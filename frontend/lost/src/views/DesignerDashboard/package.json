@@ -1,0 +1,6 @@
+{
+  "name": "DesignerDashboard",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./DesginerDashboard.js"
+}

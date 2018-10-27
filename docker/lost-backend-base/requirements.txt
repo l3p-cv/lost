@@ -1,0 +1,10 @@
+Django==2.1.1
+django-discover-runner==1.0
+django-filter==2.0.0
+django-role-permissions==2.2.0
+djangorestframework==3.8.2
+djangorestframework-jwt==1.11.0
+Markdown==3.0
+PyJWT==1.6.4
+pytz==2018.5
+six==1.11.0

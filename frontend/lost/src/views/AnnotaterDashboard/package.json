@@ -1,0 +1,6 @@
+{
+  "name": "AnnotaterDashboard",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./AnnotaterDashboard.js"
+}
