@@ -3,7 +3,7 @@
 ## Tech Stack
 
 ### Frontend
-1. Angular (6)
+1. React, Redux, Reactstrap + CORE UI
 
 ### Backend
 1. Django (2.1)
