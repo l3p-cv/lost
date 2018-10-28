@@ -1,44 +1,92 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 17.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Warstwa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="707.1px" height="200px" viewBox="0 0 707.1 200" enable-background="new 0 0 707.1 200" xml:space="preserve">
-<polygon fill="#61DAFB" points="0,150 0,50 86.6,0 173.2,50 173.2,150 86.6,200 "/>
-<polygon fill="#FFFFFF" points="86.6,133.3 57.7,116.7 57.7,83.3 86.6,66.7 115.5,83.3 144.3,66.7 86.6,33.3 28.9,66.7 28.9,133.3 
-	86.6,166.7 144.3,133.3 115.5,116.7 "/>
-<polygon opacity="0.04" stroke="#FFFFFF" stroke-miterlimit="10" enable-background="new    " points="0,50 86.6,100 86.6,0 "/>
-<polygon opacity="0.04" stroke="#FFFFFF" stroke-miterlimit="10" enable-background="new    " points="0,150 86.6,200 86.6,100 "/>
-<polygon opacity="0.08" stroke="#FFFFFF" stroke-miterlimit="10" enable-background="new    " points="86.6,100 173.2,150 173.2,50 
-	"/>
-<polygon fill-opacity="0" points="86.6,100 0,50 0,150 "/>
-<polygon opacity="0.08" stroke="#FFFFFF" stroke-miterlimit="10" enable-background="new    " points="173.2,150 86.6,100 86.6,200 
-	"/>
-<polygon opacity="0.08" stroke="#FFFFFF" stroke-miterlimit="10" enable-background="new    " points="173.2,50 86.6,0 86.6,100 "/>
-<g>
-	<path fill="#333333" d="M290.4,127.3c1,0,1.8,0.4,2.6,1.1l7.2,7.8c-4,4.9-8.8,8.7-14.6,11.3c-5.8,2.6-12.7,3.9-20.8,3.9
-		c-7.2,0-13.8-1.2-19.5-3.7c-5.8-2.5-10.7-5.9-14.8-10.3c-4.1-4.4-7.2-9.7-9.4-15.8c-2.2-6.1-3.3-12.8-3.3-20
-		c0-7.3,1.2-14.1,3.6-20.1c2.4-6.1,5.8-11.4,10.3-15.8c4.4-4.4,9.7-7.8,15.8-10.3s12.9-3.7,20.4-3.7c7.2,0,13.6,1.2,19,3.5
-		s10.1,5.4,13.9,9.2l-6.1,8.4c-0.4,0.5-0.8,1-1.4,1.4s-1.3,0.6-2.3,0.6s-2.1-0.4-3.2-1.2s-2.5-1.7-4.1-2.6c-1.7-0.9-3.8-1.8-6.3-2.6
-		c-2.5-0.8-5.8-1.2-9.7-1.2c-4.6,0-8.8,0.8-12.7,2.4c-3.8,1.6-7.2,3.9-9.9,6.9s-4.9,6.6-6.5,10.8c-1.6,4.3-2.3,9-2.3,14.3
-		c0,5.5,0.8,10.4,2.3,14.6c1.6,4.3,3.7,7.9,6.3,10.8c2.7,2.9,5.8,5.2,9.4,6.7c3.6,1.6,7.5,2.3,11.6,2.3c2.5,0,4.7-0.1,6.7-0.4
-		c2-0.3,3.8-0.7,5.5-1.3s3.3-1.3,4.8-2.3c1.5-0.9,3-2.1,4.5-3.4c0.4-0.4,0.9-0.7,1.4-1C289.3,127.4,289.9,127.3,290.4,127.3z"/>
-	<path fill="#333333" d="M407.5,101.5c0,7.2-1.2,13.8-3.6,19.9s-5.7,11.4-10.1,15.8c-4.3,4.5-9.5,7.9-15.6,10.4s-12.8,3.7-20.2,3.7
-		c-7.4,0-14.1-1.2-20.2-3.7s-11.3-6-15.7-10.4c-4.3-4.5-7.7-9.7-10.1-15.8c-2.4-6.1-3.6-12.7-3.6-19.9c0-7.2,1.2-13.8,3.6-19.9
-		s5.7-11.4,10.1-15.8c4.3-4.5,9.6-7.9,15.7-10.4s12.8-3.7,20.2-3.7c7.4,0,14.1,1.3,20.2,3.8s11.3,6,15.6,10.4
-		c4.3,4.4,7.7,9.7,10.1,15.8C406.3,87.7,407.5,94.3,407.5,101.5z M388.9,101.5c0-5.4-0.7-10.2-2.1-14.4c-1.4-4.3-3.5-7.9-6.1-10.8
-		c-2.7-3-5.9-5.2-9.7-6.8c-3.8-1.6-8.1-2.4-12.9-2.4s-9.1,0.8-12.9,2.4s-7.1,3.8-9.8,6.8c-2.7,3-4.7,6.6-6.2,10.8
-		c-1.4,4.3-2.2,9.1-2.2,14.4c0,5.4,0.7,10.2,2.2,14.4c1.4,4.3,3.5,7.9,6.2,10.8s5.9,5.2,9.8,6.8c3.8,1.6,8.1,2.4,12.9,2.4
-		s9.1-0.8,12.9-2.4c3.8-1.6,7-3.8,9.7-6.8c2.7-2.9,4.7-6.5,6.1-10.8C388.2,111.7,388.9,106.9,388.9,101.5z"/>
-	<path fill="#333333" d="M440.6,112.2v38.1h-18.2V52.7h29.8c6.7,0,12.4,0.7,17.1,2.1c4.7,1.4,8.6,3.3,11.7,5.8
-		c3,2.5,5.3,5.4,6.7,8.9c1.4,3.4,2.1,7.2,2.1,11.4c0,3.3-0.5,6.4-1.5,9.3s-2.4,5.6-4.2,8c-1.8,2.4-4.1,4.5-6.8,6.3
-		c-2.7,1.8-5.7,3.2-9.1,4.3c2.3,1.3,4.3,3.2,5.9,5.6l24.4,36h-16.3c-1.6,0-2.9-0.3-4-0.9c-1.1-0.6-2-1.5-2.8-2.7l-20.5-31.3
-		c-0.8-1.2-1.6-2-2.5-2.5s-2.3-0.7-4.1-0.7h-7.7V112.2z M440.6,99.1h11.3c3.4,0,6.4-0.4,8.9-1.3s4.6-2,6.3-3.5
-		c1.6-1.5,2.9-3.3,3.7-5.4c0.8-2.1,1.2-4.3,1.2-6.8c0-4.9-1.6-8.8-4.9-11.4c-3.3-2.7-8.2-4-15-4h-11.6v32.4H440.6z"/>
-	<path fill="#333333" d="M571.8,52.7v14.4h-43.3v27.1h34.1v14h-34.1v27.6h43.3v14.5h-61.6V52.7H571.8z"/>
-	<path fill="#61DAFB" d="M626.8,135.7c3.5,0,6.6-0.6,9.4-1.8c2.8-1.2,5.1-2.8,7-4.9c1.9-2.1,3.4-4.7,4.4-7.7s1.5-6.4,1.5-10.1V52.7
-		h18.2v58.5c0,5.8-0.9,11.2-2.8,16.1c-1.9,4.9-4.6,9.2-8.1,12.8c-3.5,3.6-7.8,6.4-12.8,8.4s-10.6,3-16.9,3s-11.9-1-16.9-3
-		s-9.2-4.8-12.7-8.4c-3.5-3.6-6.2-7.8-8-12.8c-1.9-4.9-2.8-10.3-2.8-16.1V52.7h18.2v58.4c0,3.7,0.5,7.1,1.5,10.1s2.5,5.6,4.4,7.7
-		s4.2,3.8,7,5C620.1,135.1,623.3,135.7,626.8,135.7z"/>
-	<path fill="#61DAFB" d="M706.2,150.3H688V52.7h18.2V150.3z"/>
-</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="36.818886mm"
+   height="8.2747555mm"
+   viewBox="0 0 130.46062 29.32"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="lost_white.svg"
+   inkscape:export-filename="/home/gereon/lost_white.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.313709"
+     inkscape:cx="65.08427"
+     inkscape:cy="-0.53602966"
+     inkscape:document-units="px"
+     inkscape:current-layer="text11697"
+     showgrid="false"
+     inkscape:window-width="1910"
+     inkscape:window-height="1051"
+     inkscape:window-x="1920"
+     inkscape:window-y="24"
+     inkscape:window-maximized="0"
+     showguides="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-323.96332,-336.19745)">
+    <g
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;writing-mode:tb-rl;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="text11697">
+      <path
+         d="m 335.80332,365.35745 c -7.89333,0 -11.84,-2.48 -11.84,-7.44 l 0,-19.84 c 0,-0.77333 0.22667,-1.28 0.68,-1.52 0.45333,-0.24 1.10667,-0.36 1.96,-0.36 0.88,0 1.54667,0.12 2,0.36 0.45333,0.24 0.68,0.74667 0.68,1.52 l 0,19.84 c 0,0.85333 0.52,1.58667 1.56,2.2 1.06667,0.61333 2.77333,0.92 5.12,0.92 l 19.6,0 c 0.64,0 14.72196,0.092 14.90863,0.4653 0.18666,0.34666 1.25858,0.96137 1.25858,1.6547 0,0.72 -1.13505,1.2351 -1.32172,1.60843 -0.18666,0.37334 0.0629,0.59157 -0.57709,0.59157 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Neuropol;-inkscape-font-specification:Neuropol;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
+         id="path11702"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="sssssssscsscssss" />
+      <path
+         d="m 370.13457,365.35745 q -11.84,0 -11.84,-7.44 l 0,-14.12 q 0,-7.44 11.84,-7.44 l 11.64,0 q 11.84,0 11.84,7.44 l 0,14.12 q 0,7.44 -11.84,7.44 l -11.64,0 z m 11.48,-4.32 q 3.52,0 5.12,-0.92 1.6,-0.92 1.6,-2.2 l 0,-14.12 q 0,-1.32 -1.6,-2.2 -1.6,-0.92 -5.12,-0.92 l -11.32,0 q -3.52,0 -5.12,0.92 -1.6,0.88 -1.6,2.2 l 0,14.12 q 0,1.28 1.6,2.2 1.6,0.92 5.12,0.92 l 11.32,0 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Neuropol;-inkscape-font-specification:Neuropol;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
+         id="path11704"
+         inkscape:connector-curvature="0" />
+      <path
+         d="m 408.33394,352.79745 c -7.89333,0 -11.84,-2.48 -11.84,-7.44 l 0,-1.56 c 0,-4.96 3.9467,-7.46159 11.84,-7.44 l 16.32143,0.0446 c 0.64,0.002 1.05333,0.18667 1.24,0.56 0.21333,0.34667 0.32,0.88 0.32,1.6 0,0.72 -0.10667,1.26667 -0.32,1.64 -0.18667,0.34667 -0.0911,0.46609 -0.73107,0.46643 l -16.95036,0.009 c -2.34667,10e-4 -4.01333,0.30667 -5,0.92 -0.96,0.58667 -1.44,1.32 -1.44,2.2 l 0,1.56 c 0,0.85333 0.48,1.58667 1.44,2.2 0.98667,0.61333 2.65333,0.92 5,0.92 l 9.44,0 c 7.89333,0 11.84,2.48 11.84,7.44 l 0,2 c 0,4.96 -3.94667,7.44 -11.84,7.44 l -19.6,0 c -0.64,0 -1.06667,-0.17333 -1.28,-0.52 -0.18667,-0.37333 -0.28,-0.92 -0.28,-1.64 0,-0.72 0.0933,-1.25333 0.28,-1.6 0.21333,-0.37333 0.64,-0.56 1.28,-0.56 l 19.72,0 c 2.34667,0 4,-0.29333 4.96,-0.88 0.98667,-0.61333 1.48,-1.36 1.48,-2.24 l 0,-2 c 0,-0.85333 -0.49333,-1.58667 -1.48,-2.2 -0.96,-0.61333 -2.61333,-0.92 -4.96,-0.92 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Neuropol;-inkscape-font-specification:Neuropol;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
+         id="path11706"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ssssscscsscsscsssssscscsscsscss" />
+      <path
+         d="m 440.78394,340.67745 0,22.96 c 0,0.77333 -0.22667,1.28 -0.68,1.52 -0.45333,0.24 -1.12,0.36 -2,0.36 -0.85333,0 -1.50667,-0.12 -1.96,-0.36 -0.45333,-0.24 -0.68,-0.74667 -0.68,-1.52 l 0,-22.96 -12.3525,0 c -0.64,0 -0.75417,-0.17333 -0.9675,-0.52 -0.18667,-0.37333 -0.28,-0.92 -0.28,-1.64 0,-0.72 0.0933,-1.25333 0.28,-1.6 0.21333,-0.37333 0.39447,-0.503 1.03447,-0.5042 l 29.68553,-0.0558 c 0.64,-10e-4 1.05333,0.18667 1.24,0.56 0.21333,0.34667 0.32,0.88 0.32,1.6 0,0.72 -0.10667,1.26667 -0.32,1.64 -0.18667,0.34667 -0.6,0.52 -1.24,0.52 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Neuropol;-inkscape-font-specification:Neuropol;text-align:center;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-opacity:1"
+         id="path11708"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cssssscscscsscscsc" />
+    </g>
+  </g>
 </svg>

@@ -28,7 +28,7 @@ import requireAuth from '../../components/requireAuth';
 class DefaultLayout extends Component {
 
     render() {
-        if (false) {
+        if (true) {
             return this.renderDesigner()
         } else {
             return this.renderAnnotater()
