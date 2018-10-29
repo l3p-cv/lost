@@ -20,14 +20,9 @@ export default {
       icon: 'fa-plus',
     },
     {
-      name: 'Running Pipelines',
+      name: 'Pipelines',
       url: '/pipeline/running',
-      icon: 'fa-play',
-    },
-    {
-      name: 'Finished Pipelines',
-      url: '/pipeline/finished',
-      icon: 'fa-check',
+      icon: 'fa-tasks',
     },
     {
       title: true,
@@ -50,7 +45,12 @@ export default {
     {
       name: 'Users',
       url: '/users',
-      icon: 'fa-users',
+      icon: 'fa-user',
+    },
+    {
+      name: 'Groups',
+      url: '/groups',
+      icon: 'fa-group',
     },
   ],
 };

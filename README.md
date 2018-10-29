@@ -6,11 +6,10 @@
 1. React, Redux, Reactstrap + CORE UI
 
 ### Backend
-1. Django (2.1)
-2. Django REST Framework + JWT Auth
-3. MySQL Database
-4. Celery
-5. RabbitMQ
+1. FLASK, SQLAlchemy, RESTplus
+2. Celery
+3. RabbitMQ
+4. MySQL Database
 
 ### Other
 1. CI: GitLab-CI

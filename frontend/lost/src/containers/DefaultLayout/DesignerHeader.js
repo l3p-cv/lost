@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 
 import { AppAsideToggler, AppHeaderDropdown, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
 import logo from '../../assets/img/brand/fully_lost_2.png'
-//import logo from '../../assets/img/brand/lost_logo.png'
-//import sygnet from '../../assets/img/brand/sygnet.svg'
 import sygnet from '../../assets/img/brand/lo-st.png'
 
 const propTypes = {
