@@ -16,6 +16,7 @@ const store = createStore(reducers, {
     auth: {
         token: localStorage.getItem('token'),
         refreshToken: localStorage.getItem('refreshToken'),
+        view: localStorage.getItem('view'),
     }
 }, applyMiddleware(reduxThunk))
 

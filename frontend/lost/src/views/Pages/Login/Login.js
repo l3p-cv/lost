@@ -84,11 +84,11 @@ class Login extends Component {
   }
 }
 
-function mapStateToPropse(state) {
+function mapStateToProps(state) {
   return { errorMessage: state.auth.errorMessage };
 }
 
 export default compose(
-  connect(mapStateToPropse, actions),
+  connect(mapStateToProps, actions),
   reduxForm({ form: 'login' })
 )(Login);

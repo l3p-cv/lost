@@ -5,7 +5,7 @@ const INITIAL_STATE = {
     refreshToken: '',
     errorMessage: '',
     roles: '',
-    view: 'Annotater'
+    view: ''
 };
 
 export default function (state = INITIAL_STATE, action) {
@@ -14,7 +14,8 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 token: action.payload.token,
-                refreshToken: action.payload.refresh_token
+                refreshToken: action.payload.refresh_token,
+                errorMessage: ""
             };
         case AUTH_ERR:
             return {
@@ -30,7 +31,7 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 expires: action.payload.exp,
-                roles: action.payload.roles
+                roles: action.payload.user_claims.roles
             };
         case LOGOUT:
             return INITIAL_STATE;
