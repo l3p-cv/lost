@@ -14,7 +14,8 @@ import * as serviceWorker from './serviceWorker';
 
 const store = createStore(reducers, {
     auth: {
-        authenticated: localStorage.getItem('token')
+        token: localStorage.getItem('token'),
+        refreshToken: localStorage.getItem('refreshToken'),
     }
 }, applyMiddleware(reduxThunk))
 

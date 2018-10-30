@@ -3,9 +3,9 @@ import { reduxForm, Field } from 'redux-form';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import * as actions from '../../../actions';
-import { Button, Card, CardBody, CardGroup, Col, Container, Form, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import { Alert, Button, Card, CardBody, CardGroup, Col, Container, Form, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
 
-class Login extends Component {
+class Timeout extends Component {
   onSubmit = formProps => {
     this.props.login(formProps, ()=> {
       this.props.history.push('/dashboard');
@@ -18,6 +18,9 @@ class Login extends Component {
       <div className="app flex-row align-items-center">
         <Container>
           <Row className="justify-content-center">
+          <Alert color="danger">
+          Your Sessions has been expired ! Please login again.
+          </Alert>
             <Col md="8">
               <CardGroup>
                 <Card className="p-4">
@@ -91,4 +94,4 @@ function mapStateToPropse(state) {
 export default compose(
   connect(mapStateToPropse, actions),
   reduxForm({ form: 'login' })
-)(Login);
+)(Timeout);

@@ -1,8 +1,6 @@
 import React from 'react';
 import Loadable from 'react-loadable'
 
-import DefaultLayout from './containers/DefaultLayout';
-
 function Loading() {
   return <div>Loading...</div>;
 }

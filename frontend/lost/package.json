@@ -1,15 +1,15 @@
 {
-  "name": "@coreui/coreui-free-react-admin-template",
-  "version": "2.0.13",
-  "description": "CoreUI React Open Source Bootstrap 4 Admin Template",
-  "author": "Łukasz Holeczek",
-  "homepage": "https://coreui.io",
-  "copyright": "Copyright 2018 creativeLabs Łukasz Holeczek",
-  "license": "MIT",
+  "name": "lost",
+  "version": "0.0.1",
+  "description": "LOST Label Objects and Safe Time",
+  "author": "L3P UG (haftungsbeschränkt)",
+  "homepage": "https://l3p-cv.com",
+  "copyright": "Copyright 2018 L3P UG (haftungsbeschränkt)",
+  "license": "No-Lic-Yet",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git@github.com:coreui/coreui-free-react-admin-template.git"
+    "url": "no-git-yet"
   },
   "dependencies": {
     "@coreui/coreui": "^2.0.15",
@@ -25,6 +25,7 @@
     "enzyme-adapter-react-16": "^1.6.0",
     "flag-icon-css": "^3.2.0",
     "font-awesome": "^4.7.0",
+    "jwt-decode": "^2.2.0",
     "node-sass": "^4.9.3",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
@@ -53,7 +54,7 @@
     "eject": "react-scripts eject"
   },
   "bugs": {
-    "url": "https://github.com/coreui/coreui-free-react-admin-template/issues"
+    "url": "no-git-yet"
   },
   "eslintConfig": {
     "extends": "react-app"

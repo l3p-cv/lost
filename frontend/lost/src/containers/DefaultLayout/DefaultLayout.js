@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Redirect, Route, Switch} from 'react-router-dom';
 import {Container} from 'reactstrap';
+import {compose} from 'redux';
+import {connect} from 'react-redux';
 
 import {
     AppAside,
@@ -28,7 +30,15 @@ import requireAuth from '../../components/requireAuth';
 class DefaultLayout extends Component {
 
     render() {
-        if (true) {
+        let designer = true
+        try {
+            if (this.props.view === "Designer") {
+                designer = true
+            } //roles.indexOf("Designer") > -1;
+        } catch {
+            designer = false
+        }
+        if (designer) {
             return this.renderDesigner()
         } else {
             return this.renderAnnotater()
@@ -118,5 +128,8 @@ class DefaultLayout extends Component {
         );
     }
 }
+function mapStateToPropse(state) {
+    return {view: state.auth.view};
+}
 
-export default requireAuth(DefaultLayout);
+export default compose(connect(mapStateToPropse), requireAuth)(DefaultLayout);
