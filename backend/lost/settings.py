@@ -28,3 +28,5 @@ USER_ENABLE_EMAIL = True        # Enable email authentication
 USER_ENABLE_USERNAME = False    # Disable username authentication
 USER_EMAIL_SENDER_NAME = USER_APP_NAME
 USER_EMAIL_SENDER_EMAIL = "noreply@example.com"
+
+CORS_HEADERS = 'Content-Type'

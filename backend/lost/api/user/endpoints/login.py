@@ -24,10 +24,11 @@ class UserLogin(Resource):
         user = User.find_by_email(data['email'])
         # check password
         if user and user.check_password(data['password']):
-            access_token = create_access_token(identity=user.id, fresh=True)
+            expires = datetime.timedelta(hours=2)
+            access_token = create_access_token(identity=user.id, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.id)
             return {
-                'access_token': access_token,
+                'token': access_token,
                 'refresh_token': refresh_token
             }, 200
         return {'message': 'Invalid credentials'}, 401

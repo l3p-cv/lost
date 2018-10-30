@@ -1,4 +1,5 @@
 from flask import Flask, Blueprint
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_user import UserManager
 from lost import settings
@@ -33,6 +34,7 @@ def configure_app(app):
     app.config['USER_ENABLE_USERNAME'] = settings.USER_ENABLE_USERNAME
     app.config['USER_EMAIL_SENDER_NAME'] = settings.USER_EMAIL_SENDER_NAME
     app.config['USER_EMAIL_SENDER_EMAIL'] = settings.USER_EMAIL_SENDER_EMAIL
+    app.config['CORS_HEADERS'] = settings.CORS_HEADERS
 
 def init_app(app):
     configure_app(app)
@@ -54,6 +56,7 @@ def init_app(app):
     db.init_app(app)
     # Setup Flask-User and specify the User data-model
     user_manager = UserManager(app, db, User)
+    CORS(app)
 
 
 def main():
