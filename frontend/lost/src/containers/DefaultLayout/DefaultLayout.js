@@ -30,19 +30,13 @@ import requireAuth from '../../components/requireAuth';
 class DefaultLayout extends Component {
 
     render() {
-        let designer = true
-        try {
+        if (this.props.view !== undefined) {
             if (this.props.view === "Designer") {
-                designer = true
-            } //roles.indexOf("Designer") > -1;
-        } catch {
-            designer = false
+                return this.renderDesigner()
+            }
         }
-        if (designer) {
-            return this.renderDesigner()
-        } else {
-            return this.renderAnnotater()
-        }
+        return this.renderAnnotater()
+
     }
 
     renderDesigner() {

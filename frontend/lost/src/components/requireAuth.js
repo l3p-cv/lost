@@ -18,10 +18,12 @@ export default ChildComponent => {
       if (!this.props.token) {
         this.props.history.push('/login');
       }else{
-        this.props.decodeJwt(jwt_decode(this.props.token),
-        ()=> {
+        let decoded_token = jwt_decode(this.props.token)
+        this.props.decodeJwt(decoded_token);
+        this.props.checkExpireDate(decoded_token, ()=> {
           this.props.history.push('/timeout');
         });
+        this.props.checkRole(this.props.view, decoded_token);
       }
     }
 
@@ -31,7 +33,7 @@ export default ChildComponent => {
   } 
 
   function mapStateToProps(state) {
-    return { token: state.auth.token};
+    return { token: state.auth.token, view: state.auth.view};
   }
 
   return connect(mapStateToProps, actions)(ComposedComponent);

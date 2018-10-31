@@ -4,7 +4,7 @@ const INITIAL_STATE = {
     expires: '',
     refreshToken: '',
     errorMessage: '',
-    roles: '',
+    roles: [],
     view: ''
 };
 

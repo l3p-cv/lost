@@ -18,14 +18,24 @@ export const login = (formProps, callback) => async dispatch => {
 };
 
 export const decodeJwt = (decoded_token, callback) => async dispatch => {
+    if (decoded_token !== undefined ){
+        dispatch({ type: DECODE_JWT, payload: decoded_token})
+    }
+}
+export const checkExpireDate = (decoded_token, callback) => async dispatch => {
     if (decoded_token !== undefined && decoded_token.exp < Date.now() / 1000){
         dispatch({type: LOGOUT});
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('view');
         callback();
-    }else{
-        dispatch({ type: DECODE_JWT, payload: decoded_token})
+    }
+}
+
+export const checkRole = (view, decoded_token) => async dispatch => {
+    if (!(decoded_token.user_claims.roles.indexOf(view) > -1)){
+        dispatch({ type: CHANGE_VIEW, payload: "Annotater"});
+        localStorage.setItem('view', "Annotater");
     }
 }
 export const changeView = (view) => async dispatch => {
