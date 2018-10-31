@@ -5,7 +5,7 @@
   "author": "L3P UG (haftungsbeschränkt)",
   "homepage": "https://l3p-cv.com",
   "copyright": "Copyright 2018 L3P UG (haftungsbeschränkt)",
-  "license": "No-Lic-Yet",
+  "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
