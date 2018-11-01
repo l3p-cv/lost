@@ -44,17 +44,6 @@ touch ${LOST_HOME}/logs/celery_beat_web.log
 touch ${LOST_HOME}/logs/celery_default_worker.log
 
 #init flask (create user, migrate)
-python3 /code/l3pweb/manage.py migrate
-python3 /code/l3pweb/manage.py makemigrations
-exists=$(echo "from django.contrib.auth.models import User; \
-print(User.objects.filter(username=os.environ['L3P_SU_USERNAME']).exists())" | python3 /code/l3pweb/manage.py shell)
-if [[ "$exists" == *"False"* ]]; then
-  echo "from django.contrib.auth.models import User; \
-  User.objects.create_superuser(os.environ['L3P_SU_USERNAME'], os.environ['L3P_SU_EMAIL'], os.environ['L3P_SU_PWD'], first_name='Admin', last_name='L3P')" | python3 /code/l3pweb/manage.py shell
-  echo "$(date): Created new L3P Superuser '${L3P_SU_USERNAME}'"
-else
-  echo "$(date): WARNING: L3P Superuser '${L3P_SU_USERNAME}' is already existing. Made no changes."
-fi
 
 # celery cronjob.
 celery="celery -A lost beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_beat_lost.log"
