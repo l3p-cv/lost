@@ -16,6 +16,7 @@ variables:
   
 before_script:
   - apk add --update nodejs=8.11.4-r0 npm
+  - npm install -g create-react-app@1.5.2
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN gitlab.l3portal.de:5555
 
 build-lost-base:
