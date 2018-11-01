@@ -9,10 +9,9 @@ version: '2'
      volumes:
        - ${LOST_HOME}:/${LOST_HOME}
       # - ./nginx/lost.conf:/etc/nginx/sites-enabled/lost.conf
-
      restart: always
      ports:
-       - "${LOST_WEB_PORT}:8000"
+       - "${LOST_WEB_PORT}:80"
      environment:
        - PYTHONPATH: "/code"
        - LOST_EXECUTOR: "lost"

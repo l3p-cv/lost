@@ -1,4 +1,3 @@
-FLASK_SERVER_NAME = 'localhost:1337'
 FLASK_DEBUG = True
 FLASK_THREADED = True
 

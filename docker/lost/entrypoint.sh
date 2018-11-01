@@ -30,23 +30,26 @@ while [ $n -ne 0 ]; do
 done
 
 #wait for rabbitmq
-nc -z $RABBITMQ_IP $RABBITMQ_PORT
-n=$?
-while [ $n -ne 0 ]; do
-    sleep 1
-    nc -z $RABBITMQ_IP $RABBITMQ_PORT
-    n=$?
-    echo "$(date): Waiting for RabbitMQ@$RABBITMQ_IP:$RABBITMQ_PORT"
-done
+# nc -z $RABBITMQ_IP $RABBITMQ_PORT
+# n=$?
+# while [ $n -ne 0 ]; do
+#     sleep 1
+#     nc -z $RABBITMQ_IP $RABBITMQ_PORT
+#     n=$?
+#     echo "$(date): Waiting for RabbitMQ@$RABBITMQ_IP:$RABBITMQ_PORT"
+# done
 
 mkdir -p ${LOST_HOME}/logs
 
 if [ ${DEV} = "True" ]; then
-  endpoint="python3 /code/backend/lost/app.py"
-  eval $endpoint &
-  cd /code/frontend/lost
-  frontend="npm start"
-  eval $frontend &
+
+  source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py
+  # endpoint="source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py"
+  # eval $endpoint &
+  #cd /code/frontend/lost
+  #npm start
+  #frontend="npm start"
+  # # eval $frontend &
 
 else
   echo "Production Version not yet supported."
