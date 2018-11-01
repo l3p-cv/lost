@@ -1,7 +1,18 @@
 name: lost
 channels:
+- conda-forge
 - defaults
 dependencies:
+- bzip2=1.0.6=h470a237_2
+- icu=58.2=hfc679d8_0
+- jansson=2.11=h470a237_1
+- libiconv=1.15=h470a237_3
+- libxml2=2.9.8=h422b904_5
+- openssl=1.0.2p=h470a237_1
+- pcre=8.41=hfc679d8_3
+- python=3.7.0=h5001a0f_4
+- uwsgi=2.0.17.1=py37h2184488_2
+- yaml=0.1.7=h470a237_1
 - ca-certificates=2018.03.07=0
 - certifi=2018.10.15=py37_0
 - libedit=3.1.20170329=h6b74fdf_2
@@ -9,9 +20,7 @@ dependencies:
 - libgcc-ng=8.2.0=hdf63c60_1
 - libstdcxx-ng=8.2.0=hdf63c60_1
 - ncurses=6.1=hf484d3e_0
-- openssl=1.1.1=h7b6447c_0
 - pip=10.0.1=py37_0
-- python=3.7.1=h0371630_3
 - readline=7.0=h7b6447c_5
 - setuptools=40.4.3=py37_0
 - sqlite=3.25.2=h7b6447c_0
@@ -49,3 +58,4 @@ dependencies:
   - sqlalchemy==1.2.13
   - werkzeug==0.14.1
   - wtforms==2.2.1
+prefix: /home/gereon/miniconda3/envs/lost
