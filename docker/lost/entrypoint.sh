@@ -42,14 +42,15 @@ done
 mkdir -p ${LOST_HOME}/logs
 
 if [ ${DEV} = "True" ]; then
-  source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py
-  # endpoint="source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py"
-  # eval $endpoint &
-  #cd /code/frontend/lost
-  #npm start
-  #frontend="npm start"
-  # # eval $frontend &
+  nginx="service nginx start"
+  eval $nginx &
 
+  endpoint="source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py"
+  eval $endpoint &
+
+  frontend="cd /code/frontend/lost && npm start"
+  eval $frontend 
+  
 else
   echo "Production version not yet supported."
   #gunicorn lost.wsgi -b 0.0.0.0:8000
