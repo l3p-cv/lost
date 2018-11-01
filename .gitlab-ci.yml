@@ -16,7 +16,6 @@ variables:
   
 before_script:
   - apk add --update nodejs=8.11.4-r0 npm
-  - npm install -g create-react-app@1.5.2
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN gitlab.l3portal.de:5555
 
 build-lost-base:
@@ -32,6 +31,7 @@ build-lost:
   stage: build-lost
   script:
     - docker build --build-arg base_image=$LOST_BASE_IMAGE --pull -t $LOST_TEST_IMAGE -f docker/lost/Dockerfile .
+    - npm install --prefix frontend/lost -d 
     - npm run build --prefix frontend/lost -d 
     - docker push $LOST_TEST_IMAGE
   except: 
