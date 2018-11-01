@@ -51,6 +51,6 @@ if [ ${DEV} = "True" ]; then
   # # eval $frontend &
 
 else
-  echo "Production Version not yet supported."
+  echo "Production version not yet supported."
   #gunicorn lost.wsgi -b 0.0.0.0:8000
 fi
