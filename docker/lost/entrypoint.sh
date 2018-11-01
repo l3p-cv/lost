@@ -1,4 +1,5 @@
 #!/bin/bash
+ /bin/bash -c "source /opt/conda/bin/activate lost"
 
  # init env vars 
 if [ -z "${LOST_DB_IP}" ]; then
