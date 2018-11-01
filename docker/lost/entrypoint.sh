@@ -46,11 +46,11 @@ if [ ${DEV} = "True" ]; then
   eval $nginx &
 
   endpoint="source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py"
-  eval $endpoint &
+  eval $endpoint 
 
-  frontend="cd /code/frontend/lost && npm start"
-  eval $frontend 
-  
+  # frontend="cd /code/frontend/lost && npm start"
+  # eval $frontend 
+
 else
   echo "Production version not yet supported."
   #gunicorn lost.wsgi -b 0.0.0.0:8000
