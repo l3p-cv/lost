@@ -1,17 +1,5 @@
-FROM nginx:latest
-
-# Install Backend Dependencies
-ENV PYTHONUNBUFFERED 1
-RUN mkdir /code
-RUN apt-get update && apt-get install -y --no-install-recommends python3.5 python3-pip python3-setuptools cron apt-utils wget
-RUN pip3 install --upgrade pip
-RUN apt-get update && apt-get install -y --no-install-recommends python3-dev libmysqlclient-dev build-essential libigraph0-dev netcat nano htop
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg vim
-
-WORKDIR /code
-ADD requirements.txt /code/
-RUN pip3 install -r requirements.txt
-
+ARG base_image=gitlab.l3portal.de:5555/l3p-cv/lost/base/lost-base:latest
+FROM $base_image
 # Add Code 
 ADD /docker/lost/entrypoint.sh /
 #ADD /docker/lost/nginx/prod.conf /etc/nginx/nginx.conf
