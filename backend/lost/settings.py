@@ -1,3 +1,5 @@
+import os
+
 FLASK_DEBUG = True
 FLASK_THREADED = True
 
@@ -6,7 +8,8 @@ RESTPLUS_VAL = True
 RESTPLUS_MASK_SWAGGER = False
 
 # Flask-SQLAlchemy settings
-SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite'
+SQLALCHEMY_DATABASE_URI = 'mysql://'+ os.environ['LOST_DB_USER']+ ':'+ os.environ['LOST_DB_PASSWORD'] \
+                        +'@' + os.environ['LOST_DB_IP'] +'/'+ os.environ['LOST_DB_NAME']
 SQLALCHEMY_TRACK_MODS = False
 
 # Flask settings
