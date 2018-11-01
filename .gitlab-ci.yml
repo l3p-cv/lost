@@ -19,8 +19,8 @@ before_script:
 build-lost:
   stage: build-lost
   script:
-    - npm run build --prefix frontend/lost -d 
     - docker build --pull -t $LOST_TEST_IMAGE -f docker/lost/Dockerfile .
+    - npm run build --prefix frontend/lost -d 
     - docker push $LOST_TEST_IMAGE
 
 test-lost:
