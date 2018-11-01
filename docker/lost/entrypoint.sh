@@ -42,11 +42,11 @@ done
 mkdir -p ${LOST_HOME}/logs
 
 if [ ${DEV} = "True" ]; then
-  #source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py
+  source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py
   # endpoint="source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py"
   # eval $endpoint &
-  cd /code/frontend/lost
-  npm start
+  #cd /code/frontend/lost
+  #npm start
   #frontend="npm start"
   # # eval $frontend &
 
