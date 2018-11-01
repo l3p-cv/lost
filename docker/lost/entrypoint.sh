@@ -1,24 +1,16 @@
 #!/bin/bash
 
  # init env vars 
-if [ -z "${MAN_DB_IP}" ]; then
-  export MAN_DB_IP="db-django"
+if [ -z "${LOST_DB_IP}" ]; then
+  export LOST_DB_IP="db-lost"
 fi
 
-if [ -z "${MAN_DB_PORT}" ]; then
-  export MAN_DB_PORT=3306
-fi
-
-if [ -z "${L3P_DB_IP}" ]; then
-  export L3P_DB_IP="db-l3p"
-fi
-
-if [ -z "${L3P_DB_PORT}" ]; then
-  export L3P_DB_PORT=3306
+if [ -z "${LOST_DB_PORT}" ]; then
+  export LOST_DB_PORT=3306
 fi
 
 if [ -z "${RABBITMQ_IP}" ]; then
-  export RABBITMQ_IP="rabbitmql3p"
+  export RABBITMQ_IP="rabbitmqlost"
 fi
 
 if [ -z "${RABBITMQ_PORT}" ]; then
@@ -26,24 +18,14 @@ if [ -z "${RABBITMQ_PORT}" ]; then
 fi
 
 # Wait for database to get available
-#wait for man mysql
-nc -z $MAN_DB_IP $MAN_DB_PORT
-n=$?
-while [ $n -ne 0 ]; do
-    sleep 1
-    nc -z $MAN_DB_IP $MAN_DB_PORT
-    n=$?
-    echo "$(date): Waiting for MySQL@$MAN_DB_IP:$MAN_DB_PORT"
-done
-
 #wait for l3p mysql
-nc -z $L3P_DB_IP $L3P_DB_PORT
+nc -z $LOST_DB_IP $LOST_DB_PORT
 n=$?
 while [ $n -ne 0 ]; do
     sleep 1
-    nc -z $L3P_DB_IP $L3P_DB_PORT
+    nc -z $LOST_DB_IP $LOST_DB_PORT
     n=$?
-    echo "$(date): Waiting for MySQL@$L3P_DB_IP:$L3P_DB_PORT"
+    echo "$(date): Waiting for MySQL@$LOST_DB_IP:$LOST_DB_PORT"
 done
 
 #wait for rabbitmq
@@ -56,11 +38,11 @@ while [ $n -ne 0 ]; do
     echo "$(date): Waiting for RabbitMQ@$RABBITMQ_IP:$RABBITMQ_PORT"
 done
 
-mkdir -p ${L3P_HOME}/logs
-touch ${L3P_HOME}/logs/celery_beat_web.log
-touch ${L3P_HOME}/logs/celery_default_worker.log
+mkdir -p ${LOST_HOME}/logs
+touch ${LOST_HOME}/logs/celery_beat_web.log
+touch ${LOST_HOME}/logs/celery_default_worker.log
 
-#init django (create user, migrate)
+#init flask (create user, migrate)
 python3 /code/l3pweb/manage.py migrate
 python3 /code/l3pweb/manage.py makemigrations
 exists=$(echo "from django.contrib.auth.models import User; \
@@ -74,14 +56,14 @@ else
 fi
 
 # celery cronjob.
-celery="celery -A l3pweb beat -l info --workdir /code/l3pweb/ -f ${L3P_HOME}/logs/celery_beat_web.log"
+celery="celery -A lost beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_beat_lost.log"
 eval $celery &
 
 #start a celery worker.
-worker="celery -A l3pweb worker -l info --workdir /code/l3pweb/ -f ${L3P_HOME}/logs/celery_default_worker.log"
+worker="celery -A lost worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_default_worker.log"
 eval $worker &
 
-python3 /code/l3py/init/cli/l3p.py
+python3 /code/backend/logic/init/cli/lost.py
 
 if [ ${DEV} = "True" ]; then
   python3 /code/l3pweb/manage.py runserver 0.0.0.0:8000
