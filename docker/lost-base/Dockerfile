@@ -9,5 +9,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3-dev bui
 RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg vim
 
 WORKDIR /code
-ADD requirements.txt /code/
+ADD /docker/lost-base/requirements.txt /code/
 RUN pip3 install -r requirements.txt
