@@ -1,0 +1,51 @@
+name: lost
+channels:
+- defaults
+dependencies:
+- ca-certificates=2018.03.07=0
+- certifi=2018.10.15=py37_0
+- libedit=3.1.20170329=h6b74fdf_2
+- libffi=3.2.1=hd88cf55_4
+- libgcc-ng=8.2.0=hdf63c60_1
+- libstdcxx-ng=8.2.0=hdf63c60_1
+- ncurses=6.1=hf484d3e_0
+- openssl=1.1.1=h7b6447c_0
+- pip=10.0.1=py37_0
+- python=3.7.1=h0371630_3
+- readline=7.0=h7b6447c_5
+- setuptools=40.4.3=py37_0
+- sqlite=3.25.2=h7b6447c_0
+- tk=8.6.8=hbc83047_0
+- wheel=0.32.2=py37_0
+- xz=5.2.4=h14c3975_4
+- zlib=1.2.11=ha838bed_2
+- pip:
+  - aniso8601==4.0.1
+  - asn1crypto==0.24.0
+  - bcrypt==3.1.4
+  - blinker==1.4
+  - cffi==1.11.5
+  - click==7.0
+  - cryptography==2.3.1
+  - flask==1.0.2
+  - flask-cors==3.0.6
+  - flask-jwt-extended==3.13.1
+  - flask-login==0.4.1
+  - flask-mail==0.9.1
+  - flask-restplus==0.12.1
+  - flask-sqlalchemy==2.3.2
+  - flask-user==1.0.1.5
+  - flask-wtf==0.14.2
+  - idna==2.7
+  - itsdangerous==1.1.0
+  - jinja2==2.10
+  - jsonschema==2.6.0
+  - markupsafe==1.0
+  - passlib==1.7.1
+  - pycparser==2.19
+  - pyjwt==1.6.4
+  - pytz==2018.7
+  - six==1.11.0
+  - sqlalchemy==1.2.13
+  - werkzeug==0.14.1
+  - wtforms==2.2.1
