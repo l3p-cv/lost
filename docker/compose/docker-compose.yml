@@ -1,0 +1,54 @@
+version: '2'
+ services:
+   lost:
+     image: gitlab.l3portal.de:5555/l3p-cv/lost/test:${LOST_VERSION}
+     container_name: lost
+     command: bash /entrypoint.sh
+     env_file:
+       - .env
+     volumes:
+       - ${LOST_HOME}:/${LOST_HOME}
+      # - ./nginx/lost.conf:/etc/nginx/sites-enabled/lost.conf
+
+     restart: always
+     ports:
+       - "${LOST_WEB_PORT}:8000"
+     environment:
+       - PYTHONPATH: "/code"
+       - LOST_EXECUTOR: "lost"
+     links:
+       - db-lost
+       - rabbitmqlost
+
+   db-lost:
+     image: mysql:5.7
+     container_name: db-lost
+     volumes:
+        - ${LOST_HOME}/mysql:/var/lib/mysql
+     environment:
+        MYSQL_DATABASE: ${LOST_DB_NAME}
+        MYSQL_USER: ${LOST_DB_USER}
+        MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
+        MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
+
+   rabbitmqlost:
+     image: rabbitmq:3-management
+     container_name: rabbitmqlost
+     volumes:
+        - ${LOST_HOME}/rabbitmq:/var/lib/rabbitmq
+
+   # For easy db access while dev.
+   phpmyadmin:
+     image: phpmyadmin/phpmyadmin
+     container_name: phpmyadmin
+     environment:
+        PMA_ARBITRARY: 1
+        MYSQL_USER: ${LOST_DB_USER}
+        MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
+        MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
+     links:
+       - "db-lost:db"
+     ports:
+       - "8081:80"
+     
+

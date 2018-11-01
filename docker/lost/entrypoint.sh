@@ -40,25 +40,15 @@ while [ $n -ne 0 ]; do
 done
 
 mkdir -p ${LOST_HOME}/logs
-touch ${LOST_HOME}/logs/celery_beat_web.log
-touch ${LOST_HOME}/logs/celery_default_worker.log
-
-#init flask (create user, migrate)
-
-# celery cronjob.
-celery="celery -A lost beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_beat_lost.log"
-eval $celery &
-
-#start a celery worker.
-worker="celery -A lost worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_default_worker.log"
-eval $worker &
-
-python3 /code/backend/logic/init/cli/lost.py
 
 if [ ${DEV} = "True" ]; then
-  python3 /code/l3pweb/manage.py runserver 0.0.0.0:8000
+  endpoint="python3 /code/backend/lost/app.py"
+  eval $endpoint &
+  cd /code/frontend/lost
+  frontend="npm start"
+  eval $frontend &
+
 else
-  cd /code/l3pweb/
-  python3 /code/l3pweb/manage.py collectstatic --noinput
-  gunicorn l3pweb.wsgi -b 0.0.0.0:8000
+  echo "Production Version not yet supported."
+  #gunicorn lost.wsgi -b 0.0.0.0:8000
 fi
