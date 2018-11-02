@@ -1,5 +1,8 @@
 # LOST - Label Objects and Save Time
 
+## How To Start
+TODO
+
 ## Tech Stack
 
 ### Frontend
