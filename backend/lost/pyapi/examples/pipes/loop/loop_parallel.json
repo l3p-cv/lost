@@ -1,0 +1,50 @@
+{
+  "description" : "LoopParallel",
+  "author" : "Jonas Jaeger",
+  "elements" : [
+    {
+      "peN" : 1,
+      "peOut" : [2,4],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : [3],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 3,
+      "peOut" : [5],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 4,
+      "peOut" : [5],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 5,
+      "peOut" : null,
+      "loop" : {
+        "maxIteration" : 3,
+        "peJumpId" : 1
+      }
+    }
+  ]
+}

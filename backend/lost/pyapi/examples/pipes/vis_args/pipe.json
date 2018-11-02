@@ -1,0 +1,22 @@
+{
+  "description" : "Write the out argument to visual html output",
+  "author" : "Jonas Jaeger",
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1],
+      "script" : {
+        "path": "vis_arguments.py",
+        "description" : "Write the out argument to a visual output.",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : null,
+      "visualOutput" : {
+        "type" : "html"
+      }
+    }
+  ]
+}

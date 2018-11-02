@@ -1,0 +1,34 @@
+{
+  "name" : "BreakLoop",
+  "description" : "BreakLoop",
+  "author" : "Jonas Jaeger",
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : [2],
+      "script" : {
+        "name" : "BreakLoop",
+        "path": "break_loop.py",
+        "description" : "Break loop in iteration 1",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : null,
+      "loop" : {
+        "max_iteration" : null,
+        "peJumpId" : 0
+      }
+    }
+  ]
+}

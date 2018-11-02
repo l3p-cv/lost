@@ -1,0 +1,95 @@
+{
+  "description" : "LoopDataExport",
+  "author" : "Jonas Jaeger",
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1,5],
+      "datasource" : {
+        "type" : "rawFile"
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : [2],
+      "script" : {
+        "path": "anno_all_imgs.py",
+        "description" : "Request ImageAnnotations for all images in an rawFile",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : [3,9],
+      "annoTask" : {
+        "name" : "MultiObjectImageAnnoation",
+        "type" : "mia",
+        "instructions" : "Please assign a class labels to all presented images."
+      }
+    },
+    {
+      "peN" : 3,
+      "peOut" : [4],
+      "script" : {
+        "name" : "IterationTxt",
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 4,
+      "peOut" : null,
+      "loop" : {
+        "max_iteration" : 3,
+        "peJumpId" : 1
+      }
+    },
+    {
+      "peN" : 5,
+      "peOut" : [6],
+      "script" : {
+        "path": "request_bba_preboxed.py",
+        "description" : "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes.",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 6,
+      "peOut" : [7],
+      "annoTask" : {
+        "name" : "BBoxAnnotation",
+        "type" : "sia",
+        "instructions" : "Please draw bounding boxes for all objects in image."
+      }
+    },
+    {
+      "peN" : 7,
+      "peOut" : [8],
+      "script" : {
+        "path": "export_bbox_json.py",
+        "description" : "Export all BBoxAnnotations to a json file.",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 8,
+      "peOut" : null,
+      "dataExport" : {}
+    },
+    {
+      "peN" : 9,
+      "peOut" : [4, 10],
+      "script" : {
+        "path": "export_csv.py",
+        "description" : "Export annotations to a csv file.",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 10,
+      "peOut" : null,
+      "dataExport" : {}
+    }
+  ]
+}

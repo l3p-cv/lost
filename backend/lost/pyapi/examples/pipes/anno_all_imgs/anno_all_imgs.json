@@ -1,0 +1,36 @@
+{
+  "description" : "This pipeline selects all images of an rawFile for an annotation task",
+  "author" : "Jonas Jaeger",
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1],
+      "datasource" : {
+        "type" : "rawFile"
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : [2],
+      "script" : {
+        "path": "anno_all_imgs.py",
+        "description" : "Request ImageAnnotations for all images in an rawFile",
+        "language" : "python3",
+        "libContext" : null,
+        "staticContext" : null
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : null,
+      "annoTask" : {
+        "name" : "MultiImageAnnoation",
+        "type" : "mia",
+        "instructions" : "Please assign a class labels to all presented images.",
+        "configuration": {
+          "type": "imageBased"
+        }
+      }
+    }
+  ]
+}

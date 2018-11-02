@@ -1,0 +1,63 @@
+{
+  "name" : "Parallel test",
+  "description" : "Request moa annotations and show the number of annotations per label and export annos to csv",
+  "author" : "Jonas Jaeger",
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1],
+      "datasource" : {
+        "type" : "rawFile"
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : [2],
+      "script" : {
+        "path": "anno_all_imgs.py",
+        "description" : "Request ImageAnnotations for all images in an rawFile",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : [3, 5],
+      "annoTask" : {
+        "name" : "MultiImageAnnoation",
+        "type" : "mia",
+        "instructions" : "Please assign a class labels to all presented images.",
+        "configuration":{
+          "type": "imageBased"
+        }
+      }
+    },
+    {
+      "peN" : 3,
+      "peOut" : [4],
+      "script" : {
+        "path": "annos_per_label.py",
+        "description" : "Create a VisualOutput that shows the number of MOA_IMG annotations per label",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 4,
+      "peOut" : null,
+      "visualOutput" : {}
+    },
+    {
+      "peN" : 5,
+      "peOut" : [6],
+      "script" : {
+        "path": "export_csv.py",
+        "description" : "Export annotations to a csv file.",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 6,
+      "peOut" : null,
+      "dataExport" : {}
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "description": "This pipeline selects all images of an rawFile and request bbox annotations with some dummy boxes.",
+  "author": "Jonas Jaeger",
+  "elements": [{
+      "peN": 0,
+      "peOut": [1],
+      "datasource": {
+        "type": "rawFile"
+      }
+    },
+    {
+      "peN": 1,
+      "peOut": [2],
+      "script": {
+        "path": "request_bba_preboxed.py",
+        "description": "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes.",
+        "language": "python3"
+      }
+    },
+    {
+      "peN": 2,
+      "peOut": null,
+      "annoTask": {
+        "name": "BBoxAnnotation",
+        "type": "sia",
+        "instructions": "Please draw bounding boxes for all objects in image.",
+        "configuration": {
+          "tools": {
+            "point": false,
+            "line": false,
+            "polygon": false,
+            "bbox": true
+          },
+          "actions": {
+            "drawing": true,
+            "labeling": false,
+            "edit": {
+              "label": false,
+              "bounds": true,
+              "delete": true
+            }
+          },
+          "drawables": {
+            "bbox": {
+              "minArea": 0.001234
+            }
+          }
+        }
+      }
+    }
+  ]
+}

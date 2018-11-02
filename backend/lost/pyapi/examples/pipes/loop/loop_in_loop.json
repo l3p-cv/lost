@@ -1,0 +1,59 @@
+{
+  "description" : "LoopInLoop",
+  "author" : "Jonas Jaeger",
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1,3],
+      "script" : {
+        "name" : "IterationTxt",
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : [2],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : [4],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 3,
+      "peOut" : [4],
+      "script" : {
+        "path": "iteration_txt.py",
+        "description" : "Save the current iteration to a file",
+        "language" : "python3"
+      }
+    },
+    {
+      "peN" : 4,
+      "peOut" : [5],
+      "loop" : {
+        "maxIteration" : 2,
+        "peJumpId" : 0
+      }
+    },
+    {
+      "peN" : 5,
+      "peOut" : null,
+      "loop" : {
+        "maxIteration" : null,
+        "peJumpId" : 0
+      }
+    }
+  ]
+}

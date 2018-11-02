@@ -16,4 +16,4 @@ TODO
 
 ### Other
 1. CI: GitLab-CI
-2. Docker / Docker-Compose  
+2. Docker / Docker-Compose
