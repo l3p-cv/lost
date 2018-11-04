@@ -1,16 +1,15 @@
 from flask import Flask, Blueprint
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask_user import UserManager
 from lost import settings
-
 from lost.api.api import api
 
 from lost.api.user.endpoints.login import namespace as login_namespace
 from lost.api.user.endpoints.users import namespace as users_namespace
 
-from lost.database.db import db
-from lost.database.models import User, Role, UserRoles
+#from lost.database.db import db
+from lost.db.model import User, Role, UserRoles
+from lost.db import access
 
 app = Flask(__name__)
 
@@ -18,8 +17,6 @@ def configure_app(app):
     app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTPLUS_SWAGGER_EXPANSIONS
     app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VAL
     app.config['RESTPLUS_MASK_SWAGGER'] = settings.RESTPLUS_MASK_SWAGGER
-    app.config['SQLALCHEMY_DATABASE_URI'] = settings.SQLALCHEMY_DATABASE_URI
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = settings.SQLALCHEMY_TRACK_MODS
     app.config['SECRET_KEY'] = settings.SECRET_KEY
     app.config['MAIL_SERVER'] = settings.MAIL_SERVER
     app.config['MAIL_PORT'] = settings.MAIL_PORT
@@ -41,9 +38,11 @@ def init_app(app):
 
     @jwt.user_claims_loader
     def add_claims_to_jwt(identity):
+        dbm = access.DBMan(settings.LOST_CONFIG)
         roles = []
-        for role in UserRoles.query.filter_by(user_id=identity):
-            roles.append(Role.query.filter_by(id=role.role_id).first().name)
+        for role in dbm.get_user_roles(user_id=identity):
+            roles.append(dbm.get_role(role_id=role.idx).name)
+        dbm.close_session()
         return {"roles": roles}
         
     blueprint = Blueprint('api', __name__, url_prefix='/api')
@@ -52,9 +51,6 @@ def init_app(app):
     api.add_namespace(login_namespace)
     api.add_namespace(users_namespace)
     app.register_blueprint(blueprint)
-    db.init_app(app)
-    # Setup Flask-User and specify the User data-model
-    user_manager = UserManager(app, db, User)
     CORS(app)
 
 

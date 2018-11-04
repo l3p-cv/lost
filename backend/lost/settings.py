@@ -1,4 +1,5 @@
 import os
+from lost.logic.config import LOSTConfig
 
 FLASK_DEBUG = True
 FLASK_THREADED = True
@@ -7,10 +8,7 @@ RESTPLUS_SWAGGER_EXPANSIONS = 'list'
 RESTPLUS_VAL = True
 RESTPLUS_MASK_SWAGGER = False
 
-# Flask-SQLAlchemy settings
-SQLALCHEMY_DATABASE_URI = 'mysql://'+ os.environ['LOST_DB_USER']+ ':'+ os.environ['LOST_DB_PASSWORD'] \
-                        +'@' + os.environ['LOST_DB_IP'] +'/'+ os.environ['LOST_DB_NAME']
-SQLALCHEMY_TRACK_MODS = False
+LOST_CONFIG = LOSTConfig()
 
 # Flask settings
 SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!'

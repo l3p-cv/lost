@@ -3,8 +3,7 @@ from sqlalchemy import exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy import or_
-from lost.database import models
-from lost.database import state, dtype
+from lost.db import model, state, dtype
 import os
 
 CONNECTOR = "mysql+mysqldb"
@@ -22,7 +21,7 @@ def convert_connection_str(lostconfig):
     out = CONNECTOR + "://" + lostconfig.lost_db_user + ":" + lostconfig.lost_db_pwd + "@" + lostconfig.lost_db_ip +":"+ lostconfig.lost_db_port + "/" + lostconfig.lost_db_name
     return out
 
-class ProjectDBMan(object):
+class DBMan(object):
     """Database access manager for Project database.
     """
     def __init__(self, lostconfig, debug=False):
@@ -47,11 +46,11 @@ class ProjectDBMan(object):
             method will not work.
         '''
         #Use this line to crate the tables
-        dm.Base.metadata.create_all(self.engine)
+        model.Base.metadata.create_all(self.engine)
 
     def drop_all(self):
         '''Drop all tables in database'''
-        dm.Base.metadata.drop_all(self.engine)
+        model.Base.metadata.drop_all(self.engine)
 
     def new_session(self):
         '''Cerate new orm session for this DBManager'''
@@ -97,7 +96,7 @@ class ProjectDBMan(object):
         Returns:
             list of :class:`.project.Media` objects.
         '''
-        return self.session.query(dm.Media).all()
+        return self.session.query(model.Media).all()
 
     def get_media(self, media_id=None, data_path=None):
         '''Get a media entry by id
@@ -110,9 +109,9 @@ class ProjectDBMan(object):
             :class:`.project.Media`
         '''
         if media_id is not None:
-            return self.session.query(dm.Media).filter(dm.Media.idx==media_id).first()
+            return self.session.query(model.Media).filter(model.Media.idx==media_id).first()
         elif data_path is not None:
-            return self.session.query(dm.Media).filter(dm.Media.data_path==data_path).first()
+            return self.session.query(model.Media).filter(model.Media.data_path==data_path).first()
         else:
             raise Exception('Need to specify one of the method parameters!')
 
@@ -125,7 +124,7 @@ class ProjectDBMan(object):
         Returns:
             True if media exists.
         '''
-        (ret, ), = self.session.query(exists().where(dm.Media.data_path==data_path))
+        (ret, ), = self.session.query(exists().where(model.Media.data_path==data_path))
         return ret
 
     def get_anno_task(self, anno_task_id=None, pipe_element_id=None, state=None):
@@ -139,14 +138,14 @@ class ProjectDBMan(object):
             :class:`.project.AnnoTask`
         '''
         if anno_task_id is not None:
-            return self.session.query(dm.AnnoTask)\
-                .filter(dm.AnnoTask.idx==anno_task_id).first()
+            return self.session.query(model.AnnoTask)\
+                .filter(model.AnnoTask.idx==anno_task_id).first()
         elif pipe_element_id is not None:
-            return self.session.query(dm.AnnoTask)\
-                .filter(dm.AnnoTask.pipe_element_id==pipe_element_id).first()
+            return self.session.query(model.AnnoTask)\
+                .filter(model.AnnoTask.pipe_element_id==pipe_element_id).first()
         elif state is not None:
-            return self.session.query(dm.AnnoTask)\
-                .filter(dm.AnnoTask.state==state).all()
+            return self.session.query(model.AnnoTask)\
+                .filter(model.AnnoTask.state==state).all()
         else:
             raise Exception("One of the arguments need to be not None.")
 
@@ -175,10 +174,10 @@ class ProjectDBMan(object):
             :class:`.project.Pipe`
         '''
         if pipe_id is not None:
-            return self.session.query(dm.Pipe).filter(dm.Pipe.idx==pipe_id).first()
+            return self.session.query(model.Pipe).filter(model.Pipe.idx==pipe_id).first()
         elif pipe_template_id is not None:
-            return self.session.query(dm.Pipe)\
-                    .filter(dm.Pipe.pipe_template_id==pipe_template_id).first()
+            return self.session.query(model.Pipe)\
+                    .filter(model.Pipe.pipe_template_id==pipe_template_id).first()
         else:
             raise Exception("db_access.get_pipw: Need to specify one of the arguments!")
 
@@ -188,7 +187,7 @@ class ProjectDBMan(object):
         Returns:
             list of :class:`.project.Pipe`
         '''
-        return self.session.query(dm.Pipe).all()
+        return self.session.query(model.Pipe).all()
 
     def get_pipes_to_process(self):
         '''Get all :class:`project.Pipe` objects that are not finished.
@@ -196,11 +195,11 @@ class ProjectDBMan(object):
         Returns:
             list: A list of :class:`project.Pipe` objects
         '''
-        return self.session.query(dm.Pipe)\
-            .filter((dm.Pipe.state!=state.Pipe.FINISHED) &\
-                    (dm.Pipe.state!=state.Pipe.DELETED) &\
-                    (dm.Pipe.state!=state.Pipe.PAUSED) &\
-                    (dm.Pipe.state!=state.Pipe.ERROR)).all()
+        return self.session.query(model.Pipe)\
+            .filter((model.Pipe.state!=state.Pipe.FINISHED) &\
+                    (model.Pipe.state!=state.Pipe.DELETED) &\
+                    (model.Pipe.state!=state.Pipe.PAUSED) &\
+                    (model.Pipe.state!=state.Pipe.ERROR)).all()
 
 
 
@@ -210,9 +209,9 @@ class ProjectDBMan(object):
         Returns:
             list: A list of :class:`project.Pipe` objects
         '''
-        return self.session.query(dm.Pipe)\
-            .filter((dm.Pipe.state!=state.Pipe.FINISHED) &\
-                    (dm.Pipe.state!=state.Pipe.DELETED)).all()
+        return self.session.query(model.Pipe)\
+            .filter((model.Pipe.state!=state.Pipe.FINISHED) &\
+                    (model.Pipe.state!=state.Pipe.DELETED)).all()
 
     def get_completed_pipes(self):
         '''Get all :class:`project.Pipe` objects that are  finished.
@@ -220,8 +219,8 @@ class ProjectDBMan(object):
         Returns:
             list: A list of :class:`project.Pipe` objects
         '''
-        return self.session.query(dm.Pipe)\
-            .filter((dm.Pipe.state==state.Pipe.FINISHED)).all()
+        return self.session.query(model.Pipe)\
+            .filter((model.Pipe.state==state.Pipe.FINISHED)).all()
 
     def get_all_pipe_templates(self):
         '''Get all PipeTemplate objects in db.
@@ -229,7 +228,7 @@ class ProjectDBMan(object):
         Returns:
             list: :class:`.project.PipeTemplate`
         '''
-        return self.session.query(dm.PipeTemplate).all()
+        return self.session.query(model.PipeTemplate).all()
 
     def get_pipe_template(self, pipe_template_id=None):
         '''Get a single PipeTemplate.
@@ -237,8 +236,8 @@ class ProjectDBMan(object):
         Returns:
             :class:`.project.PipeTemplate`
         '''
-        return self.session.query(dm.PipeTemplate)\
-            .filter(dm.PipeTemplate.idx==pipe_template_id).first()
+        return self.session.query(model.PipeTemplate)\
+            .filter(model.PipeTemplate.idx==pipe_template_id).first()
 
     def get_script(self, script_id=None, name=None, file_name=None):
         '''Get a script object from database.
@@ -253,14 +252,14 @@ class ProjectDBMan(object):
             :class:`.project.Script`
         '''
         if script_id is not None:
-            return self.session.query(dm.Script)\
-                .filter(dm.Script.idx==script_id).first()
+            return self.session.query(model.Script)\
+                .filter(model.Script.idx==script_id).first()
         elif name is not None:
-            return self.session.query(dm.Script)\
-                .filter(dm.Script.name==name.lower()).first()
+            return self.session.query(model.Script)\
+                .filter(model.Script.name==name.lower()).first()
         elif file_name is not None:
-            return self.session.query(dm.Script)\
-                .filter(dm.Script.path.contains(file_name)).first()
+            return self.session.query(model.Script)\
+                .filter(model.Script.path.contains(file_name)).first()
         else:
             raise Exception("lost.db.access.get_script: You need to specify one of the arguments")
 
@@ -273,8 +272,8 @@ class ProjectDBMan(object):
         Returns:
             list of :class:`.project.PipeElement`
         '''
-        return self.session.query(dm.PipeElement)\
-            .filter(dm.PipeElement.pipe_id==pipe_id).all()
+        return self.session.query(model.PipeElement)\
+            .filter(model.PipeElement.pipe_id==pipe_id).all()
             
 
     def get_pipe_element(self, pipe_e_id=None, script_id=None):
@@ -287,18 +286,18 @@ class ProjectDBMan(object):
             :class:`.project.PipeElement`
         '''
         if pipe_e_id is not None:
-            return self.session.query(dm.PipeElement)\
-                .filter(dm.PipeElement.idx==pipe_e_id).first()
+            return self.session.query(model.PipeElement)\
+                .filter(model.PipeElement.idx==pipe_e_id).first()
         elif script_id is not None:
-            return self.session.query(dm.PipeElement)\
-                .filter(dm.PipeElement.script_id==script_id).first()
+            return self.session.query(model.PipeElement)\
+                .filter(model.PipeElement.script_id==script_id).first()
         else:
             raise Exception("One of the arguments need to be not None.")
 
     def get_image_anno(self, img_anno_id):
         ''' get a single image annotation
         '''
-        return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.idx==img_anno_id).first()
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno_id).first()
 
     def get_image_annotations(self, anno_task_id):
         '''Get a list of ImageAnnos.
@@ -309,29 +308,29 @@ class ProjectDBMan(object):
         Returns:
             list of :class:`.project.ImageAnno`
         '''
-        return self.session.query(dm.ImageAnno)\
-            .filter(dm.ImageAnno.anno_task_id==anno_task_id).all()
+        return self.session.query(model.ImageAnno)\
+            .filter(model.ImageAnno.anno_task_id==anno_task_id).all()
 
     def get_image_annotations_by_state(self, anno_task_id, state, user_id, amount):
         ''' Get all Image Anno by annotask, state and user id
         '''
         if (amount > 0):
-            return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.state==state,\
-                                                          dm.ImageAnno.anno_task_id== anno_task_id,\
-                                                          dm.ImageAnno.user_id==user_id)\
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
+                                                          model.ImageAnno.anno_task_id== anno_task_id,\
+                                                          model.ImageAnno.user_id==user_id)\
                                                           .limit(amount).all()
         else:
-            return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.state==state,\
-                                                          dm.ImageAnno.anno_task_id== anno_task_id,\
-                                                          dm.ImageAnno.user_id==user_id).all()
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
+                                                          model.ImageAnno.anno_task_id== anno_task_id,\
+                                                          model.ImageAnno.user_id==user_id).all()
 
 
     def get_image_annotation_by_sim_class(self, anno_task_id, sim_class, amount):
         ''' Get unlocked image annotations by sim_class and anno task
         '''
-        return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.state==state.Anno.UNLOCKED,\
-                                                      dm.ImageAnno.anno_task_id== anno_task_id,\
-                                                      dm.ImageAnno.sim_class==sim_class)\
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state.Anno.UNLOCKED,\
+                                                      model.ImageAnno.anno_task_id== anno_task_id,\
+                                                      model.ImageAnno.sim_class==sim_class)\
         .limit(amount).all()
 
     def get_random_sim_class_img_anno(self, anno_task_id):
@@ -347,64 +346,64 @@ class ProjectDBMan(object):
         Returns:
             list of :class:`.project.ImageAnno`
         '''
-        return self.session.query(dm.ImageAnno).all()
+        return self.session.query(model.ImageAnno).all()
 
     def get_locked_img_annos(self, anno_task_id):
-        return self.session.query(dm.ImageAnno)\
-            .filter((dm.ImageAnno.anno_task_id==anno_task_id)\
-                    & ((dm.ImageAnno.state == state.Anno.LOCKED)\
-                       | (dm.ImageAnno.state == state.Anno.LOCKED_PRIORITY))).all()
+        return self.session.query(model.ImageAnno)\
+            .filter((model.ImageAnno.anno_task_id==anno_task_id)\
+                    & ((model.ImageAnno.state == state.Anno.LOCKED)\
+                       | (model.ImageAnno.state == state.Anno.LOCKED_PRIORITY))).all()
 
     def get_locked_two_d_annos(self, anno_task_id):
-        return self.session.query(dm.TwoDAnno)\
-            .filter((dm.TwoDAnno.anno_task_id==anno_task_id)\
-                    & ((dm.TwoDAnno.state == state.Anno.LOCKED)\
-                       | (dm.TwoDAnno.state == state.Anno.LOCKED_PRIORITY))).all()
+        return self.session.query(model.TwoDAnno)\
+            .filter((model.TwoDAnno.anno_task_id==anno_task_id)\
+                    & ((model.TwoDAnno.state == state.Anno.LOCKED)\
+                       | (model.TwoDAnno.state == state.Anno.LOCKED_PRIORITY))).all()
 
     def get_resultlinks_pe_n(self, pe_n_id):
         '''Get result links for pe_n.
         '''
-        return self.session.query(dm.ResultLink)\
-        .filter(dm.ResultLink.pe_n==pe_n_id).all()
+        return self.session.query(model.ResultLink)\
+        .filter(model.ResultLink.pe_n==pe_n_id).all()
 
     def get_resultlinks_pe_out(self, pe_out_id):
         '''Get result links for pe_out.
         '''
-        return self.session.query(dm.ResultLink)\
-        .filter(dm.ResultLink.pe_out==pe_out_id).all()
+        return self.session.query(model.ResultLink)\
+        .filter(model.ResultLink.pe_out==pe_out_id).all()
     
     def get_all_resultlinks(self):
         '''Get all result links.
         '''
-        return self.session.query(dm.ResultLink).all()
+        return self.session.query(model.ResultLink).all()
 
     def get_result(self, result_id):
         '''Get result by id.
         '''
-        return self.session.query(dm.Result)\
-        .filter(dm.Result.idx==result_id).first()
+        return self.session.query(model.Result)\
+        .filter(model.Result.idx==result_id).first()
 
 
     def get_label_tree(self, label_tree_id):
         '''Get label tree by idx
         '''
-        return self.session.query(dm.LabelTree)\
-        .filter(dm.LabelTree.idx==label_tree_id).first()
+        return self.session.query(model.LabelTree)\
+        .filter(model.LabelTree.idx==label_tree_id).first()
 
     def get_all_required_label_leaves(self, anno_task_id=None, label_leaf_id=None):
         '''Get required label leaves by anno_task_id
         '''
         if not anno_task_id is None:
-            return self.session.query(dm.RequiredLabelLeaf)\
-            .filter(dm.RequiredLabelLeaf.anno_task_id==anno_task_id).all()
+            return self.session.query(model.RequiredLabelLeaf)\
+            .filter(model.RequiredLabelLeaf.anno_task_id==anno_task_id).all()
         elif not label_leaf_id is None:
-            return self.session.query(dm.RequiredLabelLeaf)\
-            .filter(dm.RequiredLabelLeaf.label_leaf_id==label_leaf_id).all()
+            return self.session.query(model.RequiredLabelLeaf)\
+            .filter(model.RequiredLabelLeaf.label_leaf_id==label_leaf_id).all()
     def get_label_leaf(self, label_leaf_id):
         '''Get label leaf by idx
         '''
-        return self.session.query(dm.LabelLeaf)\
-        .filter(dm.LabelLeaf.idx==label_leaf_id).first()
+        return self.session.query(model.LabelLeaf)\
+        .filter(model.LabelLeaf.idx==label_leaf_id).first()
 
     def get_all_label_names(self):
         '''Get a list of all label definitions in database.
@@ -412,49 +411,49 @@ class ProjectDBMan(object):
         Returns:
             list: A list of :class:`lost.db.model.LabelName` objects.
         '''
-        return self.session.query(dm.LabelName).all()
+        return self.session.query(model.LabelName).all()
 
     def get_all_datasource(self):
         ''' Get all datasource
         '''
-        return self.session.query(dm.Datasource).all()
+        return self.session.query(model.Datasource).all()
 
     def get_datasource(self, datasource_id=None, name=None, pipe_element_id=None):
         ''' Get single datasource by id
         '''
         if datasource_id is not None:
-            return self.session.query(dm.Datasource)\
-            .filter(dm.Datasource.idx==datasource_id).first()
+            return self.session.query(model.Datasource)\
+            .filter(model.Datasource.idx==datasource_id).first()
         elif name is not None:
-            return self.session.query(dm.Datasource)\
-            .filter(dm.Datasource.name==name).first()
+            return self.session.query(model.Datasource)\
+            .filter(model.Datasource.name==name).first()
         elif pipe_element_id is not None:
-            return self.session.query(dm.Datasource)\
-           .filter(dm.Datasource.pipe_element_id==pipe_element_id).first()
+            return self.session.query(model.Datasource)\
+           .filter(model.Datasource.pipe_element_id==pipe_element_id).first()
         else:
             raise Exception('Need to specify one of the method parameters')
 
     def get_data_exports(self, result_id):
         ''' Get data_export by result_id
         '''
-        return self.session.query(dm.DataExport)\
-        .filter(dm.DataExport.result_id==result_id).all()
+        return self.session.query(model.DataExport)\
+        .filter(model.DataExport.result_id==result_id).all()
 
     def get_visual_outputs(self, result_id):
         ''' Get visual_output by result_id
         '''
-        return self.session.query(dm.VisualOutput)\
-        .filter(dm.VisualOutput.result_id==result_id).all()
+        return self.session.query(model.VisualOutput)\
+        .filter(model.VisualOutput.result_id==result_id).all()
 
     def get_choosen_annotask(self, user_id=None, anno_task_id=None):
         ''' Get choosen annotation task of one user by user_id
         '''
         if user_id is not None:
-            return self.session.query(dm.ChoosenAnnoTask)\
-            .filter(dm.ChoosenAnnoTask.user_id == user_id).all()
+            return self.session.query(model.ChoosenAnnoTask)\
+            .filter(model.ChoosenAnnoTask.user_id == user_id).all()
         elif anno_task_id is not None:
-            return self.session.query(dm.ChoosenAnnoTask)\
-            .filter(dm.ChoosenAnnoTask.anno_task_id == anno_task_id).all()
+            return self.session.query(model.ChoosenAnnoTask)\
+            .filter(model.ChoosenAnnoTask.anno_task_id == anno_task_id).all()
         else:
             raise Exception('Need to specify one of the method parameters')
 
@@ -469,73 +468,73 @@ class ProjectDBMan(object):
     def count_all_image_annos(self, anno_task_id, iteration):
         ''' Count the all image annotation of an annotation task
         '''
-        return self.session.query(sqlalchemy.func.count(dm.ImageAnno.idx))\
-        .filter(dm.ImageAnno.anno_task_id == anno_task_id, dm.ImageAnno.iteration == iteration)
+        return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+        .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration)
 
     def get_all_image_annos_by_iteration(self, anno_task_id, iteration):
         ''' Get all image annotation of an annotation task by iteration
         '''
-        return self.session.query(dm.ImageAnno)\
-        .filter(dm.ImageAnno.iteration==iteration, dm.ImageAnno.anno_task_id==anno_task_id).all()
+        return self.session.query(model.ImageAnno)\
+        .filter(model.ImageAnno.iteration==iteration, model.ImageAnno.anno_task_id==anno_task_id).all()
 
-    def get_user_meta(self, user_id):
-        ''' Get User Meta of one User by its id
+    def get_user(self, user_id):
+        ''' Get User by its id
         '''
-        return self.session.query(dm.UserMeta)\
-        .filter(dm.UserMeta.idx==user_id).first()
+        return self.session.query(model.User)\
+        .filter(model.User.idx==user_id).first()
 
     def get_image_annotation(self, img_anno_id=None, result_id=None):
         ''' Get single image annotation by it's id or result_id
         '''
         if img_anno_id is not None:
-            return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.idx==img_anno_id).first()
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno_id).first()
         elif result_id is not None:
-            return self.session.query(dm.ImageAnno)\
-            .filter(dm.ImageAnno.result_id==result_id).all()
+            return self.session.query(model.ImageAnno)\
+            .filter(model.ImageAnno.result_id==result_id).all()
         else:
             raise Exception('Need to specify one of the method parameters')
 
     def get_image_annotation_interval(self, result_id, date_from, date_to):
         ''' Get image annotations by result_id and time interval
         '''
-        return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.result_id==result_id, \
-                                                       dm.ImageAnno.timestamp>=date_from, \
-                                                       dm.ImageAnno.timestamp<=date_to).all()
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.result_id==result_id, \
+                                                       model.ImageAnno.timestamp>=date_from, \
+                                                       model.ImageAnno.timestamp<=date_to).all()
     
 
 
     def get_next_unlocked_sia_anno(self, anno_task_id, iteration):
         ''' Get next sia annotation of an anno_task
         '''
-        return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.anno_task_id==anno_task_id, \
-                                                       dm.ImageAnno.state==state.Anno.UNLOCKED, \
-                                                       dm.ImageAnno.iteration==iteration).first()
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                       model.ImageAnno.state==state.Anno.UNLOCKED, \
+                                                       model.ImageAnno.iteration==iteration).first()
 
     def get_next_locked_sia_anno(self, anno_task_id, user_id, iteration):
         ''' Get next sia annotation of an anno_task
         '''
         # sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND state=%d AND user_id=%d AND iteration=%d LIMIT 2"\
         #  %(anno_task_id, state.Anno.LOCKED, user_id, iteration)
-        return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.anno_task_id==anno_task_id, \
-                                                       dm.ImageAnno.state==state.Anno.LOCKED, \
-                                                       dm.ImageAnno.user_id==user_id, \
-                                                       dm.ImageAnno.iteration==iteration).all()
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                       model.ImageAnno.state==state.Anno.LOCKED, \
+                                                       model.ImageAnno.user_id==user_id, \
+                                                       model.ImageAnno.iteration==iteration).all()
 
     def get_next_sia_anno_by_last_anno(self, anno_task_id, user_id, img_anno_id, iteration):
         ''' Get next sia annotation of an anno_task
         '''
         # sql = "SELECT * FROM image_anno WHERE user_id=%d AND anno_task_id=%d AND idx>%d AND iteration=%d LIMIT 1"\
         #  %(user_id, anno_task_id, img_anno_id, iteration)
-        return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.anno_task_id==anno_task_id, \
-                                                       dm.ImageAnno.user_id== user_id, \
-                                                       dm.ImageAnno.idx > img_anno_id, \
-                                                       dm.ImageAnno.iteration==iteration).first()
+        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                       model.ImageAnno.user_id== user_id, \
+                                                       model.ImageAnno.idx > img_anno_id, \
+                                                       model.ImageAnno.iteration==iteration).first()
 
     def get_two_d_anno_by_img_anno(self, img_anno_id, iteration):
         ''' Get all two_d annotation of an image annotation
         '''
-        return self.session.query(dm.TwoDAnno).filter(dm.TwoDAnno.img_anno_id==img_anno_id,\
-                                                            dm.TwoDAnno.iteration==iteration).all()
+        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id==img_anno_id,\
+                                                            model.TwoDAnno.iteration==iteration).all()
 
     def get_previous_sia_anno(self, anno_task_id, user_id, img_anno_id, iteration):
         ''' Get a previous image annotation by current annotation id
@@ -546,7 +545,7 @@ class ProjectDBMan(object):
          %(iteration, anno_task_id, img_anno_id, user_id)
         img_anno = self.session.execute(sql).first()
         if img_anno:
-            return self.session.query(dm.ImageAnno).filter(dm.ImageAnno.idx==img_anno.idx).first()
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()
         else:
             return None
 
@@ -554,37 +553,37 @@ class ProjectDBMan(object):
     def get_all_two_d_label(self, two_d_anno_id):
         ''' Get all label of a two_d annotation
         '''
-        return self.session.query(dm.Label).filter(dm.Label.two_d_anno_id==two_d_anno_id).all()
+        return self.session.query(model.Label).filter(model.Label.two_d_anno_id==two_d_anno_id).all()
 
     def get_two_d_anno(self, two_d_anno_id=None, img_anno_id=None):
         ''' Get a single BBoxAnno by its id or img_anno_id
         '''
         if two_d_anno_id is not None:
-            return self.session.query(dm.TwoDAnno).filter(dm.TwoDAnno.idx==two_d_anno_id).first()
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.idx==two_d_anno_id).first()
         elif img_anno_id is not None:
-            return self.session.query(dm.TwoDAnno)\
-            .filter(dm.TwoDAnno.img_anno_id==img_anno_id).all()
+            return self.session.query(model.TwoDAnno)\
+            .filter(model.TwoDAnno.img_anno_id==img_anno_id).all()
         else:
             raise Exception('Need to specify one of the method parameters')
 
     def get_db_meta(self):
         ''' Get db meta entry
         '''
-        return self.session.query(dm.DBMeta).first()
+        return self.session.query(model.DBMeta).first()
 
     def get_all_scripts(self):
         ''' Get all available scripts
         '''
-        return self.session.query(dm.Script).all()
+        return self.session.query(model.Script).all()
 
     def get_loop(self, loop_id=None, pipe_element_id=None):
         ''' Get single loop by its id
         '''
         if loop_id:
-            return self.session.query(dm.Loop).filter(dm.Loop.idx == loop_id).first()
+            return self.session.query(model.Loop).filter(model.Loop.idx == loop_id).first()
         elif pipe_element_id:
-            return self.session.query(dm.Loop)\
-            .filter(dm.Loop.pipe_element_id==pipe_element_id).first()
+            return self.session.query(model.Loop)\
+            .filter(model.Loop.pipe_element_id==pipe_element_id).first()
     def get_last_sia_anno(self, anno_task_id , iteration, user_id):
         ''' Get last locked sia annotation
         '''
@@ -604,105 +603,87 @@ class ProjectDBMan(object):
     def get_all_db_meta(self):
         ''' Get all db meta entries
         '''
-        return self.session.query(dm.DBMeta).all()
+        return self.session.query(model.DBMeta).all()
     
     def get_available_datasets(self):
         ''' Get all available datasets
         '''
-        return self.session.query(dm.Dataset)\
-        .filter(dm.Dataset.is_deleted==False).all()
+        return self.session.query(model.Dataset)\
+        .filter(model.Dataset.is_deleted==False).all()
     def get_available_model_trees(self):
         ''' Get all available model trees
         '''
-        return self.session.query(dm.ModelTree).all()
+        return self.session.query(model.ModelTree).all()
     def get_available_raw_files(self):
         ''' Get all available raw files
         '''
-        return self.session.query(dm.RawFile).all()
+        return self.session.query(model.RawFile).all()
     def get_available_label_trees(self):
         ''' Get all available label trees
         '''
-        return self.session.query(dm.LabelTree).all()
+        return self.session.query(model.LabelTree).all()
     def get_available_users(self):
         ''' Get all available users
         '''
-        return self.session.query(dm.UserMeta).all()
+        return self.session.query(model.User).all()
     def get_nm_result_model_leaves(self, result_id):
         ''' Get all nm result model leaves of one result
         '''
-        return self.session.query(dm.NMResultModelLeaf)\
-        .filter(dm.NMResultModelLeaf.result_id==result_id).all()
+        return self.session.query(model.NMResultModelLeaf)\
+        .filter(model.NMResultModelLeaf.result_id==result_id).all()
     def get_two_d_annotations(self, img_anno_id):
         ''' Get all two_d_annotations of one image annotation
         '''
-        return self.session.query(dm.TwoDAnno)\
-        .filter(dm.TwoDAnno.img_anno_id==img_anno_id).all()
+        return self.session.query(model.TwoDAnno)\
+        .filter(model.TwoDAnno.img_anno_id==img_anno_id).all()
     def get_all_child_label_leaves(self, parent_leaf_id):
         ''' Get all child label leaves of a label leaf (1. order)
         '''
-        return self.session.query(dm.LabelLeaf)\
-        .filter(dm.LabelLeaf.parent_leaf_id==parent_leaf_id).all()
+        return self.session.query(model.LabelLeaf)\
+        .filter(model.LabelLeaf.parent_leaf_id==parent_leaf_id).all()
 
     def get_label_trees(self):
         ''' Get all label trees 
         '''
-        return self.session.query(dm.LabelTree).all()
+        return self.session.query(model.LabelTree).all()
 
     def get_anno_amount(self, label_leaf_id):
         ''' count the amount of connections of a label leaf
         '''
-        return self.session.query(sqlalchemy.func.count(dm.Label.idx))\
-        .filter(dm.Label.label_leaf_id == label_leaf_id).first()[0]
+        return self.session.query(sqlalchemy.func.count(model.Label.idx))\
+        .filter(model.Label.label_leaf_id == label_leaf_id).first()[0]
     
     def get_all_datasources(self):
         ''' get all available datasources
         '''
-        return self.session.query(dm.Datasource).all()
+        return self.session.query(model.Datasource).all()
 
     def count_annos(self, anno_task_id):
         '''count all annos with specific anno_task_id
         '''
-        return self.session.query(sqlalchemy.func.count(dm.ImageAnno.idx))\
-        .filter(dm.ImageAnno.anno_task_id == anno_task_id).first()[0]
+        return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+        .filter(model.ImageAnno.anno_task_id == anno_task_id).first()[0]
     
-    def get_monitor_panels(self, user_id=None):
-        ''' Get all monitor panels by user_id
-        '''
-        if user_id is not None:
-            return self.session.query(dm.MonitorPanel)\
-            .filter(dm.MonitorPanel.user_id == user_id).all()
-        else:
-            raise Exception('Need to specify one of the method parameters')
-    def get_all_monitor_panels(self, pipe_element_id):
-        ''' Get all monitor panels by pipe_element_id
-        '''
-        return self.session.query(dm.MonitorPanel).filter(dm.MonitorPanel.pipe_element_id==pipe_element_id).all()
-        
-    def get_monitor_panel_by_id(self, panel_id):
-        ''' get a single monitor panel by its id
-        '''
-        return self.session.query(dm.MonitorPanel)\
-        .filter(dm.MonitorPanel.idx==panel_id).first()
 
     def get_two_d_annotations_by_state(self, anno_task_id, state, user_id, amount):
         ''' Get all TwoDAnno by annotask, state and user id
         '''
         if (amount > 0):
-            return self.session.query(dm.TwoDAnno).filter(dm.TwoDAnno.state==state,\
-                                                            dm.TwoDAnno.anno_task_id== anno_task_id,\
-                                                            dm.TwoDAnno.user_id==user_id)\
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state,\
+                                                            model.TwoDAnno.anno_task_id== anno_task_id,\
+                                                            model.TwoDAnno.user_id==user_id)\
                                                             .limit(amount).all()
         else:
-            return self.session.query(dm.TwoDAnno).filter(dm.TwoDAnno.state==state,\
-                                                            dm.TwoDAnno.anno_task_id== anno_task_id,\
-                                                            dm.TwoDAnno.user_id==user_id).all()
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state,\
+                                                            model.TwoDAnno.anno_task_id== anno_task_id,\
+                                                            model.TwoDAnno.user_id==user_id).all()
 
     def get_two_d_anno_by_sim_class(self, anno_task_id, sim_class, amount):
         ''' Get unlocked image annotations by sim_class and anno task
         '''
-        return self.session.query(dm.TwoDAnno).filter(dm.TwoDAnno.state==state.Anno.UNLOCKED,\
-                                                      dm.TwoDAnno.anno_task_id== anno_task_id,\
-                                                      dm.TwoDAnno.sim_class==sim_class)\
+        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state.Anno.UNLOCKED,\
+                                                      model.TwoDAnno.anno_task_id== anno_task_id,\
+                                                      model.TwoDAnno.sim_class==sim_class)\
         .limit(amount).all()
     
     def get_random_sim_class_two_d_anno(self, anno_task_id):
@@ -723,16 +704,28 @@ class ProjectDBMan(object):
     def count_all_two_d_annos(self, anno_task_id, iteration):
         ''' Count the all two_d annotation of an annotation task
         '''
-        return self.session.query(sqlalchemy.func.count(dm.TwoDAnno.idx))\
-        .filter(dm.TwoDAnno.anno_task_id == anno_task_id, dm.TwoDAnno.iteration == iteration)
+        return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx))\
+        .filter(model.TwoDAnno.anno_task_id == anno_task_id, model.TwoDAnno.iteration == iteration)
 
     def get_two_d_annotation(self, two_d_anno_id=None, result_id=None):
         ''' Get single two_d annotation by it's id or result_id
         '''
         if two_d_anno_id is not None:
-            return self.session.query(dm.TwoDAnno).filter(dm.TwoDAnno.idx==two_d_anno_id).first()
+            return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.idx==two_d_anno_id).first()
         elif result_id is not None:
-            return self.session.query(dm.TwoDAnno)\
-            .filter(dm.TwoDAnno.result_id==result_id).all()
+            return self.session.query(model.TwoDAnno)\
+            .filter(model.TwoDAnno.result_id==result_id).all()
         else:
             raise Exception('Need to specify one of the method parameters')
+    
+    def find_user_by_email(self, email):
+        return self.session.query(model.User).filter(model.User.email==email).first()
+    
+    def find_user_by_user_name(self, user_name):
+        return self.session.query(model.User).filter(model.User.user_name==user_name).first()
+
+    def get_user_roles(self, user_id):
+        return self.session.query(model.UserRoles).filter(model.UserRoles.user_id==user_id).all()
+
+    def get_role(self, role_id):
+        return self.session.query(model.Role).filter(model.Role.idx==role_id).first()

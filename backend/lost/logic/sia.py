@@ -16,7 +16,7 @@ __author__ = "Gereon Reus"
 
 def get_first(db_man, user_id, media_url):
     """ Get first image anno.
-    :type db_man: lost.db.access.ProjectDBMan
+    :type db_man: lost.db.access.DBMan
     """
     at = get_sia_anno_task(db_man, user_id)
     iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
@@ -41,7 +41,7 @@ def get_next(db_man, user_id, img_id, media_url):
     # ptvsd.wait_for_attach()
     # ptvsd.break_into_debugger()
     """ Get next ImageAnno with all its TwoDAnnos
-    :type db_man: lost.db.access.ProjectDBMan
+    :type db_man: lost.db.access.DBMan
     """
     at = get_sia_anno_task(db_man, user_id)
     if at:
@@ -82,7 +82,7 @@ def get_next(db_man, user_id, img_id, media_url):
     return "nothing available"
 def get_previous(db_man, user_id, img_id, media_url):
     """ Get previous image anno
-    :type db_man: lost.db.access.ProjectDBMan
+    :type db_man: lost.db.access.DBMan
     """
     at = get_sia_anno_task(db_man, user_id)
     iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
@@ -105,7 +105,7 @@ def get_previous(db_man, user_id, img_id, media_url):
         return "nothing available"
 def get_label_trees(db_man, user_id):
     """
-    :type db_man: lost.db.access.ProjectDBMan
+    :type db_man: lost.db.access.DBMan
     """
     at = get_sia_anno_task(db_man, user_id)
     label_trees_json = dict()
@@ -146,7 +146,7 @@ def get_image_progress(db_man, anno_task, img_id):
 
 def __is_last_image__(db_man, user_id, at_id, iteration, img_id):
     """
-        :type db_man: lost.db.access.ProjectDBMan
+        :type db_man: lost.db.access.DBMan
     """
     # three ways to check
     # first: are there some next locked annos for that user ?
@@ -173,7 +173,7 @@ def __is_last_image__(db_man, user_id, at_id, iteration, img_id):
 
 def update(db_man, data, user_id):
     """ Update Image and TwoDAnnotation from SIA
-    :type db_man: lost.db.access.ProjectDBMan
+    :type db_man: lost.db.access.DBMan
     """
     sia_update = SiaUpdate(db_man, data, user_id)
     return sia_update.update()
@@ -198,7 +198,7 @@ def junk(db_man, user_id, img_id):
 class SiaUpdate(object):
     def __init__(self, db_man, data, user_id):
         """
-        :type db_man: lost.db.access.ProjectDBMan
+        :type db_man: lost.db.access.DBMan
         """
         self.timestamp = datetime.now()
         self.db_man = db_man

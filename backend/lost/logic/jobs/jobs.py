@@ -8,7 +8,7 @@ try:
     from lost.db import access
     from lost.logic.pipeline import cron
     from lost.logic import config
-    from lost.db.access import ProjectDBMan
+    from lost.db.access import DBMan
     from lost.db import state
 except:
     logging.error(traceback.format_exc())
@@ -41,7 +41,7 @@ def get_args():
 
 def exec_pipe():
     lostconfig = get_args()
-    dbm = ProjectDBMan(lostconfig)
+    dbm = DBMan(lostconfig)
     pipe_list = dbm.get_pipes_to_process()
     # For each task in this project
     for p in pipe_list:
@@ -67,7 +67,7 @@ def release_user_annos(dbm, user_id):
     '''Release locked annos for a specific user.
 
     Args:
-        dbm (object): ProjectDBMan object.
+        dbm (object): DBMan object.
         user_id (int): ID of the user to release locked annos.
     '''
     print('Was Here! User id is: {}'.format(user_id))
@@ -97,5 +97,5 @@ def release_user_annos(dbm, user_id):
 
 def release_annos():
     lostconfig = get_args()
-    dbm = ProjectDBMan(lostconfig)
+    dbm = DBMan(lostconfig)
     __release_project_annos(dbm)

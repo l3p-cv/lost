@@ -22,7 +22,7 @@ import logging
 class PipeMan(pipe_model.PipeMan):
     def __init__(self, dbm, pipe, lostconfig):
         '''
-        :type dbm: lost.db.access.ProjectDBMan
+        :type dbm: lost.db.access.DBMan
         :type pipe: lost.db.model.Pipe
         '''
         super().__init__(dbm=dbm, pipe=pipe)

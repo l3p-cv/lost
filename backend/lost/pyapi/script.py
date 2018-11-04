@@ -62,7 +62,7 @@ class Script(pipe_element.Element):
             args = parser.parse_args()
         lostconfig = LOSTConfig()
         self.file_man = FileMan(lostconfig)
-        dbm = access.ProjectDBMan(lostconfig)
+        dbm = access.DBMan(lostconfig)
         if pe_id is None:
             pe = dbm.get_pipe_element(int(args.idx))
         else:

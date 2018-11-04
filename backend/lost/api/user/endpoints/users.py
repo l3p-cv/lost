@@ -5,8 +5,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 from lost.api.api import api
 from lost.api.user.api_definition import page_with_users, user
 from lost.api.user.parsers import pagination_parser as pagination
-from lost.database.models import User, UserRoles, Role
-from lost.database.db import db
+from lost.db.model import User, UserRoles, Role
 
 namespace = api.namespace('user/users', description='All Users in System.')
 

@@ -11,7 +11,7 @@ __author__ = "Gereon Reus"
 
 def get_next(db_man, user_id,max_amount):
     """ Get next ImageAnnos 
-    :type db_man: lost.db.access.ProjectDBMan
+    :type db_man: lost.db.access.DBMan
     """
     at = __get_mia_anno_task(db_man, user_id)
     if at:
@@ -113,7 +113,7 @@ def finish(db_man, user_id):
 
 def get_label_trees(db_man, user_id):
     """
-    :type db_man: lost.db.access.ProjectDBMan
+    :type db_man: lost.db.access.DBMan
     """
     at = __get_mia_anno_task(db_man, user_id)
     label_trees_json = dict()

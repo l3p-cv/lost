@@ -14,6 +14,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     lostconfig = config.LOSTConfig()
-    dbm = access.ProjectDBMan(lostconfig)
+    dbm = access.DBMan(lostconfig)
     pi = template_import.PipeImporter(args.project_dir,dbm)
     pi.update_pipe_project()

@@ -8,7 +8,7 @@ from lost.pyapi.pipeline import PipeInfo
 class Element(object):
 
     def __init__(self, pe, dbm):
-        self._dbm = dbm #type: lost.db.access.ProjectDBMan
+        self._dbm = dbm #type: lost.db.access.DBMan
         self._lostconfig = dbm.lostconfig
         self._pipe_element = pe
         self._pipe = self._dbm.get_pipe(pipe_id=self._pipe_element.pipe_id)
