@@ -8,6 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from lost.logic import role_man
 # Set conventions for foreign key name generation
 convention = {
   "ix": 'ix_%(column_0_label)s',
@@ -55,6 +56,10 @@ class User(Base, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+    
+    def has_role(self, role):
+        return role_man.has_role(self,role)
+
 
 
 # Define the Role data-model

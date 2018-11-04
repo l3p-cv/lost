@@ -724,6 +724,9 @@ class DBMan(object):
     def find_user_by_user_name(self, user_name):
         return self.session.query(model.User).filter(model.User.user_name==user_name).first()
 
+    def get_user_by_id(self, user_id):
+        return self.session.query(model.User).filter(model.User.idx==user_id).first()
+
     def get_user_roles(self, user_id):
         return self.session.query(model.UserRoles).filter(model.UserRoles.user_id==user_id).all()
 

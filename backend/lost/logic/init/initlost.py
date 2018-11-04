@@ -5,6 +5,7 @@ from lost.db import access
 from lost.logic import config
 from lost.logic import file_man
 from lost.db.model import User, UserRoles, Role
+from lost.logic import role_man
 
 def main():
     lostconfig = config.LOSTConfig()
@@ -28,8 +29,8 @@ def create_first_user(dbm):
             first_name= 'LOST',
             last_name='Admin'
         )
-        user.roles.append(Role(name='Designer'))
-        user.roles.append(Role(name='Annotater'))
+        user.roles.append(Role(name=role_man.DESIGNER))
+        user.roles.append(Role(name=role_man.ANNOTATER))
         dbm.save_obj(user)
         dbm.close_session()
 
