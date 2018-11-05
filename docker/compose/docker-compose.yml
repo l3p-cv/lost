@@ -8,8 +8,6 @@ services:
         - .env
       volumes:
         - ${LOST_HOME}:/${LOST_HOME}
-        - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf
-        - /home/gereon/openl3p/coding/lost/docker/lost/entrypoint.sh:/entrypoint.sh
         #- /home/gereon/openl3p/coding/lost/backend/lost:/code/backend/lost
         #- /home/gereon/openl3p/coding/lost/frontend/lost:/code/frontend/lost
       restart: always
@@ -42,7 +40,7 @@ services:
     # For easy db access while dev.
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
-      container_name: phpmyadmin
+      container_name: phpmyadminlost
       environment:
         PMA_ARBITRARY: 1
         MYSQL_USER: ${LOST_DB_USER}
