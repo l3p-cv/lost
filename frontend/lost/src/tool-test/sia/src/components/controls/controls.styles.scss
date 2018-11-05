@@ -1,0 +1,71 @@
+
+.sia-user-manual{
+    width: 100%;
+    overflow-x: auto;
+
+    &:nth-child(even){
+        margin-top: 3em;
+    }
+
+    .sia-table-wrapper{
+        display: block;
+        margin-bottom: 1.3em;
+        padding: 1px;
+    }
+    .sia-shortcut{
+        span {
+            width: 3em !important;
+            padding: 2px 4px;
+            margin: 0px 3px;
+            font-size: 1.5em;
+            font-style: normal;
+            font-style: normal;
+        }
+        .sia-separator{
+            padding: 2px 0.3em !important;
+            font-size: 0.9em !important;
+            font-style: normal !important;
+            text-transform: uppercase !important;
+        }
+        .sia-plus{
+            font-size: 1.2em;
+        }
+    }
+    .sia-key{
+        padding: 3px 8px;
+        border: 3px outset #bbb;
+        border-radius: 3px;
+        width: 4.6em;
+        text-align: center;
+        background-color: #fff;
+        display:inline-block;
+        font-size: 1.0em;
+        margin-bottom: 3px;
+    }
+    .center-header{
+        /* override bootstrap properties, NOT WORKING IN ANY WAY ... */
+        vertical-align: center;
+    }
+
+    table{
+        margin-bottom: 0.6em;
+        width: 100%;
+        th{
+            text-align: left;
+            width: 10em;
+        }
+    }
+
+    h2{
+        /* bootstrap td, th padding: 8px */
+        text-indent: 4px;
+        font-size: 1.6em;
+        margin-bottom: 1em;
+    }
+    h4{
+        text-indent: 4px;
+        margin-bottom: 0.6em;
+        font-size: 1.5em;
+        font-variant: small-caps;
+    }
+}

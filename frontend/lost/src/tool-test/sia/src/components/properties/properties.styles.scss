@@ -1,0 +1,131 @@
+@import "../../shared/colors.scss";
+
+#sia-propview-container {
+    grid-area: propview;
+    -moz-user-select: -moz-none !important;
+    -khtml-user-select: none !important;
+    -webkit-user-select: none !important;
+    -o-user-select: none !important;
+    user-select: none !important;
+
+    #sia-propview-canvas-container{
+        grid-area: first;
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: auto;
+        grid-template-areas: "propertiesCanvas";
+        border-radius: 5px;
+
+        canvas {
+           grid-area: propertiesCanvas;
+           width: 100%;
+           height: 100%;
+           border-radius: 5px;
+        }
+    }
+
+    #sia-propview-label-and-descr-container{
+        grid-area: second;
+        display: grid;
+        grid-template-columns: auto;
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            "label"
+            "description";
+        grid-column-gap: 1em;
+        
+        #sia-propview-label-select {
+            grid-area: label;
+            &:focus{
+                background-color: $COLOR_HIGHLIGHT;
+                /* remove the outline if selected */
+                outline: none !important;
+                -moz-outline: none !important;
+                color: #FFF;
+                color: rgba(255,255,255,0);
+                text-shadow: 0 0 0 #FFF;
+            }
+        }
+
+        #sia-propview-description {
+            grid-area: description;
+            resize: none;
+            cursor: text;
+            padding: 1em;
+        }
+    }
+
+    #sia-propview-bounds-and-buttons-container{
+        grid-area: third;
+        display: grid;
+        grid-template-columns: repeat(2, 50%);
+        grid-template-rows: repeat(4, 22%);
+        grid-template-areas:
+            "attr_1 attr_2"
+            "attr_3 attr_4"
+            "btn_1 btn_2"
+            "btn_3 btn_4";
+        grid-row-gap: 4%;
+        align-items: center;
+        justify-items: center;
+
+        strong{
+            margin: 0em 0.5em;
+        }
+        strong, span {
+            font-size: 120%;
+        }
+        button{
+            width: 90%;
+        }
+        div:nth-child(1){
+            grid-area: attr_1;
+        }
+        div:nth-child(2){
+            grid-area: attr_2;
+        }
+        div:nth-child(3){
+            grid-area: attr_3;
+        }
+        div:nth-child(4){
+            grid-area: attr_4;
+        }
+        button::nth-child(1){
+            grid-area: btn_1;
+        }
+        button::nth-child(2){
+            grid-area: btn_2;
+        }
+        button::nth-child(3){
+            grid-area: btn_3;
+        }
+        button::nth-child(4){
+            grid-area: btn_4;
+        }
+    }
+}
+
+.sia-propview-canvas-border{
+    border: 2px solid #adadad;
+    border-radius: 5px;
+}
+.propview-layout-portrait{
+    display: grid;
+    grid-template-columns: 180px;
+    grid-template-rows: repeat(3, 150px);
+    grid-row-gap: 1em;
+    grid-template-areas:
+        "first"
+        "second"
+        "third";
+    justify-items: space-between;
+    margin-bottom: 0px;
+}
+.propview-layout-landscape{
+    display: grid;
+    grid-template-columns: repeat(3, 180px);
+    grid-template-rows: 150px;
+    grid-template-areas:
+        "first second third";
+    grid-column-gap: 1em;
+}

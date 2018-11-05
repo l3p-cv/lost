@@ -1,0 +1,79 @@
+@import "./shared/classes";
+
+svg {
+    position:absolute;
+    left:0;
+    top:0;
+}
+
+
+#sia-app-hide-plane{
+    // the main application container is hidden on init.
+    display: block;
+    position: absolute;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background-color:white;
+    z-index: 100;
+    text-align: center;
+}
+#sia-drawer-content{
+    margin-top: 1em;
+    overflow: hidden;
+}
+#sia-content-wrapper {
+    width: 100%;
+    -moz-user-select: -moz-none !important;
+    -khtml-user-select: none !important;
+    -webkit-user-select: none !important;
+    -o-user-select: none !important;
+    user-select: none !important;
+
+    // remove jquery button margin
+    button {
+        margin: 0;
+    }
+}
+
+.sia-layout-portrait {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    grid-template-rows: auto; 
+    grid-column-gap: 14px;
+    grid-template-areas:
+        "propview imageview toolbar";
+    justify-content: start;
+    align-items: center;
+    // padding-top: 3.37em;
+}
+.sia-layout-landscape {
+    display: grid;
+    grid-template-columns: auto; 
+    grid-template-rows: repeat(3, auto);
+    grid-row-gap: 14px;
+    grid-template-areas:
+        "propview"
+        "imageview"
+        "toolbar";
+    justify-content: center;
+    justify-items: center;
+    align-items: start;
+    // padding-top: 0.5em;
+}
+.sia-layout-landscape-toolbar-on-side {
+    grid-template-columns: repeat(2, auto); 
+    grid-template-rows: repeat(2, auto);
+    grid-column-gap: 14px;
+    grid-template-areas:
+        "propview propview"
+        "imageview toolbar";
+}
+.sia-layout-landscape-toolbar-below {
+    grid-template-areas:
+        "propview"
+        "imageview"
+        "toolbar";
+}
+

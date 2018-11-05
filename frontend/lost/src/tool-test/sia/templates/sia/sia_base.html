@@ -1,0 +1,38 @@
+{% load static %}
+<link href="{% static "sia-style.css" %}" rel="stylesheet">
+
+<!-- Add the Annotation Task Manager -->
+{% include "annotask/sia/current.html" %}
+
+<!-- sia: Drawer -->
+<div id="sia-drawer-panel" class="x_panel container">
+    <div id="sia-drawer-title" class="x_title row">
+        <h2>
+            <i class="fa fa-pencil-square" aria-hidden="true"></i>
+            <div style="display:inline-block">Editor</div>
+        </h2>
+        <div class="clearfix"></div>
+    </div>
+    <div id="sia-drawer-content" class="x_content row">
+        {# is created in js to make the app independend of environment #}
+    </div>
+</div>
+<!-- sia: User Manual -->
+<div id="sia-user-manual-panel" class="x_panel container">
+    <div id="sia-user-manual-title" class="x_title row">
+        <h2>
+            <i class="fa fa-keyboard-o" aria-hidden="true"></i>
+            <div style="display:inline-block">User Manual</div>
+        </h2>
+        <ul class="nav navbar-right panel_toolbox">
+            <li><a class="collapse-link"><i id="sia-collapse-manual" class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+    <div id="sia-user-manual-content" class="x_content row">
+        {# is created in js to make the app independend of environment #}
+    </div>
+</div>
+
+<!-- sia: init -->
+<script src="{% static "sia-bundle.js" %}"></script>

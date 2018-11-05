@@ -1,0 +1,10 @@
+@import "../../shared/classes";
+@import "../../shared/cursors";
+
+
+.sia-bbox {
+    &-not-selected {
+        cursor: pointer;
+    }
+    // menu code was here...
+}

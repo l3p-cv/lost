@@ -1,0 +1,61 @@
+// bootstarp normalize.less fked things up. 
+svg:not(:root) {
+    overflow: unset;
+}
+#sia-imgview {
+    grid-area: imageview;        
+    #sia-imgview-svg-padding {
+        overflow: hidden;
+    }
+    #sia-imgview-svg-container {
+        // @zoom: needed to set overflow on hidden.
+        overflow: visible;
+        position: relative;
+        canvas {
+            z-index: 0;
+        }
+        #sia-imgview-svg {
+            overflow: visible;
+            position: relative;
+        }
+    }
+    #sia-image-info {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        // background-color:rgba(255,50,50,0.4);
+        height: 2.6rem;
+        button {
+            flex-shrink: 2;
+            padding: 2px 6px; 
+            font-size: 100%;
+            margin-right: 1rem;
+        }
+        [data-ref="image-name"] {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+            padding-right: 1.2rem;
+        }
+        [data-ref="image-id"] {
+        }
+        [data-ref="space"] {
+            flex-grow: 1;
+        }
+        // replacing the space div didn't work
+        // [data-ref="image-id"]::after {
+        //     content: "";
+        //     background-color: red;
+        //     display: block;
+        //     flex-grow: 1;
+        // }
+        [data-ref="image-progress"] {
+        }
+    }
+    #sia-imgview-no-more-images {
+        display: none;
+        background-color: white;
+    }
+}
