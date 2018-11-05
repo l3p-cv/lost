@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
-from lost.logic import role_man
+
 # Set conventions for foreign key name generation
 convention = {
   "ix": 'ix_%(column_0_label)s',
@@ -26,7 +26,7 @@ class User(Base, UserMixin):
     __tablename__ = 'user'
 
     idx = Column(Integer, primary_key=True)
-    active = Column('is_active', Boolean(), nullable=False, server_default='1')
+    is_active = Column('is_active', Boolean(), nullable=False, server_default='1')
     user_name = Column(String(100), nullable=False, unique=True)
     email = Column(String(255), nullable=False, unique=True)
     email_confirmed_at = Column(DateTime())
@@ -39,8 +39,8 @@ class User(Base, UserMixin):
     confidence_level = Column(Integer)
     photo_path = Column(String(4096))
 
-    # Define the relationship to Role via UserRoles
     roles = relationship('Role', secondary='user_roles')
+    groups = relationship('Group', secondary='user_groups')
     
     def __init__(self, user_name, email, password, first_name, last_name, email_confirmed_at=None):
         self.user_name = user_name
@@ -53,13 +53,17 @@ class User(Base, UserMixin):
     def set_password(self, password):
         self.password = generate_password_hash(password)
 
-
     def check_password(self, password):
         return check_password_hash(self.password, password)
     
     def has_role(self, role):
-        return role_man.has_role(self,role)
-
+        role_names = []
+        for name in self.roles.name:
+            role_names.append(name)
+        if role in role_names:
+            return True
+        else:
+            return False
 
 
 # Define the Role data-model
@@ -75,7 +79,17 @@ class UserRoles(Base):
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     role_id = Column(Integer(), ForeignKey('role.idx', ondelete='CASCADE'))
 
+class Group(Base):
+    __tablename__ = 'group'
+    idx = Column(Integer(), primary_key=True)
+    name = Column(String(50), unique=True)
+    is_user_default = Column(Boolean(), nullable=False, server_default='0')
 
+class UserGroups(Base):
+    __tablename__ = 'user_groups'
+    idx = Column(Integer(), primary_key=True)
+    user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
+    group_id = Column(Integer(), ForeignKey('group.idx', ondelete='CASCADE'))
 
 class TwoDAnno(Base):
     """A TwoDAnno represents a 2D anno (drawings) in an image (by human).
@@ -93,7 +107,7 @@ class TwoDAnno(Base):
         sim_class (int): The similarity class this anno belong to.
             It is used to cluster similar annos in MIA.
         iteration (int): The iteration of a loop when this anno was created.
-        user_id (int): Id of the annotator.
+        group_id (int): Id of the annotator.
         img_anno_id (int) : ID of ImageAnno this TwoDAnno is appended to
         data (Text): drawing data (for e.g. x,y, width, height) of anno - depends on dtype
         dtype (int): type of TwoDAnno (for e.g. bbox, polygon)
@@ -115,21 +129,21 @@ class TwoDAnno(Base):
     count = Column(Integer)
     sim_class = Column(Integer)
     iteration = Column(Integer)
-    user_id = Column(Integer, ForeignKey('user.idx'))
+    group_id = Column(Integer, ForeignKey('group.idx'))
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     labels = relationship('Label') #type: Label
-    annotator = relationship('User', uselist=False)
+    annotator = relationship('Group', uselist=False)
     confidence = Column(Float)
     anno_time = Column(Float)
 
     def __init__(self, anno_task_id=None,
-                 user_id=None, timestamp=None, state=None,
+                 group_id=None, timestamp=None, state=None,
                  track_n=None, count=1, sim_class=None,
                  img_anno_id=None, timestamp_lock=None, 
                  iteration=0, data=None, dtype=None,
                  confidence=None, anno_time=None):
         self.anno_task_id = anno_task_id
-        self.user_id = user_id
+        self.group_id = group_id
         self.timestamp = timestamp
         self.timestamp_lock = timestamp_lock
         self.state = state
@@ -161,7 +175,7 @@ class ImageAnno(Base):
         video_path: Path to the video the image belongs to.
         result_id: Id of the related result.
         iteration (int): The iteration of a loop when this anno was created.
-        user_id (int): Id of the annotator.
+        group_id (int): Id of the annotator.
         width (int): Width of Image.
         height (int): Height of Image.
         labels (list): A list of related :class:`Label` objects.
@@ -183,19 +197,19 @@ class ImageAnno(Base):
     iteration = Column(Integer)
     width = Column(Integer)
     height = Column(Integer)
-    user_id = Column(Integer, ForeignKey('user.idx'))
+    group_id = Column(Integer, ForeignKey('group.idx'))
     labels = relationship('Label')
     two_d_annos = relationship('TwoDAnno')
-    annotator = relationship('User', uselist=False)
+    annotator = relationship('Group', uselist=False)
     anno_time = Column(Float)
-    def __init__(self, anno_task_id=None, user_id=None,
+    def __init__(self, anno_task_id=None, group_id=None,
                  timestamp=None, label_id=None, state=None, count=1,
                  sim_class=None, result_id=None, img_path=None,
                  frame_n=None,
                  video_path=None, width=None, height=None,
                  iteration=0, anno_time=None):
         self.anno_task_id = anno_task_id
-        self.user_id = user_id
+        self.group_id = group_id
         self.timestamp = timestamp
         self.label_id = label_id
         self.state = state
@@ -233,12 +247,12 @@ class AnnoTask(Base):
     """
     __tablename__ = "anno_task"
     idx = Column(Integer, primary_key=True)
-    manager_id = Column(Integer, ForeignKey('user.idx'))
+    manager_id = Column(Integer, ForeignKey('group.idx'))
     #TODO doubled fk annotater and manager to user meta
-    manager = relationship("User", foreign_keys='AnnoTask.manager_id',
+    manager = relationship("Group", foreign_keys='AnnoTask.manager_id',
                            uselist=False)
-    annotater_id = Column(Integer, ForeignKey('user.idx'))
-    annotater = relationship("User", foreign_keys='AnnoTask.annotater_id',
+    group_id = Column(Integer, ForeignKey('group.idx'))
+    group = relationship("Group", foreign_keys='AnnoTask.group_id',
                            uselist=False)
     state = Column(Integer)
     progress = Column(Float)
@@ -250,13 +264,13 @@ class AnnoTask(Base):
     configuration = Column(Text)
     req_label_leaves = relationship('RequiredLabelLeaf')
 
-    def __init__(self, idx=None, manager_id=None, annotater_id=None, state=None,
+    def __init__(self, idx=None, manager_id=None, group_id=None, state=None,
                  progress=None, dtype=None, pipe_element_id=None,
                  timestamp=None, name=None, instructions=None,
                  configuration=None):
         self.idx = idx
         self.manager_id = manager_id
-        self.annotater_id = annotater_id
+        self.group_id = group_id
         self.state = state
         self.progress = progress
         self.dtype = dtype
@@ -278,7 +292,7 @@ class Pipe(Base):
         timestamp_finished (DateTime): Date and time when this task was finished
         description (str): A general description for this task.
         is_debug_mode (Boolean): DebugMode only visible for Developers
-        user_id (int): User who created this task
+        group_id (int): Group which created this pipe
         is_locked (Boolean): Pipe Locked by PipeEngine
         pipe_template (PipeTemplate): Related :class:`PipeTemplate` object
         logfile_path (Text): path to logfile
@@ -293,8 +307,8 @@ class Pipe(Base):
     description = Column(Text)
     is_debug_mode = Column(Boolean)
     is_locked = Column(Boolean)
-    user_id = Column(Integer, ForeignKey('user.idx'))
-    user = relationship("User", uselist=False)
+    group_id = Column(Integer, ForeignKey('group.idx'))
+    group = relationship("Group", uselist=False)
     pe_list = relationship("PipeElement")
     pipe_template = relationship("PipeTemplate", uselist=False)
     logfile_path = Column(String(4096))
@@ -303,7 +317,7 @@ class Pipe(Base):
     def __init__(self, idx=None, name=None, state=None,
                  pipe_template_id=None, timestamp=None,
                  timestamp_finished=None, description=None, 
-                 is_locked=None, user_id=None, is_debug_mode=None, logfile_path=None):
+                 is_locked=None, group_id=None, is_debug_mode=None, logfile_path=None):
         self.idx = idx
         self.name = name
         self.state = state
@@ -312,7 +326,7 @@ class Pipe(Base):
         self.timestamp_finished = timestamp_finished
         self.description = description
         self.is_locked = is_locked
-        self.user_id = user_id
+        self.group_id = group_id
         self.is_debug_mode = is_debug_mode
         self.logfile_path = logfile_path
 
@@ -329,22 +343,22 @@ class PipeTemplate(Base):
         json_template (Text): A json sting that defines a pipeline template.
         timestamp (DateTime): Date and Time this Template was created or imported.
         is_debug_mode (Boolean): DebugMode shows weather this pipe is viewable for normal users or only for developers
-        user_id (int): The Id of User who created or imported this template.
+        group_id (int): The Id of Group who created or imported this template.
     """
     __tablename__ = "pipe_template"
     idx = Column(Integer, primary_key=True)
     json_template = Column(Text)
     timestamp = Column(DATETIME(fsp=6))
     is_debug_mode = Column(Boolean)
-    user_id = Column(Integer, ForeignKey("user.idx"))
+    group_id = Column(Integer, ForeignKey("group.idx"))
 
     def __init__(self, idx=None, json_template=None, timestamp=None, 
-                 is_debug_mode=None, user_id=None):
+                 is_debug_mode=None, group_id=None):
         self.idx = idx
         self.json_template = json_template
         self.timestamp = timestamp
         self.debug_mode = is_debug_mode
-        self.user_id = user_id
+        self.group_id = group_id
 
 class Script(Base):
     """A script that can be executed in a pipeline.
@@ -385,22 +399,22 @@ class Script(Base):
         self.executors = executors
 
 class ChoosenAnnoTask(Base):
-    """Linking Table which connects Anno Tasks to Users
+    """Linking Table which connects Anno Tasks to Groups
 
     Attributes:
         idx (int): ID in database.
-        user_id (int): ID of User who has choosen that anno task
+        group_id (int): ID of Group who has choosen that anno task
         anno_task_id (int): ID of the anno task which is connected to the user
     """
     __tablename__ = "choosen_anno_task"
     idx = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.idx'))
+    group_id = Column(Integer, ForeignKey('group.idx'))
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
     anno_task = relationship("AnnoTask")
 
-    def __init__(self, idx=None, user_id=None, anno_task_id=None):
+    def __init__(self, idx=None, group_id=None, anno_task_id=None):
         self.idx = idx
-        self.user_id = user_id
+        self.group_id = group_id
         self.anno_task_id = anno_task_id
 
 class PipeElement(Base):
@@ -684,7 +698,7 @@ class LabelLeaf(Base):
         abbreviation (str):
         description (str):
         timestamp (DateTime):
-        user_id (int): Id of the user who created this label
+        group_id (int): Id of the user who created this label
         regex_mask: Regular expression mask for any value which can be given to a label
         default_value: Default value for labels
         example_image: Path to an example image which represents the LabelName
@@ -701,8 +715,8 @@ class LabelLeaf(Base):
     abbreviation = Column(String(20))
     description = Column(String(300))
     timestamp = Column(DATETIME(fsp=6))
-    user_id = Column(Integer, ForeignKey('user.idx'))
-    user = relationship("User", uselist=False)
+    group_id = Column(Integer, ForeignKey('group.idx'))
+    group = relationship("Group", uselist=False)
     description = Column(Text)
     regex_mask = Column(String(300))
     default_value = Column(String(300))
@@ -716,7 +730,7 @@ class LabelLeaf(Base):
     children = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
-                 user_id=None, timestamp=None, regex_mask=None,
+                 group_id=None, timestamp=None, regex_mask=None,
                  default_value=None, example_image=None, leaf_id=None, dtype=None,
                  css_class=None, label_tree_id=None, is_deleted=None,
                  parent_leaf_id=None):
@@ -724,7 +738,7 @@ class LabelLeaf(Base):
         self.name = name
         self.abbreviation = abbreviation
         self.description = description
-        self.user_id = user_id
+        self.group_id = group_id
         self.timestamp = timestamp
         self.regex_mask = regex_mask
         self.default_value = default_value
@@ -749,7 +763,7 @@ class Label(Base):
         timestamp_lock (DateTime):
         label_leaf (LabelLeaf): related :class:`LabelLeaf` object.
         value (String): value for that label.
-        annotater_id (Integer): UserID of Annotater who has assigned this Label.
+        annotater_id (Integer): GroupID of Annotater who has assigned this Label.
         confidence (float): Confidence of Annotation.
         anno_time (float): Time of annotaiton duration
 
@@ -760,7 +774,7 @@ class Label(Base):
     label_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'), nullable=False)
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     two_d_anno_id = Column(Integer, ForeignKey('two_d_anno.idx'))
-    annotater_id = Column(Integer, ForeignKey('user.idx'))
+    group_id = Column(Integer, ForeignKey('group.idx'))
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     label_leaf = relationship('LabelLeaf', uselist=False)
@@ -793,24 +807,24 @@ class LabelTree(Base):
         name (str): Name of the LabelCategory.
         description (str):
         timestamp (DateTime):
-        user_id (int): Id of the user who created this category.
+        group_od (int): Id of the Group who created this category.
     '''
     __tablename__ = "label_tree"
     idx = Column(Integer, primary_key=True)
     name = Column(String(100))
-    user_id = Column(Integer, ForeignKey('user.idx'))
-    user = relationship("User", uselist=False)
+    group_id = Column(Integer, ForeignKey('group.idx'))
+    group = relationship("Group", uselist=False)
     description = Column(String(300))
     timestamp = Column(DATETIME(fsp=6))
     label_leaves = relationship("LabelLeaf")
 
     def __init__(self, idx=None, name=None, description=None,
-                 user_id=None, timestamp=None,):
+                 group_id=None, timestamp=None,):
         self.idx = idx
         self.name = name
         self.description = description
         self.timestamp = timestamp
-        self.user_id = user_id
+        self.group_id = group_id
 
 class RequiredLabelLeaf(Base):
     '''A RequiredLabelLeaf

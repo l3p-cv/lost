@@ -1,0 +1,2 @@
+DESIGNER = 'Designer'
+ANNOTATER = 'Annotater'
