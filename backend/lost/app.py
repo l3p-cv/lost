@@ -5,7 +5,10 @@ from lost import settings
 from lost.api.api import api
 
 from lost.api.user.endpoints.login import namespace as login_namespace
-from lost.api.user.endpoints.users import namespace as users_namespace
+from lost.api.user.endpoints.user import namespace as user_namespace
+from lost.api.user.endpoints.list import namespace as user_list_namespace
+from lost.api.group.endpoints.group import namespace as group_namespace
+from lost.api.group.endpoints.list import namespace as group_list_namespace
 
 #from lost.database.db import db
 from lost.db.model import User, Role, UserRoles
@@ -48,8 +51,11 @@ def init_app(app):
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
     #register endpoints here
+    api.add_namespace(user_namespace)
+    api.add_namespace(user_list_namespace)
     api.add_namespace(login_namespace)
-    api.add_namespace(users_namespace)
+    api.add_namespace(group_namespace)
+    api.add_namespace(group_list_namespace)
     app.register_blueprint(blueprint)
     CORS(app)
 

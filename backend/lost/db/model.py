@@ -40,7 +40,7 @@ class User(Base, UserMixin):
     photo_path = Column(String(4096))
 
     roles = relationship('Role', secondary='user_roles')
-    groups = relationship('Group', secondary='user_groups')
+    groups = relationship('Group', secondary='user_groups', lazy='joined')
     
     def __init__(self, user_name, email, password, first_name, last_name, email_confirmed_at=None):
         self.user_name = user_name
@@ -58,8 +58,8 @@ class User(Base, UserMixin):
     
     def has_role(self, role):
         role_names = []
-        for name in self.roles.name:
-            role_names.append(name)
+        for r in self.roles:
+            role_names.append(r.name)
         if role in role_names:
             return True
         else:
@@ -83,6 +83,7 @@ class Group(Base):
     __tablename__ = 'group'
     idx = Column(Integer(), primary_key=True)
     name = Column(String(50), unique=True)
+    manager_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     is_user_default = Column(Boolean(), nullable=False, server_default='0')
 
 class UserGroups(Base):
