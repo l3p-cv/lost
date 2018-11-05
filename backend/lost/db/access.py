@@ -741,3 +741,6 @@ class DBMan(object):
     
     def get_group_by_name(self, group_name):
         return self.session.query(model.Group).filter(model.Group.name==group_name).first()
+
+    def get_group_by_id(self, group_id):
+        return self.session.query(model.Group).filter(model.Group.idx==group_id).first()
