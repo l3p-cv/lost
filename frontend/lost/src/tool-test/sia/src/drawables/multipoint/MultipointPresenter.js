@@ -102,7 +102,6 @@ export default class MultipointPresenter extends DrawablePresenter {
     }
 
     move(distance: any){
-        const { imgW, imgH } = imageInterface.getDimensions()
         let { x, y } = distance
         x = x ? x : 0
         y = y ? y : 0

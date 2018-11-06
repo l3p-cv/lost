@@ -21,8 +21,8 @@ state.init({ logging: false })
 state.setHistorySize(50)
 
 const CONFIG = false
+const BACKEND = false
 const DEBUG = true
-const BACKEND = true
 // dummy labels if no backend
 const CATEGORIES = { 
     labelTrees: [
@@ -164,7 +164,7 @@ function validateConfig(config: any){
     }
     return config
 }
-if(CONFIG){
+if(!CONFIG){
     console.warn("NO CONFIG MODE: will not load backend config.")
     let config = appModel.config.value
     // config = Object.assign(config, {
@@ -298,7 +298,7 @@ function resize(){
             imageView.hide() // @add-container-for-that? (getting the top value from boundingClientRect)
 
             // scroll into view to be able to use getBoundingClientRect for calculations
-            document.getElementById("sia-drawer-title").scrollIntoView(true)
+            appView.html.ids["sia-drawer-content"].scrollIntoView(true)
 
             if(isPortrait){
                 // console.log("is portrait")
@@ -428,13 +428,9 @@ function resize(){
     }
 }
 function handleDataUpdate(data: any){
-    // update progress bar
-    if(BACKEND){
-        window.AT.updateProgressBar()
-    }
     if(data === "nothing available"){
         handleNothingAvailable()
-    } 
+    }
 }
 function handleNothingAvailable(){
     console.log("handle nothing available")

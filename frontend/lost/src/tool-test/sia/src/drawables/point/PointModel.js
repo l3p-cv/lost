@@ -8,7 +8,6 @@ import imageInterface from "components/image/imageInterface"
 
 import DrawableModel from "../DrawableModel"
 
-import * as SVG from "drawables/svg"
 
 export default class PointModel extends DrawableModel {
     constructor(annotationData: any) {

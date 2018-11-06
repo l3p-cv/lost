@@ -34,10 +34,10 @@ export const html = new NodeTemplate(`
                 <button data-ref="sia-delete-junk-btn" class="btn btn-default">
                     <i class="fa fa-trash"></i>
                 </button>
-                <span data-ref="image-name">image name placeholder</span>
-                <span data-ref="image-id">image id placeholder</span>
+                <span data-ref="image-name"></span>
+                <span data-ref="image-id"></span>
                 <div data-ref="space"></div>
-                <span data-ref="image-progress">image progress placeholder</span>
+                <span data-ref="image-progress"></span>
             </div>
         </div>
         <div id="sia-imgview-no-more-images">
@@ -65,9 +65,15 @@ export function updateImage(imgPath: String){
 }
 export function updateInfo(info: any){
     const { name, id, number, amount } = info
-    html.refs["image-name"].textContent = name
-    html.refs["image-id"].textContent = `( id: ${id} )`
-    html.refs["image-progress"].textContent = `${number}/${amount}`
+    if(name){
+        html.refs["image-name"].textContent = name
+    }
+    if(id){
+        html.refs["image-id"].textContent = `( id: ${id} )`
+    }
+    if(number && amount){
+        html.refs["image-progress"].textContent = `${number}/${amount}`
+    }
 }
 
 export function addDrawable(drawable: DrawablePresenter){

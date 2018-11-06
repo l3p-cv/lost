@@ -1,7 +1,5 @@
-import { getElementStyle } from "l3p-core"
 import * as math from "shared/math"
 
-// LABEL is used in appModel.
 export const LABEL = {
     id: -1,
     name: "no label",

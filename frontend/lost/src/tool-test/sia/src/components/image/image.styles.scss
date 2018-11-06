@@ -25,8 +25,8 @@ svg:not(:root) {
         flex-wrap: nowrap;
         justify-content: space-between;
         align-items: flex-end;
-        // background-color:rgba(255,50,50,0.4);
         height: 2.6rem;
+        padding-bottom: 0.5rem;
         button {
             flex-shrink: 2;
             padding: 2px 6px; 
@@ -39,19 +39,8 @@ svg:not(:root) {
             max-width: 60%;
             padding-right: 1.2rem;
         }
-        [data-ref="image-id"] {
-        }
         [data-ref="space"] {
             flex-grow: 1;
-        }
-        // replacing the space div didn't work
-        // [data-ref="image-id"]::after {
-        //     content: "";
-        //     background-color: red;
-        //     display: block;
-        //     flex-grow: 1;
-        // }
-        [data-ref="image-progress"] {
         }
     }
     #sia-imgview-no-more-images {

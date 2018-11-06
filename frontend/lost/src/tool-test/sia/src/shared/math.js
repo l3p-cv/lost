@@ -51,6 +51,7 @@ export function makeEven(value: Number, options: any){
             else {
                 return value
             }
+            break
         case WHOLE:
             if(Math.abs(value % 2) > 0) {
                 if(up && isPositive){
@@ -68,6 +69,7 @@ export function makeEven(value: Number, options: any){
             } else {
                 return value
             }
+            break
     }
 }
 export const even = makeEven

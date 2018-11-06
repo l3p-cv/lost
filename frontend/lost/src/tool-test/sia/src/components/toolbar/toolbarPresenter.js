@@ -8,21 +8,16 @@ import * as toolbarView from "./toolbarView"
 
 import imageInterface from "components/image/imageInterface"
 import * as imagePresenter from "components/image/imagePresenter"
-import * as imageView from "components/image/imageView"
 
 import { STATE, EVENT_COMPUTATION_SETTINGS } from "drawables/drawable.statics"
 import Timer from "shared/timer"
 
-import DrawablePresenter from "drawables/DrawablePresenter"
 import PointPresenter from "drawables/point/PointPresenter"
 import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import BoxPresenter from "drawables/box/BoxPresenter"
 import BoxModel from "drawables/box/BoxModel"
 
-import DRAWABLE_DEFAULTS from "drawables/drawable.defaults"
-
 import * as SVG from "drawables/svg"
-import * as math from "shared/math"
 
 /* model binding */
 appModel.config.on("update", config => {
@@ -422,13 +417,8 @@ appModel.config.on("update", config => {
                     })
                     break
                 case "sia-tool-bbox":
-                    // data context
-                    const container = imageInterface.getSVGEmbeddedImage()
-                    
                     // control context
                     const minDrawTime = EVENT_COMPUTATION_SETTINGS.boxCreate.MIN_DRAW_TIME
-                    let validated = false
-                    let finished = false
                     let lastUpdateCall = undefined
 
                     // calculation context
@@ -458,7 +448,6 @@ appModel.config.on("update", config => {
                                     x: (mouseCurr.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
                                     y: (mouseCurr.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
                                 }
-                                let direction = undefined
                                 let right = mouseStart.x <= mouseCurr.x
                                 let down = mouseStart.y <= mouseCurr.y
 
@@ -686,7 +675,7 @@ appModel.config.on("update", config => {
 
 /* view binding */
 $(toolbarView.html.ids["sia-toolbar-container"]).on("click", "button", ($event) => {
-    appModel.controls.tool.update($event.currentTarget.id)
+    appModel.controls.tool.update($event.target.closest("button").id)
 })
 
 

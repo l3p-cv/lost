@@ -21,6 +21,7 @@ export default class MenuPresenter {
      * @param {*} config keys: label, position, width, height, minWidth, padding, drawable 
      */
     constructor(config: any){
+        // console.log("menu presenter config:", config)
         this.model = new MenuModel(config)
         this.view = new MenuView(this.model, config.mountPoint, {
             deletable: this.model.drawable.isDeletable(),

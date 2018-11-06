@@ -6,19 +6,6 @@ svg {
     top:0;
 }
 
-
-#sia-app-hide-plane{
-    // the main application container is hidden on init.
-    display: block;
-    position: absolute;
-    top:0;
-    left:0;
-    width: 100%;
-    height: 100%;
-    background-color:white;
-    z-index: 100;
-    text-align: center;
-}
 #sia-drawer-content{
     margin-top: 1em;
     overflow: hidden;

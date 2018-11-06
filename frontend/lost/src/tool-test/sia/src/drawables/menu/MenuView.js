@@ -18,8 +18,11 @@ export default class MenuView {
         this.labelPadding = label.padding
         this.display = display
         const position = display.bar ? bar.relativePosition : { x: 0, y: 0 }
+        console.log(config)
+        console.log(position)
         this.html = new NodeTemplate(`
-            <g class="drawable-menubar drawable-menubar-not-selected drawable-menubar-locked" transform="translate(${position.x},${position.y})">
+            <svg class="drawable-menubar drawable-menubar-not-selected drawable-menubar-locked" 
+                transform="translate(${position.x},${position.y})">
                 ${
                     !this.display.label ? `` : `
                         <svg data-ref="label"
@@ -81,7 +84,7 @@ export default class MenuView {
                         </svg>
                     `
                 }
-            </g>
+            </svg>
         `)
         // cache node styles for best performance
         this.ccss = {

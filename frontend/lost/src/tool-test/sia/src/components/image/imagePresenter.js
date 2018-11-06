@@ -14,9 +14,6 @@ import DrawablePresenter from "drawables/DrawablePresenter"
 import appModel from "../../appModel"
 import * as imageView from "./imageView"
 
-import objectAssignDeep from "@cartok/object-assign-deep"
-import * as math from "shared/math"
-
 
 appModel.config.on("update", config => {
     enableSelect()
@@ -124,7 +121,11 @@ imageView.image.addEventListener("load", () => {
     // the default move step  is 1px, the fast move step depends on current image display size.
     appModel.controls.moveStepFast = Math.ceil(appModel.controls.moveStep * (imageView.getWidth() * imageView.getHeight() * 0.00001))
     if(JSON.parse(sessionStorage.getItem("sia-first-image-loaded"))){
-        document.getElementById("sia-drawer-panel").scrollIntoView(true)
+        // @quickfix: lost integration
+        const header = document.getElementById("sia-drawer-panel")
+        if(header){
+            header.scrollIntoView(true)
+        }
     } else {
         document.body.scrollIntoView(true)
         sessionStorage.setItem("sia-first-image-loaded", JSON.stringify(true))
@@ -151,8 +152,9 @@ appModel.data.drawables.on("update", () => {
 })
 
 $(svg).on("wheel", $event => {
+    $event = $event.originalEvent ? $event.originalEvent : $event
     $event.preventDefault()
-    const up = $event.originalEvent.deltaY < 0
+    const up = $event.deltaY < 0
     const down = !up
     
     // varies with zoom
@@ -605,7 +607,6 @@ export function enableChange(drawable: DrawablePresenter){
                             noPointerEvents: true,
                             noSelection: true,
                         })
-                        console.log("EXEC",moveStep)
                         $(window).one("keyup", () => mouse.unsetGlobalCursor())
                         switch ($event.key) {
                             case "w":
@@ -1561,6 +1562,7 @@ export function disableChange(drawable: DrawablePresenter){
                 $(window).off("keyup.movePoint")
                 $(window).off("keydown.multipointInsertPointStart")
                 $(window).off("keydown.lineAddPointStart")
+                break
             case "MultipointPresenter":
                 $(drawable.view.html.root).off("mousedown.moveDrawableStart")
                 $(window).off("keydown.moveDrawable")
@@ -1593,7 +1595,6 @@ export function createDrawables(drawablesRawData: any){
     appModel.state.selectedDrawableId = undefined
     
     // create new drawables
-    const drawables = []
     const containsData = Object.values(drawablesRawData).find(d => d && d.length > 0) !== undefined
 
     // create 'DrawablePresenter's
@@ -1605,7 +1606,6 @@ export function createDrawables(drawablesRawData: any){
             }
 
             // determine constructor
-            let DrawablePresenterConstructor = undefined
             switch(key){
                 case "bBoxes":
                 bulkCreate(BoxPresenter, key, drawablesRaw) 

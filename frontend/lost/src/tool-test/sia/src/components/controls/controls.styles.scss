@@ -2,15 +2,30 @@
 .sia-user-manual{
     width: 100%;
     overflow-x: auto;
+    // margin-top: 4rem;
 
     &:nth-child(even){
-        margin-top: 3em;
+        margin-top: 3rem;
     }
 
     .sia-table-wrapper{
-        display: block;
-        margin-bottom: 1.3em;
-        padding: 1px;
+        margin-bottom: 1.2rem;
+        table{
+            margin-bottom: 0.6rem;
+            width: 100%;
+            display:table;
+            tr{
+                display: table-row;
+                td {
+                    display: table-cell;
+                }
+                th{
+                    display: table-cell;
+                    text-align: left;
+                    width: 10em;
+                }
+            }
+        }
     }
     .sia-shortcut{
         span {
@@ -42,30 +57,17 @@
         font-size: 1.0em;
         margin-bottom: 3px;
     }
-    .center-header{
-        /* override bootstrap properties, NOT WORKING IN ANY WAY ... */
-        vertical-align: center;
-    }
-
-    table{
-        margin-bottom: 0.6em;
-        width: 100%;
-        th{
-            text-align: left;
-            width: 10em;
-        }
-    }
 
     h2{
         /* bootstrap td, th padding: 8px */
         text-indent: 4px;
-        font-size: 1.6em;
+        // font-size: 1.4em;
         margin-bottom: 1em;
     }
     h4{
         text-indent: 4px;
         margin-bottom: 0.6em;
-        font-size: 1.5em;
-        font-variant: small-caps;
+        // font-size: 1.5em;
+        // font-variant: small-caps;
     }
 }

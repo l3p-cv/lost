@@ -10,6 +10,7 @@ import * as modals from "../../modals"
 import * as data from "core/data"
 
 import jquery from "jquery"
+// import "bootstrap" // helps a little... functionality is fine than but not display
 import hierarchySelect from "@cartok/hierarchy-select"
 import "@cartok/hierarchy-select/build/hierarchy-select.css"
 hierarchySelect(jquery)
@@ -275,25 +276,29 @@ function updateData(action: String){
             console.log("data:", data)
             appModel.updateLabels(categories)
             appModel.updateAnnotations(data)
-            if(data.image.isFirst){
-                console.log("handling first image")
-                handleFirstImage()
-            } else {
-                console.log("handling not fist image")
-                handleNotFirstImage()
-            }
-            if(data.image.isLast){
-                console.log("handling last image")
-                handleLastImage()
-            } else {
-                console.log("handling not last image")
-                handleNotLastImage()
-            }
         }).catch((reason) => {
             console.error(reason)
         })
     })
 }
+// quickfix
+appModel.data.image.info.on("update", () => {
+    const data = appModel.data
+    if(data.image.isFirst){
+        console.log("handling first image")
+        handleFirstImage()
+    } else {
+        console.log("handling not fist image")
+        handleNotFirstImage()
+    }
+    if(data.image.isLast){
+        console.log("handling last image")
+        handleLastImage()
+    } else {
+        console.log("handling not last image")
+        handleNotLastImage()
+    }
+})
 
 function enableLabeling(){
     propertiesView.enableLabeling()

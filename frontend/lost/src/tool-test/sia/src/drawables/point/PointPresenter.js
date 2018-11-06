@@ -1,9 +1,6 @@
-import { mouse, dom } from "l3p-core"
-
 import DrawablePresenter from "../DrawablePresenter"
 import MenuPresenter from "../menu/MenuPresenter"
 
-import * as DEFAULTS from "./point.defaults"
 import PointModel from "./PointModel"
 import PointView from "./PointView"
 

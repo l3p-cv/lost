@@ -43,7 +43,6 @@ export default class BoxPresenter extends DrawablePresenter {
                     padding: BOX_DEFAULTS.strokeWidth,
                 },
                 width: this.model.actBounds.value.w + (2 * BOX_DEFAULTS.strokeWidth),
-                // minWidth: 2 * BOX_DEFAULTS.strokeWidth,
                 borderWidth: BOX_DEFAULTS.strokeWidth,           
             },
         })

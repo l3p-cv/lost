@@ -205,19 +205,20 @@ function createShortcutHTML(keys: array) {
 
 
 export const html = new NodeTemplate(`
-    <div id="sia-user-manual-panel" class="x_panel container">
-        <div id="sia-user-manual-title" class="x_title row">
+    <div class="container sia-user-manual">
+        <div class="row">
             <h2>
                 <i class="fa fa-keyboard-o" aria-hidden="true"></i>
-                <div style="display:inline-block">User Manual</div>
+                <div style="display:inline-block; padding-left: 1rem">User Manual</div>
             </h2>
-            <ul class="nav navbar-right panel_toolbox">
-                <li><a class="collapse-link"><i id="sia-collapse-manual" class="fa fa-chevron-up"></i></a></li>
-            </ul>
+            // @disabled: lost integration
+            // <ul class="nav navbar-right panel_toolbox">
+            //     <li><a class="collapse-link"><i id="sia-collapse-manual" class="fa fa-chevron-up"></i></a></li>
+            // </ul>
             <div class="clearfix"></div>
         </div>
-        <div id="sia-user-manual-content" class="x_content row">
-            <div id="sia-user-manual-content-wrapper">
+        <div class="row">
+            <div>
                 <div class="sia-user-manual">
                     <h2>Mouse</h2>
                     ${
@@ -249,9 +250,9 @@ export const html = new NodeTemplate(`
                                     ${
                                         x.entrys.map((entry, index) =>
                                             `
-                                            <tr><th class="center-header">shortcut:</th><td>${createShortcutHTML(entry.keystrokes)}</td></tr>
-                                            <tr><th class="center-header">description:</th><td><div>${entry.description}</div></td></tr>
-                                            <tr><th class="center-header">precondition:</th><td><div>${entry.precondition}</div></td></tr>
+                                            <tr><th>shortcut:</th><td>${createShortcutHTML(entry.keystrokes)}</td></tr>
+                                            <tr><th>description:</th><td><div>${entry.description}</div></td></tr>
+                                            <tr><th>precondition:</th><td><div>${entry.precondition}</div></td></tr>
                                             `
                                         ).join("")
                                     }
@@ -259,15 +260,15 @@ export const html = new NodeTemplate(`
                             </div>`
                         ).join("")
                     }
-                    <div style="clear:both"></div>
+                    <div class="clearfix"></div>
                 </div>
             </div>
         </div>
     </div>
 `)
 export function hide(){
-    document.getElementById("sia-user-manual-panel").style.display = "none"
+    html.root.style.display = "none"
 }
 export function show(){
-    document.getElementById("sia-user-manual-panel").style.display = "block"
+    html.root.style.display = "block"
 }

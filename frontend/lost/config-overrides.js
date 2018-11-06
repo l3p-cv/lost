@@ -13,7 +13,7 @@ function absolutePath(pathString){
 }
 
 module.exports = (config, env) => {
-	config.entry.push(absolutePath("./src/tool-test/sia/src/appPresenter"))
+	// config.entry.push(absolutePath("./src/tool-test/sia/src/appPresenter"))
 	config.resolve.alias.components = absolutePath("./src/tool-test/sia/src/components")
 	config.resolve.alias.core = absolutePath("./src/tool-test/sia/src/core")
 	config.resolve.alias.drawables = absolutePath("./src/tool-test/sia/src/drawables")
