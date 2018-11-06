@@ -244,33 +244,23 @@ class PipeStarter(object):
 ############################ get_running_pipes ####################
 #                                                                 #
 ###################################################################
-def get_running_pipes(db_man, debug_mode):
-    '''Read out all running pipelines dependent on debug_mode.
+def get_pipelines(db_man, group_ids, debug_mode=False):
+    '''Read out all pipelines dependent on debug_mode.
 
     Args:
         db_man:
+        group_ids: Group ids to search for
         debug_mode (Boolean): Weather to load Pipes in debug or normal
     
     Returns: 
         JSON with all meta info about the pipelines.
     '''
-    pipes = db_man.get_running_pipes()
+
+    pipes = db_man.get_pipes(group_ids)
     return __serialize_pipes(db_man, debug_mode, pipes)
 ############################ get_completed_pipes ##################
 #                                                                 #
 ###################################################################
-def get_completed_pipes(db_man, debug_mode):
-    '''Read out all completed pipelines dependent on debug_mode.
-
-    Args:
-        db_man:
-        debug_mode (Boolean): Weather to load Pipes in debug or normal
-    
-    Returns: 
-        JSON with all meta info about the pipelines.
-    '''
-    pipes = db_man.get_completed_pipes()
-    return __serialize_pipes(db_man, debug_mode, pipes)
 def __serialize_pipes(db_man, debug_mode, pipes):
     pipes_json = dict()
     pipes_json["pipes"] = list()

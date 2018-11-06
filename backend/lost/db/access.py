@@ -201,34 +201,25 @@ class DBMan(object):
                     (model.Pipe.state!=state.Pipe.PAUSED) &\
                     (model.Pipe.state!=state.Pipe.ERROR)).all()
 
-
-
-    def get_running_pipes(self):
+    def get_pipes(self, group_ids):
         '''Get all :class:`project.Pipe` objects that are not finished.
 
-        Returns:
-            list: A list of :class:`project.Pipe` objects
-        '''
-        return self.session.query(model.Pipe)\
-            .filter((model.Pipe.state!=state.Pipe.FINISHED) &\
-                    (model.Pipe.state!=state.Pipe.DELETED)).all()
-
-    def get_completed_pipes(self):
-        '''Get all :class:`project.Pipe` objects that are  finished.
+        Args:
+            group_ids [int]: List of group ids to search for.
 
         Returns:
             list: A list of :class:`project.Pipe` objects
         '''
         return self.session.query(model.Pipe)\
-            .filter((model.Pipe.state==state.Pipe.FINISHED)).all()
-
-    def get_all_pipe_templates(self):
+            .filter((model.Pipe.group_id.in_(group_ids))).all()
+                    
+    def get_all_pipeline_templates(self,group_ids):
         '''Get all PipeTemplate objects in db.
 
         Returns:
             list: :class:`.project.PipeTemplate`
         '''
-        return self.session.query(model.PipeTemplate).all()
+        return self.session.query(model.PipeTemplate).filter(model.PipeTemplate.group_id.in_(group_ids)).all()
 
     def get_pipe_template(self, pipe_template_id=None):
         '''Get a single PipeTemplate.

@@ -7,7 +7,7 @@ __author__ = "Gereon Reus"
 ############################ get_templates ########################
 #                                                                 #
 ###################################################################
-def get_templates(db_man, debug_mode):
+def get_templates(db_man, group_ids, debug_mode=False):
     '''Read out all templates.
 
     Args:
@@ -17,7 +17,7 @@ def get_templates(db_man, debug_mode):
     Returns: 
         JSON with all meta info about the pipe templates.
     '''
-    pipe_templates = db_man.get_all_pipe_templates()
+    pipe_templates = db_man.get_pipeline_templates(group_ids)
     pipe_templates_json = dict()
     pipe_templates_json["templates"] = list()
 

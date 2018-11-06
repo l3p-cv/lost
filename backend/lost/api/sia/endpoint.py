@@ -22,7 +22,7 @@ class First(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
         else:
-            re = sia.get_fist(dbm, identity, DATA_URL)
+            re = sia.get_first(dbm, identity, DATA_URL)
             dbm.close_session()
             return re
 
