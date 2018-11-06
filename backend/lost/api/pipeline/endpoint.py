@@ -2,12 +2,12 @@ from flask import request
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-#from lost.api.pipeline.api_definition import
+from lost.api.pipeline.api_definition import templates, template, pipelines, pipeline
 from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
-from lost.logic.pipeline import service as pipeline
-from lost.logic import template
+from lost.logic.pipeline import service as pipeline_service
+from lost.logic import template as template_service
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
 
@@ -24,7 +24,7 @@ class TemplateList(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
             group_ids = [g.idx for g in user.groups]
-            re = template.get_templates(dbm, group_ids)
+            re = template_service.get_templates(dbm, group_ids)
             dbm.close_session()
             return re
 
@@ -32,7 +32,7 @@ class TemplateList(Resource):
 @namespace.param('template_id', 'The id of the template.')
 class Template(Resource):
     @api.marshal_with(template)
-    @jwt_required 
+    @jwt_required
     def get(self, template_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -42,7 +42,7 @@ class Template(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
 
         else:
-            re = template.get_template(dbm, template_id)
+            re = template_service.get_template(dbm, template_id)
             dbm.close_session()
             return re
 
@@ -59,7 +59,7 @@ class PipelineList(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
             group_ids = [g.idx for g in user.groups]
-            re = pipeline.get_pipelines(dbm, group_ids)
+            re = pipeline_service.get_pipelines(dbm, group_ids)
             dbm.close_session()
             return re
 
@@ -77,6 +77,6 @@ class Pipeline(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
 
         else:
-            re = pipeline.get_pipeline(dbm, identity)
+            re = pipeline_service.get_pipeline(dbm, identity)
             dbm.close_session()
             return re
