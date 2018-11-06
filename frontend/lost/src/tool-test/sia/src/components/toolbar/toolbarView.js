@@ -1,19 +1,21 @@
+import $ from "cash-dom"
+
 import { NodeTemplate } from "l3p-core"
 import * as appModel from "../../appModel"
 
 export const html = new NodeTemplate(`
     <div id="sia-toolbar-container">
         <button class="btn btn-default" data-ref="point" id="sia-tool-point">
-            <img src="/static/assets/icons/l3p-vector-dot.svg"/>
+            <img src="/assets/icons/l3p-vector-dot.svg"/>
         </button>
         <button class="btn btn-default" data-ref="line" id="sia-tool-line">
-            <img src="/static/assets/icons/l3p-vector-line.svg"/>
+            <img src="/assets/icons/l3p-vector-line.svg"/>
         </button>
         <button class="btn btn-default" data-ref="polygon" id="sia-tool-polygon">
-            <img src="/static/assets/icons/l3p-vector-polygon.svg"/>
+            <img src="/assets/icons/l3p-vector-polygon.svg"/>
         </button>
         <button class="btn btn-default" data-ref="bbox" id="sia-tool-bbox">
-            <img src="/static/assets/icons/l3p-vector-box.svg"/>
+            <img src="/assets/icons/l3p-vector-box.svg"/>
         </button>
     </div>
 `)

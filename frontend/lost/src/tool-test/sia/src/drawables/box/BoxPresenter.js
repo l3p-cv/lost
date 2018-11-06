@@ -1,4 +1,4 @@
-import { throttle } from "lodash"
+import { throttle } from "lodash-es"
 import { mouse } from "l3p-core"
 import * as math from "shared/math"
 

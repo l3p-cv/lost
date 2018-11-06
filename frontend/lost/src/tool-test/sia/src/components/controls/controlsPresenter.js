@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import * as view from "./controlsView"
 
 // apply collapse state from local storage

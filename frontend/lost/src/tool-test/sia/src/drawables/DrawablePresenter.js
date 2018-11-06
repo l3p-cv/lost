@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import { CURSOR_UPDATE_FREQ, STATE } from "./drawable.statics"
 
 import appModel from "../appModel"

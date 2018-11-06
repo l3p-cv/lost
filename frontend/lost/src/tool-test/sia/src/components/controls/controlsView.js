@@ -205,49 +205,63 @@ function createShortcutHTML(keys: array) {
 
 
 export const html = new NodeTemplate(`
-    <div id="sia-user-manual-content-wrapper">
-        <div class="sia-user-manual">
-            <h2>Mouse</h2>
-            ${
-                data.mouse.map(x => `
-                    <div class="sia-table-wrapper">
-                        <h4>${x.text}</h4>
-                        <table class="table table-striped table-responsive">
-                            ${
-                                x.entrys.map((entry, index) =>
-                                    `
-                                    <tr><th>button:</th><td><div class="sia-key">${entry.button}</div></td></tr>
-                                    <tr><th>description:</th><td><div>${entry.description}</div></td></tr>
-                                    `
-                                ).join("")
-                            }
-                        </table>
-                    </div>`
-                ).join("")
-            }
+    <div id="sia-user-manual-panel" class="x_panel container">
+        <div id="sia-user-manual-title" class="x_title row">
+            <h2>
+                <i class="fa fa-keyboard-o" aria-hidden="true"></i>
+                <div style="display:inline-block">User Manual</div>
+            </h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i id="sia-collapse-manual" class="fa fa-chevron-up"></i></a></li>
+            </ul>
+            <div class="clearfix"></div>
         </div>
-        <hr/>
-        <div class="sia-user-manual">
-            <h2>Keyboard</h2>
-            ${
-                data.keyboard.map(x => `
-                    <div class="sia-table-wrapper">
-                        <h4>${x.text}</h4>
-                        <table class="table table-striped table-responsive">
-                            ${
-                                x.entrys.map((entry, index) =>
-                                    `
-                                    <tr><th class="center-header">shortcut:</th><td>${createShortcutHTML(entry.keystrokes)}</td></tr>
-                                    <tr><th class="center-header">description:</th><td><div>${entry.description}</div></td></tr>
-                                    <tr><th class="center-header">precondition:</th><td><div>${entry.precondition}</div></td></tr>
-                                    `
-                                ).join("")
-                            }
-                        </table>
-                    </div>`
-                ).join("")
-            }
-            <div style="clear:both"></div>
+        <div id="sia-user-manual-content" class="x_content row">
+            <div id="sia-user-manual-content-wrapper">
+                <div class="sia-user-manual">
+                    <h2>Mouse</h2>
+                    ${
+                        data.mouse.map(x => `
+                            <div class="sia-table-wrapper">
+                                <h4>${x.text}</h4>
+                                <table class="table table-striped table-responsive">
+                                    ${
+                                        x.entrys.map((entry, index) =>
+                                            `
+                                            <tr><th>button:</th><td><div class="sia-key">${entry.button}</div></td></tr>
+                                            <tr><th>description:</th><td><div>${entry.description}</div></td></tr>
+                                            `
+                                        ).join("")
+                                    }
+                                </table>
+                            </div>`
+                        ).join("")
+                    }
+                </div>
+                <hr/>
+                <div class="sia-user-manual">
+                    <h2>Keyboard</h2>
+                    ${
+                        data.keyboard.map(x => `
+                            <div class="sia-table-wrapper">
+                                <h4>${x.text}</h4>
+                                <table class="table table-striped table-responsive">
+                                    ${
+                                        x.entrys.map((entry, index) =>
+                                            `
+                                            <tr><th class="center-header">shortcut:</th><td>${createShortcutHTML(entry.keystrokes)}</td></tr>
+                                            <tr><th class="center-header">description:</th><td><div>${entry.description}</div></td></tr>
+                                            <tr><th class="center-header">precondition:</th><td><div>${entry.precondition}</div></td></tr>
+                                            `
+                                        ).join("")
+                                    }
+                                </table>
+                            </div>`
+                        ).join("")
+                    }
+                    <div style="clear:both"></div>
+                </div>
+            </div>
         </div>
     </div>
 `)

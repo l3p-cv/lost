@@ -98,7 +98,7 @@ export default {
             polygons: undefined,
             bBoxes: undefined,
         }),
-        categories: [...{}],
+        categories: [],
         labelList: new Observable([]),
     },
     
@@ -196,7 +196,7 @@ export default {
         }
     },
     getDrawableIndex(drawable: DrawablePresenter){
-        if(drawable == undefined){
+        if(drawable === undefined){
             throw new Error("empty parameter 'drawable' is undefined.")
         }
         return this.state.drawableIdList.indexOf(drawable.mountId)

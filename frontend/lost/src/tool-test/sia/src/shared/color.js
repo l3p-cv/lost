@@ -170,7 +170,7 @@ function toHsl(color: any){
     let L = (min + max) / 2
 
     // 4. determine saturation. if min == max there is no saturation, just grey. Hue = 0°
-    if(min == max){
+    if(min === max){
         return { H: 0, S: 0, L}
     }
     let S = (L < 0.5)

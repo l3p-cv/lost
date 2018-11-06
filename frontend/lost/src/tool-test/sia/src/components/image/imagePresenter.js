@@ -1,7 +1,7 @@
+import $ from "cash-dom"
+
 import { keyboard, mouse, state, Observable } from "l3p-core"
-// import { keyboard, state, Observable } from "l3p-core"
-// import { keyboard, state } from "l3p-core"
-// import * as mouse from "../../../../../../l3p-frontend-core/src/lib/input/mouse"
+
 import * as SVG from "drawables/svg"
 import * as color from "shared/color"
 
@@ -160,7 +160,7 @@ $(svg).on("wheel", $event => {
     const svgHeight = parseInt(svg.getAttribute("height"))
 
     let mousepos = mouse.getMousePosition($event, svg)
-    if(up && (oldZoom <= maxZoom) || down && (zoomLevel <= minZoomLevel) || up && (zoomLevel >= maxZoomLevel)){
+    if((up && (oldZoom <= maxZoom)) || (down && (zoomLevel <= minZoomLevel)) || (up && (zoomLevel >= maxZoomLevel))){
         // console.warn("NO EXEC")
         mousepos = undefined
         return
@@ -1535,6 +1535,7 @@ export function enableChange(drawable: DrawablePresenter){
                     if(Object.keys(drawable).length === 0){
                         break                
                     }
+                    break
                 default: throw new Error(`unknown drawable ${drawable} of type ${drawable.getClassName()}.`)
             }
         } else {

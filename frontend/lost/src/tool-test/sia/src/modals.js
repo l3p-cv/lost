@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import { NodeTemplate } from "l3p-core"
 
 

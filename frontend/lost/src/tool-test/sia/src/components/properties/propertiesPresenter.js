@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import { mouse, keyboard, state } from "l3p-core"
 
 import * as propertiesView from "./propertiesView"
@@ -7,10 +9,10 @@ import * as modals from "../../modals"
 
 import * as data from "core/data"
 
-// import jquery from "jquery"
+import jquery from "jquery"
 import hierarchySelect from "@cartok/hierarchy-select"
 import "@cartok/hierarchy-select/build/hierarchy-select.css"
-hierarchySelect($)
+hierarchySelect(jquery)
 
 import { STATE } from "drawables/drawable.statics"
 import DrawablePresenter from "drawables/DrawablePresenter"
@@ -303,7 +305,7 @@ function enableLabeling(){
     })
    
     // add hierarchy select features.
-    $(propertiesView.html.ids["sia-propview-label-select"]).hierarchySelect({
+    jquery(propertiesView.html.ids["sia-propview-label-select"]).hierarchySelect({
         hierarchy: false,
         togglePosition: false,
         returnAfterSelect: true,

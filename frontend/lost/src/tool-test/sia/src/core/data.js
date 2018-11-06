@@ -2,10 +2,10 @@ import appModel from "../appModel"
 import { data } from "l3p-core"
 // import * as data from "../../../../../l3p-frontend-core/src/lib/data/data"
 
-const BACKEND_URL = "/sia/api/"
+const BACKEND_URL = "/sia/annotation/"
 const REQUEST_STRINGS = {
     GET_CONFIG: BACKEND_URL + "configuration",
-    GET_CATEGORIES: BACKEND_URL + "label-trees",
+    GET_CATEGORIES: BACKEND_URL + "label",
     GET_FIRST: BACKEND_URL + "first",
     GET_NEXT_QUERY: (lastImageId) => BACKEND_URL + `next/${lastImageId}`,
     GET_PREV_QUERY: (lastImageId) => BACKEND_URL + `prev/${lastImageId}`,

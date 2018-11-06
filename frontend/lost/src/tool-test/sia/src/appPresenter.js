@@ -1,7 +1,8 @@
+import $ from "cash-dom"
+
 import { NodeTemplate, mouse, keyboard, state } from "l3p-core"
 
 import * as data from "core/data"
-
 import * as math from "shared/math"
 
 import { LAYOUT } from "./app.defaults"
@@ -19,6 +20,7 @@ import * as imageView from "components/image/imageView"
 state.init({ logging: false })
 state.setHistorySize(50)
 
+const CONFIG = false
 const DEBUG = true
 const BACKEND = true
 // dummy labels if no backend
@@ -63,7 +65,7 @@ const DATA = ((o: any) => {
     return {
         image: {
             id: -1,
-            url: "/static/dbug/frame_1100.png",
+            url: "/assets/picsum500x900.jpeg",
             isFirst: true,
             isLast: true,
         },
@@ -151,13 +153,7 @@ if(DEBUG){
     window.NodeTemplate = NodeTemplate
 }
 
-data.requestConfig().then(config => {
-    config = JSON.parse(config)
-    if(DEBUG){
-        console.warn("DEBUG MODE: will not load backend config.")
-        config = appModel.config.value
-    }
-    console.log("%c successfully requested config: ", "background: #282828; color: #FE8019", config)
+function validateConfig(config: any){
     if(config.tools.bbox){
         const { minArea, minAreaType } = config.drawables.bbox
         if(!(minArea && minAreaType)){
@@ -166,6 +162,11 @@ data.requestConfig().then(config => {
             config.drawables.bbox.minAreaType = "abs"
         }
     }
+    return config
+}
+if(CONFIG){
+    console.warn("NO CONFIG MODE: will not load backend config.")
+    let config = appModel.config.value
     // config = Object.assign(config, {
     //     tools: {
     //         point: true,
@@ -183,14 +184,21 @@ data.requestConfig().then(config => {
     //         }
     //     }
     // })
-    appModel.config.update(config)
+    appModel.config.update(validateConfig(config))
     init()
-}).catch(error => {
-    // make config optional
-    console.log(error.message)
-    appModel.config.update(appModel.config.value)
-    init()
-})
+} else {
+    data.requestConfig().then(config => {
+        config = JSON.parse(config)
+        console.log("%c successfully requested config: ", "background: #282828; color: #FE8019", config)
+        appModel.config.update(validateConfig(config))
+        init()
+    }).catch(error => {
+        // make config optional
+        console.log(error.message)
+        appModel.config.update(appModel.config.value)
+        init()
+    })
+}
 
 function init(){
     if(BACKEND) {

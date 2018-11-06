@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import { mouse, keyboard, state } from "l3p-core"
 import appModel from "../../appModel"
 

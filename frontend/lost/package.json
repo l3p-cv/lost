@@ -44,14 +44,18 @@
     "simple-line-icons": "^2.4.1"
   },
   "devDependencies": {
+    "circular-dependency-plugin": "^5.0.2",
+    "copy-webpack-plugin": "^4.6.0",
+    "react-app-rewire-eslint": "^0.2.3",
+    "react-app-rewired": "^1.6.2",
     "react-scripts": "^2.0.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:debug": "react-scripts --inspect-brk test --runInBand",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "test:debug": "react-app-rewired --inspect-brk test --runInBand",
+    "eject": "react-app-rewired eject"
   },
   "bugs": {
     "url": "no-git-yet"
@@ -64,5 +68,14 @@
     "not dead",
     "not ie <= 9",
     "not op_mini all"
-  ]
+  ],
+   "nodemonConfig": {
+    "watch": [
+      "test/**/*",
+      "src/**/*"
+    ],
+    "ext": "js",
+    "delay": 500,
+    "verbose": true
+  }
 }

@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import { mouse } from "l3p-core"
 import appModel from "../../appModel"
 

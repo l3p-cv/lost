@@ -9,9 +9,20 @@ import * as toolbarView from "./components/toolbar/toolbarView"
 import * as controlsView from "./components/controls/controlsView"
 
 export const html = new NodeTemplate(`
-    <div id="sia-content-wrapper">
-        <div id="sia-app-hide-plane">
-            <h4 class="panel-body">loading... <i class="fa fa-spinner load-icon" aria-hidden="true"></i></h4>
+    <div id="sia-drawer-panel" class="x_panel container">
+        <div id="sia-drawer-title" class="x_title row">
+            <h2>
+                <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                <div style="display:inline-block">Editor</div>
+            </h2>
+            <div class="clearfix"></div>
+        </div>
+        <div id="sia-drawer-content" class="x_content row">
+            <div id="sia-content-wrapper">
+                // <div id="sia-app-hide-plane">
+                //     <h4 class="panel-body">loading... <i class="fa fa-spinner load-icon" aria-hidden="true"></i></h4>
+                // </div>
+            </div>
         </div>
     </div>
 `)
@@ -19,8 +30,8 @@ export const html = new NodeTemplate(`
 html.root.appendChild(toolbarView.html.fragment)
 html.root.appendChild(propertiesView.html.fragment)
 html.root.appendChild(imageView.html.fragment)
-document.getElementById("sia-user-manual-content").appendChild(controlsView.html.fragment)
-document.getElementById("sia-drawer-content").appendChild(html.fragment)
+html.root.appendChild(controlsView.html.fragment)
+// moved mounting to SIA Component
 
 export function show(){
     document.getElementById("bba-progress-bar").style.display = "block"

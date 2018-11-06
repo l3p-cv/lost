@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import "./properties.styles.scss"
 import { NodeTemplate } from "l3p-core"
 
@@ -154,7 +156,7 @@ export function updateCanvas(values: any){
 
     ctx.restore()
 }
-export function updateLabels(labels: Array<any>){
+export function updateLabels(labels: Array<any> = []){
     // remove all options from select
     html.ids["sia-propview-label-select-list"].innerHTML = ""
     // create one option node for every label in the models label list

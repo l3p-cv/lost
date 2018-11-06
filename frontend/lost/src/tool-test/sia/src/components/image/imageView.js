@@ -1,3 +1,5 @@
+import $ from "cash-dom"
+
 import "./image.styles.scss"
 import { NodeTemplate } from "l3p-core"
 import { STATE } from "drawables/drawable.statics"

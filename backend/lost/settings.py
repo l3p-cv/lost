@@ -11,7 +11,7 @@ RESTPLUS_MASK_SWAGGER = False
 LOST_CONFIG = LOSTConfig()
 
 # Flask settings
-SECRET_KEY = 'This is an INSECURE secret!! DO NOT use this in production!'
+SECRET_KEY = 'Test'
 
 # Flask-Mail SMTP server settings
 MAIL_SERVER = 'smtp.gmail.com'
@@ -30,3 +30,5 @@ USER_EMAIL_SENDER_NAME = USER_APP_NAME
 USER_EMAIL_SENDER_EMAIL = "noreply@example.com"
 
 CORS_HEADERS = 'Content-Type'
+
+DATA_URL = 'data/'
