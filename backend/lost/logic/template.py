@@ -17,7 +17,7 @@ def get_templates(db_man, group_ids, debug_mode=False):
     Returns: 
         JSON with all meta info about the pipe templates.
     '''
-    pipe_templates = db_man.get_pipeline_templates(group_ids)
+    pipe_templates = db_man.get_pipeline_templates_by_group(group_ids)
     pipe_templates_json = dict()
     pipe_templates_json["templates"] = list()
 
@@ -63,7 +63,7 @@ def get_templates(db_man, group_ids, debug_mode=False):
 ############################ get_template #########################
 #                                                                 #
 ###################################################################
-def get_template(db_man, template_id):
+def get_template(db_man, template_id ,user):
     ''' read out one template
 
     Args:
@@ -80,19 +80,15 @@ def get_template(db_man, template_id):
         finally:
             return error_msg
     file_man = FileMan(db_man.lostconfig)
-    available_datasets = db_man.get_available_datasets()
-    available_model_trees = db_man.get_available_model_trees()
     available_raw_files = file_man.get_media_rel_path_tree()
     available_label_trees = db_man.get_available_label_trees()
-    available_users = db_man.get_available_users()
+    available_groups = user.groups
     available_scripts = db_man.get_all_scripts()
     try:
-         template_serialize = TemplateSerialize(template, 
-                                            available_datasets, 
-                                            available_model_trees,
+         template_serialize = TemplateSerialize(template,
                                             available_raw_files, 
                                             available_label_trees, 
-                                            available_users,
+                                            available_groups,
                                             available_scripts)
     except TypeError:
             return "No JSON found in PipeTemplate."
@@ -100,111 +96,43 @@ def get_template(db_man, template_id):
     return template_serialize.template_json
 
 class TemplateSerialize(object):
+    template = None
     template_json = None
-    available_datasets = None
-    available_model_trees = None
     available_raw_files = None
     available_label_trees = None
-    available_users = None
+    available_groups = None
     available_scripts = None
-    def __init__(self, template=None, available_datasets=None,
-                 available_model_trees=None, available_raw_files=None,
+    def __init__(self, template=None, available_raw_files=None,
                  available_label_trees=None,
-                 available_users=None,
+                 available_groups=None,
                  available_scripts=None):
+        self.template = template
         self.template_json = json.loads(template.json_template)
-        self.available_datasets = available_datasets
-        self.available_model_trees = available_model_trees
         self.available_raw_files = available_raw_files
         self.available_label_trees = available_label_trees
-        self.available_users = available_users
+        self.available_groups = available_groups
         self.available_scripts = available_scripts
 
     def add_available_info(self):
+        self.template_json['id'] = self.template.idx
         for pe in self.template_json['elements']:
             if 'datasource' in pe:
-                if pe['datasource']['type'] == 'dataset':
-                    pe['datasource']['availableDatasets'] = self.__ds_datasets()
-                elif pe['datasource']['type'] == 'modelLeaf':
-                    pe['datasource']['availableModelTrees'] = self.__ds_model_tress()
-                elif pe['datasource']['type'] == 'rawFile':
+                if pe['datasource']['type'] == 'rawFile':
                     pe['datasource']['availableRawFiles'] = self.__ds_raw_files()
             elif 'annoTask' in pe:
                 pe['annoTask']['availableLabelTrees'] = self.__at_label_trees()
-                pe['annoTask']['availableUser'] = self.__at_user()
+                pe['annoTask']['availableGroups'] = self.__at_groups()
             elif 'script' in pe:
                 pe['script']['arguments'] = self.__script_arguments(pe)
                 pe['script']['id'] = self.__script_id(pe)
                 pe['script']['executors'] = self.__script_executors(pe)
-    def __ds_datasets(self):
-        datasets_json = list()
-        for dataset in self.available_datasets:
-                dataset_json = dict()
-                dataset_json['id'] = dataset.idx
-                dataset_json['name'] = dataset.name
-                dataset_json['description'] = dataset.description
-                dataset_json['timestamp'] = dataset.timestamp
-                if dataset.user:
-                    dataset_json['userName'] = dataset.user.first_name + " " + dataset.user.last_name
-                else: 
-                    dataset_json['userName'] = "Unknown"
-                datasets_json.append(dataset_json)
-        return datasets_json
-
-    def __ds_model_tress(self):
-        model_trees_json = list()
-        for model_tree in self.available_model_trees:
-            model_tree_json = dict()
-            model_tree_json['id'] = model_tree.idx
-            model_tree_json['name'] = model_tree.name
-            model_tree_json['description'] = model_tree.description
-            model_tree_json['timestamp'] = model_tree.timestamp
-            if model_tree.user:
-                model_tree_json['userName'] = model_tree.user.first_name + " " + model_tree.user.last_name
-            else:
-                model_tree_json['userName'] = "Unknown"
-            model_leaves_json = list()
-            for model_leaf in model_tree.model_leaves:
-                model_leaf_json = dict()
-                model_leaf_json['id'] = model_leaf.idx
-                model_leaf_json['parentId'] = model_leaf.parent_id
-                model_leaf_json['name'] = model_leaf.name
-                model_leaf_json['description'] = model_leaf.description
-                model_leaf_json['timestamp'] = model_leaf.timestamp
-                if model_leaf.user:
-                    model_leaf_json['userName'] = model_leaf.user.first_name + " " + model_leaf.user.last_name
-                    model_leaf_json['userName'] = "Unknown"
-                model_leaf_json['isMaster'] = model_leaf.is_master
-                model_leaf_json['architecture'] = model_leaf.architecture
-                model_leaf_json['framework'] = model_leaf.framework
-                model_leaf_json['initialTrainedBy'] = model_leaf.initial_trained_by
-                model_leaves_json.append(model_leaf_json)
-            model_tree_json['modelLeaves'] = model_leaves_json
-            model_trees_json.append(model_tree_json)
-        return model_trees_json
+  
     def __ds_raw_files(self):
         raw_files_json = list()
         for raw_file in self.available_raw_files:
             raw_files_json.append(raw_file)
         return raw_files_json
-            # raw_file_json = dict()
-            # raw_file_json['id'] = raw_file.idx
-            # raw_file_json['path'] = raw_file.path
-            # raw_file_json['timestamp'] = raw_file.timestamp
-            # if raw_file.user:
-            #     raw_file_json['userName'] = raw_file.user.first_name + " " + raw_file.user.last_name
-            # else:
-            #     raw_file_json['userName'] = "Unknown"
-            # if raw_file.type == dtype.RawFile.VIDEO:
-            #     raw_file_json['type'] = 'video'
-            # elif raw_file.type == dtype.RawFile.FILE:
-            #     raw_file_json['type'] = 'file'
-            # elif raw_file.type == dtype.RawFile.IMAGESET:
-            #     raw_file_json['type'] = 'imageset'
-            # elif raw_file.type == dtype.RawFile.URL:
-            #     raw_file_json['type'] = 'url'
-            # raw_file_json['metaData'] = raw_file.meta_data
-            # raw_files_json.append(raw_file_json)
+    
 
     def __at_label_trees(self):
         label_trees_json = list()
@@ -237,16 +165,15 @@ class TemplateSerialize(object):
             label_tree_json['labelLeaves'] = label_leaves_json 
             label_trees_json.append(label_tree_json)
         return label_trees_json
-    def __at_user(self):
-        users_json = list()
-        for user in self.available_users:
-            user_json = dict()
-            user_json['id'] = user.idx
-            user_json['userName'] = user.user_name
-            user_json['photoPath'] = user.photo_path
-            user_json['name'] = user.first_name + " " + user.last_name 
-            users_json.append(user_json)
-        return users_json
+
+    def __at_groups(self):
+        groups_json = list()
+        for group in self.available_groups:
+            group_json = dict()
+            group_json['id'] = group.idx
+            group_json['groupName'] = group.name
+            groups_json.append(group_json)
+        return groups_json
 
     def __script_arguments(self, pe):
         for script in self.available_scripts:
