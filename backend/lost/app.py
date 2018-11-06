@@ -7,9 +7,7 @@ from lost.api.api import api
 from lost.api.user.endpoints.login import namespace as login_namespace
 from lost.api.user.endpoints.user import namespace as user_namespace
 from lost.api.group.endpoints.group import namespace as group_namespace
-from lost.api.sia.endpoints.annotation import namespace as sia_annotation_namespace
-from lost.api.sia.endpoints.configuration import namespace as sia_configuration_namespace
-from lost.api.sia.endpoints.label import namespace as sia_label_namespace
+from lost.api.sia.endpoints.sia import namespace as sia_namespace
 
 #from lost.database.db import db
 from lost.db.model import User, Role, UserRoles
@@ -55,9 +53,7 @@ def init_app(app):
     api.add_namespace(user_namespace)
     api.add_namespace(login_namespace)
     api.add_namespace(group_namespace)
-    api.add_namespace(sia_annotation_namespace)
-    api.add_namespace(sia_configuration_namespace)
-    api.add_namespace(sia_label_namespace)
+    api.add_namespace(sia_namespace)
     app.register_blueprint(blueprint)
     CORS(app)
 
