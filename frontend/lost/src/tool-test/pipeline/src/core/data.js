@@ -1,78 +1,40 @@
 import { data } from "l3p-core"
-// import * as data from "../../../../../l3p-frontend-core/src/lib/data/data"
 import swal from 'sweetalert2'
-const BASE_URL = "/pipeline/api"
+import appModel from "../apps/start/appModel"
+import { API_URL } from "root/actions/settings"
+
+
+const BASE_URL = `${API_URL}/pipeline`
 const URLS = {
-    // GET_TEMPLATE: (id) => `${BASE_URL}/template/${id}`,
-    GET_TEMPLATE: `${BASE_URL}/template/`,
-    // GET_TEMPLATES_NORMAL: `${BASE_URL}/templates`,
-    GET_TEMPLATES_NORMAL: `${BASE_URL}/templates/debug=false`,
-    GET_TEMPLATES_DEBUG: `${BASE_URL}/templates/debug=true`,
-
-    // GET: /pipeline/api/running-pipes/debug=[boolean]
-    GET_RUNNING_PIPES_NORMAL: `${BASE_URL}/running-pipes/debug=false`,
-    GET_RUNNING_PIPES_DEBUG: `${BASE_URL}/running-pipes/debug=true`,
-    // GET: /pipeline/api/running-pipe/\[id\]
-    GET_RUNNING_PIPE: `${BASE_URL}/running-pipe/`,
-
-    // GET:/pipeline/api/completed-pipes/debug=[boolean]
-    GET_COMPLETED_PIPES_NORMAL: `${BASE_URL}/completed-pipes/debug=false`,
-    GET_COMPLETED_PIPES_DEBUG: `${BASE_URL}/completed-pipes/debug=true`,
-    // GET: /pipeline/api/completed-pipe/[id]
-    GET_COMPLETED_PIPE: `${BASE_URL}/completed-pipe/`,
-
-    GET_PIPELINE_CREATE: `${BASE_URL}/pipeline-template-creation-data`,
+    GET_TEMPLATES: `${BASE_URL}/template`,
+    GET_TEMPLATE: (id) => `${BASE_URL}/template/${id}`,
+    GET_PIPELINES: `${BASE_URL}`,
+    GET_PIPELINE: (id) => `${BASE_URL}/${id}`,
     POST_START_PIPELINE: `${BASE_URL}/start`,
     POST_DELETE_PIPELINE: `${BASE_URL}/delete/`,
     POST_PAUSE_PIPELINE: `${BASE_URL}/pause/`,
     POST_PLAY_PIPELINE: `${BASE_URL}/play/`,
 }
 
-// START PIPE
-// ONE
-export function requestTemplate(id: number) {
+export function requestTemplates() {
+    console.log(URLS.GET_TEMPLATES)
+    return data.get(URLS.GET_TEMPLATES, appModel.state.token)
+}
+export function requestTemplate(id: Number) {
     if (id === undefined || isNaN(id)) {
         throw new Error("invalid id.")
     }
-    return data.get(URLS.GET_TEMPLATE + id)
+    return data.get(URLS.GET_TEMPLATE(id), appModel.state.token)
 }
-// ALL
-export function requestTemplates(isDebug) {
-    return (isDebug === true) ?
-        data.get(URLS.GET_TEMPLATES_DEBUG) :
-        data.get(URLS.GET_TEMPLATES_NORMAL)
+export function requestPipelines(){
+    return data.get(URLS.GET_PIPELINES, appModel.state.token)
 }
-// RUNNING PIPE
-// ONE
-export function requestRunningPipe(id: number) {
+export function requestPipeline(id: Number){
     if (id === undefined || isNaN(id)) {
         throw new Error("invalid id.")
     }
-    return data.get(URLS.GET_RUNNING_PIPE + id)
+    return data.get(URLS.GET_PIPELINE(id), appModel.state.token)
 }
-// ALL
-export function requestRunningPipes(debug) {
-    return (debug === true) ?
-        data.get(URLS.GET_RUNNING_PIPES_DEBUG) :
-        data.get(URLS.GET_RUNNING_PIPES_NORMAL)
-}
-// COMPLETED PIPE
-//ALL
-export function requestCompletedPipes(debug) {
-    return (debug === true) ?
-        data.get(URLS.GET_COMPLETED_PIPES_DEBUG) :
-        data.get(URLS.GET_COMPLETED_PIPES_NORMAL)
-}
-// ONE
-export function requestCompletedPipe(id: number) {
-    if (id === undefined || isNaN(id)) {
-        throw new Error("invalid id.")
-    }
-    return data.get(URLS.GET_COMPLETED_PIPE + id)
-}
-
-
-// DELETE PIPE RUNNING, COMPLETED
 export function deletePipe(id) {
     return swal({
         title: 'Are you sure to delete this pipe? ',
@@ -93,9 +55,9 @@ export function deletePipe(id) {
                 swal.showLoading()
             }
         })
-        return data.del(URLS.POST_DELETE_PIPELINE + id).then((result) => {
+        return data.del(URLS.POST_DELETE_PIPELINE + id, appModel.state.token).then((result) => {
             swal.closeModal();
-            if (result == "error") {
+            if (result === "error") {
                 swal({
                     type: 'error',
                     title: 'Oops...',
@@ -115,16 +77,12 @@ export function deletePipe(id) {
         }
     })
 }
-
-// POST JSON START PIPE FROM PIPE START
 export function startPipe(pipeJson) {
-    return data.post(URLS.POST_START_PIPELINE, pipeJson)
+    return data.post(URLS.POST_START_PIPELINE, pipeJson, appModel.state.token)
 }
-
-// PAUSE PIPE  Return in Promiss if isSucess
 export function pausePipe(id) {
-    return data.post(URLS.POST_PAUSE_PIPELINE, id).then((result) => {
-        if (result == "error") {
+    return data.post(URLS.POST_PAUSE_PIPELINE, id, appModel.state.token).then((result) => {
+        if (result === "error") {
             swal({
                 type: 'error',
                 title: 'Oops...',
@@ -136,11 +94,9 @@ export function pausePipe(id) {
         }
     })
 }
-
-// PLAY PIPE, Return in Promiss if isSucess
 export function playPipe(id) {
-    return data.post(URLS.POST_PLAY_PIPELINE, id).then((result) => {
-        if (result == "error") {
+    return data.post(URLS.POST_PLAY_PIPELINE, id, appModel.state.token).then((result) => {
+        if (result === "error") {
             swal({
                 type: 'error',
                 title: 'Oops...',

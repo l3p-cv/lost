@@ -9,7 +9,7 @@ from lost.settings import LOST_CONFIG
 
 namespace = api.namespace('group', description='Groups in System.')
 
-@namespace.route('/')
+@namespace.route('')
 class GroupList(Resource):
     @api.marshal_with(group_list)
     @jwt_required 

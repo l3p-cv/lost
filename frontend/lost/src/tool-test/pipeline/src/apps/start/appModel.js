@@ -8,7 +8,8 @@ export default {
     state: {
         selectedTemplateId: new Observable(-1),
         selectedTemplate: new Observable({}),
-        checkNodesValidation: new Observable(false)
+        checkNodesValidation: new Observable(false),
+        token: undefined,
     },
     controls: {
         show1: new Observable(false),

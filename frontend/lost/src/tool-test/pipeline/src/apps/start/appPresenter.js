@@ -19,10 +19,9 @@ wizard.add([
     StartPipelineTab
 ])
 
-
-export function init(isDebug) {
-    // data.requestTemplates(isDebug).then((response) => {
-    //     appModel.isDebug = isDebug
-    //     appModel.data.pipelineTemplates.update(response.templates)
-    // })
+export default function init(token){
+    appModel.state.token = token
+    data.requestTemplates().then((response) => {
+        appModel.data.pipelineTemplates.update(response.templates)
+    })
 }

@@ -24,7 +24,7 @@
     "datatables.net-select": "^1.2.2",
     "datatables.net-select-bs": "^1.2.2",
     "jquery": "^3.2.1",
-    "l3p-core": "^3.0.13",
+    "l3p-core": "^3.0.19",
     "list.js": "^1.5.0",
     "lodash-es": "^4.17.10",
     "moment": "^2.21.0",

@@ -8,7 +8,7 @@ from lost.logic import anno_task as annotask_service
 
 namespace = api.namespace('annotask', description='AnnoTask API.')
 
-@namespace.route('/')
+@namespace.route('')
 class Available(Resource):
     #@api.marshal_with(anno_task_list)
     @jwt_required 

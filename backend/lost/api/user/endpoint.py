@@ -9,7 +9,7 @@ from lost.db import access, roles
 
 namespace = api.namespace('user', description='Users in System.')
 
-@namespace.route('/')
+@namespace.route('')
 class UserList(Resource):
     @api.marshal_with(user_list)
     @jwt_required 
@@ -46,7 +46,7 @@ class User(Resource):
         else:
             return "User with ID '{}' not found.".format(id)
 
-@namespace.route('/self/')
+@namespace.route('/self')
 class UserSelf(Resource):
     @api.marshal_with(user)
     @jwt_required 
@@ -60,7 +60,7 @@ class UserSelf(Resource):
         else:
             return "No user found."
 
-@namespace.route('/login/')
+@namespace.route('/login')
 class UserLogin(Resource):
     @api.expect(user_login)
     def post(self):

@@ -10,7 +10,7 @@ from lost.logic.pipeline import service as pipeline_service
 from lost.logic import template as template_service
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
-@namespace.route('/template/')
+@namespace.route('/template')
 class TemplateList(Resource):
     @api.marshal_with(templates)
     @jwt_required 
@@ -45,7 +45,7 @@ class Template(Resource):
             dbm.close_session()
             return re
 
-@namespace.route('/')
+@namespace.route('')
 class PipelineList(Resource):
     @api.marshal_with(pipelines)
     @jwt_required 
