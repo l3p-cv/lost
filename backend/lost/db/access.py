@@ -149,19 +149,17 @@ class DBMan(object):
         else:
             raise Exception("One of the arguments need to be not None.")
 
-    def get_available_annotask(self, user_id, type):
-        '''Get all available annotation task by user id and state != pending
+    def get_available_annotask(self, group_ids):
+        '''Get all available annotation task by group_ids and state != pending
 
         Args:
-            user_id (int): ID of user
+            group_ids [int]: IDs of groups
 
         Returns:
             :class:`.project.AnnoTask`
         '''
-        sql = "SELECT * FROM anno_task WHERE state=%d AND dtype=%d\
-         AND (annotater_id=%d OR annotater_id IS NULL)"\
-        %(state.AnnoTask.IN_PROGRESS, type, user_id)
-        return self.session.execute(sql)
+        return self.session.query(model.AnnoTask).filter(model.AnnoTask.state!=state.AnnoTask.PENDING &\
+        model.AnnoTask.group_id.in_(group_ids)).all()
 
     def get_pipe(self, pipe_id=None, pipe_template_id=None):
         '''Get a pipe object.

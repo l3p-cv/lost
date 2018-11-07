@@ -41,6 +41,7 @@ class User(Base, UserMixin):
 
     roles = relationship('Role', secondary='user_roles')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
+    choosen_anno_tasks = relationship('AnnoTask', secondary='choosen_anno_task')
     
     def __init__(self, user_name, email, password, first_name, last_name, email_confirmed_at=None):
         self.user_name = user_name
@@ -249,7 +250,6 @@ class AnnoTask(Base):
     __tablename__ = "anno_task"
     idx = Column(Integer, primary_key=True)
     manager_id = Column(Integer, ForeignKey('group.idx'))
-    #TODO doubled fk annotater and manager to user meta
     manager = relationship("Group", foreign_keys='AnnoTask.manager_id',
                            uselist=False)
     group_id = Column(Integer, ForeignKey('group.idx'))
@@ -318,12 +318,13 @@ class Pipe(Base):
     logfile_path = Column(String(4096))
 
 
-    def __init__(self, idx=None, name=None, state=None,
+    def __init__(self, idx=None, name=None, manager_id=None, state=None,
                  pipe_template_id=None, timestamp=None,
                  timestamp_finished=None, description=None, 
                  is_locked=None, group_id=None, is_debug_mode=None, logfile_path=None):
         self.idx = idx
         self.name = name
+        self.manager_id = manager_id
         self.state = state
         self.pipe_template_id = pipe_template_id
         self.timestamp = timestamp
@@ -407,12 +408,12 @@ class ChoosenAnnoTask(Base):
 
     Attributes:
         idx (int): ID in database.
-        group_id (int): ID of Group who has choosen that anno task
+        user_id (int): ID of user who has choosen that anno task
         anno_task_id (int): ID of the anno task which is connected to the user
     """
     __tablename__ = "choosen_anno_task"
     idx = Column(Integer, primary_key=True)
-    group_id = Column(Integer, ForeignKey('group.idx'))
+    user_id = Column(Integer, ForeignKey('user.idx'), unique=True)
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
     anno_task = relationship("AnnoTask")
 
