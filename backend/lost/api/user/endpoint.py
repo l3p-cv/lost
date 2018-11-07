@@ -46,6 +46,20 @@ class User(Resource):
         else:
             return "User with ID '{}' not found.".format(id)
 
+@namespace.route('/self/')
+class User(Resource):
+    @api.marshal_with(user)
+    @jwt_required 
+    def get(self, id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        dbm.close_session()
+        if user:
+            return user
+        else:
+            return "No user found."
+
 @namespace.route('/login/')
 class UserLogin(Resource):
     @api.expect(user_login)

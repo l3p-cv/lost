@@ -8,12 +8,12 @@ __author__ = "Gereon Reus"
 ############################ start ################################
 #                                                                 #
 ###################################################################
-def start(db_man, data, user_id):
+def start(db_man, data, manager_id):
     #data = json.loads(data)
     # load template
     template = db_man.get_pipe_template(data['templateId'])
     # initialize pipe starter
-    pipe_starter = PipeStarter(template, data, user_id)
+    pipe_starter = PipeStarter(template, data, manager_id)
     # create general pipe and fill with info
     db_man.save_obj(pipe_starter.create_pipe())
     # create raw pipe elements and map the ids in pipe_starter.pe_map
@@ -72,14 +72,14 @@ def handle_multiple_result_links(db_man, pipe_starter, pe_n):
     for result_link in existing_result_links:
         handle_result_links(db_man, pipe_starter, pe_n, result_link.result_id)
 class PipeStarter(object):
-    def __init__(self, template, data, user_id):
+    def __init__(self, template, data, manager_id):
         self.pipe = model.Pipe()
         self.data_map = dict()
         self.pe_map = dict()
         self.template_map = dict()
         self.template = template
         self.data = data
-        self.user_id = user_id
+        self.manager_id = manager_id
         self.timestamp_now = datetime.now()
         self.template_content = json.loads(template.json_template)
         for element in self.template_content['elements']:
@@ -96,8 +96,9 @@ class PipeStarter(object):
                         state=state.Pipe.PENDING,
                         is_locked=True,
                         description=self.data['description'],
-                        user_id=self.user_id,
+                        manager_id=self.manager_id,
                         is_debug_mode=is_debug_mode,
+                        group_id=self.data['groupId'],
                         timestamp=self.timestamp_now
                         )
         self.pipe = pipe
@@ -173,7 +174,7 @@ class PipeStarter(object):
         data_element = self.data_map.get(pe_n)
         pe_id = self.pe_map.get(pe_n).idx
         anno_task = model.AnnoTask()
-       # anno_task.manager_id = self.user_id
+       # anno_task.manager_id = self.manager_id
         anno_task.pipe_element_id = pe_id
         if template_element['annoTask']['type'].lower() == "mia":
             anno_task.dtype = dtype.AnnoTask.MIA
@@ -182,9 +183,9 @@ class PipeStarter(object):
         anno_task.configuration = json.dumps(template_element['annoTask']['configuration'])
         anno_task.name = data_element['annoTask']['name']
         anno_task.instructions = data_element['annoTask']['instructions']
-        anno_task.annotater_id = data_element['annoTask']['workerId']
+        anno_task.group_id = data_element['annoTask']['workerId']
         if data_element['annoTask']['workerId'] == -1:
-            anno_task.annotater_id = None
+            anno_task.group_id = None
         anno_task.state = state.AnnoTask.PENDING
         return anno_task
     def create_required_label_leaves(self, pe_n, anno_task_id):
@@ -275,7 +276,7 @@ def __serialize_pipes(db_man, debug_mode, pipes):
                 continue
         progress = calculate_progress(db_man, pipe.idx)
         creator_name = "Unknown"
-        if pipe.user_id:
+        if pipe.manager_id:
             creator_name = pipe.user.first_name + " " + pipe.user.last_name
         if pipe.state == state.Pipe.ERROR:
             progress = "ERROR"
@@ -320,7 +321,7 @@ def get_running_pipe(db_man, pipe_id, media_url, is_running):
         finally:
             return error_msg
 
-    pipe_user_name = pipe.user.first_name + " " + pipe.user.last_name
+    pipe_manager_name = pipe.manager.first_name + " " + pipe.manager.last_name
     pipe_serialize = PipeSerialize(media_url)
     # add global meta info about pipe
     progress = calculate_progress(db_man, pipe.idx)
@@ -328,7 +329,7 @@ def get_running_pipe(db_man, pipe_id, media_url, is_running):
         progress = "ERROR"
     if pipe.state == state.Pipe.PAUSED:
         progress = "PAUSED"
-    pipe_serialize.add_global_info(pipe, pipe_user_name, progress)
+    pipe_serialize.add_global_info(pipe, pipe_manager_name, progress)
     # add certain elements with info
     serialize_elements(db_man, pipe_serialize, pipe.idx)
     return pipe_serialize.pipe_json
@@ -381,11 +382,11 @@ class PipeSerialize(object):
         self.pipe_json['elements'] = list()
         
 
-    def add_global_info(self, pipe, user_name, progress):
+    def add_global_info(self, pipe, manager_name, progress):
         self.pipe_json['id'] = pipe.idx
         self.pipe_json['name'] = pipe.name
         self.pipe_json['description'] = pipe.description
-        self.pipe_json['userName'] = user_name
+        self.pipe_json['managerName'] = manager_name
         self.pipe_json['templateId'] = pipe.pipe_template_id
         self.pipe_json['timestamp'] = pipe.timestamp
         self.pipe_json['isDebug'] = pipe.is_debug_mode

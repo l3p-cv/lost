@@ -287,6 +287,7 @@ class Pipe(Base):
     Attributes:
         idx (int): Id of Pipe in database.
         name (str): Pipe Name
+        manager_id : If of user who started this pipe
         state (enum): Status of this pipe. See :class:`data_model.state.Pipe`
         pipe_template_id (int): Id of related PipeTemplate
         timestamp (DateTime): Date and time when this task was created
@@ -301,6 +302,7 @@ class Pipe(Base):
     __tablename__ = "pipe"
     idx = Column(Integer, primary_key=True)
     name = Column(String(100))
+    manager_id = Column(Integer, ForeignKey('user.idx'))
     state = Column(Integer)
     pipe_template_id = Column(Integer, ForeignKey('pipe_template.idx'))
     timestamp = Column(DATETIME(fsp=6))
@@ -310,6 +312,7 @@ class Pipe(Base):
     is_locked = Column(Boolean)
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", uselist=False)
+    manager = relationship("User", uselist=False)
     pe_list = relationship("PipeElement")
     pipe_template = relationship("PipeTemplate", uselist=False)
     logfile_path = Column(String(4096))

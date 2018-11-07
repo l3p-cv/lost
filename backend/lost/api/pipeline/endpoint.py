@@ -79,3 +79,22 @@ class Pipeline(Resource):
             re = pipeline_service.get_pipeline(dbm, identity)
             dbm.close_session()
             return re
+
+@namespace.route('/start')
+class PipelineStart(Resource):
+    #@api.marshal_with(pipeline_start)
+    @jwt_required 
+    def get(self, pipeline_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            data = request.data
+            pipeline_service.start(dbm, data ,identity)
+            dbm.close_session()
+            return "success"
+
