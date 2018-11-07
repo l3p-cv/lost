@@ -9,17 +9,16 @@ const Dashboard = Loadable({
   loader: () => import('./views/AnnotaterDashboard/AnnotaterDashboard.js'),
   loading: Loading,
 });
-const SIA = Loadable({
-  loader: () => import('./components/SIA.js'),
+const SingleImageAnnotation = Loadable({
+  loader: () => import('./components/SingleImageAnnotation.js'),
   loading: Loading,
 });
-
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/sia', name: 'SIA', component: SIA },
+  { path: '/sia', name: 'Single Image Annotation', component: SingleImageAnnotation },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ];
 

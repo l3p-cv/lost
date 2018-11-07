@@ -167,23 +167,23 @@ function validateConfig(config: any){
 if(!CONFIG){
     console.warn("NO CONFIG MODE: will not load backend config.")
     let config = appModel.config.value
-    // config = Object.assign(config, {
-    //     tools: {
-    //         point: true,
-    //         line: true,
-    //         polygon: true,
-    //         bbox: true,
-    //     },
-    //     actions: {
-    //         drawing: true,
-    //         labeling: true,
-    //         edit: {
-    //             label: true,
-    //             bounds: true,
-    //             delete: true,
-    //         }
-    //     }
-    // })
+    config = Object.assign(config, {
+        tools: {
+            point: true,
+            line: true,
+            polygon: true,
+            bbox: true,
+        },
+        actions: {
+            drawing: true,
+            labeling: true,
+            edit: {
+                label: true,
+                bounds: true,
+                delete: true,
+            }
+        }
+    })
     appModel.config.update(validateConfig(config))
     init()
 } else {

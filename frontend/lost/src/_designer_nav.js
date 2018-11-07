@@ -16,12 +16,12 @@ export default {
     },
     {
       name: 'Start Pipeline',
-      url: '/pipeline/start',
+      url: '/start-pipeline',
       icon: 'fa-plus',
     },
     {
       name: 'Pipelines',
-      url: '/pipeline/running',
+      url: '/pipelines',
       icon: 'fa-tasks',
     },
     {

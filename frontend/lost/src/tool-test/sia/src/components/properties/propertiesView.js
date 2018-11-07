@@ -24,21 +24,11 @@ export const html = new NodeTemplate(`
 
         <!-- labelselect, description -->
         <div data-ref="label-area" id="sia-propview-label-and-descr-container">
-            <div class="btn-group hierarchy-select" data-resize="auto" id="sia-propview-label-select">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="sia-propview-label-select-button">
-                    <span class="selected-label pull-left" id="sia-propview-label-select-text">&nbsp;</span>
-                    <span class="caret"></span>
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu open">
-                    <div class="hs-searchbox">
-                        <input type="text" class="form-control" autocomplete="off" id="sia-propview-label-select-input">
-                    </div>
-                        <ul class="dropdown-menu inner" role="menu" id="sia-propview-label-select-list">
-                    </ul>
-                </div>
-                <input class="hidden hidden-field" name="example_two" readonly="readonly" aria-hidden="true" type="text"/>
-            </div>
+            <select class="btn btn-default" id="sia-propview-label-select">
+                <option value="wakaterimashta">wakaterimashta</option>
+                <option value="wakata">wakata</option>
+            </select>
+            // <div id="sia-propview-label-select-mountpoint"></div>
             <textarea id="sia-propview-description" class="form-control" rows="3" placeholder="Description" disabled></textarea>
         </div>
 
@@ -75,7 +65,6 @@ export const html = new NodeTemplate(`
                 <i class="fa fa-arrow-right" aria-hidden="true"></i>
             </button>
         </div>
-
     </div>
 `)
 export const image = new Image()
@@ -158,27 +147,19 @@ export function updateCanvas(values: any){
 }
 export function updateLabels(labels: Array<any> = []){
     // remove all options from select
-    html.ids["sia-propview-label-select-list"].innerHTML = ""
+    html.ids["sia-propview-label-select"].innerHTML = ""
+
     // create one option node for every label in the models label list
-    var nodeFragment = document.createDocumentFragment()
-    labels.forEach((label, idx) => {
-        let entry = undefined
-        if(idx === 0){
-            entry = new NodeTemplate(`
-                <li data-value="${label.id}" data-default-selected="">
-                    <a href="#">${label.name}</a>
-                </li>
-            `)
-        } else {
-            entry = new NodeTemplate(`
-                <li data-value="${label.id}">
-                    <a href="#">${label.name}</a>
-                </li>
-            `)
+    const options = new NodeTemplate(`
+        ${
+            labels.map(label => {
+                return `
+                    <option value="${label.id}">${label.name}</option>
+                `
+            })
         }
-        nodeFragment.appendChild(entry.fragment)
-    })
-    html.ids["sia-propview-label-select-list"].appendChild(nodeFragment)
+    `)
+    html.ids["sia-propview-label-select"].appendChild(options.fragment)
 }
 
 export function setLayout(layout: String){
@@ -193,8 +174,9 @@ export function setLayout(layout: String){
             break
     }
 }
-export function setLabel(label: String){
-    html.ids["sia-propview-label-select-text"].textContent = label
+export function setLabel(id: String){
+    console.log("setLabel:", id)
+    html.ids["sia-propview-label-select"].value = id
 }
 export function setDescription(description: String){
     html.ids["sia-propview-description"].textContent = description
@@ -249,7 +231,7 @@ export function resetTable(){
     html.refs["attr-value-4"].textContent = ""
 }
 export function resetLabel(){
-    html.ids["sia-propview-label-select-text"].innerText = "No Drawable selected"
+    // html.ids["sia-propview-label-select"].innerText = "No Drawable selected"
 }
 export function resetDescription(){
     html.ids["sia-propview-description"].innerHTML = "Select or create a Drawable to edit it."
@@ -257,7 +239,7 @@ export function resetDescription(){
 }
 
 export function enableLabeling(){
-    html.ids["sia-propview-label-select-button"].disabled = false
+    html.ids["sia-propview-label-select"].disabled = false
 }
 export function enableDescription(){
     html.ids["sia-propview-description"].disabled = false
@@ -282,7 +264,7 @@ export function enableLastButton(){
 }
 
 export function disableLabeling(){
-    html.ids["sia-propview-label-select-button"].disabled = true
+    html.ids["sia-propview-label-select"].disabled = true
 }
 export function disableDescription(){
     html.ids["sia-propview-description"].disabled = true

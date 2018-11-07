@@ -9,12 +9,6 @@ import * as modals from "../../modals"
 
 import * as data from "core/data"
 
-import jquery from "jquery"
-// import "bootstrap" // helps a little... functionality is fine than but not display
-import hierarchySelect from "@cartok/hierarchy-select"
-import "@cartok/hierarchy-select/build/hierarchy-select.css"
-hierarchySelect(jquery)
-
 import { STATE } from "drawables/drawable.statics"
 import DrawablePresenter from "drawables/DrawablePresenter"
 import PointPresenter from "../../drawables/point/PointPresenter";
@@ -302,48 +296,25 @@ appModel.data.image.info.on("update", () => {
 
 function enableLabeling(){
     propertiesView.enableLabeling()
-
-
-    // dont know why but in order to be able to write in hierarchy select i need to stop event propagation here.
-    $(propertiesView.html.ids["sia-propview-label-select"]).on("keydown", $event => {
-        $event.stopPropagation()
-    })
-   
-    // add hierarchy select features.
-    jquery(propertiesView.html.ids["sia-propview-label-select"]).hierarchySelect({
-        hierarchy: false,
-        togglePosition: false,
-        returnAfterSelect: true,
-        selectFirstOnEnter: true,
-        keepFocused: false,
-    })
    
     // add dropdown open shortcut
-    // disable drawable change (keyboard would block)
     $(window).on("keydown.openLabelSelect", $event => {
         if(keyboard.isShortcutHit($event, { mod: "Control", key: "L" })){
-            // console.log("ctrl + l")
+            console.log("ctrl + l")
             imagePresenter.disableChange()
             // don't set cursor to browser adress line
             $event.preventDefault()
             // open the dropdown
-            propertiesView.html.ids["sia-propview-label-select-button"].click()
+            // propertiesView.html.ids["sia-propview-label-select"].click()
         }
     })
     // add label change listener.
-    // enable drawable change + on escape?
     $(propertiesView.html.ids["sia-propview-label-select"]).on("change", $event => {
         // @todo: replace with id (add id to views)
         // find label object by name and update description
         // @improve this section
-        let labelName = $event.target.querySelector(".selected-label")
-        if(labelName){
-            labelName = labelName.textContent
-        } else {
-            return
-        }
-
-        let labelObj = appModel.data.labelList.value.find(l => l.name.trim() === labelName.trim())
+        let optionId = $event.target.value
+        let labelObj = appModel.data.labelList.value.find(l => parseInt(l.id) === parseInt(optionId))
         if(labelObj){
             // save label in appModel and session.
             appModel.state.selectedLabel = labelObj
@@ -351,7 +322,6 @@ function enableLabeling(){
             propertiesView.setDescription(labelObj.description)
             // update current drawable label.
             if(appModel.isADrawableSelected()){
-                // state.dodo(appModel.createRestorePoint())
                 const drawable = appModel.getSelectedDrawable()
                 if(drawable.isLabelable()){
                     drawable.setLabel(labelObj)
@@ -363,10 +333,9 @@ function enableLabeling(){
                 }
             }
         } else { 
-            throw  new Error(`Could not find label by name: ${labelName}.`)
+            throw  new Error(`Could not find label by id: ${optionId}.`)
         }
 
-        // $(window).off("keydown.preventDrawableMovement")
         imagePresenter.enableChange()
     })
 }
@@ -399,7 +368,7 @@ function attachDrawable(drawable: DrawablePresenter){
         drawable.model.actBounds.on("update", updateTable)
 
         // enable label and description and set the boxes label by id + description
-        propertiesView.setLabel(drawable.model.label.name)
+        propertiesView.setLabel(drawable.model.label.id)
         propertiesView.setDescription(drawable.model.label.description)
     }
 }
