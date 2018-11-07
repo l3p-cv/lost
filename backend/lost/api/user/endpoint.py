@@ -10,6 +10,7 @@ from lost.db import access, roles
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
+@api.doc(description='This is my super cool user api method.')
 class UserList(Resource):
     @api.marshal_with(user_list)
     @jwt_required 
