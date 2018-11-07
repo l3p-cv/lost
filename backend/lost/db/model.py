@@ -233,7 +233,7 @@ class AnnoTask(Base):
     Attributes:
         idx (int): ID of this AnnoTask in database.
         manager_id (int): ID of the Manager who had distributed this Task
-        annotater_id (int): ID of the Assignee (None means: All users are
+        group_id (int): ID of the assigned Group (None means: All groups are
             assigned to this task !)
         state (enum): See :class:`data_model.state.AnnoTask`
         progress (float): The Progress of the Task
