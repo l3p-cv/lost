@@ -27,7 +27,9 @@ def parse_script(element):
         object: :class:`lost.db.model.Script`
     '''
     script_language_name = element['language'].upper()
-    script_language = dtype.ScriptLanguage[script_language_name]
+    script_language = dtype.ScriptLanguage.PYTHON3
+    if script_language_name == "PYTHON2":
+        script_language = dtype.ScriptLanguage.PYTHON2
     script = model.Script(name=element['path'],
                         path=element['path'],
                         description=element['description'],
@@ -37,7 +39,7 @@ def parse_script(element):
 
 class PipeImporter(object):
 
-    def __init__(self, pipe_template_dir, dbm, forTest=False):
+    def __init__(self, pipe_template_dir, group_name, dbm, forTest=False):
         '''Load json file.
 
         Args:
@@ -54,6 +56,7 @@ class PipeImporter(object):
         self.json_files = glob(os.path.join(pipe_template_dir,'*.json'))
         self.pipes = []
         self.namespace = os.path.basename(self.src_pipe_template_path).strip('/')
+        self.group = dbm.get_group_by_name(group_name)
         for json_path in self.json_files:
             with open(json_path) as jfile:
                 pipe = json.load(jfile)
@@ -83,7 +86,7 @@ class PipeImporter(object):
             ))
     
     def update_pipe(self, pipe):
-        for db_pipe in self.dbm.get_all_pipe_templates():
+        for db_pipe in self.dbm.get_all_pipeline_templates():
             db_json = json.loads(db_pipe.json_template)
             # update pipeline if already present in db
             if db_json['name'].lower() == pipe['name'].lower():
@@ -151,7 +154,7 @@ class PipeImporter(object):
             # Do everything relative from pipeline definition file path.
             oldwd = os.getcwd()
             os.chdir(self.src_pipe_template_path)
-            for db_pipe in self.dbm.get_all_pipe_templates():
+            for db_pipe in self.dbm.get_all_pipeline_templates():
                 db_json = json.loads(db_pipe.json_template)
                 if db_json['name'].lower() == pipe['name'].lower():
                     logging.warning("PipeTemplate in database.")
@@ -159,10 +162,11 @@ class PipeImporter(object):
                     logging.warning("Will not import PipeTemplate.")
                     return db_pipe.idx
             pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
-                                            timestamp=datetime.now())
+                                            timestamp=datetime.now(), group_id=self.group.idx)
             self.dbm.save_obj(pipe_temp)
             logging.info("Added PipeTemplate to database")
             logging.info("Name of this template is: %s"%(pipe['name'],))
+            logging.info("Template is visible for Group '{}'".format(self.group.name))
             for pe_j in pipe['elements']:
                 if 'script' in pe_j:
                     element_j = pe_j['script']
@@ -227,7 +231,7 @@ class PipeImporter(object):
         '''Remove all related db entrys of a pipeline from lost database.
         '''
         #TODO: Remove script
-        for db_pipe in self.dbm.get_all_pipe_templates():
+        for db_pipe in self.dbm.get_all_pipeline_templates():
             db_json = json.loads(db_pipe.json_template)
             if db_json['name'].lower() == pipe['name'].lower():
                 t = self.dbm.get_pipe(pipe_template_id=db_pipe.idx)

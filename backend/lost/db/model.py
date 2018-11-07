@@ -41,6 +41,7 @@ class User(Base, UserMixin):
 
     roles = relationship('Role', secondary='user_roles')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
+    choosen_anno_tasks = relationship('AnnoTask', secondary='choosen_anno_task')
     
     def __init__(self, user_name, email, password, first_name, last_name, email_confirmed_at=None):
         self.user_name = user_name
@@ -232,7 +233,7 @@ class AnnoTask(Base):
     Attributes:
         idx (int): ID of this AnnoTask in database.
         manager_id (int): ID of the Manager who had distributed this Task
-        annotater_id (int): ID of the Assignee (None means: All users are
+        group_id (int): ID of the assigned Group (None means: All groups are
             assigned to this task !)
         state (enum): See :class:`data_model.state.AnnoTask`
         progress (float): The Progress of the Task
@@ -249,7 +250,6 @@ class AnnoTask(Base):
     __tablename__ = "anno_task"
     idx = Column(Integer, primary_key=True)
     manager_id = Column(Integer, ForeignKey('group.idx'))
-    #TODO doubled fk annotater and manager to user meta
     manager = relationship("Group", foreign_keys='AnnoTask.manager_id',
                            uselist=False)
     group_id = Column(Integer, ForeignKey('group.idx'))
@@ -287,6 +287,7 @@ class Pipe(Base):
     Attributes:
         idx (int): Id of Pipe in database.
         name (str): Pipe Name
+        manager_id : If of user who started this pipe
         state (enum): Status of this pipe. See :class:`data_model.state.Pipe`
         pipe_template_id (int): Id of related PipeTemplate
         timestamp (DateTime): Date and time when this task was created
@@ -301,6 +302,7 @@ class Pipe(Base):
     __tablename__ = "pipe"
     idx = Column(Integer, primary_key=True)
     name = Column(String(100))
+    manager_id = Column(Integer, ForeignKey('user.idx'))
     state = Column(Integer)
     pipe_template_id = Column(Integer, ForeignKey('pipe_template.idx'))
     timestamp = Column(DATETIME(fsp=6))
@@ -310,17 +312,19 @@ class Pipe(Base):
     is_locked = Column(Boolean)
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", uselist=False)
+    manager = relationship("User", uselist=False)
     pe_list = relationship("PipeElement")
     pipe_template = relationship("PipeTemplate", uselist=False)
     logfile_path = Column(String(4096))
 
 
-    def __init__(self, idx=None, name=None, state=None,
+    def __init__(self, idx=None, name=None, manager_id=None, state=None,
                  pipe_template_id=None, timestamp=None,
                  timestamp_finished=None, description=None, 
                  is_locked=None, group_id=None, is_debug_mode=None, logfile_path=None):
         self.idx = idx
         self.name = name
+        self.manager_id = manager_id
         self.state = state
         self.pipe_template_id = pipe_template_id
         self.timestamp = timestamp
@@ -404,12 +408,12 @@ class ChoosenAnnoTask(Base):
 
     Attributes:
         idx (int): ID in database.
-        group_id (int): ID of Group who has choosen that anno task
+        user_id (int): ID of user who has choosen that anno task
         anno_task_id (int): ID of the anno task which is connected to the user
     """
     __tablename__ = "choosen_anno_task"
     idx = Column(Integer, primary_key=True)
-    group_id = Column(Integer, ForeignKey('group.idx'))
+    user_id = Column(Integer, ForeignKey('user.idx'), unique=True)
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
     anno_task = relationship("AnnoTask")
 

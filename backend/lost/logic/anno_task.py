@@ -76,42 +76,37 @@ def set_finished(data_man, anno_task_id):
         else:
             return "not finished, remaining: " + str(progress['remainingAnnos'])
 
-def get_current_annotask(db_man, anno_type, user_id):
+def get_current_annotask(db_man, user):
         current_task = dict()
         current_task['name'] = "nothing_available"
-        for chat in db_man.get_choosen_annotask(user_id):
-            if chat.anno_task.dtype == anno_type:
-                if chat.anno_task.state != state.AnnoTask.IN_PROGRESS:
-                    db_man.delete(chat)
-                    db_man.commit()
-                    return current_task
+        anno_task = user.choosen_annotask
                 
-                # check if respective pipeline is not in progress           
-                pipe_element = db_man.get_pipe_element(pipe_e_id=chat.anno_task.pipe_element_id) 
-                pipe = db_man.get_pipe(pipe_id=pipe_element.pipe_id)
-                if pipe.state != state.Pipe.IN_PROGRESS:
-                    return current_task
+        # check if respective pipeline is not in progress           
+        pipe_element = db_man.get_pipe_element(pipe_e_id=anno_task.pipe_element_id) 
+        pipe = db_man.get_pipe(pipe_id=pipe_element.pipe_id)
+        if pipe.state != state.Pipe.IN_PROGRESS:
+            return current_task
 
-                current_task['id'] = chat.anno_task.idx
-                current_task['name'] = chat.anno_task.name
-                current_task['instructions'] = chat.anno_task.instructions
-                current_task['remainingAnnos'] = None
-                if chat.anno_task.dtype == dtype.AnnoTask.MIA:
-                    config = json.loads(chat.anno_task.configuration)
-                    if config['type'] == 'imageBased':
-                        current_task['remainingAnnos'] = db_man.count_image_remaining_annos(anno_task_id=chat.anno_task_id).r
-                    elif config['type'] == 'annoBased':
-                        current_task['remainingAnnos'] = db_man.count_two_d_remaining_annos(anno_task_id=chat.anno_task_id).r
-                else:
-                    current_task['remainingAnnos'] = db_man.count_image_remaining_annos(anno_task_id=chat.anno_task_id).r
-                if chat.anno_task.progress == None:
-                    current_task['progress'] = 0
-                else:
-                    current_task['progress'] = int(chat.anno_task.progress)
+        current_task['id'] = anno_task.idx
+        current_task['name'] = anno_task.name
+        current_task['instructions'] = anno_task.instructions
+        current_task['remainingAnnos'] = None
+        if anno_task.dtype == dtype.AnnoTask.MIA:
+            config = json.loads(anno_task.configuration)
+            if config['type'] == 'imageBased':
+                current_task['remainingAnnos'] = db_man.count_image_remaining_annos(anno_task_id=anno_task_id).r
+            elif config['type'] == 'annoBased':
+                current_task['remainingAnnos'] = db_man.count_two_d_remaining_annos(anno_task_id=anno_task_id).r
+        else:
+            current_task['remainingAnnos'] = db_man.count_image_remaining_annos(anno_task_id=anno_task_id).r
+        if anno_task.progress == None:
+            current_task['progress'] = 0
+        else:
+            current_task['progress'] = int(anno_task.progress)
 
         return current_task
 
-def get_available_annotasks(db_man, anno_type, user_id):
+def get_available_annotasks(db_man, group_ids):
     ''' get all available  annotation task for user
 
     Args:
@@ -124,7 +119,7 @@ def get_available_annotasks(db_man, anno_type, user_id):
     '''
     available_tasks = dict()
     available_tasks['annotask_available'] = list()
-    for annotask in db_man.get_available_annotask(user_id, anno_type):
+    for annotask in db_man.get_available_annotask(group_ids):
         if annotask.pipe_element_id is None:
             raise Exception("No PipeElement for AnnoTask")
         pipeelement = db_man.get_pipe_element(pipe_e_id=annotask.pipe_element_id)
@@ -133,17 +128,15 @@ def get_available_annotasks(db_man, anno_type, user_id):
         at['DT_RowId'] = annotask.idx
         at['name'] = annotask.name
         at['task_name'] = task.name
-        at['assigned_to'] = "All Users"
-        if annotask.annotater_id and annotask.annotater_id != -1:
-            user = db_man.get_user_meta(annotask.annotater_id)
-            at['assigned_to'] = user.first_name +" "+ user.last_name
+        at['assigned_to'] = "All Groups"
+        if annotask.group_id and annotask.group_id != -1:
+            at['assigned_to'] = annotask.group.name
         at['progress'] = "0 %"
         if annotask.progress:
             at['progress'] = str(int(annotask.progress)) + " %"
         at['date'] = annotask.timestamp
-        if annotask.manager_id:
-            user = db_man.get_user_meta(annotask.manager_id)
-            at['author'] = user.first_name +" "+ user.last_name
+        if annotask.manager:
+            at['author'] = manager.first_name +" "+ manager.last_name
         else:
             at['author'] = "Unknown"
         if annotask.dtype == dtype.AnnoTask.MIA:
@@ -160,12 +153,11 @@ def get_available_annotasks(db_man, anno_type, user_id):
         available_tasks['annotask_available'].append(at)
     return available_tasks
 
-def choose_annotask(db_man, anno_type, anno_task_id, user_id):
-    # first delete all previous choosen bba_annotasks
+def choose_annotask(db_man, anno_task_id, user_id):
+    # first delete all previous choosen annotasks
         for chat in db_man.get_choosen_annotask(user_id):
-            if chat.anno_task.dtype == anno_type:
-                db_man.delete(chat)
-                db_man.commit()
+            db_man.delete(chat)
+            db_man.commit()
         # choose new one
         newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
         db_man.save_obj(newcat)

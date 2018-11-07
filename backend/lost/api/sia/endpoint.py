@@ -2,9 +2,8 @@ from flask import request
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config
+from lost.api.sia.api_definition import sia_anno, sia_config, sia_update
 from lost.api.label.api_definition import label_trees
-from lost.api.sia.parsers import sia_update_parser
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -23,7 +22,7 @@ class First(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
         else:
-            re = sia.get_fist(dbm, identity, DATA_URL)
+            re = sia.get_first(dbm, identity, DATA_URL)
             dbm.close_session()
             return re
 
@@ -64,8 +63,8 @@ class Prev(Resource):
             return re
 
 @namespace.route('/update')
-@api.expect(sia_update_parser)
 class Update(Resource):
+    @api.expect(sia_update)
     @jwt_required 
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -76,8 +75,7 @@ class Update(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            args = sia_update_parser.parse_args(request)
-            data = args.get_arg('data')
+            data = request.data
             re = sia.update(dbm, data, identity)
             dbm.close_session()
             return re

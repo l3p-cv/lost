@@ -14,7 +14,8 @@ user = api.model('User', {
     'confidence_level': fields.Integer(description='Confidence level of user'),
     'photo_path': fields.String(description='Path to user avatar'),
     'new_password': fields.String(required=True, description='User password'),
-    'groups': fields.List(fields.Nested(group)) 
+    'groups': fields.List(fields.Nested(group)), 
+    'choosen_anno_task': fields.Raw()
 })
 
 user_login = api.model('UserLogin', {

@@ -33,32 +33,22 @@ point_data = api.model('Point Data',{
 
 point = api.model('Point',{
     'id': fields.Integer(readOnly=True, description='The identifier of the point.'),
-    'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
+    'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that point.'),
     'data': fields.Nested(point_data, description='2-D data of that point.')
-})
-
-
-line_data = api.model('Line Data',{
-    'x': fields.Float(readOnly=True, description='Relative and centered value of x.'),
-    'y': fields.Float(readOnly=True, description='Relative and centered value of y.')
 })
 
 
 line = api.model('Line',{
     'id': fields.Integer(readOnly=True, description='The identifier of the line.'),
-    'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
-    'data': fields.List(fields.Nested(line_data, description='2-D data of that line.'))
+    'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that line.'),
+    'data': fields.List(fields.Nested(point_data, description='2-D data of that line.'))
 })
 
-polygon_data = api.model('Polygon Data',{
-    'x': fields.Float(readOnly=True, description='Relative and centered value of x.'),
-    'y': fields.Float(readOnly=True, description='Relative and centered value of y.')
-})
 
 polygon = api.model('Polygon',{
     'id': fields.Integer(readOnly=True, description='The identifier of the polygon.'),
-    'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
-    'data': fields.List(fields.Nested(bbox_data, description='2-D data of that polygon.'))
+    'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
+    'data': fields.List(fields.Nested(point_data, description='2-D data of that polygon.'))
 })
 
 drawables = api.model('Drawables',{
@@ -71,7 +61,7 @@ drawables = api.model('Drawables',{
 
 sia_anno = api.model('SIA Annotation', {
     'image': fields.Nested(image),
-    'drawables': fields.List(fields.Nested(drawables)),
+    'drawables': fields.Nested(drawables),
 })
 
 sia_config_tools = api.model('SIA Config Tools', {
@@ -105,4 +95,43 @@ sia_config = api.model('SIA Configuration', {
     'tools': fields.Nested(sia_config_tools,description='Tools to work with in SIA.'),
     'actions': fields.Nested(sia_config_actions, description="Actions which are allowed."),
     'drawables': fields.Nested(sia_config_drawables, description="Configuration options of certain Drawables.")
+})
+
+sia_update_bbox = api.model('SIA update bbox', {
+    'id': fields.Integer(description='The identifier of the bbox'),
+    'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
+    'status': fields.String(required=True, description='Status of that bbox can be "new", "changed" and "deleted".'),
+    'data': fields.Nested(bbox_data)
+})
+
+sia_update_point = api.model('SIA update point', {
+    'id': fields.Integer(description='The identifier of the point'),
+    'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that point.'),
+    'status': fields.String(required=True, description='Status of that point can be "new", "changed" and "deleted".'),
+    'data': fields.Nested(point_data,required=True,)
+})
+
+sia_update_line = api.model('SIA update line', {
+    'id': fields.Integer(description='The identifier of the line'),
+    'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that line.'),
+    'status': fields.String(required=True, description='Status of that line can be "new", "changed" and "deleted".'),
+    'data': fields.List(fields.Nested(point_data),required=True,)
+})
+
+sia_update_polygon = api.model('SIA update polygon', {
+    'id': fields.Integer(description='The identifier of the polygon'),
+    'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
+    'status': fields.String(required=True, description='Status of that polygon can be "new", "changed" and "deleted".'),
+    'data': fields.List(fields.Nested(point_data),required=True)
+})
+
+sia_update_drawables = api.model('SIA update drawables',{
+    'bBoxes': fields.List(fields.Nested(sia_update_bbox), required=True),
+    'points': fields.List(fields.Nested(sia_update_point), required=True),
+    'lines': fields.List(fields.Nested(sia_update_line), required=True),
+    'polygons': fields.List(fields.Nested(sia_update_polygon), required=True)
+})
+sia_update = api.model('SIA Update',{
+    'imgId': fields.Integer(required=True, description='Id of image annotation.'),
+    'drawables': fields.Nested(sia_update_drawables, required=True, description='All drawables which should be updated.'),
 })

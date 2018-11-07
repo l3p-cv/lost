@@ -149,19 +149,17 @@ class DBMan(object):
         else:
             raise Exception("One of the arguments need to be not None.")
 
-    def get_available_annotask(self, user_id, type):
-        '''Get all available annotation task by user id and state != pending
+    def get_available_annotask(self, group_ids):
+        '''Get all available annotation task by group_ids and state != pending
 
         Args:
-            user_id (int): ID of user
+            group_ids [int]: IDs of groups
 
         Returns:
             :class:`.project.AnnoTask`
         '''
-        sql = "SELECT * FROM anno_task WHERE state=%d AND dtype=%d\
-         AND (annotater_id=%d OR annotater_id IS NULL)"\
-        %(state.AnnoTask.IN_PROGRESS, type, user_id)
-        return self.session.execute(sql)
+        return self.session.query(model.AnnoTask).filter(model.AnnoTask.state!=state.AnnoTask.PENDING &\
+        model.AnnoTask.group_id.in_(group_ids)).all()
 
     def get_pipe(self, pipe_id=None, pipe_template_id=None):
         '''Get a pipe object.
@@ -201,28 +199,27 @@ class DBMan(object):
                     (model.Pipe.state!=state.Pipe.PAUSED) &\
                     (model.Pipe.state!=state.Pipe.ERROR)).all()
 
-
-
-    def get_running_pipes(self):
+    def get_pipes(self, group_ids):
         '''Get all :class:`project.Pipe` objects that are not finished.
 
-        Returns:
-            list: A list of :class:`project.Pipe` objects
-        '''
-        return self.session.query(model.Pipe)\
-            .filter((model.Pipe.state!=state.Pipe.FINISHED) &\
-                    (model.Pipe.state!=state.Pipe.DELETED)).all()
-
-    def get_completed_pipes(self):
-        '''Get all :class:`project.Pipe` objects that are  finished.
+        Args:
+            group_ids [int]: List of group ids to search for.
 
         Returns:
             list: A list of :class:`project.Pipe` objects
         '''
         return self.session.query(model.Pipe)\
-            .filter((model.Pipe.state==state.Pipe.FINISHED)).all()
+            .filter((model.Pipe.group_id.in_(group_ids))).all()
+                    
+    def get_pipeline_templates_by_group(self,group_ids):
+        '''Get all PipeTemplate objects in db.
 
-    def get_all_pipe_templates(self):
+        Returns:
+            list: :class:`.project.PipeTemplate`
+        '''
+        return self.session.query(model.PipeTemplate).filter(model.PipeTemplate.group_id.in_(group_ids)).all()
+
+    def get_all_pipeline_templates(self):
         '''Get all PipeTemplate objects in db.
 
         Returns:
@@ -600,24 +597,6 @@ class DBMan(object):
          %(anno_task_id, iteration, user_id)
         return self.session.execute(sql).first()
 
-    def get_all_db_meta(self):
-        ''' Get all db meta entries
-        '''
-        return self.session.query(model.DBMeta).all()
-    
-    def get_available_datasets(self):
-        ''' Get all available datasets
-        '''
-        return self.session.query(model.Dataset)\
-        .filter(model.Dataset.is_deleted==False).all()
-    def get_available_model_trees(self):
-        ''' Get all available model trees
-        '''
-        return self.session.query(model.ModelTree).all()
-    def get_available_raw_files(self):
-        ''' Get all available raw files
-        '''
-        return self.session.query(model.RawFile).all()
     def get_available_label_trees(self):
         ''' Get all available label trees
         '''
@@ -626,11 +605,7 @@ class DBMan(object):
         ''' Get all available users
         '''
         return self.session.query(model.User).all()
-    def get_nm_result_model_leaves(self, result_id):
-        ''' Get all nm result model leaves of one result
-        '''
-        return self.session.query(model.NMResultModelLeaf)\
-        .filter(model.NMResultModelLeaf.result_id==result_id).all()
+
     def get_two_d_annotations(self, img_anno_id):
         ''' Get all two_d_annotations of one image annotation
         '''
