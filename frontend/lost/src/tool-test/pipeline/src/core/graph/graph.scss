@@ -1,0 +1,63 @@
+g .node {
+    fill: white;
+}
+
+.custom_node {
+    margin: 0;
+    cursor: pointer;
+  }
+
+g .label {
+    color: black;
+}
+
+.edgePath path {
+    stroke: #333;
+    fill: #333;
+    stroke-width: 1.5px;
+  }
+
+
+
+  // AnnoTask List Modal Start
+
+  input.search {
+    margin-top: 20px;
+    margin-left: 20px;    
+  }
+  
+
+  ul.list {
+    padding: 0;
+    list-style: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .list li {
+    padding: 10px 20px;
+  }
+  
+  .list li + li {
+    border-top: 1px solid #ccc;
+  }
+
+  //END
+
+  .modal-body{
+    padding-right: 50px;
+    padding-left: 50px;    
+  }
+
+
+
+    .edgePath path.path {
+      stroke: #333;
+      fill: none;
+      stroke-width: 1.5px;
+    }
+
+
+
+   
+      

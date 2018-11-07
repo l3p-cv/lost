@@ -1,0 +1,32 @@
+{% load static %}
+{% include "loader_datatable_css.html" %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.5/sweetalert2.css" media="screen" />
+<link href="{% static 'running-style.css' %}" rel="stylesheet"> 
+
+<div class="x_panel container">
+
+    <div class="x_title row">
+        <h2>
+            <i class="fa fa-check" aria-hidden="true"></i>
+            <div style="display:inline-block">Completed Pipe</div>
+        </h2>
+        <ul class="nav navbar-right panel_toolbox">
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+
+    <div id="pipe-running-content" class="x_content row">
+        <!-- wizard gets added here... -->
+    </div>
+
+</div>
+
+<script src="{% static 'running-bundle.js' %}"></script>
+<script>
+    let params = {
+        isDebug: false,
+        isCompleted: true
+    }
+    window.APP.init(params)
+</script>

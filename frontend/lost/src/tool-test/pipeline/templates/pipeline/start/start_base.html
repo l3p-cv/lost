@@ -1,0 +1,19 @@
+{% load static %}
+<link href="{% static 'start-style.css' %}" rel="stylesheet"> {% include "loader_datatable_css.html" %}
+
+<div class="x_panel container">
+
+    <div id="pipe-start-content" class="x_content row">
+        <!-- wizard gets added here... -->
+    </div>
+
+</div>
+
+<script src="{% static 'start-bundle.js' %}"></script>
+<script>
+    // debug = false
+    let params = {
+        isDebug: false
+    }
+    window.APP.init(params)
+</script>

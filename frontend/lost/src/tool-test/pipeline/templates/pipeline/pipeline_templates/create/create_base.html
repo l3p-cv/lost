@@ -1,0 +1,242 @@
+{% load static %}
+
+<link href="{% static "pipe-style.css" %}" rel="stylesheet">
+<link href="{% static "vendors/d3/tipsy.css" %}" rel="stylesheet">
+
+{% include "loader_datatable_css.html" %}
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <h2><i class="fa fa-plus-circle" aria-hidden="true"></i> Create Pipeline Template </h2>
+        <ul class="nav navbar-right panel_toolbox">
+          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+          </li>
+          <li><a class="close-link"><i class="fa fa-close"></i></a>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+
+        <head>
+          <form class="form-horizontal">
+          <div class="form-group">
+            <label for="name" class="control-label col-sm-2">Name:</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="name">
+          </div>
+          </div>
+          <div class="form-group">
+            <label for="author" class="control-label col-sm-2">Author:</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="author">
+          </div>
+          </div>
+          <div class="form-group">
+            <label for="description" class="control-label col-sm-2">Description:</label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" id="description">
+            </div>
+          </div>
+        </form>
+
+          <div class="panel-group" id="instruction">
+            <div class="panel panel-success">
+              <div style="background-color: #EDEDED" class="panel-heading" data-toggle="collapse" data-target="#open_instruction" style="cursor:pointer">
+                <h4 id="glypicon_instruction" style="text-align: center" class="panel-title">
+                  <i style="margin-right: 10px" class="fa fa-plus-circle" aria-hidden="true"></i>Show Instructions
+                </h4>
+              </div>
+              <div id="open_instruction" class="panel-collapse collapse">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Command</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="success">
+                      <td>add da</td>
+                      <td>Add Datasource</td>
+                    </tr>
+                    <tr class="success">
+                      <td>add sc</td>
+                      <td>Add Script</td>
+                    </tr>
+                    <tr class="success">
+                      <td>add an</td>
+                      <td>Add Annotation Task</td>
+                    </tr>
+                    <tr class="success">
+                      <td>add vi</td>
+                      <td>Add Visualization</td>
+                    </tr>
+                    <tr class="success">
+                      <td>add ex</td>
+                      <td>Add Export</td>
+                    </tr>
+                    <tr class="success">
+                      <td>add lo</td>
+                      <td>Add Loop</td>
+                    </tr>
+                    <tr class="warning">
+                      <td>[id]-[id2],[id3],[id4]</td>
+                      <td>Connect Nodes e.g. "0-1" or "0-1,2,3"</td>
+                    </tr>
+                    <tr class="danger">
+                      <td>rm[id]</td>
+                      <td> remove node e.g. "rm0"</td>
+                    </tr>
+                    <tr class="danger">
+                      <td>rm[id]-[id2]</td>
+                      <td>Remove Edge e.g. "rm0-1"</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-group" id="history">
+            <div class="panel panel-success">
+              <div style="background-color: #EDEDED" class="panel-heading" data-toggle="collapse" data-target="#open_history" style="cursor:pointer">
+                <h4 id="glypicon_history" style="text-align: center" class="panel-title">
+                  <i style="margin-right: 10px" class="fa fa-plus-circle" aria-hidden="true"></i>Show History
+                </h4>
+              </div>
+              <div id="open_history" class="panel-collapse collapse">
+                <div id="history_value" style=" overflow-y: scroll; background-color: #EDEDED;  height: 200px; cursor: initial; resize: none;">
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-group" id="output_json">
+            <div class="panel panel-success">
+              <div style="background-color: #EDEDED" class="panel-heading" data-toggle="collapse" data-target="#open_output_json" style="cursor:pointer">
+                <h4 id="glypicon_output_json" style="text-align: center" class="panel-title">
+                  <i style="margin-right: 10px" class="fa fa-plus-circle" aria-hidden="true"></i>Show Output JSON
+                </h4>
+              </div>
+              <div id="open_output_json" class="panel-collapse collapse">
+                <div class="form-group">
+                  <textarea id="ta_json" class="form-control custom_ta" disabled style="background-color: #EDEDED;  height: 200px; cursor: initial; resize: none;" autofocus="" name="name" rows="8" cols="80"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="container">
+            <form class="form-horizontal">
+              <div id="input_state" class="form-group has-success has-feedback">
+                <label class="col-sm-2 control-label" for="inputSuccess">Enter Command</label>
+                <div class="col-sm-10">
+                  <input id="compiler" class="form-control">
+                  <!--       <textarea id="compiler" name="name" rows="8" cols="80"></textarea>  -->
+                  <span id="input_glyph" class=""></span>
+                </div>
+              </div>
+            </form>
+          </div>
+        </head>
+
+        <body>
+
+
+
+          <div class="row">
+            <div style="background-color:#EDEDED; border: 2px solid #169F85; height: 850px" class="col-sm-2">
+              <a style= " margin-top: 2em;" id="btn_load" type="button" class="btn btn-success btn-block">
+                <i style="margin-right: 10px" class="fa fa-cloud-download" aria-hidden="true"></i>Load Template
+              </a>
+              <div style= " margin-top: 2em;"class="panel panel-primary">
+
+                <div class="panel-heading">
+                  <h4 id="glypicon_history" style="text-align: center" class="panel-title">
+                    <i style="margin-right: 10px" class="fa fa-plus-circle" aria-hidden="true"></i>Add Nodes
+                  </h4>
+                </div>
+
+                 <div class="panel-body">
+              <a id="btn_datasource_add" type="button" class="btn btn-success btn-block">
+                <i style="margin-right: 10px" class="fa fa-hdd-o" aria-hidden="true"></i>Datasource
+              </a>
+              <a id="btn_script_add" type="button" class="btn btn-success btn-block">
+                <i style="margin-right: 10px" class="fa fa-rocket" aria-hidden="true"></i>Script
+              </a>
+              <a id="btn_anno_add" type="button" class="btn btn-success btn-block">
+                <i style="margin-right: 10px" class="fa fa-pencil" aria-hidden="true"></i>Annotation Task
+              </a>
+              <a id="btn_visualization_add" type="button" class="btn btn-success btn-block">
+                <i style="margin-right: 10px" class="fa fa-bar-chart" aria-hidden="true"></i>Visualization
+              </a>
+              <a id="btn_export_add" type="button" class="btn btn-success btn-block">
+                <i style="margin-right: 10px" class="fa fa-cloud-upload" aria-hidden="true"></i>Export
+              </a>
+              <a id="btn_loop_add" type="button" class="btn btn-success btn-block">
+                <i style="margin-right: 10px" class="fa fa-refresh" aria-hidden="true"></i>Loop
+              </a>
+            </div>
+              </div>
+
+              <div id="validate_warning_bs" style= " margin-top: 2em;" class="panel panel-primary">
+                <div class="panel-heading">
+                  <h4 id="glypicon_history" style="text-align: center" class="panel-title">
+                    <i style="margin-right: 10px" class="fa fa-exclamation-triangle" aria-hidden="true"></i>Warnings
+                  </h4>
+                </div>
+                  <div class="panel-body" id="validate_warning" style=" background-color: #FFF; overflow-y: scroll; height: 200px; cursor: initial; resize: none;">
+                    <p>name</p>
+                    <p>author</p>
+                    <p>description</p>
+                  </div>
+              </div>
+            </div>
+
+            <div id="draw-area" class="col-sm-10">
+              <svg style="border: 2px solid orange" id="container"  height=850><g/>
+                <text id="text_validate" fill ="orange" x="5" y="20" font-family="Verdana" font-size="20">
+                   not validated
+               </text>
+              </svg>
+          </div>
+            <div class="container">
+              <button disabled id= "btn_save" style="margin-top: 20" type="button" class="btn btn-primary btn-lg btn-block">Save JSON on Server</button>
+            </div>
+        </body>
+
+        <!-- display:none, because of liferay -->
+        <div class="container ">
+          <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog ">
+              <div id="modal_container" class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 id="modal_title" class="modal-title"></h4>
+                </div>
+                <div id="modal_body" class="modal-body">
+
+                </div>
+                <div id="modal_footer" class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{% static "vendors/d3/d3.v3.min.js" %}"></script>
+  <script src="{% static "vendors/d3/dagre-d3.min.js" %}"></script>
+  <script src="{% static "vendors/d3/tipsy.js" %}"></script>
+
+  <script src="{% static "pipe-bundle.js" %}"></script>
+
+  <!-- Datatables -->
+  {% include "loader_datatable_js.html" %}

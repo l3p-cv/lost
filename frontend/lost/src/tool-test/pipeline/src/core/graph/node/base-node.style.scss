@@ -1,0 +1,208 @@
+.loop-maxiterations-text{
+    font-size: small
+}
+.progress {
+    margin-top: 10px;
+    margin-bottom: 10px;    
+    background: rgba(224, 224, 224, 1); 
+    border: 1px solid rgba(0, 0, 0, 1); 
+    border-radius: 6px; 
+    height: 26px;
+}
+.progessbar-nodes{
+    width: 180px;    
+}
+.panel-title{
+    font-size: 2em;
+}
+.footer-text{
+    font-size: 1.4em;
+}
+.margin{
+    margin: 10px
+}
+.progress-bar {
+    background: rgba(62, 141, 209, 1);
+}
+
+.bg-green{
+    background: #139006 !important;
+    border: none !important;
+}
+.bg-red{
+    background: red;
+    color: whitesmoke    
+}
+
+.bg-blue{
+    border-color: #337AB7 !important;
+    background: #337AB7 !important;
+    color: whitesmoke !important;
+}
+
+.bg-orange{
+    background: orange;
+    color: whitesmoke !important;
+}
+.bg-red {
+    background: red;
+    color: whitesmoke !important;
+}
+.color-white{
+    color: white;
+}
+.color-red{
+    color: red;
+}
+.color-grey{
+    color: gray
+}
+.color-black{
+    color: black
+}
+.bg-light-green{
+    background-color:#42CA35;   
+    color: whitesmoke    
+}
+
+
+
+/* DEBUG BLINK */
+@keyframes blink {
+    0% {
+           color: rgba(223,116,1,1)
+    }
+    50% {
+           color: rgba(223,116,1,0.5)
+    }
+    100% {
+           color: rgba(223,116,1,1)
+    }
+}
+@-webkit-keyframes blink {
+    0% {
+           color: rgba(223,116,1,1)
+    }
+    50% {
+           color: rgba(223,116,1,0.5)
+    }
+    100% {
+           color: rgba(223,116,1,1)
+    }
+}
+.debugon {
+    text-align:center;
+    margin-bottom: 4px;
+    font-size: 22px;
+    -moz-transition:all 0.5s ease-in-out;
+    -webkit-transition:all 0.5s ease-in-out;
+    -o-transition:all 0.5s ease-in-out;
+    -ms-transition:all 0.5s ease-in-out;
+    transition:all 0.5s ease-in-out;
+    -moz-animation:blink normal 1.5s infinite ease-in-out;
+    /* Firefox */
+    -webkit-animation:blink normal 1.5s infinite ease-in-out;
+    /* Webkit */
+    -ms-animation:blink normal 1.5s infinite ease-in-out;
+    /* IE */
+    animation:blink normal 1.5s infinite ease-in-out;
+    /* Opera */
+}
+
+
+
+
+.annotask-span-node-default{
+        -moz-border-radius:10px 10px 10px 10px;  // rounds corners for firefox
+        border-radius:10px 10px 10px 10px;  //rounds corners for other browsers
+        color: white;
+        background-color:#42CA35;
+        padding:5px;
+        font-size: small;        
+}
+
+.annotask-span-modal-default{
+    -moz-border-radius:10px 10px 10px 10px;  // rounds corners for firefox
+    border-radius:10px 10px 10px 10px;  //rounds corners for other browsers
+    color: white;
+    padding:5px;
+    align-content: center;
+    font-size: 1.1em;        
+}
+
+
+.table-borderless > tbody > tr > td,
+.table-borderless > tbody > tr > th,
+.table-borderless > tfoot > tr > td,
+.table-borderless > tfoot > tr > th,
+.table-borderless > thead > tr > td,
+.table-borderless > thead > tr > th {
+    border: none;
+    padding: 5px;
+    font-size: small;
+}
+.round-corner{
+    border-radius:50%;
+}
+
+
+
+.imageview{
+    width: 300px;
+    height: 300px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
+.allign-center{
+    text-align: center;
+}
+
+.required-categories-label{
+    margin: 5px;
+    font-size: 1.5em;
+    display:inline-block;
+    padding-top:0;
+    padding-bottom:0;
+    line-height:1.5em;
+}
+
+.word-break{
+word-break: break-word;
+}
+
+.no-border{
+    border: none;
+}
+
+.table > thead > tr > th, .table > thead > tr > td {
+    border: 0;
+}
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

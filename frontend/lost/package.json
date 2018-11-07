@@ -63,13 +63,16 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "eslintIgnore": [
+    "node_modules"
+  ],
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 9",
     "not op_mini all"
   ],
-   "nodemonConfig": {
+  "nodemonConfig": {
     "watch": [
       "test/**/*",
       "src/**/*"
