@@ -1,9 +1,7 @@
-{% load static %}
-<link href="{% static 'running-style.css' %}" rel="stylesheet"> {% include "loader_datatable_css.html" %}
 
-<div class="x_panel container">
+<div class="container">
 
-    <div class="x_title row">
+    <div class="row">
         <h2>
             <i class="fa fa-play-circle-o" aria-hidden="true"></i>
             <div style="display:inline-block">Running Pipes in Debug</div>
@@ -14,20 +12,8 @@
         <div class="clearfix"></div>
     </div>
 
-    <div id="pipe-running-content" class="x_content row">
+    <div id="pipe-running-content" class="row">
         <!-- wizard gets added here... -->
     </div>
 
 </div>
-
-<script src="{% static 'running-bundle.js' %}"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.11.5/sweetalert2.css" media="screen" />
-
-<script>
-    // debug true isCompleted false
-    let params = {
-        isDebug: true,
-        isCompleted: false
-    }
-    window.APP.init(params)
-</script>

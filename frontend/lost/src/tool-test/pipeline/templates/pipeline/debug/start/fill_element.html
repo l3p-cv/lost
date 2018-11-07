@@ -1,14 +1,3 @@
-{% load static %}
-
-<link href="{% static "build/css/category_color.css" %}" rel="stylesheet">
-<link href="{% static "css/pipeline.css" %}" rel="stylesheet">
-<link href="{% static "css/graph.css" %}" rel="stylesheet">
-<link href="{% static "vendors/d3/tipsy.css" %}" rel="stylesheet">
-<link href="{% static "vendors/switchery/dist/switchery.min.css" %}" rel="stylesheet">
-
-<script>
-var pipeline_in_debug = true;
-</script>
 
 <svg style="cursor:move;" id="templateContainer" width="960" height="800">
 </svg>
@@ -31,10 +20,3 @@ var pipeline_in_debug = true;
   </div>
 </div>
 
-
-<script src="{% static "vendors/switchery/dist/switchery.min.js" %}"></script>
-<script src="{% static "vendors/devbridge-autocomplete/dist/jquery.autocomplete.min.js" %}"></script>
-<script src="{% static "vendors/d3/d3.v3.min.js" %}"></script>
-<script src="{% static "vendors/d3/dagre-d3.min.js" %}"></script>
-<script src="{% static "vendors/d3/tipsy.js" %}"></script>
-<script src="{% static "js/template.js" %}"></script>

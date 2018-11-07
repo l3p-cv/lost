@@ -1,6 +1,3 @@
-{% load static %}
-<link href="{% static 'start-style.css' %}" rel="stylesheet"> {% include "loader_datatable_css.html" %}
-
 
 <section class="content-header">
         <h1>Pipes<small>Start</small></h1>
@@ -20,7 +17,7 @@
                     </div>
                 </div>
                 <div class="box-body" style="padding:30px">
-                    <div id="pipe-start-content" class="x_content row">
+                    <div id="pipe-start-content" class="row">
                             <!-- wizard gets added here... -->
                     </div>
                 </div>
@@ -28,12 +25,3 @@
         </div>
     </div> 
 </section>
-
-<script src="{% static 'start-bundle.js' %}"></script>
-<script>
-    // debug = false
-    let params = {
-        isDebug: false
-    }
-    window.APP.init(params)
-</script>

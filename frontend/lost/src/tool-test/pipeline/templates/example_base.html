@@ -1,27 +1,13 @@
-{% load static %}
-<link href="{% static "app-style.css" %}" rel="stylesheet">
 
-<!-- APP: Component -->
-<div id="app-example-panel" class="x_panel container">
-    <div id="app-example-title" class="x_title row">
+<div id="app-example-panel" class="container">
+    <div id="app-example-title" class="row">
         <h2>
             <i class="fa fa-pencil-square" aria-hidden="true"></i>
             <div style="display:inline-block">Example Panel</div>
         </h2>
         <div class="clearfix"></div>
     </div>
-    <div id="app-example-content" class="x_content row">
+    <div id="app-example-content" class="row">
         <!-- content is created in js and will be appended here -->
     </div>
 </div>
-
-<!-- APP: init -->
-<script src="{% static "app-bundle.js" %}"></script>
-<script>
-APP.init({
-    debug: true,
-    rules: {
-        example: true,
-    }
-});
-</script>
