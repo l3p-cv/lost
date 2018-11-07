@@ -32,6 +32,7 @@ const that = {
         label: {
             text: new WeakMap(),
             padding: new WeakMap(),
+            fontSize: new WeakMap(),
         }
     },
 }
@@ -143,7 +144,7 @@ export default class MenuModel {
                 that.bar.label.padding.set(this, padding)   
             }
             if(fontSize !== undefined){
-                that.bar.label.fontSize = that.bar.height.get(this) - that.bar.label.padding.get(this) - 2
+                that.bar.label.fontSize.set(this, (that.bar.height.get(this) - that.bar.label.padding.get(this) - 2))
             }
         }
     }
@@ -173,6 +174,7 @@ export default class MenuModel {
             label: {
                 text: that.bar.label.text.get(this),
                 padding: that.bar.label.padding.get(this),
+                fontSize: that.bar.label.fontSize.get(this),
             }
         }
     }

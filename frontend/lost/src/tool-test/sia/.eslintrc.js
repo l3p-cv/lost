@@ -46,7 +46,7 @@ module.exports = {
     //     "flowtype/union-intersection-spacing": [2, "always"],
     //     "flowtype/use-flow-type": 1,
     //     "flowtype/no-types-missing-file-annotation": 0
-    // },
+    },
     // extends: [
     //     "plugin:flowtype/recommended"
     // ],

@@ -3,89 +3,91 @@ import { NodeTemplate } from "l3p-core"
 import * as svg from "../svg"
 
 import "./menu.styles.scss"
-import DRAWABLE_DEFAULTS from "drawables/drawable.defaults"
-import * as MENU_DEFAULTS from "./menu.defaults"
-
-
+window.NodeTemplate = NodeTemplate
 export default class MenuView {
     /**
      * @param label: test
      * @param bounds; test
      */
-    constructor(config: any, mountPoint: SVGElement, drawableActions: any){
-        const { display, label, bar } = config
+    constructor(model: any, mountPoint: SVGElement, drawableActions: any){
+        const { display, label, bar } = model
         // @QUICKFIXES APPLYED: refactor model.onUpdate VERSUS adding label.setWidth(width, padding) or alike...
         this.labelPadding = label.padding
         this.display = display
         const position = display.bar ? bar.relativePosition : { x: 0, y: 0 }
-        console.log(config)
-        console.log(position)
         this.html = new NodeTemplate(`
-            <svg class="drawable-menubar drawable-menubar-not-selected drawable-menubar-locked" 
-                transform="translate(${position.x},${position.y})">
-                ${
-                    !this.display.label ? `` : `
-                        <svg data-ref="label"
-                            class="drawable-label"
-                            x="${label.relativePosition.x}" 
-                            y="${label.relativePosition.y}"
-                            height="${label.fontSize + 2 * label.padding}"
-                            >
-                            <rect data-ref="label-background"
-                                rx="3"
-                                ry="3"
-                                height="100%"
-                                width="0"  // width must be set using getBBox() on label-text.
-                                />
-                            <text data-ref="label-text" 
-                                x="${label.padding}"
-                                y="50%"
-                                dominant-baseline="central"
-                                style="
-                                    font-size: ${label.fontSize}px;
-                                ">
-                                ${label.text}
-                            </text>
-                        </svg>
-                    `
-                }
-                ${
-                    !this.display.bar ? `` : `
-                        <svg data-ref="menubar" class="drawable-menubar-bar"
-                            width="${bar.width}"
-                            height="${bar.height}"
-                            >
-                            <rect data-ref="menubar-background" class="drawable-menubar-background" width="100%" height="100%"/>
-                            <svg data-ref="menubar-label" class="drawable-menubar-label" width="${bar.width - drawableActions.deletable ? bar.iconSize : -bar.borderWidth -label.padding}">
-                                <text data-ref="menubar-label-text" 
+            <svg>
+                <g class="drawable-menubar drawable-menubar-not-selected drawable-menubar-locked" 
+                    transform="translate(${position.x},${position.y})">
+                    ${
+                        !this.display.label ? `` : `
+                            <svg data-ref="label"
+                                class="drawable-label"
+                                x="${label.relativePosition.x}" 
+                                y="${label.relativePosition.y}"
+                                height="${label.fontSize + 2 * label.padding}"
+                                >
+                                <rect data-ref="label-background"
+                                    rx="3"
+                                    ry="3"
+                                    height="100%"
+                                    width="0"  // width must be set using getBBox() on label-text.
+                                    />
+                                <text data-ref="label-text" 
+                                    x="${label.padding}"
                                     y="50%"
                                     dominant-baseline="central"
-                                    x="${bar.label.padding}" 
                                     style="
-                                        font-size: ${bar.label.fontSize}
-                                    "
-                                    >${bar.label.text}</text>
+                                        font-size: ${label.fontSize}px;
+                                    ">
+                                    ${label.text}
+                                </text>
                             </svg>
-                            ${
-                                drawableActions.deletable
-                                    ? `
-                                        <svg data-ref="menubar-close-button" class="drawable-menubar-close-button" 
-                                            x="${bar.width - bar.height}"
-                                            y="${0}"
-                                            width="${bar.height}" 
-                                            height="${bar.height}">
-                                            <line x1="20%" y1="20%" x2="80%" y2="80%"/>
-                                            <line x1="20%" y1="80%" x2="80%" y2="20%"/>
-                                            <rect width="100%" height="100%" fill="transparent"/>
-                                        </svg>
-                                    `
-                                    : ""
-                            }
-                        </svg>
-                    `
-                }
+                        `
+                    }
+                    ${
+                        !this.display.bar ? `` : `
+                            <svg data-ref="menubar" class="drawable-menubar-bar"
+                                width="${bar.width}"
+                                height="${bar.height}"
+                                >
+                                <rect data-ref="menubar-background" class="drawable-menubar-background" width="100%" height="100%"/>
+                                <svg data-ref="menubar-label" class="drawable-menubar-label" width="${bar.width - drawableActions.deletable ? bar.iconSize : -bar.borderWidth -label.padding}">
+                                    <text data-ref="menubar-label-text" 
+                                        y="50%"
+                                        dominant-baseline="central"
+                                        x="${bar.label.padding}" 
+                                        style="
+                                            font-size: ${bar.label.fontSize}
+                                        "
+                                        >${bar.label.text}</text>
+                                </svg>
+                                ${
+                                    drawableActions.deletable
+                                        ? `
+                                            <svg data-ref="menubar-close-button" class="drawable-menubar-close-button" 
+                                                x="${bar.width - bar.height}"
+                                                y="${0}"
+                                                width="${bar.height}" 
+                                                height="${bar.height}">
+                                                <line x1="20%" y1="20%" x2="80%" y2="80%"/>
+                                                <line x1="20%" y1="80%" x2="80%" y2="20%"/>
+                                                <rect width="100%" height="100%" fill="transparent"/>
+                                            </svg>
+                                        `
+                                        : ""
+                                }
+                            </svg>
+                        `
+                    }
+                </g>
             </svg>
         `)
+        // WARNING: WORKAROUND CANT USE NON SVG ROOT ELEMENTS DIRECTLY SINCE NODE TEMPLATE v3.
+        // SO I WRAPPED THE MENUBAR GROUP IN A SVG FOR PARSING AND WILL REMOVE IT NOW.
+        this.html.fragment.appendChild(this.html.fragment.firstElementChild.firstElementChild)
+        this.html.fragment.firstElementChild.remove()
+        this.html.root = this.html.fragment.firstElementChild
         // cache node styles for best performance
         this.ccss = {
             labelNode : this.display.label ? this.html.refs["label"].style : undefined,
