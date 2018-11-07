@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import WizardTabPresenter from "wizard/WizardTabPresenter"
 import TabInfoView from "./TabInfoView"
 import AnnoTaskStartView from "../../../../views/AnnoTaskStartView"

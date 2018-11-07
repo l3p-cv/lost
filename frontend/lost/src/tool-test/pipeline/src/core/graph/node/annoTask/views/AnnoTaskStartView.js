@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import { NodeTemplate } from "l3p-core"
 import appModel from "../../../../../apps/start/appModel"
 export default class AnnoTaskStartView {

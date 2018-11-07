@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import swal from "sweetalert2"
 export default class BaseNodePresenter {
     /**

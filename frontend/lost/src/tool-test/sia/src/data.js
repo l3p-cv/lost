@@ -1,6 +1,5 @@
-import appModel from "../appModel"
+import appModel from "./appModel"
 import { data } from "l3p-core"
-// import * as data from "../../../../../l3p-frontend-core/src/lib/data/data"
 
 const BACKEND_URL = "/sia/annotation/"
 const REQUEST_STRINGS = {

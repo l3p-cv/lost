@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import BaseNodePresenter from "../BaseNodePresenter"
 
 import ScriptNodeModel from "./ScriptNodeModel"

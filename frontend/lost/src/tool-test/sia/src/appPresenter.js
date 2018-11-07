@@ -2,7 +2,7 @@ import $ from "cash-dom"
 
 import { NodeTemplate, mouse, keyboard, state } from "l3p-core"
 
-import * as data from "core/data"
+import * as data from "siaRoot/data"
 import * as math from "shared/math"
 
 import { LAYOUT } from "./app.defaults"

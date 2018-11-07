@@ -1,16 +1,14 @@
 import React, { Component } from "react"
 import ReactDOM from "react-dom"
 
-// import * as appView from "../tool-test/pipeline/src/"
-
 export default class SingleImageAnnotation extends Component {
 	constructor(props){
 		super(props)
 		this.mount = React.createRef()
 	}
 	componentDidMount(){
-		// require("../tool-test/pipeline/src/")
-		// this.mount.current.appendChild(appView.html.fragment)
+		const init = require("../tool-test/pipeline/src/apps/start/init.js").default
+		init({ debugMode: false })
 	}
 	render(){
 		return (

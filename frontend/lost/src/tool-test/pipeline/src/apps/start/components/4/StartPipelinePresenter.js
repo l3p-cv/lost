@@ -1,9 +1,11 @@
+import $ from "jquery"
+
 import WizardTabPresenter from "wizard/WizardTabPresenter"
 import StartPipelineView from "./StartPipelineView"
 import SelectPipelinePresenter from "../1/SelectPipelinePresenter"
 import PipelineGraphPresenter from "../2/PipelineGraphPresenter"
 import ConfigPipelinePresenter from "../3/ConfigPipelinePresenter"
-import * as data from "core/data"
+import * as data from "pipRoot/core/data"
 import swal from "sweetalert2"
 import appModel from "../../appModel"
 

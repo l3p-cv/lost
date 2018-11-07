@@ -16,7 +16,7 @@ import ScriptNodePresenter from "graph/node/script/ScriptNodePresenter"
 import LoopNodePresenter from "graph/node/loop/LoopNodePresenter"
 
 import swal from 'sweetalert2'
-import * as coreData from "core/data"
+import * as coreData from "pipRoot/core/data"
 
 class PipelineGraphPresenter extends WizardTabPresenter {
     constructor() {

@@ -1,20 +1,20 @@
-/*
-    References:
-    https://getbootstrap.com/docs/3.3/javascript/
-    http://www.hessendscher.de/wai-aria/
-*/
 import "./wizard.scss"
 
-import { NodeTemplate } from "l3p-core"
-import  { iterate } from "l3p-core"
+import $ from "jquery"
 
+import { NodeTemplate, iterate } from "l3p-core"
 
 const panePrefix    = "wizard-pane-"
 const wizardPrefix  = "wizard-"
 let wizardCount     = 0
 
+function containsElementWithId(node: Node, id: string){
+    iterate(node, (n) => {
+        if(n.getAttribute("id") === id) return true
+    })
+}
 
-export default class Wizard {
+class Wizard {
     /**
      * 
      * @param {*} id ID of the DOM node or the DOM node reference where the wizard should be mounted at.
@@ -136,9 +136,4 @@ export default class Wizard {
     }
 }
 
-function containsElementWithId(node: Node, id: string){
-    iterate(node, (n) => {
-        if(n.getAttribute("id") === id) return true
-    })
-}
-
+export default Wizard

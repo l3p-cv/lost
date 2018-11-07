@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import WizardTabPresenter from "wizard/WizardTabPresenter"
 import appModel from "../../appModel"
 import PipelineGraphView from "./PipelineGraphView"

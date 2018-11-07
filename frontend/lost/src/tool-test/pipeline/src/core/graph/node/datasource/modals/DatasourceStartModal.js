@@ -114,7 +114,7 @@ export default class DatasourceStartModal extends BaseModal {
                     dataTableAvailableModelTrees.$('tr.selected').removeClass('selected')
                     $(e.currentTarget).addClass('selected')
                     nodeModel.datasource.availableModelTrees.forEach(element => {
-                        if (element.id == $(e.currentTarget.childNodes[1]).text()) {
+                        if (element.id === $(e.currentTarget.childNodes[1]).text()) {
                             $(this.view.refs["div-dropdown"]).show()
                             $(this.view.refs["leave-information"]).empty()
                             selectedTree = element

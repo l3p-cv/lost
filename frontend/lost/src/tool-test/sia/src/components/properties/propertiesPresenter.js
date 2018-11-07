@@ -7,7 +7,7 @@ import * as propertiesView from "./propertiesView"
 import appModel from "../../appModel"
 import * as modals from "../../modals"
 
-import * as data from "core/data"
+import * as data from "siaRoot/data"
 
 import { STATE } from "drawables/drawable.statics"
 import DrawablePresenter from "drawables/DrawablePresenter"

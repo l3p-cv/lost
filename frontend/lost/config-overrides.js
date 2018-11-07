@@ -2,8 +2,6 @@ const rewireEslint = require("react-app-rewire-eslint")
 // const { injectBabelPlugin } = require("react-app-rewired")
 
 const CopyWebpackPlugin = require("copy-webpack-plugin")
-// const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-// const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const CircularDependencyPlugin = require("circular-dependency-plugin")
 
 
@@ -13,12 +11,20 @@ function absolutePath(pathString){
 }
 
 module.exports = (config, env) => {
-	// config.entry.push(absolutePath("./src/tool-test/sia/src/appPresenter"))
-	config.resolve.alias.components = absolutePath("./src/tool-test/sia/src/components")
-	config.resolve.alias.core = absolutePath("./src/tool-test/sia/src/core")
-	config.resolve.alias.drawables = absolutePath("./src/tool-test/sia/src/drawables")
-	config.resolve.alias.shared = absolutePath("./src/tool-test/sia/src/shared")
+	// SIA aliases
+	config.resolve.alias["siaRoot"] = absolutePath("./src/tool-test/sia/src/")
+	config.resolve.alias["components"] = absolutePath("./src/tool-test/sia/src/components")
+	config.resolve.alias["drawables"] = absolutePath("./src/tool-test/sia/src/drawables")
+	config.resolve.alias["shared"] = absolutePath("./src/tool-test/sia/src/shared")
+
+	// PIP aliases
+	config.resolve.alias["pipRoot"] = absolutePath("src/tool-test/pipeline/src/")
+	config.resolve.alias["graph"] = absolutePath("src/tool-test/pipeline/src/core/graph")
+	config.resolve.alias["wizard"] = absolutePath("src/tool-test/pipeline/src/core/wizard")
+	config.resolve.alias["apps"] = absolutePath("src/tool-test/pipeline/src/apps")
+	
 	config.devtool = "source-map"
+
     config.plugins.push(
 		new CircularDependencyPlugin({
 			exclude: /node_modules/,
@@ -33,11 +39,13 @@ module.exports = (config, env) => {
             to: "assets",
         }])
     )
+	
 	// config = injectBabelPlugin("plugin", config)
 	config = rewireEslint(config, env)
+	
 	console.log(config)
 	// return
-    return config
+	return config
 }
 
 // sia config:

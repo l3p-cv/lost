@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import { NodeTemplate } from "l3p-core"
 import "./graph.scss"
 

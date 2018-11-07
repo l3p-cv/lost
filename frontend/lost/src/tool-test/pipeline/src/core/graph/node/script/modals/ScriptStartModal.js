@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import BaseModal from "../../BaseModal"
 import NormalStartView from "../views/ScriptNormalStartView"
 

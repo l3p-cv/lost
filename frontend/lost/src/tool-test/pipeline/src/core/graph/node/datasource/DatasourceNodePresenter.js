@@ -1,3 +1,5 @@
+import $ from "jquery"
+
 import BaseNodePresenter from "../BaseNodePresenter"
 import DatasourceNodeModel from "./DatasourceNodeModel"
 
