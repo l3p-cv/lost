@@ -47,10 +47,10 @@ class User(Resource):
             return "User with ID '{}' not found.".format(id)
 
 @namespace.route('/self/')
-class User(Resource):
+class UserSelf(Resource):
     @api.marshal_with(user)
     @jwt_required 
-    def get(self, id):
+    def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
