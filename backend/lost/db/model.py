@@ -703,7 +703,6 @@ class LabelLeaf(Base):
         abbreviation (str):
         description (str):
         timestamp (DateTime):
-        group_id (int): Id of the user who created this label
         regex_mask: Regular expression mask for any value which can be given to a label
         default_value: Default value for labels
         example_image: Path to an example image which represents the LabelName
@@ -720,8 +719,6 @@ class LabelLeaf(Base):
     abbreviation = Column(String(20))
     description = Column(String(300))
     timestamp = Column(DATETIME(fsp=6))
-    group_id = Column(Integer, ForeignKey('group.idx'))
-    group = relationship("Group", uselist=False)
     description = Column(Text)
     regex_mask = Column(String(300))
     default_value = Column(String(300))
@@ -729,10 +726,12 @@ class LabelLeaf(Base):
     css_class = Column(Text)
     leaf_id = Column(String(4096))
     dtype = Column(Integer)
-    label_tree_id = Column(Integer, ForeignKey('label_tree.idx'))
+    group_id = Column(Integer, ForeignKey('group.idx'))
+    group = relationship("Group", uselist=False)
     is_deleted = Column(Boolean)
+    is_first_leaf = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
-    children = relationship('LabelLeaf')
+    label_leaves = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
                  group_id=None, timestamp=None, regex_mask=None,
@@ -802,34 +801,6 @@ class Label(Base):
         self.value = value
         self.confidence = confidence
         self.anno_time = anno_time
-
-
-class LabelTree(Base):
-    '''A LabelTree contains LabelLeafs
-
-    Attributes:
-        idx (int): ID in database.
-        name (str): Name of the LabelCategory.
-        description (str):
-        timestamp (DateTime):
-        group_od (int): Id of the Group who created this category.
-    '''
-    __tablename__ = "label_tree"
-    idx = Column(Integer, primary_key=True)
-    name = Column(String(100))
-    group_id = Column(Integer, ForeignKey('group.idx'))
-    group = relationship("Group", uselist=False)
-    description = Column(String(300))
-    timestamp = Column(DATETIME(fsp=6))
-    label_leaves = relationship("LabelLeaf")
-
-    def __init__(self, idx=None, name=None, description=None,
-                 group_id=None, timestamp=None,):
-        self.idx = idx
-        self.name = name
-        self.description = description
-        self.timestamp = timestamp
-        self.group_id = group_id
 
 class RequiredLabelLeaf(Base):
     '''A RequiredLabelLeaf

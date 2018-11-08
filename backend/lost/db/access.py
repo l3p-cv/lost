@@ -381,11 +381,11 @@ class DBMan(object):
         .filter(model.Result.idx==result_id).first()
 
 
-    def get_label_tree(self, label_tree_id):
-        '''Get label tree by idx
+    def get_label_trees(self, group_ids):
+        '''Get label tree by group_ids
         '''
-        return self.session.query(model.LabelTree)\
-        .filter(model.LabelTree.idx==label_tree_id).first()
+        return self.session.query(model.LabelLeaf)\
+        .filter(model.LabelLeaf.group_id.in_(group_ids) & model.LabelLeaf.is_first_leaf == True ).all()
 
     def get_all_required_label_leaves(self, anno_task_id=None, label_leaf_id=None):
         '''Get required label leaves by anno_task_id
@@ -616,11 +616,6 @@ class DBMan(object):
         '''
         return self.session.query(model.LabelLeaf)\
         .filter(model.LabelLeaf.parent_leaf_id==parent_leaf_id).all()
-
-    def get_label_trees(self):
-        ''' Get all label trees 
-        '''
-        return self.session.query(model.LabelTree).all()
 
     def get_anno_amount(self, label_leaf_id):
         ''' count the amount of connections of a label leaf
