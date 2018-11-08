@@ -2,20 +2,11 @@ import $ from "jquery"
 
 import { NodeTemplate } from "l3p-core"
 import appModel from "../../../../../apps/start/appModel"
+
 export default class DatasourceStartView {
     constructor(model) {
         let validation = true
         switch (model.datasource.type) {
-            case "dataset":
-                if (isNaN(model.post.datasource.datasetId)) {
-                    validation = false
-                }
-                break
-            case "modelLeaf":
-                if (isNaN(model.post.datasource.modelLeafId)) {
-                    validation = false
-                }
-                break
             case "rawFile":
                 if (model.post.datasource.rawFilePath === undefined || model.post.datasource.rawFilePath === "") {
                     validation = false
@@ -35,17 +26,17 @@ export default class DatasourceStartView {
 
         this.html = new NodeTemplate(`
             <div class="panel panel-${validation ? `success`:`warning`} custom_node">
-            <div class="panel-heading ">
-            <i class="fa fa-hdd-o fa-2x pull-left" aria-hidden="true"></i>
-            <h class="panel-title">Datasource</h>
-            </div>
-            <div class="panel-body">
-            <table class="table table-borderless">
-            <tbody>
-            <tr><td>Type:</td><td>${model.datasource.type}</td></tr> 
-            </tbody>  
-            </table>
-            </div>
+                <div class="panel-heading ">
+                    <i class="fa fa-hdd-o fa-2x pull-left" aria-hidden="true"></i>
+                    <h class="panel-title">Datasource</h>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr><td>Type:</td><td>${model.datasource.type}</td></tr> 
+                        </tbody>  
+                    </table>
+                </div>
             </div>
         `)
         // The parent node gets defined after adding the node to

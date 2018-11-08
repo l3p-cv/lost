@@ -2,7 +2,9 @@ import { Observable } from "l3p-core"
 
 export default class DatasourceNodeModel {
     constructor(data, mode) {
-        if(data === undefined || data.peN == undefined){
+        console.log("DATA:": data)
+        console.log("STATE:": data.state)
+        if(data === undefined || data.peN === undefined){
             throw new Error("data is undefined or has no peN property.")
         }
         if(mode === "start"){

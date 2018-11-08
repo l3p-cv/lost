@@ -1,6 +1,9 @@
 import { NodeTemplate } from "l3p-core"
-import { Observable } from "l3p-core"
 import "../../base-node.style.scss"
+
+import "bootstrap"
+import "bootstrap"
+
 
 export default class DatasourceRunningView {
     constructor(model) {
@@ -21,10 +24,10 @@ export default class DatasourceRunningView {
                 </table>
             </div>
             <div data-ref="state" class="panel-footer 
-                    ${ model.state.value == "script_error"   ? "bg-red"      : "" }
-                    ${ model.state.value == "pending"        ? "bg-blue"     : "" }
-                    ${ model.state.value == "in_progress"    ? "bg-orange"   : "" }
-                    ${ model.state.value == "finished"       ? "bg-green"    : "" } 
+                    ${ model.state.value === "script_error"   ? "bg-red"      : "" }
+                    ${ model.state.value === "pending"        ? "bg-blue"     : "" }
+                    ${ model.state.value === "in_progress"    ? "bg-orange"   : "" }
+                    ${ model.state.value === "finished"       ? "bg-green"    : "" } 
                     ">
                     <p2 data-ref="state-text" class="color-white footer-text">${model.state.value.replace("_", " ")}</p2>
                 </div>

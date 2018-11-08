@@ -17,12 +17,12 @@ export default {
     {
       name: 'Start Pipeline',
       url: '/start-pipeline',
-      icon: 'fa-plus',
+      icon: 'fa fa-plus',
     },
     {
       name: 'Pipelines',
       url: '/pipelines',
-      icon: 'fa-tasks',
+      icon: 'fa fa-tasks',
     },
     {
       title: true,
@@ -35,22 +35,22 @@ export default {
     {
       name: 'Media',
       url: '/media',
-      icon: 'fa-upload',
+      icon: 'fa fa-upload',
     },
     {
       name: 'Labels',
       url: '/labels',
-      icon: 'fa-tag',
+      icon: 'fa fa-tag',
     },
     {
       name: 'Users',
       url: '/users',
-      icon: 'fa-user',
+      icon: 'fa fa-user',
     },
     {
       name: 'Groups',
       url: '/groups',
-      icon: 'fa-group',
+      icon: 'fa fa-group',
     },
   ],
 };

@@ -5,6 +5,7 @@
   "dependencies": {
     "@cartok/dagre-d3": "^0.4.59",
     "@cartok/hierarchy-select": "^1.1.17",
+    "bootstrap": "^4.1.3",
     "d3": "^3.5.17",
     "d3-tip": "^0.6.7",
     "datatables.net": "^1.10.15",
@@ -24,10 +25,12 @@
     "datatables.net-select": "^1.2.2",
     "datatables.net-select-bs": "^1.2.2",
     "jquery": "^3.2.1",
+    "jquery-ui": "^1.12.1",
     "l3p-core": "^3.0.19",
     "list.js": "^1.5.0",
     "lodash-es": "^4.17.10",
     "moment": "^2.21.0",
-    "sweetalert2": "^6.11.5"
+    "sweetalert2": "^6.11.5",
+    "webpack-jquery-ui": "^2.0.1"
   }
 }

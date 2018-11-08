@@ -10,8 +10,6 @@ import DatasourceRunningModal from "./modals/DatasourceRunningModal"
 import DatasourceStartModal from "./modals/DatasourceStartModal"
 
 
-import graph from "graph/graph"
-
 
 export default class DatasourceNodePresenter extends BaseNodePresenter {
 
@@ -22,6 +20,7 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
         super(graph)                            
         // create model
         this.model = new DatasourceNodeModel(data, mode)
+        
         // create view
         switch(mode){
             case "running":
@@ -64,10 +63,10 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
             })
             this.model.state.on("update", text => {
                 this.view.parentNode.querySelector(`[data-ref="state"]`).setAttribute("class", `panel-footer 
-                    ${ text == "script_error"   ? "bg-red"      : "" }
-                    ${ text == "pending"        ? "bg-blue"     : "" }
-                    ${ text == "in_progress"    ? "bg-orange"   : "" }
-                    ${ text == "finished"       ? "bg-green"    : "" }`)
+                    ${ text === "script_error"   ? "bg-red"      : "" }
+                    ${ text === "pending"        ? "bg-blue"     : "" }
+                    ${ text === "in_progress"    ? "bg-orange"   : "" }
+                    ${ text === "finished"       ? "bg-green"    : "" }`)
                 this.view.parentNode.querySelector(`[data-ref="state-text"]`).textContent = text.replace("_", " ")
             })
             // update modal

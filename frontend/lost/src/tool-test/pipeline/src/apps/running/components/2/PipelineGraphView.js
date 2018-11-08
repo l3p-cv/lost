@@ -7,7 +7,7 @@ class PipelineGraphTab extends WizardTabView {
     constructor(){
         const config = {
             title: "Fill out Elements",
-            icon: "glyphicon glyphicon-pencil",
+            icon: "fa fa-pencil",
             content: `
  
             <div class="btn-toolbar  toolbar " role="toolbar" aria-label="Toolbar with button groups">

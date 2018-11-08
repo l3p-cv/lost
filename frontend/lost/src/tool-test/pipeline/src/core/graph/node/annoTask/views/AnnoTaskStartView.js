@@ -49,7 +49,7 @@ export default class AnnoTaskStartView {
 {
     /* <p> Assignee:  
     <span data-ref="assignee">
-    ${model.annoTask.availableUser.map(element => 
+    ${model.annoTask.availableGroups.map(element => 
     (element.id == model.post.annoTask.workerId) ?
     ` ${element.name}`
     :``

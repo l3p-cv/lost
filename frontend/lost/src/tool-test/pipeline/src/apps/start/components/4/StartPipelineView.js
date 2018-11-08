@@ -5,7 +5,7 @@ class StartPipelineTab extends WizardTabView {
     constructor() {
         const config = {
             title: "Last Step: Start your Pipe!",            
-            icon: "glyphicon glyphicon-ok",
+            icon: "fa fa-check",
             content: `
 
         <div class="btn-toolbar  toolbar " role="toolbar" aria-label="Toolbar with button groups">

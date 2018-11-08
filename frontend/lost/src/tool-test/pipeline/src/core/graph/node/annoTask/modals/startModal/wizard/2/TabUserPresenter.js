@@ -14,7 +14,7 @@ class TabUserPresenter extends WizardTabPresenter {
         $(this.view.nav.refs["a"]).on("click", () => {
             modalView.view.refs["outerModal"].style.width = '50%'
         })
-        const modifiedAvailableUser = model.annoTask.availableUser
+        const modifiedAvailableUser = model.annoTask.availableGroups
         modifiedAvailableUser.forEach(element => {
             element.photoPath = "<img src=" + element.photoPath + " style='height:100px; width:100px'>"
         })

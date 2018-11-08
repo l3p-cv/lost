@@ -1,18 +1,25 @@
 import React, { Component } from "react"
 import ReactDOM from "react-dom"
+import {connect} from 'react-redux';
 
-export default class SingleImageAnnotation extends Component {
+class SingleImageAnnotation extends Component {
 	constructor(props){
 		super(props)
 		this.mount = React.createRef()
 	}
 	componentDidMount(){
-		const init = require("../tool-test/pipeline/src/apps/start/init.js").default
-		init({ debugMode: false })
+		const init = require("../tool-test/pipeline/src/apps/start/appPresenter.js").default
+		init(this.props.token)
 	}
 	render(){
 		return (
-			<div ref={this.mount} id="start-pipeline-mount">bar</div>
+			<div ref={this.mount} id="start-pipeline-mount"></div>
 		)
 	}
 }
+
+function mapStateToProps(state) {
+    return {token: state.auth.token,};
+}
+
+export default connect(mapStateToProps)(SingleImageAnnotation);

@@ -1,3 +1,4 @@
+const webpack = require("webpack")
 const rewireEslint = require("react-app-rewire-eslint")
 // const { injectBabelPlugin } = require("react-app-rewired")
 
@@ -11,6 +12,9 @@ function absolutePath(pathString){
 }
 
 module.exports = (config, env) => {
+	// LOST aliases
+	config.resolve.alias["root"] = absolutePath("./src/")
+
 	// SIA aliases
 	config.resolve.alias["siaRoot"] = absolutePath("./src/tool-test/sia/src/")
 	config.resolve.alias["components"] = absolutePath("./src/tool-test/sia/src/components")
@@ -23,6 +27,32 @@ module.exports = (config, env) => {
 	config.resolve.alias["wizard"] = absolutePath("src/tool-test/pipeline/src/core/wizard")
 	config.resolve.alias["apps"] = absolutePath("src/tool-test/pipeline/src/apps")
 	
+	// // additional loaders glyphicons needs.
+	// const loaders = [
+	// 	{
+	// 		test: /\.png$/,
+	// 		loader: 'url-loader?limit=100000'
+	// 	},
+	// 	{
+	// 		test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+	// 		loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+	// 	},
+	// 	{
+	// 		test: /\.(ttf|otf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?|(jpg|gif)$/,
+	// 		loader: 'file-loader'
+	// 	},
+	// ]
+	// loaders.forEach(loader => config.module.rules[config.module.rules.length-1].oneOf.push(loader))
+
+	config.plugins.push(
+		new webpack.ProvidePlugin({
+			$: "jquery",
+			jQuery: "jquery",
+			"window.jQuery": "jquery",
+			"window.$": "jquery",
+		})
+	)
+
 	config.devtool = "source-map"
 
     config.plugins.push(

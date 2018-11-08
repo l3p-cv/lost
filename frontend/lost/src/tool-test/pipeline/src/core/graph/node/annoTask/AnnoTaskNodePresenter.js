@@ -11,9 +11,6 @@ import AnnoTaskStartModal from "./modals/startModal/AnnoTaskStartModal"
 import AnnoTaskStartModalModel from "./modals/startModal/AnnoTaskStartModalModel"
 
 
-import graph from "graph/graph"
-// throw "GRAPH????"
-
 export default class AnnoTaskNodePresenter extends BaseNodePresenter {
 
     /**
@@ -31,10 +28,11 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
                 this.modal = new AnnoTaskRunningModal(this.model)
                 break
             case "start":
-                data.annoTask.availableUser.unshift({
+            console.log(data)
+                data.annoTask.availableGroups.unshift({
                     id: -1,
                     name: "All Users",
-                    photoPath: "/static/production/images/allUser.png",
+                    photoPath: "",
                     userName: "All Users"
                 })
                 this.view = new AnnoTaskStartView(this.model)
@@ -69,10 +67,10 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
             })
             this.model.state.on("update", text => {
                 this.view.parentNode.querySelector(`[data-ref="state"]`).setAttribute("class", `panel-footer 
-                    ${ text == "script_error"   ? "bg-red"      : "" }
-                    ${ text == "pending"        ? "bg-blue"     : "" }
-                    ${ text == "in_progress"    ? "bg-orange"   : "" }
-                    ${ text == "finished"       ? "bg-green"    : "" }`)
+                    ${ text === "script_error"   ? "bg-red"      : "" }
+                    ${ text === "pending"        ? "bg-blue"     : "" }
+                    ${ text === "in_progress"    ? "bg-orange"   : "" }
+                    ${ text === "finished"       ? "bg-green"    : "" }`)
                 this.view.parentNode.querySelector(`[data-ref="state-text"]`).textContent = text.replace("_", " ")
             })
     
@@ -91,8 +89,6 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
      * @override
      */
     initModelBinding(){
-
-
-        //this.model.annoTask.name.on("after-update", () => this.update(true))
+        // this.model.annoTask.name.on("after-update", () => this.update(true))
     }
 }
