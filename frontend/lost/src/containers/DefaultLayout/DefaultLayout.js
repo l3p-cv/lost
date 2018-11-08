@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {Redirect, Route, Switch} from 'react-router-dom';
-import {Container} from 'reactstrap';
-import {compose} from 'redux';
-import {connect} from 'react-redux';
+import React, {Component} from 'react'
+import {Redirect, Route, Switch} from 'react-router-dom'
+import {Container} from 'reactstrap'
+import {compose} from 'redux'
+import {connect} from 'react-redux'
 
 import {
     AppAside,
@@ -15,23 +15,23 @@ import {
     AppSidebarHeader,
     AppSidebarMinimizer,
     AppSidebarNav
-} from '@coreui/react';
+} from '@coreui/react'
 // sidebar nav config
-import desginerNavigation from '../../_designer_nav';
+import desginerNavigation from '../../_designer_nav'
 // routes config
-import designerRoutes from '../../designerRoutes';
-import annotaterRoutes from '../../annotaterRoutes';
-import DefaultAside from './DefaultAside';
-import DefaultFooter from './DefaultFooter';
-import DesignerHeader from './DesignerHeader';
-import AnnotaterHeader from './AnnotaterHeader';
-import requireAuth from '../../components/requireAuth';
+import designerRoutes from '../../designerRoutes'
+import annotaterRoutes from '../../annotaterRoutes'
+import DefaultAside from './DefaultAside'
+import DefaultFooter from './DefaultFooter'
+import DesignerHeader from './DesignerHeader'
+import AnnotaterHeader from './AnnotaterHeader'
+import requireAuth from '../../components/requireAuth'
 
 class DefaultLayout extends Component {
 
     render() {
         if (this.props.view !== undefined) {
-            if (this.props.view === "Designer") {
+            if (this.props.view === 'Designer') {
                 return this.renderDesigner()
             }
         }
@@ -41,19 +41,19 @@ class DefaultLayout extends Component {
 
     renderDesigner() {
         return (
-            <div className="app">
+            <div className='app'>
                 <AppHeader fixed>
                     <DesignerHeader/>
                 </AppHeader>
-                <div className="app-body">
-                    <AppSidebar fixed display="lg">
+                <div className='app-body'>
+                    <AppSidebar fixed display='lg'>
                         <AppSidebarHeader/>
                         <AppSidebarForm/>
                         <AppSidebarNav navConfig={desginerNavigation} {...this.props}/>
                         <AppSidebarFooter/>
                         <AppSidebarMinimizer/>
                     </AppSidebar>
-                    <main className="main">
+                    <main className='main'>
                         <AppBreadcrumb appRoutes={designerRoutes}/>
                         <Container fluid>
                             <Switch>
@@ -67,9 +67,9 @@ class DefaultLayout extends Component {
                                                 name={route.name}
                                                 render={props => (<route.component {...props}/>)}/>
                                         )
-                                        : (null);
+                                        : (null)
                                 },)}
-                                <Redirect from="/" to="/dashboard"/>
+                                <Redirect from='/' to='/dashboard'/>
                             </Switch>
                         </Container>
                     </main>
@@ -81,17 +81,17 @@ class DefaultLayout extends Component {
                     <DefaultFooter/>
                 </AppFooter>
             </div>
-        );
+        )
     }
 
     renderAnnotater() {
         return (
-            <div className="app">
+            <div className='app'>
                 <AppHeader fixed>
                     <AnnotaterHeader/>
                 </AppHeader>
-                <div className="app-body">
-                    <main className="main">
+                <div className='app-body'>
+                    <main className='main'>
                         <AppBreadcrumb appRoutes={annotaterRoutes}/>
                         <Container fluid>
                             <Switch>
@@ -105,9 +105,9 @@ class DefaultLayout extends Component {
                                                 name={route.name}
                                                 render={props => (<route.component {...props}/>)}/>
                                         )
-                                        : (null);
+                                        : (null)
                                 },)}
-                                <Redirect from="/" to="/dashboard"/>
+                                <Redirect from='/' to='/dashboard'/>
                             </Switch>
                         </Container>
                     </main>
@@ -119,11 +119,11 @@ class DefaultLayout extends Component {
                     <DefaultFooter/>
                 </AppFooter>
             </div>
-        );
+        )
     }
 }
 function mapStateToPropse(state) {
-    return {view: state.auth.view};
+    return {view: state.auth.view}
 }
 
-export default compose(connect(mapStateToPropse), requireAuth)(DefaultLayout);
+export default compose(connect(mapStateToPropse), requireAuth)(DefaultLayout)

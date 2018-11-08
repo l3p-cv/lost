@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
-import { Card, CardBody, CardColumns, CardHeader } from 'reactstrap';
-import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
+import React, { Component } from 'react'
+import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2'
+import { Card, CardBody, CardColumns, CardHeader } from 'reactstrap'
+import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips'
 
 const line = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -28,7 +28,7 @@ const line = {
       data: [65, 59, 80, 81, 56, 55, 40],
     },
   ],
-};
+}
 
 const bar = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -43,7 +43,7 @@ const bar = {
       data: [65, 59, 80, 81, 56, 55, 40],
     },
   ],
-};
+}
 
 const doughnut = {
   labels: [
@@ -65,7 +65,7 @@ const doughnut = {
         '#FFCE56',
       ],
     }],
-};
+}
 
 const radar = {
   labels: ['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running'],
@@ -91,7 +91,7 @@ const radar = {
       data: [28, 48, 40, 19, 96, 27, 100],
     },
   ],
-};
+}
 
 const pie = {
   labels: [
@@ -113,7 +113,7 @@ const pie = {
         '#FFCE56',
       ],
     }],
-};
+}
 
 const polar = {
   datasets: [
@@ -141,7 +141,7 @@ const polar = {
     'Grey',
     'Blue',
   ],
-};
+}
 
 const options = {
   tooltips: {
@@ -154,19 +154,19 @@ const options = {
 class Charts extends Component {
   render() {
     return (
-      <div className="animated fadeIn">
-        <CardColumns className="cols-2">
+      <div className='animated fadeIn'>
+        <CardColumns className='cols-2'>
           <Card>
             <CardHeader>
               Line Chart
-              <div className="card-header-actions">
-                <a href="http://www.chartjs.org" className="card-header-action">
-                  <small className="text-muted">docs</small>
+              <div className='card-header-actions'>
+                <a href='http://www.chartjs.org' className='card-header-action'>
+                  <small className='text-muted'>docs</small>
                 </a>
               </div>
             </CardHeader>
             <CardBody>
-              <div className="chart-wrapper">
+              <div className='chart-wrapper'>
                 <Line data={line} options={options} />
               </div>
             </CardBody>
@@ -174,14 +174,14 @@ class Charts extends Component {
           <Card>
             <CardHeader>
               Bar Chart
-              <div className="card-header-actions">
-                <a href="http://www.chartjs.org" className="card-header-action">
-                  <small className="text-muted">docs</small>
+              <div className='card-header-actions'>
+                <a href='http://www.chartjs.org' className='card-header-action'>
+                  <small className='text-muted'>docs</small>
                 </a>
               </div>
             </CardHeader>
             <CardBody>
-              <div className="chart-wrapper">
+              <div className='chart-wrapper'>
                 <Bar data={bar} options={options} />
               </div>
             </CardBody>
@@ -189,14 +189,14 @@ class Charts extends Component {
           <Card>
             <CardHeader>
               Doughnut Chart
-              <div className="card-header-actions">
-                <a href="http://www.chartjs.org" className="card-header-action">
-                  <small className="text-muted">docs</small>
+              <div className='card-header-actions'>
+                <a href='http://www.chartjs.org' className='card-header-action'>
+                  <small className='text-muted'>docs</small>
                 </a>
               </div>
             </CardHeader>
             <CardBody>
-              <div className="chart-wrapper">
+              <div className='chart-wrapper'>
                 <Doughnut data={doughnut} />
               </div>
             </CardBody>
@@ -204,14 +204,14 @@ class Charts extends Component {
           <Card>
             <CardHeader>
               Radar Chart
-              <div className="card-header-actions">
-                <a href="http://www.chartjs.org" className="card-header-action">
-                  <small className="text-muted">docs</small>
+              <div className='card-header-actions'>
+                <a href='http://www.chartjs.org' className='card-header-action'>
+                  <small className='text-muted'>docs</small>
                 </a>
               </div>
             </CardHeader>
             <CardBody>
-              <div className="chart-wrapper">
+              <div className='chart-wrapper'>
                 <Radar data={radar} />
               </div>
             </CardBody>
@@ -219,14 +219,14 @@ class Charts extends Component {
           <Card>
             <CardHeader>
               Pie Chart
-              <div className="card-header-actions">
-                <a href="http://www.chartjs.org" className="card-header-action">
-                  <small className="text-muted">docs</small>
+              <div className='card-header-actions'>
+                <a href='http://www.chartjs.org' className='card-header-action'>
+                  <small className='text-muted'>docs</small>
                 </a>
               </div>
             </CardHeader>
             <CardBody>
-              <div className="chart-wrapper">
+              <div className='chart-wrapper'>
                 <Pie data={pie} />
               </div>
             </CardBody>
@@ -234,22 +234,22 @@ class Charts extends Component {
           <Card>
             <CardHeader>
               Polar Area Chart
-              <div className="card-header-actions">
-                <a href="http://www.chartjs.org" className="card-header-action">
-                  <small className="text-muted">docs</small>
+              <div className='card-header-actions'>
+                <a href='http://www.chartjs.org' className='card-header-action'>
+                  <small className='text-muted'>docs</small>
                 </a>
               </div>
             </CardHeader>
             <CardBody>
-              <div className="chart-wrapper">
+              <div className='chart-wrapper'>
                 <Polar data={polar} options={options}/>
               </div>
             </CardBody>
           </Card>
         </CardColumns>
       </div>
-    );
+    )
   }
 }
 
-export default Charts;
+export default Charts

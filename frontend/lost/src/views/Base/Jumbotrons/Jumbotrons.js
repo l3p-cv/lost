@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Container, Jumbotron, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Card, CardBody, CardHeader, Col, Container, Jumbotron, Row } from 'reactstrap'
 
 class Jumbotrons extends Component {
 
@@ -49,8 +49,8 @@ class Jumbotrons extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Jumbotrons;
+export default Jumbotrons

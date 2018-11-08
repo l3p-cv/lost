@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table } from 'reactstrap';
+import React, { Component } from 'react'
+import { Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table } from 'reactstrap'
 
 class Tables extends Component {
   render() {
@@ -386,8 +386,8 @@ class Tables extends Component {
         </Row>
       </div>
 
-    );
+    )
   }
 }
 
-export default Tables;
+export default Tables

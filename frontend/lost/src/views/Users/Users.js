@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import React, { Component } from 'react'
+import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap'
 
 import usersData from './UsersData'
 
@@ -17,7 +17,7 @@ function UserRow(props) {
 
   return (
     <tr key={user.id.toString()}>
-        <th scope="row"><a href={userLink}>{user.id}</a></th>
+        <th scope='row'><a href={userLink}>{user.id}</a></th>
         <td><a href={userLink}>{user.name}</a></td>
         <td>{user.registered}</td>
         <td>{user.role}</td>
@@ -33,22 +33,22 @@ class Users extends Component {
     const userList = usersData.filter((user) => user.id < 10)
 
     return (
-      <div className="animated fadeIn">
+      <div className='animated fadeIn'>
         <Row>
           <Col xl={6}>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Users <small className="text-muted">example</small>
+                <i className='fa fa-align-justify'></i> Users <small className='text-muted'>example</small>
               </CardHeader>
               <CardBody>
                 <Table responsive hover>
                   <thead>
                     <tr>
-                      <th scope="col">id</th>
-                      <th scope="col">name</th>
-                      <th scope="col">registered</th>
-                      <th scope="col">role</th>
-                      <th scope="col">status</th>
+                      <th scope='col'>id</th>
+                      <th scope='col'>name</th>
+                      <th scope='col'>registered</th>
+                      <th scope='col'>role</th>
+                      <th scope='col'>status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -66,4 +66,4 @@ class Users extends Component {
   }
 }
 
-export default Users;
+export default Users

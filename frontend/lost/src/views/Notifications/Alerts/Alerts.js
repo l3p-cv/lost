@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import { Alert, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Alert, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 
 class Alerts extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       visible: true,
-    };
+    }
 
-    this.onDismiss = this.onDismiss.bind(this);
+    this.onDismiss = this.onDismiss.bind(this)
   }
 
   onDismiss() {
-    this.setState({ visible: false });
+    this.setState({ visible: false })
   }
 
   render() {
@@ -131,8 +131,8 @@ class Alerts extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Alerts;
+export default Alerts

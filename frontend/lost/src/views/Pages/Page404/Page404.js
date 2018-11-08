@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Col, Container, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Col, Container, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap'
 
 class Page404 extends Component {
   render() {
@@ -28,8 +28,8 @@ class Page404 extends Component {
           </Row>
         </Container>
       </div>
-    );
+    )
   }
 }
 
-export default Page404;
+export default Page404

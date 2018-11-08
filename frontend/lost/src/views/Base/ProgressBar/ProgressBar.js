@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Progress } from 'reactstrap';
+import React, { Component } from 'react'
+import { Card, CardBody, CardHeader, Progress } from 'reactstrap'
 
 class ProgressBar extends Component {
 
@@ -160,8 +160,8 @@ class ProgressBar extends Component {
           </CardBody>
         </Card>
       </div>
-    );
+    )
   }
 }
 
-export default ProgressBar;
+export default ProgressBar

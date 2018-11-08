@@ -1,7 +1,7 @@
 import { data } from "l3p-core"
 import swal from 'sweetalert2'
 import appModel from "../apps/start/appModel"
-import { API_URL } from "root/actions/settings"
+import { API_URL } from "root/settings"
 
 
 const BASE_URL = `${API_URL}/pipeline`

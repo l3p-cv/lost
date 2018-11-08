@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
-import { Badge, Col, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap';
-import classnames from 'classnames';
+import React, { Component } from 'react'
+import { Badge, Col, Nav, NavItem, NavLink, Row, TabContent, TabPane } from 'reactstrap'
+import classnames from 'classnames'
 
 class Tabs extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
+    this.toggle = this.toggle.bind(this)
     this.state = {
       activeTab: '1',
-    };
+    }
   }
 
   toggle(tab) {
     if (this.state.activeTab !== tab) {
       this.setState({
         activeTab: tab,
-      });
+      })
     }
   }
 
@@ -30,7 +30,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '1' })}
-                  onClick={() => { this.toggle('1'); }}
+                  onClick={() => { this.toggle('1') }}
                 >
                   Home
                 </NavLink>
@@ -38,7 +38,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '2' })}
-                  onClick={() => { this.toggle('2'); }}
+                  onClick={() => { this.toggle('2') }}
                 >
                   Profile
                 </NavLink>
@@ -46,7 +46,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '3' })}
-                  onClick={() => { this.toggle('3'); }}
+                  onClick={() => { this.toggle('3') }}
                 >
                   Messages
                 </NavLink>
@@ -81,7 +81,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '1' })}
-                  onClick={() => { this.toggle('1'); }}
+                  onClick={() => { this.toggle('1') }}
                 >
                   <i className="icon-calculator"></i>
                 </NavLink>
@@ -89,7 +89,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '2' })}
-                  onClick={() => { this.toggle('2'); }}
+                  onClick={() => { this.toggle('2') }}
                 >
                   <i className="icon-basket-loaded"></i>
                 </NavLink>
@@ -97,7 +97,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '3' })}
-                  onClick={() => { this.toggle('3'); }}
+                  onClick={() => { this.toggle('3') }}
                 >
                   <i className="icon-pie-chart"></i>
                 </NavLink>
@@ -132,7 +132,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '1' })}
-                  onClick={() => { this.toggle('1'); }}
+                  onClick={() => { this.toggle('1') }}
                 >
                   <i className="icon-calculator"></i> <span className={this.state.activeTab === '1' ? '' : 'd-none'}> Calculator</span>
                 </NavLink>
@@ -140,7 +140,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '2' })}
-                  onClick={() => { this.toggle('2'); }}
+                  onClick={() => { this.toggle('2') }}
                 >
                   <i className="icon-basket-loaded"></i> <span
                   className={this.state.activeTab === '2' ? '' : 'd-none'}> Shopping cart</span>
@@ -149,7 +149,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '3' })}
-                  onClick={() => { this.toggle('3'); }}
+                  onClick={() => { this.toggle('3') }}
                 >
                   <i className="icon-pie-chart"></i> <span className={this.state.activeTab === '3' ? '' : 'd-none'}> Charts</span>
                 </NavLink>
@@ -184,7 +184,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '1' })}
-                  onClick={() => { this.toggle('1'); }}
+                  onClick={() => { this.toggle('1') }}
                 >
                   <i className="icon-calculator"></i> <span className={this.state.activeTab === '1' ? '' : 'd-none'}> Calculator </span>{'\u00A0'}<Badge
                   color="success">New</Badge>
@@ -193,7 +193,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '2' })}
-                  onClick={() => { this.toggle('2'); }}
+                  onClick={() => { this.toggle('2') }}
                 >
                   <i className="icon-basket-loaded"></i> <span
                   className={this.state.activeTab === '2' ? '' : 'd-none'}> Shopping cart </span>{'\u00A0'}<Badge pill color="danger">29</Badge>
@@ -202,7 +202,7 @@ class Tabs extends Component {
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.activeTab === '3' })}
-                  onClick={() => { this.toggle('3'); }}
+                  onClick={() => { this.toggle('3') }}
                 >
                   <i className="icon-pie-chart"></i> <span className={this.state.activeTab === '3' ? '' : 'd-none'}> Charts</span>
                 </NavLink>
@@ -234,8 +234,8 @@ class Tabs extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Tabs;
+export default Tabs

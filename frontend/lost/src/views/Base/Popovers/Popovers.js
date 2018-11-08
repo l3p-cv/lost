@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Card, CardBody, CardHeader, Popover, PopoverBody, PopoverHeader } from 'reactstrap'
 
 class PopoverItem extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
+    this.toggle = this.toggle.bind(this)
     this.state = {
       popoverOpen: false,
-    };
+    }
   }
 
   toggle() {
     this.setState({
       popoverOpen: !this.state.popoverOpen,
-    });
+    })
   }
 
   render() {
@@ -28,16 +28,16 @@ class PopoverItem extends Component {
           <PopoverBody>Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</PopoverBody>
         </Popover>
       </span>
-    );
+    )
   }
 }
 
 class Popovers extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
+    this.toggle = this.toggle.bind(this)
     this.state = {
       popoverOpen: false,
       popovers: [
@@ -58,13 +58,13 @@ class Popovers extends Component {
           text: 'Right',
         },
       ],
-    };
+    }
   }
 
   toggle() {
     this.setState({
       popoverOpen: !this.state.popoverOpen,
-    });
+    })
   }
 
   render() {
@@ -96,13 +96,13 @@ class Popovers extends Component {
           </CardHeader>
           <CardBody>
             {this.state.popovers.map((popover, i) => {
-              return <PopoverItem key={i} item={popover} id={i} />;
+              return <PopoverItem key={i} item={popover} id={i} />
             })}
           </CardBody>
         </Card>
       </div>
-    );
+    )
   }
 }
 
-export default Popovers;
+export default Popovers

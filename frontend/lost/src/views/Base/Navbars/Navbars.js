@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
   Card,
   CardBody,
@@ -14,31 +14,31 @@ import {
   NavItem,
   NavLink,
   UncontrolledDropdown,
-} from 'reactstrap';
+} from 'reactstrap'
 
 class Navbars extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
-    this.toggleNavbar = this.toggleNavbar.bind(this);
+    this.toggle = this.toggle.bind(this)
+    this.toggleNavbar = this.toggleNavbar.bind(this)
     this.state = {
       isOpen: false,
       collapsed: true,
-    };
+    }
   }
 
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen,
-    });
+    })
   }
 
   toggleNavbar() {
     this.setState({
       collapsed: !this.state.collapsed,
-    });
+    })
   }
 
   render() {
@@ -111,8 +111,8 @@ class Navbars extends Component {
           </CardBody>
         </Card>
       </div>
-    );
+    )
   }
 }
 
-export default Navbars;
+export default Navbars

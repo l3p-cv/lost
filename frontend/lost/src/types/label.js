@@ -1,0 +1,1 @@
+export const GET_LABEL_TREES = 'GET_LABEL_TREES'

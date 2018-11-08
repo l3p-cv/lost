@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import React, { Component } from 'react'
+import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap'
 
 import usersData from './UsersData'
 
@@ -9,15 +9,15 @@ class User extends Component {
 
     const user = usersData.find( user => user.id.toString() === this.props.match.params.id)
 
-    const userDetails = user ? Object.entries(user) : [['id', (<span><i className="text-muted icon-ban"></i> Not found</span>)]]
+    const userDetails = user ? Object.entries(user) : [['id', (<span><i className='text-muted icon-ban'></i> Not found</span>)]]
 
     return (
-      <div className="animated fadeIn">
+      <div className='animated fadeIn'>
         <Row>
           <Col lg={6}>
             <Card>
               <CardHeader>
-                <strong><i className="icon-info pr-1"></i>User id: {this.props.match.params.id}</strong>
+                <strong><i className='icon-info pr-1'></i>User id: {this.props.match.params.id}</strong>
               </CardHeader>
               <CardBody>
                   <Table responsive striped hover>
@@ -43,4 +43,4 @@ class User extends Component {
   }
 }
 
-export default User;
+export default User

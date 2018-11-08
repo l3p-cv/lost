@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import React, { Component } from 'react'
+import { Card, CardBody, CardHeader, Pagination, PaginationItem, PaginationLink } from 'reactstrap'
 
 class Paginations extends Component {
 
@@ -170,8 +170,8 @@ class Paginations extends Component {
           </CardBody>
         </Card>
       </div>
-    );
+    )
   }
 }
 
-export default Paginations;
+export default Paginations
