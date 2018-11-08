@@ -1,5 +1,5 @@
 import * as auth from './auth'
-// import label from './label/index'
+import label from './label/index'
 
-// export default { ...auth, ...label }
-export default { ...auth, }
+export default { ...auth, ...label }
+//export default { ...auth, }

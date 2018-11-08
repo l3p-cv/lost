@@ -1,24 +1,19 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import * as actions from '../actions'
-
+import actions from '../actions'
 import {makeData, Tips} from './Utils'
 import {
-    Button,
     Card,
     CardBody,
-    CardFooter,
-    CardHeader,
-    CardTitle,
     Col,
-    Row,
-    InputGroup,
-    Input
+    Row
 } from 'reactstrap'
 
 // Import React Table
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
+
+const {getLabelTrees} = actions
 
 const treeColumns = [
     {
@@ -67,6 +62,9 @@ class Label extends Component {
             data: makeData()
         }
         console.log(this.state)
+    }
+    componentDidMount(){
+        this.props.getLabelTrees()
     }
     render() {
         const {data} = this.state
@@ -127,4 +125,4 @@ function mapStateToProps(state) {
     return {trees: state.label.trees}
 }
 
-export default connect(mapStateToProps, actions)(Label)
+export default connect(mapStateToProps, {getLabelTrees})(Label)
