@@ -15,12 +15,24 @@ const Label = Loadable({
   loading: Loading,
 })
 
+const User = Loadable({
+  loader: () => import('./components/User.js'),
+  loading: Loading,
+})
+
+const Group = Loadable({
+  loader: () => import('./components/Group.js'),
+  loading: Loading,
+})
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
-  { path: '/labels', name: 'Manage Labels', component: Label }
+  { path: '/labels', name: 'Manage Labels', component: Label },
+  { path: '/users', name: 'Manage Users', component: User },
+  { path: '/groups', name: 'Manage Groups', component: Group },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]
 
