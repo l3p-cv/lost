@@ -727,7 +727,7 @@ class LabelLeaf(Base):
     leaf_id = Column(String(4096))
     dtype = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
-    group = relationship("Group", uselist=False)
+    group = relationship("Group", uselist=False, lazy='joined')
     is_deleted = Column(Boolean)
     is_first_leaf = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
