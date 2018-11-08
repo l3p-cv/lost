@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Col, Container, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Col, Container, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap'
 
 class Page500 extends Component {
   render() {
@@ -28,8 +28,8 @@ class Page500 extends Component {
           </Row>
         </Container>
       </div>
-    );
+    )
   }
 }
 
-export default Page500;
+export default Page500

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import React, { Component } from 'react'
+import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap'
 import { AppSwitch } from '@coreui/react'
 
 class Switches extends Component {
@@ -487,8 +487,8 @@ class Switches extends Component {
         </Row>
       </div>
 
-    );
+    )
   }
 }
 
-export default Switches;
+export default Switches

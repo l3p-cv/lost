@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 
 class BrandButtons extends Component {
   render() {
@@ -13,7 +13,7 @@ class BrandButtons extends Component {
                 <strong>Brand Button</strong>
                 <small> Usage ex. </small>
                 <code>
-                  &lt;Button className="btn-facebook btn-brand"&gt;&lt;i className="fa fa-facebook"&gt;&lt;/i&gt;&lt;span&gt;Facebook&lt;/span&gt;&lt;/Button&gt;
+                  &ltButton className="btn-facebook btn-brand"&gt&lti className="fa fa-facebook"&gt&lt/i&gt&ltspan&gtFacebook&lt/span&gt&lt/Button&gt
                 </code>
               </CardHeader>
               <CardBody>
@@ -116,7 +116,7 @@ class BrandButtons extends Component {
                 <strong>Brand Button</strong>
                 <small> Icons only. Usage ex. </small>
                 <code>
-                  &lt;Button className="btn-facebook btn-brand icon"&gt;&lt;i className="fa fa-facebook"&gt;&lt;/i&gt;&lt;/Button&gt;
+                  &ltButton className="btn-facebook btn-brand icon"&gt&lti className="fa fa-facebook"&gt&lt/i&gt&lt/Button&gt
                 </code>
               </CardHeader>
               <CardBody>
@@ -219,7 +219,7 @@ class BrandButtons extends Component {
                 <strong>Brand Button</strong>
                 <small> Text only. Usage ex. </small>
                 <code>
-                  &lt;Button className="btn-facebook btn-brand text"&gt;&lt;span&gt;Facebook&lt;/span&gt;&lt;/Button&gt;
+                  &ltButton className="btn-facebook btn-brand text"&gt&ltspan&gtFacebook&lt/span&gt&lt/Button&gt
                 </code>
               </CardHeader>
               <CardBody>
@@ -317,8 +317,8 @@ class BrandButtons extends Component {
         </Row>
       </div>
 
-    );
+    )
   }
 }
 
-export default BrandButtons;
+export default BrandButtons

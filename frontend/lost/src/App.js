@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
-import './App.scss';
+import React, { Component } from 'react'
+import { HashRouter, Route, Switch } from 'react-router-dom'
+import './App.scss'
 
 // Containers
-import { DefaultLayout } from './containers';
+import { DefaultLayout } from './containers'
 // Pages
-import { Login, Page404, Page500, Register, Timeout } from './views/Pages';
+import { Login, Page404, Page500, Register, Timeout } from './views/Pages'
 
-// import { renderRoutes } from 'react-router-config';
+// import { renderRoutes } from 'react-router-config'
 
 class App extends Component {
   render() {
@@ -22,8 +22,8 @@ class App extends Component {
           <Route path="/" name="Home" component={DefaultLayout} />
         </Switch>
       </HashRouter>
-    );
+    )
   }
 }
 
-export default App;
+export default App

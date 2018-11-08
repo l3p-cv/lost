@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {Redirect, Route, Switch} from 'react-router-dom';
-import {Container} from 'reactstrap';
-import {compose} from 'redux';
-import {connect} from 'react-redux';
+import React, {Component} from 'react'
+import {Redirect, Route, Switch} from 'react-router-dom'
+import {Container} from 'reactstrap'
+import {compose} from 'redux'
+import {connect} from 'react-redux'
 
 import {
     AppAside,
@@ -15,17 +15,17 @@ import {
     AppSidebarHeader,
     AppSidebarMinimizer,
     AppSidebarNav
-} from '@coreui/react';
+} from '@coreui/react'
 // sidebar nav config
-import desginerNavigation from '../../_designer_nav';
+import desginerNavigation from '../../_designer_nav'
 // routes config
-import designerRoutes from '../../designerRoutes';
-import annotaterRoutes from '../../annotaterRoutes';
-import DefaultAside from './DefaultAside';
-import DefaultFooter from './DefaultFooter';
-import DesignerHeader from './DesignerHeader';
-import AnnotaterHeader from './AnnotaterHeader';
-import requireAuth from '../../components/requireAuth';
+import designerRoutes from '../../designerRoutes'
+import annotaterRoutes from '../../annotaterRoutes'
+import DefaultAside from './DefaultAside'
+import DefaultFooter from './DefaultFooter'
+import DesignerHeader from './DesignerHeader'
+import AnnotaterHeader from './AnnotaterHeader'
+import requireAuth from '../../components/requireAuth'
 
 class DefaultLayout extends Component {
 
@@ -67,7 +67,7 @@ class DefaultLayout extends Component {
                                                 name={route.name}
                                                 render={props => (<route.component {...props}/>)}/>
                                         )
-                                        : (null);
+                                        : (null)
                                 },)}
                                 <Redirect from="/" to="/dashboard"/>
                             </Switch>
@@ -81,7 +81,7 @@ class DefaultLayout extends Component {
                     <DefaultFooter/>
                 </AppFooter>
             </div>
-        );
+        )
     }
 
     renderAnnotater() {
@@ -105,7 +105,7 @@ class DefaultLayout extends Component {
                                                 name={route.name}
                                                 render={props => (<route.component {...props}/>)}/>
                                         )
-                                        : (null);
+                                        : (null)
                                 },)}
                                 <Redirect from="/" to="/dashboard"/>
                             </Switch>
@@ -119,11 +119,11 @@ class DefaultLayout extends Component {
                     <DefaultFooter/>
                 </AppFooter>
             </div>
-        );
+        )
     }
 }
 function mapStateToPropse(state) {
-    return {view: state.auth.view};
+    return {view: state.auth.view}
 }
 
-export default compose(connect(mapStateToPropse), requireAuth)(DefaultLayout);
+export default compose(connect(mapStateToPropse), requireAuth)(DefaultLayout)

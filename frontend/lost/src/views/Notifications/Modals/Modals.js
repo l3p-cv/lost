@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Card, CardBody, CardHeader, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap'
 
 class Modals extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       modal: false,
       large: false,
@@ -14,64 +14,64 @@ class Modals extends Component {
       warning: false,
       danger: false,
       info: false,
-    };
+    }
 
-    this.toggle = this.toggle.bind(this);
-    this.toggleLarge = this.toggleLarge.bind(this);
-    this.toggleSmall = this.toggleSmall.bind(this);
-    this.togglePrimary = this.togglePrimary.bind(this);
-    this.toggleSuccess = this.toggleSuccess.bind(this);
-    this.toggleWarning = this.toggleWarning.bind(this);
-    this.toggleDanger = this.toggleDanger.bind(this);
-    this.toggleInfo = this.toggleInfo.bind(this);
+    this.toggle = this.toggle.bind(this)
+    this.toggleLarge = this.toggleLarge.bind(this)
+    this.toggleSmall = this.toggleSmall.bind(this)
+    this.togglePrimary = this.togglePrimary.bind(this)
+    this.toggleSuccess = this.toggleSuccess.bind(this)
+    this.toggleWarning = this.toggleWarning.bind(this)
+    this.toggleDanger = this.toggleDanger.bind(this)
+    this.toggleInfo = this.toggleInfo.bind(this)
   }
 
   toggle() {
     this.setState({
       modal: !this.state.modal,
-    });
+    })
   }
 
   toggleLarge() {
     this.setState({
       large: !this.state.large,
-    });
+    })
   }
 
   toggleSmall() {
     this.setState({
       small: !this.state.small,
-    });
+    })
   }
 
   togglePrimary() {
     this.setState({
       primary: !this.state.primary,
-    });
+    })
   }
 
   toggleSuccess() {
     this.setState({
       success: !this.state.success,
-    });
+    })
   }
 
   toggleWarning() {
     this.setState({
       warning: !this.state.warning,
-    });
+    })
   }
 
   toggleDanger() {
     this.setState({
       danger: !this.state.danger,
-    });
+    })
   }
 
   toggleInfo() {
     this.setState({
       info: !this.state.info,
-    });
+    })
   }
 
   render() {
@@ -226,8 +226,8 @@ class Modals extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Modals;
+export default Modals

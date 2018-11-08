@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Row } from 'reactstrap'
 
 class Badges extends Component {
   render() {
@@ -80,8 +80,8 @@ class Badges extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Badges;
+export default Badges

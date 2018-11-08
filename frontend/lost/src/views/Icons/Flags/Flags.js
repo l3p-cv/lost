@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 
 class Flags extends Component {
   render() {
@@ -1015,8 +1015,8 @@ class Flags extends Component {
           </CardBody>
         </Card>
       </div>
-    );
+    )
   }
 }
 
-export default Flags;
+export default Flags

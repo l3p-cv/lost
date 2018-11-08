@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
   Badge,
   Button,
@@ -23,27 +23,27 @@ import {
   InputGroupText,
   Label,
   Row,
-} from 'reactstrap';
+} from 'reactstrap'
 
 class Forms extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
-    this.toggleFade = this.toggleFade.bind(this);
+    this.toggle = this.toggle.bind(this)
+    this.toggleFade = this.toggleFade.bind(this)
     this.state = {
       collapse: true,
       fadeIn: true,
       timeout: 300
-    };
+    }
   }
 
   toggle() {
-    this.setState({ collapse: !this.state.collapse });
+    this.setState({ collapse: !this.state.collapse })
   }
 
   toggleFade() {
-    this.setState((prevState) => { return { fadeIn: !prevState }});
+    this.setState((prevState) => { return { fadeIn: !prevState }})
   }
 
   render() {
@@ -741,7 +741,7 @@ class Forms extends Component {
                       <InputGroup>
                         <InputGroupAddon addonType="prepend">
                           <ButtonDropdown isOpen={this.state.first}
-                                          toggle={() => { this.setState({ first: !this.state.first }); }}>
+                                          toggle={() => { this.setState({ first: !this.state.first }) }}>
                             <DropdownToggle caret color="primary">
                               Dropdown
                             </DropdownToggle>
@@ -764,7 +764,7 @@ class Forms extends Component {
                         <Input type="email" id="input2-group3" name="input2-group3" placeholder="Email" />
                         <InputGroupAddon addonType="append">
                           <ButtonDropdown isOpen={this.state.second}
-                                          toggle={() => { this.setState({ second: !this.state.second }); }}>
+                                          toggle={() => { this.setState({ second: !this.state.second }) }}>
                             <DropdownToggle caret color="primary">
                               Dropdown
                             </DropdownToggle>
@@ -785,7 +785,7 @@ class Forms extends Component {
                       <InputGroup>
                         <InputGroupAddon addonType="prepend">
                           <ButtonDropdown isOpen={this.state.third}
-                                          toggle={() => { this.setState({ third: !this.state.third }); }}>
+                                          toggle={() => { this.setState({ third: !this.state.third }) }}>
                             {/*<Button id="caret" color="primary">Action</Button>*/}
                             <DropdownToggle caret color="primary">Action</DropdownToggle>
                             <DropdownMenu className={this.state.third ? 'show' : ''}>
@@ -800,7 +800,7 @@ class Forms extends Component {
                         <Input type="text" id="input3-group3" name="input3-group3" placeholder=".." />
                         <InputGroupAddon addonType="append">
                           <ButtonDropdown isOpen={this.state.fourth}
-                                          toggle={() => { this.setState({ fourth: !this.state.fourth }); }}>
+                                          toggle={() => { this.setState({ fourth: !this.state.fourth }) }}>
                             <DropdownToggle caret color="primary">
                               Dropdown
                             </DropdownToggle>
@@ -1158,8 +1158,8 @@ class Forms extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Forms;
+export default Forms

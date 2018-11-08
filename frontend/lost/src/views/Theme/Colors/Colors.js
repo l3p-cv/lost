@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import classNames from 'classnames';
+import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
+import classNames from 'classnames'
 import { Row, Col } from 'reactstrap'
 import { rgbToHex } from '@coreui/coreui/dist/js/coreui-utilities'
 
 class ThemeView extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       bgColor: 'rgb(255, 255, 255)'
@@ -42,7 +42,7 @@ class ThemeView extends Component {
 
 class ThemeColor extends Component {
   // constructor(props) {
-  //   super(props);
+  //   super(props)
   // }
   render() {
 
@@ -177,8 +177,8 @@ class Colors extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-export default Colors;
+export default Colors

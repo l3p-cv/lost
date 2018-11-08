@@ -1,6 +1,6 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Charts from './Charts';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Charts from './Charts'
 
 jest.mock('react-chartjs-2', () => ({
   Line: () => null,
@@ -9,10 +9,10 @@ jest.mock('react-chartjs-2', () => ({
   Radar: () => null,
   Bar: () => null,
   Doughnut: () => null,
-}));
+}))
 
 it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<Charts />, div);
-  ReactDOM.unmountComponentAtNode(div);
-});
+  const div = document.createElement('div')
+  ReactDOM.render(<Charts />, div)
+  ReactDOM.unmountComponentAtNode(div)
+})

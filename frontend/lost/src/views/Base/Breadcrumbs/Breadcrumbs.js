@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 
 class Breadcrumbs extends Component {
   render() {
@@ -40,8 +40,8 @@ class Breadcrumbs extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Breadcrumbs;
+export default Breadcrumbs

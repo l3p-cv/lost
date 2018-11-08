@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
-import { Badge, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink } from 'reactstrap';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import { Badge, DropdownItem, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink } from 'reactstrap'
+import PropTypes from 'prop-types'
 
-import { AppHeaderDropdown, AppNavbarBrand, AppSidebarToggler } from '@coreui/react';
+import { AppHeaderDropdown, AppNavbarBrand, AppSidebarToggler } from '@coreui/react'
 import logo from '../../assets/img/brand/fully_lost_2.png'
 import sygnet from '../../assets/img/brand/lo-st.png'
-import ViewChanger from '../../components/ViewChanger';
+import ViewChanger from '../../components/ViewChanger'
 
 const propTypes = {
   children: PropTypes.node,
-};
+}
 
-const defaultProps = {};
+const defaultProps = {}
 
 class DefaultHeader extends Component {
   render() {
 
     // eslint-disable-next-line
-    const { children, ...attributes } = this.props;
+    const { children, ...attributes } = this.props
 
     return (
       <React.Fragment>
@@ -64,11 +64,11 @@ class DefaultHeader extends Component {
         </Nav>
       
       </React.Fragment>
-    );
+    )
   }
 }
 
-DefaultHeader.propTypes = propTypes;
-DefaultHeader.defaultProps = defaultProps;
+DefaultHeader.propTypes = propTypes
+DefaultHeader.defaultProps = defaultProps
 
-export default DefaultHeader;
+export default DefaultHeader

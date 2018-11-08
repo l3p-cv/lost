@@ -53,4 +53,4 @@ export default {
       icon: 'fa-group',
     },
   ],
-};
+}

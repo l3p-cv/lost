@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import React, { Component } from 'react'
+import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap'
 
 import usersData from './UsersData'
 
@@ -66,4 +66,4 @@ class Users extends Component {
   }
 }
 
-export default Users;
+export default Users

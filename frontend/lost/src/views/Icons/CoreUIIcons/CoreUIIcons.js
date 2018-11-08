@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Badge, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Badge, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 
 class CoreUIIcons extends Component {
   render() {
@@ -420,9 +420,9 @@ class CoreUIIcons extends Component {
           </CardBody>
         </Card>
       </div>
-    );
+    )
   }
 }
 
-export default CoreUIIcons;
+export default CoreUIIcons
 

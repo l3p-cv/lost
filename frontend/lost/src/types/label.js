@@ -1,0 +1,1 @@
+export const GET_LABEL = "GET_LABEL"

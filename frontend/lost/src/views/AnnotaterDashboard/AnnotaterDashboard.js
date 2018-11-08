@@ -1,4 +1,4 @@
-import {Component} from 'react';
+import {Component} from 'react'
 
 
 
@@ -11,4 +11,4 @@ class AnnotaterDashboard extends Component {
     }
 }
 
-export default AnnotaterDashboard;
+export default AnnotaterDashboard

@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
-import {NavItem, NavLink} from 'reactstrap';
-import {connect} from 'react-redux';
-import * as actions from '../actions';
+import React, {Component} from 'react'
+import {NavItem, NavLink} from 'reactstrap'
+import {connect} from 'react-redux'
+import * as actions from '../actions'
 
 class ViewChanger extends Component {
     handleClick(role) {
@@ -11,9 +11,9 @@ class ViewChanger extends Component {
     }
     isActive(role) {
         if (this.props.view === role) {
-            return true;
+            return true
         }
-        return false;
+        return false
     }
 
     render() {
@@ -35,11 +35,11 @@ class ViewChanger extends Component {
         } else {
             return "Loading..."
         }
-    };
+    }
 }
 
 function mapStateToProps(state) {
-    return {view: state.auth.view, roles: state.auth.roles};
+    return {view: state.auth.view, roles: state.auth.roles}
 }
 
-export default connect(mapStateToProps, actions)(ViewChanger);
+export default connect(mapStateToProps, actions)(ViewChanger)

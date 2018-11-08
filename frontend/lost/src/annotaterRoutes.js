@@ -1,15 +1,15 @@
-import React from 'react';
+import React from 'react'
 import Loadable from 'react-loadable'
 
 
 function Loading() {
-  return <div>Loading...</div>;
+  return <div>Loading...</div>
 }
 
 const Dashboard = Loadable({
   loader: () => import('./views/AnnotaterDashboard/AnnotaterDashboard.js'),
   loading: Loading,
-});
+})
 
 
 
@@ -17,6 +17,6 @@ const Dashboard = Loadable({
 const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard }
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
-];
+]
 
-export default routes;
+export default routes

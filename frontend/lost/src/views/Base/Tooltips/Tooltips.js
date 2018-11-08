@@ -1,20 +1,20 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Tooltip, UncontrolledTooltip } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Card, CardBody, CardHeader, Tooltip, UncontrolledTooltip } from 'reactstrap'
 
 class TooltipItem extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
+    this.toggle = this.toggle.bind(this)
     this.state = {
       tooltipOpen: false,
-    };
+    }
   }
 
   toggle() {
     this.setState({
       tooltipOpen: !this.state.tooltipOpen,
-    });
+    })
   }
 
   render() {
@@ -27,16 +27,16 @@ class TooltipItem extends React.Component {
           Tooltip Content!
         </Tooltip>
       </span>
-    );
+    )
   }
 }
 
 class Tooltips extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
+    this.toggle = this.toggle.bind(this)
     this.state = {
       tooltipOpen: [false, false],
       tooltips: [
@@ -57,16 +57,16 @@ class Tooltips extends Component {
           text: 'Right',
         },
       ],
-    };
+    }
   }
 
   toggle(i) {
     const newArray = this.state.tooltipOpen.map((element, index) => {
-      return (index === i ? !element : false);
-    });
+      return (index === i ? !element : false)
+    })
     this.setState({
       tooltipOpen: newArray,
-    });
+    })
   }
 
   render() {
@@ -83,7 +83,7 @@ class Tooltips extends Component {
           </CardHeader>
           <CardBody>
             <p>Somewhere in here is a <a href="#" id="TooltipExample">tooltip</a>.</p>
-            <Tooltip placement="right" isOpen={this.state.tooltipOpen[0]} target="TooltipExample" toggle={() => {this.toggle(0);}}>
+            <Tooltip placement="right" isOpen={this.state.tooltipOpen[0]} target="TooltipExample" toggle={() => {this.toggle(0)}}>
               Hello world!
             </Tooltip>
           </CardBody>
@@ -95,7 +95,7 @@ class Tooltips extends Component {
           </CardHeader>
           <CardBody>
             <p>Sometimes you need to allow users to select text within a <a href="#" id="DisabledAutoHideExample">tooltip</a>.</p>
-            <Tooltip placement="top" isOpen={this.state.tooltipOpen[1]} autohide={false} target="DisabledAutoHideExample" toggle={() => {this.toggle(1);}}>
+            <Tooltip placement="top" isOpen={this.state.tooltipOpen[1]} autohide={false} target="DisabledAutoHideExample" toggle={() => {this.toggle(1)}}>
               Try to select this text!
             </Tooltip>
           </CardBody>
@@ -107,7 +107,7 @@ class Tooltips extends Component {
           </CardHeader>
           <CardBody>
             {this.state.tooltips.map((tooltip, i) => {
-              return <TooltipItem key={i} item={tooltip} id={i} />;
+              return <TooltipItem key={i} item={tooltip} id={i} />
             })}
           </CardBody>
         </Card>
@@ -124,8 +124,8 @@ class Tooltips extends Component {
           </CardBody>
         </Card>
       </div>
-    );
+    )
   }
 }
 
-export default Tooltips;
+export default Tooltips

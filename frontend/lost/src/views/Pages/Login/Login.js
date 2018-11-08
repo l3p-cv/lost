@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import { reduxForm, Field } from 'redux-form';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import * as actions from '../../../actions';
-import { Button, Card, CardBody, CardGroup, Col, Container, Form, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { reduxForm, Field } from 'redux-form'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import * as actions from '../../../actions'
+import { Button, Card, CardBody, CardGroup, Col, Container, Form, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap'
 
 class Login extends Component {
   onSubmit = formProps => {
     this.props.login(formProps, ()=> {
-      this.props.history.push('/dashboard');
-    });
+      this.props.history.push('/dashboard')
+    })
   }
  
   render() {
-    const { handleSubmit } = this.props;
+    const { handleSubmit } = this.props
     return (
       <div className="app flex-row align-items-center">
         <Container>
@@ -80,15 +80,15 @@ class Login extends Component {
           </Row>
         </Container>
       </div>
-    );
+    )
   }
 }
 
 function mapStateToProps(state) {
-  return { errorMessage: state.auth.errorMessage };
+  return { errorMessage: state.auth.errorMessage }
 }
 
 export default compose(
   connect(mapStateToProps, actions),
   reduxForm({ form: 'login' })
-)(Login);
+)(Login)

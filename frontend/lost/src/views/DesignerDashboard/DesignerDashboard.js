@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Bar, Line } from 'react-chartjs-2';
+import React, { Component } from 'react'
+import { Bar, Line } from 'react-chartjs-2'
 import {
   Badge,
   Button,
@@ -19,9 +19,9 @@ import {
   Progress,
   Row,
   Table,
-} from 'reactstrap';
+} from 'reactstrap'
 import Widget03 from '../../views/Widgets/Widget03'
-import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
+import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips'
 import { getStyle, hexToRgba } from '@coreui/coreui/dist/js/coreui-utilities'
 
 const brandPrimary = getStyle('--primary')
@@ -41,7 +41,7 @@ const cardChartData1 = {
       data: [65, 59, 84, 84, 51, 55, 40],
     },
   ],
-};
+}
 
 const cardChartOpts1 = {
   tooltips: {
@@ -99,7 +99,7 @@ const cardChartData2 = {
       data: [1, 18, 9, 17, 34, 22, 11],
     },
   ],
-};
+}
 
 const cardChartOpts2 = {
   tooltips: {
@@ -144,7 +144,7 @@ const cardChartOpts2 = {
       hoverRadius: 4,
     },
   },
-};
+}
 
 // Card Chart 3
 const cardChartData3 = {
@@ -157,7 +157,7 @@ const cardChartData3 = {
       data: [78, 81, 80, 45, 34, 12, 40],
     },
   ],
-};
+}
 
 const cardChartOpts3 = {
   tooltips: {
@@ -188,7 +188,7 @@ const cardChartOpts3 = {
       hoverRadius: 4,
     },
   },
-};
+}
 
 // Card Chart 4
 const cardChartData4 = {
@@ -201,7 +201,7 @@ const cardChartData4 = {
       data: [78, 81, 80, 45, 34, 12, 40, 75, 34, 89, 32, 68, 54, 72, 18, 98],
     },
   ],
-};
+}
 
 const cardChartOpts4 = {
   tooltips: {
@@ -223,7 +223,7 @@ const cardChartOpts4 = {
         display: false,
       }],
   },
-};
+}
 
 // Social Box Chart
 const socialBoxData = [
@@ -231,10 +231,10 @@ const socialBoxData = [
   { data: [1, 13, 9, 17, 34, 41, 38], label: 'twitter' },
   { data: [78, 81, 80, 45, 34, 12, 40], label: 'linkedin' },
   { data: [35, 23, 56, 22, 97, 23, 64], label: 'google' },
-];
+]
 
 const makeSocialBoxData = (dataSetNo) => {
-  const dataset = socialBoxData[dataSetNo];
+  const dataset = socialBoxData[dataSetNo]
   const data = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [
@@ -247,9 +247,9 @@ const makeSocialBoxData = (dataSetNo) => {
         label: dataset.label,
       },
     ],
-  };
-  return () => data;
-};
+  }
+  return () => data
+}
 
 const socialChartOpts = {
   tooltips: {
@@ -279,7 +279,7 @@ const socialChartOpts = {
       hoverBorderWidth: 3,
     },
   },
-};
+}
 
 // sparkline charts
 const sparkLineChartData = [
@@ -307,10 +307,10 @@ const sparkLineChartData = [
     data: [1, 13, 9, 17, 34, 41, 38],
     label: 'Bounce Rate',
   },
-];
+]
 
 const makeSparkLineData = (dataSetNo, variant) => {
-  const dataset = sparkLineChartData[dataSetNo];
+  const dataset = sparkLineChartData[dataSetNo]
   const data = {
     labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     datasets: [
@@ -321,9 +321,9 @@ const makeSparkLineData = (dataSetNo, variant) => {
         label: dataset.label,
       },
     ],
-  };
-  return () => data;
-};
+  }
+  return () => data
+}
 
 const sparklineChartOpts = {
   tooltips: {
@@ -356,24 +356,24 @@ const sparklineChartOpts = {
   legend: {
     display: false,
   },
-};
+}
 
 // Main Chart
 
 //Random Numbers
 function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-var elements = 27;
-var data1 = [];
-var data2 = [];
-var data3 = [];
+var elements = 27
+var data1 = []
+var data2 = []
+var data3 = []
 
 for (var i = 0; i <= elements; i++) {
-  data1.push(random(50, 200));
-  data2.push(random(80, 100));
-  data3.push(65);
+  data1.push(random(50, 200))
+  data2.push(random(80, 100))
+  data3.push(65)
 }
 
 const mainChart = {
@@ -405,7 +405,7 @@ const mainChart = {
       data: data3,
     },
   ],
-};
+}
 
 const mainChartOpts = {
   tooltips: {
@@ -449,31 +449,31 @@ const mainChartOpts = {
       hoverBorderWidth: 3,
     },
   },
-};
+}
 
 class Dashboard extends Component {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
-    this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
+    this.toggle = this.toggle.bind(this)
+    this.onRadioBtnClick = this.onRadioBtnClick.bind(this)
 
     this.state = {
       dropdownOpen: false,
       radioSelected: 2,
-    };
+    }
   }
 
   toggle() {
     this.setState({
       dropdownOpen: !this.state.dropdownOpen,
-    });
+    })
   }
 
   onRadioBtnClick(radioSelected) {
     this.setState({
       radioSelected: radioSelected,
-    });
+    })
   }
 
   render() {
@@ -485,7 +485,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-info">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <ButtonDropdown id='card1' isOpen={this.state.card1} toggle={() => { this.setState({ card1: !this.state.card1 }); }}>
+                  <ButtonDropdown id='card1' isOpen={this.state.card1} toggle={() => { this.setState({ card1: !this.state.card1 }) }}>
                     <DropdownToggle caret className="p-0" color="transparent">
                       <i className="icon-settings"></i>
                     </DropdownToggle>
@@ -510,7 +510,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-primary">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <Dropdown id='card2' isOpen={this.state.card2} toggle={() => { this.setState({ card2: !this.state.card2 }); }}>
+                  <Dropdown id='card2' isOpen={this.state.card2} toggle={() => { this.setState({ card2: !this.state.card2 }) }}>
                     <DropdownToggle className="p-0" color="transparent">
                       <i className="icon-location-pin"></i>
                     </DropdownToggle>
@@ -534,7 +534,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-warning">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <Dropdown id='card3' isOpen={this.state.card3} toggle={() => { this.setState({ card3: !this.state.card3 }); }}>
+                  <Dropdown id='card3' isOpen={this.state.card3} toggle={() => { this.setState({ card3: !this.state.card3 }) }}>
                     <DropdownToggle caret className="p-0" color="transparent">
                       <i className="icon-settings"></i>
                     </DropdownToggle>
@@ -558,7 +558,7 @@ class Dashboard extends Component {
             <Card className="text-white bg-danger">
               <CardBody className="pb-0">
                 <ButtonGroup className="float-right">
-                  <ButtonDropdown id='card4' isOpen={this.state.card4} toggle={() => { this.setState({ card4: !this.state.card4 }); }}>
+                  <ButtonDropdown id='card4' isOpen={this.state.card4} toggle={() => { this.setState({ card4: !this.state.card4 }) }}>
                     <DropdownToggle caret className="p-0" color="transparent">
                       <i className="icon-settings"></i>
                     </DropdownToggle>
@@ -819,10 +819,10 @@ class Dashboard extends Component {
                     </div>
                     <div className="legend text-center">
                       <small>
-                        <sup className="px-1"><Badge pill color="info">&nbsp;</Badge></sup>
+                        <sup className="px-1"><Badge pill color="info">&nbsp</Badge></sup>
                         New clients
-                        &nbsp;
-                        <sup className="px-1"><Badge pill color="danger">&nbsp;</Badge></sup>
+                        &nbsp
+                        <sup className="px-1"><Badge pill color="danger">&nbsp</Badge></sup>
                         Recurring clients
                       </small>
                     </div>
@@ -1150,8 +1150,8 @@ class Dashboard extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Dashboard;
+export default Dashboard

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 
 class Buttons extends Component {
   render() {
@@ -599,27 +599,27 @@ class Buttons extends Component {
             <Row className="align-items-center mt-3">
               <Col sm xs="12" className="text-center mt-3">
                 <Button color="primary">
-                  <i className="fa fa-lightbulb-o"></i>&nbsp;Standard Button
+                  <i className="fa fa-lightbulb-o"></i>&nbspStandard Button
                 </Button>
               </Col>
               <Col sm xs="12" className="text-center mt-3">
                 <Button color="secondary" outline>
-                  <i className="fa fa-lightbulb-o"></i>&nbsp;Outline Button
+                  <i className="fa fa-lightbulb-o"></i>&nbspOutline Button
                 </Button>
               </Col>
               <Col sm xs="12" className="text-center mt-3">
                 <Button color="ghost-success">
-                  <i className="fa fa-lightbulb-o"></i>&nbsp;Ghost Button
+                  <i className="fa fa-lightbulb-o"></i>&nbspGhost Button
                 </Button>
               </Col>
               <Col sm xs="12" className="text-center mt-3">
                 <Button color="warning" className="btn-square">
-                  <i className="fa fa-lightbulb-o"></i>&nbsp;Square Button
+                  <i className="fa fa-lightbulb-o"></i>&nbspSquare Button
                 </Button>
               </Col>
               <Col sm xs="12" className="text-center mt-3">
                 <Button color="danger" className="btn-pill">
-                  <i className="fa fa-lightbulb-o"></i>&nbsp;Pill Button
+                  <i className="fa fa-lightbulb-o"></i>&nbspPill Button
                 </Button>
               </Col>
             </Row>
@@ -662,8 +662,8 @@ class Buttons extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default Buttons;
+export default Buttons

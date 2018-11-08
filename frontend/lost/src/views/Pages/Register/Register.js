@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import React, { Component } from 'react'
+import { Button, Card, CardBody, CardFooter, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap'
 
 class Register extends Component {
   render() {
@@ -61,8 +61,8 @@ class Register extends Component {
           </Row>
         </Container>
       </div>
-    );
+    )
   }
 }
 
-export default Register;
+export default Register

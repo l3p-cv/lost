@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
-import { Card, CardBody, CardColumns, CardHeader } from 'reactstrap';
-import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
+import React, { Component } from 'react'
+import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2'
+import { Card, CardBody, CardColumns, CardHeader } from 'reactstrap'
+import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips'
 
 const line = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -28,7 +28,7 @@ const line = {
       data: [65, 59, 80, 81, 56, 55, 40],
     },
   ],
-};
+}
 
 const bar = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -43,7 +43,7 @@ const bar = {
       data: [65, 59, 80, 81, 56, 55, 40],
     },
   ],
-};
+}
 
 const doughnut = {
   labels: [
@@ -65,7 +65,7 @@ const doughnut = {
         '#FFCE56',
       ],
     }],
-};
+}
 
 const radar = {
   labels: ['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running'],
@@ -91,7 +91,7 @@ const radar = {
       data: [28, 48, 40, 19, 96, 27, 100],
     },
   ],
-};
+}
 
 const pie = {
   labels: [
@@ -113,7 +113,7 @@ const pie = {
         '#FFCE56',
       ],
     }],
-};
+}
 
 const polar = {
   datasets: [
@@ -141,7 +141,7 @@ const polar = {
     'Grey',
     'Blue',
   ],
-};
+}
 
 const options = {
   tooltips: {
@@ -248,8 +248,8 @@ class Charts extends Component {
           </Card>
         </CardColumns>
       </div>
-    );
+    )
   }
 }
 
-export default Charts;
+export default Charts

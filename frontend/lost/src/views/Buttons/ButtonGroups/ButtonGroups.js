@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
   Button,
   ButtonDropdown,
@@ -16,24 +16,24 @@ import {
   InputGroupAddon,
   InputGroupText,
   Row,
-} from 'reactstrap';
+} from 'reactstrap'
 
 class ButtonGroups extends Component {
 
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.toggle = this.toggle.bind(this);
+    this.toggle = this.toggle.bind(this)
     this.state = {
       dropdownOpen: new Array(2).fill(false),
-    };
+    }
   }
 
   toggle(i) {
-    const newArray = this.state.dropdownOpen.map((element, index) => { return (index === i ? !element : false); });
+    const newArray = this.state.dropdownOpen.map((element, index) => { return (index === i ? !element : false) })
     this.setState({
       dropdownOpen: newArray,
-    });
+    })
   }
 
   render() {
@@ -66,7 +66,7 @@ class ButtonGroups extends Component {
                 <ButtonGroup vertical>
                   <Button>1</Button>
                   <Button>2</Button>
-                  <ButtonDropdown isOpen={this.state.dropdownOpen[1]} toggle={() => { this.toggle(1); }}>
+                  <ButtonDropdown isOpen={this.state.dropdownOpen[1]} toggle={() => { this.toggle(1) }}>
                     <DropdownToggle caret>
                       Dropdown
                     </DropdownToggle>
@@ -135,7 +135,7 @@ class ButtonGroups extends Component {
                 <ButtonGroup>
                   <Button>1</Button>
                   <Button>2</Button>
-                  <ButtonDropdown isOpen={this.state.dropdownOpen[0]} toggle={() => { this.toggle(0); }}>
+                  <ButtonDropdown isOpen={this.state.dropdownOpen[0]} toggle={() => { this.toggle(0) }}>
                     <DropdownToggle caret>
                       Dropdown
                     </DropdownToggle>
@@ -185,8 +185,8 @@ class ButtonGroups extends Component {
           </Col>
         </Row>
       </div>
-    );
+    )
   }
 }
 
-export default ButtonGroups;
+export default ButtonGroups
