@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import actions from '../actions'
-import {makeData, Tips} from './Utils'
 import {
     Alert,
     Badge,
@@ -52,12 +51,7 @@ const labelColumns = [
 ]
 
 class Label extends Component {
-    constructor() {
-        super()
-        this.state = {
-            data: makeData()
-        }
-    }
+ 
     componentDidMount() {
         this.props.getLabelTrees()
     }
@@ -79,7 +73,6 @@ class Label extends Component {
                                     getTrProps={(state, rowInfo, column) => getProps(state, rowInfo, column)}
                                     SubComponent={row => renderSubComponent(row)}/>
                                 <br/>
-                                <Tips/>
                             </CardBody>
                         </Card>
                     </Col>
@@ -113,6 +106,7 @@ function renderSubComponent(row) {
                     columns={labelColumns}
                     pageSize={row.original.children.length}
                     showPagination={false}
+                    minRows = {0}
                     getTrProps={(state, rowInfo, column) => getProps(state, rowInfo, column)}
                     SubComponent={row => renderSubComponent(row)}/>
             </div>

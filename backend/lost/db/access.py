@@ -597,10 +597,11 @@ class DBMan(object):
          %(anno_task_id, iteration, user_id)
         return self.session.execute(sql).first()
 
-    def get_available_label_trees(self):
+    def get_available_label_trees(self, group_ids):
         ''' Get all available label trees
         '''
-        return self.session.query(model.LabelTree).all()
+        return self.session.query(model.LabelLeaf).filter((model.LabelLeaf.is_first_leaf == True) & \
+        model.LabelLeaf.group_id.in_(group_ids) ).all()
     def get_available_users(self):
         ''' Get all available users
         '''
