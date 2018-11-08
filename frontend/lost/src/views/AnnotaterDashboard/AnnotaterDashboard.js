@@ -6,7 +6,7 @@ class AnnotaterDashboard extends Component {
 
     render() {
 
-        return ("In Annotater dashboard")
+        return ('In Annotater dashboard')
 
     }
 }

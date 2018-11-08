@@ -46,10 +46,10 @@ class Widget01 extends Component {
     return (
       <Card className={classes} {...attributes}>
         <CardBody>
-          <div className="h4 m-0">{header}</div>
+          <div className='h4 m-0'>{header}</div>
           <div>{mainText}</div>
           <Progress className={progress.style} color={progress.color} value={progress.value} />
-          <small className="text-muted">{smallText}</small>
+          <small className='text-muted'>{smallText}</small>
           <div>{children}</div>
         </CardBody>
       </Card>

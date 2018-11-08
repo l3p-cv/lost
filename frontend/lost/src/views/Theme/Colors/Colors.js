@@ -24,15 +24,15 @@ class ThemeView extends Component {
   render() {
 
     return (
-      <table className="w-100">
+      <table className='w-100'>
         <tbody>
         <tr>
-          <td className="text-muted">HEX:</td>
-          <td className="font-weight-bold">{ rgbToHex(this.state.bgColor) }</td>
+          <td className='text-muted'>HEX:</td>
+          <td className='font-weight-bold'>{ rgbToHex(this.state.bgColor) }</td>
         </tr>
         <tr>
-          <td className="text-muted">RGB:</td>
-          <td className="font-weight-bold">{ this.state.bgColor }</td>
+          <td className='text-muted'>RGB:</td>
+          <td className='font-weight-bold'>{ this.state.bgColor }</td>
         </tr>
         </tbody>
       </table>
@@ -52,7 +52,7 @@ class ThemeColor extends Component {
     const classes = classNames(className, 'theme-color w-75 rounded mb-3')
 
     return (
-      <Col xl="2" md="4" sm="6" xs="12" className="mb-4">
+      <Col xl='2' md='4' sm='6' xs='12' className='mb-4'>
         <div className={classes} style={{paddingTop: '75%'}}></div>
         {children}
         <ThemeView/>
@@ -64,113 +64,113 @@ class ThemeColor extends Component {
 class Colors extends Component {
   render() {
     return (
-      <div className="animated fadeIn">
-        <div className="card">
-          <div className="card-header">
-            <i className="icon-drop"></i> Theme colors
+      <div className='animated fadeIn'>
+        <div className='card'>
+          <div className='card-header'>
+            <i className='icon-drop'></i> Theme colors
           </div>
-          <div className="card-body">
+          <div className='card-body'>
             <Row>
-              <ThemeColor className="bg-primary">
+              <ThemeColor className='bg-primary'>
                 <h6>Brand Primary Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-secondary">
+              <ThemeColor className='bg-secondary'>
                 <h6>Brand Secondary Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-success">
+              <ThemeColor className='bg-success'>
                 <h6>Brand Success Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-danger">
+              <ThemeColor className='bg-danger'>
                 <h6>Brand Danger Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-warning">
+              <ThemeColor className='bg-warning'>
                 <h6>Brand Warning Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-info">
+              <ThemeColor className='bg-info'>
                 <h6>Brand Info Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-light">
+              <ThemeColor className='bg-light'>
                 <h6>Brand Light Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-dark">
+              <ThemeColor className='bg-dark'>
                 <h6>Brand Dark Color</h6>
               </ThemeColor>
             </Row>
           </div>
         </div>
-        <div className="card">
-          <div className="card-header">
-            <i className="icon-drop"></i> Grays
+        <div className='card'>
+          <div className='card-header'>
+            <i className='icon-drop'></i> Grays
           </div>
-          <div className="card-body">
-            <Row className="mb-3">
-              <ThemeColor className="bg-gray-100">
+          <div className='card-body'>
+            <Row className='mb-3'>
+              <ThemeColor className='bg-gray-100'>
                 <h6>Gray 100 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-200">
+              <ThemeColor className='bg-gray-200'>
                 <h6>Gray 200 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-300">
+              <ThemeColor className='bg-gray-300'>
                 <h6>Gray 300 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-400">
+              <ThemeColor className='bg-gray-400'>
                 <h6>Gray 400 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-500">
+              <ThemeColor className='bg-gray-500'>
                 <h6>Gray 500 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-600">
+              <ThemeColor className='bg-gray-600'>
                 <h6>Gray 600 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-700">
+              <ThemeColor className='bg-gray-700'>
                 <h6>Gray 700 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-800">
+              <ThemeColor className='bg-gray-800'>
                 <h6>Gray 800 Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-gray-900">
+              <ThemeColor className='bg-gray-900'>
                 <h6>Gray 900 Color</h6>
               </ThemeColor>
             </Row>
           </div>
         </div>
-        <div className="card">
-          <div className="card-header">
-            <i className="icon-drop"></i> Additional colors
+        <div className='card'>
+          <div className='card-header'>
+            <i className='icon-drop'></i> Additional colors
           </div>
-          <div className="card-body">
+          <div className='card-body'>
             <Row>
-              <ThemeColor className="bg-blue">
+              <ThemeColor className='bg-blue'>
                 <h6>Blue Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-light-blue">
+              <ThemeColor className='bg-light-blue'>
                 <h6>Light Blue Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-indigo">
+              <ThemeColor className='bg-indigo'>
                 <h6>Indigo Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-purple">
+              <ThemeColor className='bg-purple'>
                 <h6>Purple Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-pink">
+              <ThemeColor className='bg-pink'>
                 <h6>Pink Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-red">
+              <ThemeColor className='bg-red'>
                 <h6>Red Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-orange">
+              <ThemeColor className='bg-orange'>
                 <h6>Orange Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-yellow">
+              <ThemeColor className='bg-yellow'>
                 <h6>Yellow Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-green">
+              <ThemeColor className='bg-green'>
                 <h6>Green Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-teal">
+              <ThemeColor className='bg-teal'>
                 <h6>Teal Color</h6>
               </ThemeColor>
-              <ThemeColor className="bg-cyan">
+              <ThemeColor className='bg-cyan'>
                 <h6>Cyan Color</h6>
               </ThemeColor>
             </Row>

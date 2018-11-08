@@ -15,7 +15,7 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 token: action.payload.token,
                 refreshToken: action.payload.refresh_token,
-                errorMessage: ""
+                errorMessage: ''
             }
         case TYPES.AUTH_ERR:
             return {

@@ -1,6 +1,7 @@
-import React from "react"
-import namor from "namor"
-import "./index.css"
+import React from 'react'
+import namor from 'namor'
+import './index.css'
+
 
 const range = len => {
   const arr = []
@@ -37,6 +38,6 @@ export function makeData(len = 10) {
 
 
 export const Tips = () =>
-  <div style={{ textAlign: "center" }}>
+  <div style={{ textAlign: 'center' }}>
     <em>Tip: Right click on a Tree or Label in order to add or edit elements.</em>
   </div>

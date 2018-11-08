@@ -49,9 +49,9 @@ class Widget02 extends Component {
     const cardFooter = function () {
       if (footer) {
         return (
-          <CardFooter className="px-3 py-2">
-            <a className="font-weight-bold font-xs btn-block text-muted" href={link}>View More
-              <i className="fa fa-angle-right float-right font-lg"></i></a>
+          <CardFooter className='px-3 py-2'>
+            <a className='font-weight-bold font-xs btn-block text-muted' href={link}>View More
+              <i className='fa fa-angle-right float-right font-lg'></i></a>
           </CardFooter>
         )
       }
@@ -62,7 +62,7 @@ class Widget02 extends Component {
         <CardBody className={card.classes} {...attributes}>
           {blockIcon(card.icon)}
           <div className={lead.classes}>{header}</div>
-          <div className="text-muted text-uppercase font-weight-bold font-xs">{mainText}</div>
+          <div className='text-muted text-uppercase font-weight-bold font-xs'>{mainText}</div>
         </CardBody>
         {cardFooter()}
       </Card>

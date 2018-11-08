@@ -10,7 +10,7 @@ export const login = (formProps, callback) => async dispatch => {
         dispatch({ type: TYPES.AUTH_USER, payload: response.data})
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('refreshToken', response.data.refresh_token)
-        localStorage.setItem('view', "Annotater")
+        localStorage.setItem('view', 'Annotater')
         callback()
     } catch(e){
         dispatch({ type: TYPES.AUTH_ERR, payload: 'No valid credentials.'})
@@ -34,8 +34,8 @@ export const checkExpireDate = (decoded_token, callback) => async dispatch => {
 
 export const checkRole = (view, decoded_token) => async dispatch => {
     if (!(decoded_token.user_claims.roles.indexOf(view) > -1)){
-        dispatch({ type: TYPES.CHANGE_VIEW, payload: "Annotater"})
-        localStorage.setItem('view', "Annotater")
+        dispatch({ type: TYPES.CHANGE_VIEW, payload: 'Annotater'})
+        localStorage.setItem('view', 'Annotater')
     }
 }
 export const changeView = (view) => async dispatch => {

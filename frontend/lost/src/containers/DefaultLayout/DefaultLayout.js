@@ -31,7 +31,7 @@ class DefaultLayout extends Component {
 
     render() {
         if (this.props.view !== undefined) {
-            if (this.props.view === "Designer") {
+            if (this.props.view === 'Designer') {
                 return this.renderDesigner()
             }
         }
@@ -41,19 +41,19 @@ class DefaultLayout extends Component {
 
     renderDesigner() {
         return (
-            <div className="app">
+            <div className='app'>
                 <AppHeader fixed>
                     <DesignerHeader/>
                 </AppHeader>
-                <div className="app-body">
-                    <AppSidebar fixed display="lg">
+                <div className='app-body'>
+                    <AppSidebar fixed display='lg'>
                         <AppSidebarHeader/>
                         <AppSidebarForm/>
                         <AppSidebarNav navConfig={desginerNavigation} {...this.props}/>
                         <AppSidebarFooter/>
                         <AppSidebarMinimizer/>
                     </AppSidebar>
-                    <main className="main">
+                    <main className='main'>
                         <AppBreadcrumb appRoutes={designerRoutes}/>
                         <Container fluid>
                             <Switch>
@@ -69,7 +69,7 @@ class DefaultLayout extends Component {
                                         )
                                         : (null)
                                 },)}
-                                <Redirect from="/" to="/dashboard"/>
+                                <Redirect from='/' to='/dashboard'/>
                             </Switch>
                         </Container>
                     </main>
@@ -86,12 +86,12 @@ class DefaultLayout extends Component {
 
     renderAnnotater() {
         return (
-            <div className="app">
+            <div className='app'>
                 <AppHeader fixed>
                     <AnnotaterHeader/>
                 </AppHeader>
-                <div className="app-body">
-                    <main className="main">
+                <div className='app-body'>
+                    <main className='main'>
                         <AppBreadcrumb appRoutes={annotaterRoutes}/>
                         <Container fluid>
                             <Switch>
@@ -107,7 +107,7 @@ class DefaultLayout extends Component {
                                         )
                                         : (null)
                                 },)}
-                                <Redirect from="/" to="/dashboard"/>
+                                <Redirect from='/' to='/dashboard'/>
                             </Switch>
                         </Container>
                     </main>

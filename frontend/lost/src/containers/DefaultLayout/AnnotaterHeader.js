@@ -21,44 +21,44 @@ class DefaultHeader extends Component {
 
     return (
       <React.Fragment>
-        <AppSidebarToggler className="d-lg-none" display="md" mobile />
+        <AppSidebarToggler className='d-lg-none' display='md' mobile />
         <AppNavbarBrand
           full={{ src: logo, width: 89, height: 25, alt: 'LOST Logo' }}
           minimized={{ src: sygnet, width: 30, height: 30, alt: 'LOST Logo' }}
         />
-        <AppSidebarToggler className="d-md-down-none" display="lg" />
+        <AppSidebarToggler className='d-md-down-none' display='lg' />
 
-        <Nav className="d-md-down-none" navbar>
-          <NavItem className="px-3">
-            <NavLink href="/">Dashboard</NavLink>
+        <Nav className='d-md-down-none' navbar>
+          <NavItem className='px-3'>
+            <NavLink href='/'>Dashboard</NavLink>
           </NavItem>
-          <NavItem className="px-3">
-            <NavLink href="#/users">Users</NavLink>
+          <NavItem className='px-3'>
+            <NavLink href='#/users'>Users</NavLink>
           </NavItem>
-          <NavItem className="px-3">
-            <NavLink href="#">Settings</NavLink>
+          <NavItem className='px-3'>
+            <NavLink href='#'>Settings</NavLink>
           </NavItem>
         </Nav>
-        <Nav className="ml-auto" navbar>
+        <Nav className='ml-auto' navbar>
           <ViewChanger></ViewChanger>
-          <AppHeaderDropdown direction="down">
+          <AppHeaderDropdown direction='down'>
             <DropdownToggle nav>
-              <img src={'assets/img/avatars/user.png'} className="img-avatar" alt="user" />
+              <img src={'assets/img/avatars/user.png'} className='img-avatar' alt='user' />
             </DropdownToggle>
             <DropdownMenu right style={{ right: 'auto' }}>
-              <DropdownItem header tag="div" className="text-center"><strong>Account</strong></DropdownItem>
-              <DropdownItem><i className="fa fa-bell-o"></i> Updates<Badge color="info">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-envelope-o"></i> Messages<Badge color="success">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-tasks"></i> Tasks<Badge color="danger">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-comments"></i> Comments<Badge color="warning">42</Badge></DropdownItem>
-              <DropdownItem header tag="div" className="text-center"><strong>Settings</strong></DropdownItem>
-              <DropdownItem><i className="fa fa-user"></i> Profile</DropdownItem>
-              <DropdownItem><i className="fa fa-wrench"></i> Settings</DropdownItem>
-              <DropdownItem><i className="fa fa-usd"></i> Payments<Badge color="secondary">42</Badge></DropdownItem>
-              <DropdownItem><i className="fa fa-file"></i> Projects<Badge color="primary">42</Badge></DropdownItem>
+              <DropdownItem header tag='div' className='text-center'><strong>Account</strong></DropdownItem>
+              <DropdownItem><i className='fa fa-bell-o'></i> Updates<Badge color='info'>42</Badge></DropdownItem>
+              <DropdownItem><i className='fa fa-envelope-o'></i> Messages<Badge color='success'>42</Badge></DropdownItem>
+              <DropdownItem><i className='fa fa-tasks'></i> Tasks<Badge color='danger'>42</Badge></DropdownItem>
+              <DropdownItem><i className='fa fa-comments'></i> Comments<Badge color='warning'>42</Badge></DropdownItem>
+              <DropdownItem header tag='div' className='text-center'><strong>Settings</strong></DropdownItem>
+              <DropdownItem><i className='fa fa-user'></i> Profile</DropdownItem>
+              <DropdownItem><i className='fa fa-wrench'></i> Settings</DropdownItem>
+              <DropdownItem><i className='fa fa-usd'></i> Payments<Badge color='secondary'>42</Badge></DropdownItem>
+              <DropdownItem><i className='fa fa-file'></i> Projects<Badge color='primary'>42</Badge></DropdownItem>
               <DropdownItem divider />
-              <DropdownItem><i className="fa fa-shield"></i> Lock Account</DropdownItem>
-              <DropdownItem><i className="fa fa-lock"></i> Logout</DropdownItem>
+              <DropdownItem><i className='fa fa-shield'></i> Lock Account</DropdownItem>
+              <DropdownItem><i className='fa fa-lock'></i> Logout</DropdownItem>
             </DropdownMenu>
           </AppHeaderDropdown>
         </Nav>

@@ -18,22 +18,22 @@ class ViewChanger extends Component {
 
     render() {
         if (this.props.roles !== undefined) {
-            if (this.props.roles.indexOf("Designer") > -1) {
+            if (this.props.roles.indexOf('Designer') > -1) {
                 return (
                     <React.Fragment>
-                        <NavItem active={this.isActive("Designer")} className="px-3">
-                            <NavLink onClick={() => this.handleClick("Designer")} href="#">Designer</NavLink>
+                        <NavItem active={this.isActive('Designer')} className='px-3'>
+                            <NavLink onClick={() => this.handleClick('Designer')} href='#'>Designer</NavLink>
                         </NavItem>
-                        <NavItem active={this.isActive("Annotater")} className="px-3">
-                            <NavLink onClick={() => this.handleClick("Annotater")} href="#">Annotater</NavLink>
+                        <NavItem active={this.isActive('Annotater')} className='px-3'>
+                            <NavLink onClick={() => this.handleClick('Annotater')} href='#'>Annotater</NavLink>
                         </NavItem>
                     </React.Fragment>
                 )
             }else {
-                return ""
+                return ''
             }
         } else {
-            return "Loading..."
+            return 'Loading...'
         }
     }
 }

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import * as actions from '../actions'
 
-import {makeData, Tips} from "./Utils"
+import {makeData, Tips} from './Utils'
 import {
     Button,
     Card,
@@ -17,44 +17,44 @@ import {
 } from 'reactstrap'
 
 // Import React Table
-import ReactTable from "react-table"
-import "react-table/react-table.css"
+import ReactTable from 'react-table'
+import 'react-table/react-table.css'
 
 const treeColumns = [
     {
-        Header: "Trees",
+        Header: 'Trees',
         columns: [
             {
-                Header: "Name",
-                accessor: "name",
-                id: "name"
+                Header: 'Name',
+                accessor: 'name',
+                id: 'name'
             }, {
-                Header: "Description",
-                accessor: "description"
+                Header: 'Description',
+                accessor: 'description'
             },{
-                Header: "Group",
-                accessor: "group"
+                Header: 'Group',
+                accessor: 'group'
             },{
-                Header: "Controls"
+                Header: 'Controls'
             }
         ]
     }
 ]
 const labelColumns = [
     {
-        Header: "Labels",
+        Header: 'Labels',
         columns: [
             {
-                Header: "Name",
-                accessor: "name"
+                Header: 'Name',
+                accessor: 'name'
             },
             {
-                Header: "Description",
-                accessor: "description"
+                Header: 'Description',
+                accessor: 'description'
             },
             {
-                Header: "Leaf ID",
-                accessor: "leafId"
+                Header: 'Leaf ID',
+                accessor: 'leafId'
             }
         ]
     }
@@ -73,20 +73,20 @@ class Label extends Component {
         return (
             <div>
                 <Row>
-                    <Col xs="12" sm="12" lg="12">
-                        <Card className="text-black bg-light">
-                            <CardBody className="pb-0">
+                    <Col xs='12' sm='12' lg='12'>
+                        <Card className='text-black bg-light'>
+                            <CardBody className='pb-0'>
                                 <ReactTable
                                     data={data}
                                     columns={treeColumns}
                                     defaultPageSize={10}
                                     filterable
-                                    className="-striped -highlight"
+                                    className='-striped -highlight'
                                     getTrProps={(state, rowInfo, column) => {
                                         return {
                                           onDoubleClick: (e, handleOriginal) => {
-                                          //alert("Clicked on " + rowInfo.row.id)
-                                            console.log("Cell - Double Click", {
+                                          //alert('Clicked on ' + rowInfo.row.id)
+                                            console.log('Cell - Double Click', {
                                               state,
                                               rowInfo,
                                               column,
@@ -102,7 +102,7 @@ class Label extends Component {
                                     return (
                                         <div
                                             style={{
-                                            padding: "20px",
+                                            padding: '20px',
                                         }}>
                                             <ReactTable
                                                 data={row.original.children}
