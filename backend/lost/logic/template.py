@@ -81,8 +81,9 @@ def get_template(db_man, template_id ,user):
             return error_msg
     file_man = FileMan(db_man.lostconfig)
     available_raw_files = file_man.get_media_rel_path_tree()
-    available_label_trees = db_man.get_available_label_trees()
     available_groups = user.groups
+    group_ids = [g.idx for g in user.groups]
+    available_label_trees = db_man.get_available_label_trees(group_ids)
     available_scripts = db_man.get_all_scripts()
     try:
          template_serialize = TemplateSerialize(template,
@@ -142,10 +143,7 @@ class TemplateSerialize(object):
             label_tree_json['name'] = label_tree.name
             label_tree_json['description'] = label_tree.description
             label_tree_json['timestamp'] = label_tree.timestamp
-            if label_tree.user:
-                label_tree_json['userName'] = label_tree.user.first_name + " " + label_tree.user.last_name
-            else:
-                label_tree_json['userName'] = "Unknown"
+            label_tree_json['groupName'] = label_tree.group.name
             label_leaves_json = list()
             for label_leaf in label_tree.label_leaves:
                 label_leaf_json = dict()
@@ -153,10 +151,9 @@ class TemplateSerialize(object):
                 label_leaf_json['name'] = label_leaf.name
                 label_leaf_json['abbreviation'] = label_leaf.abbreviation
                 label_leaf_json['description'] = label_leaf.description
-                if label_leaf.user:
-                    label_leaf_json['userName'] = label_leaf.user.first_name + " " + label_leaf.user.last_name
-                else:
-                    label_leaf_json['userName'] = "Unknown"
+                label_leaf_json['groupName'] = "unknown"
+                if label_leaf.group:
+                    label_leaf_json['groupName'] = label_leaf.group.name
                 label_leaf_json['timestamp'] = label_leaf.timestamp
                 label_leaf_json['cssClass'] = label_leaf.css_class
                 label_leaf_json['leafId'] = label_leaf.leaf_id
