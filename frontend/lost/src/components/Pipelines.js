@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import ReactDOM from "react-dom"
 
-// import * as appView from "../tool-test/pipeline/src/"
+// import * as appView from "../tools/pipeline/src/"
 
 export default class SingleImageAnnotation extends Component {
 	constructor(props){
@@ -9,7 +9,7 @@ export default class SingleImageAnnotation extends Component {
 		this.mount = React.createRef()
 	}
 	componentDidMount(){
-		// require("../tool-test/pipeline/src/")
+		// require("../tools/pipeline/src/")
 		// this.mount.current.appendChild(appView.html.fragment)
 	}
 	render(){

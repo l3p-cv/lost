@@ -16,16 +16,16 @@ module.exports = (config, env) => {
 	config.resolve.alias["root"] = absolutePath("./src/")
 
 	// SIA aliases
-	config.resolve.alias["siaRoot"] = absolutePath("./src/tool-test/sia/src/")
-	config.resolve.alias["components"] = absolutePath("./src/tool-test/sia/src/components")
-	config.resolve.alias["drawables"] = absolutePath("./src/tool-test/sia/src/drawables")
-	config.resolve.alias["shared"] = absolutePath("./src/tool-test/sia/src/shared")
+	config.resolve.alias["siaRoot"] = absolutePath("./src/tools/sia/src/")
+	config.resolve.alias["components"] = absolutePath("./src/tools/sia/src/components")
+	config.resolve.alias["drawables"] = absolutePath("./src/tools/sia/src/drawables")
+	config.resolve.alias["shared"] = absolutePath("./src/tools/sia/src/shared")
 
 	// PIP aliases
-	config.resolve.alias["pipRoot"] = absolutePath("src/tool-test/pipeline/src/")
-	config.resolve.alias["graph"] = absolutePath("src/tool-test/pipeline/src/core/graph")
-	config.resolve.alias["wizard"] = absolutePath("src/tool-test/pipeline/src/core/wizard")
-	config.resolve.alias["apps"] = absolutePath("src/tool-test/pipeline/src/apps")
+	config.resolve.alias["pipRoot"] = absolutePath("src/tools/pipeline/src/")
+	config.resolve.alias["graph"] = absolutePath("src/tools/pipeline/src/core/graph")
+	config.resolve.alias["wizard"] = absolutePath("src/tools/pipeline/src/core/wizard")
+	config.resolve.alias["apps"] = absolutePath("src/tools/pipeline/src/apps")
 	
 	// // additional loaders glyphicons needs.
 	// const loaders = [
@@ -65,7 +65,7 @@ module.exports = (config, env) => {
 	)
     config.plugins.push(
         new CopyWebpackPlugin([{
-            from: "./src/tool-test/sia/assets",
+            from: "./src/tools/sia/assets",
             to: "assets",
         }])
     )
