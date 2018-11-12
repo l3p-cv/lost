@@ -45,11 +45,6 @@ export default {
     {
       name: 'Users',
       url: '/users',
-      icon: 'fa-user',
-    },
-    {
-      name: 'Groups',
-      url: '/groups',
       icon: 'fa-group',
     },
   ],
