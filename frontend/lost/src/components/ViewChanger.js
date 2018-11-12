@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 import {NavItem, NavLink} from 'reactstrap'
 import {connect} from 'react-redux'
-import * as actions from '../actions'
+import actions from '../actions'
+const { changeView } = actions
 
 class ViewChanger extends Component {
     handleClick(role) {
@@ -42,4 +43,4 @@ function mapStateToProps(state) {
     return {view: state.auth.view, roles: state.auth.roles}
 }
 
-export default connect(mapStateToProps, actions)(ViewChanger)
+export default connect(mapStateToProps, { changeView })(ViewChanger)

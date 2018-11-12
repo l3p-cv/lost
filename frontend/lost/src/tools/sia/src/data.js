@@ -1,5 +1,5 @@
 import appModel from "./appModel"
-import { data } from "l3p-frontend"
+import { http } from "l3p-frontend"
 
 const BACKEND_URL = "/sia/annotation/"
 const REQUEST_STRINGS = {
@@ -14,55 +14,55 @@ const REQUEST_STRINGS = {
 }
 
 function requestNextUserLockedData(){
-    return data.get(REQUEST_STRINGS.GET_NEXT_QUERY(-1))
+    return http.get(REQUEST_STRINGS.GET_NEXT_QUERY(-1))
 }
 
 
 export function sendData(annotationData: any){
     console.log("sending data:", annotationData)
-    return data.post(REQUEST_STRINGS.POST_UPDATE, annotationData)
+    return http.post(REQUEST_STRINGS.POST_UPDATE, annotationData)
 }
 
 export function deleteJunk(imageId: Number){
-    return data.del(REQUEST_STRINGS.DELETE_ANNO(imageId))
+    return http.del(REQUEST_STRINGS.DELETE_ANNO(imageId))
 }
 export function requestConfig(){
-    return data.get(REQUEST_STRINGS.GET_CONFIG)
+    return http.get(REQUEST_STRINGS.GET_CONFIG)
     .catch(error => {
         return appModel.config
     })
 }
 export function requestInitialAnnotation(){
-    return data.get(REQUEST_STRINGS.GET_NEXT_QUERY(-1))
+    return http.get(REQUEST_STRINGS.GET_NEXT_QUERY(-1))
 }
 export function requestFirstData(){
-    return data.get(REQUEST_STRINGS.GET_FIRST)
+    return http.get(REQUEST_STRINGS.GET_FIRST)
 }
 export function requestLatestData(){
     return requestNextUserLockedData()
     .then((annoData)=>{
-        // if(annoData.isLastImage){
+        // if(annohttp.isLastImage){
             return Promise.resolve(annoData)
         // } 
         // else {
-        //     return requestPreviousData(annoData.imgId)
+        //     return requestPreviousData(annohttp.imgId)
         // }
     })
 }
 export function requestNextData(imgId: Number) {
-    return data.get(REQUEST_STRINGS.GET_NEXT_QUERY(imgId ? imgId : appModel.data.image.id))
+    return http.get(REQUEST_STRINGS.GET_NEXT_QUERY(imgId ? imgId : appModel.http.image.id))
 }
 export function requestPreviousData(imgId: Number) {
-    return data.get(REQUEST_STRINGS.GET_PREV_QUERY(imgId ? imgId : appModel.data.image.id))
+    return http.get(REQUEST_STRINGS.GET_PREV_QUERY(imgId ? imgId : appModel.http.image.id))
 }
 export function requestLabels() {
-    return data.get(REQUEST_STRINGS.GET_CATEGORIES)
+    return http.get(REQUEST_STRINGS.GET_CATEGORIES)
 }
 export function requestAnnotationProgress() {
-    return data.get("/annotask/api/sia/current")
+    return http.get("/annotask/api/sia/current")
 }
 
 
 export function finish(){
-    return data.post(REQUEST_STRINGS.POST_FINISH)
+    return http.post(REQUEST_STRINGS.POST_FINISH)
 }

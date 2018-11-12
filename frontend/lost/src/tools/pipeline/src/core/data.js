@@ -1,4 +1,4 @@
-import { data } from "l3p-frontend"
+import { http } from "l3p-frontend"
 import swal from 'sweetalert2'
 import appModel from "../apps/start/appModel"
 import { API_URL } from "root/settings"
@@ -18,22 +18,22 @@ const URLS = {
 
 export function requestTemplates() {
     console.log(URLS.GET_TEMPLATES)
-    return data.get(URLS.GET_TEMPLATES, appModel.state.token)
+    return http.get(URLS.GET_TEMPLATES, appModel.state.token)
 }
 export function requestTemplate(id: Number) {
     if (id === undefined || isNaN(id)) {
         throw new Error("invalid id.")
     }
-    return data.get(URLS.GET_TEMPLATE(id), appModel.state.token)
+    return http.get(URLS.GET_TEMPLATE(id), appModel.state.token)
 }
 export function requestPipelines(){
-    return data.get(URLS.GET_PIPELINES, appModel.state.token)
+    return http.get(URLS.GET_PIPELINES, appModel.state.token)
 }
 export function requestPipeline(id: Number){
     if (id === undefined || isNaN(id)) {
         throw new Error("invalid id.")
     }
-    return data.get(URLS.GET_PIPELINE(id), appModel.state.token)
+    return http.get(URLS.GET_PIPELINE(id), appModel.state.token)
 }
 export function deletePipe(id) {
     return swal({
@@ -55,7 +55,7 @@ export function deletePipe(id) {
                 swal.showLoading()
             }
         })
-        return data.del(URLS.POST_DELETE_PIPELINE + id, appModel.state.token).then((result) => {
+        return http.del(URLS.POST_DELETE_PIPELINE + id, appModel.state.token).then((result) => {
             swal.closeModal()
             if (result === "error") {
                 swal({
@@ -78,10 +78,10 @@ export function deletePipe(id) {
     })
 }
 export function startPipe(pipeJson) {
-    return data.post(URLS.POST_START_PIPELINE, pipeJson, appModel.state.token)
+    return http.post(URLS.POST_START_PIPELINE, pipeJson, appModel.state.token)
 }
 export function pausePipe(id) {
-    return data.post(URLS.POST_PAUSE_PIPELINE, id, appModel.state.token).then((result) => {
+    return http.post(URLS.POST_PAUSE_PIPELINE, id, appModel.state.token).then((result) => {
         if (result === "error") {
             swal({
                 type: 'error',
@@ -95,7 +95,7 @@ export function pausePipe(id) {
     })
 }
 export function playPipe(id) {
-    return data.post(URLS.POST_PLAY_PIPELINE, id, appModel.state.token).then((result) => {
+    return http.post(URLS.POST_PLAY_PIPELINE, id, appModel.state.token).then((result) => {
         if (result === "error") {
             swal({
                 type: 'error',

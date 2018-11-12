@@ -17,7 +17,7 @@ import {
     AppSidebarNav
 } from '@coreui/react'
 // sidebar nav config
-import desginerNavigation from '../../_designer_nav'
+import desginerNavigation from '../../designerNavigation'
 // routes config
 import designerRoutes from '../../designerRoutes'
 import annotaterRoutes from '../../annotaterRoutes'

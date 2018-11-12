@@ -8,7 +8,7 @@ import {createStore, applyMiddleware} from 'redux'
 import reduxThunk from 'redux-thunk'
 
 import reducers from './reducers'
-import './index.css'
+
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 

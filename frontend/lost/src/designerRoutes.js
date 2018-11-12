@@ -23,6 +23,11 @@ const Label = Loadable({
   loading: Loading,
 })
 
+const User = Loadable({
+  loader: () => import('./components/User.js'),
+  loading: Loading,
+})
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -31,6 +36,7 @@ const routes = [
   { path: '/start-pipeline', name: 'Start a Pipeline', component: StartPipeline },
   { path: '/pipelines', name: 'Pipelines', component: Pipelines },
   { path: '/labels', name: 'Manage Labels', component: Label },
+  { path: '/users', name: 'Manage Users', component: User },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]
 
