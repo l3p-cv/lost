@@ -27,22 +27,7 @@ module.exports = (config, env) => {
 	config.resolve.alias["wizard"] = absolutePath("src/tools/pipeline/src/core/wizard")
 	config.resolve.alias["apps"] = absolutePath("src/tools/pipeline/src/apps")
 	
-	// // additional loaders glyphicons needs.
-	// const loaders = [
-	// 	{
-	// 		test: /\.png$/,
-	// 		loader: 'url-loader?limit=100000'
-	// 	},
-	// 	{
-	// 		test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-	// 		loader: 'url-loader?limit=10000&mimetype=application/font-woff'
-	// 	},
-	// 	{
-	// 		test: /\.(ttf|otf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?|(jpg|gif)$/,
-	// 		loader: 'file-loader'
-	// 	},
-	// ]
-	// loaders.forEach(loader => config.module.rules[config.module.rules.length-1].oneOf.push(loader))
+	config.devtool = "source-map"
 
 	config.plugins.push(
 		new webpack.ProvidePlugin({
@@ -52,9 +37,6 @@ module.exports = (config, env) => {
 			"window.$": "jquery",
 		})
 	)
-
-	config.devtool = "source-map"
-
     config.plugins.push(
 		new CircularDependencyPlugin({
 			exclude: /node_modules/,
@@ -73,7 +55,7 @@ module.exports = (config, env) => {
 	// config = injectBabelPlugin("plugin", config)
 	config = rewireEslint(config, env)
 	
-	console.log(config)
+	// console.log(config)
 	// return
 	return config
 }
