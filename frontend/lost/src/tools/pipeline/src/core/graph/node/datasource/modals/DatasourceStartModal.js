@@ -62,7 +62,7 @@ export default class DatasourceStartModal extends BaseModal {
                             title: 'Time'
                         },
                     ]
-                });
+                })
                 $(this.view.refs["table-dataset"]).find("tbody").on('click', 'tr', (e) => {
                     dataTableAvailableDatasets.$('tr.selected').removeClass('selected')
                     $(e.currentTarget).addClass('selected')
@@ -103,7 +103,7 @@ export default class DatasourceStartModal extends BaseModal {
                             title: 'Time',
                         },
                     ]
-                });
+                })
                 let selectedTree = ""
                 $(this.view.refs["div-dropdown"]).hide()
                 $(this.view.refs["table-model-trees"]).find("tbody").on('click', 'tr', (e) => {
@@ -122,7 +122,7 @@ export default class DatasourceStartModal extends BaseModal {
                         }
                     })
                     presenter.view = new DatasourceStartView(nodeModel)                      
-                });
+                })
                 $(this.view.refs["dropdown"]).on('click', 'li a', (e) => {
                     $(this.view.refs["leave-information"]).empty()
                     let j = e.currentTarget.getAttribute("data-index")

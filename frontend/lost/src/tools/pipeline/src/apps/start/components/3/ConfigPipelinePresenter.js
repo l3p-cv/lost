@@ -6,7 +6,6 @@ import appModel from "../../appModel"
 
 
 class ConfigPipelineTab extends WizardTabPresenter {
-    
     constructor(){
         super()
         this.view = ConfigPipelineView
@@ -14,19 +13,21 @@ class ConfigPipelineTab extends WizardTabPresenter {
         this.description = ""
         this.validated = false
 
-        let  validation = () => {
-            if(this.name != "" && this.description != ""){
+        let validation = () => {
+            if(this.name !== "" && this.description !== ""){
                 this.validated = true
                 $(this.view.html.refs["btn-next"]).prop("disabled", false)                                                
             }else{
                 this.validated = false
                 $(this.view.html.refs["btn-next"]).prop("disabled", true)    
             }
-
         }
-
-
         validation()
+
+        // MODEL BINDING
+        appModel.controls.show3.on("update", () => this.show())
+
+        // VIEW BINDING
         $(this.view.html.refs["input-name"]).on('input', (e)=>{
             this.name = $(e.currentTarget).val()
             validation()
@@ -35,7 +36,6 @@ class ConfigPipelineTab extends WizardTabPresenter {
             this.description = $(e.currentTarget).val()      
             validation()    
         })
-        appModel.controls.show3.on("update", () => this.show())
         $(this.view.html.refs["btn-next"]).on('click', () => {
             appModel.controls.show4.update(true)            
         })
@@ -43,9 +43,7 @@ class ConfigPipelineTab extends WizardTabPresenter {
         $(this.view.html.refs["btn-prev"]).on('click', () => {
             appModel.controls.show2.update(true)
         })
-
     }
-
     reset(){
         this.name = null
         this.description = null
@@ -54,23 +52,6 @@ class ConfigPipelineTab extends WizardTabPresenter {
         $(this.view.html.refs["input-name"]).val(this.name)
         $(this.view.html.refs["input-description"]).val(this.description)
     }
-
-    
-    /**
-     * @extend
-     */
-
-
-
-
-    // validate(){
-    //     super.validate(()=>{
-    //         // ...
-    //         return false
-    //     })
-    // }
-
-    //@override
     isValidated(){
         return this.validated
     }

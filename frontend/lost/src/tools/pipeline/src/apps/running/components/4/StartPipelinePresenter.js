@@ -6,12 +6,8 @@ class StartPipelineTab extends WizardTabPresenter {
         super()
         this.view = StartPipelineView
     }
-    /**
-     * @extend
-     */
     validate(){
         super.validate(()=>{
-            // ...
             return true
         })
     }

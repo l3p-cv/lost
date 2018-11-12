@@ -56,7 +56,7 @@ export function deletePipe(id) {
             }
         })
         return data.del(URLS.POST_DELETE_PIPELINE + id, appModel.state.token).then((result) => {
-            swal.closeModal();
+            swal.closeModal()
             if (result === "error") {
                 swal({
                     type: 'error',

@@ -46,7 +46,7 @@ class TabSelectTreePresenter extends WizardTabPresenter {
                     title: 'Timestamp'
                 },
             ],
-        });
+        })
 
         $(this.view.nav.refs["a"]).on("click", () => {
             modalView.view.refs["outerModal"].style.width = '50%'
@@ -90,7 +90,7 @@ class TabSelectTreePresenter extends WizardTabPresenter {
             } else {
                 requestGraph()
             }
-        });
+        })
     }
     isValidated() {
 

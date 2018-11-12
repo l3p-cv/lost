@@ -116,8 +116,8 @@ class Wizard {
                      * depending on browser.
                      * opera doesnt support it at all. 
                      * only firefox and chrome support behaviour:smooth
-                     * - scrollIntoView({block: "start", behavior: "smooth"});
-                     * - scrollIntoView(true);
+                     * - scrollIntoView({block: "start", behavior: "smooth"})
+                     * - scrollIntoView(true)
                      */
                     this.html.root.scrollIntoView(true)
                 }

@@ -5,10 +5,10 @@ import appModel from "../../../../../apps/start/appModel"
 export default class AnnoTaskStartView {
     constructor(model) {
         let validation = false
-        if( model.post.annoTask.instructions != "" &&
-            model.post.annoTask.name != "" &&
+        if( model.post.annoTask.instructions !== "" &&
+            model.post.annoTask.name !== "" &&
             model.post.annoTask.labelLeaves.length > 0 &&
-            model.post.annoTask.workerId != undefined
+            model.post.annoTask.workerId !== undefined
           ){
               validation = true
           }

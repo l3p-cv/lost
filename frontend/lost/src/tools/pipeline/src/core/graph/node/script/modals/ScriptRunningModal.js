@@ -132,6 +132,6 @@ export default class ScriptRunningModal extends BaseModal {
             html: true,
             placement: "right",
             container: 'body'
-        });
+        })
     }
 }

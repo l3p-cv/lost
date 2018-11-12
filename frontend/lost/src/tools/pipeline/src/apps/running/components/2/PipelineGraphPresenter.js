@@ -21,7 +21,8 @@ class PipelineGraphPresenter extends WizardTabPresenter {
     constructor() {
         super()
         this.view = PipelineGraphView
-        // Toolbar
+
+        // VIEW-BINDING
         // Delete Pipe
         $(this.view.html.refs["btn-delete-pipeline"]).on("click", () => {
             let id = this.appData.id
@@ -83,19 +84,15 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
         // Toggle Infobox
         $(this.view.html.refs["btn-toggle-infobox"]).on("click", () => {
-            console.log('==================this.graph.svg.refs==================');
-            console.log(this.graph.svg.refs);
-            console.log('====================================');
+            console.log('==================this.graph.svg.refs==================')
+            console.log(this.graph.svg.refs)
+            console.log('====================================')
             $(this.graph.svg.refs["title-box"]).slideToggle("slow")
             $(this.view.html.refs["btn-toggle-infobox-icon"]).toggleClass("fa-toggle-on fa-toggle-off")
         })
 
-        // VIEW-BINDING
-        // @open-modal: handler here?
-
         // MODEL-BINDING
         appModel.state.selectedPipe.on("update", (data) => this.loadTemplate(data))
-
     }
     loadTemplate(appData: any){
         // the appData reference is used in the toolbar view bindings (see constructor).
@@ -113,7 +110,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         } 
         this.graph = new Graph(this.view.html.refs["dagre"])
 
-        // @refactor: move ?
         // @model-binding: should this be updated automatically ?
         if(appModel.isCompleted) {
             $(this.view.html.refs["btn-pause-pipeline"]).remove()
@@ -133,8 +129,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 </tbody>  
             </table>
         `)
-
-
 
         // handle pipeline progress information.
         if (appData.progress === "PAUSED") {
@@ -171,11 +165,8 @@ class PipelineGraphPresenter extends WizardTabPresenter {
             }
         })
 
-
         // add nodes and edges to the graph.
         this.nodes.forEach(n => this.graph.addNode(n))
-
-
         this.nodes.forEach(n => {
             if (n.constructor.name === "LoopNodePresenter") {
                 this.graph.addEdge(n.model.peN, n.model.loop.peJumpId, true)
@@ -186,7 +177,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
 
         this.graph.centerGraph()
-
 
         // enable tooltips after drawing all nodes.
         $('[data-toggle="tooltip"]').tooltip({
@@ -202,7 +192,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                  coreData.requestRunningPipe(this.appData.id)
                  .then((appData) => {
                     // tooltip would stay opened, if we wouldn't hide it on update.
-                   $('.tooltip').tooltip('hide')                  
+                    $('.tooltip').tooltip('hide')                  
                     if(typeof appData === 'string'){
                         clearInterval(refresh)
                         swal({
@@ -239,22 +229,12 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 })
             }, 1000)
         }
-
     }
-
-
-    /**
-     * @extend
-     */
     validate() {
         super.validate(() => {
-            // ...
             return true
         })
     }
-    /**
-     * @extend
-     */
     deactivate() {
         super.deactivate(() => {
             // destroy graph (remove Modals)

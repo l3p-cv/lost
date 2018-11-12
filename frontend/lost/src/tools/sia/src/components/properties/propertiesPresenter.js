@@ -1,6 +1,6 @@
 import $ from "cash-dom"
 
-import { mouse, keyboard, state } from "l3p-frontend"
+import { mouse, keyboard } from "l3p-frontend"
 
 import * as propertiesView from "./propertiesView"
 
@@ -9,13 +9,10 @@ import * as modals from "../../modals"
 
 import * as data from "siaRoot/data"
 
-import { STATE } from "drawables/drawable.statics"
 import DrawablePresenter from "drawables/DrawablePresenter"
-import PointPresenter from "../../drawables/point/PointPresenter";
+import PointPresenter from "../../drawables/point/PointPresenter"
 
 import imageInterface from "components/image/imageInterface"
-
-import objectAssignDeep from "@cartok/object-assign-deep"
 
 import * as imagePresenter from "../image/imagePresenter"
 

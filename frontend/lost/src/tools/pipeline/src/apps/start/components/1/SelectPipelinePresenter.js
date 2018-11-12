@@ -28,9 +28,6 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         return (this.isTabValidated)
     }
     updateTable(rawData){
-
-
-
         // map raw data to the format 'datatables' accepts.
         const data = rawData.map(template => {
             return [
@@ -56,8 +53,8 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 { title: "Date" },
             ]
         })   
-         // DEBUG:
-         //$(this.view.html.refs["templatetable"]).find("tr")[1].click()
+        // DEBUG:
+        // $(this.view.html.refs["templatetable"]).find("tr")[1].click()
     }
     selectTemplate(id: TemplateId){
         // request the template

@@ -166,7 +166,7 @@ export default class BoxPresenter extends DrawablePresenter {
         }
 
         // mouse position relative to the event target
-        let mousepos = mouse.getMousePosition(e, e.target);
+        let mousepos = mouse.getMousePosition(e, e.target)
         // calculate the real mouseposition (@zoom)
         const zoom = appModel.ui.zoom.value
         mousepos = {
@@ -216,7 +216,7 @@ export default class BoxPresenter extends DrawablePresenter {
                 isBottomLeftCorner: isEdge.isBottomEdge && isEdge.isLeftEdge,
                 isBottomRightCorner: isEdge.isBottomEdge && isEdge.isRightEdge
             }
-            const isCenter = !(isEdge.isLeftEdge || isEdge.isRightEdge || isEdge.isBottomEdge || isEdge.isTopEdge);
+            const isCenter = !(isEdge.isLeftEdge || isEdge.isRightEdge || isEdge.isBottomEdge || isEdge.isTopEdge)
 
             // processing
             // count edges
@@ -224,7 +224,7 @@ export default class BoxPresenter extends DrawablePresenter {
             for (var key in isEdge) {
                 if (isEdge.hasOwnProperty(key)) {
                     if (isEdge[key] === true) {
-                        edgeCount++;
+                        edgeCount++
                     }
                 }
             }

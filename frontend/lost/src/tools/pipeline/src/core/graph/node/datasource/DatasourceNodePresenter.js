@@ -44,7 +44,7 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
 
         $(this.modal.view.refs["more-information-link"]).on("click", () =>{
             $(this.modal.view.refs["collapse-this"]).collapse('toggle')
-            $(this.modal.view.refs["more-information-icon"]).toggleClass("fa-chevron-down fa-chevron-up");
+            $(this.modal.view.refs["more-information-icon"]).toggleClass("fa-chevron-down fa-chevron-up")
         })
     }
 

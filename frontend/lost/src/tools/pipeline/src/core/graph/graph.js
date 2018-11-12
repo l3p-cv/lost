@@ -83,86 +83,86 @@ export default class Graph {
     var inner = this.renderTarget
     $(document).keydown(function (event) {
       if (event.ctrlKey === true && (event.which === '61' || event.which === '107' || event.which === '173' || event.which === '109' || event.which === '187' || event.which === '189')) {
-        alert('disabling zooming');
-        event.preventDefault();
+        alert('disabling zooming')
+        event.preventDefault()
       }
-    });
+    })
 
     $(window).bind('mousewheel DOMMouseScroll', function (event) {
       if (event.ctrlKey === true) {
-        event.preventDefault();
+        event.preventDefault()
       }
-    });
+    })
 
-    var ctrlPressed = false;
+    var ctrlPressed = false
     $(window).keydown(function (evt) {
       if (evt.which === 17) {
         ctrlPressed = true
       }
     }).keyup(function (evt) {
       if (evt.which === 17) {
-        ctrlPressed = false;
+        ctrlPressed = false
       }
-    });
+    })
     var width = 500,
       height = 960,
-      center = [width / 2, height / 2];
-    zoom.on("zoom", zoomed);
+      center = [width / 2, height / 2]
+    zoom.on("zoom", zoomed)
 
     function zoomed() {
-      inner.attr("transform", "translate(" + zoom.translate() + ")scale(" + zoom.scale() + ")");
+      inner.attr("transform", "translate(" + zoom.translate() + ")scale(" + zoom.scale() + ")")
     }
     svg.call(zoom)
-    svg.on("wheel.zoom", null);
-    svg.on("dblclick.zoom", null);
+    svg.on("wheel.zoom", null)
+    svg.on("dblclick.zoom", null)
 
     $('#graph-0').bind('mousewheel DOMMouseScroll', function (e) {
       if (ctrlPressed === true) {
         if (e.type === 'mousewheel') { // Zoom Chrome
           if (e.originalEvent.wheelDelta > 0) {
-            zoom_by(1.03);
+            zoom_by(1.03)
           } else if (e.originalEvent.wheelDelta < 0) {
-            zoom_by(1 / 1.03);
+            zoom_by(1 / 1.03)
           }
         } else if (e.type === 'DOMMouseScroll') { // Zoom Firefox
           if (e.originalEvent.detail < 0) {
-            zoom_by(1.03);
+            zoom_by(1.03)
           } else if (e.originalEvent.detail > 0) {
-            zoom_by(1 / 1.03);
+            zoom_by(1 / 1.03)
           }
         }
       }
-    });
+    })
 
-    var scale_graph;
+    var scale_graph
 
     function zoom_by(factor) {
-      scale_graph = zoom.scale();
+      scale_graph = zoom.scale()
       var scale = zoom.scale(),
         extent = zoom.scaleExtent(),
         translate = zoom.translate(),
         x = translate[0],
         y = translate[1],
-        target_scale = scale * factor;
+        target_scale = scale * factor
       // If we're already at an extent, done
       if (target_scale === extent[0] || target_scale === extent[1]) {
-        return false;
+        return false
       }
       // If the factor is too much, scale it down to reach the extent exactly
-      var clamped_target_scale = Math.max(extent[0], Math.min(extent[1], target_scale));
-      if (clamped_target_scale != target_scale) {
-        target_scale = clamped_target_scale;
-        factor = target_scale / scale;
+      var clamped_target_scale = Math.max(extent[0], Math.min(extent[1], target_scale))
+      if (clamped_target_scale !== target_scale) {
+        target_scale = clamped_target_scale
+        factor = target_scale / scale
       }
 
       // Center each vector, stretch, then put back
-      x = (x - center[0]) * factor + center[0];
-      y = (y - center[1]) * factor + center[1];
+      x = (x - center[0]) * factor + center[0]
+      y = (y - center[1]) * factor + center[1]
 
       // Enact the zoom immediately
       zoom.scale(target_scale)
-        .translate([x, y]);
-      zoomed();
+        .translate([x, y])
+      zoomed()
     }
   }
 
@@ -186,17 +186,17 @@ export default class Graph {
 
   rerender() {
     var svg = d3.select("#graph-0")
-    this.renderTarget.attr("transform", "translate(" + [0, 0] + ") scale(" + 1 + ")");
+    this.renderTarget.attr("transform", "translate(" + [0, 0] + ") scale(" + 1 + ")")
     
-    var render = new dagreD3.render();
+    var render = new dagreD3.render()
     this.graph.graph().transition = function (selection) {
       return selection.transition().duration(2000)
     }
     // Run the renderer. This is what draws the final graph.
-    render(this.renderTarget, this.graph);
+    render(this.renderTarget, this.graph)
     // Center the graph
-    zoom.event(svg);
-    document.getElementById('graph-0').setAttribute("height", this.graph.graph().height * this.initialScale + this.marginTop*2);
+    zoom.event(svg)
+    document.getElementById('graph-0').setAttribute("height", this.graph.graph().height * this.initialScale + this.marginTop*2)
   }
 
 
@@ -242,8 +242,8 @@ export default class Graph {
   // loop true or false peJump to draw red line
   addEdge(from, to, redline) {
     if (redline === true) {
-      var edge_style = "stroke: #f66; stroke-width: 3px; stroke-dasharray: 5, 5;";
-      var edge_arrow_style = "fill: #f66; stroke: none;";
+      var edge_style = "stroke: #f66; stroke-width: 3px; stroke-dasharray: 5, 5;"
+      var edge_arrow_style = "fill: #f66; stroke: none;"
     } else {
       edge_style = ""
       edge_arrow_style = ""

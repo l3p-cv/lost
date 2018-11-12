@@ -2,10 +2,8 @@ import WizardTabPresenter from "wizard/WizardTabPresenter"
 import appModel from "../../appModel"
 import swal from "sweetalert2"
 import SelectPipelineView from "./SelectPipelineView"
-import PipelineGraphPresenter from "../2/PipelineGraphPresenter"
 import * as data from "pipRoot/core/data"
-import { mouse, ContextMenu } from "l3p-frontend"
-import "l3p-frontend/build/context-menu.css"
+import { ContextMenu } from "l3p-frontend"
 import $ from "jquery"
 
 import moment from 'moment'
@@ -14,24 +12,22 @@ import "datatables.net-bs"
 
 
 let templateDatatable
-
-
 class SelectPipelinePresenter extends WizardTabPresenter {
     constructor() {
         super()
         this.view = SelectPipelineView
         let that = this
         this.isTabValidated = false
-        
+
+        // MODEL-BINDING
+        appModel.data.pipelineTemplates.on("update", (data) => this.updateTable(data))
+
         // VIEW-BINDING
         $(this.view.html.refs["templatetable"]).on("click", "tbody td", (e) => {
-
             let templateId = templateDatatable.row($(e.currentTarget).parent()).data()[0]
-            if ($(e.currentTarget).text() != "Delete Pipeline") {
+            if ($(e.currentTarget).text() !== "Delete Pipeline") {
                 this.selectTemplate(templateId)
             }
-
-
         })
         $(this.view.html.refs["templatetable"]).on("contextmenu", "tbody td", (e) => {
             e.preventDefault()
@@ -73,7 +69,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     fn: () =>{
                         downloadLogfile()
                     }
-                });
+                })
             }else{
                 let cm = new ContextMenu(e, {
                     name: "Delete Pipeline",
@@ -115,22 +111,14 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 })
             }
 
-        });
-        // Delete Button
+        })
         $(this.view.html.refs["templatetable"]).on('click', 'button', function () {
-            let templateId = templateDatatable.row($(this).parents('tr')).data();
+            let templateId = templateDatatable.row($(this).parents('tr')).data()
             //data.deletePipe(templateId)
-            //alert( data[0] + "delete Pipe");
-        });
-        // MODEL-BINDING
-        appModel.data.pipelineTemplates.on("update", (data) => this.updateTable(data))
+        })
     }
-    /**
-     * @extend
-     */
     validate() {
         super.validate(() => {
-            // ...
             return true
         })
     }
@@ -151,7 +139,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     pipe.progress = `<span class="label label-warning">${pipe.progress}</span>`                                        
                 }
                 let date  = new Date(pipe.date)
-                let formatedDate = moment(date).format('MMMM Do YYYY, HH:mm:ss');
+                let formatedDate = moment(date).format('MMMM Do YYYY, HH:mm:ss')
                 return [
                     pipe.id,
                     pipe.name,

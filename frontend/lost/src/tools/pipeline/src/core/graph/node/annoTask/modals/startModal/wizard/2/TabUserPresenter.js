@@ -58,7 +58,7 @@ class TabUserPresenter extends WizardTabPresenter {
                     "targets": 2
                 },
             ]
-        });
+        })
 
         // Removed Table from TabUserView
         let groupTable = $(this.view.html.refs.dataTableGroup).DataTable({
@@ -82,14 +82,14 @@ class TabUserPresenter extends WizardTabPresenter {
                 },
 
             ],
-        });
+        })
 
         $(this.view.html.refs.dataTableUser).find("tbody").on('click', 'tr', (e) => {
             if ($(this.view.html.refs.spanGroup).text() !== "") {
                 $(this.view.html.refs.spanGroup).text("")
-                groupTable.$('tr.selected').removeClass('selected');
+                groupTable.$('tr.selected').removeClass('selected')
             }
-            userTable.$('tr.selected').removeClass('selected');
+            userTable.$('tr.selected').removeClass('selected')
             $(e.currentTarget).addClass('selected')
             // Show Name on header deprecated
           //  $(this.view.html.refs.spanUser).text(" " + $( e.currentTarget.children[2]).text())
@@ -97,19 +97,19 @@ class TabUserPresenter extends WizardTabPresenter {
             model.meta.assignee = $(e.currentTarget.children[2]).text()          
             presenter.view = new AnnoTaskStartView(model)
             presenter.modalModel.controls.show3.update(true)
-        });
+        })
 
         // deprecated groups
         $(this.view.html.refs.dataTableGroup).find("tbody").on('click', 'tr', (e) => {
             if ($(this.view.html.refs.spanUser).text() !== "") {
                 $(this.view.html.refs.spanUser).text("")
-                userTable.$('tr.selected').removeClass('selected');
+                userTable.$('tr.selected').removeClass('selected')
             }
-            groupTable.$('tr.selected').removeClass('selected');
+            groupTable.$('tr.selected').removeClass('selected')
             $(e.currentTarget).addClass('selected')
             $(this.view.html.refs.spanGroup).text($(e.currentTarget.childNodes[1]).text())
 
-        });
+        })
 
 
 

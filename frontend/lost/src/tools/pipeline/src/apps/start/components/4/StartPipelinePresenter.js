@@ -14,11 +14,14 @@ class StartPipelineTab extends WizardTabPresenter {
     constructor() {
         super()
         this.view = StartPipelineView
+        
+        // MODEL BINDING
         appModel.controls.show4.on("update", () => this.show())
+        
+        // VIEW BINDING
         $(this.view.html.refs["btn-prev"]).on('click', () => {
             appModel.controls.show3.update(true)
         })
-
         $(this.view.html.refs.btnStartPipe).on('click', () => {
             postJson.elements = []
             if (ConfigPipelinePresenter.validated === false) {
@@ -33,9 +36,9 @@ class StartPipelineTab extends WizardTabPresenter {
             postJson.name = ConfigPipelinePresenter.name
             postJson.description = ConfigPipelinePresenter.description
             postJson.isDebug = appModel.isDebug
-            console.log('===========postJson=========================');
-            console.log(postJson);
-            console.log('====================================');
+            console.log('===========postJson=========================')
+            console.log(postJson)
+            console.log('====================================')
             const allNodePresenter = PipelineGraphPresenter.graph.graph._nodes
             Object.keys(allNodePresenter).forEach(n => {
                 if (allNodePresenter[n].nodePresenter.model.post !== undefined) {
@@ -43,9 +46,9 @@ class StartPipelineTab extends WizardTabPresenter {
                 }
             })
             data.startPipe(postJson).then(response => {
-                console.log('========postJson============================');
-                console.log(postJson);
-                console.log('====================================');
+                console.log('========postJson============================')
+                console.log(postJson)
+                console.log('====================================')
                 swal({
                     position: 'top-right',
                     type: 'success',
@@ -64,20 +67,8 @@ class StartPipelineTab extends WizardTabPresenter {
                     }
                 )
             })
-
-
-            // Welche URL
         })
 
     }
-    /**
-     * @extend
-     */
-    // validate() {
-    //     super.validate(() => {
-    //         // ...
-    //         return true
-    //     })
-    // }
 }
 export default new StartPipelineTab()

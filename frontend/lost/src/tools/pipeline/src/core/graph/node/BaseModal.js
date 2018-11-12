@@ -1,8 +1,6 @@
 import $ from "jquery"
 
 import { NodeTemplate } from "l3p-frontend"
-import { log } from "util";
-import { ENGINE_METHOD_CIPHERS } from "constants";
 
 
 const DEFAULTS = {
@@ -47,6 +45,6 @@ export default class BaseModal {
             if(e.which === 13) {                
                 $('.modal').modal('hide');   
             }         
-        });
+        })
     }    
 }
