@@ -179,7 +179,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         this.graph.centerGraph()
 
         // enable tooltips after drawing all nodes.
-        $('[data-toggle="tooltip"]').tooltip({
+        $(`[data-toggle="tooltip"]`).tooltip({
             html: true,
             placement: "right",
             container: 'body'
@@ -218,7 +218,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                         }
                     })
                     // not thefinest solution add event Listenet Modal on close
-                    $('[data-toggle="tooltip"]').tooltip({
+                    $(`[data-toggle='tooltip']`).tooltip({
                         html: true,
                         placement: "right",
                         container: 'body'

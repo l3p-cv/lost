@@ -26,9 +26,4 @@ export default class LoopStartView {
         // all view events will be delegated to the parent node.
         this.parentNode = undefined
     }
-
-
-   /* setDropdownValue(text: string){
-        $(this.parentNode).find("[data-ref='dropdown']")[0].textContent = text
-    }*/
 }

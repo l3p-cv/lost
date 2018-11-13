@@ -16,6 +16,6 @@ export default class ExampleCreateView {
         this.parentNode = undefined
     }
     setInfoText(text) {
-        $(this.parentNode).find("[data-ref='info']")[0].textContent = text
+        $(this.parentNode).find(`[data-ref='info']`)[0].textContent = text
     }
 }

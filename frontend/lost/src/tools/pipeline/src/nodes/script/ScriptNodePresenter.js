@@ -50,7 +50,7 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
      * @override
      */
     initViewBinding() {
-        $(this.view.parentNode).on("mousedown", "[data-ref='checkbox']", () => {
+        $(this.view.parentNode).on("mousedown", `[data-ref='checkbox']`, () => {
             this.model.post.script.isDebug = !this.model.post.script.isDebug
             this.view = new DebugStartView(this.model)
             this.graph.updateNode(this)

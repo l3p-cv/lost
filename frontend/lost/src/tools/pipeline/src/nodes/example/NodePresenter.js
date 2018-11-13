@@ -55,7 +55,7 @@ export default class ExampleNodePresenter extends BaseNodePresenter {
      * @override
      */
     initViewBinding(){
-        $(this.view.parentNode).on("mouseover", "[data-ref='title']", (e) => {
+        $(this.view.parentNode).on("mouseover", `[data-ref='title']`, (e) => {
             this.model.text.update("it works!")
         })
     }

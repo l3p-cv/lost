@@ -47,7 +47,7 @@ export default class AnnoTaskStartView {
         this.parentNode = undefined
     }
     setName(name: String) {
-        $(this.parentNode).find("[data-ref='name']").text(name)
+        $(this.parentNode).find(`[data-ref='name']`).text(name)
     }
 }
 

@@ -71,7 +71,7 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
             if (treeTable.$('tr.selected').hasClass('selected') === true) {
                 swal({
                     title: 'Are you sure to load the graph? ',
-                    text: "Current labels will be removed. You won't be able to revert this!",
+                    text: "Current labels will be removed. You will not be able to revert this!",
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

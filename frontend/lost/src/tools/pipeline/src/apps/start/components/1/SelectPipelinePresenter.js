@@ -71,8 +71,8 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 
         if(PipelineGraphPresenter.isThereGraph){
             swal({
-                title: 'Are you sure to load the graph? ',
-                text: "Current graph will be removed. You won't be able to revert this!",
+                title: 'Are you sure to load the graph?',
+                text: "Current graph will be removed. You will not be able to revert this!",
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',

@@ -20,6 +20,6 @@ export default class ExampleStartView {
         // the actual target, cause all references or event hanlders
         // will get lost after adding the node to the graph.
         // still searching for a way to fix it at dagre-d3 fork.
-        $(this.parentNode).find("[data-ref='info']")[0].textContent = text
+        $(this.parentNode).find(`[data-ref='info']`)[0].textContent = text
     }
 }

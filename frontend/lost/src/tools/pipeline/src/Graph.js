@@ -38,7 +38,7 @@ export default class Graph {
     }
 
     // only one graph may be added to a 'mountPoint'
-    if ($(this.mountPoint).find("[data-type='graph']")[0] !== undefined) {
+    if ($(this.mountPoint).find(`[data-type='graph']`)[0] !== undefined) {
       throw new Error("a graph has allready been mounted here.")
     }
 

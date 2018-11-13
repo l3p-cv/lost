@@ -40,9 +40,7 @@ export default class AnnoTaskRunningView {
         // all view events will be delegated to the parent node.
         this.parentNode = undefined
     }
-    
     setName(name: String){
-        //$(this.parentNode).find("[data-ref='name']").text(name)
     }
 }
 

@@ -44,6 +44,6 @@ export default class DatasourceStartView {
         this.parentNode = undefined
     }
     setDropdownValue(text: string) {
-        $(this.parentNode).find("[data-ref='dropdown']")[0].textContent = text
+        $(this.parentNode).find(`[data-ref='dropdown']`)[0].textContent = text
     }
 }

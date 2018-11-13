@@ -19,7 +19,7 @@ var toolTip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function (d) {
-        return  '<h4>Description</h4><p style="text-align:center">'+d.description+'<p>'
+        return  `<h4>Description</h4><p style='text-align:center'>${d.description}<p>`
     })
 
 class TabTreePresenter extends WizardTabPresenter {

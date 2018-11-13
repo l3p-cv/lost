@@ -38,7 +38,7 @@ export function requestPipeline(id: Number){
 export function deletePipe(id) {
     return swal({
         title: 'Are you sure to delete this pipe? ',
-        text: "You won't be able to revert this!",
+        text: "You will not be able to revert this!",
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

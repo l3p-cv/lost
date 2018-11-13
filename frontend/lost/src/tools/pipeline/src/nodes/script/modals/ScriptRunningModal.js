@@ -128,7 +128,7 @@ export default class ScriptRunningModal extends BaseModal {
             `
         })
 
-        $('[data-toggle="tooltip"]').tooltip({
+        $(`[data-toggle='tooltip']`).tooltip({
             html: true,
             placement: "right",
             container: 'body'
