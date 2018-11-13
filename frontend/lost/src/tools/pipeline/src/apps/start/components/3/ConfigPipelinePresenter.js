@@ -1,6 +1,6 @@
-import $ from "jquery"
 
-import WizardTabPresenter from "wizard/WizardTabPresenter"
+
+import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
 import ConfigPipelineView from "./ConfigPipelineView"
 import appModel from "../../appModel"
 

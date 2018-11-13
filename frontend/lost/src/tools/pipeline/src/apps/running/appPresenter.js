@@ -1,7 +1,7 @@
 import appModel from "./appModel"
-import * as data from "pipRoot/core/data"
+import * as http from "pipRoot/http"
 
-import Wizard from "wizard/Wizard"
+import { Wizard } from "pipRoot/l3pfrontend/index"
 import SelectPipelineTab from "./components/1/SelectPipelinePresenter"
 import PipelineGraphTab from "./components/2/PipelineGraphPresenter"
 import "../../../node_modules/sweetalert2/dist/sweetalert2.css"
@@ -15,13 +15,13 @@ wizard.add([
 
 export function init(params) {
     if(params.isCompleted){
-        data.requestCompletedPipes(params.isDebug).then((response) => {
+        http.requestCompletedPipes(params.isDebug).then((response) => {
             appModel.isDebug = params.isDebug
             appModel.isCompleted = true
             appModel.data.pipelineTemplates.update(response.pipes)
         })
     } else {
-        data.requestRunningPipes(params.isDebug).then((response) => {
+        http.requestRunningPipes(params.isDebug).then((response) => {
             appModel.isDebug = params.isDebug
             appModel.isCompleted = false
             appModel.data.pipelineTemplates.update(response.pipes)

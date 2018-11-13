@@ -1,4 +1,4 @@
-import WizardTabView from "wizard/WizardTabView"
+import { WizardTabView } from "pipRoot/l3pfrontend/index"
 import "./SelectPipeline.scss"
 import "datatables.net"
 import "datatables.net-buttons"

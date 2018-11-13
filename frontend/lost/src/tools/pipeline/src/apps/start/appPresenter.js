@@ -1,7 +1,7 @@
 import appModel from "./appModel"
-import * as data from "pipRoot/core/data"
+import * as http from "pipRoot/http"
 
-import Wizard from "wizard/Wizard"
+import { Wizard } from "pipRoot/l3pfrontend/index"
 import SelectPipelineTab from "./components/1/SelectPipelinePresenter"
 import PipelineGraphTab from "./components/2/PipelineGraphPresenter"
 import ConfigPipelineTab from "./components/3/ConfigPipelinePresenter"
@@ -21,7 +21,7 @@ wizard.add([
 
 export default function init(token){
     appModel.state.token = token
-    data.requestTemplates().then((response) => {
+    http.requestTemplates().then((response) => {
         appModel.data.pipelineTemplates.update(response.templates)
     })
 }

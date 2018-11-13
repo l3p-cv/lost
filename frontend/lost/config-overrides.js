@@ -23,9 +23,9 @@ module.exports = (config, env) => {
 
 	// PIP aliases
 	config.resolve.alias["pipRoot"] = absolutePath("src/tools/pipeline/src/")
-	config.resolve.alias["graph"] = absolutePath("src/tools/pipeline/src/core/graph")
-	config.resolve.alias["wizard"] = absolutePath("src/tools/pipeline/src/core/wizard")
 	config.resolve.alias["apps"] = absolutePath("src/tools/pipeline/src/apps")
+	config.resolve.alias["running"] = absolutePath("src/tools/pipeline/src/apps/running")
+	config.resolve.alias["start"] = absolutePath("src/tools/pipeline/src/apps/start")
 	
 	config.devtool = "source-map"
 
@@ -52,7 +52,7 @@ module.exports = (config, env) => {
         }])
     )
 	
-	// config = injectBabelPlugin("plugin", config)
+	// config = injectBabelPlugin("@babel/plugin-transform-flow-strip-types", config)
 	config = rewireEslint(config, env)
 	
 	// console.log(config)

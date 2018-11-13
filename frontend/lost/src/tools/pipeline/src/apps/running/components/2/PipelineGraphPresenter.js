@@ -1,21 +1,21 @@
 
-import WizardTabPresenter from "wizard/WizardTabPresenter"
-
+import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
+import * as http from "pipCore/http"
 import appModel from "../../appModel"
 import PipelineGraphView from "./PipelineGraphView"
 
-import Graph from "graph/graph"
+import Graph from "pipRoot/Graph"
 
-import DatasourceNodePresenter from "graph/node/datasource/DatasourceNodePresenter"
-import AnnoTaskNodePresenter from "graph/node/annoTask/AnnoTaskNodePresenter"
-import DataExportNodePresenter from "graph/node/dataExport/DataExportNodePresenter"
-import VisualOutputNodePresenter from "graph/node/visualOutput/VisualOutputNodePresenter"
+import DatasourceNodePresenter from "pipRoot/nodes/datasource/DatasourceNodePresenter"
+import AnnoTaskNodePresenter from "pipRoot/nodes/annoTask/AnnoTaskNodePresenter"
+import DataExportNodePresenter from "pipRoot/nodes/dataExport/DataExportNodePresenter"
+import VisualOutputNodePresenter from "pipRoot/nodes/visualOutput/VisualOutputNodePresenter"
 
-import ScriptNodePresenter from "graph/node/script/ScriptNodePresenter"
-import LoopNodePresenter from "graph/node/loop/LoopNodePresenter"
+import ScriptNodePresenter from "pipRoot/nodes/script/ScriptNodePresenter"
+import LoopNodePresenter from "pipRoot/nodes/loop/LoopNodePresenter"
 
 import swal from 'sweetalert2'
-import * as coreData from "pipRoot/core/data"
+
 
 class PipelineGraphPresenter extends WizardTabPresenter {
     constructor() {
@@ -27,7 +27,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         $(this.view.html.refs["btn-delete-pipeline"]).on("click", () => {
             let id = this.appData.id
             // result can be cancel, true, false
-            coreData.deletePipe(id).then((isSuccess) => {
+            http.deletePipe(id).then((isSuccess) => {
                 if (isSuccess === "cancel") {
                     return
                 } else if (isSuccess) {
@@ -45,7 +45,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
         // Pause Pipe
         $(this.view.html.refs["btn-pause-pipe"]).on("click", () => {
-            coreData.pausePipe({
+            http.pausePipe({
                 "pipeId": this.appData.id
             }).then((isSuccess) => {
                 if (isSuccess) {
@@ -58,7 +58,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
         // Play Pipe
         $(this.view.html.refs["btn-play-pipe"]).on("click", () => {
-            coreData.playPipe({
+            http.playPipe({
                 "pipeId": this.appData.id
             }).then((isSuccess) => {
                 if (isSuccess) {
@@ -189,7 +189,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         if(!appModel.isCompleted){
             let refresh = setInterval(() => {
                 $(this.view.html.refs["update-label"]).fadeIn(200)
-                 coreData.requestRunningPipe(this.appData.id)
+                 http.requestRunningPipe(this.appData.id)
                  .then((appData) => {
                     // tooltip would stay opened, if we wouldn't hide it on update.
                     $('.tooltip').tooltip('hide')                  

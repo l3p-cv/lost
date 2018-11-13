@@ -1,10 +1,10 @@
-import WizardTabPresenter from "wizard/WizardTabPresenter"
+import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
 import appModel from "../../appModel"
 import swal from "sweetalert2"
 import SelectPipelineView from "./SelectPipelineView"
-import * as data from "pipRoot/core/data"
-import { ContextMenu } from "l3p-frontend"
-import $ from "jquery"
+import * as http from "pipRoot/http"
+import { ContextMenu } from "pipRoot/l3pfrontend/index"
+
 
 import moment from 'moment'
 
@@ -35,7 +35,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
             let row = templateDatatable.row($(e.currentTarget).parent())
 
             function deletePipeline(){
-                data.deletePipe(templateId).then((isSuccess) => {
+                http.deletePipe(templateId).then((isSuccess) => {
                     if (isSuccess === "cancel") {
                         return
                     } else if (isSuccess) {
@@ -83,7 +83,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     name: "Pause Pipeline",
                     icon: "fa fa-pause",
                     fn: () => {
-                        data.pausePipe({"pipeId": templateId}).then((isSuccess)=>{
+                        http.pausePipe({"pipeId": templateId}).then((isSuccess)=>{
                             if(isSuccess){
                                 location.reload()
                             }
@@ -95,7 +95,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     name: "Play Pipeline",
                     icon: "fa fa-play",
                     fn: () => {
-                         data.playPipe({"pipeId": templateId}).then((isSuccess)=>{
+                         http.playPipe({"pipeId": templateId}).then((isSuccess)=>{
                             if(isSuccess){
                                 location.reload()
                             }
@@ -114,7 +114,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         })
         $(this.view.html.refs["templatetable"]).on('click', 'button', function () {
             let templateId = templateDatatable.row($(this).parents('tr')).data()
-            //data.deletePipe(templateId)
+            //http.deletePipe(templateId)
         })
     }
     validate() {
@@ -197,12 +197,12 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 this.isTabValidated = true
                 // Completed                
                 if(appModel.isCompleted){
-                    data.requestCompletedPipe(id).then(response => {
+                    http.requestCompletedPipe(id).then(response => {
                         appModel.state.selectedPipe.update(response)
                     })
                 }else{
                     // Running
-                    data.requestRunningPipe(id).then(response => {
+                    http.requestRunningPipe(id).then(response => {
                         if(typeof response === "string"){
                             swal(
                                 'Oops...',

@@ -1,11 +1,11 @@
-import $ from "jquery"
 
-import WizardTabPresenter from "wizard/WizardTabPresenter"
+
+import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
 import StartPipelineView from "./StartPipelineView"
 import SelectPipelinePresenter from "../1/SelectPipelinePresenter"
 import PipelineGraphPresenter from "../2/PipelineGraphPresenter"
 import ConfigPipelinePresenter from "../3/ConfigPipelinePresenter"
-import * as data from "pipRoot/core/data"
+import * as http from "pipRoot/http"
 import swal from "sweetalert2"
 import appModel from "../../appModel"
 
@@ -45,7 +45,7 @@ class StartPipelineTab extends WizardTabPresenter {
                     postJson.elements.push(allNodePresenter[n].nodePresenter.model.post)
                 }
             })
-            data.startPipe(postJson).then(response => {
+            http.startPipe(postJson).then(response => {
                 console.log('========postJson============================')
                 console.log(postJson)
                 console.log('====================================')

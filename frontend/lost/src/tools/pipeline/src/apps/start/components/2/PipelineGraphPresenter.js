@@ -1,18 +1,18 @@
-import $ from "jquery"
 
-import WizardTabPresenter from "wizard/WizardTabPresenter"
+
+import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
 import appModel from "../../appModel"
 import PipelineGraphView from "./PipelineGraphView"
 
-import Graph from "graph/graph"
+import Graph from "pipRoot/Graph"
 import ConfigPipelinePresener from "../3/ConfigPipelinePresenter"
 
-import DatasourceNodePresenter from "graph/node/datasource/DatasourceNodePresenter"
-import AnnoTaskNodePresenter from "graph/node/annoTask/AnnoTaskNodePresenter"
-import DataExportNodePresenter from "graph/node/dataExport/DataExportNodePresenter"
-import VisualOutputNodePresenter from "graph/node/visualOutput/VisualOutputNodePresenter"
-import ScriptNodePresenter from "graph/node/script/ScriptNodePresenter"
-import LoopNodePresenter from "graph/node/loop/LoopNodePresenter"
+import DatasourceNodePresenter from "pipRoot/nodes/datasource/DatasourceNodePresenter"
+import AnnoTaskNodePresenter from "pipRoot/nodes/annoTask/AnnoTaskNodePresenter"
+import DataExportNodePresenter from "pipRoot/nodes/dataExport/DataExportNodePresenter"
+import VisualOutputNodePresenter from "pipRoot/nodes/visualOutput/VisualOutputNodePresenter"
+import ScriptNodePresenter from "pipRoot/nodes/script/ScriptNodePresenter"
+import LoopNodePresenter from "pipRoot/nodes/loop/LoopNodePresenter"
 
 
 class PipelineGraphPresenter extends WizardTabPresenter {

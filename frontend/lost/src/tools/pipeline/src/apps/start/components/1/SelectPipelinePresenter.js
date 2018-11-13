@@ -1,10 +1,10 @@
-import WizardTabPresenter from "wizard/WizardTabPresenter"
+import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
 import appModel from "../../appModel"
 import swal from "sweetalert2"
 import SelectPipelineView from "./SelectPipelineView"
 import PipelineGraphPresenter from "../2/PipelineGraphPresenter"
-import * as data from "pipRoot/core/data"
-import $ from "jquery"
+import * as http from "pipRoot/http"
+
 import "datatables.net"
 import "datatables.net-buttons"
 let templateDatatable
@@ -60,7 +60,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         // request the template
         let requestGraph = () => {
             if (typeof id === "number") {
-                data.requestTemplate(id).then(response => {
+                http.requestTemplate(id).then(response => {
                     this.isTabValidated = true
                     this.templateId = id
                     //response = JSON.parse(response)
