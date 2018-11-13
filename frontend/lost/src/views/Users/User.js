@@ -8,6 +8,7 @@ import {
 } from 'reactstrap'
 
 import CreateUser from '../../containers/Users/CreateUser'
+import CreateGroup from '../../containers/Users/CreateGroup'
 import UserTable from '../../containers/Users/UserTable'
 import actions from '../../actions'
 
@@ -26,7 +27,15 @@ class User extends Component {
     render() {
         return (
             <Row>
-                <Col xs='12' sm='12' lg='12'>
+                <Col xs='2' sm='2' lg='2'>
+                    <Card className='text-black'>
+                        <CardBody className='pb-0'>
+                        <CreateGroup groups={this.props.groups}></CreateGroup>
+                        
+                        </CardBody>
+                    </Card>
+                </Col>
+                <Col xs='10' sm='10' lg='10'>
                     <Card className='text-black'>
                         <CardBody className='pb-0'>
                         <CreateUser groups={this.props.groups}></CreateUser>

@@ -20,8 +20,17 @@ class UserGroupDropdown extends Component {
                     return acc
                 }, {})
         };
+     
         this.handleGroupCheckboxChange = this.handleGroupCheckboxChange.bind(this)
 
+    }
+    componentDidMount(){
+        if (this.props.initGroups !== undefined && this.props.initGroups.length > 0){
+            const groups = this.state.groups
+            this.props.initGroups.map((g) => {
+                groups[g.name] = true
+            })
+        }
     }
     toggle() {
         this.setState({

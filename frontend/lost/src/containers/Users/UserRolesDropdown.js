@@ -24,6 +24,14 @@ class UserRolesDropdown extends Component {
         this.handleRolesCheckboxChange = this.handleRolesCheckboxChange.bind(this)
 
     }
+    componentDidMount(){
+        if (this.props.initRoles !== undefined && this.props.initRoles.length > 0){
+            const roles = this.state.roles
+            this.props.initRoles.map((r) => {
+                roles[r.name] = true
+            })
+        }
+    }
     toggle() {
         this.setState({
             rolesDropdownOpen: !this.state.rolesDropdownOpen

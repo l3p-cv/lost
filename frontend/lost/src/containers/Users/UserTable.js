@@ -5,13 +5,11 @@ import actions from '../../actions'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import UserGroupDropdown from './UserGroupDropdown'
+import UserRolesDropdown from './UserRolesDropdown';
 
 const {getUsers, getGroups} = actions
 
 class UserTable extends Component {
-
-   
-
     render() {
         const data = this.props.users
         return (
@@ -34,26 +32,21 @@ class UserTable extends Component {
                             id: 'name'
                         }, {
                             Header: 'Groups',
-                            accessor: d => d
-                                .groups
-                                .map((group) => `${group.name},`)
-                                .join(' ')
-                                .slice(0, -1),
-                            id: 'idx',
+                            Cell: row => (
+                                <UserGroupDropdown groups={this.props.groups} callback={(g)=>console.log(g)} initGroups={row.original.groups}/>)
+                            ,
                             filterable: false,
                         }, {
                             Header: 'Roles',
-                            accessor: d => d
-                                .roles
-                                .map((role) => `${role.name},`)
-                                .join(' ')
-                                .slice(0, -1),
-                            id: 'roles',
+                            Cell: row => (
+                                <UserRolesDropdown roles={this.props.roles} callback={(g)=>console.log(g)} initRoles={row.original.roles}/>)
+                            ,
                             filterable: false,
                         }, {
                             Cell: row => (
-                                <UserGroupDropdown groups={this.props.groups}/>
-                            ),
+                            <div>Delete ...</div>
+                                )
+                            ,
                             filterable: false,
                         }
                     ]
@@ -68,8 +61,15 @@ class UserTable extends Component {
 
 function getProps(state, rowInfo, column) {
     return {
+        onClick: (e, handleOriginal) => {
+            console.log('Cell -  Click', {state, rowInfo, column, event: e})
+            if (handleOriginal) {
+                handleOriginal()
+            }
+
+        },
         onDoubleClick: (e, handleOriginal) => {
-            console.log('Cell - Double Click', {state, rowInfo, column, event: e})
+            console.log('Cell -  DoubleClick', {state, rowInfo, column, event: e})
             if (handleOriginal) {
                 handleOriginal()
             }

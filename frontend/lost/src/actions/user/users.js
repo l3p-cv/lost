@@ -8,12 +8,13 @@ export const getUsers = () => async dispatch => {
     try {
         const response = await axios.get(API_URL + '/user')
         dispatch({type: TYPES.GET_USERS, payload: response.data})
+        
     } catch (e) {}
 }
 
-export const createUser = (payload) => async dispatch => {
+export const createUser = (payload) => dispatch => {
 
-        await axios.post(API_URL + '/user', payload).then(
+        axios.post(API_URL + '/user', payload).then(
             response => {
                 dispatch({type: TYPES.CREATE_USER_SUCCESS})
             }
