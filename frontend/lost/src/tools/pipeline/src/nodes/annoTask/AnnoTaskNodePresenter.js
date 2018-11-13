@@ -22,13 +22,6 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
                 this.modal = new AnnoTaskRunningModal(this.model)
                 break
             case "start":
-                console.log(data)
-                data.annoTask.availableGroups.unshift({
-                    id: -1,
-                    name: "All Users",
-                    photoPath: "",
-                    userName: "All Users"
-                })
                 this.view = new AnnoTaskStartView(this.model)
                 this.modalModel = new AnnoTaskStartModalModel()
                 this.modal = new AnnoTaskStartModal(this)

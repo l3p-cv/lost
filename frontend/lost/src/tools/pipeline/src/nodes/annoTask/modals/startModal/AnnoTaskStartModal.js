@@ -32,10 +32,6 @@ export default class AnnoTaskStartModal extends BaseModal {
         ])
 
         // Everytime Rerender the Graph by closing the modal
-
-        
-
-        
         }
       }
   

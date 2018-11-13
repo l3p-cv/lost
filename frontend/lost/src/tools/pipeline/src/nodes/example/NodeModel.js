@@ -1,4 +1,4 @@
-import { Observable } from "l3p-frontend"
+import { Observable } from "pipRoot/l3pfrontend/index"
 
 
 export default class ExampleNodeModel {

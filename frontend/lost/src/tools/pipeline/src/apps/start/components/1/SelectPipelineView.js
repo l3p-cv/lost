@@ -15,7 +15,7 @@ class SelectPipelineView extends WizardTabView {
                 <table data-ref="templatetable" class="table table-striped table-bordered"></table>
             `,
         })
-        
+        console.log(this)
     }
 
     

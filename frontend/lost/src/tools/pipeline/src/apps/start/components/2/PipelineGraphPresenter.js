@@ -1,5 +1,3 @@
-
-
 import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
 import appModel from "../../appModel"
 import PipelineGraphView from "./PipelineGraphView"
@@ -29,12 +27,9 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         $(this.view.html.refs["btn-next"]).on('click', () => {
             appModel.controls.show3.update(true)            
         })
-
         $(this.view.html.refs["btn-prev"]).on('click', () => {
             appModel.controls.show1.update(true)
         })
-
-
     }
     // @override
     isValidated(){
@@ -55,20 +50,19 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // the graph wont render well this way.
         this.show()
         
+        // create and render the graph
+        this.graph = new Graph(this.view.html.refs["dagre"])
         // dont recreate the graph it it allready exists
         // if (this.graph !== undefined) {
         //     return
         // }
-        try {
-            $(this.graph.mountPoint.children[0]).remove()
-            this.graph = undefined
-        }
-        catch(err) {
-            throw err
-        }
-
-        // create and render the graph
-        this.graph = new Graph(this.view.html.refs["dagre"])
+        // try {
+        //     $(this.graph.mountPoint.children[0]).remove()
+        //     this.graph = undefined
+        // }
+        // catch(err) {
+        //     throw err
+        // }
 
         // data.requestTemplate()
         const elements = data.elements
@@ -89,6 +83,8 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 nodes.push(new LoopNodePresenter(this.graph, element, mode))
             }
         })
+
+        console.log(this.graph)
 
         nodes.forEach(n => {
             this.graph.addNode(n)

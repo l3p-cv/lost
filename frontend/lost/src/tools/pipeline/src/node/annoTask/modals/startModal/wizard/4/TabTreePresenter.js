@@ -1,13 +1,16 @@
 import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
+
 import AnnoTaskStartView from "../../../../views/AnnoTaskStartView"
+
 import TabTreeView from "./TabTreeView"
 
 import "datatables.net"
 import "datatables.net-buttons"
+
 import swal from "sweetalert2"
+
 import d3 from 'd3'
 import d3Tip from 'd3-tip'
-
 
 let ctrlPressed = false
 let initialized = false
@@ -44,6 +47,7 @@ class TabTreePresenter extends WizardTabPresenter {
             }
         })
 
+
         this.labelDatatable = $(this.view.html.refs["label-datatable"]).DataTable({
             columnDefs: [{
                 targets: [0],
@@ -76,16 +80,24 @@ class TabTreePresenter extends WizardTabPresenter {
             var index = this.model.post.annoTask.labelLeaves.indexOf(this.model.post.annoTask.labelLeaves.find(o => o.id === id))
             this.model.post.annoTask.labelLeaves[index].maxLabels = parseInt($(e.currentTarget).find("input").val())
         })
+
+
     }
     isValidated() {
         return true
     }
+
+
+
+
     loadTemplate(getData) {
         initialized = true
         this.labelDatatable.clear()
         this.show()
         $(this.view.html.refs["label-datatable"]).hide()
         $(this.view.html.refs["instruction"]).show()
+
+
         this.model.post.annoTask.labelLeaves = []
         this.model.meta.labelLeaves = []
         this.presenter.view = new AnnoTaskStartView(this.model)        
@@ -168,6 +180,9 @@ class TabTreePresenter extends WizardTabPresenter {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .call(toolTip)
+            
+
+        //if (error) throw error
 
         treeData.x = height / 2
         treeData.x0 = height / 2

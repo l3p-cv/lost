@@ -14,8 +14,10 @@ export default class TabUserPresenter extends WizardTabPresenter {
 
         // DATATABLES
         const modifiedAvailableUser = this.model.annoTask.availableGroups
+        console.log(this.model.annoTask.availableGroups)
         modifiedAvailableUser.forEach(element => {
-            element.photoPath = `<img src="${element.photoPath}" style="height:100px; width:100px">`
+            // element.photoPath = `<img src="${element.photoPath}" style="height:100px; width:100px">`
+            element.photoPath = ""
         })
         const userTable = $(this.view.html.refs.dataTableUser).DataTable({
             lengthMenu: [
@@ -35,12 +37,10 @@ export default class TabUserPresenter extends WizardTabPresenter {
                 {
                     data: 'photoPath',
                     title: 'Image',
-                    id: 'id',
                 },
                 {
-                    data: 'name',
+                    data: 'groupName',
                     title: 'Name',
-                    id: 'id',
                 },
             ],
             columnDefs: [
@@ -69,20 +69,18 @@ export default class TabUserPresenter extends WizardTabPresenter {
             autoWidth: false,
             data: modifiedAvailableUser,
             columns: [{
-
                     data: 'photoPath',
                     title: 'Image'
                 },
                 {
-                    data: 'name',
+                    data: 'groupName',
                     title: 'Name'
                 },
-
             ],
         })
 
         // VIEW BINDINGS
-        $(this.view.nav.refs["a"]).on("click", () => {
+        $(this.view.nav.root).on("click", () => {
             modalView.view.refs["outerModal"].style.width = '50%'
         })
         $(this.view.html.refs.dataTableUser).find("tbody").on('click', 'tr', (e) => {

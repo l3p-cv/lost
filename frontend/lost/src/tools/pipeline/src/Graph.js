@@ -1,4 +1,4 @@
-import { NodeTemplate } from "l3p-frontend"
+import { NodeTemplate } from "pipRoot/l3pfrontend/index"
 import "./Graph.scss"
 
 import * as d3 from "d3"
@@ -29,12 +29,12 @@ export default class Graph {
         break
       case "object":
         if (mountPoint.nodeType !== Node.ELEMENT_NODE) {
-          throw new Error("mountPoint has invalid type, use 'string' or 'Node'")
+          throw new Error(`mountPoint has invalid type, use "String" or "Node"`)
         }
         this.mountPoint = mountPoint
         break
       default:
-        throw new Error("mountPoint has invalid type, use 'string' or 'Node'")
+          throw new Error(`mountPoint has invalid type, use "String" or "Node"`)
     }
 
     // only one graph may be added to a 'mountPoint'

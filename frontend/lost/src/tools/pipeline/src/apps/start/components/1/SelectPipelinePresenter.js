@@ -7,7 +7,6 @@ import * as http from "pipRoot/http"
 
 import "datatables.net"
 import "datatables.net-buttons"
-let templateDatatable
 
 class SelectPipelinePresenter extends WizardTabPresenter {
     constructor(){
@@ -17,7 +16,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         appModel.controls.show1.on("update", () => this.show())
         // VIEW-BINDING
         $(this.view.html.refs["templatetable"]).on("click", "tr", (e) =>{
-            let templateId = templateDatatable.row(e.currentTarget).data()[0]            
+            let templateId = this.templateDatatable.row(e.currentTarget).data()[0]            
             this.selectTemplate(templateId)
         })
         // MODEL-BINDING
@@ -28,6 +27,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         return (this.isTabValidated)
     }
     updateTable(rawData){
+        console.log(rawData)
         // map raw data to the format 'datatables' accepts.
         const data = rawData.map(template => {
             return [
@@ -38,7 +38,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 new Date(template.date),
             ]
         })
-        templateDatatable = $(this.view.html.refs["templatetable"]).DataTable({
+        this.templateDatatable = $(this.view.html.refs["templatetable"]).DataTable({
             data,
             order: [[ 4, "desc" ]],         
             columnDefs:[{
@@ -91,11 +91,9 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     return
                 }
               })
-        }else{
+        } else {
             requestGraph()
         }
-
-      
     }
 }
 export default new SelectPipelinePresenter()

@@ -8,9 +8,9 @@ export default class TabInfoPresenter extends WizardTabPresenter {
         super()
         this.view = new TabInfoView(presenter.model)
         
-        $(this.view.nav.refs["a"]).on("click", () => {
+        $(this.view.nav.root).on("click", () => {
             // check if is not null
-            modalView.view.refs["outerModal"].style.width = '50%'
+            // modalView.view.refs["outerModal"].style.width = '50%'
         })
         $(this.view.html.refs["name"]).on('input', (e) => {
             presenter.model.post.annoTask.name = $(e.currentTarget).val()

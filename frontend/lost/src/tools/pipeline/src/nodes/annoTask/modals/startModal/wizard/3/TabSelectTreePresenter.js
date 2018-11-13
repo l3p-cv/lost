@@ -52,7 +52,7 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
         presenter.modalModel.controls.show3.on("update", () => this.show())
         
         // VIEW BINDINGS
-        $(this.view.nav.refs["a"]).on("click", () => {
+        $(this.view.nav.root).on("click", () => {
             modalView.view.refs["outerModal"].style.width = '50%'
         })
         $(this.view.html.refs["table-tree"]).find("tbody").on('click', 'tr', (e) => {

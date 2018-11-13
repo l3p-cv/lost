@@ -1,9 +1,9 @@
-import { Observable } from "l3p-frontend"
+import { Observable } from "pipRoot/l3pfrontend/index"
 
 
 export default class AnnoTaskStartModalModel{
     constructor(){
-        this.controls= {
+        this.controls = {
             show1: new Observable(-1),
             show2: new Observable(-1),
             show3: new Observable(-1),

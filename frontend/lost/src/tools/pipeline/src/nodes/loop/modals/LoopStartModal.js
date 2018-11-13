@@ -3,7 +3,7 @@ import { BaseModal } from "pipRoot/l3pfrontend/index"
 
 export default class LoopStartModal extends BaseModal {
     constructor(nodeModel){
-        const params = {
+        super({
             visible: false,
             title: "Loop",
             content: `
@@ -14,15 +14,20 @@ export default class LoopStartModal extends BaseModal {
                                 <strong> Max Iteration: </strong>
                             </td>
                             <td>
-                                <input ${nodeModel.loop.maxIteration? '':'disabled placeholder="exit condition is in script"'} data-ref="max-iteration" class='labelmax form-control' type='number' name='max_label' min='0' value='${nodeModel.loop.maxIteration}'>
+                                <input ${nodeModel.loop.maxIteration 
+                                    ? '' 
+                                    : `disabled placeholder='exit condition is in script'`}
+                                    data-ref="max-iteration"
+                                    class='labelmax form-control'
+                                    type='number'
+                                    name='max_label'
+                                    min='0'
+                                    value='${nodeModel.loop.maxIteration}'>
                             </td>
                         </tr>
                     </tbody>
-                </table>`               
-        }
-
-        super(params)
+                </table>
+            `               
+        })
     }
-
-    
 }

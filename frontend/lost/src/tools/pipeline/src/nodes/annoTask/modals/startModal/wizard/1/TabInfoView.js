@@ -7,7 +7,7 @@ class TabInfoView extends WizardTabView {
             title: "Select Options",
             icon: "fa fa-info fa-1x",
             content: `
-                <form  class="form-horizontal form-label-left" novalidate="true">
+                <form class="form-horizontal form-label-left" novalidate="true">
                     <div class="item form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="anno_name">
                             Name

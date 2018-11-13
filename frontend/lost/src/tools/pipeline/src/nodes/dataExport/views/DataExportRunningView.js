@@ -1,4 +1,4 @@
-import { NodeTemplate } from "l3p-frontend"
+import { NodeTemplate } from "pipRoot/l3pfrontend/index"
 
 
 export default class DataExportRunningView {
