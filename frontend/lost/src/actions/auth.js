@@ -38,7 +38,8 @@ const checkRole = (view, decoded_token) => async dispatch => {
         localStorage.setItem('view', 'Annotater')
     }
 }
-const changeView = (view) => async dispatch => {
+const changeView = (view, callback) => async dispatch => {
+    callback()
     dispatch({ type: TYPES.CHANGE_VIEW, payload: view})
     localStorage.setItem('view', view)
 }

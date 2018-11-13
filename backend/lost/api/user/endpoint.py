@@ -3,14 +3,14 @@ from flask_restplus import Resource
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.api.user.api_definition import user, user_list, user_login
-from lost.api.user.parsers import login_parser
+from lost.api.user.parsers import login_parser, create_user_parser
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
-
+from lost.db.model import User as DBUser, Role, Group
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
-@api.doc(description='This is my super cool user api method.')
+@api.doc(description='User Api get method.')
 class UserList(Resource):
     @api.marshal_with(user_list)
     @jwt_required 
@@ -22,9 +22,61 @@ class UserList(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            ulist = {'users':dbm.get_users()}
+            users = dbm.get_users()
+            for us in users:
+                for g in us.groups:
+                    if g.is_user_default:
+                        us.groups.remove(g)
             dbm.close_session()
-            return ulist
+            ulist = {'users':users}
+            return ulist 
+            
+    @jwt_required 
+    @api.expect(create_user_parser)
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        # get data from parser
+        data = create_user_parser.parse_args()
+        print(data)
+        # find user in database
+        user = None
+        if 'email' in data:
+            user = dbm.find_user_by_email(data['email'])
+        if not user and 'user_name' in data:
+            user = dbm.find_user_by_user_name(data['user_name'])
+
+        if user:
+            return {'message': 'User already exists.'}, 401
+        else: 
+            user = DBUser(
+            user_name = data['user_name'],
+            email_confirmed_at=datetime.datetime.utcnow(),
+            password= data['password'],
+            )
+            anno_role = dbm.get_role_by_name(roles.ANNOTATER)
+            user.roles.append(anno_role)
+            user.groups.append(Group(name=user.user_name, is_user_default=True))
+
+            for role_name in data['roles']:
+                if role_name == 'Designer':
+                    designer_role = dbm.get_role_by_name(roles.DESIGNER)
+                    user.roles.append(designer_role)        
+
+            for group_name in data['groups']:
+                group = dbm.get_group_by_name(group_name)
+                if group:
+                    user.groups.append(group)
+            dbm.save_obj(user)
+            dbm.close_session()
+            return {
+                'message': 'success'
+            }, 200
+         
 
 
 @namespace.route('/<int:id>')
@@ -46,6 +98,8 @@ class User(Resource):
             return requesteduser
         else:
             return "User with ID '{}' not found.".format(id)
+
+    
 
 @namespace.route('/self')
 class UserSelf(Resource):

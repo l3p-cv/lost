@@ -704,6 +704,9 @@ class DBMan(object):
     def get_role(self, role_id):
         return self.session.query(model.Role).filter(model.Role.idx==role_id).first()
 
+    def get_role_by_name(self, role_name):
+        return self.session.query(model.Role).filter(model.Role.name==role_name).first()
+
     def get_users(self):
         return self.session.query(model.User).all()
         

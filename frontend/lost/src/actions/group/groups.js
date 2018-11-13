@@ -6,7 +6,7 @@ axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getIte
 
 export const getGroups = () => async dispatch => {
     try {
-        const response = await axios.get(API_URL + 'group')
+        const response = await axios.get(API_URL + '/group')
         dispatch({ type: TYPES.GET_GROUPS, payload: response.data})
     } catch(e){
        

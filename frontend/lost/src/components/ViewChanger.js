@@ -2,13 +2,23 @@ import React, {Component} from 'react'
 import {NavItem, NavLink} from 'reactstrap'
 import {connect} from 'react-redux'
 import actions from '../actions'
-const { changeView } = actions
+import {createHashHistory} from 'history'
+
+const {changeView} = actions
+
+const history = createHashHistory()
 
 class ViewChanger extends Component {
-    handleClick(role) {
+
+    handleClick = role => {
         this
             .props
-            .changeView(role)
+            .changeView(role, () => {
+                history.push('/')
+                window
+                    .location
+                    .reload()
+            })
     }
     isActive(role) {
         if (this.props.view === role) {
@@ -30,7 +40,7 @@ class ViewChanger extends Component {
                         </NavItem>
                     </React.Fragment>
                 )
-            }else {
+            } else {
                 return ''
             }
         } else {
@@ -43,4 +53,4 @@ function mapStateToProps(state) {
     return {view: state.auth.view, roles: state.auth.roles}
 }
 
-export default connect(mapStateToProps, { changeView })(ViewChanger)
+export default connect(mapStateToProps, {changeView})(ViewChanger)

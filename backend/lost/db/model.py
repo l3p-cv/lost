@@ -28,22 +28,22 @@ class User(Base, UserMixin):
     idx = Column(Integer, primary_key=True)
     is_active = Column('is_active', Boolean(), nullable=False, server_default='1')
     user_name = Column(String(100), nullable=False, unique=True)
-    email = Column(String(255), nullable=False, unique=True)
+    email = Column(String(255), unique=True)
     email_confirmed_at = Column(DateTime())
     password = Column(String(255), nullable=False, server_default='')
 
     # User information
-    first_name = Column(String(100), nullable=False, server_default='')
-    last_name = Column(String(100), nullable=False, server_default='')
+    first_name = Column(String(100), server_default='')
+    last_name = Column(String(100),  server_default='')
 
     confidence_level = Column(Integer)
     photo_path = Column(String(4096))
 
-    roles = relationship('Role', secondary='user_roles')
+    roles = relationship('Role', secondary='user_roles', lazy='joined')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
     choosen_anno_tasks = relationship('AnnoTask', secondary='choosen_anno_task')
     
-    def __init__(self, user_name, email, password, first_name, last_name, email_confirmed_at=None):
+    def __init__(self, user_name, password, email=None, first_name=None, last_name=None, email_confirmed_at=None):
         self.user_name = user_name
         self.email = email
         self.email_confirmed_at = email_confirmed_at

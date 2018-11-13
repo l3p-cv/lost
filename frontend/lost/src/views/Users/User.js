@@ -1,46 +1,47 @@
-import React, { Component } from 'react'
-import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {
+    Card,
+    CardBody,
+    Col,
+    Row
+} from 'reactstrap'
 
-import usersData from './UsersData'
+import CreateUser from '../../containers/Users/CreateUser'
+import UserTable from '../../containers/Users/UserTable'
+import actions from '../../actions'
+
+const {getGroups, getUsers} = actions
 
 class User extends Component {
+    componentDidMount() {
+        this
+            .props
+            .getUsers()
+        this
+            .props
+            .getGroups()
+    }
 
-  render() {
+    render() {
+        return (
+            <Row>
+                <Col xs='12' sm='12' lg='12'>
+                    <Card className='text-black'>
+                        <CardBody className='pb-0'>
+                        <CreateUser groups={this.props.groups}></CreateUser>
+                        <div></div>
+                        <UserTable users={this.props.users} groups={this.props.groups}></UserTable>
+                        </CardBody>
+                    </Card>
+                </Col>
+            </Row>
 
-    const user = usersData.find( user => user.id.toString() === this.props.match.params.id)
-
-    const userDetails = user ? Object.entries(user) : [['id', (<span><i className='text-muted icon-ban'></i> Not found</span>)]]
-
-    return (
-      <div className='animated fadeIn'>
-        <Row>
-          <Col lg={6}>
-            <Card>
-              <CardHeader>
-                <strong><i className='icon-info pr-1'></i>User id: {this.props.match.params.id}</strong>
-              </CardHeader>
-              <CardBody>
-                  <Table responsive striped hover>
-                    <tbody>
-                      {
-                        userDetails.map(([key, value]) => {
-                          return (
-                            <tr key={key}>
-                              <td>{`${key}:`}</td>
-                              <td><strong>{value}</strong></td>
-                            </tr>
-                          )
-                        })
-                      }
-                    </tbody>
-                  </Table>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    )
-  }
+        )
+    }
+}
+function mapStateToProps(state){
+    return({users: state.user.users, groups: state.group.groups})
 }
 
-export default User
+export default connect(mapStateToProps, {getUsers, getGroups})(User)

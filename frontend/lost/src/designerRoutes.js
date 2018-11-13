@@ -24,7 +24,7 @@ const Label = Loadable({
 })
 
 const User = Loadable({
-  loader: () => import('./components/User.js'),
+  loader: () => import('./views/Users/User.js'),
   loading: Loading,
 })
 
