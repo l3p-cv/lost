@@ -1,12 +1,12 @@
-import { Observable } from "pipRoot/l3pfrontend/index"
+import { Observable } from 'pipRoot/l3pfrontend/index'
 
 
 export default class AnnoTaskNodeModel {
     constructor(data, mode) {
         if(data === undefined || data.peN === undefined){
-            throw new Error("data is undefined or has no peN property.")
+            throw new Error('data is undefined or has no peN property.')
         }
-        if(mode === "start"){
+        if(mode === 'start'){
             this.peN = data.peN
             this.peOut = data.peOut
             this.annoTask = data.annoTask
@@ -20,9 +20,9 @@ export default class AnnoTaskNodeModel {
             this.post.annoTask.labelLeaves = []
             this.meta = {}
             this.meta.labelLeaves = []
-            this.meta.assignee = ""
+            this.meta.assignee = ''
             this.validation = false
-        } else if(mode === "running"){
+        } else if(mode === 'running'){
             this.peN = data.peN
             this.peOut = data.peOut
             this.id = data.id

@@ -1,11 +1,11 @@
-import BaseNodePresenter from "../BaseNodePresenter"
-import VisualOutputNodeModel from "./VisualOutputNodeModel"
+import BaseNodePresenter from '../BaseNodePresenter'
+import VisualOutputNodeModel from './VisualOutputNodeModel'
 
-import VisualOutputRunningView from "./views/VisualOutputRunningView"
-import VisualOutputStartView from "./views/VisualOutputStartView"
+import VisualOutputRunningView from './views/VisualOutputRunningView'
+import VisualOutputStartView from './views/VisualOutputStartView'
 
-import VisualOutputRunningModal from "./modals/VisualOutputRunningModal"
-import VisualOutputStartModal from "./modals/VisualOutputStartModal"
+import VisualOutputRunningModal from './modals/VisualOutputRunningModal'
+import VisualOutputStartModal from './modals/VisualOutputStartModal'
 
 
 export default class VisualOutputNodePresenter extends BaseNodePresenter {
@@ -15,11 +15,11 @@ export default class VisualOutputNodePresenter extends BaseNodePresenter {
         this.model = new VisualOutputNodeModel(data,mode)
         // create view
         switch(mode){
-            case "running":
+            case 'running':
                 this.view = new VisualOutputRunningView(this.model)
                 this.modal = new VisualOutputRunningModal(this.model)
                 break
-            case "start":
+            case 'start':
                 this.view = new VisualOutputStartView(this.model) 
                 this.modal = new VisualOutputStartModal(this.model) 
                 break
@@ -31,13 +31,13 @@ export default class VisualOutputNodePresenter extends BaseNodePresenter {
      */
     initViewBinding(){
         if(this.view instanceof VisualOutputRunningView){
-            this.model.state.on("update", text => {
-                this.view.parentNode.querySelector(`[data-ref="state"]`).setAttribute("class", `panel-footer 
-                    ${ text === "script_error"   ? "bg-red"      : "" }
-                    ${ text === "pending"        ? "bg-blue"     : "" }
-                    ${ text === "in_progress"    ? "bg-orange"   : "" }
-                    ${ text === "finished"       ? "bg-green"    : "" }`)
-                this.view.parentNode.querySelector(`[data-ref="state-text"]`).textContent = text.replace("_", " ")
+            this.model.state.on('update', text => {
+                this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
+                    ${ text === 'script_error'   ? 'bg-red'      : '' }
+                    ${ text === 'pending'        ? 'bg-blue'     : '' }
+                    ${ text === 'in_progress'    ? 'bg-orange'   : '' }
+                    ${ text === 'finished'       ? 'bg-green'    : '' }`)
+                this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
         }
     }

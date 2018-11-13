@@ -1,17 +1,17 @@
-import { Observable } from "pipRoot/l3pfrontend/index"
+import { Observable } from 'pipRoot/l3pfrontend/index'
 
 
 export default class VisualOutputNodeModel {
     constructor(data, mode) {
         if(data === undefined || data.peN === undefined){
-            throw new Error("data is undefined or has no peN property.")
+            throw new Error('data is undefined or has no peN property.')
         }
-        if(mode === "start"){
+        if(mode === 'start'){
             this.peN = data.peN
             this.peOut = data.peOut
-            this.visualOutput = ""
+            this.visualOutput = ''
             this.validation = true
-        }else if(mode === "running"){
+        }else if(mode === 'running'){
             this.peN = data.peN
             this.peOut =  data.peOut
             this.id = data.id

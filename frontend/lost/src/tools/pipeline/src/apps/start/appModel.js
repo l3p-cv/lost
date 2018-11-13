@@ -1,4 +1,4 @@
-import { Observable } from "pipRoot/l3pfrontend/index"
+import { Observable } from 'pipRoot/l3pfrontend/index'
 
 export default {
     isDebug: undefined,

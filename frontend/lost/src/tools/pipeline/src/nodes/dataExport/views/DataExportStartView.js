@@ -1,16 +1,16 @@
-import { NodeTemplate } from "pipRoot/l3pfrontend/index"
+import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 
 
 export default class DataExportStartView {
     constructor(model) {
         this.html = new NodeTemplate(`
-            <div class="panel panel-primary custom_node">
-                <div class="panel-heading ">
-                    <i class="fa fa-cloud-download fa-2x pull-left" aria-hidden="true"></i>
-                    <h class="panel-title">Data Export</h>
+            <div class='panel panel-primary custom_node'>
+                <div class='panel-heading '>
+                    <i class='fa fa-cloud-download fa-2x pull-left' aria-hidden='true'></i>
+                    <h class='panel-title'>Data Export</h>
                 </div>
-                <div class="panel-body">
-                    <i  class="fa fa-cloud-download fa-5x color-grey" aria-hidden="true"></i>
+                <div class='panel-body'>
+                    <i  class='fa fa-cloud-download fa-5x color-grey' aria-hidden='true'></i>
                 </div>
             </div>
         `)

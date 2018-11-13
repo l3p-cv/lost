@@ -1,27 +1,27 @@
-import { BaseModal } from "pipRoot/l3pfrontend/index"
+import { BaseModal } from 'pipRoot/l3pfrontend/index'
 
 
 export default class ExampleRunningModal extends BaseModal {
     constructor(nodeModel){
         const params = {
-            title: "Example Running Modal",
+            title: 'Example Running Modal',
             content: `
                 <h2>start</h2>
-                <input data-ref="info" type="text" value="${nodeModel.text.value}"/>
+                <input data-ref='info' type='text' value='${nodeModel.text.value}'/>
             `   
         }
         super(params)
         
         // focus input field
-        $(this.view.root).on("shown.bs.modal", (e) => {
-            $(e.target).find("input").focus()
+        $(this.view.root).on('shown.bs.modal', (e) => {
+            $(e.target).find('input').focus()
         })
         // update node on change
-        $(this.view.refs["info"]).on("input", (e) => {
+        $(this.view.refs['info']).on('input', (e) => {
             nodeModel.text.update(e.target.value)
         })
     }
     setInfoText(text: string){
-        this.view.refs["info"].value = text
+        this.view.refs['info'].value = text
     }
 }

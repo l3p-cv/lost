@@ -1,13 +1,13 @@
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
 
-import AnnoTaskStartView from "../../../../views/AnnoTaskStartView"
+import AnnoTaskStartView from '../../../../views/AnnoTaskStartView'
 
-import TabTreeView from "./TabTreeView"
+import TabTreeView from './TabTreeView'
 
-import "datatables.net"
-import "datatables.net-buttons"
+import 'datatables.net'
+import 'datatables.net-buttons'
 
-import swal from "sweetalert2"
+import swal from 'sweetalert2'
 
 import d3 from 'd3'
 import d3Tip from 'd3-tip'
@@ -28,12 +28,12 @@ class TabTreePresenter extends WizardTabPresenter {
         this.model = getPresenter.model
         this.presenter = getPresenter
         this.view = new TabTreeView(this.model)
-        getPresenter.modalModel.controls.show4.on("update", (data) => this.loadTemplate(data))
+        getPresenter.modalModel.controls.show4.on('update', (data) => this.loadTemplate(data))
 
         // change modal size
-        $(this.view.nav.root).on("click", (e) => {
+        $(this.view.nav.root).on('click', (e) => {
             if(!this.isLocked()){
-                modalView.view.refs["outerModal"].style.width = '90%'
+                modalView.view.refs['outerModal'].style.width = '90%'
             }
         })
 
@@ -48,18 +48,18 @@ class TabTreePresenter extends WizardTabPresenter {
         })
 
 
-        this.labelDatatable = $(this.view.html.refs["label-datatable"]).DataTable({
+        this.labelDatatable = $(this.view.html.refs['label-datatable']).DataTable({
             columnDefs: [{
                 targets: [0],
                 visible: false,
             }],
-            "paging": false,
-            "info": false,
-            "searching": false
+            'paging': false,
+            'info': false,
+            'searching': false
         })
 
         // DELETE ROW
-        $(this.view.html.refs["label-datatable"]).on("click", "span", (e) => {
+        $(this.view.html.refs['label-datatable']).on('click', 'span', (e) => {
             let id = this.labelDatatable.row($(e.currentTarget).parent().parent()).data()[0]
             this.labelDatatable.row($(e.currentTarget).parents('tr')).remove().draw()
             var index = this.model.post.annoTask.labelLeaves.indexOf(this.model.post.annoTask.labelLeaves.find(o => o.id === id))
@@ -70,15 +70,15 @@ class TabTreePresenter extends WizardTabPresenter {
                 this.presenter.view = new AnnoTaskStartView(this.model)
             }
             if (this.labelDatatable.data().count() === 0) {
-                $(this.view.html.refs["label-datatable"]).hide()
-                $(this.view.html.refs["instruction"]).fadeIn()
+                $(this.view.html.refs['label-datatable']).hide()
+                $(this.view.html.refs['instruction']).fadeIn()
             }
         })
         // INPUT MAX LABEL
-        $(this.view.html.refs["label-datatable"]).on("input", "tr", (e) => {
+        $(this.view.html.refs['label-datatable']).on('input', 'tr', (e) => {
             let id = this.labelDatatable.row($(e.currentTarget)).data()[0]
             var index = this.model.post.annoTask.labelLeaves.indexOf(this.model.post.annoTask.labelLeaves.find(o => o.id === id))
-            this.model.post.annoTask.labelLeaves[index].maxLabels = parseInt($(e.currentTarget).find("input").val())
+            this.model.post.annoTask.labelLeaves[index].maxLabels = parseInt($(e.currentTarget).find('input').val())
         })
 
 
@@ -94,15 +94,15 @@ class TabTreePresenter extends WizardTabPresenter {
         initialized = true
         this.labelDatatable.clear()
         this.show()
-        $(this.view.html.refs["label-datatable"]).hide()
-        $(this.view.html.refs["instruction"]).show()
+        $(this.view.html.refs['label-datatable']).hide()
+        $(this.view.html.refs['instruction']).show()
 
 
         this.model.post.annoTask.labelLeaves = []
         this.model.meta.labelLeaves = []
         this.presenter.view = new AnnoTaskStartView(this.model)        
         let TabTreePresenter = this
-        $(this.view.html.refs["tree-container"]).empty()
+        $(this.view.html.refs['tree-container']).empty()
         // Toggle children on click.
         let json = {}
         json.name = getData.name
@@ -151,9 +151,9 @@ class TabTreePresenter extends WizardTabPresenter {
                 bottom: 20,
                 left: 120
             },
-            width = $(this.view.html.refs["tree-container"]).width(),
+            width = $(this.view.html.refs['tree-container']).width(),
 
-            height = $(this.view.html.refs["tree-container"]).height()
+            height = $(this.view.html.refs['tree-container']).height()
         var i = 0,
             duration = 750
 
@@ -166,19 +166,19 @@ class TabTreePresenter extends WizardTabPresenter {
             })
 
         var zoom = d3.behavior.zoom()
-            .on("zoom", zoomed)
+            .on('zoom', zoomed)
 
         function zoomed() {
-            svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
+            svg.attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')')
         }
 
-        var svg = d3.select(this.view.html.refs["tree-container"])
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
+        var svg = d3.select(this.view.html.refs['tree-container'])
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
             .call(zoom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
             .call(toolTip)
             
 
@@ -198,7 +198,7 @@ class TabTreePresenter extends WizardTabPresenter {
         }
         treeData.children.forEach(collapse)
         update(treeData, this)
-        d3.select(self.frameElement).style("height", "800px")
+        d3.select(self.frameElement).style('height', '800px')
         function update(source, that) {
             // Compute the new tree layout.
             var nodes = tree.nodes(treeData).reverse(),
@@ -210,18 +210,18 @@ class TabTreePresenter extends WizardTabPresenter {
             })
 
             // Update the nodes…
-            var node = svg.selectAll("g.node")
+            var node = svg.selectAll('g.node')
                 .data(nodes, function (d) {
                     return d.id || (d.id = ++i)
                 })
 
             // Enter any new nodes at the parent's previous position.
-            var nodeEnter = node.enter().append("g")
-                .attr("class", "node")
-                .attr("transform", function (d) {
-                    return "translate(" + source.y0 + "," + source.x0 + ")"
+            var nodeEnter = node.enter().append('g')
+                .attr('class', 'node')
+                .attr('transform', function (d) {
+                    return 'translate(' + source.y0 + ',' + source.x0 + ')'
                 })
-                .on("click", (d) => {
+                .on('click', (d) => {
                     if (ctrlPressed) {
                         if(d.depth === 0){
                             swal({
@@ -245,8 +245,8 @@ class TabTreePresenter extends WizardTabPresenter {
                                 })
                               return
                         }
-                        $(TabTreePresenter.view.html.refs["label-datatable"]).fadeIn()
-                        $(TabTreePresenter.view.html.refs["instruction"]).hide()
+                        $(TabTreePresenter.view.html.refs['label-datatable']).fadeIn()
+                        $(TabTreePresenter.view.html.refs['instruction']).hide()
                         console.log('========d============================')
                         console.log(d)
                         console.log('====================================')
@@ -263,8 +263,8 @@ class TabTreePresenter extends WizardTabPresenter {
                                     d.name,
                                     `<input data-ref=${d.id} class='labelmax form-control'  
                                              type='number' name='max_label' min='0' max='99' value='1'>`,
-                                    `<span data-ref=${d.id} class = "delete-labelLeave annotask-span-modal-default bg-red">
-                                             <i class="fa fa-times fa-lg" aria-hidden="true"></i>
+                                    `<span data-ref=${d.id} class = 'delete-labelLeave annotask-span-modal-default bg-red'>
+                                             <i class='fa fa-times fa-lg' aria-hidden='true'></i>
                                              </span>`
                                 ]).draw(false)
         
@@ -287,64 +287,64 @@ class TabTreePresenter extends WizardTabPresenter {
             )
                 .on('mouseover', toolTip.show)
                 .on('mouseout', toolTip.hide)
-            nodeEnter.append("circle")
-                .attr("r", 1e-6)
-                .style("fill", function (d) {
-                    return d._children ? "lightsteelblue" : "#fff"
+            nodeEnter.append('circle')
+                .attr('r', 1e-6)
+                .style('fill', function (d) {
+                    return d._children ? 'lightsteelblue' : '#fff'
                 })
-            nodeEnter.append("text")
-                .attr("x", function (d) {
+            nodeEnter.append('text')
+                .attr('x', function (d) {
                     return d.children || d._children ? -10 : 10
                 })
-                .attr("dy", ".35em")
-                .attr("text-anchor", function (d) {
-                    return d.children || d._children ? "end" : "start"
+                .attr('dy', '.35em')
+                .attr('text-anchor', function (d) {
+                    return d.children || d._children ? 'end' : 'start'
                 })
                 .text(function (d) {
                     return d.name
                 })
-                .style("fill", "black")
+                .style('fill', 'black')
 
             // Transition nodes to their new position.
             var nodeUpdate = node.transition()
                 .duration(duration)
-                .attr("transform", function (d) {
-                    return "translate(" + d.y + "," + d.x + ")"
+                .attr('transform', function (d) {
+                    return 'translate(' + d.y + ',' + d.x + ')'
                 })
 
-            nodeUpdate.select("circle")
-                .attr("r", 4.5)
-                .style("fill", function (d) {
-                    return d._children ? "lightsteelblue" : "#fff"
+            nodeUpdate.select('circle')
+                .attr('r', 4.5)
+                .style('fill', function (d) {
+                    return d._children ? 'lightsteelblue' : '#fff'
                 })
 
-            nodeUpdate.select("text")
-                .style("fill-opacity", 1)
+            nodeUpdate.select('text')
+                .style('fill-opacity', 1)
 
             // Transition exiting nodes to the parent's new position.
             var nodeExit = node.exit().transition()
                 .duration(duration)
-                .attr("transform", function (d) {
-                    return "translate(" + source.y + "," + source.x + ")"
+                .attr('transform', function (d) {
+                    return 'translate(' + source.y + ',' + source.x + ')'
                 })
                 .remove()
 
-            nodeExit.select("circle")
-                .attr("r", 1e-6)
+            nodeExit.select('circle')
+                .attr('r', 1e-6)
 
-            nodeExit.select("text")
-                .style("fill-opacity", 1e-6)
+            nodeExit.select('text')
+                .style('fill-opacity', 1e-6)
 
             // Update the links…
-            var link = svg.selectAll("path.link")
+            var link = svg.selectAll('path.link')
                 .data(links, function (d) {
                     return d.target.id
                 })
 
             // Enter any new links at the parent's previous position.
-            link.enter().insert("path", "g")
-                .attr("class", "link")
-                .attr("d", function (d) {
+            link.enter().insert('path', 'g')
+                .attr('class', 'link')
+                .attr('d', function (d) {
                     var o = {
                         x: source.x0,
                         y: source.y0
@@ -358,12 +358,12 @@ class TabTreePresenter extends WizardTabPresenter {
             // Transition links to their new position.
             link.transition()
                 .duration(duration)
-                .attr("d", diagonal)
+                .attr('d', diagonal)
 
             // Transition exiting nodes to the parent's new position.
             link.exit().transition()
                 .duration(duration)
-                .attr("d", function (d) {
+                .attr('d', function (d) {
                     var o = {
                         x: source.x,
                         y: source.y

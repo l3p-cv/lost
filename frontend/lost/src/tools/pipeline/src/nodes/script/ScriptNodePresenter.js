@@ -1,16 +1,16 @@
-import BaseNodePresenter from "../BaseNodePresenter"
+import BaseNodePresenter from '../BaseNodePresenter'
 
-import ScriptNodeModel from "./ScriptNodeModel"
+import ScriptNodeModel from './ScriptNodeModel'
 
-import NormalRunningView from "./views/ScriptNormalRunningView"
-import NormalStartView from "./views/ScriptNormalStartView"
-import DebugRunningView from "./views/ScriptDebugRunningView"
-import DebugStartView from "./views/ScriptDebugStartView"
-import ScriptRunningModal from "./modals/ScriptRunningModal"
-import ScriptStartModal from "./modals/ScriptStartModal"
+import NormalRunningView from './views/ScriptNormalRunningView'
+import NormalStartView from './views/ScriptNormalStartView'
+import DebugRunningView from './views/ScriptDebugRunningView'
+import DebugStartView from './views/ScriptDebugStartView'
+import ScriptRunningModal from './modals/ScriptRunningModal'
+import ScriptStartModal from './modals/ScriptStartModal'
 
-import appModelRunning from "apps/running/appModel"
-import appModelStart from "apps/start/appModel"
+import appModelRunning from 'apps/running/appModel'
+import appModelStart from 'apps/start/appModel'
 
 
 export default class ScriptNodePresenter extends BaseNodePresenter {
@@ -20,13 +20,13 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
         this.model = new ScriptNodeModel(data, mode)
         // create view
         switch (mode) {
-            case "running":
+            case 'running':
                 appModelRunning.isDebug
                     ? this.view = new DebugRunningView(this.model)
                     : this.view = new NormalRunningView(this.model)
                 this.modal = new ScriptRunningModal(this.model)
                 break
-            case "start":
+            case 'start':
                 appModelStart.isDebug
                     ? this.view = new DebugStartView(this.model)
                     : this.view = new NormalStartView(this.model)
@@ -39,9 +39,9 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
                 throw new Error(`no node view available for ${data.type}`)
         }
 
-        $(this.modal.view.refs["more-information-link"]).on("click", () => {
-            $(this.modal.view.refs["collapse-this"]).collapse('toggle')
-            $(this.modal.view.refs["more-information-icon"]).toggleClass("fa-chevron-down fa-chevron-up")
+        $(this.modal.view.refs['more-information-link']).on('click', () => {
+            $(this.modal.view.refs['collapse-this']).collapse('toggle')
+            $(this.modal.view.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
         })
     }
 
@@ -50,13 +50,13 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
      * @override
      */
     initViewBinding() {
-        $(this.view.parentNode).on("mousedown", `[data-ref='checkbox']`, () => {
+        $(this.view.parentNode).on('mousedown', `[data-ref='checkbox']`, () => {
             this.model.post.script.isDebug = !this.model.post.script.isDebug
             this.view = new DebugStartView(this.model)
             this.graph.updateNode(this)
         })
 
-        $(this.view.parentNode).on("mouseover", (e) => {
+        $(this.view.parentNode).on('mouseover', (e) => {
             // show tooltip...
         })
     }
@@ -65,34 +65,34 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
      */
     initModelBinding() {
         if (this.view instanceof NormalRunningView || this.view instanceof DebugRunningView) {
-            this.model.progress.on("update", number => {
-                this.view.parentNode.querySelector(`[data-ref="progress-bar"]`).style.width = `${number}%`
-                this.view.parentNode.querySelector(`[data-ref="progress-bar-text"]`).textContent = `${number}%`
+            this.model.progress.on('update', number => {
+                this.view.parentNode.querySelector(`[data-ref='progress-bar']`).style.width = `${number}%`
+                this.view.parentNode.querySelector(`[data-ref='progress-bar-text']`).textContent = `${number}%`
             })
-            this.model.state.on("update", text => {
-                this.view.parentNode.querySelector(`[data-ref="state"]`).setAttribute("class", `panel-footer 
-                    ${ text === "script_error" ? "bg-red" : ""}
-                    ${ text === "pending" ? "bg-blue" : ""}
-                    ${ text === "in_progress" ? "bg-orange" : ""}
-                    ${ text === "finished" ? "bg-green" : ""}`)
-                this.view.parentNode.querySelector(`[data-ref="state-text"]`).textContent = text.replace("_", " ")
+            this.model.state.on('update', text => {
+                this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
+                    ${ text === 'script_error' ? 'bg-red' : ''}
+                    ${ text === 'pending' ? 'bg-blue' : ''}
+                    ${ text === 'in_progress' ? 'bg-orange' : ''}
+                    ${ text === 'finished' ? 'bg-green' : ''}`)
+                this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
-            this.model.progress.on("update", number => {
-                this.modal.view.refs["progress-bar"].style.width = `${number}%`
-                this.modal.view.refs["progress-bar-text"].textContent = `${number ? number : 0}%`
+            this.model.progress.on('update', number => {
+                this.modal.view.refs['progress-bar'].style.width = `${number}%`
+                this.modal.view.refs['progress-bar-text'].textContent = `${number ? number : 0}%`
             })
-            this.model.errorMsg.on("update", text => {
+            this.model.errorMsg.on('update', text => {
                 if (text !== null) {
-                    this.modal.view.refs["error-msg"].style.display = "block"
-                    this.modal.view.refs["error-msg-text"].textContent = text
+                    this.modal.view.refs['error-msg'].style.display = 'block'
+                    this.modal.view.refs['error-msg-text'].textContent = text
                 }
                 else {
-                    this.modal.view.refs["error-msg"].style.display = "none"
-                    this.modal.view.refs["error-msg-text"].textContent = ""
+                    this.modal.view.refs['error-msg'].style.display = 'none'
+                    this.modal.view.refs['error-msg-text'].textContent = ''
                 }
             })
-            this.model.state.on("update", text => {
-                this.modal.view.refs["state"].textContent = text
+            this.model.state.on('update', text => {
+                this.modal.view.refs['state'].textContent = text
             })
         }
     }

@@ -1,5 +1,5 @@
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
-import ConfigPipelineView from "./ConfigPipelineView"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import ConfigPipelineView from './ConfigPipelineView'
 
 class ConfigPipelineTab extends WizardTabPresenter {
     constructor(){

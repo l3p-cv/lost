@@ -1,4 +1,4 @@
-import { NodeTemplate } from "pipRoot/l3pfrontend/index"
+import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 
 
 export default class ExampleCreateView {
@@ -6,8 +6,8 @@ export default class ExampleCreateView {
         this.html = new NodeTemplate(`
             <div>
                 <h1>CREATE</h1>
-                <h3 data-ref="title">${model.title}</h3>
-                <p data-ref="info">${model.text.value}</p>
+                <h3 data-ref='title'>${model.title}</h3>
+                <p data-ref='info'>${model.text.value}</p>
             </div>
         `)
         // the parent node gets defined after adding the node to

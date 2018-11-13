@@ -1,14 +1,14 @@
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
-import appModel from "../../appModel"
-import swal from "sweetalert2"
-import SelectPipelineView from "./SelectPipelineView"
-import * as http from "pipRoot/http"
-import { ContextMenu } from "pipRoot/l3pfrontend/index"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import appModel from '../../appModel'
+import swal from 'sweetalert2'
+import SelectPipelineView from './SelectPipelineView'
+import * as http from 'pipRoot/http'
+import { ContextMenu } from 'pipRoot/l3pfrontend/index'
 
 
 import moment from 'moment'
 
-import "datatables.net-bs"
+import 'datatables.net-bs'
 
 
 let templateDatatable
@@ -20,23 +20,23 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         this.isTabValidated = false
 
         // MODEL-BINDING
-        appModel.data.pipelineTemplates.on("update", (data) => this.updateTable(data))
+        appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
 
         // VIEW-BINDING
-        $(this.view.html.refs["templatetable"]).on("click", "tbody td", (e) => {
+        $(this.view.html.refs['templatetable']).on('click', 'tbody td', (e) => {
             let templateId = templateDatatable.row($(e.currentTarget).parent()).data()[0]
-            if ($(e.currentTarget).text() !== "Delete Pipeline") {
+            if ($(e.currentTarget).text() !== 'Delete Pipeline') {
                 this.selectTemplate(templateId)
             }
         })
-        $(this.view.html.refs["templatetable"]).on("contextmenu", "tbody td", (e) => {
+        $(this.view.html.refs['templatetable']).on('contextmenu', 'tbody td', (e) => {
             e.preventDefault()
             let templateId = templateDatatable.row($(e.currentTarget).parent()).data()[0]
             let row = templateDatatable.row($(e.currentTarget).parent())
 
             function deletePipeline(){
                 http.deletePipe(templateId).then((isSuccess) => {
-                    if (isSuccess === "cancel") {
+                    if (isSuccess === 'cancel') {
                         return
                     } else if (isSuccess) {
                         row.remove().draw(false)                        
@@ -45,7 +45,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
             }
             function downloadLogfile(){
                 if (that.rawData[0].logfilePath) {
-                    window.location = window.location.origin + "/" + that.rawData[0].logfilePath
+                    window.location = window.location.origin + '/' + that.rawData[0].logfilePath
                 } else {
                     swal({
                         type: 'error',
@@ -57,33 +57,33 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 
             if(appModel.isCompleted){
                 let cm = new ContextMenu(e, {
-                    name: "Delete Pipeline",
-                    icon: "fa fa-trash",
+                    name: 'Delete Pipeline',
+                    icon: 'fa fa-trash',
                     fn: () => {
                         deletePipeline()
                     },
                 },
                 {
-                    name:"Download Logfile",
-                    icon:"fa fa-download",
+                    name:'Download Logfile',
+                    icon:'fa fa-download',
                     fn: () =>{
                         downloadLogfile()
                     }
                 })
             }else{
                 let cm = new ContextMenu(e, {
-                    name: "Delete Pipeline",
-                    icon: "fa fa-trash",
+                    name: 'Delete Pipeline',
+                    icon: 'fa fa-trash',
                     fn: () => {
                         deletePipeline()
                     }
                 },
                 {
-                    id: "pause",
-                    name: "Pause Pipeline",
-                    icon: "fa fa-pause",
+                    id: 'pause',
+                    name: 'Pause Pipeline',
+                    icon: 'fa fa-pause',
                     fn: () => {
-                        http.pausePipe({"pipeId": templateId}).then((isSuccess)=>{
+                        http.pausePipe({'pipeId': templateId}).then((isSuccess)=>{
                             if(isSuccess){
                                 location.reload()
                             }
@@ -91,11 +91,11 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     }
                 },
                 {
-                    id: "play",
-                    name: "Play Pipeline",
-                    icon: "fa fa-play",
+                    id: 'play',
+                    name: 'Play Pipeline',
+                    icon: 'fa fa-play',
                     fn: () => {
-                         http.playPipe({"pipeId": templateId}).then((isSuccess)=>{
+                         http.playPipe({'pipeId': templateId}).then((isSuccess)=>{
                             if(isSuccess){
                                 location.reload()
                             }
@@ -103,8 +103,8 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     }
                 },
                 {
-                    name:"Download Logfile",
-                    icon:"fa fa-download",
+                    name:'Download Logfile',
+                    icon:'fa fa-download',
                     fn: () =>{
                         downloadLogfile()
                     }
@@ -112,7 +112,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
             }
 
         })
-        $(this.view.html.refs["templatetable"]).on('click', 'button', function () {
+        $(this.view.html.refs['templatetable']).on('click', 'button', function () {
             let templateId = templateDatatable.row($(this).parents('tr')).data()
             //http.deletePipe(templateId)
         })
@@ -126,17 +126,17 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         this.rawData = rawData
         // If user Start pipe --> show graph
         let pathname = window.location.pathname
-        let loadThisTemplate =  pathname.substring(pathname.lastIndexOf("/") +1 , pathname.length)
+        let loadThisTemplate =  pathname.substring(pathname.lastIndexOf('/') +1 , pathname.length)
         if(!isNaN(parseInt(loadThisTemplate))){
             this.selectTemplate(parseInt(loadThisTemplate))            
         }
 
         if (rawData !== undefined) {
             const data = rawData.map(pipe => {
-                if(pipe.progress === "ERROR"){
-                    pipe.progress = `<span class="label label-danger">${pipe.progress}</span>`                    
-                }else if(pipe.progress === "PAUSED"){
-                    pipe.progress = `<span class="label label-warning">${pipe.progress}</span>`                                        
+                if(pipe.progress === 'ERROR'){
+                    pipe.progress = `<span class='label label-danger'>${pipe.progress}</span>`                    
+                }else if(pipe.progress === 'PAUSED'){
+                    pipe.progress = `<span class='label label-warning'>${pipe.progress}</span>`                                        
                 }
                 let date  = new Date(pipe.date)
                 let formatedDate = moment(date).format('MMMM Do YYYY, HH:mm:ss')
@@ -151,9 +151,9 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 ]
             })
 
-            templateDatatable = $(this.view.html.refs["templatetable"]).DataTable({
+            templateDatatable = $(this.view.html.refs['templatetable']).DataTable({
                 data,
-                order: [[ 6, "desc" ]],                         
+                order: [[ 6, 'desc' ]],                         
                 columnDefs: [{
                     targets: [0],
                     visible: false,
@@ -165,25 +165,25 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                     
                 }],
                 columns: [{
-                        title: "ID"
+                        title: 'ID'
                     },
                     {
-                        title: "Name"
+                        title: 'Name'
                     },
                     {
-                        title: "Description"
+                        title: 'Description'
                     },
                     {
-                        title: "Template Name"
+                        title: 'Template Name'
                     },
                     {
-                        title: "Author"
+                        title: 'Author'
                     },
                     {
-                        title: "Progress"
+                        title: 'Progress'
                     },
                     {
-                        title: "Date"
+                        title: 'Date'
                     },
                 ]
             })
@@ -193,7 +193,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
     }
     selectTemplate(id: Node) {
         let requestGraph = () => {
-            if (typeof id === "number") {
+            if (typeof id === 'number') {
                 this.isTabValidated = true
                 // Completed                
                 if(appModel.isCompleted){
@@ -203,7 +203,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 }else{
                     // Running
                     http.requestRunningPipe(id).then(response => {
-                        if(typeof response === "string"){
+                        if(typeof response === 'string'){
                             swal(
                                 'Oops...',
                                 response,

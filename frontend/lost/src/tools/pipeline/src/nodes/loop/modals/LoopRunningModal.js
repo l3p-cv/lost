@@ -1,13 +1,13 @@
-import { BaseModal } from "pipRoot/l3pfrontend/index"
+import { BaseModal } from 'pipRoot/l3pfrontend/index'
 
 
 export default class LoopRunningModal extends BaseModal {
     constructor(nodeModel){
         const params = {
             id: `${nodeModel.peN}`,
-            title: "Loop",
+            title: 'Loop',
             content: `
-                <table class="table table-hover">
+                <table class='table table-hover'>
                     <tr>
                         <td>
                             <strong>Element ID: </td>
@@ -41,7 +41,7 @@ export default class LoopRunningModal extends BaseModal {
                     <tr>
                         <td>
                             <strong>Status: </td>
-                        <td data-ref= "state">${nodeModel.state.value.replace("_", " ")}</td>
+                        <td data-ref= 'state'>${nodeModel.state.value.replace('_', ' ')}</td>
                     </tr>
                 </table>`   
         }

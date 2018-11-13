@@ -1,4 +1,4 @@
-import * as appPresenter from "./appPresenter"
+import * as appPresenter from './appPresenter'
 
 window.APP = window.APP || {}
 window.APP.init = (params) => {

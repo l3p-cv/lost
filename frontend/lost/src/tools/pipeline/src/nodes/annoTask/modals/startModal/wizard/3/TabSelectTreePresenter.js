@@ -1,8 +1,8 @@
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
-import TabSelectTreeView from "./TabSelectTreeView"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import TabSelectTreeView from './TabSelectTreeView'
 
-import "datatables.net"
-import "datatables.net-buttons"
+import 'datatables.net'
+import 'datatables.net-buttons'
 import swal from 'sweetalert2'
 
 
@@ -14,13 +14,13 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
         this.validated = false
 
         // DATA TABLES
-        const treeTable = $(this.view.html.refs["table-tree"]).DataTable({
+        const treeTable = $(this.view.html.refs['table-tree']).DataTable({
             lengthMenu: [
                 [3, 5],
                 [3, 5],
             ],
             order: [
-                [1, "asc"],
+                [1, 'asc'],
             ],
             autoWidth: false,
             data: this.model.annoTask.availableLabelTrees,
@@ -49,13 +49,13 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
         })
 
         // MODEL BINDINGS
-        presenter.modalModel.controls.show3.on("update", () => this.show())
+        presenter.modalModel.controls.show3.on('update', () => this.show())
         
         // VIEW BINDINGS
-        $(this.view.nav.root).on("click", () => {
-            modalView.view.refs["outerModal"].style.width = '50%'
+        $(this.view.nav.root).on('click', () => {
+            modalView.view.refs['outerModal'].style.width = '50%'
         })
-        $(this.view.html.refs["table-tree"]).find("tbody").on('click', 'tr', (e) => {
+        $(this.view.html.refs['table-tree']).find('tbody').on('click', 'tr', (e) => {
             let requestGraph = () => {
                 treeTable.$('tr.selected').removeClass('selected')
                 $(e.currentTarget).addClass('selected')
@@ -71,7 +71,7 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
             if (treeTable.$('tr.selected').hasClass('selected') === true) {
                 swal({
                     title: 'Are you sure to load the graph? ',
-                    text: "Current labels will be removed. You will not be able to revert this!",
+                    text: 'Current labels will be removed. You will not be able to revert this!',
                     type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

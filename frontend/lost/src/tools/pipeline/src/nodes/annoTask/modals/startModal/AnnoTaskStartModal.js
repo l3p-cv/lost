@@ -1,22 +1,22 @@
-import { BaseModal } from "pipRoot/l3pfrontend/index"
+import { BaseModal } from 'pipRoot/l3pfrontend/index'
 
-import { Wizard } from "pipRoot/l3pfrontend/index"
-import TabInfoPresenter from "./wizard/1/TabInfoPresenter"
-import TabUserPresenter from "./wizard/2/TabUserPresenter"
-import TabSelectTreePresenter from "./wizard/3/TabSelectTreePresenter"
-import TabTreePresenter from "./wizard/4/TabTreePresenter"
+import { Wizard } from 'pipRoot/l3pfrontend/index'
+import TabInfoPresenter from './wizard/1/TabInfoPresenter'
+import TabUserPresenter from './wizard/2/TabUserPresenter'
+import TabSelectTreePresenter from './wizard/3/TabSelectTreePresenter'
+import TabTreePresenter from './wizard/4/TabTreePresenter'
 
 
 export default class AnnoTaskStartModal extends BaseModal {
     constructor(presenter, graph){
         super({
-          id: "anno-task-modal",
-          title: "Annotation Task",
+          id: 'anno-task-modal',
+          title: 'Annotation Task',
           content: `
-            <div data-ref="WizardContent"></div>
+            <div data-ref='WizardContent'></div>
           ` 
         })
-        this.wizard = new Wizard(this.view.refs["WizardContent"])  
+        this.wizard = new Wizard(this.view.refs['WizardContent'])  
         let tab1 = new TabInfoPresenter(presenter, this)
         let tab2 = new TabUserPresenter(presenter, this)
         let tab3 = new TabSelectTreePresenter(presenter, this)

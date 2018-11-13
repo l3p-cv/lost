@@ -1,7 +1,7 @@
-import { http } from "pipRoot/l3pfrontend/index"
+import { http } from 'pipRoot/l3pfrontend/index'
 import swal from 'sweetalert2'
-import appModel from "./apps/start/appModel"
-import { API_URL } from "root/settings"
+import appModel from './apps/start/appModel'
+import { API_URL } from 'root/settings'
 
 
 const BASE_URL = `${API_URL}/pipeline`
@@ -22,7 +22,7 @@ export function requestTemplates() {
 }
 export function requestTemplate(id: Number) {
     if (id === undefined || isNaN(id)) {
-        throw new Error("invalid id.")
+        throw new Error('invalid id.')
     }
     return http.get(URLS.GET_TEMPLATE(id), appModel.state.token)
 }
@@ -31,14 +31,14 @@ export function requestPipelines(){
 }
 export function requestPipeline(id: Number){
     if (id === undefined || isNaN(id)) {
-        throw new Error("invalid id.")
+        throw new Error('invalid id.')
     }
     return http.get(URLS.GET_PIPELINE(id), appModel.state.token)
 }
 export function deletePipe(id) {
     return swal({
         title: 'Are you sure to delete this pipe? ',
-        text: "You will not be able to revert this!",
+        text: 'You will not be able to revert this!',
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -57,7 +57,7 @@ export function deletePipe(id) {
         })
         return http.del(URLS.POST_DELETE_PIPELINE + id, appModel.state.token).then((result) => {
             swal.closeModal()
-            if (result === "error") {
+            if (result === 'error') {
                 swal({
                     type: 'error',
                     title: 'Oops...',
@@ -73,7 +73,7 @@ export function deletePipe(id) {
         // dismiss can be 'cancel', 'overlay',
         // 'close', and 'timer'
         if (dismiss === 'cancel') {
-            return "cancel"
+            return 'cancel'
         }
     })
 }
@@ -82,7 +82,7 @@ export function startPipe(pipeJson) {
 }
 export function pausePipe(id) {
     return http.post(URLS.POST_PAUSE_PIPELINE, id, appModel.state.token).then((result) => {
-        if (result === "error") {
+        if (result === 'error') {
             swal({
                 type: 'error',
                 title: 'Oops...',
@@ -96,7 +96,7 @@ export function pausePipe(id) {
 }
 export function playPipe(id) {
     return http.post(URLS.POST_PLAY_PIPELINE, id, appModel.state.token).then((result) => {
-        if (result === "error") {
+        if (result === 'error') {
             swal({
                 type: 'error',
                 title: 'Oops...',

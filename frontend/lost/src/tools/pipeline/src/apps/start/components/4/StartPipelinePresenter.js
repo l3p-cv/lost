@@ -1,13 +1,13 @@
 
 
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
-import StartPipelineView from "./StartPipelineView"
-import SelectPipelinePresenter from "../1/SelectPipelinePresenter"
-import PipelineGraphPresenter from "../2/PipelineGraphPresenter"
-import ConfigPipelinePresenter from "../3/ConfigPipelinePresenter"
-import * as http from "pipRoot/http"
-import swal from "sweetalert2"
-import appModel from "../../appModel"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import StartPipelineView from './StartPipelineView'
+import SelectPipelinePresenter from '../1/SelectPipelinePresenter'
+import PipelineGraphPresenter from '../2/PipelineGraphPresenter'
+import ConfigPipelinePresenter from '../3/ConfigPipelinePresenter'
+import * as http from 'pipRoot/http'
+import swal from 'sweetalert2'
+import appModel from '../../appModel'
 
 const postJson = {}
 class StartPipelineTab extends WizardTabPresenter {
@@ -16,20 +16,20 @@ class StartPipelineTab extends WizardTabPresenter {
         this.view = StartPipelineView
         
         // MODEL BINDING
-        appModel.controls.show4.on("update", () => this.show())
+        appModel.controls.show4.on('update', () => this.show())
         
         // VIEW BINDING
-        $(this.view.html.refs["btn-prev"]).on('click', () => {
+        $(this.view.html.refs['btn-prev']).on('click', () => {
             appModel.controls.show3.update(true)
         })
         $(this.view.html.refs.btnStartPipe).on('click', () => {
             postJson.elements = []
             if (ConfigPipelinePresenter.validated === false) {
-                alert("Please go to third tab")
+                alert('Please go to third tab')
                 return
             }
             if (PipelineGraphPresenter.validated === false) {
-                alert("Please go to second tab")
+                alert('Please go to second tab')
                 return
             }
             postJson.templateId = SelectPipelinePresenter.templateId
@@ -60,9 +60,9 @@ class StartPipelineTab extends WizardTabPresenter {
                     function () { },
                     function () {
                         if (appModel.isDebug) {
-                            window.location = "/pipeline/debug/running/" + response
+                            window.location = '/pipeline/debug/running/' + response
                         } else {
-                            window.location = "/pipeline/running/" + response
+                            window.location = '/pipeline/running/' + response
                         }
                     }
                 )

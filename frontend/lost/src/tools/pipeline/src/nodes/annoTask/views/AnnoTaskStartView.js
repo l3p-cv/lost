@@ -1,13 +1,13 @@
-import { NodeTemplate } from "pipRoot/l3pfrontend/index"
-import appModel from "start/appModel"
+import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
+import appModel from 'start/appModel'
 
 
 export default class AnnoTaskStartView {
     constructor(model) {
         let validation = false
         if(
-            model.post.annoTask.instructions !== "" &&
-            model.post.annoTask.name !== "" &&
+            model.post.annoTask.instructions !== '' &&
+            model.post.annoTask.name !== '' &&
             model.post.annoTask.labelLeaves.length > 0 &&
             model.post.annoTask.workerId !== undefined
         ){
@@ -17,13 +17,13 @@ export default class AnnoTaskStartView {
         appModel.state.checkNodesValidation.update(true)
 
         this.html = new NodeTemplate(`
-            <div class="panel panel-${validation ? "success" : "warning"} custom_node">
-                <div class="panel-heading ">
-                    <i class="fa fa-pencil fa-2x pull-left"></i>                
-                    <h class="panel-title">Annotation Task</h>           
+            <div class='panel panel-${validation ? 'success' : 'warning'} custom_node'>
+                <div class='panel-heading '>
+                    <i class='fa fa-pencil fa-2x pull-left'></i>                
+                    <h class='panel-title'>Annotation Task</h>           
                 </div>
-                <div class="panel-body">
-                    <table class="table table-borderless">
+                <div class='panel-body'>
+                    <table class='table table-borderless'>
                         <tbody>
                             <tr>
                                 <td>Name:</td>
@@ -36,7 +36,7 @@ export default class AnnoTaskStartView {
                         </tbody>  
                     </table>
                     ${model.meta.labelLeaves.map(element => `
-                        <span class="annotask-span-node-default bg-blue">${element.name}</span>
+                        <span class='annotask-span-node-default bg-blue'>${element.name}</span>
                     `)}
                 </div>
             </div>
@@ -55,11 +55,11 @@ export default class AnnoTaskStartView {
 
 {
     /* <p> Assignee:  
-    <span data-ref="assignee">
+    <span data-ref='assignee'>
     ${model.annoTask.availableGroups.map(element => 
     (element.id === model.post.annoTask.workerId) ?
     ` ${element.name}`
     :``
-    ).join("")}
+    ).join('')}
     </span> <p> */
 }

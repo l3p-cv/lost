@@ -1,18 +1,18 @@
 
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
-import * as http from "pipCore/http"
-import appModel from "../../appModel"
-import PipelineGraphView from "./PipelineGraphView"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import * as http from 'pipCore/http'
+import appModel from '../../appModel'
+import PipelineGraphView from './PipelineGraphView'
 
-import Graph from "pipRoot/Graph"
+import Graph from 'pipRoot/Graph'
 
-import DatasourceNodePresenter from "pipRoot/nodes/datasource/DatasourceNodePresenter"
-import AnnoTaskNodePresenter from "pipRoot/nodes/annoTask/AnnoTaskNodePresenter"
-import DataExportNodePresenter from "pipRoot/nodes/dataExport/DataExportNodePresenter"
-import VisualOutputNodePresenter from "pipRoot/nodes/visualOutput/VisualOutputNodePresenter"
+import DatasourceNodePresenter from 'pipRoot/nodes/datasource/DatasourceNodePresenter'
+import AnnoTaskNodePresenter from 'pipRoot/nodes/annoTask/AnnoTaskNodePresenter'
+import DataExportNodePresenter from 'pipRoot/nodes/dataExport/DataExportNodePresenter'
+import VisualOutputNodePresenter from 'pipRoot/nodes/visualOutput/VisualOutputNodePresenter'
 
-import ScriptNodePresenter from "pipRoot/nodes/script/ScriptNodePresenter"
-import LoopNodePresenter from "pipRoot/nodes/loop/LoopNodePresenter"
+import ScriptNodePresenter from 'pipRoot/nodes/script/ScriptNodePresenter'
+import LoopNodePresenter from 'pipRoot/nodes/loop/LoopNodePresenter'
 
 import swal from 'sweetalert2'
 
@@ -24,56 +24,56 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
         // VIEW-BINDING
         // Delete Pipe
-        $(this.view.html.refs["btn-delete-pipeline"]).on("click", () => {
+        $(this.view.html.refs['btn-delete-pipeline']).on('click', () => {
             let id = this.appData.id
             // result can be cancel, true, false
             http.deletePipe(id).then((isSuccess) => {
-                if (isSuccess === "cancel") {
+                if (isSuccess === 'cancel') {
                     return
                 } else if (isSuccess) {
                     if (appModel.isDebug && appModel.isCompleted) {
-                        window.location = "/pipeline/debug/completed"
+                        window.location = '/pipeline/debug/completed'
                     } else if(appModel.isDebug && !appModel.isCompleted) {
-                        window.location = "/pipeline/debug/running"
+                        window.location = '/pipeline/debug/running'
                     }else if(appModel.isCompleted){
-                        window.location = "/pipeline/completed"
+                        window.location = '/pipeline/completed'
                     }else{
-                        window.location = "/pipeline/running"
+                        window.location = '/pipeline/running'
                     }
                 }
             })
         })
         // Pause Pipe
-        $(this.view.html.refs["btn-pause-pipe"]).on("click", () => {
+        $(this.view.html.refs['btn-pause-pipe']).on('click', () => {
             http.pausePipe({
-                "pipeId": this.appData.id
+                'pipeId': this.appData.id
             }).then((isSuccess) => {
                 if (isSuccess) {
-                    $(this.view.html.refs["btn-play-pipe"]).prop("disabled", false)
-                    $(this.view.html.refs["btn-pause-pipe"]).prop("disabled", true)
-                    $($(this.graph.svg.refs["title-box"]).children()[0]).show()
+                    $(this.view.html.refs['btn-play-pipe']).prop('disabled', false)
+                    $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
+                    $($(this.graph.svg.refs['title-box']).children()[0]).show()
 
                 }
             })
         })
         // Play Pipe
-        $(this.view.html.refs["btn-play-pipe"]).on("click", () => {
+        $(this.view.html.refs['btn-play-pipe']).on('click', () => {
             http.playPipe({
-                "pipeId": this.appData.id
+                'pipeId': this.appData.id
             }).then((isSuccess) => {
                 if (isSuccess) {
-                    $(this.view.html.refs["btn-play-pipe"]).prop("disabled", true)
-                    $(this.view.html.refs["btn-pause-pipe"]).prop("disabled", false)
-                    $($(this.graph.svg.refs["title-box"]).children()[0]).hide()
+                    $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
+                    $(this.view.html.refs['btn-pause-pipe']).prop('disabled', false)
+                    $($(this.graph.svg.refs['title-box']).children()[0]).hide()
 
                 }
             })
 
         })
         // Download Logfile
-        $(this.view.html.refs["btn-download-logfile"]).on("click", () => {
+        $(this.view.html.refs['btn-download-logfile']).on('click', () => {
             if (this.appData.logfilePath) {
-                window.location = window.location.origin + "/" + this.appData.logfilePath
+                window.location = window.location.origin + '/' + this.appData.logfilePath
             } else {
                 swal({
                     type: 'error',
@@ -83,16 +83,16 @@ class PipelineGraphPresenter extends WizardTabPresenter {
             }
         })
         // Toggle Infobox
-        $(this.view.html.refs["btn-toggle-infobox"]).on("click", () => {
+        $(this.view.html.refs['btn-toggle-infobox']).on('click', () => {
             console.log('==================this.graph.svg.refs==================')
             console.log(this.graph.svg.refs)
             console.log('====================================')
-            $(this.graph.svg.refs["title-box"]).slideToggle("slow")
-            $(this.view.html.refs["btn-toggle-infobox-icon"]).toggleClass("fa-toggle-on fa-toggle-off")
+            $(this.graph.svg.refs['title-box']).slideToggle('slow')
+            $(this.view.html.refs['btn-toggle-infobox-icon']).toggleClass('fa-toggle-on fa-toggle-off')
         })
 
         // MODEL-BINDING
-        appModel.state.selectedPipe.on("update", (data) => this.loadTemplate(data))
+        appModel.state.selectedPipe.on('update', (data) => this.loadTemplate(data))
     }
     loadTemplate(appData: any){
         // the appData reference is used in the toolbar view bindings (see constructor).
@@ -108,18 +108,18 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         if(this.graph){
             this.graph.remove()
         } 
-        this.graph = new Graph(this.view.html.refs["dagre"])
+        this.graph = new Graph(this.view.html.refs['dagre'])
 
         // @model-binding: should this be updated automatically ?
         if(appModel.isCompleted) {
-            $(this.view.html.refs["btn-pause-pipeline"]).remove()
+            $(this.view.html.refs['btn-pause-pipeline']).remove()
         }
 
         // @refactor: somehow ?
-        console.log("ADDED")
-        $(this.graph.svg.refs["title-box"]).append(`
-            <table class="table table-borderless">
-                <h3 style="text-align: center"><span class='label label-warning'>PAUSED</span></h3>
+        console.log('ADDED')
+        $(this.graph.svg.refs['title-box']).append(`
+            <table class='table table-borderless'>
+                <h3 style='text-align: center'><span class='label label-warning'>PAUSED</span></h3>
                 <tbody>
                     <tr><td>Name:</td><td>${appData.name}</td></tr> 
                     <tr><td>Author:</td><td>${appData.userName}</td></tr> 
@@ -131,23 +131,23 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         `)
 
         // handle pipeline progress information.
-        if (appData.progress === "PAUSED") {
-            $($(this.graph.svg.refs["title-box"]).children()[0]).show()
-            $(this.view.html.refs["btn-play-pipe"]).prop("disabled", false)
-            $(this.view.html.refs["btn-pause-pipe"]).prop("disabled", true)
+        if (appData.progress === 'PAUSED') {
+            $($(this.graph.svg.refs['title-box']).children()[0]).show()
+            $(this.view.html.refs['btn-play-pipe']).prop('disabled', false)
+            $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
         } else {
-            $($(this.graph.svg.refs["title-box"]).children()[0]).hide()
-            $(this.view.html.refs["btn-play-pipe"]).prop("disabled", true)
-            $(this.view.html.refs["btn-pause-pipe"]).prop("disabled", false)
+            $($(this.graph.svg.refs['title-box']).children()[0]).hide()
+            $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
+            $(this.view.html.refs['btn-pause-pipe']).prop('disabled', false)
         }
 
         if(appModel.isCompleted){
-            $(this.view.html.refs["btn-play-pipe"]).prop("disabled", true)
-            $(this.view.html.refs["btn-pause-pipe"]).prop("disabled", true)
+            $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
+            $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
         }
 
         // create nodes from data.
-        const mode = "running"
+        const mode = 'running'
         this.nodes = new Map()
         appData.elements.forEach(nodeData => {
             if ('datasource' in nodeData) {
@@ -168,7 +168,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // add nodes and edges to the graph.
         this.nodes.forEach(n => this.graph.addNode(n))
         this.nodes.forEach(n => {
-            if (n.constructor.name === "LoopNodePresenter") {
+            if (n.constructor.name === 'LoopNodePresenter') {
                 this.graph.addEdge(n.model.peN, n.model.loop.peJumpId, true)
             }
             n.model.peOut.forEach(e => {
@@ -179,16 +179,16 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         this.graph.centerGraph()
 
         // enable tooltips after drawing all nodes.
-        $(`[data-toggle="tooltip"]`).tooltip({
+        $(`[data-toggle='tooltip']`).tooltip({
             html: true,
-            placement: "right",
+            placement: 'right',
             container: 'body'
         })
 
         // update polling.
         if(!appModel.isCompleted){
             let refresh = setInterval(() => {
-                $(this.view.html.refs["update-label"]).fadeIn(200)
+                $(this.view.html.refs['update-label']).fadeIn(200)
                  http.requestRunningPipe(this.appData.id)
                  .then((appData) => {
                     // tooltip would stay opened, if we wouldn't hide it on update.
@@ -200,7 +200,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                             title: 'Pipeline finished',
                             text: 'Go to Finished Pipes Tab',
                         })
-                        $(this.view.html.refs["update-label"]).delay(500).fadeOut(200)
+                        $(this.view.html.refs['update-label']).delay(500).fadeOut(200)
                         return
                     }
                     // update the model of each graph node.
@@ -208,22 +208,22 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                         const node = this.nodes.get(nodeData.id)
                         node.model.state.update(nodeData.state)
                         switch(node.__proto__.constructor.name){
-                            case "AnnoTaskNodePresenter":
+                            case 'AnnoTaskNodePresenter':
                                 node.model.progress.update(nodeData.annoTask.progress ? nodeData.annoTask.progress : 0)
                                 break
-                            case "ScriptNodePresenter":
+                            case 'ScriptNodePresenter':
                                 node.model.progress.update(nodeData.script.progress ? nodeData.script.progress : 0)
-                                node.model.errorMsg.update(nodeData.script.errorMsg ? nodeData.script.errorMsg : "")
+                                node.model.errorMsg.update(nodeData.script.errorMsg ? nodeData.script.errorMsg : '')
                                 break
                         }
                     })
                     // not thefinest solution add event Listenet Modal on close
                     $(`[data-toggle='tooltip']`).tooltip({
                         html: true,
-                        placement: "right",
+                        placement: 'right',
                         container: 'body'
                     })
-                    $(this.view.html.refs["update-label"]).delay(500).fadeOut(200)
+                    $(this.view.html.refs['update-label']).delay(500).fadeOut(200)
                 }).catch((error) => {
                     clearInterval(refresh)
                 })

@@ -1,16 +1,16 @@
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
-import appModel from "../../appModel"
-import PipelineGraphView from "./PipelineGraphView"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import appModel from '../../appModel'
+import PipelineGraphView from './PipelineGraphView'
 
-import Graph from "pipRoot/Graph"
-import ConfigPipelinePresener from "../3/ConfigPipelinePresenter"
+import Graph from 'pipRoot/Graph'
+import ConfigPipelinePresener from '../3/ConfigPipelinePresenter'
 
-import DatasourceNodePresenter from "pipRoot/nodes/datasource/DatasourceNodePresenter"
-import AnnoTaskNodePresenter from "pipRoot/nodes/annoTask/AnnoTaskNodePresenter"
-import DataExportNodePresenter from "pipRoot/nodes/dataExport/DataExportNodePresenter"
-import VisualOutputNodePresenter from "pipRoot/nodes/visualOutput/VisualOutputNodePresenter"
-import ScriptNodePresenter from "pipRoot/nodes/script/ScriptNodePresenter"
-import LoopNodePresenter from "pipRoot/nodes/loop/LoopNodePresenter"
+import DatasourceNodePresenter from 'pipRoot/nodes/datasource/DatasourceNodePresenter'
+import AnnoTaskNodePresenter from 'pipRoot/nodes/annoTask/AnnoTaskNodePresenter'
+import DataExportNodePresenter from 'pipRoot/nodes/dataExport/DataExportNodePresenter'
+import VisualOutputNodePresenter from 'pipRoot/nodes/visualOutput/VisualOutputNodePresenter'
+import ScriptNodePresenter from 'pipRoot/nodes/script/ScriptNodePresenter'
+import LoopNodePresenter from 'pipRoot/nodes/loop/LoopNodePresenter'
 
 
 class PipelineGraphPresenter extends WizardTabPresenter {
@@ -20,14 +20,14 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         this.validated = false
         
         // MODEL-BINDING
-        appModel.controls.show2.on("update", () => this.show())  
-        appModel.state.selectedTemplate.on("update", (data) => this.loadTemplate(data))
+        appModel.controls.show2.on('update', () => this.show())  
+        appModel.state.selectedTemplate.on('update', (data) => this.loadTemplate(data))
 
         // VIEW-BINDING
-        $(this.view.html.refs["btn-next"]).on('click', () => {
+        $(this.view.html.refs['btn-next']).on('click', () => {
             appModel.controls.show3.update(true)            
         })
-        $(this.view.html.refs["btn-prev"]).on('click', () => {
+        $(this.view.html.refs['btn-prev']).on('click', () => {
             appModel.controls.show1.update(true)
         })
     }
@@ -51,7 +51,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         this.show()
         
         // create and render the graph
-        this.graph = new Graph(this.view.html.refs["dagre"])
+        this.graph = new Graph(this.view.html.refs['dagre'])
         // dont recreate the graph it it allready exists
         // if (this.graph !== undefined) {
         //     return
@@ -66,7 +66,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
         // data.requestTemplate()
         const elements = data.elements
-        const mode = "start"        
+        const mode = 'start'        
         const nodes = []
         elements.forEach(element => {
             if ('datasource' in element) {
@@ -90,7 +90,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
             this.graph.addNode(n)
         })
         nodes.forEach(n => {
-            if (n.constructor.name === "LoopNodePresenter") {
+            if (n.constructor.name === 'LoopNodePresenter') {
                 this.graph.addEdge(n.model.peN, n.model.loop.peJumpId, true)
             }
             if (n.model.peOut !== null) {
@@ -102,7 +102,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
         this.graph.centerGraph()
         
-        appModel.state.checkNodesValidation.on("update", ()=>{
+        appModel.state.checkNodesValidation.on('update', ()=>{
             const allNodePresenter = this.graph.graph._nodes
             Object.keys(allNodePresenter).every(n => {
                 if (allNodePresenter[n].nodePresenter.model.validation !== undefined) {
@@ -118,9 +118,9 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 }
             })
             if(this.validated){
-                $(this.view.html.refs["btn-next"]).prop("disabled", false)                
+                $(this.view.html.refs['btn-next']).prop('disabled', false)                
             }else{
-                $(this.view.html.refs["btn-next"]).prop("disabled", true)
+                $(this.view.html.refs['btn-next']).prop('disabled', true)
             }
         })
         appModel.state.checkNodesValidation.update(true)

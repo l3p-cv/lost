@@ -1,13 +1,13 @@
-import { BaseModal } from "pipRoot/l3pfrontend/index"
+import { BaseModal } from 'pipRoot/l3pfrontend/index'
 
 
 export default class DataExportRunningModal extends BaseModal {
     constructor(nodeModel){
         const params = {
             visible: `${nodeModel.dataExport.length === 0 ? `false`:`true`}`,
-            title: "Export",
+            title: 'Export',
             content: `
-                <table class="table table-hover">
+                <table class='table table-hover'>
                     <thead>
                         <tr>
                             <th>Iteration</th>
@@ -23,8 +23,8 @@ export default class DataExportRunningModal extends BaseModal {
                             </tr>
                             <tr>
                                 <td>
-                                    <a href="/${element.file_path}" class="btn btn-info" role="button">
-                                        ${element.file_path.substring(element.file_path.lastIndexOf("/") + 1, element.file_path.length)}
+                                    <a href='/${element.file_path}' class='btn btn-info' role='button'>
+                                        ${element.file_path.substring(element.file_path.lastIndexOf('/') + 1, element.file_path.length)}
                                     </a>
                                 </td>
                             </tr>

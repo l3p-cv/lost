@@ -1,12 +1,12 @@
-import BaseNodePresenter from "../BaseNodePresenter"
-import AnnoTaskNodeModel from "./AnnoTaskNodeModel"
+import BaseNodePresenter from '../BaseNodePresenter'
+import AnnoTaskNodeModel from './AnnoTaskNodeModel'
 
-import AnnoTaskRunningView from "./views/AnnoTaskRunningView"
-import AnnoTaskStartView from "./views/AnnoTaskStartView"
+import AnnoTaskRunningView from './views/AnnoTaskRunningView'
+import AnnoTaskStartView from './views/AnnoTaskStartView'
 
-import AnnoTaskRunningModal from "./modals/AnnoTaskRunningModal"
-import AnnoTaskStartModal from "./modals/startModal/AnnoTaskStartModal"
-import AnnoTaskStartModalModel from "./modals/startModal/AnnoTaskStartModalModel"
+import AnnoTaskRunningModal from './modals/AnnoTaskRunningModal'
+import AnnoTaskStartModal from './modals/startModal/AnnoTaskStartModal'
+import AnnoTaskStartModalModel from './modals/startModal/AnnoTaskStartModalModel'
 
 
 export default class AnnoTaskNodePresenter extends BaseNodePresenter {
@@ -17,11 +17,11 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
       
         // create view
         switch(mode){
-            case "running":
+            case 'running':
                 this.view = new AnnoTaskRunningView(this.model)
                 this.modal = new AnnoTaskRunningModal(this.model)
                 break
-            case "start":
+            case 'start':
                 this.view = new AnnoTaskStartView(this.model)
                 this.modalModel = new AnnoTaskStartModalModel()
                 this.modal = new AnnoTaskStartModal(this)
@@ -33,9 +33,9 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
         }
 
         // VIEW BINDINGS
-        $(this.modal.view.refs["more-information-link"]).on("click", () =>{
-            $(this.modal.view.refs["collapse-this"]).collapse('toggle')
-            $(this.modal.view.refs["more-information-icon"]).toggleClass("fa-chevron-down fa-chevron-up")
+        $(this.modal.view.refs['more-information-link']).on('click', () =>{
+            $(this.modal.view.refs['collapse-this']).collapse('toggle')
+            $(this.modal.view.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
         })
     }
     /**
@@ -43,24 +43,24 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
      */
     initViewBinding(){
         if(this.view instanceof AnnoTaskRunningView){
-            this.model.progress.on("update", number => {
-                this.view.parentNode.querySelector(`[data-ref="progress-bar"]`).style.width = `${number}%`
-                this.view.parentNode.querySelector(`[data-ref="progress-bar-text"]`).textContent = `${number}%`
+            this.model.progress.on('update', number => {
+                this.view.parentNode.querySelector(`[data-ref='progress-bar']`).style.width = `${number}%`
+                this.view.parentNode.querySelector(`[data-ref='progress-bar-text']`).textContent = `${number}%`
             })
-            this.model.state.on("update", text => {
-                this.view.parentNode.querySelector(`[data-ref="state"]`).setAttribute("class", `panel-footer 
-                    ${ text === "script_error"   ? "bg-red"      : "" }
-                    ${ text === "pending"        ? "bg-blue"     : "" }
-                    ${ text === "in_progress"    ? "bg-orange"   : "" }
-                    ${ text === "finished"       ? "bg-green"    : "" }`)
-                this.view.parentNode.querySelector(`[data-ref="state-text"]`).textContent = text.replace("_", " ")
+            this.model.state.on('update', text => {
+                this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
+                    ${ text === 'script_error'   ? 'bg-red'      : '' }
+                    ${ text === 'pending'        ? 'bg-blue'     : '' }
+                    ${ text === 'in_progress'    ? 'bg-orange'   : '' }
+                    ${ text === 'finished'       ? 'bg-green'    : '' }`)
+                this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
-            this.model.progress.on("update", number => {
-                this.modal.view.refs["progress-bar"].style.width = `${number}%`
-                this.modal.view.refs["progress-bar-text"].textContent = `${number? number: 0}%`
+            this.model.progress.on('update', number => {
+                this.modal.view.refs['progress-bar'].style.width = `${number}%`
+                this.modal.view.refs['progress-bar-text'].textContent = `${number? number: 0}%`
             })
-            this.model.state.on("update", text => {
-                this.modal.view.refs["state"].textContent = text
+            this.model.state.on('update', text => {
+                this.modal.view.refs['state'].textContent = text
             })
         }
     }
@@ -68,6 +68,6 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
      * @override
      */
     initModelBinding(){
-        // this.model.annoTask.name.on("after-update", () => this.update(true))
+        // this.model.annoTask.name.on('after-update', () => this.update(true))
     }
 }

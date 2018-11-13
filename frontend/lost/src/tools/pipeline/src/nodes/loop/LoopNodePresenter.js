@@ -1,12 +1,12 @@
-import BaseNodePresenter from "../BaseNodePresenter"
+import BaseNodePresenter from '../BaseNodePresenter'
 
-import LoopNodeModel from "./LoopNodeModel"
+import LoopNodeModel from './LoopNodeModel'
 
-import LoopRunningView from "./views/LoopRunningView"
-import LoopStartView from "./views/LoopStartView"
+import LoopRunningView from './views/LoopRunningView'
+import LoopStartView from './views/LoopStartView'
 
-import LoopRunningModal from "./modals/LoopRunningModal"
-import LoopStartModal from "./modals/LoopStartModal"
+import LoopRunningModal from './modals/LoopRunningModal'
+import LoopStartModal from './modals/LoopStartModal'
 
 
 export default class LoopNodePresenter extends BaseNodePresenter {
@@ -16,14 +16,14 @@ export default class LoopNodePresenter extends BaseNodePresenter {
         this.model = new LoopNodeModel(data, mode)
         // create view
         switch(mode){
-            case "running":
+            case 'running':
                 this.view = new LoopRunningView(this.model)
                 this.modal = new LoopRunningModal(this.model)
                 break
-            case "start":
+            case 'start':
                 this.view = new LoopStartView(this.model)
                 this.modal = new LoopStartModal(this.model)
-                $(this.modal.view.refs["max-iteration"]).on('input', (e)=>{
+                $(this.modal.view.refs['max-iteration']).on('input', (e)=>{
                     this.model.loop.maxIteration = e.currentTarget.value
                     this.view = new LoopStartView(this.model)
                 })
@@ -39,16 +39,16 @@ export default class LoopNodePresenter extends BaseNodePresenter {
      */
     initViewBinding(){
         if(this.view instanceof LoopRunningView){
-            this.model.state.on("update", text => {
-                this.view.parentNode.querySelector(`[data-ref="state"]`).setAttribute("class", `panel-footer 
-                    ${ text === "script_error"   ? "bg-red"      : "" }
-                    ${ text === "pending"        ? "bg-blue"     : "" }
-                    ${ text === "in_progress"    ? "bg-orange"   : "" }
-                    ${ text === "finished"       ? "bg-green"    : "" }`)
-                this.view.parentNode.querySelector(`[data-ref="state-text"]`).textContent = text.replace("_", " ")
+            this.model.state.on('update', text => {
+                this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
+                    ${ text === 'script_error'   ? 'bg-red'      : '' }
+                    ${ text === 'pending'        ? 'bg-blue'     : '' }
+                    ${ text === 'in_progress'    ? 'bg-orange'   : '' }
+                    ${ text === 'finished'       ? 'bg-green'    : '' }`)
+                this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
-            this.model.state.on("update", text => {
-                this.modal.view.refs["state"].textContent = text
+            this.model.state.on('update', text => {
+                this.modal.view.refs['state'].textContent = text
             })
         }
     }

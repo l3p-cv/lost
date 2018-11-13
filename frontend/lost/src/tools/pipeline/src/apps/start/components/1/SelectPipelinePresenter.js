@@ -1,26 +1,26 @@
-import { WizardTabPresenter } from "pipRoot/l3pfrontend/index"
-import appModel from "../../appModel"
-import swal from "sweetalert2"
-import SelectPipelineView from "./SelectPipelineView"
-import PipelineGraphPresenter from "../2/PipelineGraphPresenter"
-import * as http from "pipRoot/http"
+import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import appModel from '../../appModel'
+import swal from 'sweetalert2'
+import SelectPipelineView from './SelectPipelineView'
+import PipelineGraphPresenter from '../2/PipelineGraphPresenter'
+import * as http from 'pipRoot/http'
 
-import "datatables.net"
-import "datatables.net-buttons"
+import 'datatables.net'
+import 'datatables.net-buttons'
 
 class SelectPipelinePresenter extends WizardTabPresenter {
     constructor(){
         super()
         this.isTabValidated = false
         this.view = SelectPipelineView
-        appModel.controls.show1.on("update", () => this.show())
+        appModel.controls.show1.on('update', () => this.show())
         // VIEW-BINDING
-        $(this.view.html.refs["templatetable"]).on("click", "tr", (e) =>{
+        $(this.view.html.refs['templatetable']).on('click', 'tr', (e) =>{
             let templateId = this.templateDatatable.row(e.currentTarget).data()[0]            
             this.selectTemplate(templateId)
         })
         // MODEL-BINDING
-        appModel.data.pipelineTemplates.on("update", (data) => this.updateTable(data))
+        appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
     }
     // @override
     isValidated(){
@@ -38,28 +38,28 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 new Date(template.date),
             ]
         })
-        this.templateDatatable = $(this.view.html.refs["templatetable"]).DataTable({
+        this.templateDatatable = $(this.view.html.refs['templatetable']).DataTable({
             data,
-            order: [[ 4, "desc" ]],         
+            order: [[ 4, 'desc' ]],         
             columnDefs:[{
                 targets: [0],
                 visible: false,
             }],
             columns: [
-                { title: "ID"},                
-                { title: "Name" },
-                { title: "Description" },
-                { title: "Author" },
-                { title: "Date" },
+                { title: 'ID'},                
+                { title: 'Name' },
+                { title: 'Description' },
+                { title: 'Author' },
+                { title: 'Date' },
             ]
         })   
         // DEBUG:
-        // $(this.view.html.refs["templatetable"]).find("tr")[1].click()
+        // $(this.view.html.refs['templatetable']).find('tr')[1].click()
     }
     selectTemplate(id: TemplateId){
         // request the template
         let requestGraph = () => {
-            if (typeof id === "number") {
+            if (typeof id === 'number') {
                 http.requestTemplate(id).then(response => {
                     this.isTabValidated = true
                     this.templateId = id
@@ -72,7 +72,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         if(PipelineGraphPresenter.isThereGraph){
             swal({
                 title: 'Are you sure to load the graph?',
-                text: "Current graph will be removed. You will not be able to revert this!",
+                text: 'Current graph will be removed. You will not be able to revert this!',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',

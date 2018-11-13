@@ -1,5 +1,5 @@
-import "./BaseNodeStyle.scss"
-import swal from "sweetalert2"
+import './BaseNodeStyle.scss'
+import swal from 'sweetalert2'
 
 export default class BaseNodePresenter {
     /**
@@ -17,14 +17,14 @@ export default class BaseNodePresenter {
         // recreate fragment!
         if(this.initialized){
             // get all real current node html content
-            let content = $(this.view.parentNode).find("foreignObject")[0].firstElementChild.childNodes
+            let content = $(this.view.parentNode).find('foreignObject')[0].firstElementChild.childNodes
             // and add it to a new fragment
             this.fragment = document.createDocumentFragment()
             content.forEach(n => this.fragment.appendChild(n))
             // then rerender the node by adding it again 
             this.graph.updateNode(this)
         } else {
-            throw new Error("only update the node after it was initialized.")
+            throw new Error('only update the node after it was initialized.')
         }
     }
 
@@ -42,12 +42,12 @@ export default class BaseNodePresenter {
         this.view.parentNode = parentNode
         
         // open modal on click
-        $(this.view.parentNode).on("dblclick", (e) => {
+        $(this.view.parentNode).on('dblclick', (e) => {
             if(this.onDblClick instanceof Function){
                 // example: function replaceModal(data)
             } else {
-                if(this.modal === undefined) throw new Error("modal is not defined.")
-                if(this.modal.visible === true || this.modal.visible === "true"){
+                if(this.modal === undefined) throw new Error('modal is not defined.')
+                if(this.modal.visible === true || this.modal.visible === 'true'){
                     $(this.modal.view.root).modal()                    
                 }else{
                     swal({

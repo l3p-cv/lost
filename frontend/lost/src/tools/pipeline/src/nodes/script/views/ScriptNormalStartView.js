@@ -1,22 +1,22 @@
-import { NodeTemplate } from "pipRoot/l3pfrontend/index"
+import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 
 
 export default class ScriptStartView {
     constructor(model) {
         let validation = true
         this.html = new NodeTemplate(`
-                <div class="panel panel-${
-                                (model.post.script.arguments === " " || model.post.script.arguments === undefined || model.post.script.arguments === null) ?
+                <div class='panel panel-${
+                                (model.post.script.arguments === ' ' || model.post.script.arguments === undefined || model.post.script.arguments === null) ?
                                 `primary`
                                 : `${validation?`success`:`warning`}`
                             } 
-                            custom_node">
-                    <div class="panel-heading ">
-                        <i class="fa fa-rocket fa-2x pull-left" aria-hidden="true"></i>
-                        <h class="panel-title">Script</h>
+                            custom_node'>
+                    <div class='panel-heading '>
+                        <i class='fa fa-rocket fa-2x pull-left' aria-hidden='true'></i>
+                        <h class='panel-title'>Script</h>
                     </div>
-                    <div class="panel-body">
-                        <table class="table table-borderless">
+                    <div class='panel-body'>
+                        <table class='table table-borderless'>
                             <tbody>
                                 <tr>
                                     <td>Name:</td>

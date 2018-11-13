@@ -1,12 +1,12 @@
-import appModel from "./appModel"
-import * as http from "pipRoot/http"
+import appModel from './appModel'
+import * as http from 'pipRoot/http'
 
-import { Wizard } from "pipRoot/l3pfrontend/index"
-import SelectPipelineTab from "./components/1/SelectPipelinePresenter"
-import PipelineGraphTab from "./components/2/PipelineGraphPresenter"
-import "../../../node_modules/sweetalert2/dist/sweetalert2.css"
+import { Wizard } from 'pipRoot/l3pfrontend/index'
+import SelectPipelineTab from './components/1/SelectPipelinePresenter'
+import PipelineGraphTab from './components/2/PipelineGraphPresenter'
+import '../../../node_modules/sweetalert2/dist/sweetalert2.css'
 
-const wizard = new Wizard("pipe-running-content")
+const wizard = new Wizard('pipe-running-content')
 PipelineGraphTab.requiresValid(SelectPipelineTab)
 wizard.add([
     SelectPipelineTab, 

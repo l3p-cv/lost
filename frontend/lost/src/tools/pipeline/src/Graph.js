@@ -1,16 +1,16 @@
-import { NodeTemplate } from "pipRoot/l3pfrontend/index"
-import "./Graph.scss"
+import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
+import './Graph.scss'
 
-import * as d3 from "d3"
-import * as dagreD3 from "@cartok/dagre-d3"
+import * as d3 from 'd3'
+import * as dagreD3 from '@cartok/dagre-d3'
 
 var svg
 var zoom = d3.behavior.zoom()
 const DEFAULT_PARAMS = {
   nodesep: 100,
   edgesep: 40,
-  rankdir: "TB",
-  ranker: "network-simplex",
+  rankdir: 'TB',
+  ranker: 'network-simplex',
 }
 const _render = dagreD3.render()
 let initCounter = 0
@@ -24,22 +24,22 @@ export default class Graph {
   constructor(mountPoint: Node | string, graphOptions: any) {
     // define container where the graphs svg gets appended
     switch (typeof (mountPoint)) {
-      case "string":
+      case 'string':
         this.mountPoint = document.getElementById(mountPoint)
         break
-      case "object":
+      case 'object':
         if (mountPoint.nodeType !== Node.ELEMENT_NODE) {
-          throw new Error(`mountPoint has invalid type, use "String" or "Node"`)
+          throw new Error(`mountPoint has invalid type, use 'String' or 'Node'`)
         }
         this.mountPoint = mountPoint
         break
       default:
-          throw new Error(`mountPoint has invalid type, use "String" or "Node"`)
+          throw new Error(`mountPoint has invalid type, use 'String' or 'Node'`)
     }
 
     // only one graph may be added to a 'mountPoint'
     if ($(this.mountPoint).find(`[data-type='graph']`)[0] !== undefined) {
-      throw new Error("a graph has allready been mounted here.")
+      throw new Error('a graph has allready been mounted here.')
     }
 
     this.id = `graph-0`
@@ -50,25 +50,25 @@ export default class Graph {
     // else the graph and its node wont get rendered propperly.
     // if a 'Node' is hidden (display=none) it has a width of 0.
     const containerWidth = $(mountPoint).width()
-    if (typeof (containerWidth) !== "number" || containerWidth <= 0) {
-      throw new Error("the container where the graph gets mounted must have a width greater than 0.")
+    if (typeof (containerWidth) !== 'number' || containerWidth <= 0) {
+      throw new Error('the container where the graph gets mounted must have a width greater than 0.')
     }
 
     // create and svg area
     this.svg = new NodeTemplate(`
-            <svg data-type="graph" id="${this.id}" width="100" height="100">
-              <foreignObject class="node" x="46" y="22" width="200" height="200">
-              <div data-ref="title-box" id="title_box">
+            <svg data-type='graph' id='${this.id}' width='100' height='100'>
+              <foreignObject class='node' x='46' y='22' width='200' height='200'>
+              <div data-ref='title-box' id='title_box'>
             </div>
             </foreignObject>
-              <g id="${this.id}-content"></g>
+              <g id='${this.id}-content'></g>
             </svg>
         `)
     this.mountPoint.appendChild(this.svg.fragment)
 
     // resize svg area
     this.resize()
-    $(window).on("resize", () => this.resize())
+    $(window).on('resize', () => this.resize())
 
     // init dagre graph
     this.graph = new dagreD3.graphlib.Graph()
@@ -77,7 +77,7 @@ export default class Graph {
 
     initCounter++
 
-    svg = d3.select("#graph-0")    
+    svg = d3.select('#graph-0')    
     var inner = this.renderTarget
     $(document).keydown(function (event) {
       if (event.ctrlKey === true && (event.which === '61' || event.which === '107' || event.which === '173' || event.which === '109' || event.which === '187' || event.which === '189')) {
@@ -105,14 +105,14 @@ export default class Graph {
     var width = 500,
       height = 960,
       center = [width / 2, height / 2]
-    zoom.on("zoom", zoomed)
+    zoom.on('zoom', zoomed)
 
     function zoomed() {
-      inner.attr("transform", "translate(" + zoom.translate() + ")scale(" + zoom.scale() + ")")
+      inner.attr('transform', 'translate(' + zoom.translate() + ')scale(' + zoom.scale() + ')')
     }
     svg.call(zoom)
-    svg.on("wheel.zoom", null)
-    svg.on("dblclick.zoom", null)
+    svg.on('wheel.zoom', null)
+    svg.on('dblclick.zoom', null)
 
     $('#graph-0').bind('mousewheel DOMMouseScroll', function (e) {
       if (ctrlPressed === true) {
@@ -168,7 +168,7 @@ export default class Graph {
   centerGraph(){
     let width = this.graph.graph().width
     zoom
-      .translate([((svg.attr("width") / 2)  - (width* this.initialScale)/2 ) , this.marginTop])
+      .translate([((svg.attr('width') / 2)  - (width* this.initialScale)/2 ) , this.marginTop])
       .scale(this.initialScale)
     this.rerender()
   }
@@ -179,12 +179,12 @@ export default class Graph {
 
   render() {
     _render(this.renderTarget, this.graph)
-    console.warn("RENDER")
+    console.warn('RENDER')
   }
 
   rerender() {
-    var svg = d3.select("#graph-0")
-    this.renderTarget.attr("transform", "translate(" + [0, 0] + ") scale(" + 1 + ")")
+    var svg = d3.select('#graph-0')
+    this.renderTarget.attr('transform', 'translate(' + [0, 0] + ') scale(' + 1 + ')')
     
     var render = new dagreD3.render()
     this.graph.graph().transition = function (selection) {
@@ -194,14 +194,14 @@ export default class Graph {
     render(this.renderTarget, this.graph)
     // Center the graph
     zoom.event(svg)
-    document.getElementById('graph-0').setAttribute("height", this.graph.graph().height * this.initialScale + this.marginTop*2)
+    document.getElementById('graph-0').setAttribute('height', this.graph.graph().height * this.initialScale + this.marginTop*2)
   }
 
 
   resize() {
-    console.log("RESIZE")
-    this.svg.root.setAttribute("width", $(this.mountPoint).width())
-    this.svg.root.setAttribute("height", Math.floor(window.innerHeight * 0.6))
+    console.log('RESIZE')
+    this.svg.root.setAttribute('width', $(this.mountPoint).width())
+    this.svg.root.setAttribute('height', Math.floor(window.innerHeight * 0.6))
     try{
       this.centerGraph()
     }catch(err){
@@ -225,9 +225,9 @@ export default class Graph {
       node.model.peN, {
         nodePresenter: node,
         id: nodeId,
-        labelType: "html",
+        labelType: 'html',
         label: node.view.html.fragment,
-        shape: "rect",
+        shape: 'rect',
         padding: 0
       }
     )
@@ -240,15 +240,15 @@ export default class Graph {
   // loop true or false peJump to draw red line
   addEdge(from, to, redline) {
     if (redline === true) {
-      var edge_style = "stroke: #f66; stroke-width: 3px; stroke-dasharray: 5, 5;"
-      var edge_arrow_style = "fill: #f66; stroke: none;"
+      var edge_style = 'stroke: #f66; stroke-width: 3px; stroke-dasharray: 5, 5;'
+      var edge_arrow_style = 'fill: #f66; stroke: none;'
     } else {
-      edge_style = ""
-      edge_arrow_style = ""
+      edge_style = ''
+      edge_arrow_style = ''
     }
 
     this.graph.setEdge(from, to, {
-      label: "",
+      label: '',
       style: edge_style,
       arrowheadStyle: edge_arrow_style,
     })
