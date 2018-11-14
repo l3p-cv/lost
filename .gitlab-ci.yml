@@ -15,7 +15,7 @@ variables:
   LOST_RELEASE_IMAGE: gitlab.l3portal.de:5555/l3p-cv/lost/release/lost:$CI_COMMIT_TAG
   
 before_script:
-  - apk add --update nodejs=10.13.0-r0 npm
+  - apk add --update nodejs=8.11.4-r0 npm
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN gitlab.l3portal.de:5555
 
 build-lost-base:
@@ -33,6 +33,7 @@ build-lost:
     - npm install --prefix frontend/lost -d 
     - npm run build --prefix frontend/lost -d 
     - rm -rf frontend/lost/node_modules
+    - cd backend/lost/pyapi/docs && source activate lost && make html && cd -
     - docker build --build-arg base_image=$LOST_BASE_IMAGE --pull -t $LOST_TEST_IMAGE -f docker/lost/Dockerfile .
     - docker push $LOST_TEST_IMAGE
   except: 
