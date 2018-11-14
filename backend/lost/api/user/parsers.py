@@ -1,10 +1,10 @@
 from flask_restplus import reqparse
 
 login_parser = reqparse.RequestParser()
-login_parser.add_argument('email',
+login_parser.add_argument('user_name',
                            type=str,
                            required=True,
-                           help="E-Mail.")
+                           help="Username.")
 login_parser.add_argument('password',
                            type=str,
                            required=True,

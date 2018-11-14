@@ -8,7 +8,7 @@ import UserRolesDropdown from './UserRolesDropdown'
 
 import 'react-notifications/lib/notifications.css';
 
-const {cleanError,createUser} = actions
+const {cleanGroupError,createGroup,deleteGroup} = actions
 
 class CreateGroup extends Component {
 
@@ -59,9 +59,8 @@ class CreateGroup extends Component {
         }
         this
             .props
-            .cleanError()
+            .cleanGroupError()
     }
-
     render() {
         return (
             <Row style={{
@@ -84,7 +83,7 @@ class CreateGroup extends Component {
 }
 
 function mapStateToProps(state){
-    return({createError: state.user.createError})
+    return({createError: state.group.createError})
 }
 
-export default connect(mapStateToProps, {cleanError, createUser})(CreateGroup)
+export default connect(mapStateToProps, {cleanGroupError, createGroup, deleteGroup})(CreateGroup)

@@ -12,3 +12,21 @@ export const getGroups = () => async dispatch => {
        
     }
 }
+
+export const createGroup = (payload) => dispatch => {
+
+    axios.post(API_URL + '/group', payload).then(
+        response => {
+            dispatch({type: TYPES.CREATE_GROUP_SUCCESS})
+        }
+    ).catch(error => {
+        console.log(error.response)
+        dispatch({type: TYPES.CREATE_GROUP_FAILED, payload: error.response.data.message})
+    })
+
+
+}
+
+export const cleanGroupError = () => dispatch => {
+dispatch({type: TYPES.CLEAN_GROUP_ERROR})
+}

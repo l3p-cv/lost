@@ -27,5 +27,5 @@ export const createUser = (payload) => dispatch => {
 }
 
 export const cleanError = () => dispatch => {
-    dispatch({type: TYPES.CLEAN_ERROR})
+    dispatch({type: TYPES.CLEAN_USER_ERROR})
 }
