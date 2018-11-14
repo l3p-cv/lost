@@ -707,7 +707,7 @@ class LabelLeaf(Base):
         default_value: Default value for labels
         example_image: Path to an example image which represents the LabelName
         css_class: Style Attributes for this LabelLeaf
-        leaf_id: Id of an external (or internal !) semantic label system (for e.g. synsetid of wordnet)
+        external_id: Id of an external (or internal !) semantic label system (for e.g. synsetid of wordnet)
         dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g valuable or not)
         label_tree_id (Integer): LabelTree this LabelLeaf belongs to. 
         is_deleted (Boolean): 
@@ -724,7 +724,7 @@ class LabelLeaf(Base):
     default_value = Column(String(300))
     example_image = Column(String(4096))
     css_class = Column(Text)
-    leaf_id = Column(String(4096))
+    external_id = Column(String(4096))
     dtype = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", uselist=False, lazy='joined')
@@ -735,7 +735,7 @@ class LabelLeaf(Base):
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
                  group_id=None, timestamp=None, regex_mask=None,
-                 default_value=None, example_image=None, leaf_id=None, dtype=None,
+                 default_value=None, example_image=None, external_id=None, dtype=None,
                  css_class=None, label_tree_id=None, is_deleted=None,
                  parent_leaf_id=None):
         self.idx = idx
@@ -748,7 +748,7 @@ class LabelLeaf(Base):
         self.default_value = default_value
         self.example_image = example_image
         self.css_class = css_class
-        self.leaf_id = leaf_id
+        self.external_id = external_id
         self.dtype = dtype
         self.label_tree_id = label_tree_id
         self.is_deleted = is_deleted
