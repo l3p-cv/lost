@@ -168,7 +168,7 @@ class ImageAnno(Base):
         anno_task_id (int): ID of the anno_task this
             ImageAnno belongs to.
         timestamp (DateTime): Timestamp of ImageAnno
-        state (enum): See :class:`data_model.state.Anno`
+        state (enum): See :class:`lost.db.state.Anno`
         count (int): Number of Annos for this ImageAnno.
         sim_class (int): The similarity class this anno belong to.
             It is used to cluster similar annos in MIA
@@ -707,7 +707,7 @@ class LabelLeaf(Base):
         default_value: Default value for labels
         example_image: Path to an example image which represents the LabelName
         css_class: Style Attributes for this LabelLeaf
-        external_id: Id of an external (or internal !) semantic label system (for e.g. synsetid of wordnet)
+        external_id: Id of an external semantic label system (for e.g. synsetid of wordnet)
         dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g valuable or not)
         label_tree_id (Integer): LabelTree this LabelLeaf belongs to. 
         is_deleted (Boolean): 
@@ -755,12 +755,12 @@ class LabelLeaf(Base):
         self.parent_leaf_id = parent_leaf_id
 
 class Label(Base):
-    '''Represants an Label that is releated to annoation.
+    '''Represants an Label that is related to an annoation.
 
     Attributes:
         idx (int): ID in database.
         dtype (enum): :class:`lost.db.dtype.Result` type of this attribute.
-        label_leaf_id: ID of releated :class:`LabelLeaf`.
+        label_leaf_id: ID of related :class:`LabelLeaf`.
         img_anno_id (int):
         two_d_anno_id (int):
         timestamp (DateTime):
