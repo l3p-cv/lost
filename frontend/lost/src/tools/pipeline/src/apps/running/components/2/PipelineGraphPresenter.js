@@ -51,8 +51,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 if (isSuccess) {
                     $(this.view.html.refs['btn-play-pipe']).prop('disabled', false)
                     $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
-                    $($(this.graph.svg.refs['title-box']).children()[0]).show()
-
+                    $(this.graph.svg.refs['title']).show()
                 }
             })
         })
@@ -64,8 +63,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 if (isSuccess) {
                     $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
                     $(this.view.html.refs['btn-pause-pipe']).prop('disabled', false)
-                    $($(this.graph.svg.refs['title-box']).children()[0]).hide()
-
+                    $(this.graph.svg.refs['title']).hide()
                 }
             })
 
@@ -87,7 +85,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
             console.log('==================this.graph.svg.refs==================')
             console.log(this.graph.svg.refs)
             console.log('====================================')
-            $(this.graph.svg.refs['title-box']).slideToggle('slow')
+            $(this.graph.svg.refs['title']).slideToggle('slow')
             $(this.view.html.refs['btn-toggle-infobox-icon']).toggleClass('fa-toggle-on fa-toggle-off')
         })
 
@@ -117,7 +115,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
         // @refactor: somehow ?
         console.log('ADDED')
-        $(this.graph.svg.refs['title-box']).append(`
+        $(this.graph.svg.refs['title']).append(`
             <table class='table table-borderless'>
                 <h3 style='text-align: center'><span class='label label-warning'>PAUSED</span></h3>
                 <tbody>
@@ -132,11 +130,11 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
         // handle pipeline progress information.
         if (appData.progress === 'PAUSED') {
-            $($(this.graph.svg.refs['title-box']).children()[0]).show()
+            $(this.graph.svg.refs['title']).show()
             $(this.view.html.refs['btn-play-pipe']).prop('disabled', false)
             $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
         } else {
-            $($(this.graph.svg.refs['title-box']).children()[0]).hide()
+            $(this.graph.svg.refs['title']).hide()
             $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
             $(this.view.html.refs['btn-pause-pipe']).prop('disabled', false)
         }

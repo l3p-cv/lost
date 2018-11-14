@@ -43,8 +43,8 @@ export function deletePipe(id) {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!',
-        cancelButtonText: 'No, cancel!',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
         confirmButtonClass: 'btn btn-success',
         cancelButtonClass: 'btn btn-danger',
         buttonsStyling: false

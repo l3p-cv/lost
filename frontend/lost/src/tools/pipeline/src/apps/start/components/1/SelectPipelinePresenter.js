@@ -8,67 +8,46 @@ import * as http from 'pipRoot/http'
 import 'datatables.net'
 import 'datatables.net-buttons'
 
+
 class SelectPipelinePresenter extends WizardTabPresenter {
     constructor(){
         super()
-        this.isTabValidated = false
         this.view = SelectPipelineView
-        appModel.controls.show1.on('update', () => this.show())
-        // VIEW-BINDING
-        $(this.view.html.refs['templatetable']).on('click', 'tr', (e) =>{
-            let templateId = this.templateDatatable.row(e.currentTarget).data()[0]            
-            this.selectTemplate(templateId)
-        })
-        // MODEL-BINDING
-        appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
-    }
-    // @override
-    isValidated(){
-        return (this.isTabValidated)
-    }
-    updateTable(rawData){
-        console.log(rawData)
-        // map raw data to the format 'datatables' accepts.
-        const data = rawData.map(template => {
-            return [
-                template.id,
-                template.name,
-                template.description,
-                template.author,
-                new Date(template.date),
-            ]
-        })
-        this.templateDatatable = $(this.view.html.refs['templatetable']).DataTable({
-            data,
-            order: [[ 4, 'desc' ]],         
-            columnDefs:[{
-                targets: [0],
-                visible: false,
-            }],
-            columns: [
-                { title: 'ID'},                
-                { title: 'Name' },
-                { title: 'Description' },
-                { title: 'Author' },
-                { title: 'Date' },
-            ]
-        })   
-        // DEBUG:
-        // $(this.view.html.refs['templatetable']).find('tr')[1].click()
-    }
-    selectTemplate(id: TemplateId){
-        // request the template
-        let requestGraph = () => {
-            if (typeof id === 'number') {
-                http.requestTemplate(id).then(response => {
-                    this.isTabValidated = true
-                    this.templateId = id
-                    //response = JSON.parse(response)
-                    appModel.state.selectedTemplate.update(response)
-                })
-            }
-        }
 
+        this.tableLoaded = false
+
+        // MODEL-BINDING
+        appModel.controls.show1.on('update', () => this.show())
+        appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
+
+        // VIEW-BINDING
+        $(this.view.html.refs["data-table"]).on('click', 'tr', (e) => {
+            const id = this.view.table.row(e.currentTarget).data()[0]            
+            this.selectTemplate(id)
+        })
+    }
+    isValidated(){
+        return this.tableLoaded
+    }
+    updateTable(data){
+        this.view.updateTable(data.map(template => {
+            const { id, name, description, author, date } = template
+            return [
+                id,
+                name,
+                description,
+                author,
+                new Date(date),
+            ]
+        }))
+        this.tableLoaded = true
+    }
+    selectTemplate(id){
+        const requestTemplate = () => {
+            http.requestTemplate(id).then(response => {
+                appModel.state.selectedTemplate.update(response)
+            })
+        }
         if(PipelineGraphPresenter.isThereGraph){
             swal({
                 title: 'Are you sure to load the graph?',
@@ -77,22 +56,20 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, do it!',
-                cancelButtonText: 'No, cancel!',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
                 confirmButtonClass: 'btn btn-success',
                 cancelButtonClass: 'btn btn-danger',
-                buttonsStyling: false
-              }).then(function () {
-                requestGraph()
-              }, function (dismiss) {
-                // dismiss can be 'cancel', 'overlay',
-                // 'close', and 'timer'
-                if (dismiss === 'cancel') {
+                buttonsStyling: false,
+            }).then(() => {
+                requestTemplate()
+            }, (dismiss) => {
+                if(dismiss === 'cancel') {
                     return
                 }
-              })
+            })
         } else {
-            requestGraph()
+            requestTemplate()
         }
     }
 }

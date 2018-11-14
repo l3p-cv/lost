@@ -1,10 +1,6 @@
 import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
-import appModel from '../../appModel'
-import PipelineGraphView from './PipelineGraphView'
 
 import Graph from 'pipRoot/Graph'
-import ConfigPipelinePresener from '../3/ConfigPipelinePresenter'
-
 import DatasourceNodePresenter from 'pipRoot/nodes/datasource/DatasourceNodePresenter'
 import AnnoTaskNodePresenter from 'pipRoot/nodes/annoTask/AnnoTaskNodePresenter'
 import DataExportNodePresenter from 'pipRoot/nodes/dataExport/DataExportNodePresenter'
@@ -12,11 +8,16 @@ import VisualOutputNodePresenter from 'pipRoot/nodes/visualOutput/VisualOutputNo
 import ScriptNodePresenter from 'pipRoot/nodes/script/ScriptNodePresenter'
 import LoopNodePresenter from 'pipRoot/nodes/loop/LoopNodePresenter'
 
+import PipelineGraphView from './PipelineGraphView'
+import ConfigPipelinePresener from '../3/ConfigPipelinePresenter'
+import appModel from '../../appModel'
+
 
 class PipelineGraphPresenter extends WizardTabPresenter {
     constructor() {
         super()
         this.view = PipelineGraphView
+
         this.validated = false
         
         // MODEL-BINDING
@@ -24,11 +25,11 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         appModel.state.selectedTemplate.on('update', (data) => this.loadTemplate(data))
 
         // VIEW-BINDING
-        $(this.view.html.refs['btn-next']).on('click', () => {
-            appModel.controls.show3.update(true)            
-        })
         $(this.view.html.refs['btn-prev']).on('click', () => {
             appModel.controls.show1.update(true)
+        })
+        $(this.view.html.refs['btn-next']).on('click', () => {
+            appModel.controls.show3.update(true)            
         })
     }
     // @override
@@ -37,9 +38,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
     }
     loadTemplate(data) {
         // Reset the Data when graph was loaded seecond time
-        console.log('=========get=Json==========================')
-        console.log(data)
-        console.log('====================================')
         ConfigPipelinePresener.reset()
 
         this.isThereGraph = true
@@ -103,7 +101,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         this.graph.centerGraph()
         
         appModel.state.checkNodesValidation.on('update', ()=>{
-            const allNodePresenter = this.graph.graph._nodes
+            const allNodePresenter = this.graph.dagreD3Graph._nodes
             Object.keys(allNodePresenter).every(n => {
                 if (allNodePresenter[n].nodePresenter.model.validation !== undefined) {
                     if(allNodePresenter[n].nodePresenter.model.validation === false){
