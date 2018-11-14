@@ -19,4 +19,5 @@ ADD /docker/lost-base/environment.yml .
 RUN /bin/bash -c "source /opt/conda/bin/activate && conda env create -f environment.yml"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install python-igraph"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install sphinx"
+RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install sphinx-rtd-theme"
 WORKDIR /code
