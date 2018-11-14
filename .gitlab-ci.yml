@@ -26,13 +26,13 @@ build-lost-base:
   only: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-  
 build-lost:
   stage: build-lost
   script:
     - npm install --prefix frontend/lost -d 
     - npm run build --prefix frontend/lost -d 
     - rm -rf frontend/lost/node_modules
+    - cd backend/lost/pyapi/docs && source activate lost && make html && cd -
     - docker build --build-arg base_image=$LOST_BASE_IMAGE --pull -t $LOST_TEST_IMAGE -f docker/lost/Dockerfile .
     - docker push $LOST_TEST_IMAGE
   except: 

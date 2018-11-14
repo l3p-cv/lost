@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import {InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
 
-
 class UserGroupDropdown extends Component {
     constructor(props) {
         super(props);
@@ -20,15 +19,23 @@ class UserGroupDropdown extends Component {
                     return acc
                 }, {})
         };
-     
-        this.handleGroupCheckboxChange = this.handleGroupCheckboxChange.bind(this)
+
+        this.handleGroupCheckboxChange = this
+            .handleGroupCheckboxChange
+            .bind(this)
 
     }
-    componentDidMount(){
-        if (this.props.initGroups !== undefined && this.props.initGroups.length > 0){
-            const groups = this.state.groups
-            this.props.initGroups.map((g) => {
-                groups[g.name] = true
+    componentDidMount() {
+        if (this.props.initGroups !== undefined && this.props.initGroups.length > 0) {
+            this.setState((state) => {
+                const groups = state.groups
+                this
+                    .props
+                    .initGroups
+                    .map((g) => {
+                        groups[g.name] = true
+                    })
+                return {groups}
             })
         }
     }
@@ -58,7 +65,9 @@ class UserGroupDropdown extends Component {
                 }
                 return false
             })
-        this.props.callback(choosenGroups)
+        this
+            .props
+            .callback(choosenGroups)
     }
     renderChoosenGroups() {
         const groups = this.state.groups
@@ -86,10 +95,13 @@ class UserGroupDropdown extends Component {
             )
         }
     }
-    
+
     render() {
         return (
-            <InputGroupButtonDropdown addonType="prepend" isOpen={this.state.groupDropdownOpen} toggle={this.toggle}>
+            <InputGroupButtonDropdown
+                addonType="prepend"
+                isOpen={this.state.groupDropdownOpen}
+                toggle={this.toggle}>
                 <DropdownToggle caret>
                     {this.renderChoosenGroups()}
                 </DropdownToggle>

@@ -1,15 +1,36 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import actions from '../../actions'
 
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import UserGroupDropdown from './UserGroupDropdown'
-import UserRolesDropdown from './UserRolesDropdown';
-
-const {getUsers, getGroups} = actions
+import UserRolesDropdown from './UserRolesDropdown'
+import UserContextMenu from './ContextMenu'
 
 class UserTable extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            clickedUser: null
+        }
+        this.handleRowClick = this
+            .handleRowClick
+            .bind(this);
+
+    }
+    handleRowClick(state, rowInfo, column) {
+        return {
+            onClick: (e, handleOriginal) => {
+                this.setState({clickedUser: rowInfo.original.idx})
+                if (handleOriginal) {
+                    handleOriginal()
+                }
+
+            }
+        }
+    }
+
+
     render() {
         const data = this.props.users
         return (
@@ -32,49 +53,33 @@ class UserTable extends Component {
                             id: 'name'
                         }, {
                             Header: 'Groups',
-                            Cell: row => (
-                                <UserGroupDropdown groups={this.props.groups} callback={(g)=>console.log(g)} initGroups={row.original.groups}/>)
-                            ,
-                            filterable: false,
+                            Cell: row => (<UserGroupDropdown
+                                groups={this.props.groups}
+                                callback={(g) => console.log(g)}
+                                initGroups={row.original.groups}/>),
+                            filterable: false
                         }, {
                             Header: 'Roles',
-                            Cell: row => (
-                                <UserRolesDropdown roles={this.props.roles} callback={(g)=>console.log(g)} initRoles={row.original.roles}/>)
-                            ,
-                            filterable: false,
+                            Cell: row => (<UserRolesDropdown
+                                roles={this.props.roles}
+                                callback={(g) => console.log(g)}
+                                initRoles={row.original.roles}/>),
+                            filterable: false
                         }, {
                             Cell: row => (
-                            <div>Delete ...</div>
-                                )
-                            ,
-                            filterable: false,
+                                
+                                    <UserContextMenu/>
+            
+                            ),
+                            filterable: false
                         }
                     ]
                 }
             ]}
                 defaultPageSize={10}
                 className='-striped -highlight'
-                getTrProps={(state, rowInfo, column) => getProps(state, rowInfo, column)}/>
+                getTrProps={(state, rowInfo, column) => this.handleRowClick(state, rowInfo, column)}/>
         )
-    }
-}
-
-function getProps(state, rowInfo, column) {
-    return {
-        onClick: (e, handleOriginal) => {
-            console.log('Cell -  Click', {state, rowInfo, column, event: e})
-            if (handleOriginal) {
-                handleOriginal()
-            }
-
-        },
-        onDoubleClick: (e, handleOriginal) => {
-            console.log('Cell -  DoubleClick', {state, rowInfo, column, event: e})
-            if (handleOriginal) {
-                handleOriginal()
-            }
-
-        }
     }
 }
 
@@ -82,4 +87,4 @@ function mapStateToProps(state) {
     return {users: state.user.users, groups: state.group.groups}
 }
 
-export default connect(mapStateToProps, {getUsers, getGroups})(UserTable)
+export default connect(mapStateToProps)(UserTable)

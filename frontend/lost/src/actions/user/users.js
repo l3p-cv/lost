@@ -12,20 +12,20 @@ export const getUsers = () => async dispatch => {
     } catch (e) {}
 }
 
-export const createUser = (payload) => dispatch => {
-
-        axios.post(API_URL + '/user', payload).then(
-            response => {
-                dispatch({type: TYPES.CREATE_USER_SUCCESS})
-            }
-        ).catch(error => {
-            console.log(error.response)
-            dispatch({type: TYPES.CREATE_USER_FAILED, payload: error.response.data.message})
-        })
-  
+export const createUser = (payload) => async dispatch => {
+        try{
+             await axios.post(API_URL + '/user', payload)
+             dispatch({type: TYPES.CREATE_USER_SUCCESS})
+             const newUserList = await axios.get(API_URL + '/user')
+             dispatch({type: TYPES.GET_USERS, payload: newUserList.data})
+             }    
+        catch (e) {
+            console.log(e.response)
+            dispatch({type: TYPES.CREATE_USER_FAILED, payload: e.response.data.message})
+        } 
     
 }
 
-export const cleanError = () => dispatch => {
+export const cleanUserError = () => dispatch => {
     dispatch({type: TYPES.CLEAN_USER_ERROR})
 }

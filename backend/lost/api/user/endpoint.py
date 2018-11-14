@@ -61,16 +61,19 @@ class UserList(Resource):
             anno_role = dbm.get_role_by_name(roles.ANNOTATER)
             user.roles.append(anno_role)
             user.groups.append(Group(name=user.user_name, is_user_default=True))
-
-            for role_name in data['roles']:
-                if role_name == 'Designer':
-                    designer_role = dbm.get_role_by_name(roles.DESIGNER)
-                    user.roles.append(designer_role)        
-
-            for group_name in data['groups']:
-                group = dbm.get_group_by_name(group_name)
-                if group:
-                    user.groups.append(group)
+            
+            
+            if data['roles']:
+                for role_name in data['roles']:
+                    if role_name == 'Designer':
+                        designer_role = dbm.get_role_by_name(roles.DESIGNER)
+                        user.roles.append(designer_role)        
+            
+            if data['groups']:
+                for group_name in data['groups']:
+                    group = dbm.get_group_by_name(group_name)
+                    if group:
+                        user.groups.append(group)
             dbm.save_obj(user)
             dbm.close_session()
             return {

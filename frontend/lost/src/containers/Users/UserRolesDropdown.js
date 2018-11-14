@@ -26,10 +26,13 @@ class UserRolesDropdown extends Component {
     }
     componentDidMount(){
         if (this.props.initRoles !== undefined && this.props.initRoles.length > 0){
-            const roles = this.state.roles
+            this.setState((state) => {
+            const roles = state.roles
             this.props.initRoles.map((r) => {
                 roles[r.name] = true
             })
+            return { roles }
+        })
         }
     }
     toggle() {
