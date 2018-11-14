@@ -504,7 +504,7 @@ class Output(inout.Output):
             rel_img_path = self._script.file_man.make_path_relative(img_path)
             img_anno = annos.Image(anno_task_id=None,
                                     img_path=rel_img_path,
-                                    state=state.Anno.UNLOCKED.value,
+                                    state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
                                     iteration=self._script._pipe_element.iteration,
                                     frame_n=frame_n,
