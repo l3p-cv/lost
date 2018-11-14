@@ -56,7 +56,6 @@
     "react-scripts": "^2.0.4"
   },
   "scripts": {
-    "preinstall": "npm install --prefix ./src/tools/sia -d && npm install --prefix ./src/tools/pipeline -d",
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
