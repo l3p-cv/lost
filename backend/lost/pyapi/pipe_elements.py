@@ -21,13 +21,13 @@ class Element(object):
 
     @property
     def inp(self):
-        ''':class:`inout.Input`
+        ''':class:`lost.pyapi.inout.Input`: Input of this pipeline element
         '''
         return self._inp
 
     @property
     def outp(self):
-        ''':class:`inout.Output`
+        ''':class:`lost.pyapi.inout.Output`: Output of this pipeline element
         '''
         return self._outp
 
@@ -45,7 +45,7 @@ class RawFile(Element):
 
     @property
     def path(self):
-        '''str: Absolute path to file'''
+        '''str: Absolute path to file or folder'''
         return self._fm.get_abs_path(self._pipe_element.datasource.raw_file_path)
 
 class AnnoTask(Element):

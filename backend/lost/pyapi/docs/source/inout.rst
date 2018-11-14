@@ -5,6 +5,7 @@ ScriptOutput
 ================
 .. autoclass:: lost.pyapi.inout.ScriptOutput
     :members:
+    :inherited-members:
 
 Output
 ================
