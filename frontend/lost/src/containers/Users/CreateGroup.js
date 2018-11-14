@@ -35,14 +35,11 @@ class CreateGroup extends Component {
         console.log(this.state)
         if (this.validateCreationData()) {
             const payload = {
-                user_name: this.state.createUsername,
-                password: this.state.createPassword,
-                groups: this.state.createChoosenGroups,
-                roles: this.state.createChoosenRoles
+                group_name: this.state.createGroupName
             }
             this
                 .props
-                .createUser(payload)
+                .createGroup(payload)
         } else {
             NotificationManager.error(`No valid data.`)
         }
@@ -52,10 +49,10 @@ class CreateGroup extends Component {
         return true
     }
     componentDidUpdate() {
-        if (this.props.createError === 'success') {
-            NotificationManager.success(`User ${this.state.createUsername} created.`)
-        } else if (this.props.createError !== '') {
-            NotificationManager.error(this.props.createError)
+        if (this.props.errorMessage === 'success') {
+            NotificationManager.success(`User ${this.state.createGroupName} created.`)
+        } else if (this.props.errorMessage !== '') {
+            NotificationManager.error(this.props.errorMessage)
         }
         this
             .props
@@ -83,7 +80,7 @@ class CreateGroup extends Component {
 }
 
 function mapStateToProps(state){
-    return({createError: state.group.createError})
+    return({errorMessage: state.group.errorMessage})
 }
 
 export default connect(mapStateToProps, {cleanGroupError, createGroup, deleteGroup})(CreateGroup)

@@ -15,7 +15,7 @@ variables:
   LOST_RELEASE_IMAGE: gitlab.l3portal.de:5555/l3p-cv/lost/release/lost:$CI_COMMIT_TAG
   
 before_script:
-  - apk add --update nodejs=8.11.4-r0 npm
+  - apk add --update nodejs=10.13.0-r0 npm
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN gitlab.l3portal.de:5555
 
 build-lost-base:
