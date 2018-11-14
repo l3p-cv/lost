@@ -5,8 +5,12 @@ import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import UserGroupDropdown from './UserGroupDropdown'
 import UserRolesDropdown from './UserRolesDropdown'
-import UserContextMenu from './ContextMenu'
+import UserContextMenu from './UserContextMenu'
+import actions from '../../actions'
+import {NotificationManager, NotificationContainer } from 'react-notifications'
+import 'react-notifications/lib/notifications.css';
 
+ const {cleanDeleteUserMessage} = actions
 class UserTable extends Component {
     constructor(props) {
         super(props);
@@ -29,11 +33,21 @@ class UserTable extends Component {
             }
         }
     }
-
+    componentDidUpdate() {
+        if (this.props.deleteMessage === 'success') {
+            NotificationManager.success(`User with id ${this.state.clickedUser} deleted.`)
+        } else if (this.props.deleteMessage !== '') {
+            NotificationManager.error(this.props.deleteMessage)
+        }
+        this
+            .props
+            .cleanDeleteUserMessage()
+    }
 
     render() {
         const data = this.props.users
         return (
+            <React.Fragment>
             <ReactTable
                 data={data}
                 filterable
@@ -57,21 +71,25 @@ class UserTable extends Component {
                                 groups={this.props.groups}
                                 callback={(g) => console.log(g)}
                                 initGroups={row.original.groups}/>),
-                            filterable: false
+                            filterable: false,
+                            sortable: false
                         }, {
                             Header: 'Roles',
                             Cell: row => (<UserRolesDropdown
                                 roles={this.props.roles}
                                 callback={(g) => console.log(g)}
                                 initRoles={row.original.roles}/>),
-                            filterable: false
+                            filterable: false,
+                            sortable: false
                         }, {
                             Cell: row => (
-                                
-                                    <UserContextMenu/>
+                                 
+                                    <UserContextMenu userId={row.original.idx}/>
             
                             ),
-                            filterable: false
+                            maxWidth: 35,
+                            filterable: false,
+                            sortable: false
                         }
                     ]
                 }
@@ -79,12 +97,13 @@ class UserTable extends Component {
                 defaultPageSize={10}
                 className='-striped -highlight'
                 getTrProps={(state, rowInfo, column) => this.handleRowClick(state, rowInfo, column)}/>
+                <NotificationContainer/></React.Fragment>
         )
     }
 }
 
 function mapStateToProps(state) {
-    return {users: state.user.users, groups: state.group.groups}
+    return {users: state.user.users, groups: state.group.groups, deleteMessage: state.user.deleteMessage}
 }
 
-export default connect(mapStateToProps)(UserTable)
+export default connect(mapStateToProps,{cleanDeleteUserMessage})(UserTable)

@@ -20,12 +20,26 @@ export const createUser = (payload) => async dispatch => {
              dispatch({type: TYPES.GET_USERS, payload: newUserList.data})
              }    
         catch (e) {
-            console.log(e.response)
             dispatch({type: TYPES.CREATE_USER_FAILED, payload: e.response.data.message})
         } 
     
 }
 
-export const cleanUserError = () => dispatch => {
-    dispatch({type: TYPES.CLEAN_USER_ERROR})
+export const deleteUser = (payload) => async dispatch => {
+    try{
+        await axios.delete(API_URL + `/user/${payload}`)
+        dispatch({type: TYPES.DELETE_USER_SUCCESS})
+        const newUserList = await axios.get(API_URL + '/user')
+        dispatch({type: TYPES.GET_USERS, payload: newUserList.data})
+        }    
+     catch (e) {
+       dispatch({type: TYPES.DELETE_USER_FAILED, payload: e.response.data.message})
+   } 
+}
+export const cleanCreateUserMessage = () => dispatch => {
+    dispatch({type: TYPES.CLEAN_CREATE_USER_MESSAGE})
+}
+
+export const cleanDeleteUserMessage = () => dispatch => {
+    dispatch({type: TYPES.CLEAN_DELETE_USER_MESSAGE})
 }

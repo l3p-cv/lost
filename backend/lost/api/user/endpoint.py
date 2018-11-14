@@ -102,6 +102,29 @@ class User(Resource):
         else:
             return "User with ID '{}' not found.".format(id)
 
+    @jwt_required 
+    def delete(self, id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+
+        requesteduser = dbm.get_user_by_id(id)
+        
+        if requesteduser:
+            for g in requesteduser.groups:
+                    if g.is_user_default:
+                        dbm.delete(g)
+            dbm.delete(requesteduser) 
+            dbm.commit()
+            dbm.close_session()
+            return 'success', 200 
+        else:
+            dbm.close_session()
+            return "User with ID '{}' not found.".format(id), 400
+
     
 
 @namespace.route('/self')

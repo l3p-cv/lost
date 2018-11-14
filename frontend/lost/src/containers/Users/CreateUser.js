@@ -8,7 +8,7 @@ import UserRolesDropdown from './UserRolesDropdown'
 
 import 'react-notifications/lib/notifications.css';
 
-const {cleanUserError,createUser} = actions
+const {cleanCreateUserMessage,createUser} = actions
 
 class CreateUser extends Component {
 
@@ -64,14 +64,14 @@ class CreateUser extends Component {
         return true
     }
     componentDidUpdate() {
-        if (this.props.errorMessage === 'success') {
+        if (this.props.createMessage === 'success') {
             NotificationManager.success(`User ${this.state.createUsername} created.`)
-        } else if (this.props.errorMessage !== '') {
-            NotificationManager.error(this.props.errorMessage)
+        } else if (this.props.createMessage !== '') {
+            NotificationManager.error(this.props.createMessage)
         }
         this
             .props
-            .cleanUserError()
+            .cleanCreateUserMessage()
     }
     createUserCheckGroup(choosenGroups) { 
         this.setState({createChoosenGroups: choosenGroups})
@@ -109,7 +109,7 @@ class CreateUser extends Component {
 }
 
 function mapStateToProps(state){
-    return({errorMessage: state.user.errorMessage})
+    return({createMessage: state.user.createMessage})
 }
 
-export default connect(mapStateToProps, {cleanUserError, createUser})(CreateUser)
+export default connect(mapStateToProps, {cleanCreateUserMessage, createUser})(CreateUser)

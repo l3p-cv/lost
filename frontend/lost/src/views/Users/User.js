@@ -27,7 +27,7 @@ class User extends Component {
     render() {
         return (
             <Row>
-                <Col xs='2' sm='2' lg='2'>
+                <Col xs='4' sm='4' lg='3'>
                     <Card className='text-black'>
                         <CardBody className='pb-0'>
                         <CreateGroup groups={this.props.groups}></CreateGroup>
@@ -35,7 +35,7 @@ class User extends Component {
                         </CardBody>
                     </Card>
                 </Col>
-                <Col xs='10' sm='10' lg='10'>
+                <Col xs='8' sm='8' lg='9'>
                     <Card className='text-black'>
                         <CardBody className='pb-0'>
                         <CreateUser groups={this.props.groups}></CreateUser>
