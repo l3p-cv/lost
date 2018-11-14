@@ -13,6 +13,7 @@ Welcome to lost's documentation!
         Getting Started <getting_started.rst>
         Script API <script.rst>
         Annotation Tools <anno_tools.rst>
+        Conventions <conventions.rst>
 
 Indices and tables
 ==================

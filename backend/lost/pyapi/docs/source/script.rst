@@ -1,7 +1,3 @@
-api.script
-*****************
-.. automodule:: lost.pyapi.script
-
 Script
 ================
 .. autoclass:: lost.pyapi.script.Script
