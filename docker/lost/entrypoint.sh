@@ -1,6 +1,6 @@
 #!/bin/bash
  /bin/bash -c "source /opt/conda/bin/activate lost"
-
+source activate lost
  # init env vars 
 if [ -z "${LOST_DB_IP}" ]; then
   export LOST_DB_IP="db-lost"
@@ -41,14 +41,14 @@ done
 
 mkdir -p ${LOST_HOME}/logs
 
-source /opt/conda/bin/activate lost && python3 /code/backend/lost/logic/init/initlost.py
-cd /code/backend/lost/pyapi/docs && source /opt/conda/bin/activate lost && make html && cd -
+python3 /code/backend/lost/logic/init/initlost.py
+cd /code/backend/lost/pyapi/docs &&  make html && cd -
 
 if [ ${DEV} = "True" ]; then
   nginx="service nginx start"
   eval $nginx &
 
-  endpoint="source /opt/conda/bin/activate lost && python3 /code/backend/lost/app.py"
+  endpoint="python3 /code/backend/lost/app.py"
   eval $endpoint 
 
   # frontend="cd /code/frontend/lost && npm start"
