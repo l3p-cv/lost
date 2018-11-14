@@ -13,6 +13,8 @@ Welcome to lost's documentation!
         Getting Started <getting_started.rst>
         Script API <script.rst>
         Script Input and Output <inout.rst>
+        Pipeline Elements <pipe_elements.rst>
+        Data Model  <data_model.rst>
         Annotation Tools <anno_tools.rst>
         Conventions <conventions.rst>
 
