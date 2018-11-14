@@ -26,7 +26,6 @@ build-lost-base:
   only: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-  
 build-lost:
   stage: build-lost
   script:
