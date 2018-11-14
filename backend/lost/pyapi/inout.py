@@ -65,17 +65,6 @@ class Input(object):
                 yield img
 
     @property
-    def img_preds(self):
-        '''Iterate over all :class:`.project.ImagePrediction` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`.project.ImagePrediction` objects.
-        '''
-        for result in self._results:
-            for img_pred in result.img_preds:
-                yield img_pred
-
-    @property
     def bbox_annos(self):
         '''Iterate over all :class:`.project.BBoxAnnotation` objects in this Resultset.
 
@@ -102,17 +91,6 @@ class Input(object):
                 for twod_anno in img_anno.two_d_annos:
                     yield twod_anno #type: lost.db.TwoDAnno
 
-    @property
-    def bbox_preds(self):
-        '''Iterate over all :class:`.project.BBoxPrediction` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`.project.BBoxPrediction`.
-        '''
-        for result in self._results:
-            for img_pred in result.img_preds:
-                for bb_pred in img_pred.bbox_preds:
-                    yield bb_pred
 
 
 class Output(object):
@@ -130,10 +108,6 @@ class Output(object):
             self._element._dbm.delete(anno)
         for anno in self.bbox_annos:
             self._element._dbm.delete(anno)
-        for pred in self.img_preds:
-            self._element._dbm.delete(pred)
-        for pred in self.bbox_preds:
-            self._element._dbm.delete(pred)
         for vout in self.visual_outputs:
             self._element._dbm.delete(vout)
         for dexport in self.data_exports:
@@ -192,17 +166,6 @@ class Output(object):
                 yield img
 
     @property
-    def img_preds(self):
-        '''Iterate over all :class:`.project.ImagePrediction` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`.project.ImagePrediction` objects.
-        '''
-        for result in self._results:
-            for img_pred in result.img_preds:
-                yield img_pred
-
-    @property
     def bbox_annos(self):
         '''Iterate over all :class:`.project.BBoxAnnotation` objects in this Resultset.
 
@@ -229,17 +192,6 @@ class Output(object):
                 for twod_anno in img_anno.two_d_annos:
                     yield twod_anno #type: lost.db.TwoDAnno
 
-    @property
-    def bbox_preds(self):
-        '''Iterate over all :class:`.project.BBoxPrediction` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`.project.BBoxPrediction`.
-        '''
-        for result in self._results:
-            for img_pred in result.img_preds:
-                for bb_pred in img_pred.bbox_preds:
-                    yield bb_pred
     @property
     def visual_outputs(self):
         '''Iterate over all :class:`.project.VisualOutput` objects in this Resultset.
