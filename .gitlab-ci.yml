@@ -29,8 +29,6 @@ build-lost-base:
 build-lost:
   stage: build-lost
   script:
-    - npm install --prefix frontend/lost/src/tools/sia -d 
-    - npm install --prefix frontend/lost/src/tools/pipeline -d
     - npm install --prefix frontend/lost -d 
     - npm run build --prefix frontend/lost -d 
     - rm -rf frontend/lost/node_modules
