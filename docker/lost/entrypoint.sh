@@ -42,6 +42,7 @@ done
 mkdir -p ${LOST_HOME}/logs
 
 source /opt/conda/bin/activate lost && python3 /code/backend/lost/logic/init/initlost.py
+cd /code/backend/lost/pyapi/docs && source /opt/conda/bin/activate lost && make html && cd -
 
 if [ ${DEV} = "True" ]; then
   nginx="service nginx start"
