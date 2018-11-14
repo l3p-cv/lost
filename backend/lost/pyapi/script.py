@@ -1,5 +1,5 @@
 '''
-A modul for basic interaction of coustom scripts with the portal.
+A modul for basic interaction of custom scripts with the portal.
 '''
 __author__ = 'Jonas Jäger'
 
@@ -17,17 +17,14 @@ import os
 from lost.logic.config import LOSTConfig
 import json
 import pickle
-#import cv2
-#from lost.logic.pipeline.template_import import TemplateQuery
 from lost.pyapi import pipe_element
 from lost.pyapi import annos
 
-#TODO: Adjust comments for all properties.
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
 
     Args:
-        msg: The error message that should be reported.
+        msg (str): The error message that should be reported.
 
     Note:
         You can call this method multiple times if you like. All messages
@@ -97,7 +94,7 @@ class Script(pipe_element.Element):
 
     @property
     def inp(self):
-        ''':class:`inout.Input`
+        ''':class:`lost.pyapi.inout.Input`
         '''
         return self._inp
 
@@ -425,6 +422,14 @@ class Output(inout.Output):
                 -> Set the img_path and the bb_dict argument. For boxes you
                 need to assign a list of box and a list of label_ids for label_list.
                 E.g. boxes =[[0.1,0.1,0.2,0.3],...], label_list =[[1,5],...]
+        
+        Example:
+            How to use this method in a Script::
+
+                self.request_bba('path/to/img.png', 
+                    boxes=[[0.1,0.1,0.2,0.3],[0.2,0.2,0.4,0.4]], 
+                    label_list=[[0],[1]]
+                )
         '''
         self.__check_for_video(frame_n, video_path)
         if video_path is not None:
@@ -520,7 +525,7 @@ class Output(inout.Output):
                         raise ValueError('*sim_classes* and *boxes* need to have same size!')
                     bbox.sim_class = sim_classes[i]
                 img_anno.add_bbox(bbox)
-                
+
     def request_mia(self, img_path, sim_class=None, frame_n=None, video_path=None):
         '''Request a class label annotation for an image for MIA (MultiImageAnnotation).
 
