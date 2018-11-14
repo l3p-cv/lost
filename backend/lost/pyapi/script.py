@@ -456,7 +456,71 @@ class Output(inout.Output):
                         bbox.sim_class = sim_classes[i]
                     img_anno.add_bbox(bbox)
 
+    def add_bba(self, img_path, boxes = [], label_list = [],
+                    frame_n=None, video_path=None, sim_classes=[]):
+        '''Add BBoxAnnotations to the output of this Script.
 
+        Args:
+            img_path (str): Path of the image.
+            boxes (list) : A list of boxes [[x,y,w,h],..].
+            label_list (list) : A list of labels for each box. A box can
+                contain multiple lables.
+                [[b0_lbl0, b0_lbl1, ...], ... , [bn_lbl0]]
+            frame_n (int): If *img_path* belongs to a video *frame_n* indicates
+                the framenumber.
+            video_path (str): If *img_path* belongs to a video this is the path to
+                this video.
+            sim_classes (list): [sim_class1, sim_class2,...] 
+                A list of similarity classes that is used to 
+                cluster BBoxes when using MIA for annotation.
+
+        Note:
+            There are three cases when you request a bbox annotation.
+
+            Case1: Annotate empty image
+                You just want to get bounding boxes drawn by a human annotator
+                for an image.
+                -> Only set the img_path argument.
+            Case2: Annotate image with a preset of boxes
+                You want to get verified predicted bounding boxes by a human
+                annotator and you have not predicted a label for the boxes.
+                -> Set the img_path argument and boxes.
+            Case3: Annotate image with a preset of boxes and labels
+                You want to get predicted bounding boxes and the related predicted
+                labels to be verified by a human annotator.
+                -> Set the img_path and the bb_dict argument. For boxes you
+                need to assign a list of box and a list of label_ids for label_list.
+                E.g. boxes =[[0.1,0.1,0.2,0.3],...], label_list =[[1,5],...]
+        '''
+        self.__check_for_video(frame_n, video_path)
+        if video_path is not None:
+            video_path = self._script.get_rel_path(video_path)
+        for pe in self._connected_pes:
+            rel_img_path = self._script.file_man.make_path_relative(img_path)
+            img_anno = annos.Image(anno_task_id=None,
+                                    img_path=rel_img_path,
+                                    state=state.Anno.UNLOCKED.value,
+                                    result_id=self._result_map[pe.idx],
+                                    iteration=self._script._pipe_element.iteration,
+                                    frame_n=frame_n,
+                                    video_path=video_path)
+            img_anno.add_to_context(self._script._dbm)
+            for i, bb in enumerate(boxes):
+                bbox = annos.BBox(bb, None, 
+                                    self._script._pipe_element.iteration)
+                if label_list:
+                    if len(label_list) != len(boxes):
+                        raise ValueError('*label_list* and *boxes* need to be of same size!')
+                    labels = label_list[i]
+                    for label_leaf_id in labels:
+                        if label_leaf_id is not None:
+                            bbox.add_label(label_leaf_id)
+                if sim_classes:
+                    if len(sim_classes) != len(boxes):
+                        raise ValueError('*sim_classes* and *boxes* need to have same size!')
+                    bbox.sim_class = sim_classes[i]
+                img_anno.add_bbox(bbox)
+                
     def request_mia(self, img_path, sim_class=None, frame_n=None, video_path=None):
         '''Request a class label annotation for an image for MIA (MultiImageAnnotation).
 
