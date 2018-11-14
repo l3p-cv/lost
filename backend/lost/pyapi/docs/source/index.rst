@@ -12,6 +12,7 @@ Welcome to lost's documentation!
 
         Getting Started <getting_started.rst>
         Script API <script.rst>
+        Annotation Tools <anno_tools.rst>
 
 Indices and tables
 ==================
