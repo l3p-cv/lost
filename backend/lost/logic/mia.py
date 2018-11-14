@@ -51,7 +51,7 @@ class TwoDSerialize(object):
         self.anno_task_id = anno_task_id
         self.file_man = FileMan(self.db_man.lostconfig)
         self.proposedLabel = proposedLabel
-    def serialize(self):
+     def serialize(self):
         directory = os.path.join(self.file_man.two_d_path, str(self.anno_task_id))
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -62,7 +62,7 @@ class TwoDSerialize(object):
         for anno in self.annos:
             image_json = dict()
             image_json['id'] = anno.idx
-            if anno.dtype == dtype.TwoDAnno.BBOX:
+            if anno.dtype == dtype.TwoDAnno.BBOX.value:
                 # get image_anno of two_d anno
                 image_anno = self.db_man.get_image_annotation(img_anno_id=anno.img_anno_id)
                 cropped_image_path = os.path.join(directory, str(anno.idx)) + '.png'
@@ -74,17 +74,53 @@ class TwoDSerialize(object):
                     continue
                 else:    
                     # crop two_d_anno out of image_anno
-                    image = skimage.io.imread(os.path.join(self.file_man.lostconfig.project_path,image_anno.img_path))
+                    config = get_config(self.db_man, self.user_id)
+                    draw_box = False
+                    context = None
+                    try:
+                        draw_box = config['drawBox']
+                    except:
+                        pass
+                    try:
+                        context = float(config['addContext'])
+                    except:
+                        pass
+
+                    image = skimage.io.imread(os.path.join(self.file_man.l3pconfig.project_path,image_anno.img_path))
                     crop_data = json.loads(anno.data)
-                    x_min = int((crop_data['x'] - crop_data['w']/2) * image.shape[1])
-                    x_max = int(x_min + crop_data['w'] * image.shape[1])
-                    y_min = int((crop_data['y'] - crop_data['h']/2) * image.shape[0])
-                    y_max = int(y_min + crop_data['h'] * image.shape[0])
+                    x = int((crop_data['x'] - crop_data['w']/2) * image.shape[1])
+                    y = int((crop_data['y'] - crop_data['h']/2) * image.shape[0])
+                    w = int(crop_data['w'] * image.shape[1])
+                    h = int(crop_data['h'] * image.shape[0])
+                    if context is None:
+                        # Crop without context
+                        x_min = int((crop_data['x'] - crop_data['w']/2) * image.shape[1])
+                        x_max = int(x_min + crop_data['w'] * image.shape[1])
+                        y_min = int((crop_data['y'] - crop_data['h']/2) * image.shape[0])
+                        y_max = int(y_min + crop_data['h'] * image.shape[0])
+                    else:
+                        # Crop with context
+                        x_min = x - int(w*context)
+                        if x_min < 0:
+                            x_min = 0
+                        x_max = x + w + int(w*context)
+                        if x_max > image.shape[1]:
+                            x_max = image.shape[1]
+                        y_min = y - int(h*context)
+                        if y_min < 0:
+                            y_min = 0
+                        y_max = y + h + int(h*context)
+                        if y_max > image.shape[0]:
+                            y_max = image.shape[0]
+                    if draw_box:
+                        # Draw box into crop
+                        rr, cc = polygon_perimeter([y, y, y+h, y+h],[x, x+w, x+w,x ],shape=image.shape)
+                        image[rr,cc] = (255,0,0)
                     cropped_image = image[y_min:y_max, x_min:x_max]
                     skimage.io.imsave(cropped_image_path, cropped_image)
-
                     image_json['path'] = relative_cropped_image_path 
                     self.mia_json['images'].append(image_json) 
+
 def update(db_man, user_id, data):
     at = __get_mia_anno_task(db_man, user_id)
     if at:
@@ -343,3 +379,16 @@ def get_proposed_label(db_man, anno, user_id):
         except:
             return None
     return None
+
+def get_config(db_man, user_id):
+    '''Get annotation tast config.
+
+    Args:
+        db_man (Object): Database manager object.
+        user_id (int): Id of the user.
+    Returns:
+        dict: configuration dictionary.
+    '''
+    at = __get_mia_anno_task(db_man, user_id)
+    config = json.loads(at.configuration)
+    return config
