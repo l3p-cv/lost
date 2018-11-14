@@ -32,7 +32,7 @@ build-lost:
     - npm install --prefix frontend/lost/src/tools/sia -d 
     - npm install --prefix frontend/lost/src/tools/pipeline -d
     - npm install --prefix frontend/lost -d 
-    - npm run build --prefix frontend/lost -d 
+    - CI=false npm run build --prefix frontend/lost -d 
     - rm -rf frontend/lost/node_modules
     - cd backend/lost/pyapi/docs && source activate lost && make html && cd -
     - docker build --build-arg base_image=$LOST_BASE_IMAGE --pull -t $LOST_TEST_IMAGE -f docker/lost/Dockerfile .
