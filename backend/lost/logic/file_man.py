@@ -35,6 +35,34 @@ class FileMan(object):
             os.makedirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
 
+    def get_rel_path(self, path):
+        '''Get relativ path for current project
+
+        Args:
+            path (str): A absolute path
+
+        Returns:
+            str : Relative path
+        '''
+        if os.path.isabs(path):
+            return self.make_path_relative(path)
+        else:
+            return path
+
+    def get_abs_path(self, path):
+        '''Get absolute path in current file system.
+
+        Args:
+            path (str): A relative path.
+
+        Returns:
+            str: Absolute path
+        '''
+        if not os.path.isabs(path):
+            return os.path.join(self.lostconfig.project_path, path)
+        else:
+            return path
+
     def make_path_relative(self, in_path):
         '''Make a path relative to project root path.
 
