@@ -97,7 +97,8 @@ class UserTable extends Component {
                 defaultPageSize={10}
                 className='-striped -highlight'
                 getTrProps={(state, rowInfo, column) => this.handleRowClick(state, rowInfo, column)}/>
-                <NotificationContainer/></React.Fragment>
+                <NotificationContainer/>
+                </React.Fragment>
         )
     }
 }

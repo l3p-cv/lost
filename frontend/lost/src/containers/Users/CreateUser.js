@@ -44,7 +44,6 @@ class CreateUser extends Component {
         this.setState({createPassword: e.target.value})
     }
     handleCreate(e) {
-        console.log(this.state)
         if (this.validateCreationData()) {
             const payload = {
                 user_name: this.state.createUsername,

@@ -10,6 +10,7 @@ import {
 import CreateUser from '../../containers/Users/CreateUser'
 import CreateGroup from '../../containers/Users/CreateGroup'
 import UserTable from '../../containers/Users/UserTable'
+import GroupList from '../../containers/Users/GroupList'
 import actions from '../../actions'
 
 const {getGroups, getUsers} = actions
@@ -31,7 +32,7 @@ class User extends Component {
                     <Card className='text-black'>
                         <CardBody className='pb-0'>
                         <CreateGroup groups={this.props.groups}></CreateGroup>
-                        
+                        <GroupList></GroupList>
                         </CardBody>
                     </Card>
                 </Col>

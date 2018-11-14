@@ -3,12 +3,10 @@ import {connect} from 'react-redux'
 import actions from '../../actions'
 import {Col, Row, Input, InputGroup,InputGroupAddon, Button} from 'reactstrap'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
-import UserGroupDropdown from './UserGroupDropdown'
-import UserRolesDropdown from './UserRolesDropdown'
 
 import 'react-notifications/lib/notifications.css';
 
-const {cleanGroupError,createGroup,deleteGroup} = actions
+const {cleanGroupCreateMessage,getGroups, createGroup,deleteGroup} = actions
 
 class CreateGroup extends Component {
 
@@ -32,7 +30,6 @@ class CreateGroup extends Component {
     }
    
     handleCreate(e) {
-        console.log(this.state)
         if (this.validateCreationData()) {
             const payload = {
                 group_name: this.state.createGroupName
@@ -40,6 +37,7 @@ class CreateGroup extends Component {
             this
                 .props
                 .createGroup(payload)
+            this.props.getGroups()
         } else {
             NotificationManager.error(`No valid data.`)
         }
@@ -49,14 +47,14 @@ class CreateGroup extends Component {
         return true
     }
     componentDidUpdate() {
-        if (this.props.errorMessage === 'success') {
-            NotificationManager.success(`User ${this.state.createGroupName} created.`)
-        } else if (this.props.errorMessage !== '') {
-            NotificationManager.error(this.props.errorMessage)
+        if (this.props.createMessage === 'success') {
+            NotificationManager.success(`Group ${this.state.createGroupName} created.`)
+        } else if (this.props.createMessage !== '') {
+            NotificationManager.error(this.props.createMessage)
         }
         this
             .props
-            .cleanGroupError()
+            .cleanGroupCreateMessage()
     }
     render() {
         return (
@@ -80,7 +78,7 @@ class CreateGroup extends Component {
 }
 
 function mapStateToProps(state){
-    return({errorMessage: state.group.errorMessage})
+    return({createMessage: state.group.createMessage})
 }
 
-export default connect(mapStateToProps, {cleanGroupError, createGroup, deleteGroup})(CreateGroup)
+export default connect(mapStateToProps, {cleanGroupCreateMessage, getGroups, createGroup, deleteGroup})(CreateGroup)

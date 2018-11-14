@@ -1,7 +1,8 @@
 import TYPES from '../types/index'
 const INITIAL_STATE = {
     groups: [],
-    errorMessage: '',
+    createMessage: '',
+    deleteMessage: '',
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -14,17 +15,17 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.CREATE_GROUP_SUCCESS:
             return {
                 ...state,
-                errorMessage: 'success'
+                createMessage: 'success'
             }
-        case TYPES.CLEAN_GROUP_ERROR:
+        case TYPES.CLEAN_GROUP_CREATE_MESSAGE:
             return {
                 ...state,
-                errorMessage: ''
+                createMessage: ''
             }
         case TYPES.CREATE_GROUP_FAILED:
             return {
                 ...state,
-                errorMessage: action.payload
+                createMessage: action.payload
             }
         default:
             return state
