@@ -6,15 +6,14 @@ from lost.db import model
 from lost.db import state
 import os
 
-#TODO: Adjust property comments
 class Input(object):
-    def __init__(self, element):
-        '''Init
+    '''Class that represants an Input of a pipeline element.
 
-        Args:
-            element (object): Related :class:`pipe_element.Element` object.
-            results (list): A list of :class:`data_model.Result`
-        '''
+    Args:
+        element (object): Related :class:`pipe_element.Element` object.
+        results (list): A list of :class:`data_model.Result`
+    '''
+    def __init__(self, element):
         self._element = element
         self._results = element._pipe_element.result_in
         self._connected_pes = element._pipe_man.get_prev_pes(element._pipe_element)
@@ -260,6 +259,9 @@ class Output(object):
                 yield v_out
 
 class ScriptOutput(Output):
+    '''Special :class:`Output` class since :class:`lost.pyapi.script.Script` objects 
+    may manipulate and request annotations.
+    '''
     
     def __init__(self, script):
         super().__init__(script)
