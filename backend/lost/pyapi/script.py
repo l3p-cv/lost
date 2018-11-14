@@ -17,7 +17,7 @@ import os
 from lost.logic.config import LOSTConfig
 import json
 import pickle
-from lost.pyapi import pipe_element
+from lost.pyapi import pipe_elements
 from lost.pyapi import annos
 
 def report_script_err(pipe_element, task, dbm, msg):
@@ -42,7 +42,7 @@ def report_script_err(pipe_element, task, dbm, msg):
     dbm.add(pipe_element)
     dbm.commit()
 
-class Script(pipe_element.Element):
+class Script(pipe_elements.Element):
     '''Superclass for a user defined Script.
 
     Custom scripts need to inherit from Script and implement the main method.
@@ -104,6 +104,27 @@ class Script(pipe_element.Element):
         '''
         return self._outp
 
+    def get_rel_path(self, path):
+        '''Get relativ path for current project
+
+        Args:
+            path (str): A absolute path
+
+        Returns:
+            str : Relative path
+        '''
+        return self.file_man.get_rel_path(path)
+
+    def get_abs_path(self, path):
+        '''Get absolute path in current file system.
+
+        Args:
+            path (str): A relative path.
+
+        Returns:
+            str: Absolute path
+        '''
+        return self.file_man.get_abs_path(path)
 
     def break_loop(self):
         '''Break next loop in pipeline.
