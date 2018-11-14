@@ -123,9 +123,7 @@ class UserLogin(Resource):
         data = login_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
         # find user in database
-        if 'email' in data:
-            user = dbm.find_user_by_email(data['email'])
-        if not user and 'user_name' in data:
+        if 'user_name' in data:
             user = dbm.find_user_by_user_name(data['user_name'])
 
         # check password

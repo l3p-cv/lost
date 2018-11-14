@@ -6,7 +6,7 @@ import { API_URL } from '../settings'
 
 const login = (formProps, callback) => async dispatch => {
     try {
-        const response = await axios.post(API_URL + 'user/login', formProps)
+        const response = await axios.post(API_URL + '/user/login', formProps)
         dispatch({ type: TYPES.AUTH_USER, payload: response.data})
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('refreshToken', response.data.refresh_token)

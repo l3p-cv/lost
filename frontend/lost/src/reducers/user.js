@@ -1,7 +1,7 @@
 import TYPES from '../types/index'
 const INITIAL_STATE = {
     users: [],
-    createError: ''
+    errorMessage: '',
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -14,17 +14,17 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.CREATE_USER_SUCCESS:
             return {
                 ...state,
-                createError: 'success'
+                errorMessage: 'success'
             }
-        case TYPES.CLEAN_ERROR:
+        case TYPES.CLEAN_USER_ERROR:
             return {
                 ...state,
-                createError: ''
+                errorMessage: ''
             }
         case TYPES.CREATE_USER_FAILED:
             return {
                 ...state,
-                createError: action.payload
+                errorMessage: action.payload
             }
         default:
             return state

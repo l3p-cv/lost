@@ -4,4 +4,3 @@ import group from './group/index'
 import user from './user/index'
 
 export default { ...auth, ...label, ...group, ...user }
-
