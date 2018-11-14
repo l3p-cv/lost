@@ -1,5 +1,4 @@
-from lost.pyapi import anno_task
-from lost.pyapi import datasource
+from lost.pyapi import pipe_elements
 from lost.db import access, dtype
 from lost.pyapi import annos
 from lost.db import model
@@ -23,7 +22,7 @@ class Input(object):
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.DATASOURCE:
-                res_list.append(datasource.RawFile(pe, self._element._dbm))
+                res_list.append(pipe_elements.RawFile(pe, self._element._dbm))
         return res_list
 
     @property
@@ -32,7 +31,7 @@ class Input(object):
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 if pe.anno_task.dtype == dtype.AnnoTask.MIA:
-                    res_list.append(anno_task.MIATask(pe, self._element._dbm))
+                    res_list.append(pipe_elements.MIATask(pe, self._element._dbm))
         return res_list
 
     @property
@@ -40,7 +39,7 @@ class Input(object):
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                res_list.append(anno_task.AnnoTask(pe, self._element._dbm))
+                res_list.append(pipe_elements.AnnoTask(pe, self._element._dbm))
         return res_list
 
     @property
@@ -49,7 +48,7 @@ class Input(object):
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 if pe.anno_task.dtype == dtype.AnnoTask.SIA:
-                    res_list.append(anno_task.SIATask(pe, self._element._dbm))
+                    res_list.append(pipe_elements.SIATask(pe, self._element._dbm))
         return res_list
 
     @property
@@ -150,7 +149,7 @@ class Output(object):
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.DATASOURCE:
-                res_list.append(datasource.RawFile(pe, self._element._dbm))
+                res_list.append(pipe_elements.RawFile(pe, self._element._dbm))
         return res_list
 
     @property
@@ -159,7 +158,7 @@ class Output(object):
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 if pe.anno_task.dtype == dtype.AnnoTask.MIA:
-                    res_list.append(anno_task.MIATask(pe, self._element._dbm))
+                    res_list.append(pipe_elements.MIATask(pe, self._element._dbm))
         return res_list
 
     @property
@@ -167,7 +166,7 @@ class Output(object):
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                res_list.append(anno_task.AnnoTask(pe, self._element._dbm))
+                res_list.append(pipe_elements.AnnoTask(pe, self._element._dbm))
         return res_list
 
     @property
@@ -176,7 +175,7 @@ class Output(object):
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 if pe.anno_task.dtype == dtype.AnnoTask.SIA:
-                    res_list.append(anno_task.SIATask(pe, self._element._dbm))
+                    res_list.append(pipe_elements.SIATask(pe, self._element._dbm))
         return res_list
 
     @property
