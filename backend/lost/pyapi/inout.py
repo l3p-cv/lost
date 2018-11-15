@@ -6,11 +6,10 @@ from lost.db import state
 import os
 
 class Input(object):
-    '''Class that represants an Input of a pipeline element.
+    '''Class that represants an input of a pipeline element.
 
     Args:
-        element (object): Related :class:`pipe_element.Element` object.
-        results (list): A list of :class:`data_model.Result`
+        element (object): Related :class:`lost.db.model.PipeElement` object.
     '''
     def __init__(self, element):
         self._element = element
@@ -19,6 +18,7 @@ class Input(object):
 
     @property
     def raw_files(self):
+        '''list of :class:`lost.pyapi.pipe_elements.RawFile` objects'''
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.DATASOURCE:
@@ -27,6 +27,7 @@ class Input(object):
 
     @property
     def mia_tasks(self):
+        '''list of :class:`lost.pyapi.pipe_elements.MIATask` objects'''
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
@@ -36,6 +37,7 @@ class Input(object):
 
     @property
     def anno_tasks(self):
+        '''list of :class:`lost.pyapi.pipe_elements.AnnoTask` objects'''
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
@@ -44,6 +46,7 @@ class Input(object):
 
     @property
     def sia_tasks(self):
+        '''list of :class:`lost.pyapi.pipe_elements.SIATask` objects'''
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
@@ -53,47 +56,94 @@ class Input(object):
 
     @property
     def img_annos(self):
-        '''Iterate over all :class:`lost.db.model.ImageAnnotation` objects in this Resultset.
+        '''Iterate over all :class:`lost.db.model.ImageAnno` objects in this Resultset.
 
         Returns:
-            Iterator: :class:`lost.db.model.ImageAnnotation` objects.
+            Iterator of :class:`lost.db.model.ImageAnno` objects.
         '''
         for result in self._results:
             for img_anno in result.img_annos:
-                img = annos.Image()
-                img._set_anno(img_anno)
-                yield img
+                yield img_anno
+
+    @property
+    def twod_annos(self):
+        '''Iterate over 2D-annotations.
+
+        Returns:
+            Iterator: of :class:`lost.db.model.TwoDAnno` objects.
+        '''
+        for result in self._results:
+            for img_anno in result.img_annos:
+                for twod_anno in img_anno.two_d_annos:
+                    yield twod_anno #type: lost.db.model.TwoDAnno
 
     @property
     def bbox_annos(self):
-        '''Iterate over all :class:`.project.BBoxAnnotation` objects in this Resultset.
+        '''Iterate over all bbox annotation.
 
         Returns:
-            Iterator: :class:`.project.BBoxAnnotation` objects.
+            Iterator of :class:`lost.db.model.TwoDAnno`.
         '''
         for result in self._results:
             for img_anno in result.img_annos:
-                for twod_anno in img_anno.two_d_annos:
-                    if twod_anno.dtype == dtype.TwoDAnno.BBOX:
-                        bb = annos.BBox()
-                        bb._set_anno(twod_anno)
-                        yield bb #type: lost.pyapi.annos.BBox
+                for bb in img_anno.bbox_annos:
+                    yield bb #type: lost.db.model.TwoDAnno
+
+    @property
+    def point_annos(self):
+        '''Iterate over all point annotations.
+
+        Returns:
+            Iterator of :class:`lost.db.model.TwoDAnno`.
+        '''
+        for result in self._results:
+            for img_anno in result.img_annos:
+                for bb in img_anno.point_annos:
+                    yield bb #type: lost.db.model.TwoDAnno
     
     @property
-    def twod_annos(self):
-        '''Iterate over all :class:`lost.db.TwoDAnno` objects in this Resultset.
+    def line_annos(self):
+        '''Iterate over all line annotations.
 
         Returns:
-            Iterator: :class:`lost.db.TwoDAnno` objects.
+            Iterator of :class:`lost.db.model.TwoDAnno` objects.
         '''
         for result in self._results:
             for img_anno in result.img_annos:
-                for twod_anno in img_anno.two_d_annos:
-                    yield twod_anno #type: lost.db.TwoDAnno
+                for tda in img_anno.line_annos:
+                    yield tda #type: lost.db.model.TwoDAnno
+
+    @property
+    def polygon_annos(self):
+        '''Iterate over all polygon annotations.
+
+        Returns:
+            Iterator of :class:`lost.db.model.TwoDAnno` objects.
+        '''
+        for result in self._results:
+            for img_anno in result.img_annos:
+                for tda in img_anno.polygon_annos:
+                    yield tda #type: lost.db.model.TwoDAnno
+
+    @property
+    def visual_outputs(self):
+        '''Iterate over all :class:`.project.VisualOutput` objects in this Resultset.
+
+        Returns:
+            Iterator: :class:`.project.VisualOutput`.
+        '''
+        for result in self._results:
+            for v_out in result.visual_outputs:
+                yield v_out
+
+    @property
+    def data_exports(self):
+        for result in self._results:
+            for v_out in result.data_exports:
+                yield v_out
 
 
-
-class Output(object):
+class Output(Input):
 
     def __init__(self, element):
         self._element = element
@@ -117,97 +167,6 @@ class Output(object):
             self._element._fm.rm_instance_path(self._element._pipe_element)
         except:
             pass
-
-    @property
-    def raw_files(self):
-        res_list = []
-        for pe in self._connected_pes:
-            if pe.dtype == dtype.PipeElement.DATASOURCE:
-                res_list.append(pipe_elements.RawFile(pe, self._element._dbm))
-        return res_list
-
-    @property
-    def mia_tasks(self):
-        res_list = []
-        for pe in self._connected_pes:
-            if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                if pe.anno_task.dtype == dtype.AnnoTask.MIA:
-                    res_list.append(pipe_elements.MIATask(pe, self._element._dbm))
-        return res_list
-
-    @property
-    def anno_tasks(self):
-        res_list = []
-        for pe in self._connected_pes:
-            if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                res_list.append(pipe_elements.AnnoTask(pe, self._element._dbm))
-        return res_list
-
-    @property
-    def sia_tasks(self):
-        res_list = []
-        for pe in self._connected_pes:
-            if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                if pe.anno_task.dtype == dtype.AnnoTask.SIA:
-                    res_list.append(pipe_elements.SIATask(pe, self._element._dbm))
-        return res_list
-
-    @property
-    def img_annos(self):
-        '''Iterate over all :class:`lost.db.model.ImageAnnotation` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`lost.db.model.ImageAnnotation` objects.
-        '''
-        for result in self._results:
-            for img_anno in result.img_annos:
-                img = annos.Image()
-                img._set_anno(img_anno)
-                yield img
-
-    @property
-    def bbox_annos(self):
-        '''Iterate over all :class:`.project.BBoxAnnotation` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`.project.BBoxAnnotation` objects.
-        '''
-        for result in self._results:
-            for img_anno in result.img_annos:
-                for twod_anno in img_anno.two_d_annos:
-                    if twod_anno.dtype == dtype.TwoDAnno.BBOX:
-                        bb = annos.BBox()
-                        bb._set_anno(twod_anno)
-                        yield bb #type: lost.pyapi.annos.BBox
-    
-    @property
-    def twod_annos(self):
-        '''Iterate over all :class:`lost.db.TwoDAnno` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`lost.db.TwoDAnno` objects.
-        '''
-        for result in self._results:
-            for img_anno in result.img_annos:
-                for twod_anno in img_anno.two_d_annos:
-                    yield twod_anno #type: lost.db.TwoDAnno
-
-    @property
-    def visual_outputs(self):
-        '''Iterate over all :class:`.project.VisualOutput` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`.project.VisualOutput`.
-        '''
-        for result in self._results:
-            for v_out in result.visual_outputs:
-                yield v_out
-
-    @property
-    def data_exports(self):
-        for result in self._results:
-            for v_out in result.data_exports:
-                yield v_out
 
 class ScriptOutput(Output):
     '''Special :class:`Output` class since :class:`lost.pyapi.script.Script` objects 
