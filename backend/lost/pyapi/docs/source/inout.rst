@@ -11,8 +11,10 @@ Output
 ================
 .. autoclass:: lost.pyapi.inout.Output
     :members:
+    :inherited-members:
 
 Input
 ================
 .. autoclass:: lost.pyapi.inout.Input
     :members:
+    :inherited-members:
