@@ -79,6 +79,7 @@ class UserRoles(Base):
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     role_id = Column(Integer(), ForeignKey('role.idx', ondelete='CASCADE'))
+    role = relationship('Role', uselist=False)
 
 class Group(Base):
     __tablename__ = 'group'

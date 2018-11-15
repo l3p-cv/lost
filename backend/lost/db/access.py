@@ -718,3 +718,9 @@ class DBMan(object):
 
     def get_group_by_id(self, group_id):
         return self.session.query(model.Group).filter(model.Group.idx==group_id).first()
+
+    def get_user_roles_by_user_id(self, user_id):
+        return self.session.query(model.UserRoles).filter(model.UserRoles.user_id==user_id).all()
+    
+    def get_user_groups_by_user_id(self, user_id):
+        return self.session.query(model.UserGroups).filter(model.UserGroups.user_id==user_id).all()

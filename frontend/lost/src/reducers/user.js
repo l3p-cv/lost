@@ -3,6 +3,7 @@ const INITIAL_STATE = {
     users: [],
     createMessage: '',
     deleteMessage: '',
+    updateMessage: '',
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -41,6 +42,21 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 deleteMessage: ''
+            }
+        case TYPES.UPDATE_USER_SUCCESS:
+            return {
+                ...state,
+                updateMessage: 'success'
+            }
+        case TYPES.UPDATE_USER_FAILED:
+            return {
+                ...state,
+                updateMessage: action.payload
+            }
+        case TYPES.CLEAN_UPDATE_USER_MESSAGE:
+            return {
+                ...state,
+                updateMessage: ''
             }
         default:
             return state

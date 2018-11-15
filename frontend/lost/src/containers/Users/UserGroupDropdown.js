@@ -67,7 +67,7 @@ class UserGroupDropdown extends Component {
             })
         this
             .props
-            .callback(choosenGroups)
+            .callback(this.props.rowInfo, choosenGroups)
     }
     renderChoosenGroups() {
         const groups = this.state.groups

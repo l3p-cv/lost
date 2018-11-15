@@ -24,8 +24,8 @@ user = api.model('User', {
 })
 
 user_login = api.model('UserLogin', {
-    'email': fields.String(description='User email'),
-    # 'user_name': fields.String(description='User name'),
+    # 'email': fields.String(description='User email'),
+    'user_name': fields.String(description='User name'),
     'password': fields.String(required=True, description='User password')
 })
 

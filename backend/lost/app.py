@@ -45,7 +45,8 @@ def init_app(app):
         dbm = access.DBMan(settings.LOST_CONFIG)
         roles = []
         for role in dbm.get_user_roles(user_id=identity):
-            roles.append(dbm.get_role(role_id=role.idx).name)
+            print(role.idx) 
+            roles.append(dbm.get_role(role_id=role.role_id).name)
         dbm.close_session()
         return {"roles": roles}
         

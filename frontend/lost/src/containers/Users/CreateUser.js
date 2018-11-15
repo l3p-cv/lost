@@ -72,11 +72,11 @@ class CreateUser extends Component {
             .props
             .cleanCreateUserMessage()
     }
-    createUserCheckGroup(choosenGroups) { 
+    createUserCheckGroup(rowInfo, choosenGroups) { 
         this.setState({createChoosenGroups: choosenGroups})
     }
 
-    createUserCheckRole(choosenRoles) { 
+    createUserCheckRole(rowInfo, choosenRoles) { 
         this.setState({createChoosenRoles: choosenRoles})
     }
     render() {

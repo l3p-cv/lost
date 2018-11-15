@@ -3,7 +3,7 @@ from flask_restplus import Resource
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.api.user.api_definition import user, user_list, user_login
-from lost.api.user.parsers import login_parser, create_user_parser
+from lost.api.user.parsers import login_parser, create_user_parser, update_user_parser
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
 from lost.db.model import User as DBUser, Role, Group
@@ -42,7 +42,6 @@ class UserList(Resource):
             return "You are not authorized.", 401
         # get data from parser
         data = create_user_parser.parse_args()
-        print(data)
         # find user in database
         user = None
         if 'email' in data:
@@ -119,6 +118,57 @@ class User(Resource):
                         dbm.delete(g)
             dbm.delete(requesteduser) 
             dbm.commit()
+            dbm.close_session()
+            return 'success', 200 
+        else:
+            dbm.close_session()
+            return "User with ID '{}' not found.".format(id), 400
+    
+    @jwt_required 
+    @api.expect(update_user_parser)
+    def patch(self, id):
+        args = update_user_parser.parse_args()
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+
+        requesteduser = dbm.get_user_by_id(id)
+         
+        if requesteduser:
+            requesteduser.email = args.get('email')
+            requesteduser.first_name = args.get('first_name')
+            requesteduser.last_name = args.get('last_name')
+
+    
+
+            if roles.DESIGNER not in args.get('roles'):
+                for user_role in dbm.get_user_roles_by_user_id(id):
+                    if user_role.role.name == roles.DESIGNER: 
+                        dbm.delete(user_role) 
+                        dbm.commit()   
+
+            if args.get('roles'):
+                for role_name in args.get('roles'):
+                    if role_name == 'Designer':
+                        designer_role = dbm.get_role_by_name(roles.DESIGNER)
+                        requesteduser.roles.append(designer_role)        
+            
+            for user_group in dbm.get_user_groups_by_user_id(id):
+                dbm.delete(user_group)
+                dbm.commit()
+            if args.get('groups'):
+                for group_name in args.get('groups'):
+                    group = dbm.get_group_by_name(group_name)
+                    if group:
+                        requesteduser.groups.append(group)
+            if args.get('password'):
+                print(args.get('password')) 
+                requesteduser.set_password(args.get('password'))
+
+            dbm.save_obj(requesteduser)
             dbm.close_session()
             return 'success', 200 
         else:

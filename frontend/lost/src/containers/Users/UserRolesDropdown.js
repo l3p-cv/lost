@@ -61,7 +61,7 @@ class UserRolesDropdown extends Component {
             }
             return false
         })
-        this.props.callback(choosenRoles)
+        this.props.callback(this.props.rowInfo, choosenRoles)
     }
     renderChoosenRoles() {
         const roles = this.state.roles
