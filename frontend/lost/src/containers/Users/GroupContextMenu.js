@@ -37,8 +37,7 @@ class GroupContextMenu extends Component {
                 <Menu id={this.state.menuId}>
                     <Item onClick={() => this.props.deleteGroup(this.props.groupId)}>
                         <span>
-                            <i className='fa fa-trash fa-lg'></i>
-                            Delete Group
+                            <i className='fa fa-trash fa-lg'></i> Delete Group
                         </span>
                     </Item>
                 </Menu>
@@ -46,7 +45,5 @@ class GroupContextMenu extends Component {
         )
     }
 }
-function mapStateToProps(state){
-    return {deleteMessage: state.group.deleteMessage}
-}
-export default connect(mapStateToProps, {deleteGroup})(GroupContextMenu)
+
+export default connect(null, {deleteGroup})(GroupContextMenu)

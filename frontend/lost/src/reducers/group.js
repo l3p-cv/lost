@@ -11,6 +11,7 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 groups: action.payload.groups
+
             }
         case TYPES.CREATE_GROUP_SUCCESS:
             return {
@@ -26,6 +27,21 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 createMessage: action.payload
+            }
+        case TYPES.DELETE_GROUP_SUCCESS:
+            return {
+                ...state,
+                deleteMessage: 'success'
+            }
+        case TYPES.DELETE_GROUP_FAILED:
+            return {
+                ...state,
+                deleteMessage: action.payload
+            }
+        case TYPES.CLEAN_GROUP_DELETE_MESSAGE:
+            return {
+                ...state,
+                deleteMessage: ''
             }
         default:
             return state

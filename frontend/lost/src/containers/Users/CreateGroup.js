@@ -1,34 +1,41 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import actions from '../../actions'
-import {Col, Row, Input, InputGroup,InputGroupAddon, Button} from 'reactstrap'
-import {NotificationManager, NotificationContainer } from 'react-notifications'
+import {
+    Col,
+    Row,
+    Input,
+    InputGroup,
+    InputGroupAddon,
+    Button
+} from 'reactstrap'
+import {NotificationManager, NotificationContainer} from 'react-notifications'
 
 import 'react-notifications/lib/notifications.css';
 
-const {cleanGroupCreateMessage,getGroups, createGroup,deleteGroup} = actions
+const {cleanGroupCreateMessage, getGroups, createGroup} = actions
 
 class CreateGroup extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            createGroupName: '',
-        };
-    
+            createGroupName: ''
+        }
+
         this.handleCreateGroupName = this
             .handleCreateGroupName
-            .bind(this);
+            .bind(this)
         this.handleCreate = this
             .handleCreate
-            .bind(this);
+            .bind(this)
 
     }
 
     handleCreateGroupName(e) {
         this.setState({createGroupName: e.target.value})
     }
-   
+
     handleCreate(e) {
         if (this.validateCreationData()) {
             const payload = {
@@ -37,13 +44,15 @@ class CreateGroup extends Component {
             this
                 .props
                 .createGroup(payload)
-            this.props.getGroups()
+            this
+                .props
+                .getGroups()
         } else {
             NotificationManager.error(`No valid data.`)
         }
     }
 
-    validateCreationData(){
+    validateCreationData() {
         return true
     }
     componentDidUpdate() {
@@ -67,18 +76,19 @@ class CreateGroup extends Component {
                             placeholder="group name"
                             value={this.state.createGroupName}
                             onChange={this.handleCreateGroupName}></Input>
-                        <InputGroupAddon addonType="append"><Button className='btn-info' onClick={this.handleCreate}>Create</Button>
+                        <InputGroupAddon addonType="append">
+                            <Button className='btn-info' onClick={this.handleCreate}>Create</Button>
                         </InputGroupAddon>
                     </InputGroup>
                 </Col>
-                <NotificationContainer />
+                <NotificationContainer/>
             </Row>
         )
     }
 }
 
-function mapStateToProps(state){
-    return({createMessage: state.group.createMessage})
+function mapStateToProps(state) {
+    return ({createMessage: state.group.createMessage})
 }
 
-export default connect(mapStateToProps, {cleanGroupCreateMessage, getGroups, createGroup, deleteGroup})(CreateGroup)
+export default connect(mapStateToProps, {cleanGroupCreateMessage, getGroups, createGroup})(CreateGroup)
