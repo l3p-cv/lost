@@ -93,9 +93,9 @@ class MyProfile extends Component {
                         <Form className="form-horizontal">
                             <FormGroup row>
                                 <Col md="3">
-                                    <Label htmlFor="myprofile-user_name">Username</Label>
+                                    <Label htmlFor="myprofile-user_name">User</Label>
                                 </Col>
-                                <Col xs="12" md="9">
+                                <Col xs="12" md="5">
                                     <Input
                                         disabled
                                         value={this.state.user_name}
@@ -103,6 +103,15 @@ class MyProfile extends Component {
                                         name="myprofile-user_name"
                                         placeholder=""/>
                                     <FormText className="help-block">Username is not editable</FormText>
+                                </Col>
+                                <Col xs="12" md="4">
+                                    <Input
+                                        disabled
+                                        value={this.state.idx}
+                                        type="text"
+                                        name="myprofile-idx"
+                                        placeholder=""/>
+                                    <FormText className="help-block">User id is not editable</FormText>
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
