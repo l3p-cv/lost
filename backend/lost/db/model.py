@@ -164,23 +164,24 @@ class TwoDAnno(Base):
         self.confidence = confidence
         self.anno_time = anno_time
 
-    @property
-    def anno_vec(self):
-        '''list of floats: Annotation data in list style.
+    def get_anno_vec(self):
+        '''Get annotation data in list style.
 
-        For a POINT:
-            [x, y]
+        Returns:
+            list of floats:
+                For a POINT:
+                    [x, y]
 
-        For a BBOX:
-            [x, y, w, h]
+                For a BBOX:
+                    [x, y, w, h]
 
-        For a LINE and POLYGONS:
-            [[x, y], [x, y],...]
+                For a LINE and POLYGONS:
+                    [[x, y], [x, y],...]
 
         Example:
             HowTo get a numpy array? In the following example a bounding box is returned::
 
-                >>> np.array(twod_anno.anno_vec)
+                >>> np.array(twod_anno.get_anno_vec())
                 array([0.1 , 0.2 , 0.3 , 0.18])
         '''
         
@@ -196,71 +197,68 @@ class TwoDAnno(Base):
         else:
             raise Exception('Unknown TwoDAnno type!')
         
-    @property
-    def lbl_vec(self):
-        '''list of int [id, ...]: 
-        Get label ids for this annotations in list style.
-        An id in this list is related to :class:`LabelLeaf`
-        that is part of a LabelTree in the LOST framework.  
-        A 2D annotation can contain multiple labels.
+    def get_lbl_vec(self, which='id'):
+        '''Get labels for this annotations in list style.
 
-        Example:
-            If one label is assigned to this annotation
-            
-            >>> twod_anno.lbl_vec
-            [2]
-            
-            If three labels are assigned to this annotation
-            
-            >>> twod_anno.lbl_vec
-            [2, 10, 5]
-        '''
-        return [lbl.label_leaf.idx for lbl in self.labels]
-
-    @property
-    def lbl_external_vec(self):
-        '''list of str [id, ...]: 
-        Get external label ids for this annotations in list style.
-        An external label id can be any str 
-        and is used to map LOST-LabelLeafs to label ids from
-        external systems like ImageNet.
         A 2D annotation can contain multiple labels 
 
-        Example:
+        Args:
+            which (str):
 
-            >>> twod_anno.lbl_vec
+                'id':
+                An id in this list is related to :class:`LabelLeaf`
+                that is part of a LabelTree in the LOST framework.  
+                A 2D annotation can contain multiple labels.
+
+                'external_id':
+                An external label id can be any str 
+                and is used to map LOST-LabelLeafs to label ids from
+                external systems like ImageNet.
+
+                'name':
+                Get label names for this annotations in list style.
+
+        Retruns:
+            list of int or str [id, ...]:
+
+        Example:
+            Get vec of label ids
+            
+            >>> twod_anno.get_lbl_vec()
             [2]
-        '''
-        return [lbl.label_leaf.idx for lbl in self.labels]
+            
+            Get related external ids
+            
+            >>> twod_anno.get_lbl_vec('external_id')
+            [5]
 
-    @property
-    def lbl_name_vec(self):
-        '''list of lists or str [name,...]: 
-        Get label names for this annotations in list style.
-        A 2D annotation can contain multiple labels 
-
-        Example:
-
-            >>> twod_anno.lbl_name_vec
+            Get related label name
+            
+            >>> twod_anno.get_lbl_vec('name')
             ['cow']
         '''
-        lbl = []
-        for label in self.labels:
-            lbl.append(label.label_leaf.name)
-        return lbl
+        if which == 'id':
+            return [lbl.label_leaf.idx for lbl in self.labels]
+        elif which == 'external_id':
+            return [lbl.label_leaf.external_id for lbl in self.labels]
+        elif which == 'name':
+            return [lbl.label_leaf.name for lbl in self.labels]
+        else:
+            raise Exception('Unknown argument value: {}'.format(which))
 
-    @property
-    def anno_dict(self):
-        '''dict: Annotation data in dict style
-        
-        For a POINT:
-            {"x": float, "y": float}
+    def get_anno_dict(self):
+        '''Get annotation data in dict style
 
-        For a BBOX:
-            {"x": float, "y": float, "w": float, "h": float}
+        Retruns:
+            dict:
+                For a POINT:
+                    {"x": float, "y": float}
 
-        For a LINE and POLYGONS:
-            [{"x": float, "y": float}, {"x": float, "y": float},...]
+                For a BBOX:
+                    {"x": float, "y": float, "w": float, "h": float}
+
+                For a LINE and POLYGONS:
+                    [{"x": float, "y": float}, {"x": float, "y": float},...]
         '''
         return json.loads(self.data)
     
@@ -378,13 +376,123 @@ class ImageAnno(Base):
                 >>> img_anno.anno_vec()
                 [[0.1 , 0.2 , 0.3 , 0.18],
                  [0.25, 0.25, 0.2, 0.4]]
+                >>> img_anno.get_anno_lbl_vec('name', 'bbox') #Get related label names
+                [['cow'], ['horse']]
         '''
         res = []
         for anno in self.twod_annos:
             if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
-                res.append(anno.anno_vec)
+                res.append(anno.get_anno_vec())
         return res
 
+    def get_anno_lbl_vec(self, which='id', anno_type='bbox'):
+        '''Get labels for related TwoDAnnos of tis ImageAnnotation in list style.
+
+        An TwoDAnno can contain multible labels.
+        The TwoDAnno will be filtered by type.
+
+        Args:
+            which (str):
+
+                'id':
+                Get a list of label ids.
+                Each id is related to a :class:`LabelLeaf`
+                that is part of a LabelTree in the LOST framework.  
+                A 2D annotation can contain multiple labels.
+
+                'external_id':
+                An external label id can be any str 
+                and is used to map LOST-LabelLeafs to label ids from
+                external systems like ImageNet.
+
+                'name':
+                Get label names for this annotations in list style.
+
+            anno_type (str): Can be 'bbox', 'point', 'line', 'polygon'
+
+        Retruns:
+            list of int or str [id, ...]:
+
+        Example:
+            Get vec of label ids
+            
+            >>> img_anno.get_anno_lbl_vec(anno_type='bbox')
+            [[2], [10]]
+            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
+            [[0.1 , 0.2 , 0.3 , 0.18],
+            [0.25, 0.25, 0.2, 0.4]]
+            
+            Get related external ids
+            
+            >>> img_anno.get_anno_lbl_vec('external_id', 'bbox')
+            [[5], [24]]
+            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
+            [[0.1 , 0.2 , 0.3 , 0.18],
+            [0.25, 0.25, 0.2, 0.4]]
+
+            Get related label name
+            
+            >>> img_anno.get_anno_lbl_vec('name', 'bbox')
+            [['cow'], ['horse']]
+            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
+            [[0.1 , 0.2 , 0.3 , 0.18],
+            [0.25, 0.25, 0.2, 0.4]]
+        '''
+        res = []
+        for anno in self.twod_annos:
+            if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
+                res.append(anno.get_lbl_vec(which=which))
+        return res
+
+    def get_img_lbl_vec(self, which='id'):
+        '''Get labels for this image annotation in list style.
+
+        An ImageAnnotation can contain multible labels. 
+
+        Args:
+            which (str):
+
+                'id':
+                Get a list of label ids.
+                Each id is related to a :class:`LabelLeaf`
+                that is part of a LabelTree in the LOST framework.  
+                A 2D annotation can contain multiple labels.
+
+                'external_id':
+                An external label id can be any str 
+                and is used to map LOST-LabelLeafs to label ids from
+                external systems like ImageNet.
+
+                'name':
+                Get label names for this annotations in list style.
+
+        Retruns:
+            list of int or str [id, ...]:
+
+        Example:
+            Get vec of label ids
+            
+            >>> twod_anno.get_img_lbl_vec()
+            [2]
+            
+            Get related external ids
+            
+            >>> twod_anno.get_img_lbl_vec('external_id')
+            [5]
+
+            Get related label name
+            
+            >>> twod_anno.get_img_lbl_vec('name')
+            ['cow']
+        '''
+        if which == 'id':
+            return [lbl.label_leaf.idx for lbl in self.labels]
+        elif which == 'external_id':
+            return [lbl.label_leaf.external_id for lbl in self.labels]
+        elif which == 'name':
+            return [lbl.label_leaf.name for lbl in self.labels]
+        else:
+            raise Exception('Unknown argument value: {}'.format(which))
 
 class AnnoTask(Base):
     """A object that represents a anno task.
