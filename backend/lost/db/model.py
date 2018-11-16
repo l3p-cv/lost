@@ -494,6 +494,88 @@ class ImageAnno(Base):
         else:
             raise Exception('Unknown argument value: {}'.format(which))
 
+    def get_df(self):
+        '''Get ImageAnno and related TwoDAnnos as pandas Dataframe.
+
+        Returns:
+            pandas.DataFrame: Each row represants an TwoDAnno and the related ImageAnno information.
+        '''
+        val_table = []
+        column_names = [
+            'img.id',
+            'img.timestamp',
+            'img.path',
+            'img.width',
+            'img.height'
+            'img.anno_time',
+            'img.iteration',
+            'img.label.leafids',
+            'img.label.external_ids',
+            'img.label.names',
+            'anno.id',
+            'anno.timestamp',
+            'anno.anno_time',
+            'anno.data',
+            'anno.annotator',
+            'anno.iteration',
+            'anno.label.leafids',
+            'anno.label.external_ids',
+            'anno.label.names',
+            'anno.type'
+        ]
+        anno_list = list(self.iter_annos('all'))
+        if len(anno_list) > 0:
+            for anno in anno_list:
+                val_table.append([
+                    self.idx,
+                    self.timestamp,
+                    self.img_path,
+                    self.width,
+                    self.height,
+                    self.anno_time,
+                    self.iteration,
+                    json.dumps(self.get_img_lbl_vec('id')),
+                    json.dumps(self.get_img_lbl_vec('external_id')),
+                    json.dumps(self.get_img_lbl_vec('name')),
+                    anno.idx,
+                    anno.timestamp,
+                    anno.anno_time,
+                    anno.data,
+                    anno.annotator.name,
+                    anno.iteration,
+                    json.dumps(anno.get_lbl_vec('id')),
+                    json.dumps(anno.get_lbl_vec('external_id')),
+                    json.dumps(anno.get_lbl_vec('name')),
+                    dtype.TwoDAnno.TYPE_TO_STR[anno.dtype]
+                ])
+        else:
+            val_table.append([
+                self.idx,
+                self.timestamp,
+                self.img_path,
+                self.width,
+                self.height,
+                self.anno_time,
+                self.iteration,
+                json.dumps(self.get_img_lbl_vec('id')),
+                json.dumps(self.get_img_lbl_vec('external_id')),
+                json.dumps(self.get_img_lbl_vec('name')),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None
+            ])
+
+        #return pd.DataFrame(val_table, columns=column_names)
+        raise Exception('Add pandas and numpy to base image -.-')
+        
+
 class AnnoTask(Base):
     """A object that represents a anno task.
 
