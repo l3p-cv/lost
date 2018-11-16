@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {NavItem, NavLink} from 'reactstrap'
 import {connect} from 'react-redux'
-import actions from '../actions'
+import actions from '../../../actions'
 import {createHashHistory} from 'history'
 
 const {changeView} = actions

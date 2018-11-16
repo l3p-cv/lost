@@ -6,17 +6,17 @@ function Loading() {
 }
 
 const Dashboard = Loadable({
-  loader: () => import('./views/AnnotaterDashboard/AnnotaterDashboard.js'),
+  loader: () => import('./views/Dashboard/Annotater/AnnotaterDashboard.js'),
   loading: Loading,
 });
 
 const SingleImageAnnotation = Loadable({
-  loader: () => import('./components/SingleImageAnnotation.js'),
+  loader: () => import('./views/SIA/SingleImageAnnotation.js'),
   loading: Loading,
 });
 
 const MyProfile = Loadable({
-  loader: () => import('./views/Profile/MyProfile.js'),
+  loader: () => import('./views/Profile/Profile.js'),
   loading: Loading,
 })
 

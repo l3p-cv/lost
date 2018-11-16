@@ -32,7 +32,7 @@ class GroupContextMenu extends Component {
                 cursor: 'pointer'
             }}>
                 <center>
-                    <i className='icon-options-vertical'></i>
+                    <i className='icon-options-vertical icons font-1xl '></i>
                 </center>
                 <Menu id={this.state.menuId}>
                     <Item onClick={() => this.props.deleteGroup(this.props.groupId)}>

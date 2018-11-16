@@ -1,6 +1,0 @@
-{
-  "name": "Timeout",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./Timeout.js"
-}

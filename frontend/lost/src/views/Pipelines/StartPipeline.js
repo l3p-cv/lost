@@ -8,7 +8,7 @@ class SingleImageAnnotation extends Component {
 		this.mount = React.createRef()
 	}
 	componentDidMount(){
-		const init = require("../tools/pipeline/src/apps/start/appPresenter.js").default
+		const init = require("../../tools/pipeline/src/apps/start/appPresenter.js").default
 		init(this.props.token)
 	}
 	render(){

@@ -32,7 +32,7 @@ class UserContextMenu extends Component {
                 cursor: 'pointer'
             }}>
                 <center>
-                    <i className='icon-options-vertical'></i>
+                    <i className='icon-options-vertical icons font-xl'></i>
                 </center>
                 <Menu id={this.state.menuId}>
                     <Item onClick={() => this.props.deleteUser(this.props.userId)}>
