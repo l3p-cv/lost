@@ -8,6 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from lost.db import dtype
 
 # Set conventions for foreign key name generation
 convention = {
@@ -161,27 +162,33 @@ class TwoDAnno(Base):
     
 
 class ImageAnno(Base):
-    """An Image Anno represents an image anno (by human).
+    """An ImageAnno represents an image annotation.
+
+    Multiple labels as well as 2d annotations 
+    (e.g. points, lines, boxes, polygons) 
+    can be assigned to an image.
 
     Attributes:
+        labels (list): A list of related :class:`Label` objects.
+        twod_annos (list): A list of :class:`TwoDAnno` objects.
+        img_path (str): Path to the image where this anno belongs to.
+        frame_n (int): If this image is part of an video,
+            frame_n indicates the frame number.
+        video_path (str): If this image is part of an video,
+            this should be the path to that video in file system.
+        width (int): Width of the image.
+        height (int): Height of the image.
+        sim_class (int): The similarity class this anno belong to.
+            It is used to cluster similar annos in MIA
+        anno_time: Overall annotation time in seconds.
+        timestamp (DateTime): Timestamp of ImageAnno
+        iteration (int): The iteration of a loop when this anno was created.        
         idx (int): ID of this ImageAnno in database
         anno_task_id (int): ID of the anno_task this
             ImageAnno belongs to.
-        timestamp (DateTime): Timestamp of ImageAnno
         state (enum): See :class:`lost.db.state.Anno`
-        count (int): Number of Annos for this ImageAnno.
-        sim_class (int): The similarity class this anno belong to.
-            It is used to cluster similar annos in MIA
-        frame_n: Frame number
-        img_path: Path to the image where this anno belongs to.
-        video_path: Path to the video the image belongs to.
         result_id: Id of the related result.
-        iteration (int): The iteration of a loop when this anno was created.
         group_id (int): Id of the annotator.
-        width (int): Width of Image.
-        height (int): Height of Image.
-        labels (list): A list of related :class:`Label` objects.
-        anno_time: Overall Annotation Time in ms.
     """
     __tablename__ = "image_anno"
 
@@ -190,7 +197,6 @@ class ImageAnno(Base):
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     state = Column(Integer)
-    count = Column(Integer)
     sim_class = Column(Integer)
     frame_n = Column(Integer)
     video_path = Column(String(4096))
@@ -201,7 +207,7 @@ class ImageAnno(Base):
     height = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
     labels = relationship('Label')
-    two_d_annos = relationship('TwoDAnno')
+    twod_annos = relationship('TwoDAnno')
     annotator = relationship('Group', uselist=False)
     anno_time = Column(Float)
     def __init__(self, anno_task_id=None, group_id=None,
@@ -215,7 +221,6 @@ class ImageAnno(Base):
         self.timestamp = timestamp
         self.label_id = label_id
         self.state = state
-        self.count = count
         self.sim_class = sim_class
         self.result_id = result_id
         self.img_path = img_path
@@ -225,6 +230,38 @@ class ImageAnno(Base):
         self.height = height
         self.iteration = iteration
         self.anno_time = anno_time
+    
+    @property
+    def bbox_annos(self):
+        '''iterator of :class:`TwoDAnno`: An iterator to get all 
+        bounding boxes related to this image.'''
+        for two_d_anno in self.twod_annos:
+            if two_d_anno.dtype == dtype.TwoDAnno.BBOX:
+                yield two_d_anno
+    
+    @property
+    def point_annos(self):
+        '''iterator of :class:`TwoDAnno`: An iterator to get all 
+        points related to this image.'''
+        for two_d_anno in self.twod_annos:
+            if two_d_anno.dtype == dtype.TwoDAnno.POINT:
+                yield two_d_anno
+
+    @property
+    def polygon_annos(self):
+        '''iterator of :class:`TwoDAnno`: An iterator to get all 
+        polygons related to this image.'''
+        for two_d_anno in self.twod_annos:
+            if two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
+                yield two_d_anno
+
+    @property
+    def line_annos(self):
+        '''iterator of :class:`TwoDAnno`: An iterator to get all 
+        line annotations related to this image.'''
+        for two_d_anno in self.twod_annos:
+            if two_d_anno.dtype == dtype.TwoDAnno.LINE:
+                yield two_d_anno
 
 
 class AnnoTask(Base):

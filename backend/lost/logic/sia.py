@@ -435,7 +435,7 @@ class SiaSerialize(object):
         self.sia_json['drawables']['points'] = list()
         self.sia_json['drawables']['lines'] = list()
         self.sia_json['drawables']['polygons'] = list()
-        for two_d_anno in self.image_anno.two_d_annos: #type: lost.db.model.TwoDAnno
+        for two_d_anno in self.image_anno.twod_annos: #type: lost.db.model.TwoDAnno
             if two_d_anno.dtype == dtype.TwoDAnno.BBOX:
                 bbox_json = dict()
                 bbox_json['id'] = two_d_anno.idx
