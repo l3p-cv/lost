@@ -24,7 +24,7 @@ export default class AccountDropdown extends Component {
                     <DropdownItem header tag='div' className='text-center'>
                         <strong>Settings</strong>
                     </DropdownItem>
-                    <DropdownItem>
+                    <DropdownItem onClick={() => history.push('profile')}>
                         <i className='fa fa-user'></i>
                         Profile</DropdownItem>
                     <DropdownItem header tag='div' className='text-center'>

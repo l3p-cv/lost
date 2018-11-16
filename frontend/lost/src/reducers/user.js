@@ -4,6 +4,7 @@ const INITIAL_STATE = {
     createMessage: '',
     deleteMessage: '',
     updateMessage: '',
+    ownUser: null,
 }
 
 export default function (state = INITIAL_STATE, action) {

@@ -55,3 +55,13 @@ export const updateUser = (payload) => async dispatch => {
         dispatch({type: TYPES.UPDATE_USER_FAILED, payload: e.response.data})
     }
 }
+
+export const getOwnUser = () => async dispatch => {
+    try{
+        const response = await axios.get(API_URL + '/user/self')
+        console.log(response)
+    }
+    catch(e) {
+        console.log(e)
+    }
+}
