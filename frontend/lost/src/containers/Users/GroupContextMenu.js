@@ -4,7 +4,7 @@ import actions from '../../actions'
 import {Menu, Item, contextMenu} from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 
-const {deleteGroup} = actions
+const {deleteGroup, getUsers} = actions
 class GroupContextMenu extends Component {
     constructor(props) {
         super(props)
@@ -35,7 +35,7 @@ class GroupContextMenu extends Component {
                     <i className='icon-options-vertical icons font-1xl '></i>
                 </center>
                 <Menu id={this.state.menuId}>
-                    <Item onClick={() => this.props.deleteGroup(this.props.groupId)}>
+                    <Item onClick={() => this.props.deleteGroup(this.props.getUsers, this.props.groupId)}>
                         <span>
                             <i className='fa fa-trash fa-lg'></i> Delete Group
                         </span>
@@ -46,4 +46,4 @@ class GroupContextMenu extends Component {
     }
 }
 
-export default connect(null, {deleteGroup})(GroupContextMenu)
+export default connect(null, {deleteGroup, getUsers})(GroupContextMenu)
