@@ -9,6 +9,7 @@ from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from lost.db import dtype
+import json
 
 # Set conventions for foreign key name generation
 convention = {
@@ -96,7 +97,9 @@ class UserGroups(Base):
     group_id = Column(Integer(), ForeignKey('group.idx', ondelete='CASCADE'))
 
 class TwoDAnno(Base):
-    """A TwoDAnno represents a 2D anno (drawings) in an image (by human).
+    """A TwoDAnno represents a 2D annotation/ drawing for an image.
+
+    A TwoDAnno can be of type point, line, bbox or polygon.
 
     Attributes:
         idx (int): ID of this TwoDAnno in database
@@ -160,6 +163,106 @@ class TwoDAnno(Base):
         self.iteration = iteration
         self.confidence = confidence
         self.anno_time = anno_time
+
+    @property
+    def anno_vec(self):
+        '''list of floats: Annotation data in list style.
+
+        For a POINT:
+            [x, y]
+
+        For a BBOX:
+            [x, y, w, h]
+
+        For a LINE and POLYGONS:
+            [[x, y], [x, y],...]
+
+        Example:
+            HowTo get a numpy array? In the following example a bounding box is returned::
+
+                >>> np.array(twod_anno.anno_vec)
+                array([0.1 , 0.2 , 0.3 , 0.18])
+        '''
+        
+        data = json.loads(self.data)
+        if self.dtype == dtype.TwoDAnno.BBOX:
+            return [data['x'], data['y'], data['w'], data['h']]
+        elif self.dtype == dtype.TwoDAnno.POINT:
+            return [data['x'], data['y']]
+        elif self.dtype == dtype.TwoDAnno.LINE:
+            return [[e['x'], e['y']] for e in data]
+        elif self.dtype == dtype.TwoDAnno.POLYGON:
+            return [[e['x'], e['y']] for e in data]
+        else:
+            raise Exception('Unknown TwoDAnno type!')
+        
+    @property
+    def lbl_vec(self):
+        '''list of int [id, ...]: 
+        Get label ids for this annotations in list style.
+        An id in this list is related to :class:`LabelLeaf`
+        that is part of a LabelTree in the LOST framework.  
+        A 2D annotation can contain multiple labels.
+
+        Example:
+            If one label is assigned to this annotation
+            
+            >>> twod_anno.lbl_vec
+            [2]
+            
+            If three labels are assigned to this annotation
+            
+            >>> twod_anno.lbl_vec
+            [2, 10, 5]
+        '''
+        return [lbl.label_leaf.idx for lbl in self.labels]
+
+    @property
+    def lbl_external_vec(self):
+        '''list of str [id, ...]: 
+        Get external label ids for this annotations in list style.
+        An external label id can be any str 
+        and is used to map LOST-LabelLeafs to label ids from
+        external systems like ImageNet.
+        A 2D annotation can contain multiple labels 
+
+        Example:
+
+            >>> twod_anno.lbl_vec
+            [2]
+        '''
+        return [lbl.label_leaf.idx for lbl in self.labels]
+
+    @property
+    def lbl_name_vec(self):
+        '''list of lists or str [name,...]: 
+        Get label names for this annotations in list style.
+        A 2D annotation can contain multiple labels 
+
+        Example:
+
+            >>> twod_anno.lbl_name_vec
+            ['cow']
+        '''
+        lbl = []
+        for label in self.labels:
+            lbl.append(label.label_leaf.name)
+        return lbl
+
+    @property
+    def anno_dict(self):
+        '''dict: Annotation data in dict style
+        
+        For a POINT:
+            {"x": float, "y": float}
+
+        For a BBOX:
+            {"x": float, "y": float, "w": float, "h": float}
+
+        For a LINE and POLYGONS:
+            [{"x": float, "y": float}, {"x": float, "y": float},...]
+        '''
+        return json.loads(self.data)
     
 
 class ImageAnno(Base):
@@ -231,38 +334,56 @@ class ImageAnno(Base):
         self.height = height
         self.iteration = iteration
         self.anno_time = anno_time
-    
-    @property
-    def bbox_annos(self):
-        '''iterator of :class:`TwoDAnno`: An iterator to get all 
-        bounding boxes related to this image.'''
-        for two_d_anno in self.twod_annos:
-            if two_d_anno.dtype == dtype.TwoDAnno.BBOX:
-                yield two_d_anno
-    
-    @property
-    def point_annos(self):
-        '''iterator of :class:`TwoDAnno`: An iterator to get all 
-        points related to this image.'''
-        for two_d_anno in self.twod_annos:
-            if two_d_anno.dtype == dtype.TwoDAnno.POINT:
-                yield two_d_anno
 
-    @property
-    def polygon_annos(self):
-        '''iterator of :class:`TwoDAnno`: An iterator to get all 
-        polygons related to this image.'''
-        for two_d_anno in self.twod_annos:
-            if two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
-                yield two_d_anno
+    def iter_annos(self, anno_type='bbox'):
+        '''Iterator for all related 2D annotations of this image.
 
-    @property
-    def line_annos(self):
-        '''iterator of :class:`TwoDAnno`: An iterator to get all 
-        line annotations related to this image.'''
-        for two_d_anno in self.twod_annos:
-            if two_d_anno.dtype == dtype.TwoDAnno.LINE:
-                yield two_d_anno
+        Args:
+            anno_type (str): Can be bbox', 'point', 'line', 'polygon', 'all'
+        
+        Retruns:
+            iterator of :class:`TwoDAnno` objects
+
+        Example:
+            >>> for bb in img_anno.iter_annos('bbox'):
+            ...     do_something(bb)
+        '''
+        if anno_type == 'all':
+            for anno in self.twod_annos:
+                yield anno
+        else:
+            for anno in self.twod_annos:
+                if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
+                    yield anno
+
+    def get_anno_vec(self, anno_type='bbox'):
+        '''Get related 2d annotations in list style.
+
+        Args:
+            anno_type (str): Can be 'bbox', 'point', 'line', 'polygon'
+
+        Returns:
+            list of list of floats:
+                For POINTs:
+                    [[x, y], [x, y], ...]
+                For BBOXs:
+                    [[x, y, w, h], [x, y, w, h], ...]
+                For LINEs and POLYGONs:
+                    [[[x, y], [x, y],...], [[x, y], [x, y],...]]
+
+        Example:
+            In the following example all bounding boxes 
+            of the image annotation will be returned in list style::
+
+                >>> img_anno.anno_vec()
+                [[0.1 , 0.2 , 0.3 , 0.18],
+                 [0.25, 0.25, 0.2, 0.4]]
+        '''
+        res = []
+        for anno in self.twod_annos:
+            if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
+                res.append(anno.anno_vec)
+        return res
 
 
 class AnnoTask(Base):

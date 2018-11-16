@@ -121,3 +121,13 @@ class TwoDAnno():
     POINT = 3
     LINE = 4
     CIRCLE = 5
+
+    TYPE_TO_STR = {
+        1:'bbox', 
+        2:'polygon',
+        3:'point',
+        4:'line',
+        5:'circle'
+    }
+
+    STR_TO_TYPE = {v:k for (k,v) in TYPE_TO_STR.items()}
