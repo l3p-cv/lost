@@ -45,6 +45,10 @@ export const cleanUpdateUserMessage = () => dispatch => {
     dispatch({type: TYPES.CLEAN_UPDATE_USER_MESSAGE})
 }
 
+export const cleanUpdateOwnUserMessage = () => dispatch => {
+    dispatch({type: TYPES.CLEAN_UPDATE_OWN_USER_MESSAGE})
+}
+
 export const updateUser = (payload) => async dispatch => {
     try {
         await axios.patch(API_URL + `/user/${payload.idx}`, payload)
@@ -56,12 +60,24 @@ export const updateUser = (payload) => async dispatch => {
     }
 }
 
-export const getOwnUser = () => async dispatch => {
+export const getOwnUser = (callback) => async dispatch => {
     try{
         const response = await axios.get(API_URL + '/user/self')
-        console.log(response)
+        dispatch({type: TYPES.GET_OWN_USER, payload: response.data})
+        callback()
     }
     catch(e) {
-        console.log(e)
+    }
+}
+
+
+export const updateOwnUser = (payload) => async dispatch => {
+    try {
+        await axios.patch(API_URL + `/user/self`, payload)
+        dispatch({type: TYPES.UPDATE_OWN_USER_SUCCESS})
+        const newOwnUser = await axios.get(API_URL + '/user/self')
+        dispatch({type: TYPES.GET_OWN_USER, payload: newOwnUser.data})
+    } catch (e) {
+        dispatch({type: TYPES.UPDATE_OWN_USER_FAILED, payload: e.response.data})
     }
 }

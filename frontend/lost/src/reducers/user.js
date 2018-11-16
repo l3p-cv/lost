@@ -4,7 +4,15 @@ const INITIAL_STATE = {
     createMessage: '',
     deleteMessage: '',
     updateMessage: '',
-    ownUser: null,
+    updateOwnMessage: '',
+    ownUser: {
+        user_name: '', 
+        email: '',
+        first_name: '',
+        last_name: '',
+        roles: [],
+        groups: []
+    },
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -13,6 +21,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 users: action.payload.users
+            }
+        case TYPES.GET_OWN_USER:
+            return {
+                ...state,
+                ownUser: action.payload
             }
         case TYPES.CREATE_USER_SUCCESS:
             return {
@@ -58,6 +71,21 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 updateMessage: ''
+            }
+        case TYPES.UPDATE_OWN_USER_SUCCESS:
+            return {
+                ...state,
+                updateOwnMessage: 'success'
+            }
+        case TYPES.UPDATE_OWN_USER_FAILED:
+            return {
+                ...state,
+                updateOwnMessage: action.payload
+            }
+        case TYPES.CLEAN_UPDATE_OWN_USER_MESSAGE:
+            return {
+                ...state,
+                updateOwnMessage: ''
             }
         default:
             return state

@@ -29,7 +29,6 @@ create_user_parser.add_argument('roles',
 update_user_parser = reqparse.RequestParser()
 update_user_parser.add_argument('idx',
                            type=str,
-                           required=True,
                            help="User id.")
 update_user_parser.add_argument('email',
                            type=str,

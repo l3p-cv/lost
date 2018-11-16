@@ -191,6 +191,26 @@ class UserSelf(Resource):
         else:
             return "No user found."
 
+    @api.expect(update_user_parser)
+    @jwt_required 
+    def patch(self):
+        args = update_user_parser.parse_args()
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if user:
+            user.email = args.get('email') 
+            user.first_name = args.get('first_name')
+            user.last_name = args.get('last_name')
+            if args.get('password'):
+                user.set_password(args.get('password'))
+            dbm.save_obj(user)
+            dbm.close_session()
+            return 'success', 200
+        else:
+            dbm.close_session()
+            return "No user found.", 405
+
 @namespace.route('/logout')
 class UserLogout(Resource):
     @jwt_required 
