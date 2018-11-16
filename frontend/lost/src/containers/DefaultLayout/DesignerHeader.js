@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { DropdownItem, DropdownMenu, DropdownToggle, Nav } from 'reactstrap'
+import { Nav } from 'reactstrap'
 import PropTypes from 'prop-types'
 
 import ViewChanger from '../../components/ViewChanger'
-import { AppHeaderDropdown, AppNavbarBrand, AppSidebarToggler } from '@coreui/react'
+import { AppNavbarBrand, AppSidebarToggler } from '@coreui/react'
 import logo from '../../assets/img/brand/fully_lost_2.png'
 import sygnet from '../../assets/img/brand/lo-st.png'
+import AccountDropdown from './AccountDropdown';
 
 
 const propTypes = {
@@ -31,17 +32,7 @@ class DefaultHeader extends Component {
 
         <Nav className='ml-auto' navbar>
           <ViewChanger></ViewChanger>
-          <AppHeaderDropdown direction='down'>
-            <DropdownToggle nav>
-              <img src={'assets/img/avatars/user.png'} className='img-avatar' alt='admin@bootstrapmaster.com' />
-            </DropdownToggle>
-            <DropdownMenu right style={{ right: 'auto' }}>
-              <DropdownItem header tag='div' className='text-center'><strong>Settings</strong></DropdownItem>
-              <DropdownItem><i className='fa fa-user'></i> Profile</DropdownItem>
-              <DropdownItem header tag='div' className='text-center'><strong>Account</strong></DropdownItem>
-              <DropdownItem><i className='fa fa-lock'></i> Logout</DropdownItem>
-            </DropdownMenu>
-          </AppHeaderDropdown>
+          <AccountDropdown></AccountDropdown>
         </Nav>
         {/* <AppAsideToggler className='d-md-down-none' /> */}
         {/*<AppAsideToggler className='d-lg-none' mobile />*/}

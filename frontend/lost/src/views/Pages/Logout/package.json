@@ -1,6 +1,6 @@
 {
-  "name": "Modals",
+  "name": "Logout",
   "version": "0.0.0",
   "private": true,
-  "main": "./Modals.js"
+  "main": "./Logout.js"
 }

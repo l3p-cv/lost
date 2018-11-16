@@ -191,6 +191,20 @@ class UserSelf(Resource):
         else:
             return "No user found."
 
+@namespace.route('/logout')
+class UserLogout(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        dbm.close_session()
+        if user:
+            #TODO: logout stuff
+            return user
+        else:
+            return "No user found."
+
 @namespace.route('/login')
 class UserLogin(Resource):
     @api.expect(user_login)

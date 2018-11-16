@@ -24,10 +24,7 @@ const decodeJwt = (decoded_token, callback) => async dispatch => {
 }
 const checkExpireDate = (decoded_token, callback) => async dispatch => {
     if (decoded_token !== undefined && decoded_token.exp < Date.now() / 1000){
-        dispatch({type: TYPES.LOGOUT})
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('view')
+        logout()
         callback()
     }
 }
@@ -44,8 +41,16 @@ const changeView = (view, callback) => async dispatch => {
     localStorage.setItem('view', view)
 }
 
+const logout = () => async dispatch => {
+    axios.post(API_URL + '/user/logout')
+    dispatch({type: TYPES.LOGOUT})
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('view')
+}
 export default {
     login,
+    logout, 
     decodeJwt,
     checkExpireDate,
     checkRole,
