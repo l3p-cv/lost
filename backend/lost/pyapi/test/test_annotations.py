@@ -8,3 +8,4 @@ class TestTwoDAnnos(object):
         assert vec[1] == 0.1
         assert vec[2] == 0.2
         assert vec[3] == 0.2
+        assert False

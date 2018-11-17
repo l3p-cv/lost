@@ -43,7 +43,8 @@ build-lost:
 test-lost:
   stage: test-lost
   script:
-    - echo "LOST TEST WILL BE HERE IN FUTURE :)"
+    - docker pull $LOST_TEST_IMAGE
+    - docker exec $LOST_TEST_IMAGE source /opt/conda/bin/activate lost && pytest /code/backend/lost
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
