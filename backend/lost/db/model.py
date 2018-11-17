@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import orm
 from lost.db import dtype
 import json
+import pandas as pd
 
 # Set conventions for foreign key name generation
 convention = {
@@ -572,8 +573,8 @@ class ImageAnno(Base):
                 None
             ])
 
-        #return pd.DataFrame(val_table, columns=column_names)
-        raise Exception('Add pandas and numpy to base image -.-')
+        return pd.DataFrame(val_table, columns=column_names)
+        #raise Exception('Add pandas and numpy to base image -.-')
         
 
 class AnnoTask(Base):
