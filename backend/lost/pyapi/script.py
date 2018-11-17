@@ -18,7 +18,6 @@ from lost.logic.config import LOSTConfig
 import json
 import pickle
 from lost.pyapi import pipe_elements
-from lost.pyapi import annos
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal

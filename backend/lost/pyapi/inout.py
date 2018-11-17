@@ -1,9 +1,9 @@
 from lost.pyapi import pipe_elements
 from lost.db import access, dtype
-from lost.pyapi import annos
 from lost.db import model
 from lost.db import state
 import os
+import json
 
 class Input(object):
     '''Class that represants an input of a pipeline element.
@@ -272,7 +272,7 @@ class ScriptOutput(Output):
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 rel_img_path = self._script.file_man.make_path_relative(img_path)
-                img_anno = annos.Image(anno_task_id=pe.anno_task.idx,
+                img_anno = model.ImageAnno(anno_task_id=pe.anno_task.idx,
                                         img_path=rel_img_path,
                                         state=state.Anno.UNLOCKED,
                                         result_id=self._result_map[pe.idx],
@@ -281,8 +281,9 @@ class ScriptOutput(Output):
                                         video_path=video_path)
                 img_anno.add_to_context(self._script._dbm)
                 for i, bb in enumerate(boxes):
-                    bbox = annos.BBox(bb, pe.anno_task.idx, 
-                                        self._script._pipe_element.iteration)
+                    bbox = model.TwoDAnno(data=json.dumps({'x':bb[0],'y':bb[1],'w':bb[2],'h':bb[3]}), 
+                        anno_task_id=pe.anno_task.idx, 
+                        iteration=self._script._pipe_element.iteration)
                     if label_list:
                         if len(label_list) != len(boxes):
                             raise ValueError('*label_list* and *boxes* need to be of same size!')
@@ -337,7 +338,7 @@ class ScriptOutput(Output):
             video_path = self._script.get_rel_path(video_path)
         for pe in self._connected_pes:
             rel_img_path = self._script.file_man.make_path_relative(img_path)
-            img_anno = annos.Image(anno_task_id=None,
+            img_anno = model.ImageAnno(anno_task_id=None,
                                     img_path=rel_img_path,
                                     state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
@@ -346,8 +347,8 @@ class ScriptOutput(Output):
                                     video_path=video_path)
             img_anno.add_to_context(self._script._dbm)
             for i, bb in enumerate(boxes):
-                bbox = annos.BBox(bb, None, 
-                                    self._script._pipe_element.iteration)
+                bbox = model.TwoDAnno(data=json.dumps({'x':bb[0],'y':bb[1],'w':bb[2],'h':bb[3]}), 
+                        iteration=self._script._pipe_element.iteration)
                 if label_list:
                     if len(label_list) != len(boxes):
                         raise ValueError('*label_list* and *boxes* need to be of same size!')
