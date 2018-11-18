@@ -164,6 +164,108 @@ class TwoDAnno(Base):
         self.confidence = confidence
         self.anno_time = anno_time
 
+    @property
+    def point(self):
+        '''list: POINT annotation in list style [x, y]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.point = [0.1, 0.1]
+            >>> anno.point
+            [0.1, 0.1]
+        '''
+        if self.dtype == dtype.TwoDAnno.POINT:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use point property 
+                since this annotation is no point! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @point.setter
+    def point(self, value):
+        self.data = json.dumps(
+            {
+                'x': value[0],
+                'y': value[1]
+            }
+        )
+        self.dtype = dtype.TwoDAnno.POINT
+
+    @property
+    def bbox(self):
+        '''list: BBOX annotation in list style [x, y, w, h]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.bbox = [0.1, 0.1, 0.2, 0.2]
+            >>> anno.bbox
+            [0.1, 0.1, 0.2, 0.2]
+        '''
+        if self.dtype == dtype.TwoDAnno.BBOX:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use bbox property 
+                since this annotation is no BBOX! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @bbox.setter
+    def bbox(self, value):
+        self.data = json.dumps(
+            {
+                'x': value[0],
+                'y': value[1],
+                'w': value[2],
+                'h': value[3]
+            }
+        )
+        self.dtype = dtype.TwoDAnno.BBOX
+    
+    @property
+    def line(self):
+        '''list of list: LINE annotation in list style [[x, y], [x, y], ...]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.line = [[0.1, 0.1], [0.2, 0.2]]
+            >>> anno.line
+            [[0.1, 0.1], [0.2, 0.2]]
+        '''
+        if self.dtype == dtype.TwoDAnno.LINE:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use line property 
+                since this annotation is no line! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @line.setter
+    def line(self, value):
+        val_list = [{'x':v[0],'y':v[1]} for v in value]
+        self.data = json.dumps(val_list)
+        self.dtype = dtype.TwoDAnno.LINE
+
+    @property
+    def polygon(self):
+        '''list of list: polygon annotation in list style [[x, y], [x, y], ...]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.polygon = [[0.1, 0.1], [0.2, 0.1], [0.15, 0.2]]
+            >>> anno.polygon
+            [[0.1, 0.1], [0.2, 0.1], [0.15, 0.2]]
+        '''
+        if self.dtype == dtype.TwoDAnno.POLYGON:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use polygon property 
+                since this annotation is no polygon! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @polygon.setter
+    def polygon(self, value):
+        val_list = [{'x':v[0],'y':v[1]} for v in value]
+        self.data = json.dumps(val_list)
+        self.dtype = dtype.TwoDAnno.POLYGON
+
     def get_anno_vec(self):
         '''Get annotation data in list style.
 
