@@ -261,10 +261,10 @@ class ScriptOutput(Output):
         Example:
             How to use this method in a Script::
 
-                self.request_bba('path/to/img.png', 
-                    boxes=[[0.1,0.1,0.2,0.3],[0.2,0.2,0.4,0.4]], 
-                    label_list=[[0],[1]]
-                )
+                >>> self.request_bba('path/to/img.png', 
+                ...     boxes=[[0.1,0.1,0.2,0.3],[0.2,0.2,0.4,0.4]], 
+                ...     label_list=[[0],[1]]
+                ... )
         '''
         self.__check_for_video(frame_n, video_path)
         if video_path is not None:
@@ -281,9 +281,9 @@ class ScriptOutput(Output):
                                         video_path=video_path)
                 img_anno.add_to_context(self._script._dbm)
                 for i, bb in enumerate(boxes):
-                    bbox = model.TwoDAnno(data=json.dumps({'x':bb[0],'y':bb[1],'w':bb[2],'h':bb[3]}), 
-                        anno_task_id=pe.anno_task.idx, 
+                    bbox = model.TwoDAnno(anno_task_id=pe.anno_task.idx, 
                         iteration=self._script._pipe_element.iteration)
+                    bbox.bbox = bb
                     if label_list:
                         if len(label_list) != len(boxes):
                             raise ValueError('*label_list* and *boxes* need to be of same size!')
@@ -347,8 +347,8 @@ class ScriptOutput(Output):
                                     video_path=video_path)
             img_anno.add_to_context(self._script._dbm)
             for i, bb in enumerate(boxes):
-                bbox = model.TwoDAnno(data=json.dumps({'x':bb[0],'y':bb[1],'w':bb[2],'h':bb[3]}), 
-                        iteration=self._script._pipe_element.iteration)
+                bbox = model.TwoDAnno(iteration=self._script._pipe_element.iteration)
+                bbox.bbox = bb
                 if label_list:
                     if len(label_list) != len(boxes):
                         raise ValueError('*label_list* and *boxes* need to be of same size!')
@@ -386,7 +386,7 @@ class ScriptOutput(Output):
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 if pe.anno_task.dtype == dtype.AnnoTask.MIA:
                     rel_img_path = self._script.file_man.make_path_relative(img_path)
-                    img_anno = annos.Image(anno_task_id=pe.anno_task.idx,
+                    img_anno = model.ImageAnno(anno_task_id=pe.anno_task.idx,
                                           img_path=rel_img_path,
                                           sim_class=sim_class,
                                           state=state.Anno.UNLOCKED,
