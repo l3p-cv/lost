@@ -11,6 +11,32 @@ REF_POLYGON = [[0.1,0.1],[0.2,0.1],[0.15,0.2]]
 
 dbm = DBMan(config.LOSTConfig())
 
+def check_bbox(ref, to_check):
+    '''Check if two boxes are equal'''
+    for i, r in enumerate(ref):
+        if r != to_check[i]:
+            return False
+    return True
+
+def check_point(ref, to_check):
+    '''Check if two points are equal'''
+    for i, r in enumerate(ref):
+        if r != to_check[i]:
+            return False
+    return True
+
+def check_line(ref, to_check):
+    '''Check if two lines are equal'''
+    for i, point in enumerate(ref):
+        for j, r in enumerate(point):
+            if r != to_check[i][j]:
+                return False
+    return True
+
+def check_polygon(ref, to_check):
+    '''Check if two polygons are equal'''
+    return check_line(ref, to_check)
+
 @pytest.fixture(scope='module')
 def simple_bbox_anno():
     twod_anno = model.TwoDAnno(
@@ -30,11 +56,7 @@ def simple_bbox_anno():
     dbm.delete(twod_anno)
     dbm.commit()
 
-# @pytest.fixture(scope='module')
-# def bbox_anno():
-#     pass
-
-class TestAnnos(object):
+class TestTwoDAnnos(object):
 
     def test_get_anno_vec(self, simple_bbox_anno):
         vec = simple_bbox_anno.get_anno_vec()
@@ -75,3 +97,38 @@ class TestAnnos(object):
         for i, point in enumerate(REF_POLYGON):
             for j, ref in enumerate(point):
                 assert ref == anno.polygon[i][j]
+
+class TestImageAnnos(object):
+
+    def test_get_anno_vec(self):
+        img_anno = model.ImageAnno()
+        anno = model.TwoDAnno()
+        anno.bbox = REF_BBOX
+        img_anno.twod_annos.append(anno)
+        anno = model.TwoDAnno()
+        anno.point = REF_POINT
+        img_anno.twod_annos.append(anno)
+        anno = model.TwoDAnno()
+        anno.line = REF_LINE
+        img_anno.twod_annos.append(anno)
+        anno = model.TwoDAnno()
+        anno.polygon = REF_POLYGON
+        img_anno.twod_annos.append(anno)
+
+        print('Check BBox')
+        bb_list = img_anno.get_anno_vec(anno_type='bbox')
+        assert check_bbox(REF_BBOX, bb_list[0])
+        
+        print('Check Point')
+        point_list = img_anno.get_anno_vec(anno_type='point')
+        assert check_point(REF_POINT, point_list[0])        
+
+        print('Check Line')
+        line_list = img_anno.get_anno_vec(anno_type='line')
+        line = line_list[0]
+        check_line(REF_LINE, line)
+        
+        print('Check Polygon')
+        polygon_list = img_anno.get_anno_vec(anno_type='polygon')
+        check_polygon(REF_POLYGON, polygon_list[0])
+
