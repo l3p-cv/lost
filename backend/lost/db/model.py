@@ -165,6 +165,17 @@ class TwoDAnno(Base):
         self.confidence = confidence
         self.anno_time = anno_time
 
+    def add_labels(self, label_leaf_ids):
+        '''Add a label to this image annotation.
+
+        Args:
+            label_leaf_ids (list of int): Id of the label_leaf that should be added.
+        '''
+        for label_leaf_id in label_leaf_ids:
+            if label_leaf_id is not None:
+                lbl = Label(label_leaf_id=label_leaf_id)
+                self.labels.append(lbl)
+
     @property
     def point(self):
         '''list: POINT annotation in list style [x, y]
@@ -435,6 +446,17 @@ class ImageAnno(Base):
         self.height = height
         self.iteration = iteration
         self.anno_time = anno_time
+
+    def add_labels(self, label_leaf_ids):
+        '''Add a label to this image annotation.
+
+        Args:
+            label_leaf_ids (list of int): Id of the label_leaf that should be added.
+        '''
+        for label_leaf_id in label_leaf_ids:
+            if label_leaf_id is not None:
+                lbl = Label(label_leaf_id=label_leaf_id)
+                self.labels.append(lbl)
 
     def iter_annos(self, anno_type='bbox'):
         '''Iterator for all related 2D annotations of this image.
