@@ -29,7 +29,7 @@ export default class BaseNodePresenter {
     }
 
     /**
-     * This method finishs the initialization fo the Graph-Node. 
+     * This method finishs the initialization of the Graph-Node. 
      * After the Graph-Node view was added to the graph, this method is 
      * called and passed the resulting root DOM-Node reference. 
      * 
@@ -42,6 +42,13 @@ export default class BaseNodePresenter {
         this.view.parentNode = parentNode
         
         // open modal on click
+		console.log("init", this)
+		console.log({parentNode})
+		console.log(this.view)
+		console.log(this.view.parentNode)
+		$(this.view.parentNode).on('mouseover', () => {
+			console.log('mouseover')
+		})
         $(this.view.parentNode).on('dblclick', (e) => {
             if(this.onDblClick instanceof Function){
                 // example: function replaceModal(data)

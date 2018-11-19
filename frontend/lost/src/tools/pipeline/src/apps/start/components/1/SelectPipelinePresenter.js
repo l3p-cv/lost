@@ -43,34 +43,9 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         this.tableLoaded = true
     }
     selectTemplate(id){
-        const requestTemplate = () => {
-            http.requestTemplate(id).then(response => {
-                appModel.state.selectedTemplate.update(response)
-            })
-        }
-        if(PipelineGraphPresenter.isThereGraph){
-            swal({
-                title: 'Are you sure to load the graph?',
-                text: 'Current graph will be removed. You will not be able to revert this!',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No',
-                confirmButtonClass: 'btn btn-success',
-                cancelButtonClass: 'btn btn-danger',
-                buttonsStyling: false,
-            }).then(() => {
-                requestTemplate()
-            }, (dismiss) => {
-                if(dismiss === 'cancel') {
-                    return
-                }
-            })
-        } else {
-            requestTemplate()
-        }
-    }
+		http.requestTemplate(id).then(response => {
+			appModel.state.selectedTemplate.update(response)
+		})
+	}
 }
 export default new SelectPipelinePresenter()

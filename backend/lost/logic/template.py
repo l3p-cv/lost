@@ -116,6 +116,7 @@ class TemplateSerialize(object):
 
     def add_available_info(self):
         self.template_json['id'] = self.template.idx
+        self.template_json['timestamp'] = self.template.timestamp
         for pe in self.template_json['elements']:
             if 'datasource' in pe:
                 if pe['datasource']['type'] == 'rawFile':
@@ -169,6 +170,7 @@ class TemplateSerialize(object):
             group_json = dict()
             group_json['id'] = group.idx
             group_json['groupName'] = group.name
+            group_json['isGroup'] = not group.is_user_default
             groups_json.append(group_json)
         return groups_json
 

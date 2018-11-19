@@ -2,8 +2,6 @@ import { Observable } from 'pipRoot/l3pfrontend/index'
 
 export default class DatasourceNodeModel {
     constructor(data, mode) {
-        console.log('DATA:': data)
-        console.log('STATE:': data.state)
         if(data === undefined || data.peN === undefined){
             throw new Error('data is undefined or has no peN property.')
         }

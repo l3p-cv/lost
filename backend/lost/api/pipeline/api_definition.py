@@ -17,6 +17,7 @@ template  = api.model('Template', {
     'author': fields.String(readOnly=True, description="The author of the pipeline template."),
     'namespace': fields.String(readOnly=True, description="The namespace of the pipeline template."),
     'name': fields.String(readOnly=True, description="The name of the pipeline template."),
+    'date': fields.DateTime(readOnly=True, description="Timestamp when template was imported."),
     'elements': fields.Raw()
     #'elements': fields.List(fields.Nested(template_element))
 })

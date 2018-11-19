@@ -5,14 +5,14 @@ import TabTreeView from './TabTreeView'
 import 'datatables.net'
 import 'datatables.net-buttons'
 import swal from 'sweetalert2'
-import d3 from 'd3'
+import * as d3 from 'd3'
 import d3Tip from 'd3-tip'
 
 
 let ctrlPressed = false
 let initialized = false
-d3.tip = d3Tip
-var toolTip = d3.tip()
+console.log({d3Tip})
+var toolTip = d3Tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function (d) {

@@ -8,21 +8,21 @@ class PipelineGraphTab extends WizardTabView {
             title: 'Fill out Elements',
             icon: 'fa fa-pencil',
             content: `
-                <div class='btn-toolbar toolbar ' role='toolbar' aria-label='Toolbar with button groups'>
-                    <div class='btn-group pull-right' role='group' aria-label='Second group'>
-                        <button data-ref='btn-next' type='button' class='btn btn-sm btn-default'>
-                            <i class='fa fa-step-forward' aria-hidden='true'></i>  &nbsp;&nbsp;  
+                <div class='btn-toolbar toolbar' role='toolbar'>
+                    <div class='btn-group pull-right' role='group'>
+                        <button data-ref='btn-next' class='btn btn-sm btn-default'>
+                            <i class='fa fa-step-forward'></i>
                             <span>Next<span> 
                         </button>
                     </div>
-                    <div class='btn-group pull-right' role='group' aria-label='First group'>
-                        <button data-ref='btn-prev' type='button' class='btn btn-sm btn-default '>
-                            <i class='fa fa-step-backward' aria-hidden='true'></i>   &nbsp;&nbsp;  
+                    <div class='btn-group pull-right' role='group'>
+                        <button data-ref='btn-prev' class='btn btn-sm btn-default '>
+                            <i class='fa fa-step-backward' aria-hidden='true'></i>
                             <span>Previous<span>    
                         </button>
                     </div>
                 </div>
-                <div data-ref='dagre'></div>
+                <div id='dagre-graph-container' data-ref='dagre'></div>
             `,
         }
         super(config)

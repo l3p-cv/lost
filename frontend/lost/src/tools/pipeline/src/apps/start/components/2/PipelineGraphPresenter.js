@@ -50,17 +50,11 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         
         // create and render the graph
         this.graph = new Graph(this.view.html.refs['dagre'])
+
         // dont recreate the graph it it allready exists
-        // if (this.graph !== undefined) {
-        //     return
-        // }
-        // try {
-        //     $(this.graph.mountPoint.children[0]).remove()
-        //     this.graph = undefined
-        // }
-        // catch(err) {
-        //     throw err
-        // }
+		// if(this.graph !== undefined){
+		// 	this.graph.remove()
+		// }
 
         // data.requestTemplate()
         const elements = data.elements
@@ -82,11 +76,10 @@ class PipelineGraphPresenter extends WizardTabPresenter {
             }
         })
 
-        console.log(this.graph)
-
         nodes.forEach(n => {
-            this.graph.addNode(n)
-        })
+            const nodeId = this.graph.addNode(n)
+			console.log(document.getElementById(nodeId))
+		})
         nodes.forEach(n => {
             if (n.constructor.name === 'LoopNodePresenter') {
                 this.graph.addEdge(n.model.peN, n.model.loop.peJumpId, true)
@@ -96,6 +89,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                     this.graph.addEdge(n.model.peN, e)
                 })
             }
+			this.graph.render()
         })
 
         this.graph.centerGraph()

@@ -14,7 +14,6 @@ export default class TabUserPresenter extends WizardTabPresenter {
 
         // DATATABLES
         const modifiedAvailableUser = this.model.annoTask.availableGroups
-        console.log(this.model.annoTask.availableGroups)
         modifiedAvailableUser.forEach(element => {
             // element.photoPath = `<img src='${element.photoPath}' style='height:100px; width:100px'>`
             element.photoPath = ''
