@@ -5,10 +5,10 @@ Getting Started
 The pipeline idea
 =================
 
-A **L3P-Pipeline** consists of different elements that will be processed in a defined
-order by the *L3P-Engine* to transform data in the portal.
+A **LOST-Pipeline** consists of different elements that will be processed in a defined
+order by the *LOST-Engine* to transform data in the portal.
 
-A *L3P-Pipeline* is defined by a **PipelineTemplate** and modeled as directed graph.
+A *LOST-Pipeline* is defined by a **PipelineTemplate** and modeled as directed graph.
 A *Pipeline* is an istance of a *PipelineTemplate*.
 A *PipelineTemplate* may define a graph that consits of the following
 **PipelineElements**:
@@ -26,6 +26,28 @@ A *PipelineTemplate* may define a graph that consits of the following
   a loop in the graph. A loop element implements the a similar behaviour as a while
   loop in a programming language.
 
+A first example
+================
+
+How to define a pipeline?
+-------------------------
+.. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_imgs.json
+   :language: json
+   :emphasize-lines: 1
+   :linenos:
 
 How to write a script?
-======================
+----------------------
+.. code-block:: python
+   :emphasize-lines: 3,5
+
+   def some_function():
+       interesting = False
+       print 'This line is highlighted.'
+       print 'This one is not...'
+       print '...but this one is.'
+
+.. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_imgs.py
+   :language: python
+   :emphasize-lines: 22
+   :linenos:

@@ -27,7 +27,7 @@ def report_script_err(pipe_element, task, dbm, msg):
 
     Note:
         You can call this method multiple times if you like. All messages
-        will be concatenated an sent to the portal.
+        will be concatenated and sent to the portal.
     '''
     if pipe_element.error_msg is None:
         pipe_element.error_msg = str(msg)
@@ -99,7 +99,7 @@ class Script(pipe_elements.Element):
 
     @property
     def outp(self):
-        ''':class:`Output`
+        ''':class:`lost.pyapi.inout.ScriptOutput`
         '''
         return self._outp
 
