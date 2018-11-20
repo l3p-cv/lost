@@ -103,7 +103,7 @@ class LabelLeaf():
 
     '''
     CLASS = 1
-    VALUABLE = 2
+    VALUE = 2
 
 class TwoDAnno():
     '''Type of a TwoDAnno
