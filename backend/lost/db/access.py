@@ -90,42 +90,42 @@ class DBMan(object):
         self.session.add(obj)
         self.session.commit()
 
-    def get_all_media(self):
-        '''Get all media entries in project from database
+    # def get_all_media(self):
+    #     '''Get all media entries in project from database
 
-        Returns:
-            list of :class:`.project.Media` objects.
-        '''
-        return self.session.query(model.Media).all()
+    #     Returns:
+    #         list of :class:`.project.Media` objects.
+    #     '''
+    #     return self.session.query(model.Media).all()
 
-    def get_media(self, media_id=None, data_path=None):
-        '''Get a media entry by id
+    # def get_media(self, media_id=None, data_path=None):
+    #     '''Get a media entry by id
 
-        Args:
-            media_id (int): Get media by media_id.
-            data_path (int): Get media by data_path.
+    #     Args:
+    #         media_id (int): Get media by media_id.
+    #         data_path (int): Get media by data_path.
 
-        Returns:
-            :class:`.project.Media`
-        '''
-        if media_id is not None:
-            return self.session.query(model.Media).filter(model.Media.idx==media_id).first()
-        elif data_path is not None:
-            return self.session.query(model.Media).filter(model.Media.data_path==data_path).first()
-        else:
-            raise Exception('Need to specify one of the method parameters!')
+    #     Returns:
+    #         :class:`.project.Media`
+    #     '''
+    #     if media_id is not None:
+    #         return self.session.query(model.Media).filter(model.Media.idx==media_id).first()
+    #     elif data_path is not None:
+    #         return self.session.query(model.Media).filter(model.Media.data_path==data_path).first()
+    #     else:
+    #         raise Exception('Need to specify one of the method parameters!')
 
-    def media_exists(self, data_path):
-        '''Check if media with the specified data_path exists.
+    # def media_exists(self, data_path):
+    #     '''Check if media with the specified data_path exists.
 
-        Args:
-            data_path: path to the media
+    #     Args:
+    #         data_path: path to the media
 
-        Returns:
-            True if media exists.
-        '''
-        (ret, ), = self.session.query(exists().where(model.Media.data_path==data_path))
-        return ret
+    #     Returns:
+    #         True if media exists.
+    #     '''
+    #     (ret, ), = self.session.query(exists().where(model.Media.data_path==data_path))
+    #     return ret
 
     def get_anno_task(self, anno_task_id=None, pipe_element_id=None, state=None):
         '''Get an AnnoationTask object.
@@ -385,7 +385,7 @@ class DBMan(object):
         '''Get label tree by group_ids
         '''
         return self.session.query(model.LabelLeaf)\
-        .filter(model.LabelLeaf.group_id.in_(group_ids) & model.LabelLeaf.is_first_leaf == True ).all()
+        .filter(model.LabelLeaf.group_id.in_(group_ids) & model.LabelLeaf.is_root == True ).all()
 
     def get_all_required_label_leaves(self, anno_task_id=None, label_leaf_id=None):
         '''Get required label leaves by anno_task_id
@@ -600,7 +600,7 @@ class DBMan(object):
     def get_available_label_trees(self, group_ids):
         ''' Get all available label trees
         '''
-        return self.session.query(model.LabelLeaf).filter((model.LabelLeaf.is_first_leaf == True) & \
+        return self.session.query(model.LabelLeaf).filter((model.LabelLeaf.is_root == True) & \
         model.LabelLeaf.group_id.in_(group_ids) ).all()
     def get_available_users(self):
         ''' Get all available users

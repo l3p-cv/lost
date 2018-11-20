@@ -619,7 +619,7 @@ class ImageAnno(Base):
         else:
             raise Exception('Unknown argument value: {}'.format(which))
 
-    def get_df(self):
+    def to_df(self):
         '''Get ImageAnno and related TwoDAnnos as pandas Dataframe.
 
         Returns:
@@ -1005,13 +1005,6 @@ class Result(Base):
         '''
         self.img_annos.append(img_anno)
 
-    # def add_bbox_anno(self, bbox_anno):
-    #     '''Add a :class:`TwoDAnno` to this result.
-    #     '''
-    #     #TODO check this method - result id was removed in bbox_anno
-    #     self.bbox_annos.append(bbox_anno)
-
-
     def add_visual_output(self, visual_output):
         '''Add a :class:`VisualOutput` to this result.
         '''
@@ -1177,21 +1170,23 @@ class LabelLeaf(Base):
         abbreviation (str):
         description (str):
         timestamp (DateTime):
-        regex_mask: Regular expression mask for any value which can be given to a label
-        default_value: Default value for labels
+        regex_mask (str): Regular expression mask for any value which can be given to a label
+        default_value (str): Default value for labels
         example_image: Path to an example image which represents the LabelName
-        css_class: Style Attributes for this LabelLeaf
-        external_id: Id of an external semantic label system (for e.g. synsetid of wordnet)
-        dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g valuable or not)
-        label_tree_id (Integer): LabelTree this LabelLeaf belongs to. 
+        css_class (str): Style Attributes for this LabelLeaf
+        external_id (str): Id of an external semantic label system (for e.g. synsetid of wordnet)
+        dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g CLASS or VALUE)
+        group_id (int):
+        group (:class:`Group`):
         is_deleted (Boolean): 
+        is_root (Boolean): Indicates if this leaf is the root of a tree.
         parent_leaf_id (Integer): Reference to parent LabelLeaf.
+        label_leafs (list of :class:`LabelLeaf`):
     '''
     __tablename__ = "label_leaf"
     idx = Column(Integer, primary_key=True)
     name = Column(String(100))
     abbreviation = Column(String(20))
-    description = Column(String(300))
     timestamp = Column(DATETIME(fsp=6))
     description = Column(Text)
     regex_mask = Column(String(300))
@@ -1203,7 +1198,7 @@ class LabelLeaf(Base):
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", uselist=False, lazy='joined')
     is_deleted = Column(Boolean)
-    is_first_leaf = Column(Boolean)
+    is_root = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
     label_leaves = relationship('LabelLeaf')
 
@@ -1211,7 +1206,7 @@ class LabelLeaf(Base):
                  group_id=None, timestamp=None, regex_mask=None,
                  default_value=None, example_image=None, external_id=None, dtype=None,
                  css_class=None, label_tree_id=None, is_deleted=None,
-                 parent_leaf_id=None):
+                 parent_leaf_id=None, is_root=None):
         self.idx = idx
         self.name = name
         self.abbreviation = abbreviation
@@ -1224,9 +1219,34 @@ class LabelLeaf(Base):
         self.css_class = css_class
         self.external_id = external_id
         self.dtype = dtype
-        self.label_tree_id = label_tree_id
         self.is_deleted = is_deleted
         self.parent_leaf_id = parent_leaf_id
+        self.is_root = is_root
+
+    def to_df(self):
+        '''Transform this LabelLeaf to a pandas DataFrame.
+
+        Returns:
+            pd.DataFrame:
+        '''
+        return pd.DataFrame({
+            'idx' : self.idx,
+            'name': self.name,
+            'abbreviation' : self.abbreviation,
+            'description' : self.description,
+            'group_id' : self.group_id,
+            'timestamp' : self.timestamp,
+            'regex_mask' : self.regex_mask,
+            'default_value' : self.default_value,
+            'example_image' : self.example_image,
+            'css_class' : self.css_class,
+            'external_id' : self.external_id,
+            'dtype' : self.dtype,
+            'is_deleted' : self.is_deleted,
+            'parent_leaf_id' : self.parent_leaf_id,
+            'is_root' : self.is_root
+        })
+
 
 class Label(Base):
     '''Represants an Label that is related to an annoation.
