@@ -20,7 +20,7 @@ export default class ScriptStartView {
 
         this.html = new NodeTemplate(/*html*/`
             <div class='panel panel-${nodeClass} 
-            custom_node'>
+            custom-node'>
             <div class='panel-heading '>
             <i class='fa fa-rocket fa-2x pull-left'></i>
             <h class='panel-title'>Script</h>

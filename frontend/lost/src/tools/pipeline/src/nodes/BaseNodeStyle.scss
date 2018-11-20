@@ -1,9 +1,16 @@
-@import './icons.scss';
-
-// ----------
-.loop-maxiterations-text{
+// MOVE?
+.loop-maxiterations-text {
     font-size: small
 }
+.panel-title {
+    font-size: 1rem;
+}
+.footer-text {
+    font-size: 0.6rem;
+}
+
+
+// progress bar and background colors (could use cleanup)
 .progress {
     margin-top: 10px;
     margin-bottom: 10px;    
@@ -12,38 +19,26 @@
     border-radius: 6px; 
     height: 26px;
 }
-.progessbar-nodes{
+.progessbar-nodes {
     width: 180px;    
-}
-.panel-title{
-    font-size: 2em;
-}
-.footer-text{
-    font-size: 1.4em;
-}
-.margin{
-    margin: 10px
 }
 .progress-bar {
     background: rgba(62, 141, 209, 1);
 }
-
-.bg-green{
+.bg-green {
     background: #139006 !important;
     border: none !important;
 }
-.bg-red{
+.bg-red {
     background: red;
     color: whitesmoke    
 }
-
-.bg-blue{
+.bg-blue {
     border-color: #337AB7 !important;
     background: #337AB7 !important;
     color: whitesmoke !important;
 }
-
-.bg-orange{
+.bg-orange {
     background: orange;
     color: whitesmoke !important;
 }
@@ -51,159 +46,114 @@
     background: red;
     color: whitesmoke !important;
 }
-.color-white{
+.color-white {
     color: white;
 }
-.color-red{
+.color-red {
     color: red;
 }
-.color-grey{
+.color-grey {
     color: gray
 }
-.color-black{
+.color-black {
     color: black
 }
-.bg-light-green{
+.bg-light-green {
     background-color:#42CA35;   
     color: whitesmoke    
 }
 
 
-
-/* DEBUG BLINK */
+// debug mode blink effect
 @keyframes blink {
     0% {
-           color: rgba(223,116,1,1)
+		color: rgba(223,116,1,1)
     }
     50% {
-           color: rgba(223,116,1,0.5)
+		color: rgba(223,116,1,0.5)
     }
     100% {
-           color: rgba(223,116,1,1)
+		color: rgba(223,116,1,1)
     }
 }
-@-webkit-keyframes blink {
-    0% {
-           color: rgba(223,116,1,1)
-    }
-    50% {
-           color: rgba(223,116,1,0.5)
-    }
-    100% {
-           color: rgba(223,116,1,1)
-    }
-}
-.debugon {
-    text-align:center;
+.debug-on {
+    text-align: center;
     margin-bottom: 4px;
     font-size: 22px;
-    -moz-transition:all 0.5s ease-in-out;
-    -webkit-transition:all 0.5s ease-in-out;
-    -o-transition:all 0.5s ease-in-out;
-    -ms-transition:all 0.5s ease-in-out;
-    transition:all 0.5s ease-in-out;
-    -moz-animation:blink normal 1.5s infinite ease-in-out;
-    /* Firefox */
-    -webkit-animation:blink normal 1.5s infinite ease-in-out;
-    /* Webkit */
-    -ms-animation:blink normal 1.5s infinite ease-in-out;
-    /* IE */
-    animation:blink normal 1.5s infinite ease-in-out;
-    /* Opera */
+    transition: all 0.5s ease-in-out;
+    animation: blink normal 1.5s infinite ease-in-out;
 }
 
+// WHERE TO PUT?
+// .annotask-span-node-default {
+//         -moz-border-radius:10px 10px 10px 10px;  // rounds corners for firefox
+//         border-radius:10px 10px 10px 10px;  //rounds corners for other browsers
+//         color: white;
+//         background-color:#42CA35;
+//         padding:5px;
+//         font-size: small;        
+// }
 
-.annotask-span-node-default{
-        -moz-border-radius:10px 10px 10px 10px;  // rounds corners for firefox
-        border-radius:10px 10px 10px 10px;  //rounds corners for other browsers
-        color: white;
-        background-color:#42CA35;
-        padding:5px;
-        font-size: small;        
-}
+// .annotask-span-modal-default {
+//     -moz-border-radius:10px 10px 10px 10px;  // rounds corners for firefox
+//     border-radius:10px 10px 10px 10px;  //rounds corners for other browsers
+//     color: white;
+//     padding:5px;
+//     align-content: center;
+//     font-size: 1.1em;        
+// }
 
-.annotask-span-modal-default{
-    -moz-border-radius:10px 10px 10px 10px;  // rounds corners for firefox
-    border-radius:10px 10px 10px 10px;  //rounds corners for other browsers
-    color: white;
-    padding:5px;
-    align-content: center;
-    font-size: 1.1em;        
-}
-
-
-.table-borderless > tbody > tr > td,
-.table-borderless > tbody > tr > th,
-.table-borderless > tfoot > tr > td,
-.table-borderless > tfoot > tr > th,
-.table-borderless > thead > tr > td,
-.table-borderless > thead > tr > th {
-    border: none;
-    padding: 5px;
-    font-size: small;
-}
-.round-corner{
-    border-radius:50%;
-}
-
-
-
-.imageview{
-    width: 300px;
-    height: 300px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto
-}
-
-.allign-center{
-    text-align: center;
-}
-
-.required-categories-label{
-    margin: 5px;
-    font-size: 1.5em;
-    display:inline-block;
-    padding-top:0;
-    padding-bottom:0;
-    line-height:1.5em;
-}
-
-.word-break{
-word-break: break-word;
-}
-
-.no-border{
-    border: none;
-}
-
-.table > thead > tr > th, .table > thead > tr > td {
-    border: 0;
-}
-
-.cursor-pointer{
-    cursor: pointer;
-}
+// WHERE TO PUT?
+// .table-borderless > tbody > tr > td,
+// .table-borderless > tbody > tr > th,
+// .table-borderless > tfoot > tr > td,
+// .table-borderless > tfoot > tr > th,
+// .table-borderless > thead > tr > td,
+// .table-borderless > thead > tr > th {
+//     border: none;
+//     padding: 5px;
+//     font-size: small;
+// }
+// .round-corner {
+//     border-radius:50%;
+// }
 
 
 
+// .imageview {
+//     width: 300px;
+//     height: 300px;
+//     display: block;
+//     margin-left: auto;
+//     margin-right: auto
+// }
 
+// .allign-center {
+//     text-align: center;
+// }
 
+// .required-categories-label {
+//     margin: 5px;
+//     font-size: 1.5em;
+//     display:inline-block;
+//     padding-top:0;
+//     padding-bottom:0;
+//     line-height:1.5em;
+// }
 
+// .word-break {
+// word-break: break-word;
+// }
 
+// .no-border {
+//     border: none;
+// }
 
+// .table > thead > tr > th, .table > thead > tr > td {
+//     border: 0;
+// }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+// .cursor-pointer {
+//     cursor: pointer;
+// }
 

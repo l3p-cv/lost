@@ -10,7 +10,7 @@ export default class ScriptStartView {
                                 `primary`
                                 : `${validation?`success`:`warning`}`
                             } 
-                            custom_node'>
+                            custom-node'>
                     <div class='panel-heading '>
                         <i class='fa fa-rocket fa-2x pull-left'></i>
                         <h class='panel-title'>Script</h>

@@ -1,149 +1,39 @@
-g .node {
-    fill: white;
-}
+// could be imported elsewhere
+@import './custom-d3-tip.scss';
+@import './custom-icons.scss';
 
-.custom_node {
-    margin: 0;
-    cursor: pointer;
-}
+.dagre-graph {
+	
+	.label {
+		color: black;
+	}
+	
+	.node {
+		fill: white;
+		cursor: pointer;
 
-g .label {
-    color: black;
-}
-
-.edgePath path {
-    stroke: #333;
-    fill: #333;
-    stroke-width: 1.5px;
-}
-
-
-
-// AnnoTask List Modal Start
-
-input.search {
-	margin-top: 20px;
-	margin-left: 20px;    
-}
-  
-
-ul.list {
-	padding: 0;
-	list-style: none;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-}
-
-.list li {
-	padding: 10px 20px;
-}
-
-.list li + li {
-	border-top: 1px solid #ccc;
-}
-
-
-.modal-body{
-	padding-right: 50px;
-	padding-left: 50px;    
-}
-
-.edgePath path.path {
-	stroke: #333;
-	fill: none;
-	stroke-width: 1.5px;
-}
-
-
-
-// FROM graph.scss HIDDEN SOMEWHERE
-.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
-  z-index: 1051
-}
-
-/* Creates a small triangle extender for the tooltip */
-.d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
-}
-
-/* Style northward tooltips differently */
-.d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
-}
-
-.instruction-text-tab4{
-  text-align: center;
-  vertical-align: middle;
-  display: table-cell;
-  font-size: large;
-  animation: blinker 2s linear infinite;  
-}
-
-@keyframes blinker {  
-  50% { opacity: 0; }
-}
-
-.table-container-tab4{
-  height: 500px;
-  display: table;
-}
-.tree-container-tab4{
-  border: 2px solid #337AB7;
-  border-radius: 10px;
-  height: 500px;
-}
-
-.node {
-  cursor: pointer;
-}
-
-.overlay{
-    background-color:#EEE;
-}
- 
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
- 
-.node text {
-  color: blue;  
-  font-size:10px; 
-  font-family:sans-serif;
-}
- 
-.link {
-  fill: none;
-  stroke: #ccc;
-  stroke-width: 1.5px;
-}
-
-.templink {
-  fill: none;
-  stroke: red;
-  stroke-width: 3px;
-}
-
-.ghostCircle.show{
-    display:block;
-}
-
-.ghostCircle, .activeDrag .ghostCircle{
-     display: none;
+		circle {
+			fill: #fff;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+		text {
+			color: blue;  
+			font-size:10px; 
+			font-family:sans-serif;
+		}
+		
+		.custom-node {
+			margin: 0;
+		}
+	}
+	
+	.edgePath {
+		path {
+			stroke: #333;
+			fill: #333;
+			stroke-width: 1.5px;
+		}
+	}
+	
 }

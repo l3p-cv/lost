@@ -4,7 +4,7 @@ import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 export default class VisualOutputStartView {
     constructor(model) {
         this.html = new NodeTemplate(/*html*/`
-        <div class='panel panel-primary custom_node'>
+        <div class='panel panel-primary custom-node'>
         <div class='panel-heading '>
         <i class='fa fa-bar-chart fa-2x pull-left'></i>
         <h class='panel-title'>Visualization</h>

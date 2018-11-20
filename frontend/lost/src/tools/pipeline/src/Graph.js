@@ -48,7 +48,7 @@ export default class Graph {
         this.marginTop = 50
         this.svg = new NodeTemplate(/*html*/`
             <svg data-type='graph' id='${this.id}'> // data-type?
-                <g data-ref="dagre-graph"></g>
+                <g data-ref="dagre-graph" class="dagre-graph"></g>
             </svg>
         `)
         this.mountPoint.appendChild(this.svg.fragment)

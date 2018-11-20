@@ -4,7 +4,7 @@ import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 export default class AnnoTaskRunningView {
     constructor(model) {
         this.html = new NodeTemplate(/*html*/`            
-            <div class='panel panel-primary custom_node' 
+            <div class='panel panel-primary custom-node' 
 				data-toggle='tooltip' 
 				data-placement='right' 
 				title='<h4>Instruction</h4><p>${model.annoTask.instructions}<p>'

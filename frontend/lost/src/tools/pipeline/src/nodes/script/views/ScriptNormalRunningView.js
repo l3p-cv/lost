@@ -4,7 +4,7 @@ import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 export default class ScriptRunningView {
     constructor(model) {
         this.html = new NodeTemplate(/*html*/`        
-            <div class='panel panel-primary custom_node' data-toggle='tooltip' data-placement='right' title='<h4>Description</h4><p>${model.script.description}<p>'>
+            <div class='panel panel-primary custom-node' data-toggle='tooltip' data-placement='right' title='<h4>Description</h4><p>${model.script.description}<p>'>
                 <div class='panel-heading '>
                     <i class='fa fa-rocket fa-2x pull-left'></i>
                     <h class='panel-title'>Script</h>
