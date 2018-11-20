@@ -1245,7 +1245,7 @@ class LabelLeaf(Base):
             'is_deleted' : self.is_deleted,
             'parent_leaf_id' : self.parent_leaf_id,
             'is_root' : self.is_root
-        })
+        }, index=[0])
 
 
 class Label(Base):
