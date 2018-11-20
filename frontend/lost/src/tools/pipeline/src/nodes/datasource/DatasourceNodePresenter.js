@@ -48,6 +48,7 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
             $(this.view.html.root).on('click', $event => {
                 console.warn('CLICK')
             })
+			
             this.model.state.on('update', text => {
                 this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
                     ${ text === 'script_error'   ? 'bg-red'      : '' }

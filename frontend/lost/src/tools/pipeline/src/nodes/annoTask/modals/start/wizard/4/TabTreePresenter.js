@@ -1,4 +1,4 @@
-import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import { WizardTabPresenter, keyboard } from 'pipRoot/l3pfrontend/index'
 import AnnoTaskStartView from '../../../../views/AnnoTaskStartView'
 import TabTreeView from './TabTreeView'
 
@@ -9,10 +9,9 @@ import * as d3 from 'd3'
 import d3Tip from 'd3-tip'
 
 
-let ctrlPressed = false
-let initialized = false
-console.log({d3Tip})
-var toolTip = d3Tip()
+let ctrlPressed = false	 // replace this 
+
+const toolTip = d3Tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function (d) {
@@ -25,14 +24,10 @@ class TabTreePresenter extends WizardTabPresenter {
         this.model = getPresenter.model
         this.presenter = getPresenter
         this.view = new TabTreeView(this.model)
-        getPresenter.modalModel.controls.show4.on('update', (data) => this.loadTemplate(data))
 
-        // change modal size
-        $(this.view.nav.root).on('click', (e) => {
-            if(!this.isLocked()){
-                modalView.view.refs['outerModal'].style.width = '90%'
-            }
-        })
+		this.initialized = false
+        getPresenter.model.controls.show4.on('update', (data) => this.loadTemplate(data))
+
 
         $(window).keydown(function (evt) {
             if (evt.which === 17) {
@@ -81,7 +76,7 @@ class TabTreePresenter extends WizardTabPresenter {
         return true
     }
     loadTemplate(getData) {
-        initialized = true
+        this.initialized = true
         this.labelDatatable.clear()
         this.show()
         $(this.view.html.refs['label-datatable']).hide()

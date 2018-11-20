@@ -59,7 +59,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // data.requestTemplate()
         const elements = data.elements
         const mode = 'start'        
-        const nodes = []
+        let nodes = []
         elements.forEach(element => {
             if ('datasource' in element) {
                 nodes.push(new DatasourceNodePresenter(this.graph, element, mode))
@@ -75,24 +75,35 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 nodes.push(new LoopNodePresenter(this.graph, element, mode))
             }
         })
-
-        nodes.forEach(n => {
-            const nodeId = this.graph.addNode(n)
-			console.log(document.getElementById(nodeId))
+		
+		// add nodes and add their generated ids (generated in Graph.js)
+		nodes = nodes.map(node => {
+            const nodeId = this.graph.addNode(node)
+			return {
+				id: nodeId,
+				node: node,
+			}
 		})
-        nodes.forEach(n => {
-            if (n.constructor.name === 'LoopNodePresenter') {
-                this.graph.addEdge(n.model.peN, n.model.loop.peJumpId, true)
+
+		// add edges
+        nodes.forEach(({ node }) => {
+            if (node.constructor.name === 'LoopNodePresenter') {
+                this.graph.addEdge(node.model.peN, node.model.loop.peJumpId, true)
             }
-            if (n.model.peOut !== null) {
-                n.model.peOut.forEach(e => {
-                    this.graph.addEdge(n.model.peN, e)
+            if (node.model.peOut !== null) {
+                node.model.peOut.forEach(e => {
+                    this.graph.addEdge(node.model.peN, e)
                 })
             }
 			this.graph.render()
         })
-
-        this.graph.centerGraph()
+		
+		// finish node creation by using the node ids... blablabla explain this bullshit
+		nodes.forEach(({ node, id }) => {
+			node.init(document.getElementById(id))
+		})
+    
+	    this.graph.centerGraph()
         
         appModel.state.checkNodesValidation.on('update', ()=>{
             const allNodePresenter = this.graph.dagreD3Graph._nodes

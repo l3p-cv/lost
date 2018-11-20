@@ -29,7 +29,10 @@ export default class DatasourceStartModal extends BaseModal {
             default:
                 throw new Error('invalid datasourcce type.')
         }
+		console.log({params})
         super(params)
+
+		console.log(this.view)
 
         // init modal params
         switch (nodeModel.datasource.type) {

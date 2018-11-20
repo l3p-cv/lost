@@ -50,16 +50,3 @@ export default class AnnoTaskStartView {
         $(this.parentNode).find(`[data-ref='name']`).text(name)
     }
 }
-
-
-
-{
-    /* <p> Assignee:  
-    <span data-ref='assignee'>
-    ${model.annoTask.availableGroups.map(element => 
-    (element.id === model.post.annoTask.workerId) ?
-    ` ${element.name}`
-    :``
-    ).join('')}
-    </span> <p> */
-}

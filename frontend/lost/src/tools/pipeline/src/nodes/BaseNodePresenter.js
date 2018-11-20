@@ -1,6 +1,7 @@
 import './BaseNodeStyle.scss'
 import swal from 'sweetalert2'
 
+
 export default class BaseNodePresenter {
     /**
      * This constructor creates a Graph-Node.
@@ -42,12 +43,8 @@ export default class BaseNodePresenter {
         this.view.parentNode = parentNode
         
         // open modal on click
-		console.log("init", this)
-		console.log({parentNode})
-		console.log(this.view)
-		console.log(this.view.parentNode)
-		$(this.view.parentNode).on('mouseover', () => {
-			console.log('mouseover')
+		$(this.view.parentNode).on('mousemove', () => {
+			console.log('mousemove')
 		})
         $(this.view.parentNode).on('dblclick', (e) => {
             if(this.onDblClick instanceof Function){
@@ -55,6 +52,9 @@ export default class BaseNodePresenter {
             } else {
                 if(this.modal === undefined) throw new Error('modal is not defined.')
                 if(this.modal.visible === true || this.modal.visible === 'true'){
+					console.log(this)
+					console.log(this.modal)
+					console.log(this.modal.view)
                     $(this.modal.view.root).modal()                    
                 }else{
                     swal({

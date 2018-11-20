@@ -5,7 +5,6 @@ import * as d3 from 'd3'
 import * as dagreD3 from '@cartok/dagre-d3'
 
 
-const d3Zoom = d3.zoom()
 const DEFAULT_PARAMS = {
     nodesep: 100,
     edgesep: 40,
@@ -62,18 +61,20 @@ export default class Graph {
         this.dagreD3Graph = new dagreD3.graphlib.Graph().setGraph(options)
         this.dagreD3Graph.graph().transition = (selection) => selection.transition().duration(1000)
     
-        // add pan and zoom
-        this.d3SelectionSvg.call(d3Zoom.on('zoom', (event) => {
-            this.d3SelectionGroup.attr('transform', d3.event.transform)
-        }))
-        // disable doubleclick zoom
-        .on('dblclick.zoom', null)
+        // add pan and zoom to svg group
+		this.d3Zoom = new d3.zoom()
+		this.d3Zoom.on('zoom', event => this.d3SelectionGroup.attr('transform', d3.event.transform))
+		// set min and max zoom
+		this.d3Zoom.scaleExtent([0.1, 1.1])
 
+		// disable doubleclick zoom
+        this.d3SelectionSvg.call(this.d3Zoom).on('dblclick.zoom', null)
+		
         this.resize()
         $(window).on('resize', () => this.resize())
     }
     resize(){
-        this.width = this.mountPoint.getBoundingClientRect().width
+        this.width = this.mountPoint.getBoundingClientRect().width // some error, gets bit to wide
         this.height = window.innerHeight - this.svg.root.getBoundingClientRect().top - this.marginTop
         this.svg.root.setAttribute('width', this.width)
         this.svg.root.setAttribute('height', this.height)
@@ -87,27 +88,14 @@ export default class Graph {
     centerGraph(){
         const x = (this.width / 2) - (this.dagreD3Graph.graph().width / 2) || 0
         const y = this.marginTop
+		// center the graph
         this.d3SelectionGroup.attr('transform', `translate(${x}, ${y})`)
         this.render()
     }
     render(){
         dagreD3.render()(this.d3SelectionGroup, this.dagreD3Graph)
     }
-    addNode(node: NodePresenter){
-        const nodeId = `${this.id}-node-${node.model.peN}`
-        this.setNode(node)
-        // give the node the created parents id
-        // so that it can be used for events (click)
-		console.log("will call init on node:", node)
-		console.log("passing element id:", nodeId)
-		console.log("passing element:", document.getElementById(nodeId))
-        // node.init(document.getElementById(nodeId))
-		return nodeId
-    }
-    updateNode(node: NodePresenter){
-        this.setNode(node)
-    }
-    setNode(node: NodePresenter){
+	setNode(node: NodePresenter){
         // the nodeId is the id of the grouping element created by dagree
         const nodeId = `${this.id}-node-${node.model.peN}`
         this.dagreD3Graph.setNode(
@@ -121,12 +109,18 @@ export default class Graph {
             }
         )
         this.render()
-		let element = Object.values(this.dagreD3Graph._nodes).find(n => {
-			return n.id === nodeId
-		})
-		console.log(element)
-		console.log(element.elem)
-		console.log(typeof this.dagreD3Graph._nodes)
+    }
+    addNode(node: NodePresenter){
+        const nodeId = `${this.id}-node-${node.model.peN}`
+        this.setNode(node)
+		// REMOVED & REPLACED BY DIFFERENT APPROACH, SEE PipelineGraphPresenter
+        // give the node the created parents id
+        // so that it can be used for events (click)
+        // node.init(document.getElementById(nodeId))
+		return nodeId
+    }
+    updateNode(node: NodePresenter){
+        this.setNode(node)
     }
     addEdge(from, to, redline){
         // loop true or false peJump to draw red line

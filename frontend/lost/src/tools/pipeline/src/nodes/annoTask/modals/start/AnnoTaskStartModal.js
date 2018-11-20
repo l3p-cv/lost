@@ -8,19 +8,21 @@ import TabTreePresenter from './wizard/4/TabTreePresenter'
 
 
 export default class AnnoTaskStartModal extends BaseModal {
-    constructor(presenter, graph){
+    constructor(node: AnnotaskStartNodePresenter){
         super({
-          id: 'anno-task-modal',
-          title: 'Annotation Task',
-          content: `
-            <div data-ref='WizardContent'></div>
-          ` 
+			id: 'anno-task-modal',
+			title: 'Annotation Task',
+			content: `
+				<div data-ref='WizardContent'></div>
+			` 
         })
+		
         this.wizard = new Wizard(this.view.refs['WizardContent'])  
-        let tab1 = new TabInfoPresenter(presenter, this)
-        let tab2 = new TabUserPresenter(presenter, this)
-        let tab3 = new TabSelectTreePresenter(presenter, this)
-        let tab4 = new TabTreePresenter(presenter, this)
+
+        let tab1 = new TabInfoPresenter(node)
+        let tab2 = new TabUserPresenter(node)
+        let tab3 = new TabSelectTreePresenter(node)
+        let tab4 = new TabTreePresenter(node)
         
         tab4.requiresValid(tab3)
         
@@ -30,8 +32,6 @@ export default class AnnoTaskStartModal extends BaseModal {
           tab3,
           tab4
         ])
-
-        // Everytime Rerender the Graph by closing the modal
-        }
-      }
+	}
+}
   

@@ -1,3 +1,5 @@
+import 'bootstrap'	// needed by modals
+
 import appModel from './appModel'
 import * as http from 'pipRoot/http'
 
