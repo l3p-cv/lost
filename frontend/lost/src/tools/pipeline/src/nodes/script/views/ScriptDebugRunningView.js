@@ -7,7 +7,7 @@ export default class ScriptRunningView {
             <div class='panel panel-primary custom_node' data-toggle='tooltip' data-placement='right' 
             title = '<h4>Description</h4><p>${model.script.description}<p>'>
             <div class='panel-heading '>
-            <i class='fa fa-rocket fa-2x pull-left' aria-hidden='true'></i>
+            <i class='fa fa-rocket fa-2x pull-left'></i>
             <h class='panel-title'>Script</h>
             </div>
             <div class='panel-body' >
@@ -18,7 +18,7 @@ export default class ScriptRunningView {
             </table>
             ${model.script.isDebug? `<p2 id='type_datasrc' class='debugon'>DEBUG</p2>`:``} 
                     <div class='progress progessbar-nodes'>
-                        <div data-ref='progress-bar' class='progress-bar' role='progressbar' aria-valuenow='54' aria-valuemin='0' aria-valuemax='100'
+                        <div data-ref='progress-bar' class='progress-bar' role='progressbar'
                             style='width:${model.progress.value }%'>
                             <p data-ref='progress-bar-text' class='color-black'>${model.progress.value ?model.progress.value: 0}%<p>
                         </div>

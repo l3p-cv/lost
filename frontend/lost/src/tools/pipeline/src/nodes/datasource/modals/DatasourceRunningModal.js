@@ -56,7 +56,7 @@ export default class DatasourceRunningModal extends BaseModal {
                     </table>
 
                     <a class='cursor-pointer' data-ref='more-information-link'> 
-                    <u>More informations </u> &nbsp;<i data-ref='more-information-icon' class='fa fa-chevron-down ' aria-hidden='true'></i></a>
+                    <u>More informations </u> &nbsp;<i data-ref='more-information-icon' class='fa fa-chevron-down '></i></a>
                     
                     <div class='panel-group'>
                         <div class='panel panel-primary no-border'>      

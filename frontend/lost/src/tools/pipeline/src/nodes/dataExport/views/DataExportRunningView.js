@@ -6,11 +6,11 @@ export default class DataExportRunningView {
         this.html = new NodeTemplate(/*html*/`
             <div class='panel panel-primary custom_node'>
                 <div class='panel-heading '>
-                    <i class='fa fa-cloud-download fa-2x pull-left' aria-hidden='true'></i>
+                    <i class='fa fa-cloud-download fa-2x pull-left'></i>
                     <h class='panel-title'>Data Export</h>
                 </div>
                 <div class='panel-body'>
-                    <i class='fa fa-cloud-download fa-5x color-grey' aria-hidden='true'></i>
+                    <i class='fa fa-cloud-download fa-5x color-grey'></i>
                 </div>
                 <div data-ref='state' class='panel-footer 
                         ${ model.state.value === 'script_error'   ? 'bg-red '      : ' ' }

@@ -6,7 +6,7 @@ export default class LoopStartView {
         this.html = new NodeTemplate(/*html*/`            
             <div class='panel panel-primary custom_node'>
                 <div class='panel-heading '>
-                    <i class='fa fa-refresh fa-2x pull-left' aria-hidden='true'></i>
+                    <i class='fa fa-refresh fa-2x pull-left'></i>
                     <h class='panel-title'>Loop</h>
                 </div>
                 <div class='panel-body'>
@@ -18,7 +18,7 @@ export default class LoopStartView {
                             </tr>
                         </tbody>
                     </table>
-                    <i style='color:grey;' class='fa fa-refresh fa-5x' aria-hidden='true'></i>
+                    <i style='color:grey;' class='fa fa-refresh fa-5x'></i>
                 </div>
             </div>`)
         // The parent node gets defined after adding the node to

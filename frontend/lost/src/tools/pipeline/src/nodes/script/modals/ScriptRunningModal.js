@@ -22,7 +22,7 @@ export default class ScriptRunningModal extends BaseModal {
 
                 <div class='container'>
                     <div class='progress'>
-                        <div data-ref='progress-bar' class='progress-bar' role='progressbar' aria-valuenow='70' aria-valuemin='0' aria-valuemax='100' 
+                        <div data-ref='progress-bar' class='progress-bar' role='progressbar' 
                             style='width:${nodeModel.progress.value}%'>
                             <p data-ref='progress-bar-text' class='color-black'>
                                 ${nodeModel.progress.value}%
@@ -33,7 +33,7 @@ export default class ScriptRunningModal extends BaseModal {
 
                 <a class='cursor-pointer ${ nodeModel.script.errorMsg !== null ? `color-red` : `` }' data-ref='more-information-link'>
                     <u>More informations </u> &nbsp;
-                    <i data-ref='more-information-icon' class='fa fa-chevron-down ' aria-hidden='true'></i>
+                    <i data-ref='more-information-icon' class='fa fa-chevron-down '></i>
                 </a>
 
                 <div class='panel-group'>

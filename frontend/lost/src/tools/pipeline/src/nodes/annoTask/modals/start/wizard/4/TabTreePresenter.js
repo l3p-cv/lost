@@ -244,7 +244,7 @@ class TabTreePresenter extends WizardTabPresenter {
                                     `<input data-ref=${d.id} class='labelmax form-control'  
                                              type='number' name='max_label' min='0' max='99' value='1'>`,
                                     `<span data-ref=${d.id} class = 'delete-labelLeave annotask-span-modal-default bg-red'>
-                                             <i class='fa fa-times fa-lg' aria-hidden='true'></i>
+                                             <i class='fa fa-times fa-lg'></i>
                                              </span>`
                                 ]).draw(false)
         

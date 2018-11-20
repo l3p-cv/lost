@@ -7,15 +7,15 @@ class ConfigPipelineTab extends WizardTabView {
             icon: 'fa fa-list-alt',
             content: /*html*/`
                 <div class='btn-toolbar toolbar' role='toolbar'>
-                    <div class='btn-group pull-right' role='group' aria-label='Second group'>
+                    <div class='btn-group pull-right' role='group'>
                         <button data-ref='btn-next' type='button' class='btn btn-sm btn-default'>
-                            <i class='fa fa-step-forward' aria-hidden='true'></i>  &nbsp;&nbsp;  
+                            <i class='fa fa-step-forward'></i>  &nbsp;&nbsp;  
                             <span>Next<span> 
                         </button>
                     </div>
-                    <div class='btn-group pull-right' role='group' aria-label='First group'>
+                    <div class='btn-group pull-right' role='group'>
                         <button data-ref='btn-prev' type='button' class='btn btn-sm btn-default '>
-                            <i class='fa fa-step-backward' aria-hidden='true'></i>   &nbsp;&nbsp;  
+                            <i class='fa fa-step-backward'></i>   &nbsp;&nbsp;  
                             <span>Previous<span>    
                         </button>
                     </div>

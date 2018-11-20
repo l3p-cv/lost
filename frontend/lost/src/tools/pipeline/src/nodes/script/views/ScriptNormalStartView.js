@@ -12,7 +12,7 @@ export default class ScriptStartView {
                             } 
                             custom_node'>
                     <div class='panel-heading '>
-                        <i class='fa fa-rocket fa-2x pull-left' aria-hidden='true'></i>
+                        <i class='fa fa-rocket fa-2x pull-left'></i>
                         <h class='panel-title'>Script</h>
                     </div>
                     <div class='panel-body'>

@@ -6,13 +6,13 @@ export default class LoopRunningView {
         this.html = new NodeTemplate(/*html*/`
                 <div class='panel panel-primary custom_node'>
                     <div class='panel-heading '>
-                        <i class='fa fa-refresh fa-2x pull-left' aria-hidden='true'></i>
+                        <i class='fa fa-refresh fa-2x pull-left'></i>
                         <h class='panel-title'>Loop</h>
                     </div>
                     <div class='panel-body'>
                         <p class='loop-maxiterations-text'>Max Iterations: ${model.loop.maxIteration? model.loop.maxIteration: Number.POSITIVE_INFINITY }
                             <p>
-                                <i style='color:grey;' class='fa fa-refresh fa-5x' aria-hidden='true'></i>
+                                <i style='color:grey;' class='fa fa-refresh fa-5x'></i>
                             </div>
                     <div data-ref='state' class='panel-footer 
                     ${ model.state.value === 'script_error'   ? 'bg-red '      : ' ' }
