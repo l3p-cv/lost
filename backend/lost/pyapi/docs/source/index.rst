@@ -13,6 +13,8 @@ Welcome to lost's documentation!
         Getting Started <getting_started.rst>
         Annotation Tools <anno_tools.rst>
         Conventions <conventions.rst>
+        All About Scripts <all_about_scripts.rst>
+        ALL About Pipelines <all_about_pipelines.rst>
         PyAPI <pyapi.rst>
 
 Indices and tables

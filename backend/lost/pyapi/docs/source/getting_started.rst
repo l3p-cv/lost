@@ -38,16 +38,7 @@ How to define a pipeline?
 
 How to write a script?
 ----------------------
-.. code-block:: python
-   :emphasize-lines: 3,5
-
-   def some_function():
-       interesting = False
-       print 'This line is highlighted.'
-       print 'This one is not...'
-       print '...but this one is.'
-
 .. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_imgs.py
    :language: python
-   :emphasize-lines: 22
+   :emphasize-lines: 16
    :linenos:
