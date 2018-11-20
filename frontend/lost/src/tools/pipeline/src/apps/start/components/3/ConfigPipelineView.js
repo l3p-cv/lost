@@ -6,7 +6,7 @@ class ConfigPipelineTab extends WizardTabView {
             title: 'Enter Pipe Name and Description',
             icon: 'fa fa-list-alt',
             content: /*html*/`
-                <div class='btn-toolbar toolbar' role='toolbar' aria-label='Toolbar with button groups'>
+                <div class='btn-toolbar toolbar' role='toolbar'>
                     <div class='btn-group pull-right' role='group' aria-label='Second group'>
                         <button data-ref='btn-next' type='button' class='btn btn-sm btn-default'>
                             <i class='fa fa-step-forward' aria-hidden='true'></i>  &nbsp;&nbsp;  
