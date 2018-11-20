@@ -3,7 +3,7 @@ import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 
 export default class AnnoTaskRunningView {
     constructor(model) {
-        this.html = new NodeTemplate(`            
+        this.html = new NodeTemplate(/*html*/`            
             <div class='panel panel-primary custom_node' 
 				data-toggle='tooltip' 
 				data-placement='right' 

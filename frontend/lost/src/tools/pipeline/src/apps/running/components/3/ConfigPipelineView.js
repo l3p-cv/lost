@@ -5,10 +5,10 @@ class ConfigPipelineTab extends WizardTabView {
         const config = {
             title: 'Enter Pipe Name and Description',
             icon: 'fa fa-list-alt',
-            content: `
-                <label for='pipe_name'>Name * :</label>
+            content: /*html*/`
+                <label for='pipe_name'>Name *:</label>
                 <input data-ref='input-name' type='text' id='pipe_name' class='form-control' name='pipe_name' required=''>
-                <label for='pipe_description'>Description * :</label>
+                <label for='pipe_description'>Description *:</label>
                 <input data-ref='input-description' type='text' id='pipe_description' class='form-control' name='pipe_description' data-parsley-trigger='change' required=''>
                 <div class='ln_solid'></div>
         

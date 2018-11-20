@@ -23,20 +23,12 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // MODEL-BINDING
         appModel.controls.show2.on('update', () => this.show())  
         appModel.state.selectedTemplate.on('update', (data) => this.loadTemplate(data))
-
-        // VIEW-BINDING
-        $(this.view.html.refs['btn-prev']).on('click', () => {
-            appModel.controls.show1.update(true)
-        })
-        $(this.view.html.refs['btn-next']).on('click', () => {
-            appModel.controls.show3.update(true)            
-        })
     }
     // @override
     isValidated(){
-        return this.validated
+        return this.validated 
     }
-    loadTemplate(data) {
+    loadTemplate(data: any) {
         // Reset the Data when graph was loaded seecond time
         ConfigPipelinePresener.reset()
 

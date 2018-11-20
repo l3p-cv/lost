@@ -3,7 +3,7 @@ import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 
 export default class ExampleRunningView {
     constructor(model) {
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
             <div>
                 <h1>RUNNING</h1>
                 <h3 data-ref='title'>${model.title}</h3>

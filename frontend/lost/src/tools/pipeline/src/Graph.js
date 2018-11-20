@@ -46,7 +46,7 @@ export default class Graph {
         this.id = `graph-${initCounter}`
         this.initialScale = 0.8
         this.marginTop = 50
-        this.svg = new NodeTemplate(`
+        this.svg = new NodeTemplate(/*html*/`
             <svg data-type='graph' id='${this.id}'> // data-type?
                 <g data-ref="dagre-graph"></g>
             </svg>

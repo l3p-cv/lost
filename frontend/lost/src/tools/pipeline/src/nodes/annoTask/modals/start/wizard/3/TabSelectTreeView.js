@@ -9,7 +9,7 @@ export default class TabSelectTreeView extends WizardTabView {
         super({
             title: 'Select Label Tree',
             icon: 'fa fa-database fa-1x',
-            content: `
+            content: /*html*/`
                 <div class='row'>
                     <table data-ref='table-tree' class='table table-striped table-bordered'></table>
                 </div>

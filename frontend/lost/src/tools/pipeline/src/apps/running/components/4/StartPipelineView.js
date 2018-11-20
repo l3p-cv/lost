@@ -4,7 +4,7 @@ class StartPipelineTab extends WizardTabView {
     constructor(){
         const config = {
             icon: 'fa fa-check',
-            content: `
+            content: /*html*/`
                 <div style='width: 50%;margin: 0 auto; text-align:center'>
                     <h3>Complete</h3>
                     <p>You have successfully completed all steps.</p>

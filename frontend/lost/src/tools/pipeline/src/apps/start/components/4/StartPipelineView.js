@@ -6,7 +6,7 @@ class StartPipelineTab extends WizardTabView {
         const config = {
             title: 'Last Step: Start your Pipe!',            
             icon: 'fa fa-check',
-            content: `
+            content: /*html*/`
                 <div class='btn-toolbar  toolbar ' role='toolbar' aria-label='Toolbar with button groups'>
                     <div class='btn-group pull-right' role='group' aria-label='Second group'>
                         <button disabled data-ref='btn-next' type='button' class='btn btn-sm btn-default'>

@@ -8,7 +8,7 @@ class SelectPipelineView extends WizardTabView {
         super({
             title: 'Choose Template',
             icon: 'fa fa-puzzle-piece fa-1x',
-            content: `
+            content: /*html*/`
                 <h4> Right Click on Row to open Context menu </h4>
                 <table data-ref='templatetable' class='table table-striped table-bordered'></table>
             `,

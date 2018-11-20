@@ -18,7 +18,7 @@ export default class ScriptStartView {
             nodeClass = 'danger'
         }
 
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
             <div class='panel panel-${nodeClass} 
             custom_node'>
             <div class='panel-heading '>

@@ -5,7 +5,7 @@ class ConfigPipelineTab extends WizardTabView {
         const config = {
             title: 'Enter Pipe Name and Description',
             icon: 'fa fa-list-alt',
-            content: `
+            content: /*html*/`
                 <div class='btn-toolbar toolbar' role='toolbar' aria-label='Toolbar with button groups'>
                     <div class='btn-group pull-right' role='group' aria-label='Second group'>
                         <button data-ref='btn-next' type='button' class='btn btn-sm btn-default'>

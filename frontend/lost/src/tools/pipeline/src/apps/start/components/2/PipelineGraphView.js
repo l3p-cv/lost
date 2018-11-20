@@ -7,21 +7,11 @@ class PipelineGraphTab extends WizardTabView {
         const config = {
             title: 'Fill out Elements',
             icon: 'fa fa-pencil',
-            content: `
+            content: /*html*/`
                 <div class='btn-toolbar toolbar' role='toolbar'>
-                    <div class='btn-group pull-right' role='group'>
-                        <button data-ref='btn-next' class='btn btn-sm btn-default'>
-                            <i class='fa fa-step-forward'></i>
-                            <span>Next<span> 
-                        </button>
-                    </div>
-                    <div class='btn-group pull-right' role='group'>
-                        <button data-ref='btn-prev' class='btn btn-sm btn-default '>
-                            <i class='fa fa-step-backward' aria-hidden='true'></i>
-                            <span>Previous<span>    
-                        </button>
-                    </div>
                 </div>
+				// in order to remove the toolbar completely you need to give the dagre-graph container
+				// a fixed width, else it can not mount. 
                 <div id='dagre-graph-container' data-ref='dagre'></div>
             `,
         }

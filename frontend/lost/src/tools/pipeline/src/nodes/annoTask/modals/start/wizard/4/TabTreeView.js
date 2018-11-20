@@ -6,7 +6,7 @@ class TabTreeView extends WizardTabView {
         super({
             title: ' ',
             icon: 'fa fa-tag fa-1x',
-            content: `
+            content: /*html*/`
                 <div class='container-fluid'>
                     <div class='row'>
                         <div data-ref='table-container' class='col-sm-3 table-container-tab4'>

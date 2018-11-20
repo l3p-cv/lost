@@ -10,7 +10,7 @@ class SelectPipelineView extends WizardTabView {
         super({
             title: 'Choose Template',
             icon: 'fa fa-puzzle-piece fa-1x',
-            content: `
+            content: /*html*/`
                 <table data-ref="data-table" class='table table-striped table-bordered'>
                     <thead>
                         <tr>

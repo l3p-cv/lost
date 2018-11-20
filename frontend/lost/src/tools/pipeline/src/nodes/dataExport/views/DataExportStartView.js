@@ -3,7 +3,7 @@ import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 
 export default class DataExportStartView {
     constructor(model) {
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
             <div class='panel panel-primary custom_node'>
                 <div class='panel-heading '>
                     <i class='fa fa-cloud-download fa-2x pull-left' aria-hidden='true'></i>

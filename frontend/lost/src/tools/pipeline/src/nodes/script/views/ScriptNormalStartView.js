@@ -4,7 +4,7 @@ import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
 export default class ScriptStartView {
     constructor(model) {
         let validation = true
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
                 <div class='panel panel-${
                                 (model.post.script.arguments === ' ' || model.post.script.arguments === undefined || model.post.script.arguments === null) ?
                                 `primary`

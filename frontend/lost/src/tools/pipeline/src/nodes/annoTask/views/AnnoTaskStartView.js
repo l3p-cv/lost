@@ -16,7 +16,7 @@ export default class AnnoTaskStartView {
         model.validation = validation
         appModel.state.checkNodesValidation.update(true)
 
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
             <div class='panel panel-${validation ? 'success' : 'warning'} custom_node'>
                 <div class='panel-heading '>
                     <i class='fa fa-pencil fa-2x pull-left'></i>                

@@ -1,8 +1,6 @@
 import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
 import appModel from '../../appModel'
-import swal from 'sweetalert2'
 import SelectPipelineView from './SelectPipelineView'
-import PipelineGraphPresenter from '../2/PipelineGraphPresenter'
 import * as http from 'pipRoot/http'
 
 import 'datatables.net'
