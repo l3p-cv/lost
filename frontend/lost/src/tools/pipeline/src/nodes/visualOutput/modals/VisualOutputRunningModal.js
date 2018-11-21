@@ -6,7 +6,7 @@ export default class VisualOutputRunningModal extends BaseModal {
         const params = {
             visible: `${nodeModel.visualOutput.length === 0 ? `false`:`true`}`,            
             title: 'Visualisazion',
-            content: `
+            content: /*html*/`
                 ${nodeModel.visualOutput.map(element => `
                     <h3 class='allign-center'>${element.iteration}</h3>
                     <img src='${element.imagePath}' alt='${element.imagePath} not found' class='imageview'>

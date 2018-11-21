@@ -5,7 +5,7 @@ export default class ExampleStartModal extends BaseModal {
     constructor(nodeModel: any){
         const params = {
             title: 'Example Start Modal',
-            content: `
+            content: /*html*/`
                 <h2>start</h2>
                 <input data-ref='info' type='text' value='${nodeModel.text.value}'/>
             `   

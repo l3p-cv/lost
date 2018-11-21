@@ -8,7 +8,7 @@ export default class ScriptStartModal extends BaseModal {
         let nodeModel = presenter.model
         super({
             title: 'Script',
-            content: `
+            content: /*html*/`
                 <table class='table table-hover'>
                     <tbody>
                         <tr><td><strong> Name: </strong></td><td>${nodeModel.script.name}</td></tr>

@@ -5,7 +5,7 @@ export default class ExampleRunningModal extends BaseModal {
     constructor(nodeModel){
         const params = {
             title: 'Example Running Modal',
-            content: `
+            content: /*html*/`
                 <h2>start</h2>
                 <input data-ref='info' type='text' value='${nodeModel.text.value}'/>
             `   

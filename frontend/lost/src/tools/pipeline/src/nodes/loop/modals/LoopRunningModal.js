@@ -6,7 +6,7 @@ export default class LoopRunningModal extends BaseModal {
         const params = {
             id: `${nodeModel.peN}`,
             title: 'Loop',
-            content: `
+            content: /*html*/`
                 <table class='table table-hover'>
                     <tr>
                         <td>

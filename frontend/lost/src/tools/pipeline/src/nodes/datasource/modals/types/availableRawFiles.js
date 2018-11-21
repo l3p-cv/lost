@@ -1,6 +1,6 @@
 export default {
     title: 'Datasource Typ Raw File',
-    content: `
+    content: /*html*/`
         <div class='form-group'>
             <p data-ref='pathAvaiable'> Path is not avaiable <p>
             <label for='usr'>Search in Path:</label>

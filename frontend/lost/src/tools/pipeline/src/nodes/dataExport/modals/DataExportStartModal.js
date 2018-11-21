@@ -6,7 +6,7 @@ export default class DataExportStartModal extends BaseModal {
         const params = {
             visible: false,
             title: 'Export',
-            content: `
+            content: /*html*/`
                 Start Modal
             `   
         }

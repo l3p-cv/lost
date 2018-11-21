@@ -8,7 +8,7 @@ export default class ScriptRunningModal extends BaseModal {
         super({
             id: nodeModel.peN,
             title: 'Script',
-            content: `
+            content: /*html*/`
                 <table class='table table-hover'>
                     <tr>
                         <td><strong>Script Name: </strong></td>

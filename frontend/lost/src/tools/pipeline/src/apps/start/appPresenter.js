@@ -1,3 +1,4 @@
+import '../../custom-index.scss'
 import 'bootstrap'	// needed by modals
 
 import appModel from './appModel'
@@ -10,7 +11,7 @@ import ConfigPipelineTab from './components/3/ConfigPipelinePresenter'
 import StartPipelineTab from './components/4/StartPipelinePresenter'
 import '../../../node_modules/sweetalert2/dist/sweetalert2.css'
 
-const wizard = new Wizard('start-pipeline-mount')
+const wizard = new Wizard('start-pipeline')
 PipelineGraphTab.requiresValid(SelectPipelineTab)
 ConfigPipelineTab.requiresValid(PipelineGraphTab)
 StartPipelineTab.requiresValid(ConfigPipelineTab)

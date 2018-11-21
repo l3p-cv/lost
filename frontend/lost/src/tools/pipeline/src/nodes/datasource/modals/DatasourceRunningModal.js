@@ -8,7 +8,7 @@ export default class DatasourceRunningModal extends BaseModal {
         case 'dataset':
             params = {
                 title: 'Datasource',
-                content: `
+                content: /*html*/`
                     <table class='table table-hover'>
                         <tr><td><strong>Type:</td><td>Dataset</td></tr> 
                         <tr><td><strong>Dataset ID: </td><td>${nodeModel.datasource.dataset.id}</td></tr>                
@@ -21,7 +21,7 @@ export default class DatasourceRunningModal extends BaseModal {
         case 'modelLeaf':
             params = {
                 title: 'Datasource',
-                content: `
+                content: /*html*/`
                     <table class='table table-hover'>
                         <tr><td><strong>Type:</td><td>Model Leaf</td></tr>
                         <tr><td><strong>Model Leaf ID: </td><td>${nodeModel.datasource.modelLeaf.id}</td></tr>  
@@ -38,7 +38,7 @@ export default class DatasourceRunningModal extends BaseModal {
         case 'pipeElement':
             params = {
                 title: 'Datasource',
-                content: `
+                content: /*html*/`
                     <table class='table table-hover'>
                         <tr><td><strong>Type:</td><td>Pipe Element</td></tr> 
                         <tr><td><strong>Pipe Element ID: </td><td>${nodeModel.datasource.pipeElement.id}</td></tr> 
@@ -49,7 +49,7 @@ export default class DatasourceRunningModal extends BaseModal {
         case 'rawFile':
              params = {
                 title: 'Datasource',
-                content: `
+                content: /*html*/`
                     <table class='table table-hover'>
                         <tr><td><strong>Type:</td><td>Raw File</td></tr> 
                         <tr><td><strong>Path: </td><td>${nodeModel.datasource.rawFilePath}</td></tr>

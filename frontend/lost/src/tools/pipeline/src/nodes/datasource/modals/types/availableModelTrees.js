@@ -1,6 +1,6 @@
 export default {
     title: 'Datasource Typ Model Trees',
-    content: `
+    content: /*html*/`
         <div class='row'>
             <table data-ref='table-model-trees' class='table table-striped table-bordered' cellspacing='0' width='100%'></table>
                 

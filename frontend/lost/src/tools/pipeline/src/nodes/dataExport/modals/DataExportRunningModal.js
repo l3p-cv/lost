@@ -6,7 +6,7 @@ export default class DataExportRunningModal extends BaseModal {
         const params = {
             visible: `${nodeModel.dataExport.length === 0 ? `false`:`true`}`,
             title: 'Export',
-            content: `
+            content: /*html*/`
                 <table class='table table-hover'>
                     <thead>
                         <tr>

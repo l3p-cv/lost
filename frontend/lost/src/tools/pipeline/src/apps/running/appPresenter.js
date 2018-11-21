@@ -1,10 +1,13 @@
+import '../../custom-index.scss'
+import '../../../node_modules/sweetalert2/dist/sweetalert2.css'	// remove?
+
 import appModel from './appModel'
 import * as http from 'pipRoot/http'
 
 import { Wizard } from 'pipRoot/l3pfrontend/index'
 import SelectPipelineTab from './components/1/SelectPipelinePresenter'
 import PipelineGraphTab from './components/2/PipelineGraphPresenter'
-import '../../../node_modules/sweetalert2/dist/sweetalert2.css'
+
 
 const wizard = new Wizard('pipe-running-content')
 PipelineGraphTab.requiresValid(SelectPipelineTab)

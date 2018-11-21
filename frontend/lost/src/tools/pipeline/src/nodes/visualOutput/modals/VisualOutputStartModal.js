@@ -6,7 +6,7 @@ export default class VisualOutputStartModal extends BaseModal {
         const params = {
             visible: false,
             title: 'Visualisazion',
-            content: `
+            content: /*html*/`
                 Visualisazion Modal Start
             `   
         }

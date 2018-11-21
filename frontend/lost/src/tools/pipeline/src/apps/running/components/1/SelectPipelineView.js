@@ -6,7 +6,7 @@ import 'datatables.net-buttons'
 class SelectPipelineView extends WizardTabView {
     constructor(){
         super({
-            title: 'Choose Template',
+            title: 'Choose a Template',
             icon: 'fa fa-puzzle-piece fa-1x',
             content: /*html*/`
                 <h4> Right Click on Row to open Context menu </h4>

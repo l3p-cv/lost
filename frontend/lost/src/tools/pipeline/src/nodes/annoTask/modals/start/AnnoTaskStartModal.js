@@ -12,12 +12,12 @@ export default class AnnoTaskStartModal extends BaseModal {
         super({
 			id: 'anno-task-modal',
 			title: 'Annotation Task',
-			content: `
-				<div data-ref='WizardContent'></div>
+			content: /*html*/`
+				<div id='anno-task-modal-wizard'></div>
 			` 
         })
 		
-        this.wizard = new Wizard(this.view.refs['WizardContent'])  
+        this.wizard = new Wizard(this.view.ids['anno-task-modal-wizard'])  
 
         let tab1 = new TabInfoPresenter(node)
         let tab2 = new TabUserPresenter(node)

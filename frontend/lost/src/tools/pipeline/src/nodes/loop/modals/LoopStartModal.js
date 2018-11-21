@@ -6,7 +6,7 @@ export default class LoopStartModal extends BaseModal {
         super({
             visible: false,
             title: 'Loop',
-            content: `
+            content: /*html*/`
                 <table class='table table-hover'>
                     <tbody>
                         <tr>

@@ -7,6 +7,7 @@ import 'datatables.net-buttons'
 export default class TabUserView extends WizardTabView {
     constructor(groups: any){
         super({
+			title: 'Select User or Group',
             icon: 'fa fa-user fa-1x',
             content: /*html*/`
                 <div class='container-fluid'>            
@@ -18,8 +19,7 @@ export default class TabUserView extends WizardTabView {
 								<th>Name</th>								
 							</tr>
 						</thead>
-						<tbody>
-						</tbody>
+						<tbody></tbody>
 					</table>
                 </div>
             `,

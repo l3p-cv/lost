@@ -4,7 +4,7 @@ export default class AnnoTaskRunningModal extends BaseModal {
     constructor(nodeModel){       
         const params = {
             title: 'Annonation Task',
-            content: `
+            content: /*html*/`
                 <table class='table table-hover'>
                     <tr><td><strong>Annotation Task Name: </td><td>${nodeModel.annoTask.name}</td></tr>     
                     <tr><td><strong>Instructions: </td><td>${nodeModel.annoTask.instructions}</td></tr>    

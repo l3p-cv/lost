@@ -4,7 +4,7 @@ import "./TabTreeStyle.scss"
 class TabTreeView extends WizardTabView {
     constructor(){
         super({
-            title: ' ',
+            title: 'Select Labels',
             icon: 'fa fa-tag fa-1x',
             content: /*html*/`
                 <div class='container-fluid'>
