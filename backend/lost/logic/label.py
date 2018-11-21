@@ -27,7 +27,7 @@ class LabelTree(object):
             self.logger = logger
         if root_leaf is not None:
             self.root = root_leaf
-            self.tree[root_leaf.idx] = root_leaf
+            self.__collect_tree(self.root, self.tree)
         elif root_id is not None:
             self.root = self.dbm.get_label_leaf(root_id)
             self.__collect_tree(self.root, self.tree)
@@ -246,6 +246,7 @@ class LabelTree(object):
                 childs[row['parent_leaf_id']].append(row)
             
             self.__create_childs_from_df(childs, root_leaf, root.loc[0])
+            self.dbm.commit()
             return root_leaf
 
 
