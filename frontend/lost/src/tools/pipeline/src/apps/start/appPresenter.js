@@ -1,5 +1,9 @@
 import '../../custom-index.scss'
-import 'bootstrap'	// needed by modals
+
+// imports for wizard and datatables
+import 'bootstrap'
+import 'datatables.net'
+import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 
 import appModel from './appModel'
 import * as http from 'pipRoot/http'

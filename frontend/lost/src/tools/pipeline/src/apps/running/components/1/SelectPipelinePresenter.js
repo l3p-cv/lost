@@ -8,7 +8,7 @@ import { ContextMenu } from 'pipRoot/l3pfrontend/index'
 
 import moment from 'moment'
 
-import 'datatables.net-bs'
+
 
 
 let templateDatatable

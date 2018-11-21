@@ -1,14 +1,16 @@
 import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
 import TabSelectTreeView from './TabSelectTreeView'
 
-import 'datatables.net'
-import 'datatables.net-buttons'
+
+
 
 
 export default class TabSelectTreePresenter extends WizardTabPresenter {
     constructor(node: AnnoTaskNodePresenter) {
         super()
+		
         this.view = new TabSelectTreeView(this.model)
+
         this.validated = false
 
         // MODEL BINDINGS

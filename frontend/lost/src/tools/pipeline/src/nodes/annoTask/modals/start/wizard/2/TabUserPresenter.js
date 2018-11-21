@@ -1,9 +1,6 @@
 import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
 import TabUserView from './TabUserView'
 
-import 'datatables.net'
-import 'datatables.net-buttons'
-
 
 export default class TabUserPresenter extends WizardTabPresenter {
     constructor(node: AnnoTaskNodePresenter) {

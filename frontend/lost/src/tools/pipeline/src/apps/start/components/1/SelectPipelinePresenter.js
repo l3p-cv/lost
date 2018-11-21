@@ -3,8 +3,8 @@ import appModel from '../../appModel'
 import SelectPipelineView from './SelectPipelineView'
 import * as http from 'pipRoot/http'
 
-import 'datatables.net'
-import 'datatables.net-buttons'
+
+
 
 
 class SelectPipelinePresenter extends WizardTabPresenter {

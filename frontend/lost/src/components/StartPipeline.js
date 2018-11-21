@@ -1,6 +1,11 @@
 import React, { Component } from "react"
-import ReactDOM from "react-dom"
 import {connect} from 'react-redux';
+
+import {
+	Row,
+	Col,
+} from 'reactstrap'
+
 
 class SingleImageAnnotation extends Component {
 	constructor(props){
@@ -13,7 +18,11 @@ class SingleImageAnnotation extends Component {
 	}
 	render(){
 		return (
-			<div ref={this.mount} id="start-pipeline-mount"></div>
+			<Row>
+				<Col>
+					<div ref={this.mount} id="start-pipeline"></div>
+				</Col>
+			</Row>
 		)
 	}
 }

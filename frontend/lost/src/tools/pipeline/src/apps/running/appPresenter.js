@@ -1,4 +1,10 @@
 import '../../custom-index.scss'
+
+// imports for wizard and datatables
+import 'bootstrap'
+import 'datatables.net'
+import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
+
 import '../../../node_modules/sweetalert2/dist/sweetalert2.css'	// remove?
 
 import appModel from './appModel'

@@ -51,7 +51,11 @@ module.exports = (config, env) => {
             to: "assets",
         }])
     )
-	
+
+	// config.module.rules.push({
+	// 	parser: { amd: false }
+	// })
+
 	// config = injectBabelPlugin("@babel/plugin-transform-flow-strip-types", config)
 	config = rewireEslint(config, env)
 	

@@ -1,7 +1,7 @@
 import { WizardTabView } from 'pipRoot/l3pfrontend/index'
 import './SelectPipeline.scss'
-import 'datatables.net'
-import 'datatables.net-buttons'
+
+
 
 class SelectPipelineView extends WizardTabView {
     constructor(){

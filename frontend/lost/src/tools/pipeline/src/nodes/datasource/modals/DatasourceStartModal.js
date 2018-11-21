@@ -4,8 +4,8 @@ import paramsModelTree from './types/availableModelTrees'
 import paramsDatasets from './types/availableDatasets'
 import paramsPipeElement from './types/pipeElement'
 import DatasourceStartView from '../views/DatasourceStartView'
-import 'datatables.net'
-import 'datatables.net-buttons'
+
+
 
 
 export default class DatasourceStartModal extends BaseModal {
@@ -29,10 +29,7 @@ export default class DatasourceStartModal extends BaseModal {
             default:
                 throw new Error('invalid datasourcce type.')
         }
-		console.log({params})
         super(params)
-
-		console.log(this.view)
 
         // init modal params
         switch (nodeModel.datasource.type) {

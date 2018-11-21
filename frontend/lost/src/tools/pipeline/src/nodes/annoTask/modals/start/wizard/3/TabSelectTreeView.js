@@ -1,7 +1,7 @@
 import { WizardTabView } from 'pipRoot/l3pfrontend/index'
 
-import 'datatables.net'
-import 'datatables.net-buttons'
+
+
 
 
 export default class TabSelectTreeView extends WizardTabView {

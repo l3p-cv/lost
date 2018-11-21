@@ -5,6 +5,7 @@ import TabInfoView from './TabInfoView'
 export default class TabInfoPresenter extends WizardTabPresenter {
     constructor(node: AnnoTaskNodePresenter){
         super()
+		
         this.view = new TabInfoView(node.model)
 
 		// MODEL BINDINGS
