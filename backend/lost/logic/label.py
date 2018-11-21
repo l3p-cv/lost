@@ -120,9 +120,11 @@ class LabelTree(object):
         df = pd.concat(df_list)
         return df.values.tolist()
             
-
     def to_df(self):
         '''Transform this LabelTree to a pandas DataFrame.
+
+        Returns:
+            pandas.DataFrame
         '''
         df_list = []
         for leaf_id, leaf in self.tree.items():
@@ -130,11 +132,11 @@ class LabelTree(object):
         df = pd.concat(df_list)
         return df
 
-    def to_list(self):
-        leaves = list()
-        for leaf_id, leaf in self.tree.items():
-            leaves.append(leaf.to_dict())
-        return leaves
+    # def to_list(self):
+    #     leaves = list()
+    #     for leaf_id, leaf in self.tree.items():
+    #         leaves.append(leaf.to_dict())
+    #     return leaves
 
     def __collect_dict_tree(self, label_leaf, t_dict):
         t_dict['children'] = []
@@ -151,6 +153,3 @@ class LabelTree(object):
     def import_df(self, df):
         '''Import LabelTree from DataFrame'''
         raise NotImplementedError()
-
-    
-
