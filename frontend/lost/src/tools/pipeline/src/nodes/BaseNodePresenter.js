@@ -52,9 +52,6 @@ export default class BaseNodePresenter {
             } else {
                 if(this.modal === undefined) throw new Error('modal is not defined.')
                 if(this.modal.visible === true || this.modal.visible === 'true'){
-					console.log(this)
-					console.log(this.modal)
-					console.log(this.modal.view)
                     $(this.modal.view.root).modal()                    
                 }else{
                     swal({
@@ -64,7 +61,7 @@ export default class BaseNodePresenter {
                         text: 'nothing to show',
                         showConfirmButton: false,
                         timer: 1500
-                        })
+					})
                 }
             }
         })    

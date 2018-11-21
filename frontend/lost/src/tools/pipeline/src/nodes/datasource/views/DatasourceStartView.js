@@ -24,17 +24,19 @@ export default class DatasourceStartView {
         appModel.state.checkNodesValidation.update(true)
 
         this.html = new NodeTemplate(/*html*/`
-            <div class='panel panel-${validation ? `success`:`warning`} custom-node'>
-                <div class='panel-heading '>
-                    <i class='fa fa-hdd-o fa-2x pull-left'></i>
-                    <h class='panel-title'>Datasource</h>
+            <div class='card pipeline-graph-node ${validation ? `success` : `warning`}'>
+                <div class='card-header'>
+					// <div class='col'>
+						<i class='fa fa-hdd-o'></i>
+						<span class='node-title'>Datasource</span>
+					// </div>
                 </div>
-                <div class='panel-body'>
-                    <table class='table table-borderless'>
-                        <tbody>
-                            <tr><td>Type:</td><td>${model.datasource.type}</td></tr> 
-                        </tbody>  
-                    </table>
+                <div class='card-body'>
+					<div class=''>
+						<table class='table table-borderless'>
+								<tr><td>Type:</td><td>${model.datasource.type}</td></tr> 
+						</table>
+					</div>
                 </div>
             </div>
         `)

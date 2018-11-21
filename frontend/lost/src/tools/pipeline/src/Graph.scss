@@ -1,30 +1,23 @@
 
 .dagre-graph {
-	
-	.label {
-		color: black;
-	}
-	
 	.node {
 		fill: white;
 		cursor: pointer;
 
-		circle {
-			fill: #fff;
-			stroke: steelblue;
-			stroke-width: 1.5px;
-		}
-		text {
-			color: blue;  
-			font-size:10px; 
-			font-family:sans-serif;
-		}
+		// used?
+		// circle {
+		// 	fill: #fff;
+		// 	stroke: steelblue;
+		// 	stroke-width: 1.5px;
+		// }
 		
-		.custom-node {
-			margin: 0;
-		}
+		// used?
+		// text {
+		// 	color: blue;  
+		// 	font-size:10px; 
+		// 	font-family:sans-serif;
+		// }		
 	}
-	
 	.edgePath {
 		path {
 			stroke: #333;

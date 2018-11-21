@@ -4,13 +4,8 @@ import ScriptNodeModel from './ScriptNodeModel'
 
 import NormalRunningView from './views/ScriptNormalRunningView'
 import NormalStartView from './views/ScriptNormalStartView'
-import DebugRunningView from './views/ScriptDebugRunningView'
-import DebugStartView from './views/ScriptDebugStartView'
 import ScriptRunningModal from './modals/ScriptRunningModal'
 import ScriptStartModal from './modals/ScriptStartModal'
-
-import appModelRunning from 'apps/running/appModel'
-import appModelStart from 'apps/start/appModel'
 
 
 export default class ScriptNodePresenter extends BaseNodePresenter {
@@ -21,15 +16,11 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
         // create view
         switch (mode) {
             case 'running':
-                appModelRunning.isDebug
-                    ? this.view = new DebugRunningView(this.model)
-                    : this.view = new NormalRunningView(this.model)
+                this.view = new NormalRunningView(this.model)
                 this.modal = new ScriptRunningModal(this.model)
                 break
             case 'start':
-                appModelStart.isDebug
-                    ? this.view = new DebugStartView(this.model)
-                    : this.view = new NormalStartView(this.model)
+                this.view = new NormalStartView(this.model)
                 this.modal = new ScriptStartModal(this)
                 $(this.modal.view.root).on('hidden.bs.modal', () => {
                     this.graph.updateNode(this)
@@ -52,7 +43,7 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
     initViewBinding() {
         $(this.view.parentNode).on('mousedown', `[data-ref='checkbox']`, () => {
             this.model.post.script.isDebug = !this.model.post.script.isDebug
-            this.view = new DebugStartView(this.model)
+            this.view = new NormalStartView(this.model)
             this.graph.updateNode(this)
         })
 
@@ -64,7 +55,7 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
      * @override
      */
     initModelBinding() {
-        if (this.view instanceof NormalRunningView || this.view instanceof DebugRunningView) {
+        if (this.view instanceof NormalRunningView) {
             this.model.progress.on('update', number => {
                 this.view.parentNode.querySelector(`[data-ref='progress-bar']`).style.width = `${number}%`
                 this.view.parentNode.querySelector(`[data-ref='progress-bar-text']`).textContent = `${number}%`

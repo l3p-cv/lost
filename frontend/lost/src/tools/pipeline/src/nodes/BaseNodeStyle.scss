@@ -1,12 +1,21 @@
-// MOVE?
+
+.pipeline-graph-node {
+	.col {
+		
+	}
+	.card-header {
+		line-height: 1.6rem;
+		font-size: 1.2rem;
+		i {
+			font-size: 1.6rem;
+			padding-right: 1rem;
+		}	
+	}
+}
+
+// where used?
 .loop-maxiterations-text {
     font-size: small
-}
-.panel-title {
-    font-size: 1rem;
-}
-.footer-text {
-    font-size: 0.6rem;
 }
 
 
