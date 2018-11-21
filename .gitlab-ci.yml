@@ -46,7 +46,7 @@ test-lost:
     - apk add --no-cache py-pip
     - pip install docker-compose
   script:
-    - cd docker/compose && docker-compose run -e LOST_VERSION=$CI_PIPELINE_ID bash /pytest.sh
+    - cd docker/compose && docker-compose run -e LOST_VERSION=$CI_PIPELINE_ID lost bash /pytest.sh
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
