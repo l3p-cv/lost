@@ -53,6 +53,7 @@ class LabelTree(object):
         '''
         for ll in leaf.label_leaves:
             self.delete_subtree(ll)
+            self.logger.info('Deleting label leaf: {}'.format(ll.name))
             self.dbm.delete(ll)
 
     def delete_tree(self):
@@ -82,6 +83,7 @@ class LabelTree(object):
         self.dbm.add(self.root)
         self.dbm.commit()
         self.tree[self.root.idx] = self.root
+        self.logger.info('Created root leaf: {}'.format(name))
         return self.root
 
     def create_child(self, parent_id, name, external_id=None):
@@ -100,6 +102,7 @@ class LabelTree(object):
         self.dbm.add(leaf)
         self.dbm.commit()
         self.tree[leaf.idx] = leaf
+        self.logger.info('Created child leaf: {}'.format(name))
         return leaf
 
     def get_child_vec(self, parent_id, style='id'):
