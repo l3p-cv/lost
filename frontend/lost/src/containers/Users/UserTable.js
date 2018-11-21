@@ -73,6 +73,28 @@ class UserTable extends Component {
             .props
             .cleanUpdateUserMessage()
     }
+    validateInputAndUpdateBackend(original, updateUser) {
+        // NotificationManager.error("No valid input")
+        let somethingChanged = false
+        console.log(original)
+        console.log(updateUser)
+
+        if (original.email !== updateUser.email){
+            somethingChanged = true
+        }
+        if (original.first_name !== updateUser.first_name){
+            somethingChanged = true
+        }
+        if (original.last_name !== updateUser.last_name){
+            somethingChanged = true
+        }
+        if(updateUser.password !== null && updateUser.password.length > 2){
+            somethingChanged = true
+        }
+        if (somethingChanged) {
+            this.updateUserBackend(updateUser)
+        }
+    }
     updatePassword(rowInfo, password) {
         const {idx, email, first_name, last_name} = rowInfo.original
         const roles = rowInfo
@@ -92,7 +114,7 @@ class UserTable extends Component {
             roles,
             password: password
         }
-        this.updateUserBackend(updateUser)
+        this.validateInputAndUpdateBackend(rowInfo.original, updateUser)
     }
     updateUserGroups(rowInfo, g) {
         const {idx, email, first_name, last_name} = rowInfo.original
@@ -109,7 +131,7 @@ class UserTable extends Component {
             groups: g,
             password: null
         }
-        this.updateUserBackend(updateUser)
+        this.validateInputAndUpdateBackend(rowInfo.original, updateUser)
     }
     updateUserRoles(rowInfo, r) {
         const {idx, email, first_name, last_name} = rowInfo.original
@@ -126,7 +148,7 @@ class UserTable extends Component {
             roles: r,
             password: null
         }
-        this.updateUserBackend(updateUser)
+        this.validateInputAndUpdateBackend(rowInfo.original, updateUser)
     }
     updateUserCells(e, cellInfo) {
         const {idx, email, first_name, last_name} = cellInfo.original
@@ -184,7 +206,8 @@ class UserTable extends Component {
             default:
                 {}
         }
-        this.updateUserBackend(updateUser)
+        this.validateInputAndUpdateBackend(cellInfo.original, updateUser)
+
     }
 
     renderEditable(cellInfo) {
@@ -194,17 +217,10 @@ class UserTable extends Component {
                 type='password'
                 onBlur={(event) => this.updatePassword(cellInfo, event.target.value)}/>)
         }
-        return (<div
-            style={{
-            backgroundColor: "#fafafa"
-        }}
-            contentEditable
-            suppressContentEditableWarning
+        return (<Input
+            defaultValue={this.props.users[cellInfo.index][cellInfo.column.id]}
             onBlur={e => {
-            this.updateUserCells(e.target.innerHTML, cellInfo)
-        }}
-            dangerouslySetInnerHTML={{
-            __html: this.props.users[cellInfo.index][cellInfo.column.id]
+            this.updateUserCells(e.target.value, cellInfo)
         }}/>);
     }
 
