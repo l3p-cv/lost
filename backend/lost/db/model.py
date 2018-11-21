@@ -8,6 +8,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from lost.db import dtype
+import json
+import pandas as pd
 
 # Set conventions for foreign key name generation
 convention = {
@@ -28,22 +31,22 @@ class User(Base, UserMixin):
     idx = Column(Integer, primary_key=True)
     is_active = Column('is_active', Boolean(), nullable=False, server_default='1')
     user_name = Column(String(100), nullable=False, unique=True)
-    email = Column(String(255), nullable=False, unique=True)
+    email = Column(String(255), unique=True)
     email_confirmed_at = Column(DateTime())
     password = Column(String(255), nullable=False, server_default='')
 
     # User information
-    first_name = Column(String(100), nullable=False, server_default='')
-    last_name = Column(String(100), nullable=False, server_default='')
+    first_name = Column(String(100), server_default='')
+    last_name = Column(String(100),  server_default='')
 
     confidence_level = Column(Integer)
     photo_path = Column(String(4096))
 
-    roles = relationship('Role', secondary='user_roles')
+    roles = relationship('Role', secondary='user_roles', lazy='joined')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
     choosen_anno_tasks = relationship('AnnoTask', secondary='choosen_anno_task')
     
-    def __init__(self, user_name, email, password, first_name, last_name, email_confirmed_at=None):
+    def __init__(self, user_name, password, email=None, first_name=None, last_name=None, email_confirmed_at=None):
         self.user_name = user_name
         self.email = email
         self.email_confirmed_at = email_confirmed_at
@@ -79,6 +82,7 @@ class UserRoles(Base):
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     role_id = Column(Integer(), ForeignKey('role.idx', ondelete='CASCADE'))
+    role = relationship('Role', uselist=False)
 
 class Group(Base):
     __tablename__ = 'group'
@@ -94,7 +98,9 @@ class UserGroups(Base):
     group_id = Column(Integer(), ForeignKey('group.idx', ondelete='CASCADE'))
 
 class TwoDAnno(Base):
-    """A TwoDAnno represents a 2D anno (drawings) in an image (by human).
+    """A TwoDAnno represents a 2D annotation/ drawing for an image.
+
+    A TwoDAnno can be of type point, line, bbox or polygon.
 
     Attributes:
         idx (int): ID of this TwoDAnno in database
@@ -158,30 +164,247 @@ class TwoDAnno(Base):
         self.iteration = iteration
         self.confidence = confidence
         self.anno_time = anno_time
+
+    def add_labels(self, label_leaf_ids):
+        '''Add a label to this image annotation.
+
+        Args:
+            label_leaf_ids (list of int): Id of the label_leaf that should be added.
+        '''
+        for label_leaf_id in label_leaf_ids:
+            if label_leaf_id is not None:
+                lbl = Label(label_leaf_id=label_leaf_id)
+                self.labels.append(lbl)
+
+    @property
+    def point(self):
+        '''list: POINT annotation in list style [x, y]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.point = [0.1, 0.1]
+            >>> anno.point
+            [0.1, 0.1]
+        '''
+        if self.dtype == dtype.TwoDAnno.POINT:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use point property 
+                since this annotation is no point! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @point.setter
+    def point(self, value):
+        self.data = json.dumps(
+            {
+                'x': value[0],
+                'y': value[1]
+            }
+        )
+        self.dtype = dtype.TwoDAnno.POINT
+
+    @property
+    def bbox(self):
+        '''list: BBOX annotation in list style [x, y, w, h]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.bbox = [0.1, 0.1, 0.2, 0.2]
+            >>> anno.bbox
+            [0.1, 0.1, 0.2, 0.2]
+        '''
+        if self.dtype == dtype.TwoDAnno.BBOX:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use bbox property 
+                since this annotation is no BBOX! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @bbox.setter
+    def bbox(self, value):
+        self.data = json.dumps(
+            {
+                'x': value[0],
+                'y': value[1],
+                'w': value[2],
+                'h': value[3]
+            }
+        )
+        self.dtype = dtype.TwoDAnno.BBOX
+    
+    @property
+    def line(self):
+        '''list of list: LINE annotation in list style [[x, y], [x, y], ...]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.line = [[0.1, 0.1], [0.2, 0.2]]
+            >>> anno.line
+            [[0.1, 0.1], [0.2, 0.2]]
+        '''
+        if self.dtype == dtype.TwoDAnno.LINE:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use line property 
+                since this annotation is no line! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @line.setter
+    def line(self, value):
+        val_list = [{'x':v[0],'y':v[1]} for v in value]
+        self.data = json.dumps(val_list)
+        self.dtype = dtype.TwoDAnno.LINE
+
+    @property
+    def polygon(self):
+        '''list of list: polygon annotation in list style [[x, y], [x, y], ...]
+
+        Example:
+            >>> anno = TwoDAnno()
+            >>> anno.polygon = [[0.1, 0.1], [0.2, 0.1], [0.15, 0.2]]
+            >>> anno.polygon
+            [[0.1, 0.1], [0.2, 0.1], [0.15, 0.2]]
+        '''
+        if self.dtype == dtype.TwoDAnno.POLYGON:
+            return self.get_anno_vec()
+        else:
+            raise Exception('''Can not use polygon property 
+                since this annotation is no polygon! 
+                It is a {}'''.format(dtype.TwoDAnno.TYPE_TO_STR[self.dtype].upper()))
+
+    @polygon.setter
+    def polygon(self, value):
+        val_list = [{'x':v[0],'y':v[1]} for v in value]
+        self.data = json.dumps(val_list)
+        self.dtype = dtype.TwoDAnno.POLYGON
+
+    def get_anno_vec(self):
+        '''Get annotation data in list style.
+
+        Returns:
+            list of floats:
+                For a POINT:
+                    [x, y]
+
+                For a BBOX:
+                    [x, y, w, h]
+
+                For a LINE and POLYGONS:
+                    [[x, y], [x, y],...]
+
+        Example:
+            HowTo get a numpy array? In the following example a bounding box is returned::
+
+                >>> np.array(twod_anno.get_anno_vec())
+                array([0.1 , 0.2 , 0.3 , 0.18])
+        '''
+        
+        data = json.loads(self.data)
+        if self.dtype == dtype.TwoDAnno.BBOX:
+            return [data['x'], data['y'], data['w'], data['h']]
+        elif self.dtype == dtype.TwoDAnno.POINT:
+            return [data['x'], data['y']]
+        elif self.dtype == dtype.TwoDAnno.LINE:
+            return [[e['x'], e['y']] for e in data]
+        elif self.dtype == dtype.TwoDAnno.POLYGON:
+            return [[e['x'], e['y']] for e in data]
+        else:
+            raise Exception('Unknown TwoDAnno type!')
+        
+    def get_lbl_vec(self, which='id'):
+        '''Get labels for this annotations in list style.
+
+        A 2D annotation can contain multiple labels 
+
+        Args:
+            which (str):
+
+                'id':
+                An id in this list is related to :class:`LabelLeaf`
+                that is part of a LabelTree in the LOST framework.  
+                A 2D annotation can contain multiple labels.
+
+                'external_id':
+                An external label id can be any str 
+                and is used to map LOST-LabelLeafs to label ids from
+                external systems like ImageNet.
+
+                'name':
+                Get label names for this annotations in list style.
+
+        Retruns:
+            list of int or str [id, ...]:
+
+        Example:
+            Get vec of label ids
+            
+            >>> twod_anno.get_lbl_vec()
+            [2]
+            
+            Get related external ids
+            
+            >>> twod_anno.get_lbl_vec('external_id')
+            [5]
+
+            Get related label name
+            
+            >>> twod_anno.get_lbl_vec('name')
+            ['cow']
+        '''
+        if which == 'id':
+            return [lbl.label_leaf.idx for lbl in self.labels]
+        elif which == 'external_id':
+            return [lbl.label_leaf.external_id for lbl in self.labels]
+        elif which == 'name':
+            return [lbl.label_leaf.name for lbl in self.labels]
+        else:
+            raise Exception('Unknown argument value: {}'.format(which))
+
+    def get_anno_dict(self):
+        '''Get annotation data in dict style
+
+        Retruns:
+            dict:
+                For a POINT:
+                    {"x": float, "y": float}
+
+                For a BBOX:
+                    {"x": float, "y": float, "w": float, "h": float}
+
+                For a LINE and POLYGONS:
+                    [{"x": float, "y": float}, {"x": float, "y": float},...]
+        '''
+        return json.loads(self.data)
     
 
 class ImageAnno(Base):
-    """An Image Anno represents an image anno (by human).
+    """An ImageAnno represents an image annotation.
+
+    Multiple labels as well as 2d annotations 
+    (e.g. points, lines, boxes, polygons) 
+    can be assigned to an image.
 
     Attributes:
+        labels (list): A list of related :class:`Label` objects.
+        twod_annos (list): A list of :class:`TwoDAnno` objects.
+        img_path (str): Path to the image where this anno belongs to.
+        frame_n (int): If this image is part of an video,
+            frame_n indicates the frame number.
+        video_path (str): If this image is part of an video,
+            this should be the path to that video in file system.
+        width (int): Width of the image.
+        height (int): Height of the image.
+        sim_class (int): The similarity class this anno belong to.
+            It is used to cluster similar annos in MIA
+        anno_time: Overall annotation time in seconds.
+        timestamp (DateTime): Timestamp of ImageAnno
+        iteration (int): The iteration of a loop when this anno was created.        
         idx (int): ID of this ImageAnno in database
         anno_task_id (int): ID of the anno_task this
             ImageAnno belongs to.
-        timestamp (DateTime): Timestamp of ImageAnno
-        state (enum): See :class:`data_model.state.Anno`
-        count (int): Number of Annos for this ImageAnno.
-        sim_class (int): The similarity class this anno belong to.
-            It is used to cluster similar annos in MIA
-        frame_n: Frame number
-        img_path: Path to the image where this anno belongs to.
-        video_path: Path to the video the image belongs to.
+        state (enum): See :class:`lost.db.state.Anno`
         result_id: Id of the related result.
-        iteration (int): The iteration of a loop when this anno was created.
         group_id (int): Id of the annotator.
-        width (int): Width of Image.
-        height (int): Height of Image.
-        labels (list): A list of related :class:`Label` objects.
-        anno_time: Overall Annotation Time in ms.
     """
     __tablename__ = "image_anno"
 
@@ -190,7 +413,6 @@ class ImageAnno(Base):
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     state = Column(Integer)
-    count = Column(Integer)
     sim_class = Column(Integer)
     frame_n = Column(Integer)
     video_path = Column(String(4096))
@@ -201,7 +423,7 @@ class ImageAnno(Base):
     height = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
     labels = relationship('Label')
-    two_d_annos = relationship('TwoDAnno')
+    twod_annos = relationship('TwoDAnno')
     annotator = relationship('Group', uselist=False)
     anno_time = Column(Float)
     def __init__(self, anno_task_id=None, group_id=None,
@@ -215,7 +437,6 @@ class ImageAnno(Base):
         self.timestamp = timestamp
         self.label_id = label_id
         self.state = state
-        self.count = count
         self.sim_class = sim_class
         self.result_id = result_id
         self.img_path = img_path
@@ -226,6 +447,259 @@ class ImageAnno(Base):
         self.iteration = iteration
         self.anno_time = anno_time
 
+    def add_labels(self, label_leaf_ids):
+        '''Add a label to this image annotation.
+
+        Args:
+            label_leaf_ids (list of int): Id of the label_leaf that should be added.
+        '''
+        for label_leaf_id in label_leaf_ids:
+            if label_leaf_id is not None:
+                lbl = Label(label_leaf_id=label_leaf_id)
+                self.labels.append(lbl)
+
+    def iter_annos(self, anno_type='bbox'):
+        '''Iterator for all related 2D annotations of this image.
+
+        Args:
+            anno_type (str): Can be bbox', 'point', 'line', 'polygon', 'all'
+        
+        Retruns:
+            iterator of :class:`TwoDAnno` objects
+
+        Example:
+            >>> for bb in img_anno.iter_annos('bbox'):
+            ...     do_something(bb)
+        '''
+        if anno_type == 'all':
+            for anno in self.twod_annos:
+                yield anno
+        else:
+            for anno in self.twod_annos:
+                if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
+                    yield anno
+
+    def get_anno_vec(self, anno_type='bbox'):
+        '''Get related 2d annotations in list style.
+
+        Args:
+            anno_type (str): Can be 'bbox', 'point', 'line', 'polygon'
+
+        Returns:
+            list of list of floats:
+                For POINTs:
+                    [[x, y], [x, y], ...]
+                For BBOXs:
+                    [[x, y, w, h], [x, y, w, h], ...]
+                For LINEs and POLYGONs:
+                    [[[x, y], [x, y],...], [[x, y], [x, y],...]]
+
+        Example:
+            In the following example all bounding boxes 
+            of the image annotation will be returned in list style::
+
+                >>> img_anno.anno_vec()
+                [[0.1 , 0.2 , 0.3 , 0.18],
+                 [0.25, 0.25, 0.2, 0.4]]
+                >>> img_anno.get_anno_lbl_vec('name', 'bbox') #Get related label names
+                [['cow'], ['horse']]
+        '''
+        res = []
+        for anno in self.twod_annos:
+            if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
+                res.append(anno.get_anno_vec())
+        return res
+
+    def get_anno_lbl_vec(self, which='id', anno_type='bbox'):
+        '''Get labels for related TwoDAnnos of tis ImageAnnotation in list style.
+
+        An TwoDAnno can contain multible labels.
+        The TwoDAnno will be filtered by type.
+
+        Args:
+            which (str):
+
+                'id':
+                Get a list of label ids.
+                Each id is related to a :class:`LabelLeaf`
+                that is part of a LabelTree in the LOST framework.  
+                A 2D annotation can contain multiple labels.
+
+                'external_id':
+                An external label id can be any str 
+                and is used to map LOST-LabelLeafs to label ids from
+                external systems like ImageNet.
+
+                'name':
+                Get label names for this annotations in list style.
+
+            anno_type (str): Can be 'bbox', 'point', 'line', 'polygon'
+
+        Retruns:
+            list of int or str [id, ...]:
+
+        Example:
+            Get vec of label ids
+            
+            >>> img_anno.get_anno_lbl_vec(anno_type='bbox')
+            [[2], [10]]
+            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
+            [[0.1 , 0.2 , 0.3 , 0.18],
+            [0.25, 0.25, 0.2, 0.4]]
+            
+            Get related external ids
+            
+            >>> img_anno.get_anno_lbl_vec('external_id', 'bbox')
+            [[5], [24]]
+            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
+            [[0.1 , 0.2 , 0.3 , 0.18],
+            [0.25, 0.25, 0.2, 0.4]]
+
+            Get related label name
+            
+            >>> img_anno.get_anno_lbl_vec('name', 'bbox')
+            [['cow'], ['horse']]
+            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
+            [[0.1 , 0.2 , 0.3 , 0.18],
+            [0.25, 0.25, 0.2, 0.4]]
+        '''
+        res = []
+        for anno in self.twod_annos:
+            if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
+                res.append(anno.get_lbl_vec(which=which))
+        return res
+
+    def get_img_lbl_vec(self, which='id'):
+        '''Get labels for this image annotation in list style.
+
+        An ImageAnnotation can contain multible labels. 
+
+        Args:
+            which (str):
+
+                'id':
+                Get a list of label ids.
+                Each id is related to a :class:`LabelLeaf`
+                that is part of a LabelTree in the LOST framework.  
+                A 2D annotation can contain multiple labels.
+
+                'external_id':
+                An external label id can be any str 
+                and is used to map LOST-LabelLeafs to label ids from
+                external systems like ImageNet.
+
+                'name':
+                Get label names for this annotations in list style.
+
+        Retruns:
+            list of int or str [id, ...]:
+
+        Example:
+            Get vec of label ids
+            
+            >>> twod_anno.get_img_lbl_vec()
+            [2]
+            
+            Get related external ids
+            
+            >>> twod_anno.get_img_lbl_vec('external_id')
+            [5]
+
+            Get related label name
+            
+            >>> twod_anno.get_img_lbl_vec('name')
+            ['cow']
+        '''
+        if which == 'id':
+            return [lbl.label_leaf.idx for lbl in self.labels]
+        elif which == 'external_id':
+            return [lbl.label_leaf.external_id for lbl in self.labels]
+        elif which == 'name':
+            return [lbl.label_leaf.name for lbl in self.labels]
+        else:
+            raise Exception('Unknown argument value: {}'.format(which))
+
+    def to_df(self):
+        '''Get ImageAnno and related TwoDAnnos as pandas Dataframe.
+
+        Returns:
+            pandas.DataFrame: Each row represants an TwoDAnno and the related ImageAnno information.
+        '''
+        val_table = []
+        column_names = [
+            'img.id',
+            'img.timestamp',
+            'img.path',
+            'img.width',
+            'img.height'
+            'img.anno_time',
+            'img.iteration',
+            'img.label.leafids',
+            'img.label.external_ids',
+            'img.label.names',
+            'anno.id',
+            'anno.timestamp',
+            'anno.anno_time',
+            'anno.data',
+            'anno.annotator',
+            'anno.iteration',
+            'anno.label.leafids',
+            'anno.label.external_ids',
+            'anno.label.names',
+            'anno.type'
+        ]
+        anno_list = list(self.iter_annos('all'))
+        if len(anno_list) > 0:
+            for anno in anno_list:
+                val_table.append([
+                    self.idx,
+                    self.timestamp,
+                    self.img_path,
+                    self.width,
+                    self.height,
+                    self.anno_time,
+                    self.iteration,
+                    json.dumps(self.get_img_lbl_vec('id')),
+                    json.dumps(self.get_img_lbl_vec('external_id')),
+                    json.dumps(self.get_img_lbl_vec('name')),
+                    anno.idx,
+                    anno.timestamp,
+                    anno.anno_time,
+                    anno.data,
+                    anno.annotator.name,
+                    anno.iteration,
+                    json.dumps(anno.get_lbl_vec('id')),
+                    json.dumps(anno.get_lbl_vec('external_id')),
+                    json.dumps(anno.get_lbl_vec('name')),
+                    dtype.TwoDAnno.TYPE_TO_STR[anno.dtype]
+                ])
+        else:
+            val_table.append([
+                self.idx,
+                self.timestamp,
+                self.img_path,
+                self.width,
+                self.height,
+                self.anno_time,
+                self.iteration,
+                json.dumps(self.get_img_lbl_vec('id')),
+                json.dumps(self.get_img_lbl_vec('external_id')),
+                json.dumps(self.get_img_lbl_vec('name')),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None
+            ])
+
+        return pd.DataFrame(val_table, columns=column_names)
+        #raise Exception('Add pandas and numpy to base image -.-')
+        
 
 class AnnoTask(Base):
     """A object that represents a anno task.
@@ -531,13 +1005,6 @@ class Result(Base):
         '''
         self.img_annos.append(img_anno)
 
-    # def add_bbox_anno(self, bbox_anno):
-    #     '''Add a :class:`TwoDAnno` to this result.
-    #     '''
-    #     #TODO check this method - result id was removed in bbox_anno
-    #     self.bbox_annos.append(bbox_anno)
-
-
     def add_visual_output(self, visual_output):
         '''Add a :class:`VisualOutput` to this result.
         '''
@@ -673,7 +1140,7 @@ class Loop(Base):
         iteration (int): Current iteration of the loop.
         pe_jump_id (int): ID of the :class:`PipeElement` where this loop should jump to.
         break_loop (bool): Indicates wether a script wants to break this loop.
-        pe_jump (PipeElement): Related PipeElement object.
+        pe_jump (model.PipeElement): Related PipeElement object.
         pipe_element_id (int): The PipeElement this Loop belongs to.
     '''
     __tablename__ = "loop"
@@ -703,41 +1170,43 @@ class LabelLeaf(Base):
         abbreviation (str):
         description (str):
         timestamp (DateTime):
-        regex_mask: Regular expression mask for any value which can be given to a label
-        default_value: Default value for labels
+        regex_mask (str): Regular expression mask for any value which can be given to a label
+        default_value (str): Default value for labels
         example_image: Path to an example image which represents the LabelName
-        css_class: Style Attributes for this LabelLeaf
-        leaf_id: Id of an external (or internal !) semantic label system (for e.g. synsetid of wordnet)
-        dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g valuable or not)
-        label_tree_id (Integer): LabelTree this LabelLeaf belongs to. 
+        css_class (str): Style Attributes for this LabelLeaf
+        external_id (str): Id of an external semantic label system (for e.g. synsetid of wordnet)
+        dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g CLASS or VALUE)
+        group_id (int):
+        group (:class:`Group`):
         is_deleted (Boolean): 
+        is_root (Boolean): Indicates if this leaf is the root of a tree.
         parent_leaf_id (Integer): Reference to parent LabelLeaf.
+        label_leafs (list of :class:`LabelLeaf`):
     '''
     __tablename__ = "label_leaf"
     idx = Column(Integer, primary_key=True)
     name = Column(String(100))
     abbreviation = Column(String(20))
-    description = Column(String(300))
     timestamp = Column(DATETIME(fsp=6))
     description = Column(Text)
     regex_mask = Column(String(300))
     default_value = Column(String(300))
     example_image = Column(String(4096))
     css_class = Column(Text)
-    leaf_id = Column(String(4096))
+    external_id = Column(String(4096))
     dtype = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", uselist=False, lazy='joined')
     is_deleted = Column(Boolean)
-    is_first_leaf = Column(Boolean)
+    is_root = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
     label_leaves = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
                  group_id=None, timestamp=None, regex_mask=None,
-                 default_value=None, example_image=None, leaf_id=None, dtype=None,
+                 default_value=None, example_image=None, external_id=None, dtype=None,
                  css_class=None, label_tree_id=None, is_deleted=None,
-                 parent_leaf_id=None):
+                 parent_leaf_id=None, is_root=None):
         self.idx = idx
         self.name = name
         self.abbreviation = abbreviation
@@ -748,24 +1217,57 @@ class LabelLeaf(Base):
         self.default_value = default_value
         self.example_image = example_image
         self.css_class = css_class
-        self.leaf_id = leaf_id
+        self.external_id = external_id
         self.dtype = dtype
-        self.label_tree_id = label_tree_id
         self.is_deleted = is_deleted
         self.parent_leaf_id = parent_leaf_id
+        self.is_root = is_root
+
+    def to_dict(self):
+        '''Transform this object to a dict.
+
+        Returns:
+            dict:
+        '''
+        return {
+            'idx' : self.idx,
+            'name': self.name,
+            'abbreviation' : self.abbreviation,
+            'description' : self.description,
+            'group_id' : self.group_id,
+            'timestamp' : self.timestamp,
+            'regex_mask' : self.regex_mask,
+            'default_value' : self.default_value,
+            'example_image' : self.example_image,
+            'css_class' : self.css_class,
+            'external_id' : self.external_id,
+            'dtype' : self.dtype,
+            'is_deleted' : self.is_deleted,
+            'parent_leaf_id' : self.parent_leaf_id,
+            'is_root' : self.is_root
+        }
+        
+    def to_df(self):
+        '''Transform this LabelLeaf to a pandas DataFrame.
+
+        Returns:
+            pd.DataFrame:
+        '''
+        return pd.DataFrame(self.to_dict(), index=[0])
+
 
 class Label(Base):
-    '''Represants an Label that is releated to annoation.
+    '''Represants an Label that is related to an annoation.
 
     Attributes:
         idx (int): ID in database.
         dtype (enum): :class:`lost.db.dtype.Result` type of this attribute.
-        label_leaf_id: ID of releated :class:`LabelLeaf`.
+        label_leaf_id: ID of related :class:`model.LabelLeaf`.
         img_anno_id (int):
         two_d_anno_id (int):
         timestamp (DateTime):
         timestamp_lock (DateTime):
-        label_leaf (LabelLeaf): related :class:`LabelLeaf` object.
+        label_leaf (model.LabelLeaf): related :class:`model.LabelLeaf` object.
         value (String): value for that label.
         annotater_id (Integer): GroupID of Annotater who has assigned this Label.
         confidence (float): Confidence of Annotation.

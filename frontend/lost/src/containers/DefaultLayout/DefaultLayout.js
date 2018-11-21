@@ -5,7 +5,6 @@ import {
 } from 'reactstrap'
 import {compose} from 'redux'
 import {connect} from 'react-redux'
-
 import {
     AppAside,
     AppBreadcrumb,
@@ -23,11 +22,11 @@ import desginerNavigation from '../../designerNavigation'
 // routes config
 import designerRoutes from '../../designerRoutes'
 import annotaterRoutes from '../../annotaterRoutes'
-import DefaultAside from './DefaultAside'
-import DefaultFooter from './DefaultFooter'
-import DesignerHeader from './DesignerHeader'
-import AnnotaterHeader from './AnnotaterHeader'
-import requireAuth from '../../components/requireAuth'
+import DefaultAside from './SubContainers/DefaultAside'
+import DefaultFooter from './SubContainers/DefaultFooter'
+import DesignerHeader from './SubContainers/DesignerHeader'
+import AnnotaterHeader from './SubContainers/AnnotaterHeader'
+import requireAuth from '../requireAuth'
 
 class DefaultLayout extends Component {
 

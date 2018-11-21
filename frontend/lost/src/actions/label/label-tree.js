@@ -6,7 +6,7 @@ axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getIte
 
 export const getLabelTrees = () => async dispatch => {
     try {
-        const response = await axios.get(API_URL + 'label/tree')
+        const response = await axios.get(API_URL + '/label/tree')
         dispatch({ type: TYPES.GET_LABEL_TREES, payload: response.data})
     } catch(e){
        

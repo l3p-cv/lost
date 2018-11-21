@@ -6,25 +6,30 @@ function Loading() {
 }
 
 const Dashboard = Loadable({
-  loader: () => import('./views/DesignerDashboard/DesignerDashboard.js'),
+  loader: () => import('./views/Dashboard/Designer/DesignerDashboard.js'),
   loading: Loading,
 })
 const StartPipeline = Loadable({
-  loader: () => import('./components/StartPipeline.js'),
+  loader: () => import('./views/Pipelines/StartPipeline.js'),
   loading: Loading,
 })
 const Pipelines = Loadable({
-  loader: () => import('./components/Pipelines.js'),
+  loader: () => import('./views/Pipelines/Pipelines.js'),
   loading: Loading,
 })
 
 const Label = Loadable({
-  loader: () => import('./components/Label.js'),
+  loader: () => import('./views/Labels/Labels.js'),
   loading: Loading,
 })
 
 const User = Loadable({
-  loader: () => import('./components/User.js'),
+  loader: () => import('./views/Users/Users.js'),
+  loading: Loading,
+})
+
+const MyProfile = Loadable({
+  loader: () => import('./views/Profile/Profile.js'),
   loading: Loading,
 })
 
@@ -37,6 +42,7 @@ const routes = [
   { path: '/pipelines', name: 'Pipelines', component: Pipelines },
   { path: '/labels', name: 'Manage Labels', component: Label },
   { path: '/users', name: 'Manage Users', component: User },
+  { path: '/profile', name: 'My Profile', component: MyProfile },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]
 

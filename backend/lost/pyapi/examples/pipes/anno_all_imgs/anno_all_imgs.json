@@ -1,5 +1,5 @@
 {
-  "description" : "This pipeline selects all images of an rawFile for an annotation task",
+  "description" : "This pipeline annotates all images in a folder with the MIA annotation tool.",
   "author" : "Jonas Jaeger",
   "elements" : [
     {
@@ -14,10 +14,7 @@
       "peOut" : [2],
       "script" : {
         "path": "anno_all_imgs.py",
-        "description" : "Request ImageAnnotations for all images in an rawFile",
-        "language" : "python3",
-        "libContext" : null,
-        "staticContext" : null
+        "description" : "Request ImageAnnotations for all images in an rawFile"
       }
     },
     {
@@ -28,7 +25,10 @@
         "type" : "mia",
         "instructions" : "Please assign a class labels to all presented images.",
         "configuration": {
-          "type": "imageBased"
+          "type": "imageBased",
+          "showProposedLabel" : false,
+          "drawBox" : false,
+          "addContext" : 0.0
         }
       }
     }

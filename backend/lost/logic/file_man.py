@@ -35,6 +35,34 @@ class FileMan(object):
             os.makedirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
 
+    def get_rel_path(self, path):
+        '''Get relativ path for current project
+
+        Args:
+            path (str): A absolute path
+
+        Returns:
+            str : Relative path
+        '''
+        if os.path.isabs(path):
+            return self.make_path_relative(path)
+        else:
+            return path
+
+    def get_abs_path(self, path):
+        '''Get absolute path in current file system.
+
+        Args:
+            path (str): A relative path.
+
+        Returns:
+            str: Absolute path
+        '''
+        if not os.path.isabs(path):
+            return os.path.join(self.lostconfig.project_path, path)
+        else:
+            return path
+
     def make_path_relative(self, in_path):
         '''Make a path relative to project root path.
 
@@ -121,22 +149,22 @@ class FileMan(object):
             os.mkdir(pe_i_path)
         return pe_i_path
 
-    def create_script_path(self, script_id):
-        '''Create path where a script file will be stored.
+    # def create_script_path(self, script_id):
+    #     '''Create path where a script file will be stored.
 
-            script_id: ID of the related :class:`lost.db.models.Script`
+    #         script_id: ID of the related :class:`lost.db.models.Script`
 
-        Returns:
-            The absolute path to the script folder.
-        '''
-        root_path = self.lostconfig.project_path
-        script_dir = os.path.join(root_path,SCRIPT_ROOT_PATH)
-        if not os.path.exists(script_dir):
-            os.mkdir(script_dir)
-        script_i_dir = os.path.join(script_dir,str(script_id))
-        if not os.path.exists(script_i_dir):
-            os.mkdir(script_i_dir)
-        return script_i_dir
+    #     Returns:
+    #         The absolute path to the script folder.
+    #     '''
+    #     root_path = self.lostconfig.project_path
+    #     script_dir = os.path.join(root_path,SCRIPT_ROOT_PATH)
+    #     if not os.path.exists(script_dir):
+    #         os.mkdir(script_dir)
+    #     script_i_dir = os.path.join(script_dir,str(script_id))
+    #     if not os.path.exists(script_i_dir):
+    #         os.mkdir(script_i_dir)
+    #     return script_i_dir
 
     @property
     def pipe_path(self):
@@ -197,11 +225,11 @@ class FileMan(object):
             os.mkdir(join(root,DEBUG_ROOT_PATH))
             print("\t Created: %s"%(join(root,DEBUG_ROOT_PATH),))
 
-    def rm_script_folder(self, script):
-        '''Remove folder for a specific script.
-        '''
-        s_path = join(self.lostconfig.project_path, SCRIPT_ROOT_PATH, str(script.idx))
-        shutil.rmtree(s_path)
+    # def rm_script_folder(self, script):
+    #     '''Remove folder for a specific script.
+    #     '''
+    #     s_path = join(self.lostconfig.project_path, SCRIPT_ROOT_PATH, str(script.idx))
+    #     shutil.rmtree(s_path)
 
     @property
     def media_root_path(self):

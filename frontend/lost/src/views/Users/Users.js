@@ -1,69 +1,52 @@
-import React, { Component } from 'react'
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {Card, CardBody, Col, Row} from 'reactstrap'
 
-import usersData from './UsersData'
+import CreateUser from '../../containers/Users/CreateUser'
+import CreateGroup from '../../containers/Users/CreateGroup'
+import UserTable from '../../containers/Users/UserTable'
+import GroupList from '../../containers/Users/GroupList'
+import actions from '../../actions'
 
-function UserRow(props) {
-  const user = props.user
-  const userLink = `#/users/${user.id}`
+const {getGroups, getUsers} = actions
 
-  const getBadge = (status) => {
-    return status === 'Active' ? 'success' :
-      status === 'Inactive' ? 'secondary' :
-        status === 'Pending' ? 'warning' :
-          status === 'Banned' ? 'danger' :
-            'primary'
-  }
+class User extends Component {
+    componentDidMount() {
+        this
+            .props
+            .getUsers()
+        this
+            .props
+            .getGroups()
+    }
 
-  return (
-    <tr key={user.id.toString()}>
-        <th scope='row'><a href={userLink}>{user.id}</a></th>
-        <td><a href={userLink}>{user.name}</a></td>
-        <td>{user.registered}</td>
-        <td>{user.role}</td>
-        <td><Badge href={userLink} color={getBadge(user.status)}>{user.status}</Badge></td>
-    </tr>
-  )
+    render() {
+        return (
+            <Row>
+                <Col xs='4' sm='4' lg='3'>
+                    <Card className='text-black'>
+                        <CardBody className='pb-0'>
+                            <CreateGroup groups={this.props.groups}></CreateGroup>
+                            <GroupList></GroupList>
+                        </CardBody>
+                    </Card>
+                </Col>
+                <Col xs='8' sm='8' lg='9'>
+                    <Card className='text-black'>
+                        <CardBody className='pb-0'>
+                            <CreateUser groups={this.props.groups}></CreateUser>
+                            <div></div>
+                            <UserTable users={this.props.users} groups={this.props.groups}></UserTable>
+                        </CardBody>
+                    </Card>
+                </Col>
+            </Row>
+
+        )
+    }
+}
+function mapStateToProps(state) {
+    return ({users: state.user.users, groups: state.group.groups})
 }
 
-class Users extends Component {
-
-  render() {
-
-    const userList = usersData.filter((user) => user.id < 10)
-
-    return (
-      <div className='animated fadeIn'>
-        <Row>
-          <Col xl={6}>
-            <Card>
-              <CardHeader>
-                <i className='fa fa-align-justify'></i> Users <small className='text-muted'>example</small>
-              </CardHeader>
-              <CardBody>
-                <Table responsive hover>
-                  <thead>
-                    <tr>
-                      <th scope='col'>id</th>
-                      <th scope='col'>name</th>
-                      <th scope='col'>registered</th>
-                      <th scope='col'>role</th>
-                      <th scope='col'>status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userList.map((user, index) =>
-                      <UserRow key={index} user={user}/>
-                    )}
-                  </tbody>
-                </Table>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    )
-  }
-}
-
-export default Users
+export default connect(mapStateToProps, {getUsers, getGroups})(User)

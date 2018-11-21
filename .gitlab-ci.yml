@@ -13,6 +13,8 @@ variables:
   LOST_BASE_IMAGE: gitlab.l3portal.de:5555/l3p-cv/lost/base/lost-base:0.1
   LOST_TEST_IMAGE: gitlab.l3portal.de:5555/l3p-cv/lost/test/lost:$CI_PIPELINE_ID
   LOST_RELEASE_IMAGE: gitlab.l3portal.de:5555/l3p-cv/lost/release/lost:$CI_COMMIT_TAG
+  LOST_VERSION: $CI_PIPELINE_ID
+
   
 before_script:
   - apk add --update nodejs=8.11.4-r0 npm
@@ -26,12 +28,13 @@ build-lost-base:
   only: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-  
 build-lost:
   stage: build-lost
   script:
+    - npm install --prefix frontend/lost/src/tools/sia -d 
+    - npm install --prefix frontend/lost/src/tools/pipeline -d
     - npm install --prefix frontend/lost -d 
-    - npm run build --prefix frontend/lost -d 
+    - CI=false npm run build --prefix frontend/lost -d 
     - rm -rf frontend/lost/node_modules
     - docker build --build-arg base_image=$LOST_BASE_IMAGE --pull -t $LOST_TEST_IMAGE -f docker/lost/Dockerfile .
     - docker push $LOST_TEST_IMAGE
@@ -41,8 +44,12 @@ build-lost:
 
 test-lost:
   stage: test-lost
+  before_script: 
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN gitlab.l3portal.de:5555
+    - apk add --no-cache py-pip
+    - pip install docker-compose
   script:
-    - echo "LOST TEST WILL BE HERE IN FUTURE :)"
+    - cd docker/compose && docker-compose run -e LOST_VERSION=$LOST_VERSION lost bash /pytest.sh
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/

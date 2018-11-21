@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import { reduxForm, Field } from 'redux-form'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import * as actions from '../../../actions'
+import actions from '../../../actions'
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap'
 
+const {login} = actions
 class Login extends Component {
   onSubmit = formProps => {
     this.props.login(formProps, ()=> {
@@ -28,14 +29,14 @@ class Login extends Component {
                       <InputGroup className='mb-3'>
                         <InputGroupAddon addonType='prepend'>
                           <InputGroupText>
-                            <i className='icon-envelope'></i>
+                            <i className='icon-user'></i>
                           </InputGroupText>
                         </InputGroupAddon>
                         <Field
-                          name='email'
+                          name='user_name'
                           type='text'
-                          placeholder='Email'
-                          autoComplete='email'
+                          placeholder='Username'
+                          autoComplete='user_name'
                           component='input'
                         />
                       </InputGroup>
@@ -89,6 +90,6 @@ function mapStateToProps(state) {
 }
 
 export default compose(
-  connect(mapStateToProps, actions),
+  connect(mapStateToProps, {login}),
   reduxForm({ form: 'login' })
 )(Login)

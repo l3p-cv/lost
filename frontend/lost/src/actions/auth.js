@@ -6,7 +6,7 @@ import { API_URL } from '../settings'
 
 const login = (formProps, callback) => async dispatch => {
     try {
-        const response = await axios.post(API_URL + 'user/login', formProps)
+        const response = await axios.post(API_URL + '/user/login', formProps)
         dispatch({ type: TYPES.AUTH_USER, payload: response.data})
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('refreshToken', response.data.refresh_token)
@@ -24,10 +24,7 @@ const decodeJwt = (decoded_token, callback) => async dispatch => {
 }
 const checkExpireDate = (decoded_token, callback) => async dispatch => {
     if (decoded_token !== undefined && decoded_token.exp < Date.now() / 1000){
-        dispatch({type: TYPES.LOGOUT})
-        localStorage.removeItem('token')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('view')
+        logout()
         callback()
     }
 }
@@ -38,13 +35,22 @@ const checkRole = (view, decoded_token) => async dispatch => {
         localStorage.setItem('view', 'Annotater')
     }
 }
-const changeView = (view) => async dispatch => {
+const changeView = (view, callback) => async dispatch => {
+    callback()
     dispatch({ type: TYPES.CHANGE_VIEW, payload: view})
     localStorage.setItem('view', view)
 }
 
+const logout = () => async dispatch => {
+    axios.post(API_URL + '/user/logout')
+    dispatch({type: TYPES.LOGOUT})
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('view')
+}
 export default {
     login,
+    logout, 
     decodeJwt,
     checkExpireDate,
     checkRole,
