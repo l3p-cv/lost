@@ -44,7 +44,7 @@ test-lost:
   stage: test-lost
   script:
     - docker pull $LOST_TEST_IMAGE
-    - docker run $LOST_TEST_IMAGE source /opt/conda/bin/activate lost && pytest /code/backend/lost
+    - docker run $LOST_TEST_IMAGE bash /pytest.sh
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
