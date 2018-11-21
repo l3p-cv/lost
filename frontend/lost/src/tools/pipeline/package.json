@@ -14,6 +14,7 @@
     "list.js": "^1.5.0",
     "lodash-es": "^4.17.10",
     "moment": "^2.21.0",
+    "sweetalert": "^2.1.2",
     "sweetalert2": "^6.11.5",
     "webpack-jquery-ui": "^2.0.1"
   }

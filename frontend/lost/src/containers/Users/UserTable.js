@@ -76,8 +76,6 @@ class UserTable extends Component {
     validateInputAndUpdateBackend(original, updateUser) {
         // NotificationManager.error("No valid input")
         let somethingChanged = false
-        console.log(original)
-        console.log(updateUser)
 
         if (original.email !== updateUser.email){
             somethingChanged = true

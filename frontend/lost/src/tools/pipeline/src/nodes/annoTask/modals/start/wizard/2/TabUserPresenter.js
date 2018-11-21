@@ -8,6 +8,7 @@ export default class TabUserPresenter extends WizardTabPresenter {
 
 		// add icon to groups, pass groups to view to create a data table
 		let groups = node.model.annoTask.availableGroups
+		console.log({groups})
 		groups = groups.map(group => {
 			const { id, groupName, isGroup } = group
 			const icon = isGroup ? 'goup' : 'no group'
