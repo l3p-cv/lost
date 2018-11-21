@@ -83,7 +83,7 @@ def get_template(db_man, template_id ,user):
     available_raw_files = file_man.get_media_rel_path_tree()
     available_groups = user.groups
     group_ids = [g.idx for g in user.groups]
-    available_label_trees = db_man.get_available_label_trees(group_ids)
+    available_label_trees = db_man.get_all_root_leaves_by_groups(group_ids)
     available_scripts = db_man.get_all_scripts()
     try:
          template_serialize = TemplateSerialize(template,
