@@ -1171,12 +1171,7 @@ class LabelLeaf(Base):
         abbreviation (str):
         description (str):
         timestamp (DateTime):
-        regex_mask (str): Regular expression mask for any value which can be given to a label
-        default_value (str): Default value for labels
-        example_image: Path to an example image which represents the LabelName
-        css_class (str): Style Attributes for this LabelLeaf
         external_id (str): Id of an external semantic label system (for e.g. synsetid of wordnet)
-        dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g CLASS or VALUE)
         group_id (int):
         group (:class:`Group`):
         is_deleted (Boolean): 
@@ -1190,12 +1185,7 @@ class LabelLeaf(Base):
     abbreviation = Column(String(20))
     timestamp = Column(DATETIME(fsp=6))
     description = Column(Text)
-    regex_mask = Column(String(300))
-    default_value = Column(String(300))
-    example_image = Column(String(4096))
-    css_class = Column(Text)
     external_id = Column(String(4096))
-    dtype = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", uselist=False, lazy='joined')
     is_deleted = Column(Boolean)
@@ -1204,9 +1194,8 @@ class LabelLeaf(Base):
     label_leaves = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
-                 group_id=None, timestamp=None, regex_mask=None,
-                 default_value=None, example_image=None, external_id=None, dtype=None,
-                 css_class=None, label_tree_id=None, is_deleted=None,
+                 group_id=None, timestamp=None,
+                 external_id=None, label_tree_id=None, is_deleted=None,
                  parent_leaf_id=None, is_root=None):
         self.idx = idx
         self.name = name
@@ -1214,12 +1203,7 @@ class LabelLeaf(Base):
         self.description = description
         self.group_id = group_id
         self.timestamp = timestamp
-        self.regex_mask = regex_mask
-        self.default_value = default_value
-        self.example_image = example_image
-        self.css_class = css_class
         self.external_id = external_id
-        self.dtype = dtype
         self.is_deleted = is_deleted
         self.parent_leaf_id = parent_leaf_id
         self.is_root = is_root
@@ -1237,12 +1221,7 @@ class LabelLeaf(Base):
             'description' : self.description,
             'group_id' : self.group_id,
             'timestamp' : self.timestamp,
-            'regex_mask' : self.regex_mask,
-            'default_value' : self.default_value,
-            'example_image' : self.example_image,
-            'css_class' : self.css_class,
             'external_id' : self.external_id,
-            'dtype' : self.dtype,
             'is_deleted' : self.is_deleted,
             'parent_leaf_id' : self.parent_leaf_id,
             'is_root' : self.is_root
@@ -1269,7 +1248,6 @@ class Label(Base):
         timestamp (DateTime):
         timestamp_lock (DateTime):
         label_leaf (model.LabelLeaf): related :class:`model.LabelLeaf` object.
-        value (String): value for that label.
         annotater_id (Integer): GroupID of Annotater who has assigned this Label.
         confidence (float): Confidence of Annotation.
         anno_time (float): Time of annotaiton duration
@@ -1285,13 +1263,12 @@ class Label(Base):
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     label_leaf = relationship('LabelLeaf', uselist=False)
-    value = Column(String(300))
     confidence = Column(Float)
     anno_time = Column(Float)
 
     def __init__(self, idx=None, dtype=None, label_leaf_id=None, img_anno_id=None,
                  two_d_anno_id=None, annotater_id=None,
-                 timestamp_lock=None, timestamp=None, value=None,
+                 timestamp_lock=None, timestamp=None,
                  confidence=None, anno_time=None):
         self.idx = idx
         self.dtype = dtype
@@ -1301,7 +1278,6 @@ class Label(Base):
         self.annotater_id = annotater_id
         self.timestamp_lock = timestamp_lock
         self.timestamp = timestamp
-        self.value = value
         self.confidence = confidence
         self.anno_time = anno_time
 

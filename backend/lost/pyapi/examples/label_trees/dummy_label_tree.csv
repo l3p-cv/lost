@@ -1,0 +1,7 @@
+idx,name,description,group_id,external_id,parent_leaf_id,is_root
+0,dummy tree,A dummy LabelTree,,10,,True
+1,horse,A horse,,11,0,
+2,cow,A cow,,12,0,
+3,person,A human,,13,0,
+4,old,An old human,,14,3,
+5,young,A young human,,15,3,

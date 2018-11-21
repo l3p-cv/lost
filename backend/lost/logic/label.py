@@ -13,15 +13,21 @@ class LabelTree(object):
         dbm (:class:`lost.db.access.DBMan`): Database manager object.
         root_id (int): label_leaf_id of the root Leaf.
         root_leaf (:class:`lost.db.model.LabelLeaf`): Root leaf of the tree.
+        logger (logger): A logger.
     '''
 
-    def __init__(self, dbm, root_id=None, root_leaf=None):
+    def __init__(self, dbm, root_id=None, root_leaf=None, logger=None):
         self.dbm = dbm # type: lost.db.access.DBMan
         self.root = None # type: lost.db.model.LabelLeaf
         self.tree = {}
+        if logger is None:
+            import logging
+            self.logger = logging
+        else:
+            self.logger = logger
         if root_leaf is not None:
             self.root = root_leaf
-            self.tree[root_leaf.idx] = root_leaf
+            self.__collect_tree(self.root, self.tree)
         elif root_id is not None:
             self.root = self.dbm.get_label_leaf(root_id)
             self.__collect_tree(self.root, self.tree)
@@ -47,6 +53,7 @@ class LabelTree(object):
         '''
         for ll in leaf.label_leaves:
             self.delete_subtree(ll)
+            self.logger.info('Deleting label leaf: {}'.format(ll.name))
             self.dbm.delete(ll)
 
     def delete_tree(self):
@@ -63,13 +70,20 @@ class LabelTree(object):
             external_id (str): Some id of an external label system.
         
         Retruns:
-            :class:`lost.db.model.LabelLeaf`: The created root leaf.
+            :class:`lost.db.model.LabelLeaf` or None: 
+                The created root leaf or None if a root leaf with same
+                name is already present in database.
         '''
+        root_leafs = self.dbm.get_all_label_trees()
+        for leaf in root_leafs:
+            if name == leaf.name:
+                return None
         self.root = model.LabelLeaf(name=name, 
             external_id=external_id, is_root=True)
         self.dbm.add(self.root)
         self.dbm.commit()
         self.tree[self.root.idx] = self.root
+        self.logger.info('Created root leaf: {}'.format(name))
         return self.root
 
     def create_child(self, parent_id, name, external_id=None):
@@ -81,13 +95,14 @@ class LabelTree(object):
             external_id (str): Some id of an external label system.
         
         Retruns:
-            :class:`lost.db.model.LabelLeaf`: The leaf object.
+            :class:`lost.db.model.LabelLeaf`: The the created child leaf.
         '''
         leaf = model.LabelLeaf(name=name, 
             external_id=external_id, parent_leaf_id=parent_id)
         self.dbm.add(leaf)
         self.dbm.commit()
         self.tree[leaf.idx] = leaf
+        self.logger.info('Created child leaf: {}'.format(name))
         return leaf
 
     def get_child_vec(self, parent_id, style='id'):
@@ -130,7 +145,7 @@ class LabelTree(object):
         for leaf_id, leaf in self.tree.items():
             df_list.append(leaf.to_df())
         df = pd.concat(df_list)
-        return df
+        return df.reset_index().drop(columns=['index'])
 
     # def to_list(self):
     #     leaves = list()
@@ -150,6 +165,89 @@ class LabelTree(object):
         self.__collect_dict_tree(self.root, my_dict)
         return my_dict
  
+    def _df_row_to_leaf(self, row, leaf):
+        '''Transfrom LabelLeaf in row style to a LabelLeaf object.
+
+        Args:
+            row (pandas.Series): A LabelLeaf in row style.
+        
+        Returns:
+            :class:`lost.db.model.LabelLeaf`:
+                The transformed row.
+        '''
+        try:
+            leaf.abbreviation = row['abbreviation']
+        except KeyError:
+            self.logger.info('No abbreviation provided in label tree.')
+        try:
+            leaf.description = row['description']
+        except KeyError:
+            self.logger.info('No description provided in label tree.')
+        try:
+            leaf.timestamp = row['timestamp']
+        except KeyError:
+            self.logger.info('No timestamp provided in label tree.')
+        try:
+            leaf.external_id = row['external_id']
+        except KeyError:
+            self.logger.info('No external_id provided in label tree.')
+        try:
+            leaf.is_deleted = row['is_deleted']
+        except KeyError:
+            self.logger.info('No is_deleted provided in label tree.')
+
+    def __create_childs_from_df(self, child_dict, parent, parent_row):
+        '''Create child leafs from a df.
+
+        Args:
+            child_dict (dict): A dictionary that maps parent_ids from DataFrame 
+                to child rows from DataFrame.
+            parent (:class:`lost.db.model.LabelLeaf`): A parent LabelLeaf 
+                that was already imported.
+            parent_row (pandas.Series): A row from the DataFrame to import. 
+        '''
+        if parent_row['idx'] not in child_dict:
+            return
+        for child_row in child_dict[parent_row['idx']]:
+            child = self.create_child(parent.idx, 
+                        child_row['name'])
+            self._df_row_to_leaf(child_row, child)
+            self.__create_childs_from_df(child_dict, child, child_row)
+        
     def import_df(self, df):
-        '''Import LabelTree from DataFrame'''
-        raise NotImplementedError()
+        '''Import LabelTree from DataFrame
+        
+        Args:
+            df (pandas.DataFrame): LabelTree in DataFrame style.
+
+        Retruns:
+            :class:`lost.db.model.LabelLeaf` or None: 
+                The created root leaf or None if a root leaf with same
+                name is already present in database.
+        '''
+        root = df[df['parent_leaf_id'].isnull()]
+        no_root = df[~df['parent_leaf_id'].isnull()]
+        childs = {}
+
+        if len(root) != 1:
+            raise ValueError('''Can not import. There needs 
+                to be exactly one root leaf for that tree! 
+                Found: \n{}'''.format(root))
+        else:
+            root_leaf = self.create_root(root['name'].values[0])
+            if root_leaf is None:
+                return None #A tree with the same name already exists.
+            self._df_row_to_leaf(root.loc[0], root_leaf)
+
+            #Create child dict
+            for index, row in no_root.iterrows():
+                if not row['parent_leaf_id'] in childs:
+                    childs[row['parent_leaf_id']] = []
+                childs[row['parent_leaf_id']].append(row)
+            
+            self.__create_childs_from_df(childs, root_leaf, root.loc[0])
+            self.dbm.commit()
+            return root_leaf
+
+
+            

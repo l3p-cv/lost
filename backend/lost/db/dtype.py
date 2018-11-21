@@ -94,17 +94,6 @@ class VisualOutput():
     IMAGE = 0
     HTML = 1
 
-class LabelLeaf():
-    '''Type of a LabelLeaf
-
-    Attributes:
-        CLASS (1): ClassLabel without values.
-        VALUABLE (2): Label has a value (defined by RegEx)
-
-    '''
-    CLASS = 1
-    VALUE = 2
-
 class TwoDAnno():
     '''Type of a TwoDAnno
 
