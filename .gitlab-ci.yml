@@ -45,6 +45,7 @@ build-lost:
 test-lost:
   stage: test-lost
   before_script: 
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN gitlab.l3portal.de:5555
     - apk add --no-cache py-pip
     - pip install docker-compose
   script:
