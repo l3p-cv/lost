@@ -18,6 +18,7 @@ from lost.logic.config import LOSTConfig
 import json
 import pickle
 from lost.pyapi import pipe_elements
+from lost.logic.label import LabelTree
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
@@ -59,6 +60,7 @@ class Script(pipe_elements.Element):
         lostconfig = LOSTConfig()
         self.file_man = FileMan(lostconfig)
         dbm = access.DBMan(lostconfig)
+        self._dbm = dbm #type: lost.db.access.DBMan
         if pe_id is None:
             pe = dbm.get_pipe_element(int(args.idx))
         else:
@@ -113,6 +115,39 @@ class Script(pipe_elements.Element):
             str : Relative path
         '''
         return self.file_man.get_rel_path(path)
+
+    def get_label_tree(self, name):
+        '''Get a LabelTree by name.
+        
+        Args:
+            name (str): Name of the desired LabelTree.
+        
+        Retruns:
+            :class:`lost.logic.label.LabelTree` or None: 
+                If a label tree with the given name exists 
+                it will be returned. Otherwise None
+                will be returned'''
+        root_list = self._dbm.get_all_label_trees()
+        root = next(filter(lambda x: x==name, root_list), None)
+        if root is None:
+            return None
+        else:
+            return LabelTree(self._dbm, root_leaf=root)
+
+    def create_label_tree(self, name, external_id=None):
+        '''Create a new LabelTree
+        
+        Args:
+            name (str): Name of the tree / name of the root leaf.
+            external_id (str): An external id for the root leaf.
+        
+        Returns:
+            :class:`lost.logic.label.LabelTree`:
+                The created LabelTree.
+        '''
+        tree = LabelTree(self._dbm)
+        tree.create_root(name, external_id=external_id)
+        return tree
 
     def get_abs_path(self, path):
         '''Get absolute path in current file system.

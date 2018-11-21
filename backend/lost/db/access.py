@@ -601,7 +601,12 @@ class DBMan(object):
         ''' Get all available label trees
         '''
         return self.session.query(model.LabelLeaf).filter((model.LabelLeaf.is_root == True) & \
-        model.LabelLeaf.group_id.in_(group_ids) ).all()
+            model.LabelLeaf.group_id.in_(group_ids)).all()
+    
+    def get_all_label_trees(self):
+        '''Get all label trees in lost'''
+        return self.session.query(model.LabelLeaf)\
+            .filter(model.LabelLeaf.is_root == True).all()
 
     def get_available_users(self):
         ''' Get all available users

@@ -1140,7 +1140,7 @@ class Loop(Base):
         iteration (int): Current iteration of the loop.
         pe_jump_id (int): ID of the :class:`PipeElement` where this loop should jump to.
         break_loop (bool): Indicates wether a script wants to break this loop.
-        pe_jump (PipeElement): Related PipeElement object.
+        pe_jump (model.PipeElement): Related PipeElement object.
         pipe_element_id (int): The PipeElement this Loop belongs to.
     '''
     __tablename__ = "loop"
@@ -1262,12 +1262,12 @@ class Label(Base):
     Attributes:
         idx (int): ID in database.
         dtype (enum): :class:`lost.db.dtype.Result` type of this attribute.
-        label_leaf_id: ID of related :class:`LabelLeaf`.
+        label_leaf_id: ID of related :class:`model.LabelLeaf`.
         img_anno_id (int):
         two_d_anno_id (int):
         timestamp (DateTime):
         timestamp_lock (DateTime):
-        label_leaf (LabelLeaf): related :class:`LabelLeaf` object.
+        label_leaf (model.LabelLeaf): related :class:`model.LabelLeaf` object.
         value (String): value for that label.
         annotater_id (Integer): GroupID of Annotater who has assigned this Label.
         confidence (float): Confidence of Annotation.

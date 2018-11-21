@@ -12,13 +12,17 @@ class LabelTree(object):
     Args:
         dbm (:class:`lost.db.access.DBMan`): Database manager object.
         root_id (int): label_leaf_id of the root Leaf.
+        root_leaf (:class:`lost.db.model.LabelLeaf`): Root leaf of the tree.
     '''
 
-    def __init__(self, dbm, root_id=None):
+    def __init__(self, dbm, root_id=None, root_leaf=None):
         self.dbm = dbm # type: lost.db.access.DBMan
         self.root = None # type: lost.db.model.LabelLeaf
         self.tree = {}
-        if root_id is not None:
+        if root_leaf is not None:
+            self.root = root_leaf
+            self.tree[root_leaf.idx] = root_leaf
+        elif root_id is not None:
             self.root = self.dbm.get_label_leaf(root_id)
             self.__collect_tree(self.root, self.tree)
 
@@ -116,9 +120,11 @@ class LabelTree(object):
         df = pd.concat(df_list)
         return df.values.tolist()
             
-
     def to_df(self):
         '''Transform this LabelTree to a pandas DataFrame.
+
+        Returns:
+            pandas.DataFrame
         '''
         df_list = []
         for leaf_id, leaf in self.tree.items():
@@ -126,11 +132,11 @@ class LabelTree(object):
         df = pd.concat(df_list)
         return df
 
-    def to_list(self):
-        leaves = list()
-        for leaf_id, leaf in self.tree.items():
-            leaves.append(leaf.to_dict())
-        return leaves
+    # def to_list(self):
+    #     leaves = list()
+    #     for leaf_id, leaf in self.tree.items():
+    #         leaves.append(leaf.to_dict())
+    #     return leaves
 
     def __collect_dict_tree(self, label_leaf, t_dict):
         t_dict['children'] = []
@@ -147,6 +153,3 @@ class LabelTree(object):
     def import_df(self, df):
         '''Import LabelTree from DataFrame'''
         raise NotImplementedError()
-
-    
-
