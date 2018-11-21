@@ -308,7 +308,6 @@ class ScriptOutput(Output):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
-            pe (PipeElement): The connected PipeElement where annotation should be provided for.
             img_path (str): Path to the image where annotations are added for.
             img_labels (list of int): Labels that will be assigned to the image. Each label in the list is
                 represented by a label_leaf_id. An image may have multiple labels.
@@ -381,7 +380,7 @@ class ScriptOutput(Output):
             anno_labels (list of list of int): Labels for the twod annos. 
                 Each label in the list is represented by a label_leaf_id.
                 A twod annotation may have multiple labels. 
-                (see also :class:`LabelLeaf`).
+                (see also :class:`model.LabelLeaf`).
             anno_sim_classes (list of ints): List of arbitrary cluster ids 
                 that are used to cluster annotations in the MIA annotation tool.
             frame_n (int): If *img_path* belongs to a video *frame_n* indicates
@@ -433,7 +432,7 @@ class ScriptOutput(Output):
         '''Add annos in list style to an image.
         
         Args:
-            pe (PipeElement): The connected PipeElement where annotation should be provided for.
+            pe (model.PipeElement): The connected PipeElement where annotation should be provided for.
             img_path (str): Path to the image where annotations are added for.
             img_labels (list of int): Labels that will be assigned to the image. Each label in the list is
                 represented by a label_leaf_id. An image may have multiple labels.

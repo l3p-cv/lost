@@ -75,11 +75,6 @@ TwoDAnno
 .. autoclass:: lost.db.model.TwoDAnno
     :members:
 
-LabelTree
-----------------
-.. autoclass:: lost.logic.label.LabelTree
-    :members:
-
 LabelLeaf
 ----------------
 .. autoclass:: lost.db.model.LabelLeaf
@@ -88,6 +83,14 @@ LabelLeaf
 Label
 ----------------
 .. autoclass:: lost.db.model.Label
+    :members:
+
+logic.label 
+================
+
+LabelTree
+----------------
+.. autoclass:: lost.logic.label.LabelTree
     :members:
 
 dtype
