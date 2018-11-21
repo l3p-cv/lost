@@ -5,7 +5,7 @@ from lost.api.api import api
 from lost.api.label.api_definition import label_leaf
 from lost.db import model, roles, access
 from lost.settings import LOST_CONFIG
-from lost.logic import label
+from lost.logic.label import LabelTree
 
 namespace = api.namespace('label', description='Label API.')
 
@@ -22,9 +22,13 @@ class LabelTrees(Resource):
             return "You are not authorized.", 401
         else:
             group_ids = [g.idx for g in user.groups]
-            re = label.get_recursive_label_trees(dbm, group_ids)
+            root_leaves = dbm.get_all_root_leaves_by_groups(group_ids)
+            trees = list()
+            for root_leaf in root_leaves:
+                trees.append(LabelTree(dbm, root_leaf.idx).to_hierarchical_dict())
             dbm.close_session()
-            return re
+            return trees
+
 
 @namespace.route('/<int:label_leaf_id>')
 @namespace.param('label_leaf_id', 'The label leaf identifier')

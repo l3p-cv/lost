@@ -1223,13 +1223,13 @@ class LabelLeaf(Base):
         self.parent_leaf_id = parent_leaf_id
         self.is_root = is_root
 
-    def to_df(self):
-        '''Transform this LabelLeaf to a pandas DataFrame.
+    def to_dict(self):
+        '''Transform this object to a dict.
 
         Returns:
-            pd.DataFrame:
+            dict:
         '''
-        return pd.DataFrame({
+        return {
             'idx' : self.idx,
             'name': self.name,
             'abbreviation' : self.abbreviation,
@@ -1245,7 +1245,15 @@ class LabelLeaf(Base):
             'is_deleted' : self.is_deleted,
             'parent_leaf_id' : self.parent_leaf_id,
             'is_root' : self.is_root
-        }, index=[0])
+        }
+        
+    def to_df(self):
+        '''Transform this LabelLeaf to a pandas DataFrame.
+
+        Returns:
+            pd.DataFrame:
+        '''
+        return pd.DataFrame(self.to_dict(), index=[0])
 
 
 class Label(Base):
