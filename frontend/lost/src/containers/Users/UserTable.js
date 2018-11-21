@@ -129,7 +129,7 @@ class UserTable extends Component {
             groups: g,
             password: null
         }
-        this.validateInputAndUpdateBackend(rowInfo.original, updateUser)
+        this.updateUserBackend(updateUser)
     }
     updateUserRoles(rowInfo, r) {
         const {idx, email, first_name, last_name} = rowInfo.original
@@ -146,7 +146,7 @@ class UserTable extends Component {
             roles: r,
             password: null
         }
-        this.validateInputAndUpdateBackend(rowInfo.original, updateUser)
+        this.updateUserBackend(updateUser) 
     }
     updateUserCells(e, cellInfo) {
         const {idx, email, first_name, last_name} = cellInfo.original
