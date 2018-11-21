@@ -92,7 +92,9 @@ class TestLabelTree(object):
 
         dbm = DBMan(config.LOSTConfig())
         tree2 = LabelTree(dbm)
-        tree2.import_df(df2)
+        root_leaf = tree2.import_df(df2)
+        if root_leaf is None:
+            raise Exception('A label tree with name "{}" already exists. Clean your Test Database!'.format(df2.loc[root_idx, 'name']))
         for key, val in tree2.tree.items():
             print(val.to_df()[['idx', 'name', 'external_id', 'parent_leaf_id']])
         for ll in tree2.root.label_leaves:

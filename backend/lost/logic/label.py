@@ -69,8 +69,14 @@ class LabelTree(object):
             external_id (str): Some id of an external label system.
         
         Retruns:
-            :class:`lost.db.model.LabelLeaf`: The created root leaf.
+            :class:`lost.db.model.LabelLeaf` or None: 
+                The created root leaf or None if a root leaf with same
+                name is already present in database.
         '''
+        root_leafs = self.dbm.get_all_label_trees()
+        for leaf in root_leafs:
+            if name == leaf.name:
+                return None
         self.root = model.LabelLeaf(name=name, 
             external_id=external_id, is_root=True)
         self.dbm.add(self.root)
@@ -210,6 +216,11 @@ class LabelTree(object):
         
         Args:
             df (pandas.DataFrame): LabelTree in DataFrame style.
+
+        Retruns:
+            :class:`lost.db.model.LabelLeaf` or None: 
+                The created root leaf or None if a root leaf with same
+                name is already present in database.
         '''
         root = df[df['parent_leaf_id'].isnull()]
         no_root = df[~df['parent_leaf_id'].isnull()]
@@ -221,6 +232,8 @@ class LabelTree(object):
                 Found: \n{}'''.format(root))
         else:
             root_leaf = self.create_root(root['name'].values[0])
+            if root_leaf is None:
+                return None #A tree with the same name already exists.
             self._df_row_to_leaf(root.loc[0], root_leaf)
 
             #Create child dict
@@ -230,6 +243,7 @@ class LabelTree(object):
                 childs[row['parent_leaf_id']].append(row)
             
             self.__create_childs_from_df(childs, root_leaf, root.loc[0])
+            return root_leaf
 
 
             
