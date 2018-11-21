@@ -1,11 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {
-    Card,
-    CardBody,
-    Col,
-    Row
-} from 'reactstrap'
+import {Card, CardBody, Col, Row} from 'reactstrap'
 
 import CreateUser from '../../containers/Users/CreateUser'
 import CreateGroup from '../../containers/Users/CreateGroup'
@@ -31,17 +26,17 @@ class User extends Component {
                 <Col xs='4' sm='4' lg='3'>
                     <Card className='text-black'>
                         <CardBody className='pb-0'>
-                        <CreateGroup groups={this.props.groups}></CreateGroup>
-                        <GroupList></GroupList>
+                            <CreateGroup groups={this.props.groups}></CreateGroup>
+                            <GroupList></GroupList>
                         </CardBody>
                     </Card>
                 </Col>
                 <Col xs='8' sm='8' lg='9'>
                     <Card className='text-black'>
                         <CardBody className='pb-0'>
-                        <CreateUser groups={this.props.groups}></CreateUser>
-                        <div></div>
-                        <UserTable users={this.props.users} groups={this.props.groups}></UserTable>
+                            <CreateUser groups={this.props.groups}></CreateUser>
+                            <div></div>
+                            <UserTable users={this.props.users} groups={this.props.groups}></UserTable>
                         </CardBody>
                     </Card>
                 </Col>
@@ -50,8 +45,8 @@ class User extends Component {
         )
     }
 }
-function mapStateToProps(state){
-    return({users: state.user.users, groups: state.group.groups})
+function mapStateToProps(state) {
+    return ({users: state.user.users, groups: state.group.groups})
 }
 
 export default connect(mapStateToProps, {getUsers, getGroups})(User)

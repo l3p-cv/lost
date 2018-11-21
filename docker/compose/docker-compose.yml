@@ -8,8 +8,6 @@ services:
         - .env
       volumes:
         - ${LOST_HOME}:/${LOST_HOME}
-        #- /home/gereon/openl3p/coding/lost/backend/lost:/code/backend/lost
-        #- /home/gereon/openl3p/coding/lost/frontend/lost:/code/frontend/lost
       restart: always
       ports:
         - "${LOST_FRONTEND_PORT}:8080"
@@ -40,7 +38,7 @@ services:
     # For easy db access while dev.
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
-      container_name: phpmyadminlost
+      container_name: phpmyadmin
       environment:
         PMA_ARBITRARY: 1
         MYSQL_USER: ${LOST_DB_USER}

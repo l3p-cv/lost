@@ -597,11 +597,11 @@ class DBMan(object):
          %(anno_task_id, iteration, user_id)
         return self.session.execute(sql).first()
 
-    def get_available_label_trees(self, group_ids):
+    def get_all_root_leaves_by_groups(self, group_ids):
         ''' Get all available label trees
         '''
         return self.session.query(model.LabelLeaf).filter((model.LabelLeaf.is_root == True) & \
-        model.LabelLeaf.group_id.in_(group_ids)).all()
+            model.LabelLeaf.group_id.in_(group_ids)).all()
     
     def get_all_label_trees(self):
         '''Get all label trees in lost'''
