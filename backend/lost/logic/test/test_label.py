@@ -73,3 +73,28 @@ class TestLabelTree(object):
             else:
                 print('Either cow or horse need to be in e!!!')
                 assert False
+
+    def test_to_df(self, tree_plus_childs):
+        df = tree_plus_childs.to_df()
+        name_list = df['name'].values.tolist()
+        assert CHILD_COW_NAME in name_list
+        assert CHILD_HORSE_NAME in name_list
+        assert ROOT_NAME in name_list
+
+    def test_import_df(self, tree_plus_childs):
+        df = tree_plus_childs.to_df()
+        df2 = df.copy()
+        root_idx = df2[df2['parent_leaf_id'].isnull()].index.values[0]
+        no_root_idx = df2[~df2['parent_leaf_id'].isnull()].index
+        df2.loc[root_idx, 'name'] = 'second tree'
+        df2.loc[root_idx, 'idx'] = 0
+        df2.loc[no_root_idx, 'parent_leaf_id'] = 0
+
+        dbm = DBMan(config.LOSTConfig())
+        tree2 = LabelTree(dbm)
+        tree2.import_df(df2)
+        for key, val in tree2.tree.items():
+            print(val.to_df()[['idx', 'name', 'external_id', 'parent_leaf_id']])
+        for ll in tree2.root.label_leaves:
+            assert ll.name == CHILD_COW_NAME or ll.name == CHILD_HORSE_NAME
+        tree2.delete_tree()
