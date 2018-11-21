@@ -166,8 +166,8 @@ class TemplateSerialize(object):
     def __at_groups(self):
         groups_json = list()
         for group in self.available_groups:
-            if group.is_user_default:
-                continue
+            # if group.is_user_default:
+            #     continue
             group_json = dict()
             group_json['id'] = group.idx
             group_json['groupName'] = group.name
