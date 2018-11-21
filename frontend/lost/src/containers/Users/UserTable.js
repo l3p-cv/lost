@@ -214,7 +214,6 @@ class UserTable extends Component {
             <React.Fragment>
                 <ReactTable
                     data={data}
-                    filterable
                     columns={[{
                         Header: 'Users',
                         columns: [

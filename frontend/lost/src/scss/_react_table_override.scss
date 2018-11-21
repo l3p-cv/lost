@@ -1,0 +1,26 @@
+
+.ReactTable {
+    .rt-table {
+        .rt-thead {
+            .rt-tr {
+                .rt-th {
+
+                }
+            }
+        }
+        .rt-tbody {
+            .rt-tr-group {
+                &:nth-child(even) {
+                    // background: green;
+                }
+                &:nth-child(odd) {
+                    // background: blue;
+                }
+                .rt-th {
+
+                }
+            }
+
+        }
+    }
+}
