@@ -39,7 +39,7 @@ def parse_script(element):
 
 class PipeImporter(object):
 
-    def __init__(self, pipe_template_dir, group_name, dbm, forTest=False):
+    def __init__(self, pipe_template_dir, dbm, forTest=False):
         '''Load json file.
 
         Args:
@@ -56,7 +56,6 @@ class PipeImporter(object):
         self.json_files = glob(os.path.join(pipe_template_dir,'*.json'))
         self.pipes = []
         self.namespace = os.path.basename(self.src_pipe_template_path).strip('/')
-        self.group = dbm.get_group_by_name(group_name)
         for json_path in self.json_files:
             with open(json_path) as jfile:
                 pipe = json.load(jfile)
@@ -162,11 +161,10 @@ class PipeImporter(object):
                     logging.warning("Will not import PipeTemplate.")
                     return db_pipe.idx
             pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
-                                            timestamp=datetime.now(), group_id=self.group.idx)
+                                            timestamp=datetime.now())
             self.dbm.save_obj(pipe_temp)
             logging.info("Added PipeTemplate to database")
             logging.info("Name of this template is: %s"%(pipe['name'],))
-            logging.info("Template is visible for Group '{}'".format(self.group.name))
             for pe_j in pipe['elements']:
                 if 'script' in pe_j:
                     element_j = pe_j['script']

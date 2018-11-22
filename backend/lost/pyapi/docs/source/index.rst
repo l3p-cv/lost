@@ -15,6 +15,7 @@ Welcome to lost's documentation!
         Conventions <conventions.rst>
         All About Scripts <all_about_scripts.rst>
         ALL About Pipelines <all_about_pipelines.rst>
+        Users & Groups <user_groups.rst>
         PyAPI <pyapi.rst>
 
 Indices and tables

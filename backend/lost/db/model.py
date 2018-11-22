@@ -823,23 +823,20 @@ class PipeTemplate(Base):
         json_template (Text): A json sting that defines a pipeline template.
         timestamp (DateTime): Date and Time this Template was created or imported.
         is_debug_mode (Boolean): DebugMode shows weather this pipe is viewable for normal users or only for developers
-        group_id (int): The Id of Group who created or imported this template.
     """
     __tablename__ = "pipe_template"
     idx = Column(Integer, primary_key=True)
     json_template = Column(Text)
     timestamp = Column(DATETIME(fsp=6))
     is_debug_mode = Column(Boolean)
-    group_id = Column(Integer, ForeignKey("group.idx"))
 
     def __init__(self, idx=None, json_template=None, timestamp=None, 
-                 is_debug_mode=None, group_id=None):
+                 is_debug_mode=None):
         self.idx = idx
         self.json_template = json_template
         self.timestamp = timestamp
         self.debug_mode = is_debug_mode
-        self.group_id = group_id
-
+       
 class Script(Base):
     """A script that can be executed in a pipeline.
 
@@ -1172,8 +1169,6 @@ class LabelLeaf(Base):
         description (str):
         timestamp (DateTime):
         external_id (str): Id of an external semantic label system (for e.g. synsetid of wordnet)
-        group_id (int):
-        group (:class:`Group`):
         is_deleted (Boolean): 
         is_root (Boolean): Indicates if this leaf is the root of a tree.
         parent_leaf_id (Integer): Reference to parent LabelLeaf.
@@ -1186,22 +1181,18 @@ class LabelLeaf(Base):
     timestamp = Column(DATETIME(fsp=6))
     description = Column(Text)
     external_id = Column(String(4096))
-    group_id = Column(Integer, ForeignKey('group.idx'))
-    group = relationship("Group", uselist=False, lazy='joined')
     is_deleted = Column(Boolean)
     is_root = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
     label_leaves = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
-                 group_id=None, timestamp=None,
-                 external_id=None, label_tree_id=None, is_deleted=None,
+                 timestamp=None, external_id=None, label_tree_id=None, is_deleted=None,
                  parent_leaf_id=None, is_root=None):
         self.idx = idx
         self.name = name
         self.abbreviation = abbreviation
         self.description = description
-        self.group_id = group_id
         self.timestamp = timestamp
         self.external_id = external_id
         self.is_deleted = is_deleted
@@ -1219,7 +1210,6 @@ class LabelLeaf(Base):
             'name': self.name,
             'abbreviation' : self.abbreviation,
             'description' : self.description,
-            'group_id' : self.group_id,
             'timestamp' : self.timestamp,
             'external_id' : self.external_id,
             'is_deleted' : self.is_deleted,
@@ -1259,7 +1249,7 @@ class Label(Base):
     label_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'), nullable=False)
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     two_d_anno_id = Column(Integer, ForeignKey('two_d_anno.idx'))
-    group_id = Column(Integer, ForeignKey('group.idx'))
+    annotater_id = Column(Integer, ForeignKey('group.idx'))
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     label_leaf = relationship('LabelLeaf', uselist=False)
