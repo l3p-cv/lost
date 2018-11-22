@@ -18,7 +18,7 @@ Pipeline Definition files
 
 Example
 -------
-.. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_imgs.json
+.. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_mia.json
    :language: json
    :emphasize-lines: 1
    :linenos:

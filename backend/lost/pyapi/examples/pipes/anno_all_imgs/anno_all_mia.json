@@ -1,5 +1,6 @@
 {
   "author" : "Jonas Jaeger",
+  "description" : "Annotate all images in a folder with the MIA annotation tool.",
   "pipe-schema-version" : 0.0,
   "elements" : [
     {
