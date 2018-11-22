@@ -1,17 +1,31 @@
-User & Groups
+User and Groups
 *******************
 
-
-Image coordinate system
+Management
 =======================
-The same coordinate system as in OpenCv is used. So an image is treated as a matix.
-The x-axis increases to the right and the y-axis increases while moving downwards
-in the coordinate system, as in matrix notation.
+Users and groups can be added via the "Users" section.
+Each user created gets its own default group with the same name as the username. 
+No more users can be added to this default group. 
+Groups that are added manually can be assigned to any number of users. 
 
-Bounding Box definition
+Visibility 
 =======================
-* x: Defines the x-coordinate of the center of a bounding box (relative, in pixels).
-* y: Defines the y-coordinate of the center of a bounding box (relative, in pixels).
-* width: Defines the width of a bbox (relative, in pixels).
-* height: Defines the height of a bbox (relative, in pixels).
-see also :class:`l3py_api.data_model.BBoxAnnotation`
+Pipeline
+-----------------------
+Pipelines can be assigned to a group or to the own user when starting. 
+Only groups to which the user is assigned can be selected.
+Later, these pipelines will only be visible to the selected group or user.
+
+Label Trees
+-----------------------
+Label Trees are visible system-wide across all applications.
+
+AnnoTasks
+-----------------------
+AnnoTask can be assigned either to your own user or to a group when starting a pipeline. 
+Only groups to which the user is assigned can be selected.
+
+Pipeline Templates
+-----------------------
+Pipeline Templates are visible system-wide across all applications.
+
