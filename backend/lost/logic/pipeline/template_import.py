@@ -72,7 +72,7 @@ class PipeImporter(object):
             for pipe in self.pipes:
                 self.update_pipe(pipe)
             dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-            logging.info('\n++++++++++++++++++++++')
+            logging.info('\n\n++++++++++++++++++++++')
             logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         else:
@@ -138,7 +138,7 @@ class PipeImporter(object):
             ))
             return
         dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-        logging.info('\n++++++++++++++++++++++')
+        logging.info('\n\n++++++++++++++++++++++')
         logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         for pipe in self.pipes:
