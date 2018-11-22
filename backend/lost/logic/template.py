@@ -124,18 +124,12 @@ class TemplateSerialize(object):
         for pe in self.template_json['elements']:
             if 'datasource' in pe:
                 if pe['datasource']['type'] == 'rawFile':
-                    pe['datasource']['availableRawFiles'] = self.__ds_raw_files()
+                    pe['datasource']['availableRawFiles'] = self.available_raw_files
             elif 'script' in pe:
                 pe['script']['arguments'] = self.__script_arguments(pe)
                 pe['script']['id'] = self.__script_id(pe)
                 pe['script']['executors'] = self.__script_executors(pe)
-  
-    def __ds_raw_files(self):
-        raw_files_json = list()
-        for raw_file in self.available_raw_files:
-            raw_files_json.append(raw_file)
-        return raw_files_json
-    
+   
 
     def __label_trees(self):
         label_trees_json = list()

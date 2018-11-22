@@ -2,6 +2,7 @@ __author__ = 'Jonas Jaeger'
 
 from os.path import join
 import os
+import json
 import shutil
 import zipfile
 import lost
@@ -233,16 +234,15 @@ class FileMan(object):
         '''
         return os.path.join(self.lostconfig.project_path, MEDIA_CHUNK_PATH)
     
+
+
     def get_media_rel_path_tree(self):
         '''get first sublevel of media directory
         Returns: 
             list: ['path/1', 'path/2']
         '''
-        path_json = list()
-        for file in os.listdir(self.media_root_path):
-            if not file.startswith('.'):
-               path_json.append(file)
-        return path_json
+        return path_to_dict(self.media_root_path)
+
 
     @property
     def two_d_path(self):
@@ -300,3 +300,13 @@ def validate_action(db_man, path):
         if ds.raw_file_path in path:
             return False
     return True
+
+
+def path_to_dict(path):
+        d = {'name': os.path.basename(path)}
+        if os.path.isdir(path):
+            d['type'] = "directory"
+            d['children'] = [path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
+        else:
+            d['type'] = "file"
+        return d
