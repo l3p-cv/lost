@@ -21,7 +21,7 @@ if __name__ == "__main__":
     dbm = access.DBMan(lostconfig)
     root_leaf = next(filter(lambda x: x.name==args.tree_name, dbm.get_all_label_trees()),None)
     if root_leaf is None:
-        logging.info('LabelTree "{}" not present in database!'.format(args.tree_name))
+        logging.warning('LabelTree "{}" not present in database!'.format(args.tree_name))
     else:
         tree = LabelTree(dbm, root_leaf=root_leaf)
         df = tree.to_df()
