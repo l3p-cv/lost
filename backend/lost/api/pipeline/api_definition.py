@@ -17,6 +17,8 @@ template  = api.model('Template', {
     'author': fields.String(readOnly=True, description="The author of the pipeline template."),
     'namespace': fields.String(readOnly=True, description="The namespace of the pipeline template."),
     'name': fields.String(readOnly=True, description="The name of the pipeline template."),
+    'availableLabelTrees': fields.Raw(readOnly=True, description="All available label trees in system."),
+    'availableGroups': fields.Raw(readOnly=True, description="All available groups for the user."),
     'elements': fields.Raw()
     #'elements': fields.List(fields.Nested(template_element))
 })
