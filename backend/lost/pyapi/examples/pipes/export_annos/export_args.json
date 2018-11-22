@@ -1,14 +1,13 @@
 {
-  "description" : "Write arguments to a file and provides this file via data export",
   "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
   "elements" : [
     {
       "peN" : 0,
       "peOut" : [1],
       "script" : {
         "path": "export_arguments.py",
-        "description" : "Write arguments to a file and export.",
-        "language" : "python3"
+        "description" : "Write arguments to a file and export."
       }
     },
     {

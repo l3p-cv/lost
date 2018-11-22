@@ -1,7 +1,7 @@
 {
-  "name" : "Parallel test",
   "description" : "Request moa annotations and show the number of annotations per label and export annos to csv",
   "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
   "elements" : [
     {
       "peN" : 0,

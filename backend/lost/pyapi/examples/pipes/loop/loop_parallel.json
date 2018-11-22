@@ -7,8 +7,7 @@
       "peOut" : [2,4],
       "script" : {
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {
@@ -16,8 +15,7 @@
       "peOut" : [3],
       "script" : {
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {
@@ -25,8 +23,7 @@
       "peOut" : [5],
       "script" : {
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {
@@ -34,8 +31,7 @@
       "peOut" : [5],
       "script" : {
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {

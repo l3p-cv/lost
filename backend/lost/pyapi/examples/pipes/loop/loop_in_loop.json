@@ -1,15 +1,13 @@
 {
-  "description" : "LoopInLoop",
   "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
   "elements" : [
     {
       "peN" : 0,
       "peOut" : [1,3],
       "script" : {
-        "name" : "IterationTxt",
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {
@@ -18,7 +16,6 @@
       "script" : {
         "path": "iteration_txt.py",
         "description" : "Save the current iteration to a file",
-        "language" : "python3"
       }
     },
     {
@@ -26,8 +23,7 @@
       "peOut" : [4],
       "script" : {
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {
@@ -35,8 +31,7 @@
       "peOut" : [4],
       "script" : {
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {

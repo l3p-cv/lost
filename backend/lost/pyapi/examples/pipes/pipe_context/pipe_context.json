@@ -7,8 +7,7 @@
       "peOut" : [1],
       "script" : {
         "path": "test_pipe_context.py",
-        "description" : "Write id of this script to somefile.txt in pipe context",
-        "language" : "python3"
+        "description" : "Write id of this script to somefile.txt in pipe context"
       }
     },
     {
@@ -16,8 +15,7 @@
       "peOut" : null,
       "script" : {
         "path": "test_pipe_context.py",
-        "description" : "Write id of this script to somefile.txt in pipe context",
-        "language" : "python3"
+        "description" : "Write id of this script to somefile.txt in pipe context"
       }
     }
   ]

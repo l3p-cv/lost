@@ -1,6 +1,6 @@
 {
-  "description" : "LoopDataExport",
   "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
   "elements" : [
     {
       "peN" : 0,
@@ -14,8 +14,7 @@
       "peOut" : [2],
       "script" : {
         "path": "anno_all_imgs.py",
-        "description" : "Request ImageAnnotations for all images in an rawFile",
-        "language" : "python3"
+        "description" : "Request ImageAnnotations for all images in an rawFile"
       }
     },
     {
@@ -31,10 +30,8 @@
       "peN" : 3,
       "peOut" : [4],
       "script" : {
-        "name" : "IterationTxt",
         "path": "iteration_txt.py",
-        "description" : "Save the current iteration to a file",
-        "language" : "python3"
+        "description" : "Save the current iteration to a file"
       }
     },
     {
@@ -50,8 +47,7 @@
       "peOut" : [6],
       "script" : {
         "path": "request_bba_preboxed.py",
-        "description" : "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes.",
-        "language" : "python3"
+        "description" : "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes."
       }
     },
     {
@@ -68,8 +64,7 @@
       "peOut" : [8],
       "script" : {
         "path": "export_bbox_json.py",
-        "description" : "Export all BBoxAnnotations to a json file.",
-        "language" : "python3"
+        "description" : "Export all BBoxAnnotations to a json file."
       }
     },
     {
@@ -82,8 +77,7 @@
       "peOut" : [4, 10],
       "script" : {
         "path": "export_csv.py",
-        "description" : "Export annotations to a csv file.",
-        "language" : "python3"
+        "description" : "Export annotations to a csv file."
       }
     },
     {
