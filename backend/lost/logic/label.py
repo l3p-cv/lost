@@ -177,29 +177,29 @@ class LabelTree(object):
         '''
         try:
             leaf.abbreviation = row['abbreviation']
-            self.logger.info('    abbreviation: {}'.format(leaf.abbreviation))
+            self.logger.info('\tabbreviation: {}'.format(leaf.abbreviation))
         except KeyError:
-            self.logger.info('    No abbreviation provided.')
+            self.logger.info('\tNo abbreviation provided.')
         try:
             leaf.description = row['description']
-            self.logger.info('    description: {}'.format(leaf.description))
+            self.logger.info('\tdescription: {}'.format(leaf.description))
         except KeyError:
-            self.logger.info('    No description provided.')
+            self.logger.info('\tNo description provided.')
         try:
             leaf.timestamp = row['timestamp']
-            self.logger.info('    timestamp: {}'.format(leaf.timestamp))
+            self.logger.info('\ttimestamp: {}'.format(leaf.timestamp))
         except KeyError:
-            self.logger.info('   No timestamp provided.')
+            self.logger.info('\tNo timestamp provided.')
         try:
             leaf.external_id = row['external_id']
-            self.logger.info('    external_id: {}'.format(leaf.external_id))
+            self.logger.info('\texternal_id: {}'.format(leaf.external_id))
         except KeyError:
-            self.logger.info('    No external_id provided.')
+            self.logger.info('\tNo external_id provided.')
         try:
             leaf.is_deleted = row['is_deleted']
-            self.logger.info('    is_deleted: {}'.format(leaf.is_deleted))
+            self.logger.info('\tis_deleted: {}'.format(leaf.is_deleted))
         except KeyError:
-            self.logger.info('    No is_deleted provided.')
+            self.logger.info('\tNo is_deleted provided.')
 
     def __create_childs_from_df(self, child_dict, parent, parent_row):
         '''Create child leafs from a df.
@@ -230,7 +230,7 @@ class LabelTree(object):
                 The created root leaf or None if a root leaf with same
                 name is already present in database.
         '''
-        df = df.fillna(None)
+        df = df.where((pd.notnull(df)), None)
         root = df[df['parent_leaf_id'].isnull()]
         no_root = df[~df['parent_leaf_id'].isnull()]
         childs = {}
