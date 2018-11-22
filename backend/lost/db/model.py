@@ -823,23 +823,20 @@ class PipeTemplate(Base):
         json_template (Text): A json sting that defines a pipeline template.
         timestamp (DateTime): Date and Time this Template was created or imported.
         is_debug_mode (Boolean): DebugMode shows weather this pipe is viewable for normal users or only for developers
-        group_id (int): The Id of Group who created or imported this template.
     """
     __tablename__ = "pipe_template"
     idx = Column(Integer, primary_key=True)
     json_template = Column(Text)
     timestamp = Column(DATETIME(fsp=6))
     is_debug_mode = Column(Boolean)
-    group_id = Column(Integer, ForeignKey("group.idx"))
 
     def __init__(self, idx=None, json_template=None, timestamp=None, 
-                 is_debug_mode=None, group_id=None):
+                 is_debug_mode=None):
         self.idx = idx
         self.json_template = json_template
         self.timestamp = timestamp
         self.debug_mode = is_debug_mode
-        self.group_id = group_id
-
+       
 class Script(Base):
     """A script that can be executed in a pipeline.
 
@@ -849,11 +846,6 @@ class Script(Base):
         path (str): Path to a script that will execute a algorithm
             on data in database.
         description (str): Description of this algorithm/ script.
-        language (enum):  see :class:`data_model.dtype.ScriptLanguage`
-        lib_context (str): Path to custom libraries.
-        static_context (str): A path, where files can be stored that are always
-            used by this script. For example a trained classifer file. There is
-            also an instance_context - see :class:`lost.db.model.PipeElement`.
         arguments (str): json object with key value pairs (arguments for script)
         executors (str): json object containing the names of container which 
                          are able to run this script
@@ -863,18 +855,15 @@ class Script(Base):
     name = Column(String(100))
     path = Column(String(4096))
     description = Column(Text)
-    language = Column(Integer)
     arguments = Column(Text)
     executors = Column(Text)
 
     def __init__(self, idx=None, name=None, path=None, description=None,
-                 language=None, arguments=None,
-                 executors=None):
+        arguments=None, executors=None):
         self.idx = idx
         self.name = name
         self.path = path
         self.description = description
-        self.language = language
         self.arguments = arguments
         self.executors = executors
 
@@ -1171,14 +1160,7 @@ class LabelLeaf(Base):
         abbreviation (str):
         description (str):
         timestamp (DateTime):
-        regex_mask (str): Regular expression mask for any value which can be given to a label
-        default_value (str): Default value for labels
-        example_image: Path to an example image which represents the LabelName
-        css_class (str): Style Attributes for this LabelLeaf
         external_id (str): Id of an external semantic label system (for e.g. synsetid of wordnet)
-        dtype: Label Type see :class:`lost.db.dtype.LabelLeaf` (for e.g CLASS or VALUE)
-        group_id (int):
-        group (:class:`Group`):
         is_deleted (Boolean): 
         is_root (Boolean): Indicates if this leaf is the root of a tree.
         parent_leaf_id (Integer): Reference to parent LabelLeaf.
@@ -1190,36 +1172,21 @@ class LabelLeaf(Base):
     abbreviation = Column(String(20))
     timestamp = Column(DATETIME(fsp=6))
     description = Column(Text)
-    regex_mask = Column(String(300))
-    default_value = Column(String(300))
-    example_image = Column(String(4096))
-    css_class = Column(Text)
     external_id = Column(String(4096))
-    dtype = Column(Integer)
-    group_id = Column(Integer, ForeignKey('group.idx'))
-    group = relationship("Group", uselist=False, lazy='joined')
     is_deleted = Column(Boolean)
     is_root = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
     label_leaves = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
-                 group_id=None, timestamp=None, regex_mask=None,
-                 default_value=None, example_image=None, external_id=None, dtype=None,
-                 css_class=None, label_tree_id=None, is_deleted=None,
+                 timestamp=None, external_id=None, label_tree_id=None, is_deleted=None,
                  parent_leaf_id=None, is_root=None):
         self.idx = idx
         self.name = name
         self.abbreviation = abbreviation
         self.description = description
-        self.group_id = group_id
         self.timestamp = timestamp
-        self.regex_mask = regex_mask
-        self.default_value = default_value
-        self.example_image = example_image
-        self.css_class = css_class
         self.external_id = external_id
-        self.dtype = dtype
         self.is_deleted = is_deleted
         self.parent_leaf_id = parent_leaf_id
         self.is_root = is_root
@@ -1235,14 +1202,8 @@ class LabelLeaf(Base):
             'name': self.name,
             'abbreviation' : self.abbreviation,
             'description' : self.description,
-            'group_id' : self.group_id,
             'timestamp' : self.timestamp,
-            'regex_mask' : self.regex_mask,
-            'default_value' : self.default_value,
-            'example_image' : self.example_image,
-            'css_class' : self.css_class,
             'external_id' : self.external_id,
-            'dtype' : self.dtype,
             'is_deleted' : self.is_deleted,
             'parent_leaf_id' : self.parent_leaf_id,
             'is_root' : self.is_root
@@ -1269,7 +1230,6 @@ class Label(Base):
         timestamp (DateTime):
         timestamp_lock (DateTime):
         label_leaf (model.LabelLeaf): related :class:`model.LabelLeaf` object.
-        value (String): value for that label.
         annotater_id (Integer): GroupID of Annotater who has assigned this Label.
         confidence (float): Confidence of Annotation.
         anno_time (float): Time of annotaiton duration
@@ -1281,17 +1241,16 @@ class Label(Base):
     label_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'), nullable=False)
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     two_d_anno_id = Column(Integer, ForeignKey('two_d_anno.idx'))
-    group_id = Column(Integer, ForeignKey('group.idx'))
+    annotater_id = Column(Integer, ForeignKey('group.idx'))
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     label_leaf = relationship('LabelLeaf', uselist=False)
-    value = Column(String(300))
     confidence = Column(Float)
     anno_time = Column(Float)
 
     def __init__(self, idx=None, dtype=None, label_leaf_id=None, img_anno_id=None,
                  two_d_anno_id=None, annotater_id=None,
-                 timestamp_lock=None, timestamp=None, value=None,
+                 timestamp_lock=None, timestamp=None,
                  confidence=None, anno_time=None):
         self.idx = idx
         self.dtype = dtype
@@ -1301,7 +1260,6 @@ class Label(Base):
         self.annotater_id = annotater_id
         self.timestamp_lock = timestamp_lock
         self.timestamp = timestamp
-        self.value = value
         self.confidence = confidence
         self.anno_time = anno_time
 

@@ -12,11 +12,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Import a pipeline into the portal')
     parser.add_argument('pipe_dir', nargs='?', action='store',
                         help='Path directory with pipeline definition files.')
-    parser.add_argument('group_name', nargs='?', action='store',
-                        help='Name of group that pipeline should be visible for.')
     args = parser.parse_args()
 
     lostconfig = config.LOSTConfig()
     dbm = access.DBMan(lostconfig)
-    importer = template_import.PipeImporter(args.pipe_dir, args.group_name, dbm)
+    importer = template_import.PipeImporter(args.pipe_dir, dbm)
     importer.start_import()

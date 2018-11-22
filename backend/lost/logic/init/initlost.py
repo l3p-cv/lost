@@ -35,5 +35,7 @@ def create_first_user(dbm):
         dbm.save_obj(user)
         dbm.close_session()
 
+
+
 if __name__ == '__main__':
     main()

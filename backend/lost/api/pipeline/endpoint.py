@@ -22,8 +22,7 @@ class TemplateList(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            group_ids = [g.idx for g in user.groups]
-            re = template_service.get_templates(dbm, group_ids)
+            re = template_service.get_templates(dbm)
             dbm.close_session()
             return re
 

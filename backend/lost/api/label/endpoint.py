@@ -21,8 +21,7 @@ class LabelTrees(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            group_ids = [g.idx for g in user.groups]
-            root_leaves = dbm.get_all_root_leaves_by_groups(group_ids)
+            root_leaves = dbm.get_all_label_trees()
             trees = list()
             for root_leaf in root_leaves:
                 trees.append(LabelTree(dbm, root_leaf.idx).to_hierarchical_dict())
@@ -43,7 +42,6 @@ class Label(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            group_ids = [g.idx for g in user.groups]
             re = dbm.get_label_leaf(label_leaf_id)
             dbm.close_session()
             return re

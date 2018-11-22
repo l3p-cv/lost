@@ -72,16 +72,6 @@ class Label():
     IMG_ANNO = 1
     TWO_D_ANNO = 2
 
-class ScriptLanguage():
-    '''The language a script was written in
-
-    Attributes:
-        PYTHON3 (0):
-        PYTHON2 (1):
-    '''
-    PYTHON3 = 0
-    PYTHON2 = 1
-
 class VisualOutput():
     '''Type of a VisualOutput
 
@@ -93,17 +83,6 @@ class VisualOutput():
     '''
     IMAGE = 0
     HTML = 1
-
-class LabelLeaf():
-    '''Type of a LabelLeaf
-
-    Attributes:
-        CLASS (1): ClassLabel without values.
-        VALUABLE (2): Label has a value (defined by RegEx)
-
-    '''
-    CLASS = 1
-    VALUE = 2
 
 class TwoDAnno():
     '''Type of a TwoDAnno

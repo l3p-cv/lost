@@ -211,14 +211,6 @@ class DBMan(object):
         return self.session.query(model.Pipe)\
             .filter((model.Pipe.group_id.in_(group_ids))).all()
                     
-    def get_pipeline_templates_by_group(self,group_ids):
-        '''Get all PipeTemplate objects in db.
-
-        Returns:
-            list: :class:`.project.PipeTemplate`
-        '''
-        return self.session.query(model.PipeTemplate).filter(model.PipeTemplate.group_id.in_(group_ids)).all()
-
     def get_all_pipeline_templates(self):
         '''Get all PipeTemplate objects in db.
 
@@ -380,12 +372,6 @@ class DBMan(object):
         return self.session.query(model.Result)\
         .filter(model.Result.idx==result_id).first()
 
-
-    def get_label_trees(self, group_ids):
-        '''Get label tree by group_ids
-        '''
-        return self.session.query(model.LabelLeaf)\
-        .filter(model.LabelLeaf.group_id.in_(group_ids) & model.LabelLeaf.is_root == True ).all()
 
     def get_all_required_label_leaves(self, anno_task_id=None, label_leaf_id=None):
         '''Get required label leaves by anno_task_id
@@ -596,12 +582,6 @@ class DBMan(object):
          FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND user_id=%d )"\
          %(anno_task_id, iteration, user_id)
         return self.session.execute(sql).first()
-
-    def get_all_root_leaves_by_groups(self, group_ids):
-        ''' Get all available label trees
-        '''
-        return self.session.query(model.LabelLeaf).filter((model.LabelLeaf.is_root == True) & \
-            model.LabelLeaf.group_id.in_(group_ids)).all()
     
     def get_all_label_trees(self):
         '''Get all label trees in lost'''

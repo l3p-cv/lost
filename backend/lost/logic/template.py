@@ -2,12 +2,13 @@ import json
 from datetime import datetime
 from lost.db import model, access, dtype
 from lost.logic.file_man import FileMan
+from lost.logic.label import LabelTree
 __author__ = "Gereon Reus"
 
 ############################ get_templates ########################
 #                                                                 #
 ###################################################################
-def get_templates(db_man, group_ids, debug_mode=False):
+def get_templates(db_man, debug_mode=False):
     '''Read out all templates.
 
     Args:
@@ -17,7 +18,7 @@ def get_templates(db_man, group_ids, debug_mode=False):
     Returns: 
         JSON with all meta info about the pipe templates.
     '''
-    pipe_templates = db_man.get_pipeline_templates_by_group(group_ids)
+    pipe_templates = db_man.get_all_pipeline_templates()
     pipe_templates_json = dict()
     pipe_templates_json["templates"] = list()
 
@@ -82,11 +83,10 @@ def get_template(db_man, template_id ,user):
     file_man = FileMan(db_man.lostconfig)
     available_raw_files = file_man.get_media_rel_path_tree()
     available_groups = user.groups
-    group_ids = [g.idx for g in user.groups]
-    available_label_trees = db_man.get_all_root_leaves_by_groups(group_ids)
+    available_label_trees = db_man.get_all_label_trees()
     available_scripts = db_man.get_all_scripts()
     try:
-         template_serialize = TemplateSerialize(template,
+         template_serialize = TemplateSerialize(db_man, template,
                                             available_raw_files, 
                                             available_label_trees, 
                                             available_groups,
@@ -97,16 +97,18 @@ def get_template(db_man, template_id ,user):
     return template_serialize.template_json
 
 class TemplateSerialize(object):
+    dbm = None
     template = None
     template_json = None
     available_raw_files = None
     available_label_trees = None
     available_groups = None
     available_scripts = None
-    def __init__(self, template=None, available_raw_files=None,
+    def __init__(self, dbm, template=None, available_raw_files=None,
                  available_label_trees=None,
                  available_groups=None,
                  available_scripts=None):
+        self.dbm = dbm
         self.template = template
         self.template_json = json.loads(template.json_template)
         self.available_raw_files = available_raw_files
@@ -117,62 +119,32 @@ class TemplateSerialize(object):
     def add_available_info(self):
         self.template_json['id'] = self.template.idx
         self.template_json['timestamp'] = self.template.timestamp
+        self.template_json['availableGroups'] = self.__groups()
+        self.template_json['availableLabelTrees'] = self.__label_trees()
+
         for pe in self.template_json['elements']:
             if 'datasource' in pe:
                 if pe['datasource']['type'] == 'rawFile':
-                    pe['datasource']['availableRawFiles'] = self.__ds_raw_files()
-            elif 'annoTask' in pe:
-                pe['annoTask']['availableLabelTrees'] = self.__at_label_trees()
-                pe['annoTask']['availableGroups'] = self.__at_groups()
+                    pe['datasource']['availableRawFiles'] = self.available_raw_files
             elif 'script' in pe:
                 pe['script']['arguments'] = self.__script_arguments(pe)
                 pe['script']['id'] = self.__script_id(pe)
                 pe['script']['executors'] = self.__script_executors(pe)
-  
-    def __ds_raw_files(self):
-        raw_files_json = list()
-        for raw_file in self.available_raw_files:
-            raw_files_json.append(raw_file)
-        return raw_files_json
-    
+   
 
-    def __at_label_trees(self):
+    def __label_trees(self):
         label_trees_json = list()
         for label_tree in self.available_label_trees:
-            label_tree_json = dict()
-            label_tree_json['id'] = label_tree.idx
-            label_tree_json['name'] = label_tree.name
-            label_tree_json['description'] = label_tree.description
-            label_tree_json['timestamp'] = label_tree.timestamp
-            label_tree_json['groupName'] = label_tree.group.name
-            label_leaves_json = list()
-            for label_leaf in label_tree.label_leaves:
-                label_leaf_json = dict()
-                label_leaf_json['id'] = label_leaf.idx
-                label_leaf_json['name'] = label_leaf.name
-                label_leaf_json['abbreviation'] = label_leaf.abbreviation
-                label_leaf_json['description'] = label_leaf.description
-                label_leaf_json['groupName'] = "unknown"
-                if label_leaf.group:
-                    label_leaf_json['groupName'] = label_leaf.group.name
-                label_leaf_json['timestamp'] = label_leaf.timestamp
-                label_leaf_json['cssClass'] = label_leaf.css_class
-                label_leaf_json['leafId'] = label_leaf.leaf_id
-                label_leaf_json['parentLeafId'] = label_leaf.parent_leaf_id
-                label_leaves_json.append(label_leaf_json)
-            label_tree_json['labelLeaves'] = label_leaves_json 
-            label_trees_json.append(label_tree_json)
+            label_trees_json.append(LabelTree(self.dbm, label_tree.idx).to_hierarchical_dict())
         return label_trees_json
 
-    def __at_groups(self):
+    def __groups(self):
         groups_json = list()
         for group in self.available_groups:
-            # if group.is_user_default:
-            #     continue
             group_json = dict()
             group_json['id'] = group.idx
             group_json['groupName'] = group.name
-            group_json['isGroup'] = not group.is_user_default
+            group_json['isUserDefault'] = group.is_user_default
             groups_json.append(group_json)
         return groups_json
 

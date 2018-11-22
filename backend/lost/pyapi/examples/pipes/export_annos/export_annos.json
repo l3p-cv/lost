@@ -1,6 +1,6 @@
 {
-  "description" : "Request moa annotations and show the number of annotations per label",
   "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
   "elements" : [
     {
       "peN" : 0,
@@ -15,7 +15,6 @@
       "script" : {
         "path": "anno_all_imgs.py",
         "description" : "Request ImageAnnotations for all images in an rawFile",
-        "language" : "python3"
       }
     },
     {
@@ -35,8 +34,7 @@
       "peOut" : [4],
       "script" : {
         "path": "export_csv.py",
-        "description" : "Export annotations to a csv file.",
-        "language" : "python3"
+        "description" : "Export annotations to a csv file."
       }
     },
     {

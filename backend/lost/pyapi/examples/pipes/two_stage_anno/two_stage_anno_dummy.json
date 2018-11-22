@@ -1,6 +1,7 @@
 {
   "description": "This pipe represents a two stage annotation process. In a first stage bbox annotations are created and in the second stage this bboxes will be labeled by MIA",
   "author": "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
   "elements": [{
       "peN": 0,
       "peOut": [1],
@@ -13,8 +14,7 @@
       "peOut": [2],
       "script": {
         "path": "request_bba_preboxed.py",
-        "description": "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes.",
-        "language": "python3"
+        "description": "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes."
       }
     },
     {
@@ -53,8 +53,7 @@
       "peOut": [4],
       "script": {
         "path": "cluster_boxes.py",
-        "description": "Cluster bboxes by setting sim class",
-        "language": "python3"
+        "description": "Cluster bboxes by setting sim class"
       }
     },
     {

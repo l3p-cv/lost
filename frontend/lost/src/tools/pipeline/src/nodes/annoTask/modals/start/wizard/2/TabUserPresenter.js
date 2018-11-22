@@ -10,8 +10,8 @@ export default class TabUserPresenter extends WizardTabPresenter {
 		let groups = node.model.annoTask.availableGroups
 		console.log({groups})
 		groups = groups.map(group => {
-			const { id, groupName, isGroup } = group
-			const icon = isGroup ? 'goup' : 'no group'
+			const { id, groupName, isUserDefault } = group
+			const icon = isUserDefault ? 'user-icon' : 'group-icon'
 			return [
 				id,
 				groupName,

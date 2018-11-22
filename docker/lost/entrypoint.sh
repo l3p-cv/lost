@@ -1,6 +1,7 @@
 #!/bin/bash
  /bin/bash -c "source /opt/conda/bin/activate lost"
 source /opt/conda/bin/activate lost
+
  # init env vars 
 if [ -z "${LOST_DB_IP}" ]; then
   export LOST_DB_IP="db-lost"
@@ -19,7 +20,6 @@ if [ -z "${RABBITMQ_PORT}" ]; then
 fi
 
 # Wait for database to get available
-#wait for l3p mysql
 nc -z $LOST_DB_IP $LOST_DB_PORT
 n=$?
 while [ $n -ne 0 ]; do
@@ -42,6 +42,7 @@ done
 mkdir -p ${LOST_HOME}/logs
 
 python3 /code/backend/lost/logic/init/initlost.py
+cd /code/backend/lost/cli && bash import_examples.sh && cd -
 cd /code/backend/lost/pyapi/docs &&  make html && cd -
 
 if [ ${DEV} = "True" ]; then
@@ -50,9 +51,6 @@ if [ ${DEV} = "True" ]; then
 
   endpoint="python3 /code/backend/lost/app.py"
   eval $endpoint 
-
-  # frontend="cd /code/frontend/lost && npm start"
-  # eval $frontend 
 
 else
   echo "Production version not yet supported."

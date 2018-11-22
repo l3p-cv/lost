@@ -26,20 +26,15 @@ def parse_script(element):
     Returns:
         object: :class:`lost.db.model.Script`
     '''
-    script_language_name = element['language'].upper()
-    script_language = dtype.ScriptLanguage.PYTHON3
-    if script_language_name == "PYTHON2":
-        script_language = dtype.ScriptLanguage.PYTHON2
     script = model.Script(name=element['path'],
                         path=element['path'],
-                        description=element['description'],
-                        language=script_language)
+                        description=element['description'])
     return script
 
 
 class PipeImporter(object):
 
-    def __init__(self, pipe_template_dir, group_name, dbm, forTest=False):
+    def __init__(self, pipe_template_dir, dbm, forTest=False):
         '''Load json file.
 
         Args:
@@ -56,7 +51,6 @@ class PipeImporter(object):
         self.json_files = glob(os.path.join(pipe_template_dir,'*.json'))
         self.pipes = []
         self.namespace = os.path.basename(self.src_pipe_template_path).strip('/')
-        self.group = dbm.get_group_by_name(group_name)
         for json_path in self.json_files:
             with open(json_path) as jfile:
                 pipe = json.load(jfile)
@@ -78,6 +72,7 @@ class PipeImporter(object):
             for pipe in self.pipes:
                 self.update_pipe(pipe)
             dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
+            logging.info('\n\n++++++++++++++++++++++')
             logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         else:
@@ -143,6 +138,7 @@ class PipeImporter(object):
             ))
             return
         dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
+        logging.info('\n\n++++++++++++++++++++++')
         logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         for pipe in self.pipes:
@@ -150,7 +146,7 @@ class PipeImporter(object):
 
     def import_pipe(self, pipe):
         try:
-            logging.info('\n**********************')
+            logging.info('\n---')
             # Do everything relative from pipeline definition file path.
             oldwd = os.getcwd()
             os.chdir(self.src_pipe_template_path)
@@ -162,11 +158,9 @@ class PipeImporter(object):
                     logging.warning("Will not import PipeTemplate.")
                     return db_pipe.idx
             pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
-                                            timestamp=datetime.now(), group_id=self.group.idx)
+                                            timestamp=datetime.now())
             self.dbm.save_obj(pipe_temp)
-            logging.info("Added PipeTemplate to database")
-            logging.info("Name of this template is: %s"%(pipe['name'],))
-            logging.info("Template is visible for Group '{}'".format(self.group.name))
+            logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
             for pe_j in pipe['elements']:
                 if 'script' in pe_j:
                     element_j = pe_j['script']
@@ -199,9 +193,10 @@ class PipeImporter(object):
                         logging.warning((str(db_script.idx), db_script.name, db_script.path))
             os.chdir(oldwd) # Change dir back to old working directory.
             return pipe_temp.idx
-        except:
+        except Exception as e:
+            logging.error(e, exc_info=True)
             if not self.forTest:
-                self.remove_pipeline(pipe)
+                self.remove_pipe_project()
             logging.error('Cleanup successful. Removed buggy pipeline.')
 
     def remove_pipe_project(self):
