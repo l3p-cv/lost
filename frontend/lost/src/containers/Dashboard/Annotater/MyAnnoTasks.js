@@ -1,8 +1,115 @@
 import React, {Component} from 'react'
 import {Progress, Table} from 'reactstrap'
 import AmountPerLabel from './AmountPerLabel'
+import {getColor} from './utils'
+const annoTasks = [
+    {
+        'name': 'TestTask',
+        'id': 1,
+        'pipelineName': 'FirstTestPipe',
+        'pipelineCreator': 'admin',
+        'group': 'dieDollenAnnotierer',
+        'createdAt': 'datetime',
+        'type': 'MIA',
+        'lastActivity': 'datetime',
+        'lastAnnotater': 'jochen',
+        'finished': 20,
+        'size': 450
+    },
+    {
+        'name': 'TestTask',
+        'id': 2,
+        'pipelineName': 'FirstTestPipe',
+        'pipelineCreator': 'admin',
+        'group': 'dieDollenAnnotierer',
+        'createdAt': 'datetime',
+        'type': 'MIA',
+        'lastActivity': 'datetime',
+        'lastAnnotater': 'jochen',
+        'finished': 150,
+        'size': 450
+    },
+    {
+        'name': 'TestTask',
+        'id': 3,
+        'pipelineName': 'FirstTestPipe',
+        'pipelineCreator': 'admin',
+        'group': 'dieDollenAnnotierer',
+        'createdAt': 'datetime',
+        'type': 'MIA',
+        'lastActivity': 'datetime',
+        'lastAnnotater': 'jochen',
+        'finished': 300,
+        'size': 450
+    }, {
+        'name': 'TestTask',
+        'id': 4,
+        'pipelineName': 'FirstTestPipe',
+        'pipelineCreator': 'admin',
+        'group': 'dieDollenAnnotierer',
+        'createdAt': 'datetime',
+        'type': 'SIA',
+        'lastActivity': 'datetime',
+        'lastAnnotater': 'jochen',
+        'finished': 405,
+        'size': 450
+    }
+]
 
 class MyAnnoTasks extends Component {
+    handleRowClick(id){
+        console.log('Clicked on AnnoTask with ID: ' + id)
+    }
+
+    renderTableBody() {
+        return (
+            <tbody>
+                {annoTasks.map((annoTask) => {
+                    let progress = Math.floor((annoTask.finished/annoTask.size)*100)
+                    return (
+                        <tr key={annoTask.id} style={{'cursor': 'pointer'}} onClick={() => this.handleRowClick(annoTask.id)}>
+                            <td className='text-center'>
+                                <div>{annoTask.name}</div>
+                                <div className='small text-muted'>ID: {annoTask.id}
+                                </div>
+                            </td>
+                            <td>
+                                <div>{annoTask.pipelineName}</div>
+                                <div className='small text-muted'>
+                                    Created by: {annoTask.pipelineCreator}
+                                </div>
+                            </td>
+                            <td className='text-center'>
+                                <div>{annoTask.group}</div>
+                            </td>
+                            <td>
+                                <div className='clearfix'>
+                                    <div className='float-left'>
+                                        <strong>{progress}%</strong>
+                                    </div>
+                                    <div className='float-right'>
+                                        <small className='text-muted'>Started at: {annoTask.createdAt}</small>
+                                    </div>
+                                </div>
+                                <Progress className='progress-xs' color={getColor(progress)} value={progress}/>
+                                <div className='small text-muted'>
+                                    {annoTask.finished}/{annoTask.size}
+                                </div>
+                            </td>
+                            <td className='text-center'>
+                                <strong>{annoTask.type}</strong>
+                            </td>
+                            <td>
+                                <strong>{annoTask.lastActivity}</strong>
+                                <div className='small text-muted'>by {annoTask.lastAnnotater}</div>
+                            </td>
+                        </tr>
+                    )
+                })}
+            </tbody>
+
+        )
+    }
     render() {
 
         return (
@@ -17,267 +124,7 @@ class MyAnnoTasks extends Component {
                         <th className='text-center'>Activity</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td className='text-center'>
-                            <div className='avatar'>
-                                <img
-                                    src={'assets/img/avatars/1.jpg'}
-                                    className='img-avatar'
-                                    alt='admin@bootstrapmaster.com'/>
-                                <span className='avatar-status badge-success'></span>
-                            </div>
-                        </td>
-                        <td>
-                            <div>Yiorgos Avraamu</div>
-                            <div className='small text-muted'>
-                                <span>New</span>
-                                | Registered: Jan 1, 2015
-                            </div>
-                        </td>
-                        <td className='text-center'>
-                            <i className='flag-icon flag-icon-us h4 mb-0' title='us' id='us'></i>
-                        </td>
-                        <td>
-                            <div className='clearfix'>
-                                <div className='float-left'>
-                                    <strong>50%</strong>
-                                </div>
-                                <div className='float-right'>
-                                    <small className='text-muted'>Jun 11, 2015 - Jul 10, 2015</small>
-                                </div>
-                            </div>
-                            <Progress className='progress-xs' color='success' value='50'/>
-                        </td>
-                        <td className='text-center'>
-                            <i
-                                className='fa fa-cc-mastercard'
-                                style={{
-                                fontSize: 24 + 'px'
-                            }}></i>
-                        </td>
-                        <td>
-                            <div className='small text-muted'>Last login</div>
-                            <strong>10 sec ago</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className='text-center'>
-                            <div className='avatar'>
-                                <img
-                                    src={'assets/img/avatars/2.jpg'}
-                                    className='img-avatar'
-                                    alt='admin@bootstrapmaster.com'/>
-                                <span className='avatar-status badge-danger'></span>
-                            </div>
-                        </td>
-                        <td>
-                            <div>Avram Tarasios</div>
-                            <div className='small text-muted'>
-
-                                <span>Recurring</span>
-                                | Registered: Jan 1, 2015
-                            </div>
-                        </td>
-                        <td className='text-center'>
-                            <i className='flag-icon flag-icon-br h4 mb-0' title='br' id='br'></i>
-                        </td>
-                        <td>
-                            <div className='clearfix'>
-                                <div className='float-left'>
-                                    <strong>10%</strong>
-                                </div>
-                                <div className='float-right'>
-                                    <small className='text-muted'>Jun 11, 2015 - Jul 10, 2015</small>
-                                </div>
-                            </div>
-                            <Progress className='progress-xs' color='info' value='10'/>
-                        </td>
-                        <td className='text-center'>
-                            <i
-                                className='fa fa-cc-visa'
-                                style={{
-                                fontSize: 24 + 'px'
-                            }}></i>
-                        </td>
-                        <td>
-                            <div className='small text-muted'>Last login</div>
-                            <strong>5 minutes ago</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className='text-center'>
-                            <div className='avatar'>
-                                <img
-                                    src={'assets/img/avatars/3.jpg'}
-                                    className='img-avatar'
-                                    alt='admin@bootstrapmaster.com'/>
-                                <span className='avatar-status badge-warning'></span>
-                            </div>
-                        </td>
-                        <td>
-                            <div>Quintin Ed</div>
-                            <div className='small text-muted'>
-                                <span>New</span>
-                                | Registered: Jan 1, 2015
-                            </div>
-                        </td>
-                        <td className='text-center'>
-                            <i className='flag-icon flag-icon-in h4 mb-0' title='in' id='in'></i>
-                        </td>
-                        <td>
-                            <div className='clearfix'>
-                                <div className='float-left'>
-                                    <strong>74%</strong>
-                                </div>
-                                <div className='float-right'>
-                                    <small className='text-muted'>Jun 11, 2015 - Jul 10, 2015</small>
-                                </div>
-                            </div>
-                            <Progress className='progress-xs' color='warning' value='74'/>
-                        </td>
-                        <td className='text-center'>
-                            <i
-                                className='fa fa-cc-stripe'
-                                style={{
-                                fontSize: 24 + 'px'
-                            }}></i>
-                        </td>
-                        <td>
-                            <div className='small text-muted'>Last login</div>
-                            <strong>1 hour ago</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className='text-center'>
-                            <div className='avatar'>
-                                <img
-                                    src={'assets/img/avatars/4.jpg'}
-                                    className='img-avatar'
-                                    alt='admin@bootstrapmaster.com'/>
-                                <span className='avatar-status badge-secondary'></span>
-                            </div>
-                        </td>
-                        <td>
-                            <div>Enéas Kwadwo</div>
-                            <div className='small text-muted'>
-                                <span>New</span>
-                                | Registered: Jan 1, 2015
-                            </div>
-                        </td>
-                        <td className='text-center'>
-                            <i className='flag-icon flag-icon-fr h4 mb-0' title='fr' id='fr'></i>
-                        </td>
-                        <td>
-                            <div className='clearfix'>
-                                <div className='float-left'>
-                                    <strong>98%</strong>
-                                </div>
-                                <div className='float-right'>
-                                    <small className='text-muted'>Jun 11, 2015 - Jul 10, 2015</small>
-                                </div>
-                            </div>
-                            <Progress className='progress-xs' color='danger' value='98'/>
-                        </td>
-                        <td className='text-center'>
-                            <i
-                                className='fa fa-paypal'
-                                style={{
-                                fontSize: 24 + 'px'
-                            }}></i>
-                        </td>
-                        <td>
-                            <div className='small text-muted'>Last login</div>
-                            <strong>Last month</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className='text-center'>
-                            <div className='avatar'>
-                                <img
-                                    src={'assets/img/avatars/5.jpg'}
-                                    className='img-avatar'
-                                    alt='admin@bootstrapmaster.com'/>
-                                <span className='avatar-status badge-success'></span>
-                            </div>
-                        </td>
-                        <td>
-                            <div>Agapetus Tadeáš</div>
-                            <div className='small text-muted'>
-                                <span>New</span>
-                                | Registered: Jan 1, 2015
-                            </div>
-                        </td>
-                        <td className='text-center'>
-                            <i className='flag-icon flag-icon-es h4 mb-0' title='es' id='es'></i>
-                        </td>
-                        <td>
-                            <div className='clearfix'>
-                                <div className='float-left'>
-                                    <strong>22%</strong>
-                                </div>
-                                <div className='float-right'>
-                                    <small className='text-muted'>Jun 11, 2015 - Jul 10, 2015</small>
-                                </div>
-                            </div>
-                            <Progress className='progress-xs' color='info' value='22'/>
-                        </td>
-                        <td className='text-center'>
-                            <i
-                                className='fa fa-google-wallet'
-                                style={{
-                                fontSize: 24 + 'px'
-                            }}></i>
-                        </td>
-                        <td>
-                            <div className='small text-muted'>Last login</div>
-                            <strong>Last week</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className='text-center'>
-                            <div className='avatar'>
-                                <img
-                                    src={'assets/img/avatars/6.jpg'}
-                                    className='img-avatar'
-                                    alt='admin@bootstrapmaster.com'/>
-                                <span className='avatar-status badge-danger'></span>
-                            </div>
-                        </td>
-                        <td>
-                            <div>Friderik Dávid</div>
-                            <div className='small text-muted'>
-                                <span>New</span>
-                                | Registered: Jan 1, 2015
-                            </div>
-                        </td>
-                        <td className='text-center'>
-                            <i className='flag-icon flag-icon-pl h4 mb-0' title='pl' id='pl'></i>
-                        </td>
-                        <td>
-                            <div className='clearfix'>
-                                <div className='float-left'>
-                                    <strong>43%</strong>
-                                </div>
-                                <div className='float-right'>
-                                    <small className='text-muted'>Jun 11, 2015 - Jul 10, 2015</small>
-                                </div>
-                            </div>
-                            <Progress className='progress-xs' color='success' value='43'/>
-                        </td>
-                        <td className='text-center'>
-                            <i
-                                className='fa fa-cc-amex'
-                                style={{
-                                fontSize: 24 + 'px'
-                            }}></i>
-                        </td>
-                        <td>
-                            <div className='small text-muted'>Last login</div>
-                            <strong>Yesterday</strong>
-                        </td>
-                    </tr>
-                </tbody>
+                {this.renderTableBody()}
             </Table>
         )
 
