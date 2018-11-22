@@ -10,8 +10,6 @@ import lost
 
 DATA_ROOT_PATH = "data/"
 MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
-IMAGESET_ROOT_PATH =  MEDIA_ROOT_PATH + "imageset/"
-VIDEO_ROOT_PATH = MEDIA_ROOT_PATH + "video/"
 MEDIA_UPLOAD_PATH = MEDIA_ROOT_PATH + "uploads/"
 MEDIA_CHUNK_PATH = MEDIA_ROOT_PATH + ".chunks/"
 # SCRIPT_ROOT_PATH = DATA_ROOT_PATH + "script/"
@@ -122,8 +120,6 @@ class FileMan(object):
         else:
             raise Exception("No valid argument for pipe context path.")
 
-    def get_imageset_base(self):
-        return join(self.lostconfig.project_path, IMAGESET_ROOT_PATH)
     
     def get_jupyter_notebook_output_file(self):
         return join(self.lostconfig.project_path, JUPYTER_NOTEBOOK_OUTPUT_PATH)
@@ -190,12 +186,6 @@ class FileMan(object):
             os.mkdir(pe_i_path)
         return pe_i_path
 
-    def is_valid_imageset_path(self, imgset_path):
-        return IMAGESET_ROOT_PATH in imgset_path
-
-    def is_valid_video_path(self, video_path):
-        return VIDEO_ROOT_PATH in video_path
-
     def create_project_folders(self):
         '''Create folder structure for a project in lost webportal.
 
@@ -215,31 +205,12 @@ class FileMan(object):
         if not os.path.exists(join(root,MEDIA_ROOT_PATH)):
             os.mkdir(join(root,MEDIA_ROOT_PATH))
             print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
-        if not os.path.exists(join(root,IMAGESET_ROOT_PATH)):
-            os.mkdir(join(root,IMAGESET_ROOT_PATH))
-            print("\t Created: %s"%(join(root,IMAGESET_ROOT_PATH),))
-        if not os.path.exists(join(root,VIDEO_ROOT_PATH)):
-            os.mkdir(join(root,VIDEO_ROOT_PATH))
-            print("\t Created: %s"%(join(root,VIDEO_ROOT_PATH),))
         if not os.path.exists(join(root,DEBUG_ROOT_PATH)):
             os.mkdir(join(root,DEBUG_ROOT_PATH))
             print("\t Created: %s"%(join(root,DEBUG_ROOT_PATH),))
 
-    # def rm_script_folder(self, script):
-    #     '''Remove folder for a specific script.
-    #     '''
-    #     s_path = join(self.lostconfig.project_path, SCRIPT_ROOT_PATH, str(script.idx))
-    #     shutil.rmtree(s_path)
-
     @property
     def media_root_path(self):
-        # try:
-        #     ptvsd.enable_attach(secret='my_secret',address = ('0.0.0.0', 3500))
-        #     print("Started Debug Server")
-        # except Exception:
-        #     print("Port Already in Use")
-        # ptvsd.wait_for_attach()
-        # ptvsd.break_into_debugger()
         '''str: get absolute media root path
         '''
         return os.path.join(self.lostconfig.project_path, MEDIA_ROOT_PATH)

@@ -42,6 +42,7 @@ done
 mkdir -p ${LOST_HOME}/logs
 
 python3 /code/backend/lost/logic/init/initlost.py
+cd /code/backend/lost/cli && bash import_examples.sh && cd -
 cd /code/backend/lost/pyapi/docs &&  make html && cd -
 
 if [ ${DEV} = "True" ]; then
