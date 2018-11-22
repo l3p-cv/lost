@@ -17,7 +17,7 @@ export default class AnnoTaskStartModal extends BaseModal {
 			` 
         })
 		
-        this.wizard = new Wizard(this.view.ids['anno-task-modal-wizard'])  
+        this.wizard = new Wizard(this.html.ids['anno-task-modal-wizard'])  
 
         let tab1 = new TabInfoPresenter(node)
         let tab2 = new TabUserPresenter(node)

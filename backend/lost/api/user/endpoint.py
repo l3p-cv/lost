@@ -157,6 +157,8 @@ class User(Resource):
                         requesteduser.roles.append(designer_role)        
             
             for user_group in dbm.get_user_groups_by_user_id(id):
+                if user_group.group.is_user_default:
+                    continue
                 dbm.delete(user_group)
                 dbm.commit()
             if args.get('groups'):

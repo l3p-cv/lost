@@ -96,6 +96,7 @@ class UserGroups(Base):
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     group_id = Column(Integer(), ForeignKey('group.idx', ondelete='CASCADE'))
+    group =  relationship('Group', uselist=False)
 
 class TwoDAnno(Base):
     """A TwoDAnno represents a 2D annotation/ drawing for an image.

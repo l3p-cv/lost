@@ -1,50 +1,59 @@
 import BaseNodePresenter from '../BaseNodePresenter'
 import DatasourceNodeModel from './DatasourceNodeModel'
 
-import DatasourceRunningView from './views/DatasourceRunningView'
-import DatasourceStartView from './views/DatasourceStartView'
+import DatasourceNodeRunningView from './views/DatasourceNodeRunningView'
+import DatasourceNodeStartView from './views/DatasourceNodeStartView'
 
-import DatasourceRunningModal from './modals/DatasourceRunningModal'
-import DatasourceStartModal from './modals/DatasourceStartModal'
+import DatasourceNodeRunningModal from './modals/DatasourceNodeRunningModal'
+import DatasourceNodeStartModal from './modals/DatasourceNodeStartModal'
+
+import appModel from 'start/appModel'
 
 
 export default class DatasourceNodePresenter extends BaseNodePresenter {
-    constructor(graph, data, mode) {
+    constructor(graph: Graph, data: any, mode: String) {
         super(graph)                            
-        // create model
+        // create model.
         this.model = new DatasourceNodeModel(data, mode)
-        // create view
-        switch(mode){
-            case 'running':
-                this.view = new DatasourceRunningView(this.model)
-                this.modal = new DatasourceRunningModal(this.model)
-                break
-            case 'start':
-                this.view = new DatasourceStartView(this.model)
-                this.modal = new DatasourceStartModal(this)
-                $(this.modal.view.root).on('shown.bs.modal',() => {
-                    if(this.modal.view.refs['inputAvailableRawFiles']){
-                        this.modal.view.refs['inputAvailableRawFiles'].focus()
-                    }
-                })
-                $(this.modal.view.root).on('hidden.bs.modal',() => {
-                    this.graph.updateNode(this)           
-                })
-                break
-            default: throw new Error(`no node view available for ${data.type}`)
-        }
 
-        // VIEW BINDINGS
-        $(this.modal.view.refs['more-information-link']).on('click', () =>{
-            $(this.modal.view.refs['collapse-this']).collapse('toggle')
-            $(this.modal.view.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
-        })
+        // create view.
+		if(mode === 'running'){
+			this.view = new DatasourceNodeRunningView(this.model)
+			this.modal = new DatasourceNodeRunningModal(this.model)
+			$(this.modal.html.refs['more-information-link']).on('click', () =>{
+				$(this.modal.html.refs['collapse-this']).collapse('toggle')
+				$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+			})
+		} else if(mode === 'start'){
+			this.view = new DatasourceNodeStartView(this.model)
+			this.modal = new DatasourceNodeStartModal(this)
+			$(this.modal.html.root).on('shown.bs.modal',() => {
+				if(this.modal.html.refs['inputAvailableRawFiles']){
+					this.modal.html.refs['inputAvailableRawFiles'].focus()
+				}
+			})
+			$(this.modal.html.root).on('hidden.bs.modal',() => {
+				this.graph.updateNode(this)           
+			})
+		} else {
+			// THROW THIS ELSEWHERE. => MODEL. => CREATE BASE MODEL? / CREATE TESTS INSTEAD? YES.
+			throw new Error('Invalid mode')
+		}
+
+		// trigger graph validation check after node validation change.
+		// update node header color.
+		this.model.state.validated.on('change', validated => {
+			if(validated){
+				appModel.state.checkNodesValidation.update(true)
+				this.view.setColor(validated)
+			}
+		})
     }
     /**
      * @override
      */
     initViewBinding(){
-        if(this.view instanceof DatasourceRunningView){
+        if(this.view instanceof DatasourceNodeRunningView){
             $(this.view.html.root).on('click', $event => {
                 console.warn('CLICK')
             })
@@ -58,7 +67,7 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
                 this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
             this.model.state.on('update', text => {
-                this.modal.view.refs['state'].textContent = text
+                this.modal.html.refs['state'].textContent = text
             })
         }
     }

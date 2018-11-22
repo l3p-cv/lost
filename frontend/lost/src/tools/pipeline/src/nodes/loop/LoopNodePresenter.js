@@ -23,11 +23,11 @@ export default class LoopNodePresenter extends BaseNodePresenter {
             case 'start':
                 this.view = new LoopStartView(this.model)
                 this.modal = new LoopStartModal(this.model)
-                $(this.modal.view.refs['max-iteration']).on('input', (e)=>{
+                $(this.modal.html.refs['max-iteration']).on('input', (e)=>{
                     this.model.loop.maxIteration = e.currentTarget.value
                     this.view = new LoopStartView(this.model)
                 })
-                $(this.modal.view.root).on('hidden.bs.modal',() => {
+                $(this.modal.html.root).on('hidden.bs.modal',() => {
                     this.graph.updateNode(this)           
                 })
                 break
@@ -48,7 +48,7 @@ export default class LoopNodePresenter extends BaseNodePresenter {
                 this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
             this.model.state.on('update', text => {
-                this.modal.view.refs['state'].textContent = text
+                this.modal.html.refs['state'].textContent = text
             })
         }
     }

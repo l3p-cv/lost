@@ -1,4 +1,3 @@
-import './BaseNodeStyle.scss'
 import swal from 'sweetalert2'
 
 
@@ -52,7 +51,7 @@ export default class BaseNodePresenter {
             } else {
                 if(this.modal === undefined) throw new Error('modal is not defined.')
                 if(this.modal.visible === true || this.modal.visible === 'true'){
-                    $(this.modal.view.root).modal()                    
+                    $(this.modal.html.root).modal()                    
                 }else{
                     swal({
                         position: 'top-right',

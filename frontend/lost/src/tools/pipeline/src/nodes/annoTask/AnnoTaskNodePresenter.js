@@ -25,7 +25,7 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
             case 'start':
                 this.view = new AnnoTaskStartView(this.model)
                 this.modal = new AnnoTaskStartModal(this)
-                $(this.modal.view.root).on('hidden.bs.modal',() => {
+                $(this.modal.html.root).on('hidden.bs.modal',() => {
                     this.graph.updateNode(this)           
                 })
                 break
@@ -33,9 +33,9 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
         }
 
         // VIEW BINDINGS
-        $(this.modal.view.refs['more-information-link']).on('click', () =>{
-            $(this.modal.view.refs['collapse-this']).collapse('toggle')
-            $(this.modal.view.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+        $(this.modal.html.refs['more-information-link']).on('click', () =>{
+            $(this.modal.html.refs['collapse-this']).collapse('toggle')
+            $(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
         })
     }
     /**
@@ -62,11 +62,11 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
                 this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
             this.model.progress.on('update', number => {
-                this.modal.view.refs['progress-bar'].style.width = `${number}%`
-                this.modal.view.refs['progress-bar-text'].textContent = `${number? number: 0}%`
+                this.modal.html.refs['progress-bar'].style.width = `${number}%`
+                this.modal.html.refs['progress-bar-text'].textContent = `${number? number: 0}%`
             })
             this.model.state.on('update', text => {
-                this.modal.view.refs['state'].textContent = text
+                this.modal.html.refs['state'].textContent = text
             })
 		}
     }

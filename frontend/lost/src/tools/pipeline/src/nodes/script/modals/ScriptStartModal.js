@@ -68,7 +68,7 @@ export default class ScriptStartModal extends BaseModal {
 
         if(nodeModel.post.script.arguments !== null) {
             Object.keys(nodeModel.script.arguments).forEach(element => {
-                $(this.view.refs[element]).on('input', (e) =>{
+                $(this.html.refs[element]).on('input', (e) =>{
                     nodeModel.post.script.arguments[element].value = $(e.currentTarget).val()
                 })
             })

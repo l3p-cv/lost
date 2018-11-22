@@ -13,15 +13,15 @@ export default class ExampleStartModal extends BaseModal {
         super(params)
 
         // focus input field
-        $(this.view.root).on('shown.bs.modal', (e) => {
+        $(this.html.root).on('shown.bs.modal', (e) => {
             $(e.target).find('[data-ref=info]').focus()
         })
         // update node on change
-        $(this.view.refs['info']).on('input', (e) => {
+        $(this.html.refs['info']).on('input', (e) => {
             nodeModel.text.update(e.target.value)
         })
     }
     setInfoText(text: string){
-        this.view.refs['info'].value = text
+        this.html.refs['info'].value = text
     }
 }

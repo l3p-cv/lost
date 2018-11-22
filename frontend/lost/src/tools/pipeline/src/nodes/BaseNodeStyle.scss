@@ -1,15 +1,32 @@
 
 .pipeline-graph-node {
-	.col {
-		
-	}
 	.card-header {
-		line-height: 1.6rem;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 		font-size: 1.2rem;
 		i {
 			font-size: 1.6rem;
-			padding-right: 1rem;
-		}	
+			padding-right: 0.3rem;
+		}
+		span {
+			font-variant: small-caps;
+		}
+	}
+	.card-body {
+		display: grid;
+		grid-template-columns: 2fr 8fr;
+		grid-auto-rows: auto;
+		grid-gap: 0.5rem;
+		div {
+			&.attribute {
+				text-align: right;
+				font-weight: bold;
+				&:after {
+					content: ":";
+				}
+			}
+		}
 	}
 }
 
