@@ -177,24 +177,29 @@ class LabelTree(object):
         '''
         try:
             leaf.abbreviation = row['abbreviation']
+            self.logger.info('    abbreviation: {}'.format(leaf.abbreviation))
         except KeyError:
-            self.logger.info('No abbreviation provided in label tree.')
+            self.logger.info('    No abbreviation provided.')
         try:
             leaf.description = row['description']
+            self.logger.info('    description: {}'.format(leaf.description))
         except KeyError:
-            self.logger.info('No description provided in label tree.')
+            self.logger.info('    No description provided.')
         try:
             leaf.timestamp = row['timestamp']
+            self.logger.info('    timestamp: {}'.format(leaf.timestamp))
         except KeyError:
-            self.logger.info('No timestamp provided in label tree.')
+            self.logger.info('   No timestamp provided.')
         try:
             leaf.external_id = row['external_id']
+            self.logger.info('    external_id: {}'.format(leaf.external_id))
         except KeyError:
-            self.logger.info('No external_id provided in label tree.')
+            self.logger.info('    No external_id provided.')
         try:
             leaf.is_deleted = row['is_deleted']
+            self.logger.info('    is_deleted: {}'.format(leaf.is_deleted))
         except KeyError:
-            self.logger.info('No is_deleted provided in label tree.')
+            self.logger.info('    No is_deleted provided.')
 
     def __create_childs_from_df(self, child_dict, parent, parent_row):
         '''Create child leafs from a df.
@@ -225,6 +230,7 @@ class LabelTree(object):
                 The created root leaf or None if a root leaf with same
                 name is already present in database.
         '''
+        df = df.fillna(None)
         root = df[df['parent_leaf_id'].isnull()]
         no_root = df[~df['parent_leaf_id'].isnull()]
         childs = {}
@@ -234,20 +240,25 @@ class LabelTree(object):
                 to be exactly one root leaf for that tree! 
                 Found: \n{}'''.format(root))
         else:
-            root_leaf = self.create_root(root['name'].values[0])
-            if root_leaf is None:
-                return None #A tree with the same name already exists.
-            self._df_row_to_leaf(root.loc[0], root_leaf)
+            try:
+                root_leaf = self.create_root(root['name'].values[0])
+                if root_leaf is None:
+                    return None #A tree with the same name already exists.
+                self._df_row_to_leaf(root.loc[0], root_leaf)
 
-            #Create child dict
-            for index, row in no_root.iterrows():
-                if not row['parent_leaf_id'] in childs:
-                    childs[row['parent_leaf_id']] = []
-                childs[row['parent_leaf_id']].append(row)
-            
-            self.__create_childs_from_df(childs, root_leaf, root.loc[0])
-            self.dbm.commit()
-            return root_leaf
+                #Create child dict
+                for index, row in no_root.iterrows():
+                    if not row['parent_leaf_id'] in childs:
+                        childs[row['parent_leaf_id']] = []
+                    childs[row['parent_leaf_id']].append(row)
+                
+                self.__create_childs_from_df(childs, root_leaf, root.loc[0])
+                self.dbm.commit()
+                return root_leaf
+            except KeyError:
+                self.logger.error('''At least the following columns 
+                    need to be provided: *idx*, *name*, *parent_leaf_id*''')
+                raise
 
 
             
