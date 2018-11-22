@@ -1,14 +1,14 @@
 {
   "description" : "Write the out argument to visual html output",
   "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
   "elements" : [
     {
       "peN" : 0,
       "peOut" : [1],
       "script" : {
         "path": "vis_arguments.py",
-        "description" : "Write the out argument to a visual output.",
-        "language" : "python3"
+        "description" : "Write the out argument to a visual output."
       }
     },
     {

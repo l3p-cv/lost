@@ -72,7 +72,7 @@ class PipeImporter(object):
             for pipe in self.pipes:
                 self.update_pipe(pipe)
             dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-            logging.info('\n++++++++++++++++++++++')
+            logging.info('\n\n++++++++++++++++++++++')
             logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         else:
@@ -138,7 +138,7 @@ class PipeImporter(object):
             ))
             return
         dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-        logging.info('\n++++++++++++++++++++++')
+        logging.info('\n\n++++++++++++++++++++++')
         logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         for pipe in self.pipes:
@@ -146,7 +146,7 @@ class PipeImporter(object):
 
     def import_pipe(self, pipe):
         try:
-            logging.info('\n**********************')
+            logging.info('\n---')
             # Do everything relative from pipeline definition file path.
             oldwd = os.getcwd()
             os.chdir(self.src_pipe_template_path)
@@ -160,8 +160,7 @@ class PipeImporter(object):
             pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
                                             timestamp=datetime.now())
             self.dbm.save_obj(pipe_temp)
-            logging.info("Added PipeTemplate to database")
-            logging.info("Name of this template is: %s"%(pipe['name'],))
+            logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
             for pe_j in pipe['elements']:
                 if 'script' in pe_j:
                     element_j = pe_j['script']

@@ -31,7 +31,7 @@ A first example
 
 How to define a pipeline?
 -------------------------
-.. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_imgs.json
+.. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_mia.json
    :language: json
    :emphasize-lines: 1
    :linenos:
