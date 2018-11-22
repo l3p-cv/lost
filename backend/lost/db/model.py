@@ -846,11 +846,6 @@ class Script(Base):
         path (str): Path to a script that will execute a algorithm
             on data in database.
         description (str): Description of this algorithm/ script.
-        language (enum):  see :class:`data_model.dtype.ScriptLanguage`
-        lib_context (str): Path to custom libraries.
-        static_context (str): A path, where files can be stored that are always
-            used by this script. For example a trained classifer file. There is
-            also an instance_context - see :class:`lost.db.model.PipeElement`.
         arguments (str): json object with key value pairs (arguments for script)
         executors (str): json object containing the names of container which 
                          are able to run this script
@@ -860,18 +855,15 @@ class Script(Base):
     name = Column(String(100))
     path = Column(String(4096))
     description = Column(Text)
-    language = Column(Integer)
     arguments = Column(Text)
     executors = Column(Text)
 
     def __init__(self, idx=None, name=None, path=None, description=None,
-                 language=None, arguments=None,
-                 executors=None):
+        arguments=None, executors=None):
         self.idx = idx
         self.name = name
         self.path = path
         self.description = description
-        self.language = language
         self.arguments = arguments
         self.executors = executors
 

@@ -72,16 +72,6 @@ class Label():
     IMG_ANNO = 1
     TWO_D_ANNO = 2
 
-class ScriptLanguage():
-    '''The language a script was written in
-
-    Attributes:
-        PYTHON3 (0):
-        PYTHON2 (1):
-    '''
-    PYTHON3 = 0
-    PYTHON2 = 1
-
 class VisualOutput():
     '''Type of a VisualOutput
 
