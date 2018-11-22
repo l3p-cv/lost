@@ -118,13 +118,13 @@ class TemplateSerialize(object):
 
     def add_available_info(self):
         self.template_json['id'] = self.template.idx
+        self.template_json['availableGroups'] = self.__groups()
+        self.template_json['availableLabelTrees'] = self.__label_trees()
+
         for pe in self.template_json['elements']:
             if 'datasource' in pe:
                 if pe['datasource']['type'] == 'rawFile':
                     pe['datasource']['availableRawFiles'] = self.__ds_raw_files()
-            elif 'annoTask' in pe:
-                pe['annoTask']['availableLabelTrees'] = self.__at_label_trees()
-                pe['annoTask']['availableGroups'] = self.__at_groups()
             elif 'script' in pe:
                 pe['script']['arguments'] = self.__script_arguments(pe)
                 pe['script']['id'] = self.__script_id(pe)
@@ -137,13 +137,13 @@ class TemplateSerialize(object):
         return raw_files_json
     
 
-    def __at_label_trees(self):
+    def __label_trees(self):
         label_trees_json = list()
         for label_tree in self.available_label_trees:
             label_trees_json.append(LabelTree(self.dbm, label_tree.idx).to_hierarchical_dict())
         return label_trees_json
 
-    def __at_groups(self):
+    def __groups(self):
         groups_json = list()
         for group in self.available_groups:
             group_json = dict()
