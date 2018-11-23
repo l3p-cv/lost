@@ -171,14 +171,70 @@ class TwoDAnno(Base):
             self.label = Label(label_leaf_id=label_leaf_id)
 
     def to_dict(self, style='flat'):
-        '''Transform this object to a dict.
+        '''Transform this object into a dict.
         
         Args:
             style (str): 'flat' or 'hierarchical'
+                'flat': Return a dictionray in table style
+                'hierarchical': Return a nested dictionary
         
         Retruns:
-            dict:
-                In flat or hierarchical style.
+            dict: In flat or hierarchical style.
+        
+        Example:
+            Get a dict in flat style. Note that 'anno.data' is 
+            a string in contrast to the *hierarchical* style.
+
+                >>> bbox.to_dict(style='flat')
+                {
+                    'anno.idx': 88, 
+                    'anno.anno_task_id': None, 
+                    'anno.timestamp': None, 
+                    'anno.timestamp_lock': None, 
+                    'anno.state': None, 
+                    'anno.track_n': None, 
+                    'anno.dtype': 1, 
+                    'anno.count': 1, 
+                    'anno.sim_class': None, 
+                    'anno.iteration': 0, 
+                    'anno.group_id': 47, 
+                    'anno.img_anno_id': None, 
+                    'anno.annotator': 'test', 
+                    'anno.confidence': None, 
+                    'anno.anno_time': None, 
+                    'anno.lbl.idx': 14, 
+                    'anno.lbl.name': 'Aeroplane', 
+                    'anno.lbl.external_id': '6', 
+                    'anno.data': '{"x": 0.1, "y": 0.1, "w": 0.2, "h": 0.2}'
+                }
+
+            Get a dict in hierarchical style. Note that 'anno.data'
+            is a dict in contrast to the *flat* style.
+
+                >>> bbox.to_dict(style='hierarchical')
+                {
+                    'anno.idx': 86, 
+                    'anno.anno_task_id': None, 
+                    'anno.timestamp': None, 
+                    'anno.timestamp_lock': None, 
+                    'anno.state': None, 
+                    'anno.track_n': None, 
+                    'anno.dtype': 1, 
+                    'anno.count': 1, 
+                    'anno.sim_class': None, 
+                    'anno.iteration': 0, 
+                    'anno.group_id': 46, 
+                    'anno.img_anno_id': None, 
+                    'anno.annotator': 'test', 
+                    'anno.confidence': None, 
+                    'anno.anno_time': None, 
+                    'anno.lbl.idx': 14, 
+                    'anno.lbl.name': 'Aeroplane', 
+                    'anno.lbl.external_id': '6', 
+                    'anno.data': {
+                        'x': 0.1, 'y': 0.1, 'w': 0.2, 'h': 0.2
+                    }
+                }
         '''
         anno_dict = {
             'anno.idx': self.idx,
@@ -221,9 +277,56 @@ class TwoDAnno(Base):
             raise ValueError('Unknow style argument! Needs to be "flat" or "hierarchical".')
     
     def to_df(self):
+        '''Transform this annotation into a pandas DataFrame
+        
+        Returns:
+            pandas.DataFrame: 
+                A DataFrame where column names correspond
+                to the keys of the dictionary returned from *to_dict()*
+                method.
+        
+        Note:
+            Column names are:
+                ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
+                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                'anno.dtype', 'anno.count', 'anno.sim_class', 
+                'anno.iteration', 'anno.group_id', 'anno.img_anno_id', 
+                'anno.annotator', 'anno.confidence', 'anno.anno_time', 
+                'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
+                'anno.data']
+        '''
         return pd.DataFrame(self.to_dict(), index=[0])
 
     def to_vec(self, columns='all'):
+        '''Tansfrom this annotation in list style.
+
+        Args:
+            columns (list of str OR str): Possible column names are:
+                'all' OR
+                ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
+                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                'anno.dtype', 'anno.count', 'anno.sim_class', 
+                'anno.iteration', 'anno.group_id', 'anno.img_anno_id', 
+                'anno.annotator', 'anno.confidence', 'anno.anno_time', 
+                'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
+                'anno.data']
+        Returns:
+            list of objects: A list of the desired columns.
+        
+        Example:
+            If you want to get only the annotation in list style 
+            e.g. [x, y, w, h] (if this TwoDAnnotation is a bbox).
+
+            >>> anno.to_vec('anno.data')
+            [0.1, 0.1, 0.2, 0.2]
+
+            If you want in addition also the corresponding *label name*
+            and *label id* for this annotation then just add additional
+            column names:
+
+            >>> bbox.to_vec(['anno.data', 'anno.lbl.idx', 'anno.lbl.name'])
+            [[0.1, 0.1, 0.2, 0.2], 14, 'Aeroplane']
+        '''
         df = self.to_df().drop(columns=['anno.data'])
         df_new = df.assign(data=[self.get_anno_vec()])
         df_new = df_new.rename(index=str, columns={'data':'anno.data'})
