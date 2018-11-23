@@ -1,0 +1,53 @@
+[
+    {
+        "name": "TestTask",
+        "id": 1,
+        "pipelineName": "FirstTestPipe",
+        "pipelineCreator": "admin",
+        "group": "dieDollenAnnotierer",
+        "createdAt": "datetime",
+        "type": "MIA",
+        "lastActivity": "datetime",
+        "lastAnnotater": "jochen",
+        "finished": 430,
+        "size": 450
+    },
+    {
+        "name": "TestTask",
+        "id": 2,
+        "pipelineName": "FirstTestPipe",
+        "pipelineCreator": "admin",
+        "group": "dieDollenAnnotierer",
+        "createdAt": "datetime",
+        "type": "MIA",
+        "lastActivity": "datetime",
+        "lastAnnotater": "jochen",
+        "finished": 150,
+        "size": 450
+    },
+    {
+        "name": "TestTask",
+        "id": 3,
+        "pipelineName": "FirstTestPipe",
+        "pipelineCreator": "admin",
+        "group": "dieDollenAnnotierer",
+        "createdAt": "datetime",
+        "type": "MIA",
+        "lastActivity": "datetime",
+        "lastAnnotater": "jochen",
+        "finished": 300,
+        "size": 450
+    }, {
+        "name": "TestTask",
+        "id": 4,
+        "pipelineName": "FirstTestPipe",
+        "pipelineCreator": "admin",
+        "group": "dieDollenAnnotierer",
+        "createdAt": "datetime",
+        "type": "SIA",
+        "lastActivity": "datetime",
+        "lastAnnotater": "jochen",
+        "finished": 405,
+        "size": 450
+    }
+]

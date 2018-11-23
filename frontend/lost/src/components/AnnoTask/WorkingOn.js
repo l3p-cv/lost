@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Progress} from 'reactstrap'
 import {getColor} from './utils'
-import {Button} from 'reactstrap'
+import {Button, Col ,Row} from 'reactstrap'
 
 
 class WorkingOn extends Component {
@@ -12,11 +12,29 @@ class WorkingOn extends Component {
         let progress = Math.floor((this.props.annoTask.finished / this.props.annoTask.size) * 100)
         return (
             <div>
-                <div>
-                    You are working on
-                    <strong>{this.props.annoTask.name}</strong>
-                </div>
-                <br/>
+                <Row>
+                <Col xs='4' md='4' xl='4'>
+                <div className='callout callout-danger'>
+                                <small className='text-muted'>Working on</small>
+                                <br/>
+                                <strong>{this.props.annoTask.name}</strong>
+                 </div>
+                </Col>
+                <Col xs='4' md='4' xl='4'>
+                  <div className='callout callout-warning'>
+                                <small className='text-muted'>Annotations</small>
+                                <br/>
+                                <strong className='h4'>{this.props.annoTask.finished}/{this.props.annoTask.size}</strong>
+                 </div>
+                </Col>
+                <Col xs='4' md='4' xl='4'>
+                  <div className='callout callout-success'>
+                                <small className='text-muted'>Seconds/Annotation</small>
+                                <br/>
+                                <strong className='h4'>&#8709; {this.props.annoTask.statistic.secondsPerAnno}</strong>
+                 </div>
+                </Col>
+                </Row>
                 <div className='clearfix'>
                     <div className='float-left'>
                         <strong>{progress}%</strong>
@@ -27,9 +45,7 @@ class WorkingOn extends Component {
                 </div>
                 <Progress className='progress-xs' color={getColor(progress)} value={progress}/>
                 <br/>
-                <div>{this.props.annoTask.finished}/{this.props.annoTask.size}
-                    &nbsp; annotations </div>
-                    <br/>
+                <br/>
                 <Button onClick={()=>this.handleContinue(this.props.annoTask.id) }className='btn btn-info'>Continue</Button>
             </div>
         )

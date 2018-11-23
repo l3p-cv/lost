@@ -1,68 +1,22 @@
 import React, {Component} from 'react'
+import {connect } from 'react-redux'
 import {Card, CardBody, CardHeader, Col, Row} from 'reactstrap'
 import Facts from '../../../containers/Dashboard/Annotater/Facts'
 import ImagesPerDay from '../../../containers/Dashboard/Annotater/ImagesPerDay'
 import AmountPerLabel from '../../../components/AnnoTask/AmountPerLabel'
 import MyAnnoTasks from '../../../components/AnnoTask/MyAnnoTasks'
 import WorkingOn from '../../../components/AnnoTask/WorkingOn'
+import actions from '../../../actions'
 
-const annoTasks = [
-    {
-        'name': 'TestTask',
-        'id': 1,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'MIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 430,
-        'size': 450
-    },
-    {
-        'name': 'TestTask',
-        'id': 2,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'MIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 150,
-        'size': 450
-    },
-    {
-        'name': 'TestTask',
-        'id': 3,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'MIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 300,
-        'size': 450
-    }, {
-        'name': 'TestTask',
-        'id': 4,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'SIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 405,
-        'size': 450
-    }
-]
+const {getAnnoTasks, getWorkingOnAnnoTask} = actions
 
 class AnnotaterDashboard extends Component {
+    componentDidMount(){
+        this.props.getAnnoTasks()
+        this.props.getWorkingOnAnnoTask()
+    }
     renderWorkingOn() {
-        if (true) {
+        if (this.props.workingOnAnnoTask !== null) {
             return (
                 <Row>
                     <Col>
@@ -72,11 +26,11 @@ class AnnotaterDashboard extends Component {
                             </CardHeader>
                             <CardBody>
                                 <Row>
-                                    <Col xs='8' md='8' xl='8'>
-                                        <WorkingOn annoTask={annoTasks[0]}></WorkingOn>
+                                    <Col xs='7' md='7' xl='7'>
+                                        <WorkingOn annoTask={this.props.workingOnAnnoTask}></WorkingOn>
                                     </Col>
-                                    <Col xs='4' md='4' xl='4'>
-                                        <AmountPerLabel></AmountPerLabel>
+                                    <Col xs='5' md='5' xl='5'>
+                                        <AmountPerLabel data={this.props.workingOnAnnoTask.statistic.amountPerLabel}></AmountPerLabel>
                                     </Col>
                                 </Row>
                             </CardBody>
@@ -90,7 +44,7 @@ class AnnotaterDashboard extends Component {
         )
     }
     render() {
-
+        console.log(this.props)
         return (
             <div className='animated fadeIn'>
                 {this.renderWorkingOn()}
@@ -101,10 +55,8 @@ class AnnotaterDashboard extends Component {
                                 My Annotation Tasks
                             </CardHeader>
                             <CardBody>
-                              
                                 <br/>
-                
-                                <MyAnnoTasks annoTasks={annoTasks}></MyAnnoTasks>
+                                <MyAnnoTasks annoTasks={this.props.annoTasks}></MyAnnoTasks>
 
                             </CardBody>
                         </Card>
@@ -114,6 +66,9 @@ class AnnotaterDashboard extends Component {
                             </CardHeader>
                             <CardBody>
                             <Facts></Facts>
+                            <br/>
+                            <div>Images/Day</div>
+                            <br/>
                             <ImagesPerDay></ImagesPerDay>
                             </CardBody>
                         </Card>
@@ -125,4 +80,7 @@ class AnnotaterDashboard extends Component {
     }
 }
 
-export default AnnotaterDashboard
+function mapStateToProps(state){
+    return({workingOnAnnoTask: state.annoTask.workingOnAnnoTask, annoTasks: state.annoTask.annoTasks})
+}
+export default connect(mapStateToProps, {getAnnoTasks, getWorkingOnAnnoTask})(AnnotaterDashboard)

@@ -1,8 +1,9 @@
 import json
 from lost.db import model, state, dtype
 from datetime import datetime
+from lost.pyapi import pipe_elements
 
-def update_anno_task(dbm, anno_task_id):
+def update_anno_task(dbm, anno_task_id, user_id=None):
     remaining = None
     available = None
     response = dict()
@@ -36,6 +37,9 @@ def update_anno_task(dbm, anno_task_id):
         response['remainingAnnos'] = remaining
         annotask = dbm.get_anno_task(anno_task_id)
         annotask.progress = progress
+        if user_id:
+            annotask.last_activity = datetime.now()
+            annotask.last_annotater_id = user_id
         dbm.save_obj(annotask)
         return response
 
@@ -72,13 +76,13 @@ def set_finished(dbm, anno_task_id):
             pipe_e.state = state.PipeElement.FINISHED
             dbm.add(pipe_e)
             dbm.commit()
-            return "succeeded"
+            return "success"
         else:
             return "not finished, remaining: " + str(progress['remainingAnnos'])
 
 def get_current_annotask(dbm, user):
-        if user.choosen_annotask:
-            anno_task = user.choosen_annotask
+        if user.choosen_anno_task:
+            anno_task = user.choosen_anno_task
             return __get_at_info(dbm, anno_task)
         return "no annotask choosen"
 
@@ -132,6 +136,9 @@ def __get_at_info(dbm, annotask):
         remaining, available = __get_image_anno_counts(dbm, annotask.idx, pipeelement.iteration)
         at['finished'] = available - remaining
         at['size'] = available
+    at['statistic'] = dict()
+    at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement)
+    at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, annotask)
     return at
 
 def choose_annotask(dbm, anno_task_id, user_id):
@@ -147,3 +154,18 @@ def has_annotation(dbm, anno_task_id):
     if dbm.count_annos(anno_task_id) > 0:
         return True
     else: return False
+
+def __get_seconds_per_anno(dbm, annotask):
+    return 6.78
+
+def __get_amount_per_label(dbm, pipeelement, type):
+    dist = list()
+    annotask = pipe_elements.AnnoTask(pipeelement, dbm)
+    
+    df_list = []
+    for img_anno in annotask.outp.img_annos:
+        df_list.append(img_anno.to_df())
+    pd.concat(df_list)
+
+
+    return dist

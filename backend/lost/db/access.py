@@ -158,8 +158,8 @@ class DBMan(object):
         Returns:
             :class:`.project.AnnoTask`
         '''
-        return self.session.query(model.AnnoTask).filter(model.AnnoTask.state!=state.AnnoTask.PENDING &\
-        model.AnnoTask.group_id.in_(group_ids)).all()
+        return self.session.query(model.AnnoTask).filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
+        (model.AnnoTask.group_id.in_(group_ids))).all()
 
     def get_pipe(self, pipe_id=None, pipe_template_id=None):
         '''Get a pipe object.
