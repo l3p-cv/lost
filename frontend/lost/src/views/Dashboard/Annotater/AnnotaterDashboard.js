@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {connect } from 'react-redux'
+import {connect} from 'react-redux'
 import {Card, CardBody, CardHeader, Col, Row} from 'reactstrap'
 import Facts from '../../../containers/Dashboard/Annotater/Facts'
 import ImagesPerDay from '../../../containers/Dashboard/Annotater/ImagesPerDay'
@@ -8,12 +8,29 @@ import MyAnnoTasks from '../../../components/AnnoTask/MyAnnoTasks'
 import WorkingOn from '../../../components/AnnoTask/WorkingOn'
 import actions from '../../../actions'
 
-const {getAnnoTasks, getWorkingOnAnnoTask} = actions
+const {getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask} = actions
 
 class AnnotaterDashboard extends Component {
-    componentDidMount(){
-        this.props.getAnnoTasks()
-        this.props.getWorkingOnAnnoTask()
+    componentDidMount() {
+        this
+            .props
+            .getAnnoTasks()
+        this
+            .props
+            .getWorkingOnAnnoTask()
+    }
+    chooseAnnoTask(id, type) {
+        if (type === "MIA") {
+            this
+                .props
+                .chooseAnnoTask(id, this.props.history.push('/mia'))
+
+        } else if (type === "SIA") {
+
+            this
+                .props
+                .chooseAnnoTask(id, this.props.history.push('/sia'))
+        }
     }
     renderWorkingOn() {
         if (this.props.workingOnAnnoTask !== null) {
@@ -44,7 +61,6 @@ class AnnotaterDashboard extends Component {
         )
     }
     render() {
-        console.log(this.props)
         return (
             <div className='animated fadeIn'>
                 {this.renderWorkingOn()}
@@ -56,8 +72,9 @@ class AnnotaterDashboard extends Component {
                             </CardHeader>
                             <CardBody>
                                 <br/>
-                                <MyAnnoTasks annoTasks={this.props.annoTasks}></MyAnnoTasks>
-
+                                <MyAnnoTasks
+                                    annoTasks={this.props.annoTasks}
+                                    callBack={(id, type) => this.chooseAnnoTask(id, type)}></MyAnnoTasks>
                             </CardBody>
                         </Card>
                         <Card>
@@ -65,11 +82,11 @@ class AnnotaterDashboard extends Component {
                                 Statistics
                             </CardHeader>
                             <CardBody>
-                            <Facts></Facts>
-                            <br/>
-                            <div>Images/Day</div>
-                            <br/>
-                            <ImagesPerDay></ImagesPerDay>
+                                <Facts></Facts>
+                                <br/>
+                                <div>Images/Day</div>
+                                <br/>
+                                <ImagesPerDay></ImagesPerDay>
                             </CardBody>
                         </Card>
                     </Col>
@@ -80,7 +97,7 @@ class AnnotaterDashboard extends Component {
     }
 }
 
-function mapStateToProps(state){
-    return({workingOnAnnoTask: state.annoTask.workingOnAnnoTask, annoTasks: state.annoTask.annoTasks})
+function mapStateToProps(state) {
+    return ({workingOnAnnoTask: state.annoTask.workingOnAnnoTask, annoTasks: state.annoTask.annoTasks})
 }
-export default connect(mapStateToProps, {getAnnoTasks, getWorkingOnAnnoTask})(AnnotaterDashboard)
+export default connect(mapStateToProps, {getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask})(AnnotaterDashboard)

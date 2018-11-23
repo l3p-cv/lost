@@ -2,12 +2,14 @@ from flask_restplus import Resource
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-#from lost.api.user.api_definition import anno_task, anno_task_list
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
+from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
 
+
 namespace = api.namespace('annotask', description='AnnoTask API.')
+
 
 @namespace.route('')
 class Available(Resource):
@@ -30,8 +32,10 @@ class Available(Resource):
             return data
             # return annotask_list
 
+    @api.expect(annotask_parser)
     @jwt_required 
     def post(self):
+        args = annotask_parser.parse_args(request)
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -39,8 +43,7 @@ class Available(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            data = request.data['id']
-            annotask_service.choose_annotask(dbm, data ,user.idx)
+            annotask_service.choose_annotask(dbm, args.get('id') ,user.idx)
             dbm.close_session()
             return "success"
 
