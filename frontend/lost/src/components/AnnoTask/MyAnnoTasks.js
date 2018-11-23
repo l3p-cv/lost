@@ -1,60 +1,6 @@
 import React, {Component} from 'react'
 import {Progress, Table} from 'reactstrap'
-import AmountPerLabel from './AmountPerLabel'
 import {getColor} from './utils'
-const annoTasks = [
-    {
-        'name': 'TestTask',
-        'id': 1,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'MIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 20,
-        'size': 450
-    },
-    {
-        'name': 'TestTask',
-        'id': 2,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'MIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 150,
-        'size': 450
-    },
-    {
-        'name': 'TestTask',
-        'id': 3,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'MIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 300,
-        'size': 450
-    }, {
-        'name': 'TestTask',
-        'id': 4,
-        'pipelineName': 'FirstTestPipe',
-        'pipelineCreator': 'admin',
-        'group': 'dieDollenAnnotierer',
-        'createdAt': 'datetime',
-        'type': 'SIA',
-        'lastActivity': 'datetime',
-        'lastAnnotater': 'jochen',
-        'finished': 405,
-        'size': 450
-    }
-]
 
 class MyAnnoTasks extends Component {
     handleRowClick(id){
@@ -64,7 +10,7 @@ class MyAnnoTasks extends Component {
     renderTableBody() {
         return (
             <tbody>
-                {annoTasks.map((annoTask) => {
+                {this.props.annoTasks.map((annoTask) => {
                     let progress = Math.floor((annoTask.finished/annoTask.size)*100)
                     return (
                         <tr key={annoTask.id} style={{'cursor': 'pointer'}} onClick={() => this.handleRowClick(annoTask.id)}>

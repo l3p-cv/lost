@@ -724,8 +724,8 @@ class AnnoTask(Base):
     """
     __tablename__ = "anno_task"
     idx = Column(Integer, primary_key=True)
-    manager_id = Column(Integer, ForeignKey('group.idx'))
-    manager = relationship("Group", foreign_keys='AnnoTask.manager_id',
+    manager_id = Column(Integer, ForeignKey('user.idx'))
+    manager = relationship("User", foreign_keys='AnnoTask.manager_id',
                            uselist=False)
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", foreign_keys='AnnoTask.group_id',
@@ -738,12 +738,15 @@ class AnnoTask(Base):
     timestamp = Column(DATETIME(fsp=6))
     instructions = Column(Text)
     configuration = Column(Text)
+    last_activity = Column(DATETIME(fsp=6))
+    last_annotater_id = Column(Integer, ForeignKey('user.idx'))
+    last_annotater = relationship("User", foreign_keys='AnnoTask.last_annotater_id', uselist=False)
     req_label_leaves = relationship('RequiredLabelLeaf')
 
     def __init__(self, idx=None, manager_id=None, group_id=None, state=None,
                  progress=None, dtype=None, pipe_element_id=None,
                  timestamp=None, name=None, instructions=None,
-                 configuration=None):
+                 configuration=None, last_activity=None, last_annotater=None):
         self.idx = idx
         self.manager_id = manager_id
         self.group_id = group_id
@@ -755,6 +758,8 @@ class AnnoTask(Base):
         self.name = name
         self.instructions = instructions
         self.configuration = configuration
+        self.last_activity = last_activity
+        self.last_annotater = last_annotater
 
 class Pipe(Base):
     """A general pipe (task) that defines how a video/dataset (Media) will be processed.
@@ -881,9 +886,9 @@ class ChoosenAnnoTask(Base):
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
     anno_task = relationship("AnnoTask")
 
-    def __init__(self, idx=None, group_id=None, anno_task_id=None):
+    def __init__(self, idx=None, user_id=None, anno_task_id=None):
         self.idx = idx
-        self.group_id = group_id
+        self.user_id = user_id
         self.anno_task_id = anno_task_id
 
 class PipeElement(Base):
