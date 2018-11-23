@@ -5,8 +5,6 @@ import * as http from 'pipRoot/http'
 
 
 
-
-
 class SelectPipelinePresenter extends WizardTabPresenter {
     constructor(){
         super()

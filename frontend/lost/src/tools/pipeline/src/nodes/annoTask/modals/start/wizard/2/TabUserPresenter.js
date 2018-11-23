@@ -1,15 +1,15 @@
 import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
 import TabUserView from './TabUserView'
 
+import appModel from 'apps/start/appModel'
+
 
 export default class TabUserPresenter extends WizardTabPresenter {
     constructor(node: AnnoTaskNodePresenter) {
         super()
 
 		// add icon to groups, pass groups to view to create a data table
-		let groups = node.model.annoTask.availableGroups
-		console.log({groups})
-		groups = groups.map(group => {
+		const groups = appModel.state.selectedTemplate.value.availableGroups.map(group => {
 			const { id, groupName, isUserDefault } = group
 			const icon = isUserDefault ? 'user-icon' : 'group-icon'
 			return [

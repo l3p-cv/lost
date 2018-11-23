@@ -6,7 +6,7 @@ export default {
         pipelineTemplates: new Observable({}),
     },
     state: {
-        selectedTemplateId: new Observable(-1),
+        selectedTemplateId: new Observable(-1),	// used?
         selectedTemplate: new Observable({}),
         checkNodesValidation: new Observable(false),
         token: undefined,

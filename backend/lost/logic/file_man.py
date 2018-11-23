@@ -303,10 +303,13 @@ def validate_action(db_man, path):
 
 
 def path_to_dict(path):
-        d = {'name': os.path.basename(path)}
-        if os.path.isdir(path):
-            d['type'] = "directory"
-            d['children'] = [path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
-        else:
-            d['type'] = "file"
-        return d
+    if os.path.basename(path) == "":
+        d = {'text': 'root'}
+    else:
+        d = {'text': os.path.basename(path)}
+    if os.path.isdir(path):
+        d['type'] = "directory"
+        d['nodes'] = [path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
+    else:
+        d['type'] = "file"
+    return d

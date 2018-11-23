@@ -1,10 +1,10 @@
-import React, { Component } from "react"
-import ReactDOM from "react-dom"
+import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 
-import * as appView from "../../tools/sia/src/appView"
-import * as controlsView from "../../tools/sia/src/components/controls/controlsView"
+import * as appView from '../../tools/sia/src/appView'
+import * as controlsView from '../../tools/sia/src/components/controls/controlsView'
 
-import LabelSelect from "../../components/LabelSelect/LabelSelect"
+import LabelSelect from '../../components/LabelSelect/LabelSelect'
 
 export default class SingleImageAnnotation extends Component {
 	constructor(props){
@@ -12,14 +12,14 @@ export default class SingleImageAnnotation extends Component {
 		this.mount = React.createRef()
 	}
 	componentDidMount(){
-		require("../../tools/sia/src/appPresenter")
+		require('../../tools/sia/src/appPresenter')
 		this.mount.current.appendChild(appView.html.fragment)
 		this.mount.current.appendChild(controlsView.html.fragment)
-		// ReactDOM.render(<LabelSelect/>, document.getElementById("sia-propview-label-select-mountpoint"))
+		// ReactDOM.render(<LabelSelect/>, document.getElementById('sia-propview-label-select-mountpoint'))
 	}
 	render(){
 		return (
-			<div ref={this.mount} id="sia-mount"></div>
+			<div ref={this.mount} id='sia-mount'></div>
 		)
 	}
 }

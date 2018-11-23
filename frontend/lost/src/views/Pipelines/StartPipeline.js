@@ -1,5 +1,5 @@
-import React, { Component } from "react"
-import {connect} from 'react-redux';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import {
 	Row,
@@ -13,14 +13,14 @@ class SingleImageAnnotation extends Component {
 		this.mount = React.createRef()
 	}
 	componentDidMount(){
-		const init = require("../../tools/pipeline/src/apps/start/appPresenter.js").default
+		const init = require('../../tools/pipeline/src/apps/start/appPresenter.js').default
 		init(this.props.token)
 	}
 	render(){
 		return (
 			<Row>
 				<Col>
-					<div ref={this.mount} id="start-pipeline"></div>
+					<div ref={this.mount} id='start-pipeline'></div>
 				</Col>
 			</Row>
 		)
@@ -28,7 +28,7 @@ class SingleImageAnnotation extends Component {
 }
 
 function mapStateToProps(state) {
-    return {token: state.auth.token,};
+    return { token: state.auth.token, }
 }
 
 export default connect(mapStateToProps)(SingleImageAnnotation);

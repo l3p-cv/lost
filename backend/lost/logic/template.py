@@ -125,7 +125,7 @@ class TemplateSerialize(object):
         for pe in self.template_json['elements']:
             if 'datasource' in pe:
                 if pe['datasource']['type'] == 'rawFile':
-                    pe['datasource']['availableRawFiles'] = self.available_raw_files
+                    pe['datasource']['fileTree'] = self.available_raw_files
             elif 'script' in pe:
                 pe['script']['arguments'] = self.__script_arguments(pe)
                 pe['script']['id'] = self.__script_id(pe)
