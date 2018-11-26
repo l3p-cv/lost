@@ -115,10 +115,16 @@ def full_img_anno():
         annotator=test_user.groups[0],
         label_leaf_id=label_vec[1]
     )
+    line = model.TwoDAnno(
+        annotator=test_user.groups[0],
+        label_leaf_id=label_vec[4]
+    )
+    line.line = REF_LINE
     img_anno = model.ImageAnno(label_leaf_id=label_vec[3],
         img_path='path/to/img1.jpg')
     img_anno.twod_annos.append(twod_anno)
     img_anno.twod_annos.append(twod_anno2)
+    img_anno.twod_annos.append(line)
     dbm.add(img_anno)
     dbm.add(twod_anno)
     dbm.commit()
@@ -302,9 +308,9 @@ class TestImageAnnos(object):
         assert vec[2] == img_anno.label.label_leaf.external_id
         assert vec[3] == img_anno.img_path
 
-        print(img_anno.to_vec('anno.lbl.name'))
-        print(img_anno.to_vec(['img.img_path', 'anno.lbl.name', 'anno.lbl.idx', 'anno.dtype']))
-        assert False
+        # print(img_anno.to_vec('anno.lbl.name'))
+        # print(img_anno.to_vec(['img.img_path', 'anno.lbl.name', 'anno.data', 'anno.dtype']))
+        # assert False
         
     def test_to_vec_empty_image(self, empty_img_anno):
         img_anno = empty_img_anno
