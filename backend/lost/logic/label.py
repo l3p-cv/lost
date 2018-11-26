@@ -13,10 +13,11 @@ class LabelTree(object):
         dbm (:class:`lost.db.access.DBMan`): Database manager object.
         root_id (int): label_leaf_id of the root Leaf.
         root_leaf (:class:`lost.db.model.LabelLeaf`): Root leaf of the tree.
+        name (str): Name of a label tree.
         logger (logger): A logger.
     '''
 
-    def __init__(self, dbm, root_id=None, root_leaf=None, logger=None):
+    def __init__(self, dbm, root_id=None, root_leaf=None, name=None, logger=None):
         self.dbm = dbm # type: lost.db.access.DBMan
         self.root = None # type: lost.db.model.LabelLeaf
         self.tree = {}
@@ -31,6 +32,17 @@ class LabelTree(object):
         elif root_id is not None:
             self.root = self.dbm.get_label_leaf(root_id)
             self.__collect_tree(self.root, self.tree)
+        elif name is not None:
+            root_list = self.dbm.get_all_label_trees()
+            for leaf in root_list:
+                print(leaf.name)
+            root = next(filter(lambda x: x.name==name, root_list), None)
+            if root is None:
+                raise Exception('LabelTree with name "{}" not found in database!'.format(name))
+            else:
+                self.root = root
+                self.__collect_tree(self.root, self.tree)
+
 
     def __collect_tree(self, label_leaf, leaf_map):
         '''Collect all LabelLeafs from Tree or Subtree
@@ -105,20 +117,20 @@ class LabelTree(object):
         self.logger.info('Created child leaf: {}'.format(name))
         return leaf
 
-    def get_child_vec(self, parent_id, style='id'):
+    def get_child_vec(self, parent_id, columns='idx'):
         '''Get a vector of child labels.
 
         Args:
             parent_id (int): Id of the parent leaf.
-            style (str or list of str): Can be any attribute of :class:`lost.db.model.LabelLeaf`
-                for example 'id', 'external_id', 'name' or a list of these e.g.
-                ['name', 'id']
+            columns (str or list of str): Can be any attribute of :class:`lost.db.model.LabelLeaf`
+                for example 'idx', 'external_idx', 'name' or a list of these e.g.
+                ['name', 'idx']
         
         Example:
-            >>> label_tree.get_child_vec(1, style='id')
+            >>> label_tree.get_child_vec(1, columns='idx')
             [2, 3, 4]
 
-            >>> label_tree.get_child_vec(1, style=['id', 'name'])
+            >>> label_tree.get_child_vec(1, columns=['idx', 'name'])
             [
                 [2, 'cow'], 
                 [3, 'horse'], 
@@ -126,12 +138,12 @@ class LabelTree(object):
             ]
 
         Returns:
-            list in the requested style: 
+            list in the requested columns: 
         '''
         parent = self.tree[parent_id] # type: lost.db.model.LabelLeaf
         df_list = []
         for ll in parent.label_leaves:
-            df_list.append(ll.to_df()[style])
+            df_list.append(ll.to_df()[columns])
         df = pd.concat(df_list)
         return df.values.tolist()
             
