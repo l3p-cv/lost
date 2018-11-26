@@ -112,7 +112,6 @@ class TwoDAnno(Base):
         state (enum): can be unlocked, locked, locked_priority or labeled
             (see :class:`lost.db.state.Anno`)
         track_n (int): The track number this TwoDAnno belongs to.
-        count (int): Number of Annos for this TwoDAnno.
         sim_class (int): The similarity class this anno belong to.
             It is used to cluster similar annos in MIA.
         iteration (int): The iteration of a loop when this anno was created.
@@ -135,7 +134,6 @@ class TwoDAnno(Base):
     track_n = Column(Integer)
     data = Column(Text)
     dtype = Column(Integer)
-    count = Column(Integer)
     sim_class = Column(Integer)
     iteration = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
@@ -147,7 +145,7 @@ class TwoDAnno(Base):
 
     def __init__(self, anno_task_id=None,
                  group_id=None, timestamp=None, state=None,
-                 track_n=None, count=1, sim_class=None,
+                 track_n=None, sim_class=None,
                  img_anno_id=None, timestamp_lock=None, 
                  iteration=0, data=None, dtype=None,
                  confidence=None, anno_time=None, annotator=None,
@@ -158,7 +156,6 @@ class TwoDAnno(Base):
         self.timestamp_lock = timestamp_lock
         self.state = state
         self.track_n = track_n
-        self.count = count
         self.sim_class = sim_class
         self.img_anno_id = img_anno_id
         self.data = data
@@ -193,8 +190,7 @@ class TwoDAnno(Base):
                     'anno.timestamp_lock': None, 
                     'anno.state': None, 
                     'anno.track_n': None, 
-                    'anno.dtype': 1, 
-                    'anno.count': 1, 
+                    'anno.dtype': 'bbox', 
                     'anno.sim_class': None, 
                     'anno.iteration': 0, 
                     'anno.group_id': 47, 
@@ -219,8 +215,7 @@ class TwoDAnno(Base):
                     'anno.timestamp_lock': None, 
                     'anno.state': None, 
                     'anno.track_n': None, 
-                    'anno.dtype': 1, 
-                    'anno.count': 1, 
+                    'anno.dtype': 'bbox', 
                     'anno.sim_class': None, 
                     'anno.iteration': 0, 
                     'anno.group_id': 46, 
@@ -243,8 +238,7 @@ class TwoDAnno(Base):
             'anno.timestamp_lock': self.timestamp_lock,
             'anno.state': self.state,
             'anno.track_n': self.track_n,
-            'anno.dtype': self.dtype,
-            'anno.count': self.count,
+            'anno.dtype': None,
             'anno.sim_class': self.sim_class,
             'anno.iteration': self.iteration,
             'anno.group_id': self.group_id,
@@ -256,6 +250,10 @@ class TwoDAnno(Base):
             'anno.lbl.name': None,
             'anno.lbl.external_id': None
         }
+        try:
+            anno_dict['anno.dtype'] = dtype.TwoDAnno.TYPE_TO_STR[self.dtype]
+        except:
+            pass
         try:
             anno_dict['anno.lbl.idx'] = self.label.label_leaf.idx
             anno_dict['anno.lbl.name'] = self.label.label_leaf.name
@@ -289,7 +287,7 @@ class TwoDAnno(Base):
             Column names are:
                 ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                'anno.dtype', 'anno.count', 'anno.sim_class', 
+                'anno.dtype', 'anno.sim_class', 
                 'anno.iteration', 'anno.group_id', 'anno.img_anno_id', 
                 'anno.annotator', 'anno.confidence', 'anno.anno_time', 
                 'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
@@ -305,7 +303,7 @@ class TwoDAnno(Base):
                 'all' OR
                 ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                'anno.dtype', 'anno.count', 'anno.sim_class', 
+                'anno.dtype', 'anno.sim_class', 
                 'anno.iteration', 'anno.group_id', 'anno.img_anno_id', 
                 'anno.annotator', 'anno.confidence', 'anno.anno_time', 
                 'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
@@ -563,8 +561,6 @@ class ImageAnno(Base):
             frame_n indicates the frame number.
         video_path (str): If this image is part of an video,
             this should be the path to that video in file system.
-        width (int): Width of the image.
-        height (int): Height of the image.
         sim_class (int): The similarity class this anno belong to.
             It is used to cluster similar annos in MIA
         anno_time: Overall annotation time in seconds.
@@ -590,44 +586,217 @@ class ImageAnno(Base):
     img_path = Column(String(4096))
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
-    width = Column(Integer)
-    height = Column(Integer)
     group_id = Column(Integer, ForeignKey('group.idx'))
     label = relationship('Label', uselist=False)
     twod_annos = relationship('TwoDAnno')
     annotator = relationship('Group', uselist=False)
     anno_time = Column(Float)
     def __init__(self, anno_task_id=None, group_id=None,
-                 timestamp=None, label_id=None, state=None, count=1,
+                 timestamp=None, label_leaf_id=None, state=None,
                  sim_class=None, result_id=None, img_path=None,
                  frame_n=None,
-                 video_path=None, width=None, height=None,
+                 video_path=None,
                  iteration=0, anno_time=None):
         self.anno_task_id = anno_task_id
         self.group_id = group_id
         self.timestamp = timestamp
-        self.label_id = label_id
         self.state = state
         self.sim_class = sim_class
         self.result_id = result_id
         self.img_path = img_path
         self.video_path = video_path
         self.frame_n = frame_n
-        self.width = width
-        self.height = height
         self.iteration = iteration
         self.anno_time = anno_time
+        if label_leaf_id is not None:
+            self.label = Label(label_leaf_id=label_leaf_id)
 
-
-    def add_label(self, label_leaf_id):
-        '''Add a label to this image annotation.
+    def to_dict(self, style='flat'):
+        '''Transform this ImageAnno and all related TwoDAnnos into a dict.
 
         Args:
-            label_leaf_id (int): Id of the label_leaf that should be added.
+            style (str): 'flat' or 'hierarchical'. 
+                Return a dict in flat or nested style. 
+
+        Returns:
+            list of dict OR dict:
+                In 'flat' style return a list of dicts with one dict
+                per annotation.
+                In 'hierarchical' style, return a nested dictionary.
+        
+        Example:
+            HowTo iterate through all TwoDAnnotations of this ImageAnno 
+            dictionary in *flat* style:
+
+                >>> for d in img_anno.to_dict():
+                ...     print(d['img.img_path'], d['anno.lbl.name'], d['anno.dtype'])
+                path/to/img1.jpg Aeroplane bbox
+                path/to/img1.jpg Bicycle point
+
+            Possible keys in *flat* style:
+
+                >>> img_anno.to_dict()[0].keys()
+                dict_keys([
+                    'img.idx', 'img.anno_task_id', 'img.timestamp', 
+                    'img.timestamp_lock', 'img.state', 'img.sim_class', 
+                    'img.frame_n', 'img.video_path', 'img.img_path', 
+                    'img.result_id', 'img.iteration', 'img.group_id', 
+                    'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
+                    'img.lbl.external_id', 'img.annotator', 'anno.idx', 
+                    'anno.anno_task_id', 'anno.timestamp', 
+                    'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                    'anno.dtype', 'anno.sim_class', 'anno.iteration', 
+                    'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                    'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
+                    'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+                ])
+            
+            HowTo iterate through all TwoDAnnotations of this ImageAnno 
+            dictionary in *hierarchical* style:
+
+                >>> h_dict = img_anno.to_dict(style='hierarchical')
+                >>> for d in h_dict['img.twod_annos']:
+                ...     print(h_dict['img.img_path'], d['anno.lbl.name'], d['anno.dtype'])
+                path/to/img1.jpg Aeroplane bbox
+                path/to/img1.jpg Bicycle point
+
+            Possible keys in *hierarchical* style:
+
+                >>> h_dict = img_anno.to_dict(style='hierarchical')
+                >>> h_dict.keys()
+                dict_keys([
+                    'img.idx', 'img.anno_task_id', 'img.timestamp', 
+                    'img.timestamp_lock', 'img.state', 'img.sim_class', 
+                    'img.frame_n', 'img.video_path', 'img.img_path', 
+                    'img.result_id', 'img.iteration', 'img.group_id', 
+                    'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
+                    'img.lbl.external_id', 'img.annotator', 'img.twod_annos'
+                ])
+                >>> h_dict['img.twod_annos'][0].keys()
+                dict_keys([
+                    'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
+                    'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                    'anno.dtype', 'anno.sim_class', 'anno.iteration', 
+                    'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                    'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
+                    'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+                ])
         '''
-        if label_leaf_id is not None:
-            lbl = Label(label_leaf_id=label_leaf_id)
-            self.label = lbl
+
+        img_dict = {
+            'img.idx':self.idx,
+            'img.anno_task_id':self.anno_task_id,
+            'img.timestamp':self.timestamp,
+            'img.timestamp_lock': self.timestamp_lock,
+            'img.state': self.state,
+            'img.sim_class': self.sim_class,
+            'img.frame_n': self.frame_n,
+            'img.video_path': self.video_path,
+            'img.img_path': self.img_path,
+            'img.result_id': self.result_id,
+            'img.iteration': self.iteration,
+            'img.group_id': self.group_id,
+            'img.anno_time': self.anno_time,
+            'img.lbl.idx': None, 
+            'img.lbl.name': None,
+            'img.lbl.external_id': None,
+            'img.annotator': None
+        }
+        try:
+            img_dict['img.lbl.idx'] = self.label.label_leaf.idx 
+            img_dict['img.lbl.name'] = self.label.label_leaf.name
+            img_dict['img.lbl.external_id'] = self.label.label_leaf.external_id
+        except:
+            pass
+        try:
+            img_dict['img.annotator'] = self.annotator.name
+        except:
+            pass
+        if style == 'hierarchical':
+            img_dict['img.twod_annos'] = []
+            for anno in self.twod_annos:
+                img_dict['img.twod_annos'].append(
+                    anno.to_dict(style='hierarchical')
+                )
+            return img_dict
+        elif style == 'flat':
+            d_list = []
+            if len(self.twod_annos) > 0:
+                for anno in self.twod_annos:
+                    d_list.append(
+                        dict(img_dict, **anno.to_dict())
+                    )
+                return d_list
+            else:
+                empty_anno = TwoDAnno().to_dict()
+                return [dict(img_dict, **empty_anno)]
+        else:
+            raise ValueError('Unknow style argument! Needs to be "flat" or "hierarchical".')
+
+    def to_df(self):
+        '''Tranform this ImageAnnotation and all related TwoDAnnotaitons into a pandas DataFrame.
+
+        Returns:
+            pandas.DataFrame: Column names are:
+                'img.idx', 'img.anno_task_id', 'img.timestamp', 
+                'img.timestamp_lock', 'img.state', 'img.sim_class', 
+                'img.frame_n', 'img.video_path', 'img.img_path', 
+                'img.result_id', 'img.iteration', 'img.group_id', 
+                'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
+                'img.lbl.external_id', 'img.annotator', 'anno.idx', 
+                'anno.anno_task_id', 'anno.timestamp', 
+                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                'anno.dtype', 'anno.sim_class', 'anno.iteration', 
+                'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
+                'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+        '''
+        return pd.DataFrame(self.to_dict())
+
+    def to_vec(self, columns='all'):
+        '''Transform this ImageAnnotation and all related TwoDAnnotations in list style.
+
+        Args:
+            columns (str or list of str): 'all' OR 
+                'img.idx', 'img.anno_task_id', 'img.timestamp', 
+                'img.timestamp_lock', 'img.state', 'img.sim_class', 
+                'img.frame_n', 'img.video_path', 'img.img_path', 
+                'img.result_id', 'img.iteration', 'img.group_id', 
+                'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
+                'img.lbl.external_id', 'img.annotator', 'anno.idx', 
+                'anno.anno_task_id', 'anno.timestamp', 
+                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                'anno.dtype', 'anno.sim_class', 'anno.iteration', 
+                'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
+                'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+        
+        Retruns:
+            list OR list of lists: Desired columns
+
+        Example:
+            Return just a list of 2d anno labels:
+
+                >>> img_anno.to_vec('anno.lbl.name')
+                ['Aeroplane', 'Bicycle']
+
+            Return a list of lists:
+
+                >>> img_anno.to_vec(['img.img_path', 'anno.lbl.name', 
+                ...     'anno.lbl.idx', 'anno.dtype'])
+                [
+                    ['path/to/img1.jpg', 'Aeroplane', 14, 'bbox'], 
+                    ['path/to/img1.jpg', 'Bicycle', 15, 'point']
+                ]
+        '''
+        anno_vec = [vec.get_anno_vec() for vec in self.twod_annos]
+        df = self.to_df()
+        if anno_vec:
+            df.update(pd.DataFrame({'anno.data':anno_vec}))
+        if columns == 'all':
+            return df.values.tolist()
+        else:
+            return df[columns].values.tolist()
 
     def iter_annos(self, anno_type='bbox'):
         '''Iterator for all related 2D annotations of this image.
@@ -680,197 +849,6 @@ class ImageAnno(Base):
             if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
                 res.append(anno.get_anno_vec())
         return res
-
-    def get_anno_lbl_vec(self, which='id', anno_type='bbox'):
-        '''Get labels for related TwoDAnnos of tis ImageAnnotation in list style.
-
-        An TwoDAnno can contain multible labels.
-        The TwoDAnno will be filtered by type.
-
-        Args:
-            which (str):
-
-                'id':
-                Get a list of label ids.
-                Each id is related to a :class:`LabelLeaf`
-                that is part of a LabelTree in the LOST framework.  
-                A 2D annotation can contain multiple labels.
-
-                'external_id':
-                An external label id can be any str 
-                and is used to map LOST-LabelLeafs to label ids from
-                external systems like ImageNet.
-
-                'name':
-                Get label names for this annotations in list style.
-
-            anno_type (str): Can be 'bbox', 'point', 'line', 'polygon'
-
-        Retruns:
-            list of int or str [id, ...]:
-
-        Example:
-            Get vec of label ids
-            
-            >>> img_anno.get_anno_lbl_vec(anno_type='bbox')
-            [[2], [10]]
-            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
-            [[0.1 , 0.2 , 0.3 , 0.18],
-            [0.25, 0.25, 0.2, 0.4]]
-            
-            Get related external ids
-            
-            >>> img_anno.get_anno_lbl_vec('external_id', 'bbox')
-            [[5], [24]]
-            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
-            [[0.1 , 0.2 , 0.3 , 0.18],
-            [0.25, 0.25, 0.2, 0.4]]
-
-            Get related label name
-            
-            >>> img_anno.get_anno_lbl_vec('name', 'bbox')
-            [['cow'], ['horse']]
-            >>> img_anno.get_anno_vec('bbox') #Get corresponding bounding boxes
-            [[0.1 , 0.2 , 0.3 , 0.18],
-            [0.25, 0.25, 0.2, 0.4]]
-        '''
-        res = []
-        for anno in self.twod_annos:
-            if anno.dtype == dtype.TwoDAnno.STR_TO_TYPE[anno_type]:
-                res.append(anno.get_lbl_vec(which=which))
-        return res
-
-    def get_img_lbl_vec(self, which='id'):
-        '''Get labels for this image annotation in list style.
-
-        An ImageAnnotation can contain multible labels. 
-
-        Args:
-            which (str):
-
-                'id':
-                Get a list of label ids.
-                Each id is related to a :class:`LabelLeaf`
-                that is part of a LabelTree in the LOST framework.  
-                A 2D annotation can contain multiple labels.
-
-                'external_id':
-                An external label id can be any str 
-                and is used to map LOST-LabelLeafs to label ids from
-                external systems like ImageNet.
-
-                'name':
-                Get label names for this annotations in list style.
-
-        Retruns:
-            list of int or str [id, ...]:
-
-        Example:
-            Get vec of label ids
-            
-            >>> twod_anno.get_img_lbl_vec()
-            [2]
-            
-            Get related external ids
-            
-            >>> twod_anno.get_img_lbl_vec('external_id')
-            [5]
-
-            Get related label name
-            
-            >>> twod_anno.get_img_lbl_vec('name')
-            ['cow']
-        '''
-        if which == 'id':
-            return [lbl.label_leaf.idx for lbl in self.labels]
-        elif which == 'external_id':
-            return [lbl.label_leaf.external_id for lbl in self.labels]
-        elif which == 'name':
-            return [lbl.label_leaf.name for lbl in self.labels]
-        else:
-            raise Exception('Unknown argument value: {}'.format(which))
-
-    def to_df(self):
-        '''Get ImageAnno and related TwoDAnnos as pandas Dataframe.
-
-        Returns:
-            pandas.DataFrame: Each row represants an TwoDAnno and the related ImageAnno information.
-        '''
-        val_table = []
-        column_names = [
-            'img.id',
-            'img.timestamp',
-            'img.path',
-            'img.width',
-            'img.height'
-            'img.anno_time',
-            'img.iteration',
-            'img.lbl.id',
-            'img.lbl.external_id',
-            'img.lbl.name',
-            'anno.id',
-            'anno.timestamp',
-            'anno.anno_time',
-            'anno.data',
-            'anno.annotator',
-            'anno.iteration',
-            'anno.lbl.id',
-            'anno.lbl.external_id',
-            'anno.lbl.name',
-            'anno.type'
-        ]
-        anno_list = list(self.iter_annos('all'))
-        if len(anno_list) > 0:
-            for anno in anno_list:
-                val_table.append([
-                    self.idx,
-                    self.timestamp,
-                    self.img_path,
-                    self.width,
-                    self.height,
-                    self.anno_time,
-                    self.iteration,
-                    self.label.label_leaf_id,
-                    self.label.label_leaf.external_id,
-                    self.label.label_leaf.name,
-                    anno.idx,
-                    anno.timestamp,
-                    anno.anno_time,
-                    anno.data,
-                    anno.annotator.name,
-                    anno.iteration,
-                    anno.label.label_leaf_id,
-                    anno.label.label_leaf.external_id,
-                    anno.label.label_leaf.name,
-                    dtype.TwoDAnno.TYPE_TO_STR[anno.dtype]
-                ])
-        else:
-            val_table.append([
-                self.idx,
-                self.timestamp,
-                self.img_path,
-                self.width,
-                self.height,
-                self.anno_time,
-                self.iteration,
-                self.label.label_leaf_id,
-                self.label.label_leaf.external_id,
-                self.label.label_leaf.name,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None
-            ])
-
-        return pd.DataFrame(val_table, columns=column_names)
-        #raise Exception('Add pandas and numpy to base image -.-')
-        
 
 class AnnoTask(Base):
     """A object that represents a anno task.
