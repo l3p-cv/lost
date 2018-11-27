@@ -18,7 +18,7 @@ def exec_pipe():
     pipe_list = dbm.get_pipes_to_process()
     # For each task in this project
     for p in pipe_list:
-       pipe_man = cron.PipeMan(dbm=dbm, pipe=p, lostconfig=lostconfig)
+       pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig)
        pipe_man.process_pipeline()
 
 def release_annos():

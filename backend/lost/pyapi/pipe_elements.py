@@ -13,7 +13,7 @@ class Element(object):
         self._lostconfig = dbm.lostconfig
         self._pipe_element = pe
         self._pipe = self._dbm.get_pipe(pipe_id=self._pipe_element.pipe_id)
-        self._pipe_man = pipe_model.PipeMan(self._dbm, self._pipe)
+        self._pipe_man = pipe_model.PipeEngine(self._dbm, self._pipe)
         self._inp = inout.Input(self)
         self._outp = inout.Output(self)
         self._fm = file_man.FileMan(self._lostconfig)
