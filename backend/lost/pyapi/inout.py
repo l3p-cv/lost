@@ -159,7 +159,7 @@ class Input(object):
                     yield bb #type: lost.db.model.TwoDAnno
 
     @property
-    def line_annos(self):
+    def point_annos(self):
         '''Iterate over all point annotations.
 
         Returns:
@@ -498,7 +498,6 @@ class ScriptOutput(Output):
         '''Add annos in list style to an image.
         
         Args:
-            pe (model.PipeElement): The connected PipeElement where annotation should be provided for.
             img_path (str): Path to the image where annotations are added for.
             img_label (int): Labels that will be assigned to the image. Each label in the list is
                 represented by a label_leaf_id.
