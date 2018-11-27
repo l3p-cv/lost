@@ -247,64 +247,6 @@ class PipeImporter(object):
                 return True
         return True
 
-class TemplateQuery(object):
-    '''A Class to query the dict representation of a pipeline definition json file.
-
-    Attributes:
-        pipe_template (dict): Dict representation of a pipeline template.
-    '''
-
-    def __init__(self, pipe_template):
-        '''Init
-
-        Args:
-            pipe_template (dict): Dict representation of a PipelineTemplate json
-        '''
-        self.pipe_template = pipe_template
-
-    def get_script(self, filename):
-        '''Get a script element by scriptname
-
-        Args:
-            filename (str): Filename or path to a script. Script elemnts are
-                identified by the filename of the script.
-
-        Returns:
-            dict : A script element in dictionary format. E.g.:
-                    {
-                    "name" : "TestScript",
-                    "path": "../../scripts/testscript.py",
-                    "description" : "Test",
-                    "language" : "python3",
-                    "arguments" : {"arg1" : {
-                                                {"value" : "val1"},
-                                                {"help" : "helptext"}
-                                            }
-                                }
-                    }
-        '''
-        f_name = os.path.basename(filename)
-        for element in self.pipe_template['elements']:
-            if 'script' in element:
-                if os.path.basename(element['script']['path']) == f_name:
-                    return element
-        return {}
-
-    def get_script_args(self, filename):
-        '''Get arguments of a script element.
-
-        Args:
-            filename: Filename or path to a script. Scripts will be identified by
-
-        Returns:
-            dict : A arguments dict in format {"arg1":"value1",...,"argn":"valuen"}
-                If no arguments are found, an empty dictionary will be returned.
-        '''
-        script = self.get_script(filename)
-        if 'arguments' in script:
-            return script['arguments']
-        return {}
-
 class PipePacker(object):
 
     def __init__(self, pipe_template_file):
