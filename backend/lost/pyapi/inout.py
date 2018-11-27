@@ -323,7 +323,7 @@ class ScriptOutput(Output):
                 labels to be verified by a human annotator.
                 -> Set the img_path and the boxes argument. For boxes you
                 need to assign a list of box and a list of label_ids for labels.
-                E.g. boxes =[[0.1,0.1,0.2,0.3],...], labels =[[1,5],...]
+                E.g. boxes =[[0.1,0.1,0.2,0.3],...], labels =[1,5,...]
         
         Example:
             How to use this method in a Script::
@@ -369,7 +369,7 @@ class ScriptOutput(Output):
                 #         bbox.sim_class = sim_classes[i]
                 #     img_anno.add_bbox(bbox)
 
-    def request_annos(self, img_path, img_label=[], img_sim_class=None, 
+    def request_annos(self, img_path, img_label=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
         video_path=None):
         '''Request annotations for a subsequent annotaiton task.
@@ -492,7 +492,7 @@ class ScriptOutput(Output):
                 anno.sim_class = anno_sim_classes[i]
             img_anno.twod_annos.append(anno)
     
-    def add_annos(self, img_path, img_label=[], img_sim_class=None, 
+    def add_annos(self, img_path, img_label=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
         video_path=None):
         '''Add annos in list style to an image.
