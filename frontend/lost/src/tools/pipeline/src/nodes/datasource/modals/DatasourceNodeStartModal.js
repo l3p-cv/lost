@@ -1,4 +1,4 @@
-import { BaseModal } from 'pipRoot/l3pfrontend/index'
+import { BaseModal, mapTree } from 'pipRoot/l3pfrontend/index'
 
 import 'bootstrap-tree'
 import 'bootstrap-tree/dist/bootstrap-treeview.min.css'
@@ -44,15 +44,17 @@ export default class DatasourceStartModal extends BaseModal {
                             break
                         } else {
                             $(this.html.refs['available']).text('Path is not avaiable')
-                            node.model.state.path.update('') // reset?
+                            node.model.state.path.update('') // trigger reset instead?
 							node.model.state.validated.update(false)
                         }
                     }
                 })
 				// file tree
-				$(this.html.refs['file-tree']).treeview({
-					data: node.model.datasource.fileTree.nodes,
+				const data = mapTree(node.model.datasource.fileTree, {
+					childrenKey: "children",
+					map: [["name", "text"], ["children", "nodes"]]
 				})
+				$(this.html.refs['file-tree']).treeview({ data: data.nodes })
 				$(this.html.refs['file-tree']).treeview('collapseAll')
 				$(this.html.refs['file-tree']).on('nodeSelected', ($event, data) => {
 					$(this.html.refs['file-tree']).treeview('expandNode', data.nodeId)
