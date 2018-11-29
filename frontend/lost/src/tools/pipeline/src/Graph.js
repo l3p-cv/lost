@@ -89,7 +89,10 @@ export default class Graph {
         const x = (this.width / 2) - (this.dagreD3Graph.graph().width / 2) || 0
         const y = this.marginTop
 		// center the graph
+		// STILL NEED TO SCALE DEPENDING ON GRAPH HEIGHT
         this.d3SelectionGroup.attr('transform', `translate(${x}, ${y})`)
+        // this.d3SelectionGroup.attr('transform', `translate(${x}, ${y}) scale(${0.5})`)
+		// this.d3SelectionSvg.call(this.d3Zoom.scaleTo, 0.5)
         this.render()
     }
     render(){

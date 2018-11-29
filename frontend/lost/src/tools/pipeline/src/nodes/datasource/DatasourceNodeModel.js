@@ -3,7 +3,6 @@ import { Observable } from 'pipRoot/l3pfrontend/index'
 
 export default class DatasourceNodeModel {
     constructor(data: any, mode: String) {
-		console.log({DatasourceNodeModel: data})
         if(data === undefined || data.peN === undefined){
             throw new Error('data is undefined or has no peN property.')
         }
@@ -24,14 +23,3 @@ export default class DatasourceNodeModel {
         }
     }
 }
-
-// function mapFileTree(data){
-// 	console.log(data)
-// 	// extend item
-// 	data.text = "hodor was here"
-// 	if(!data.nodes){
-// 		mapFileTree(data)
-// 	}
-// 	// go deeper baby
-// 	mapFileTree(data.nodes)
-// }

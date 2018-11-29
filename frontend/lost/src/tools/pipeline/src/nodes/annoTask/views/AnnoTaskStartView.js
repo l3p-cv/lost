@@ -1,9 +1,29 @@
-import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
+import BaseNodeView from '../../BaseNodeView'
+
 import appModel from 'start/appModel'
 
 
-export default class AnnoTaskStartView {
+export default class AnnoTaskStartView extends BaseNodeView {
     constructor(model) {
+		super({
+			header: {
+				icon: 'fa fa-pencil',
+				title: 'Annotation Task',
+				colorInvalidated: 'warning',
+				colorValidated: 'success',
+			},
+			content: [
+				{
+					attribute: 'Name',
+					value: model.post.annoTask.name,
+				},
+				{
+					attribute: 'Assignee',
+					value: model.meta.assignee,
+				},
+			]
+		})
+		// -------- ???
         let validation = false
         if(
             model.post.annoTask.instructions !== '' &&
@@ -15,38 +35,6 @@ export default class AnnoTaskStartView {
         }
         model.validation = validation
         appModel.state.checkNodesValidation.update(true)
-
-        this.html = new NodeTemplate(/*html*/`
-            <div class='panel'>
-                <div class='panel-heading bg-${validation ? `success` : `warning`}'>
-                    <i class='fa fa-pencil fa-2x pull-left'></i>                
-                    <h class='panel-title'>Annotation Task</h>           
-                </div>
-                <div class='panel-body'>
-                    <table class='table table-borderless'>
-                        <tbody>
-                            <tr>
-                                <td>Name:</td>
-                                <td>${model.post.annoTask.name}</td>
-                            </tr> 
-                            <tr>
-                                <td>Assignee:</td>
-                                <td>${model.meta.assignee}</td>
-                            </tr>       
-                        </tbody>  
-                    </table>
-                    ${model.meta.labelLeaves.map(element => `
-                        <span class='annotask-span-node-default bg-blue'>${element.name}</span>
-                    `)}
-                </div>
-            </div>
-        `)
-        // The parent node gets defined after adding the node to
-        // the graph by the nodes presenter.
-        // all view events will be delegated to the parent node.
-        this.parentNode = undefined
-    }
-    setName(name: String) {
-        $(this.parentNode).find(`[data-ref='name']`).text(name)
+		// -------- ???
     }
 }

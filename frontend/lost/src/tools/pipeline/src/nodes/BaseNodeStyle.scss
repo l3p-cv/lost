@@ -1,5 +1,9 @@
 
 .pipeline-graph-node {
+	&.card {
+		// remove default margin-bottom
+		margin-bottom: 0rem;
+	}
 	.card-header {
 		display: flex;
 		justify-content: center;
@@ -26,6 +30,14 @@
 					content: ":";
 				}
 			}
+			span {
+				color: gray;
+			}
+		}
+		i {
+			// trying to span the icon to both columns didn't work as it should.
+			grid-column: 2 / 2;
+			font-size: 3.5rem;
 		}
 	}
 }

@@ -28,8 +28,8 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
 			this.view = new DatasourceNodeStartView(this.model)
 			this.modal = new DatasourceNodeStartModal(this)
 			$(this.modal.html.root).on('shown.bs.modal',() => {
-				if(this.modal.html.refs['inputAvailableRawFiles']){
-					this.modal.html.refs['inputAvailableRawFiles'].focus()
+				if(this.modal.html.refs['path-input']){
+					this.modal.html.refs['path-input'].focus()
 				}
 			})
 			$(this.modal.html.root).on('hidden.bs.modal',() => {
