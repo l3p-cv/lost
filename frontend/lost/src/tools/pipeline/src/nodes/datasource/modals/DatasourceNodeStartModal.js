@@ -1,12 +1,13 @@
-import { BaseModal, mapTree } from 'pipRoot/l3pfrontend/index'
+import { BaseModal, mapTree, keyboard } from 'pipRoot/l3pfrontend/index'
 
 // bootstrap-tree does only support glyphicons as it seems.
-// we dont have them.
-// options to fix not having icons: 
+// expanding and collapsing do not work per default.
+// options to fix not having glyphicons: 
 // - buy glyphicons (-)
 // - fork bootstrap-tree and fix / extend it (--)
 // - build a tree component in our framework (+)
 // - build a tree component in react (++)
+// - replace component with good premade react component (++)
 import 'bootstrap-tree'
 import 'bootstrap-tree/dist/bootstrap-treeview.min.css'
 // https://github.com/jonmiles/bootstrap-treeview
@@ -15,10 +16,10 @@ const attributeMap = new Map([
 	['rawFile', {
 		title: 'Choose Directory',
 		content: /*html*/`
-			<div class='form-group'>
+			<div class='form-group' data-ref='raw-file-root'>
 				// file-tree
 				<label>Select Folder:</label>
-				<input data-ref='path-input' type='text' class='form-control'>
+				<input data-ref='search-bar' type='text' class='form-control'>
 				// <p data-ref='available'>Path is not avaiable<p>
 				<div data-ref='file-tree'></div>
 			</div>
@@ -45,54 +46,16 @@ export default class DatasourceStartModal extends BaseModal {
         switch(node.model.datasource.type){
             case 'rawFile':
 				// map data for bootstrap-tree
-				var data = {
-					name: "1",
-					nodes: [
-						{
-							name: "1.1",
-							nodes: [
-								{
-									name: "1.1.1",
-									nodes: [{
-										name: "1.1.1.1"
-									}],
-								},
-								{
-									name: "1.1.2"
-								},
-								{
-									name: "3.1.2 - will this be undefined?"
-								}
-							]
-						},
-						{
-							name: "1.2",
-							nodes: [
-								{
-									name: "1.2.1"
-								}
-							]
-						},
-						{
-							name: "1.3"
-						},
-						{
-							name: "2.4 - is this undefined?"
-						}
-					]
-				}
-				data = mapTree(data, {
-					childrenKey: 'nodes',
-					map: [['name', 'text']],
+				// ---------------------------------------------------------------------------------------------------------------
+				const data = mapTree(node.model.datasource.fileTree, {
+					childrenKey: 'children',
+					map: [['name', 'text'], ['children', 'nodes']],
+					filter: (item => item.type === 'directory'),
 				})
-				// const data = mapTree(node.model.datasource.fileTree, {
-				// 	childrenKey: 'children',
-				// 	map: [['name', 'text'], ['children', 'nodes']],
-				// 	// filter: (item => item.type === 'directory'),
-				// })
 				// console.log({data})
 
 				// init bootstrap-tree.
+				// ---------------------------------------------------------------------------------------------------------------
 				$(this.html.refs['file-tree']).treeview({ 
 					data: data.nodes,
 					icon: 'fa folder',
@@ -101,50 +64,76 @@ export default class DatasourceStartModal extends BaseModal {
 				$(this.html.refs['file-tree']).treeview('collapseAll')
 
 				// set bootstrap-tree event handlers.
+				// TODO: add arrow key movement.
+				// TODO: should trigger validation request for the node.
+				// TODO: replace enter with tab key for cycling through multiple search results.
+				// ---------------------------------------------------------------------------------------------------------------
 				// expand node on select & set data.
-				// TODO: should trigger validation request for the node
 				$(this.html.refs['file-tree']).on('nodeSelected', ($event, node) => {
-					console.log('selected', node)
 					if(!node.state.expanded){
 						$(this.html.refs['file-tree']).treeview('expandNode', node.nodeId)
 					}
-					
-					let parent = $(this.html.refs['file-tree']).treeview('getParent', node)
-					console.log('parent:', parent)
-					while(parent.nodeId){
-						console.log('parent:', parent)
-						parent = $(this.html.refs['file-tree']).treeview('getParent', parent)
+				})
+
+				// add search bar functionallity.
+				let searchResultCycleIndex = 0
+				let searchResults = undefined
+                $(this.html.refs['search-bar']).on('input', ($event) => {
+					searchResults = $(this.html.refs['file-tree']).treeview('search', [ $event.target.value, {
+						ignoreCase: true,
+						exactMatch: false,
+						revealResults: true,
+					}])
+                })
+                $(this.html.refs['search-bar']).on('keyup', ($event) => {
+					if(keyboard.isKeyHit($event, 'Enter')){
+						// one search match
+						if(searchResults.length === 1){
+							$(this.html.refs['file-tree']).treeview('clearSearch')
+							$(this.html.refs['file-tree']).treeview('selectNode', searchResults[0].nodeId)
+							searchResultCycleIndex = 0
+							// set focus on ok button
+							$(this.html.refs['ok-button']).focus()
+						}
+						// multiple search matches
+						if(searchResults.length > 1){
+							$(this.html.refs['file-tree']).treeview('selectNode', searchResults[searchResultCycleIndex].nodeId)
+							searchResultCycleIndex = (searchResultCycleIndex === searchResults.length - 1)
+								? 0
+								: searchResultCycleIndex + 1
+						}
 					}
 				})
-				// collapse node on double select (unselect).
-				// treeview('getSelected') is broken.
-				$(this.html.refs['file-tree']).on('nodeUnselected', ($event, node) => {
-					// console.log('2. node selected', node)
-					// console.log('selected nodes:', $(this.html.refs['file-tree']).treeview('getSelected'))
-					// console.log('expanded nodes:', $(this.html.refs['file-tree']).treeview('getExpanded'))
-				})
-				// collapse previous folder
-				$(this.html.refs['file-tree']).on('nodeUnselected', ($event, node) => {
-					// $(this.html.refs['file-tree']).treeview('collapseNode', node.nodeId)
-					// const parent = $(this.html.refs['file-tree']).treeview('getParent', node)
-					// if(partent && parent.state.expanded)
-					// if()
-					// const selectedNode = $(this.html.refs['file-tree']).treeview('getSelected', node.nodeId)
-					// console.log({selectedNode})
-					// console.log('node disabled', node)
-					// TODO: should invalidate the node
+
+				// finish search.
+				$(this.html.refs['file-tree']).on('click', 'li', $event => {
+					const selectedNode = $(this.html.refs['file-tree']).treeview('getNode', $event.currentTarget.dataset['nodeid'])
+					searchResults = $(this.html.refs['file-tree']).treeview('search', [ selectedNode.text, {
+						ignoreCase: true,
+						exactMatch: true,
+						revealResults: true,
+					}])
+					if(selectedNode.state.selected){
+						// need to stop propagation or bootstrap-tree will unselect it.
+						$event.stopPropagation()
+						$(this.html.refs['file-tree']).treeview('clearSearch')
+					}
 				})
 
-				// add search bar functionallity
-                $(this.html.refs['path-input']).on('input', ($event) => {
-                    console.log('searching...')
-					// $('#tree').treeview('search', [ 'Parent', {
-					// 	ignoreCase: true,     // case insensitive
-					// 	exactMatch: false,    // like or equals
-					// 	revealResults: true,  // reveal matching nodes
-					// }]);
-                })
+				// focus searchbar when modal opens.
+				$(this.html.root).on('shown.bs.modal',() => {
+					if(this.html.refs['search-bar']){
+						this.html.refs['search-bar'].focus()
+					}
+				})
 
+				// when button has focus focus search bar on backspace key. 
+				// notice: escape key wont trigger, prevented by bootstrap-tree.
+				$(this.html.refs['ok-button']).on('keyup', $event => {
+					if(keyboard.isKeyHit($event, 'Backspace')){
+						$(this.html.refs['search-bar']).focus()
+					}
+				})
                 break
 			case 'labelTree':
 				throw new Error('Not implemented.')

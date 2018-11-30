@@ -113,13 +113,38 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 }
             })
             if(this.validated){
+				console.warn('all nodes validated')
                 $(this.view.html.refs['btn-next']).prop('disabled', false)                
             }else{
+				console.warn('not all nodes are valid')
                 $(this.view.html.refs['btn-next']).prop('disabled', true)
             }
         })
         appModel.state.checkNodesValidation.update(true)
     }
-
+	isValidated(){
+		const nodes = this.graph.dagreD3Graph._nodes
+		Object.values(nodes).every(node => {
+			console.log('validating:', node)
+			// IF IS TEMP
+			if(node.model.state.validated.value){
+				return node.model.state.validated.value
+			} else {
+				return true
+			}
+			// IF IS TEMP
+			// if (nodes[n].nodePresenter.model.validation !== undefined) {
+			// 	if(nodes[n].nodePresenter.model.validation === false){
+			// 		this.validated = false
+			// 		return false
+			// 	}else{
+			// 		this.validated = true
+			// 		return true
+			// 	}
+			// } else {
+			// 	return false
+			// }
+		})
+	}
 }
 export default new PipelineGraphPresenter()

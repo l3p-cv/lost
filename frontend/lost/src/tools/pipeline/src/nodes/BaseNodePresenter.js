@@ -42,9 +42,6 @@ export default class BaseNodePresenter {
         this.view.parentNode = parentNode
         
         // open modal on click
-		$(this.view.parentNode).on('mousemove', () => {
-			console.log('mousemove')
-		})
         $(this.view.parentNode).on('dblclick', (e) => {
             if(this.onDblClick instanceof Function){
                 // example: function replaceModal(data)
@@ -63,14 +60,13 @@ export default class BaseNodePresenter {
 					})
                 }
             }
-        })    
-
+        })
         
-       
         this.initViewBinding()
         this.initModelBinding()
 
         this.initialized = true
+		// this.isValidated = false
     }
 
     /**

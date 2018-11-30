@@ -27,12 +27,13 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
 		} else if(mode === 'start'){
 			this.view = new DatasourceNodeStartView(this.model)
 			this.modal = new DatasourceNodeStartModal(this)
-			$(this.modal.html.root).on('shown.bs.modal',() => {
-				if(this.modal.html.refs['path-input']){
-					this.modal.html.refs['path-input'].focus()
+			$(this.modal.html.root).on('hidden.bs.modal', () => {
+				let path = $(this.modal.html.refs['file-tree']).treeview('getSelected')
+				if(path.length === 1){
+					path = path[0].text
 				}
-			})
-			$(this.modal.html.root).on('hidden.bs.modal',() => {
+				this.model.state.path.update(path)
+				
 				this.graph.updateNode(this)           
 			})
 		} else {
@@ -54,10 +55,11 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
      */
     initViewBinding(){
         if(this.view instanceof DatasourceNodeRunningView){
+			// ??
             $(this.view.html.root).on('click', $event => {
                 console.warn('CLICK')
             })
-			
+			// ??
             this.model.state.on('update', text => {
                 this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
                     ${ text === 'script_error'   ? 'bg-red'      : '' }

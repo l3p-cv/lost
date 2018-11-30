@@ -10,6 +10,7 @@ export default class DatasourceNodeModel {
 		this.peOut = data.peOut
 		this.datasource = data.datasource
 		// mapFileTree(data.datasource.fileTree)
+		this.validation = false
         if(mode === 'start'){
             this.state = {
 				peN : this.peN,	// USED?
@@ -22,4 +23,8 @@ export default class DatasourceNodeModel {
             this.state = new Observable(data.state) // what is data.state?
         }
     }
+	// WRITE BASE NODE MODEL CLASS
+	isValidated(){
+		return !this.state.path.isInInitialState
+	}
 }
