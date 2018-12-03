@@ -30,6 +30,7 @@ export default class BaseNodeView {
 		this.colorValidated = colorValidated
 
 		// create html
+		// could need some cleanup.
 		this.html = new NodeTemplate(/*html*/`
 			<div class='card pipeline-graph-node'>
 				// color depends on validation.
@@ -52,7 +53,7 @@ export default class BaseNodeView {
 							if(row.attribute){
 								return /*html*/`
 									<div class='attribute'>${row.attribute}</div>
-									<div>${row.value ? row.value : `<span>undefined</span>`}</div>
+									<div ${row.ref ? `data-ref='${row.ref}'` : ''}>${row.value}</div>
 								`
 							}
 						}
@@ -61,7 +62,7 @@ export default class BaseNodeView {
                 </div>
 				// footer is optional and contains text only.
 				${footer ? /*html*/`
-					<div class='card-footer'>${footer}</div>
+					<div class='card-footer' data-ref='footer'>${footer}</div>
 				` : ``}
             </div>
 		`)

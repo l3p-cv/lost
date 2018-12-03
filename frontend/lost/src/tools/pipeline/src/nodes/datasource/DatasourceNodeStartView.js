@@ -15,7 +15,17 @@ export default class DatasourceStartView extends BaseNodeView {
 					attribute: 'Type',
 					value: model.datasource.type,
 				},
+				{
+					attribute: 'Source',
+					value: model.state.path.value,
+					ref: 'source',
+				},
 			],
 		})
+		console.log(this)
     }
+	setSource(source: String){
+		this.html.refs['source'].textContent = source
+	}
+	
 }
