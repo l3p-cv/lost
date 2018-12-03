@@ -23,15 +23,22 @@ export default class AnnoTaskStartModal extends BaseModal {
         let tab2 = new TabUserPresenter(nodeModel)
         let tab3 = new TabSelectTreePresenter(nodeModel)
         let tab4 = new TabTreePresenter(nodeModel)
-        
+		
         tab4.requiresValid(tab3)
-        
-        this.wizard.add([
+		tab2.on('after-activate', () => {
+			tab2.adjustDataTable()
+		})
+		tab3.on('after-activate', () => {
+			tab3.adjustDataTable()
+		})
+
+		this.wizard.add([
           tab1,
           tab2,
           tab3,
           tab4
         ])
+		
 	}
 }
   

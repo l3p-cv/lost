@@ -21,6 +21,11 @@ const wizard = new Wizard('start-pipeline')
 PipelineGraphTab.requiresValid(SelectPipelineTab)
 ConfigPipelineTab.requiresValid(PipelineGraphTab)
 StartPipelineTab.requiresValid(ConfigPipelineTab)
+
+SelectPipelineTab.on('after-activate', () => {
+	SelectPipelineTab.adjustDataTable()
+})
+
 wizard.add([
     SelectPipelineTab, 
     PipelineGraphTab, 

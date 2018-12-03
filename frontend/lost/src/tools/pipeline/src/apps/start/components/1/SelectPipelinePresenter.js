@@ -38,6 +38,9 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         }))
         this.tableLoaded = true
     }
+	adjustDataTable(){
+		this.view.adjustDataTable()
+	}
     selectTemplate(id){
 		http.requestTemplate(id).then(response => {
 			appModel.state.selectedTemplate.update(response)

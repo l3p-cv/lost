@@ -36,4 +36,8 @@ export default class TabUserPresenter extends WizardTabPresenter {
             nodeModel.controls.show3.update(true)
         })
     }
+	adjustDataTable(){
+		this.view.adjustDataTable()
+	}
+
 }
