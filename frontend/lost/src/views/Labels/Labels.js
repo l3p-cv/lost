@@ -10,6 +10,7 @@ import {
     Col,
     Row
 } from 'reactstrap'
+import LabelTreeTable from '../../components/Labels/LabelTreeTable';
 
 const {getLabelTrees} = actions
 
@@ -30,6 +31,7 @@ class Label extends Component {
                             Label Trees
                         </CardHeader>
                             <CardBody className='pb-0'>
+                            <LabelTreeTable labelTrees={this.props.trees}></LabelTreeTable>
                               </CardBody> 
                         </Card>
                     </Col>
