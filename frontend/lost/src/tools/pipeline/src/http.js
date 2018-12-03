@@ -35,6 +35,7 @@ export function requestPipeline(id: Number){
     }
     return http.get(URLS.GET_PIPELINE(id), appModel.state.token)
 }
+// remove swal
 export function deletePipe(id) {
     return swal({
         title: 'Are you sure to delete this pipe? ',

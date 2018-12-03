@@ -3,12 +3,12 @@ import TabTreeView from './TabTreeView'
 
 
 export default class TabTreePresenter extends WizardTabPresenter {
-    constructor(node: AnnoTaskNodePresenter) {
+    constructor(nodeModel: AnnoTaskNodeModel) {
         super()
         
 		this.view = new TabTreeView(this.model)
 
-        node.model.controls.show4.on('update', (data) => this.loadTemplate(data))
+        nodeModel.controls.show4.on('update', (data) => this.loadTemplate(data))
     }
     loadTemplate(){
     }

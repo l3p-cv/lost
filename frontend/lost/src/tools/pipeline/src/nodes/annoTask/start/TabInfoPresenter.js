@@ -3,20 +3,20 @@ import TabInfoView from './TabInfoView'
 
 
 export default class TabInfoPresenter extends WizardTabPresenter {
-    constructor(node: AnnoTaskNodePresenter){
+    constructor(nodeModel: AnnoTaskNodeModel){
         super()
 		
-        this.view = new TabInfoView(node.model)
+        this.view = new TabInfoView(nodeModel)
 
 		// MODEL BINDINGS
-		node.model.controls.show1.on('update', () => this.show())
+		nodeModel.controls.show1.on('update', () => this.show())
 
 		// VIEW BINDINGS
         $(this.view.html.refs['name']).on('input', ($event) => {
-            node.model.post.annoTask.name = $event.target.value
+            nodeModel.annoTask.name = $event.target.value
         })
         $(this.view.html.refs['instructions']).on('input', ($event) => {
-            node.model.post.annoTask.instructions = $event.target.value
+            nodeModel.annoTask.instructions = $event.target.value
         })
     }
 }

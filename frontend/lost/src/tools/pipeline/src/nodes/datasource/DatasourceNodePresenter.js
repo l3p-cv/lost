@@ -1,54 +1,47 @@
 import BaseNodePresenter from '../BaseNodePresenter'
+
 import DatasourceNodeModel from './DatasourceNodeModel'
-
-import DatasourceNodeRunningView from './views/DatasourceNodeRunningView'
-import DatasourceNodeStartView from './views/DatasourceNodeStartView'
-
-import DatasourceNodeRunningModal from './modals/DatasourceNodeRunningModal'
-import DatasourceNodeStartModal from './modals/DatasourceNodeStartModal'
+import DatasourceNodeRunningView from './DatasourceNodeRunningView'
+import DatasourceNodeStartView from './DatasourceNodeStartView'
+import DatasourceNodeRunningModal from './DatasourceNodeRunningModal'
+import DatasourceNodeStartModal from './DatasourceNodeStartModal'
 
 import appModel from 'start/appModel'
 
 
 export default class DatasourceNodePresenter extends BaseNodePresenter {
-    constructor(graph: Graph, data: any, mode: String) {
-        super(graph)                            
-        // create model.
-        this.model = new DatasourceNodeModel(data, mode)
+    constructor(graph: Graph, data: any, mode: String){
+		let model = new DatasourceNodeModel(data, mode)
+		let view = undefined
+		let modal = undefined
 
-        // create view.
+		if(mode === 'start'){
+			view = new DatasourceNodeStartView(model)
+			modal = new DatasourceNodeStartModal(model)
+		}
 		if(mode === 'running'){
-			this.view = new DatasourceNodeRunningView(this.model)
-			this.modal = new DatasourceNodeRunningModal(this.model)
-			$(this.modal.html.refs['more-information-link']).on('click', () =>{
-				$(this.modal.html.refs['collapse-this']).collapse('toggle')
-				$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
-			})
-		} else if(mode === 'start'){
-			this.view = new DatasourceNodeStartView(this.model)
-			this.modal = new DatasourceNodeStartModal(this)
+			view = new DatasourceNodeRunningView(model)
+			modal = new DatasourceNodeRunningModal(model)
+		}
+        super({ graph, model, view, modal })
+
+		if(mode === 'start'){
 			$(this.modal.html.root).on('hidden.bs.modal', () => {
 				let path = $(this.modal.html.refs['file-tree']).treeview('getSelected')
 				if(path.length === 1){
 					path = path[0].text
 				}
 				this.model.state.path.update(path)
-				
+
 				this.graph.updateNode(this)           
 			})
-		} else {
-			// THROW THIS ELSEWHERE. => MODEL. => CREATE BASE MODEL? / CREATE TESTS INSTEAD? YES.
-			throw new Error('Invalid mode')
 		}
-
-		// trigger graph validation check after node validation change.
-		// update node header color.
-		this.model.state.validated.on('change', validated => {
-			if(validated){
-				appModel.state.checkNodesValidation.update(true)
-				this.view.setColor(validated)
-			}
-		})
+		if(mode === 'running'){
+			$(this.modal.html.refs['more-information-link']).on('click', () =>{
+				$(this.modal.html.refs['collapse-this']).collapse('toggle')
+				$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+			})
+		}
     }
     /**
      * @override

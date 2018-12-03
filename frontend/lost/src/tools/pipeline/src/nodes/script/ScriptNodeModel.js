@@ -1,29 +1,31 @@
 import { Observable } from 'pipRoot/l3pfrontend/index'
+import BaseNodeModel from '../BaseNodeModel'
 
 
-export default class ScriptNodeModel {
-    constructor(nodeData, mode) {
-        if(nodeData === undefined || nodeData.peN === undefined){
-            throw new Error('nodeData is undefined or has no peN property.')
-        }
+export default class ScriptNodeModel extends BaseNodeModel {
+    constructor(params, mode) {
+		const { peN, peOut, id, state, script } = params
 
-        this.peN = nodeData.peN
-        this.peOut = nodeData.peOut
-        this.id = nodeData.id
-        this.script = nodeData.script
+		super({ peN, peOut })
+		
+        this.id = id
+
+		// data structure?
+        this.script = script
         
-        if(mode === 'start'){
-            this.validation = true
-            // Post
-            this.post = {}
-            this.post.peN = nodeData.peN
-            this.post.script = {}
-            this.post.script.isDebug = false
-            this.post.script.arguments = nodeData.script.arguments
-        } else if (mode === 'running'){
-            this.state = new Observable(nodeData.state)
-            this.progress = new Observable(nodeData.script.progress ? nodeData.script.progress: 0)
-            this.errorMsg = new Observable(nodeData.script.errorMsg ? nodeData.script.errorMsg : '')
+        if(mode === 'running'){
+			// for progress bar updates
+            this.state = new Observable(state)
+            this.progress = new Observable(script.progress ? script.progress : 0)
+            this.errorMsg = new Observable(script.errorMsg ? script.errorMsg : '')
         }
     }
+	getOutput(){
+		return {
+			peN: this.peN,
+			script: {
+				arguments: this.script.arguments
+			}
+		}
+	}
 }

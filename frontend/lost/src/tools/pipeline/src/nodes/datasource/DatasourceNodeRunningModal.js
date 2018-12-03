@@ -2,7 +2,7 @@ import { BaseModal } from 'pipRoot/l3pfrontend/index'
 
 
 export default class DatasourceRunningModal extends BaseModal {
-    constructor(nodeModel){
+    constructor(nodeModel: DatasourceNodeModel){
         let params = {}
         switch(nodeModel.datasource.type){
         case 'dataset':

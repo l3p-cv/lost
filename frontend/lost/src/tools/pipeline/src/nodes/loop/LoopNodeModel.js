@@ -1,22 +1,20 @@
 import { Observable } from 'pipRoot/l3pfrontend/index'
+import BaseNodeModel from '../BaseNodeModel'
 
 
-export default class LoopNodeModel {
-    constructor(nodeData, mode) {
-        if (nodeData === undefined || nodeData.peN === undefined) {
-            throw new Error('nodeData is undefined or has no peN property.')
+export default class LoopNodeModel extends BaseNodeModel {
+    constructor(params, mode) {
+		const { peN, peOut, id, state, loop } = params
+
+		super({ peN, peOut })
+
+		this.id = id
+		// data structure?
+		this.loop = loop
+
+		if(mode === 'running'){
+			// for progress bar updates
+            this.state = new Observable(state)
         }
-        this.peN = nodeData.peN
-        this.peOut = nodeData.peOut
-        this.id = nodeData.id
-
-        if (mode === 'start') {
-            this.loop = nodeData.loop
-            this.validation = true
-        } else if (mode === 'running') {
-            this.loop = nodeData.loop
-            this.state = new Observable(nodeData.state)
-        }
-
     }
 }

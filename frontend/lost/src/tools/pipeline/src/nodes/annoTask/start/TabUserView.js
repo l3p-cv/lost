@@ -1,9 +1,6 @@
 import { WizardTabView } from 'pipRoot/l3pfrontend/index'
 
 
-
-
-
 export default class TabUserView extends WizardTabView {
     constructor(groups: any){
         super({

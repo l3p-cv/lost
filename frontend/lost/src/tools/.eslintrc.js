@@ -11,5 +11,6 @@ module.exports = {
         "no-unused-vars": "warn",
         "no-unused-expressions": "warn",
         "no-restricted-globals": "warn",
+        "no-dupe-class-members": "off",
     },
 }

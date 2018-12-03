@@ -1,60 +1,57 @@
 import BaseNodePresenter from '../BaseNodePresenter'
 
 import ScriptNodeModel from './ScriptNodeModel'
-
-import NormalRunningView from './views/ScriptNormalRunningView'
-import NormalStartView from './views/ScriptNormalStartView'
-import ScriptRunningModal from './modals/ScriptRunningModal'
-import ScriptStartModal from './modals/ScriptStartModal'
+import NormalRunningView from './ScriptNormalRunningView'
+import NormalStartView from './ScriptNormalStartView'
+import ScriptRunningModal from './ScriptRunningModal'
+import ScriptStartModal from './ScriptStartModal'
 
 
 export default class ScriptNodePresenter extends BaseNodePresenter {
     constructor(graph, data, mode) {
-        super(graph)
-        // create model
-        this.model = new ScriptNodeModel(data, mode)
-        // create view
-        switch (mode) {
-            case 'running':
-                this.view = new NormalRunningView(this.model)
-                this.modal = new ScriptRunningModal(this.model)
-                break
-            case 'start':
-                this.view = new NormalStartView(this.model)
-                this.modal = new ScriptStartModal(this)
-                $(this.modal.html.root).on('hidden.bs.modal', () => {
-                    this.graph.updateNode(this)
-                })
-                break
-            default:
-                throw new Error(`no node view available for ${data.type}`)
-        }
+		let model = new ScriptNodeModel(data, mode)
+		let view = undefined
+		let modal = undefined
+		if(mode === 'start'){
+			view = new NormalStartView(model)
+			modal = new ScriptStartModal(model)
+		}
+		if(mode === 'running'){
+			view = new NormalRunningView(model)
+			modal = new ScriptRunningModal(model)
+		}
+        super({ graph, model, view, modal })
 
-        $(this.modal.html.refs['more-information-link']).on('click', () => {
-            $(this.modal.html.refs['collapse-this']).collapse('toggle')
-            $(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
-        })
+		// SHOULD ADD MODE TO BASE MODEL STATE AND MOVE THESE TWO BLOCKS TO initViewBinding()
+		// update dagre d3 graph on modal close.
+		if(mode === 'start'){
+			$(this.modal.html.root).on('hidden.bs.modal', () => {
+				this.graph.updateNode(this)
+			})
+		}
+		// add collapse functionallity.
+		if(mode === 'running'){
+			$(this.modal.html.refs['more-information-link']).on('click', () => {
+				$(this.modal.html.refs['collapse-this']).collapse('toggle')
+				$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+			})
+		}
     }
-
 
     /**
      * @override
      */
     initViewBinding() {
         $(this.view.parentNode).on('mousedown', `[data-ref='checkbox']`, () => {
-            this.model.post.script.isDebug = !this.model.post.script.isDebug
             this.view = new NormalStartView(this.model)
             this.graph.updateNode(this)
-        })
-
-        $(this.view.parentNode).on('mouseover', (e) => {
-            // show tooltip...
         })
     }
     /**
      * @override
      */
     initModelBinding() {
+		// only for running
         if (this.view instanceof NormalRunningView) {
             this.model.progress.on('update', number => {
                 this.view.parentNode.querySelector(`[data-ref='progress-bar']`).style.width = `${number}%`

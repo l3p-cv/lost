@@ -19,10 +19,7 @@ export default class BaseNodeView {
 		const { header, footer, validated } = params
 		const { icon, title, colorInvalidated, colorValidated } = header
 		let { content } = params
-		console.log({content})
 		content = Array.isArray(content) ? content : [ content ]
-		console.log({content})
-		
 
 		// The parent node reference will be added by Graph.js calling BaseNodePresenter.init().
         this.parentNode = undefined

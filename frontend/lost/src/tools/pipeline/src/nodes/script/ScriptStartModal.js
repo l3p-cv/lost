@@ -4,8 +4,7 @@ import { BaseModal } from 'pipRoot/l3pfrontend/index'
 
 
 export default class ScriptStartModal extends BaseModal {
-    constructor(presenter) {
-        let nodeModel = presenter.model
+    constructor(nodeModel: ScriptNodeModel) {
         super({
             title: 'Script',
             content: /*html*/`
@@ -66,10 +65,10 @@ export default class ScriptStartModal extends BaseModal {
             container: 'body',
         })
 
-        if(nodeModel.post.script.arguments !== null) {
+        if(nodeModel.script.arguments !== null) {
             Object.keys(nodeModel.script.arguments).forEach(element => {
                 $(this.html.refs[element]).on('input', (e) =>{
-                    nodeModel.post.script.arguments[element].value = $(e.currentTarget).val()
+                    nodeModel.script.arguments[element].value = $(e.currentTarget).val()
                 })
             })
         }

@@ -1,10 +1,10 @@
 import { WizardTabView } from 'pipRoot/l3pfrontend/index'
-import AnnoTaskNodeModel from '../../../../AnnoTaskNodeModel';
+import AnnoTaskNodeModel from '../AnnoTaskNodeModel';
 
 
 export default class TabInfoView extends WizardTabView {
-    constructor({ annoTask }: AnnoTaskNodeModel){
-		const { name, instructions } = annoTask
+    constructor({ state }: AnnoTaskNodeModel){
+		const { name, instructions } = state
         super({
             title: 'Fill Out',
             icon: 'fa fa-info fa-1x',
@@ -13,6 +13,7 @@ export default class TabInfoView extends WizardTabView {
                     <div class='item form-group'>
                         <label class='control-label' for='anno_name'>
                             Name
+							// use css after!
                             <span class='required'>*</span>
                         </label>
                         <div class=''>          
@@ -25,6 +26,7 @@ export default class TabInfoView extends WizardTabView {
                     <div class='item form-group'>
                         <label class='control-label' for='anno_instructions'>
                             Instructions
+							// use css after!
                             <span class='required'>*</span>
                         </label>
                         <div class=''>

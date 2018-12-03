@@ -1,30 +1,24 @@
 import BaseNodePresenter from '../BaseNodePresenter'
+
 import VisualOutputNodeModel from './VisualOutputNodeModel'
-
-import VisualOutputRunningView from './views/VisualOutputRunningView'
-import VisualOutputStartView from './views/VisualOutputStartView'
-
-import VisualOutputRunningModal from './modals/VisualOutputRunningModal'
-import VisualOutputStartModal from './modals/VisualOutputStartModal'
+import VisualOutputRunningView from './VisualOutputRunningView'
+import VisualOutputStartView from './VisualOutputStartView'
+import VisualOutputRunningModal from './VisualOutputRunningModal'
 
 
 export default class VisualOutputNodePresenter extends BaseNodePresenter {
-    constructor(graph, data, mode) {        
-        super(graph)
-        // create model
-        this.model = new VisualOutputNodeModel(data,mode)
-        // create view
-        switch(mode){
-            case 'running':
-                this.view = new VisualOutputRunningView(this.model)
-                this.modal = new VisualOutputRunningModal(this.model)
-                break
-            case 'start':
-                this.view = new VisualOutputStartView(this.model) 
-                this.modal = new VisualOutputStartModal(this.model) 
-                break
-            default: throw new Error(`no node view available for ${data.type}`)
-        }
+    constructor(graph, data, mode){
+		let model = new VisualOutputNodeModel(data, mode)
+		let view = undefined
+		let modal = undefined
+		if(mode === 'start'){
+			view = new VisualOutputStartView(model) 
+		}
+		if(mode === 'running'){
+			view = new VisualOutputRunningView(model)
+			modal = new VisualOutputRunningModal(model)
+		}
+        super({ graph, model, view, modal })
     }
     /**
      * @override

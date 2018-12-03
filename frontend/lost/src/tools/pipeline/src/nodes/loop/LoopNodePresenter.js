@@ -1,38 +1,38 @@
 import BaseNodePresenter from '../BaseNodePresenter'
 
 import LoopNodeModel from './LoopNodeModel'
-
-import LoopRunningView from './views/LoopRunningView'
-import LoopStartView from './views/LoopStartView'
-
-import LoopRunningModal from './modals/LoopRunningModal'
-import LoopStartModal from './modals/LoopStartModal'
+import LoopRunningView from './LoopRunningView'
+import LoopStartView from './LoopStartView'
+import LoopRunningModal from './LoopRunningModal'
+import LoopStartModal from './LoopStartModal'
 
 
 export default class LoopNodePresenter extends BaseNodePresenter {
     constructor(graph, data, mode) {      
         super(graph)
-        // create model
-        this.model = new LoopNodeModel(data, mode)
-        // create view
-        switch(mode){
-            case 'running':
-                this.view = new LoopRunningView(this.model)
-                this.modal = new LoopRunningModal(this.model)
-                break
-            case 'start':
-                this.view = new LoopStartView(this.model)
-                this.modal = new LoopStartModal(this.model)
-                $(this.modal.html.refs['max-iteration']).on('input', (e)=>{
-                    this.model.loop.maxIteration = e.currentTarget.value
-                    this.view = new LoopStartView(this.model)
-                })
-                $(this.modal.html.root).on('hidden.bs.modal',() => {
-                    this.graph.updateNode(this)           
-                })
-                break
-            default: throw new Error(`no node view available for ${data.type}`)
-        }
+		let model = new LoopNodeModel(data, mode)
+		let view = undefined
+		let modal = undefined
+		if(mode === 'start'){
+			view = new LoopStartView(this.model)
+			modal = new LoopStartModal(this.model)
+		}
+		if(mode === 'running'){
+			view = new LoopRunningView(this.model)
+			modal = new LoopRunningModal(this.model)
+		}
+		super({ graph, model, view, modal })
+
+		// whats this?
+		if(mode === 'start'){
+			$(this.modal.html.refs['max-iteration']).on('input', (e)=>{
+				this.model.loop.maxIteration = e.currentTarget.value
+				this.view = new LoopStartView(this.model) // bad shit bra.
+			})
+			$(this.modal.html.root).on('hidden.bs.modal',() => {
+				this.graph.updateNode(this)           
+			})
+		}
     }
     /**
      * @override

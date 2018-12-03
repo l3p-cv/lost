@@ -1,4 +1,4 @@
-import swal from 'sweetalert2'
+// import swal from 'sweetalert2'
 
 
 export default class BaseNodePresenter {
@@ -9,12 +9,19 @@ export default class BaseNodePresenter {
      * The model is generic but view and modal differ.
      * @param {*} graph 
      */
-    constructor(graph) {
+    constructor(params) {
+		const { graph, model, view, modal } = params
+		this.model = model
+		this.view = view
         this.graph = graph
+		// modal is optional.
+		if(modal){
+	        this.modal = modal
+		}
         this.initialized = false
     }
     update(){
-        // recreate fragment!
+        // recreate fragment
         if(this.initialized){
             // get all real current node html content
             let content = $(this.view.parentNode).find('foreignObject')[0].firstElementChild.childNodes
@@ -28,48 +35,7 @@ export default class BaseNodePresenter {
         }
     }
 
-    /**
-     * This method finishs the initialization of the Graph-Node. 
-     * After the Graph-Node view was added to the graph, this method is 
-     * called and passed the resulting root DOM-Node reference. 
-     * 
-     * No need to touch this method.
-     * 
-     * @param {*} parentNode The root node of this node inside the graph. 
-     */
-    init(parentNode: HTMLElement){
-        // bind view events to actions
-        this.view.parentNode = parentNode
-        
-        // open modal on click
-        $(this.view.parentNode).on('dblclick', (e) => {
-            if(this.onDblClick instanceof Function){
-                // example: function replaceModal(data)
-            } else {
-                if(this.modal === undefined) throw new Error('modal is not defined.')
-                if(this.modal.visible === true || this.modal.visible === 'true'){
-                    $(this.modal.html.root).modal()                    
-                }else{
-                    swal({
-                        position: 'top-right',
-                        type: 'error',
-                        title: 'Sorry',
-                        text: 'nothing to show',
-                        showConfirmButton: false,
-                        timer: 1500
-					})
-                }
-            }
-        })
-        
-        this.initViewBinding()
-        this.initModelBinding()
-
-        this.initialized = true
-		// this.isValidated = false
-    }
-
-    /**
+	/**
      * This method binds all view events.
      * Must be overriden!
      */
@@ -80,4 +46,33 @@ export default class BaseNodePresenter {
      * Must be overriden!
      */
     initModelBinding(){}
+
+    /**
+     * This method finishs the initialization of the Graph-Node. 
+     * After the Graph-Node view was added to the graph, this method is 
+     * called and passed the resulting root DOM-Node reference. 
+     * 
+     * No need to touch this method.
+     * 
+     * @param {*} parentNode The root node of this node inside the graph. 
+     */
+    init(parentNode: HTMLElement){
+        // bind view events to actions.
+        this.view.parentNode = parentNode
+        
+        // open modal on double click.
+        $(this.view.parentNode).on('dblclick', (e) => {
+			if(this.modal){
+				$(this.modal.html.root).modal()                    
+			}
+        })
+        
+        this.initViewBinding()
+        this.initModelBinding()
+
+        this.initialized = true
+    }
+	isValidated(){
+		return this.model.isValidated()
+	}
 }

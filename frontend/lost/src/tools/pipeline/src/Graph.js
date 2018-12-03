@@ -103,7 +103,7 @@ export default class Graph {
         const nodeId = `${this.id}-node-${node.model.peN}`
         this.dagreD3Graph.setNode(
             node.model.peN, {
-                nodePresenter: node,
+                node,
                 id: nodeId,
                 labelType: 'html',
                 label: node.view.html.fragment,

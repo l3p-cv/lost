@@ -1,36 +1,33 @@
 import BaseNodePresenter from '../BaseNodePresenter'
+
 import AnnoTaskNodeModel from './AnnoTaskNodeModel'
-
-import AnnoTaskRunningView from './views/AnnoTaskRunningView'
-import AnnoTaskStartView from './views/AnnoTaskStartView'
-
-import AnnoTaskRunningModal from './modals/running/AnnoTaskRunningModal'
-import AnnoTaskStartModal from './modals/start/AnnoTaskStartModal'
+import AnnoTaskRunningView from './AnnoTaskRunningView'
+import AnnoTaskStartView from './AnnoTaskStartView'
+import AnnoTaskRunningModal from './running/AnnoTaskRunningModal'
+import AnnoTaskStartModal from './start/AnnoTaskStartModal'
 
 
 export default class AnnoTaskNodePresenter extends BaseNodePresenter {
-    constructor(graph: Graph, data: any, mode: String) {
-        super(graph)                      
-		this.mode = mode
+    constructor(graph: Graph, data: any, mode: String){
+		let model = new AnnoTaskNodeModel(data, mode)
+		let view = undefined
+		let modal = undefined
+		if(mode === 'start'){
+			view = new AnnoTaskStartView(model)
+			modal = new AnnoTaskStartModal(model)
+		}
+		if(mode === 'running'){
+			view = new AnnoTaskRunningView(model)
+			modal = new AnnoTaskRunningModal(model)
+		}
+		
+        super({ graph, model, view, modal })
 
-        // create model
-        this.model = new AnnoTaskNodeModel(data, mode)
-
-        // create view
-        switch(mode){
-            case 'running':
-                this.view = new AnnoTaskRunningView(this.model)
-                this.modal = new AnnoTaskRunningModal(this.model)
-                break
-            case 'start':
-                this.view = new AnnoTaskStartView(this.model)
-                this.modal = new AnnoTaskStartModal(this)
-                $(this.modal.html.root).on('hidden.bs.modal',() => {
-                    this.graph.updateNode(this)           
-                })
-                break
-            default: throw new Error(`no node view available for ${data.type}`)
-        }
+		if(mode === 'start'){
+			$(this.modal.html.root).on('hidden.bs.modal',() => {
+				this.graph.updateNode(this)           
+			})
+		}
 
         // VIEW BINDINGS
         $(this.modal.html.refs['more-information-link']).on('click', () =>{
@@ -48,7 +45,7 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
      */
 	// TODO: VIEW METHODS!
     initModelBinding(){
-		if(this.mode === 'running'){
+		if(this.model.mode === 'running'){
             this.model.progress.on('update', number => {
                 this.view.parentNode.querySelector(`[data-ref='progress-bar']`).style.width = `${number}%`
                 this.view.parentNode.querySelector(`[data-ref='progress-bar-text']`).textContent = `${number}%`

@@ -1,30 +1,26 @@
 import BaseNodePresenter from '../BaseNodePresenter'
+
 import DataExportNodeModel from './DataExportNodeModel'
-
-import DataExportRunningView from './views/DataExportRunningView'
-import DataExportStartView from './views/DataExportStartView'
-
-import DataExportRunningModal from './modals/DataExportRunningModal'
-import DataExportStartModal from './modals/DataExportStartModal'
+import DataExportRunningView from './DataExportRunningView'
+import DataExportStartView from './DataExportStartView'
+import DataExportRunningModal from './DataExportRunningModal'
 
 
 export default class DataExportNodePresenter extends BaseNodePresenter {
-    constructor(graph, data, mode) {
-        super(graph)                                    
-        // create model
-        this.model = new DataExportNodeModel(data, mode)
-        // create view
-        switch(mode){
-            case 'running':
-                this.view = new DataExportRunningView(this.model)
-                this.modal = new DataExportRunningModal(this.model)
-                break
-            case 'start':
-                this.view = new DataExportStartView(this.model)
-                this.modal = new DataExportStartModal(this.model)
-                break
-            default: throw new Error(`no node view available for ${data.type}`)
-        }
+    constructor(graph, data, mode){
+		let model = new DataExportNodeModel(data, mode)
+		let view = undefined
+		let modal = undefined
+		
+		if(mode === 'start'){
+			view = new DataExportStartView(model)
+		}
+		if(mode === 'running'){
+			view = new DataExportRunningView(model)
+			modal = new DataExportRunningModal(model)
+		}
+
+        super({ graph, model, view, modal })
     }
     /**
      * @override

@@ -38,16 +38,16 @@ const attributeMap = new Map([
 ])
 
 export default class DatasourceStartModal extends BaseModal {
-    constructor(node: DatasoureNodePresenter){
+    constructor(nodeModel: DatasourceNodeModel){
 		// init modal html
-		super(attributeMap.get(node.model.datasource.type))
+		super(attributeMap.get(nodeModel.datasource.type))
 
         // add bindings
-        switch(node.model.datasource.type){
+        switch(nodeModel.datasource.type){
             case 'rawFile':
 				// map data for bootstrap-tree
 				// ---------------------------------------------------------------------------------------------------------------
-				const data = mapTree(node.model.datasource.fileTree, {
+				const data = mapTree(nodeModel.datasource.fileTree, {
 					childrenKey: 'children',
 					map: [['name', 'text'], ['children', 'nodes']],
 					filter: (item => item.type === 'directory'),

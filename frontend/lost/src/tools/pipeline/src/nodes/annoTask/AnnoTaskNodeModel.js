@@ -1,41 +1,44 @@
 import { Observable } from 'pipRoot/l3pfrontend/index'
+import BaseNodeModel from '../BaseNodeModel'
 
 
-export default class AnnoTaskNodeModel {
-    constructor(data, mode) {
-        if(data === undefined || data.peN === undefined){
-            throw new Error('data is undefined or has no peN property.')
-        }
+export default class AnnoTaskNodeModel extends BaseNodeModel {
+    constructor(params, mode) {
+		const { peN, peOut, id, state, annoTask } = params
+
+		super({ peN, peOut })
+
         if(mode === 'start'){
-            this.peN = data.peN
-            this.peOut = data.peOut
-            this.annoTask = data.annoTask
-            // Extras for Post
-            this.post = {}
-            this.post.peN = data.peN
-            this.post.annoTask = {}
-            this.post.annoTask.name = data.annoTask.name
-            this.post.annoTask.instructions = data.annoTask.instructions
-            this.post.annoTask.workerId = undefined
-            this.post.annoTask.labelLeaves = []
-            this.post.annoTask.groups = []
-            this.meta = {}
-            this.meta.labelLeaves = []
-            this.meta.assignee = ''
-            this.validation = false
+			this.state = {
+				name: annoTask.name,
+				assignee: '',
+				instructions: annoTask.instructions,
+				workerId: undefined,
+				labelLeaves: [],
+				groups: [],
+			}		
+			// for wizard navigation
 			this.controls = {
 				show1: new Observable(true),
 				show2: new Observable(false),
 				show3: new Observable(false),
 				show4: new Observable(false),
 			}
-        } else if(mode === 'running'){
-            this.peN = data.peN
-            this.peOut = data.peOut
-            this.id = data.id
-            this.annoTask = data.annoTask
-            this.state = new Observable(data.state)
-            this.progress = new Observable(data.annoTask.progress? data.annoTask.progress: 0)
+        }
+
+		if(mode === 'running'){
+            this.id = id
+            this.annoTask = annoTask
+			// for progress bar updates
+            this.state = new Observable(state)
+            this.progress = new Observable(annoTask.progress ? annoTask.progress : 0)
         }
     }
+	isValidated(){
+		// not finished
+		return false
+	}
+	getOutput(){
+		return this.state
+	}
 }

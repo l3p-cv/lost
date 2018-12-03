@@ -1,4 +1,4 @@
-import BaseNodeView from '../../BaseNodeView'
+import BaseNodeView from '../BaseNodeView'
 
 
 export default class VisualOutputStartView extends BaseNodeView {

@@ -96,54 +96,14 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 		})
     
 	    this.graph.centerGraph()
-        
-        appModel.state.checkNodesValidation.on('update', ()=>{
-            const allNodePresenter = this.graph.dagreD3Graph._nodes
-            Object.keys(allNodePresenter).every(n => {
-                if (allNodePresenter[n].nodePresenter.model.validation !== undefined) {
-                    if(allNodePresenter[n].nodePresenter.model.validation === false){
-                        this.validated = false
-                        return false
-                    }else{
-                        this.validated = true
-                        return true
-                    }
-                } else {
-                    return false
-                }
-            })
-            if(this.validated){
-				console.warn('all nodes validated')
-                $(this.view.html.refs['btn-next']).prop('disabled', false)                
-            }else{
-				console.warn('not all nodes are valid')
-                $(this.view.html.refs['btn-next']).prop('disabled', true)
-            }
-        })
-        appModel.state.checkNodesValidation.update(true)
     }
+	getNodes(){
+		return this.graph.dagreD3Graph._nodes
+	}
 	isValidated(){
-		const nodes = this.graph.dagreD3Graph._nodes
-		Object.values(nodes).every(node => {
-			console.log('validating:', node)
-			// IF IS TEMP
-			if(node.model.state.validated.value){
-				return node.model.state.validated.value
-			} else {
-				return true
-			}
-			// IF IS TEMP
-			// if (nodes[n].nodePresenter.model.validation !== undefined) {
-			// 	if(nodes[n].nodePresenter.model.validation === false){
-			// 		this.validated = false
-			// 		return false
-			// 	}else{
-			// 		this.validated = true
-			// 		return true
-			// 	}
-			// } else {
-			// 	return false
-			// }
+		return Object.values(this.getNodes()).every(graphNode => {
+			console.log('validating node:', graphNode.node)
+			return graphNode.node.model.isValidated()
 		})
 	}
 }

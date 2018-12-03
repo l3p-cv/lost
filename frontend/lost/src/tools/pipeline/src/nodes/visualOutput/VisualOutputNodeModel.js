@@ -1,22 +1,24 @@
 import { Observable } from 'pipRoot/l3pfrontend/index'
+import BaseNodeModel from '../BaseNodeModel'
 
 
-export default class VisualOutputNodeModel {
-    constructor(data, mode) {
-        if(data === undefined || data.peN === undefined){
-            throw new Error('data is undefined or has no peN property.')
-        }
+export default class VisualOutputNodeModel extends BaseNodeModel {
+    constructor(params, mode) {
+		const { peN, peOut, id, state, visualOutput } = params
+
+		super({ peN, peOut })
+
         if(mode === 'start'){
-            this.peN = data.peN
-            this.peOut = data.peOut
+			// what is this?
             this.visualOutput = ''
-            this.validation = true
-        }else if(mode === 'running'){
-            this.peN = data.peN
-            this.peOut =  data.peOut
-            this.id = data.id
-            this.state =  new Observable(data.state)
-            this.visualOutput = data.visualOutput
+        }
+
+		if(mode === 'running'){
+            this.id = id
+			// what is this?
+            this.visualOutput = visualOutput
+			// for progress bar updates
+            this.state = new Observable(state)
         }
     }
 }

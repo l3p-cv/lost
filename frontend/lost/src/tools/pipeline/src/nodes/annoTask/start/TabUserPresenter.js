@@ -5,7 +5,7 @@ import appModel from 'apps/start/appModel'
 
 
 export default class TabUserPresenter extends WizardTabPresenter {
-    constructor(node: AnnoTaskNodePresenter) {
+    constructor(nodeModel: AnnoTaskNodeModel) {
         super()
 
 		// add icon to groups, pass groups to view to create a data table
@@ -21,7 +21,7 @@ export default class TabUserPresenter extends WizardTabPresenter {
         this.view = new TabUserView(groups)
 
 		// MODEL BINDINGS
-		node.model.controls.show2.on('update', () => this.show())
+		nodeModel.controls.show2.on('update', () => this.show())
 
         // VIEW BINDINGS
         $(this.view.html.refs["data-table"]).find('tbody').on('click', 'tr', ($event) => {
@@ -29,11 +29,11 @@ export default class TabUserPresenter extends WizardTabPresenter {
 			this.view.selectRow($event.currentTarget)
 			
 			// update model on selection
-            node.model.post.annoTask.workerId = parseInt($($event.currentTarget.children[0]).text())
-            node.model.meta.assignee = $($event.currentTarget.children[1]).text()  
+            nodeModel.annoTask.workerId = parseInt($($event.currentTarget.children[0]).text())
+            nodeModel.meta.assignee = $($event.currentTarget.children[1]).text()  
 			
 			// show next tab pane
-            node.model.controls.show3.update(true)
+            nodeModel.controls.show3.update(true)
         })
     }
 }

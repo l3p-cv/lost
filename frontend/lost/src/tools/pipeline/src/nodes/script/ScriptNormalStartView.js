@@ -1,4 +1,4 @@
-import BaseNodeView from '../../BaseNodeView'
+import BaseNodeView from '../BaseNodeView'
 
 
 export default class ScriptStartView extends BaseNodeView {
@@ -7,8 +7,8 @@ export default class ScriptStartView extends BaseNodeView {
 			header: {
 				icon: 'fa fa-rocket',
 				title: 'Script',
-				colorInvalidated: model.post.script.arguments ? 'warning' : 'primary',
-				colorValidated: model.post.script.arguments ? 'success' : 'primary',
+				colorInvalidated: model.script.arguments ? 'warning' : 'primary',
+				colorValidated: model.script.arguments ? 'success' : 'primary',
 			},
 			content: [
 				{
@@ -17,8 +17,5 @@ export default class ScriptStartView extends BaseNodeView {
 				},
 			],
 		})
-		// ------ ???
-        let validation = true
-		// ------ ???
 	}
 }
