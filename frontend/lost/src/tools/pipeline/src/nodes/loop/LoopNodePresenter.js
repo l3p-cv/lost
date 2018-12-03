@@ -22,23 +22,18 @@ export default class LoopNodePresenter extends BaseNodePresenter {
 			modal = new LoopRunningModal(this.model)
 		}
 		super({ graph, model, view, modal })
-
-		// whats this?
-		if(mode === 'start'){
-			$(this.modal.html.refs['max-iteration']).on('input', (e)=>{
-				this.model.loop.maxIteration = e.currentTarget.value
-				this.view = new LoopStartView(this.model) // bad shit bra.
-			})
-			$(this.modal.html.root).on('hidden.bs.modal',() => {
-				this.graph.updateNode(this)           
-			})
-		}
     }
     /**
      * @override
      */
     initViewBinding(){
-        if(this.view instanceof LoopRunningView){
+		if(this.model.mode === 'start'){
+			$(this.modal.html.refs['max-iteration']).on('input', (e)=>{
+				this.model.loop.maxIteration = e.currentTarget.value
+			})
+		}
+		if(this.model.mode === 'running'){
+			// DUPLICATION?
             this.model.state.on('update', text => {
                 this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
                     ${ text === 'script_error'   ? 'bg-red'      : '' }
@@ -50,11 +45,10 @@ export default class LoopNodePresenter extends BaseNodePresenter {
             this.model.state.on('update', text => {
                 this.modal.html.refs['state'].textContent = text
             })
-        }
+		}
     }
     /**
      * @override
      */
-    initModelBinding(){
-    }
+    initModelBinding(){}
 }

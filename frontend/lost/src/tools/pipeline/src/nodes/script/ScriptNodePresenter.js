@@ -21,38 +21,24 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
 			modal = new ScriptRunningModal(model)
 		}
         super({ graph, model, view, modal })
+    }
 
-		// SHOULD ADD MODE TO BASE MODEL STATE AND MOVE THESE TWO BLOCKS TO initViewBinding()
-		// update dagre d3 graph on modal close.
-		if(mode === 'start'){
-			$(this.modal.html.root).on('hidden.bs.modal', () => {
-				this.graph.updateNode(this)
-			})
-		}
+    /**
+     * @override
+     */
+    initViewBinding(){
 		// add collapse functionallity.
-		if(mode === 'running'){
-			$(this.modal.html.refs['more-information-link']).on('click', () => {
-				$(this.modal.html.refs['collapse-this']).collapse('toggle')
-				$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
-			})
-		}
-    }
-
-    /**
+		$(this.modal.html.refs['more-information-link']).on('click', () => {
+			$(this.modal.html.refs['collapse-this']).collapse('toggle')
+			$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+		})
+	}
+    
+	/**
      * @override
      */
-    initViewBinding() {
-        $(this.view.parentNode).on('mousedown', `[data-ref='checkbox']`, () => {
-            this.view = new NormalStartView(this.model)
-            this.graph.updateNode(this)
-        })
-    }
-    /**
-     * @override
-     */
-    initModelBinding() {
-		// only for running
-        if (this.view instanceof NormalRunningView) {
+    initModelBinding(){
+		if(this.model.mode === 'running'){
             this.model.progress.on('update', number => {
                 this.view.parentNode.querySelector(`[data-ref='progress-bar']`).style.width = `${number}%`
                 this.view.parentNode.querySelector(`[data-ref='progress-bar-text']`).textContent = `${number}%`
@@ -82,7 +68,7 @@ export default class ScriptNodePresenter extends BaseNodePresenter {
             this.model.state.on('update', text => {
                 this.modal.html.refs['state'].textContent = text
             })
-        }
+		}
     }
 }
 

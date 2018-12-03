@@ -22,23 +22,17 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
 		}
 		
         super({ graph, model, view, modal })
-
-		if(mode === 'start'){
-			$(this.modal.html.root).on('hidden.bs.modal',() => {
-				this.graph.updateNode(this)           
-			})
-		}
-
-        // VIEW BINDINGS
-        $(this.modal.html.refs['more-information-link']).on('click', () =>{
-            $(this.modal.html.refs['collapse-this']).collapse('toggle')
-            $(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
-        })
     }
     /**
      * @override
      */
     initViewBinding(){
+		if(this.model.mode === 'running'){
+			$(this.modal.html.refs['more-information-link']).on('click', () =>{
+				$(this.modal.html.refs['collapse-this']).collapse('toggle')
+				$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+			})
+		}
     }
     /**
      * @override
@@ -50,6 +44,7 @@ export default class AnnoTaskNodePresenter extends BaseNodePresenter {
                 this.view.parentNode.querySelector(`[data-ref='progress-bar']`).style.width = `${number}%`
                 this.view.parentNode.querySelector(`[data-ref='progress-bar-text']`).textContent = `${number}%`
             })
+			// DUPLICATION?
             this.model.state.on('update', text => {
                 this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
                     ${ text === 'script_error'   ? 'bg-red'      : '' }

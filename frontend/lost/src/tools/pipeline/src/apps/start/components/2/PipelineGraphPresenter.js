@@ -98,13 +98,20 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 	    this.graph.centerGraph()
     }
 	getNodes(){
-		return this.graph.dagreD3Graph._nodes
+		if(this.graph.dagreD3Graph){
+			return this.graph.dagreD3Graph._nodes
+		}
+		return null
 	}
 	isValidated(){
-		return Object.values(this.getNodes()).every(graphNode => {
-			console.log('validating node:', graphNode.node)
-			return graphNode.node.model.isValidated()
-		})
+		const nodes = this.getNodes()
+		if(nodes){
+			return Object.values(nodes).every(graphNode => {
+				console.log('validating node:', graphNode.node)
+				return graphNode.node.model.isValidated()
+			})
+		}
+		return false
 	}
 }
 export default new PipelineGraphPresenter()

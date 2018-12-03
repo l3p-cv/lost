@@ -6,7 +6,7 @@ export default class AnnoTaskNodeModel extends BaseNodeModel {
     constructor(params, mode) {
 		const { peN, peOut, id, state, annoTask } = params
 
-		super({ peN, peOut })
+		super({ peN, peOut, mode })
 
         if(mode === 'start'){
 			this.state = {

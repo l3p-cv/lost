@@ -6,7 +6,7 @@ export default class DatasourceNodeModel extends BaseNodeModel {
     constructor(params: any, mode: String) {
 		const { peN, peOut, id, state, datasource } = params	
 	
-		super({ peN, peOut })
+		super({ peN, peOut, mode })
 	
 		// { type: String, fileTree: any }
 		this.datasource = datasource

@@ -6,7 +6,7 @@ export default class DataExportNodeModel extends BaseNodeModel {
     constructor(params, mode) {
 		const { peN, peOut, id, state, dataExport } = params	
 		
-		super({ peN, peOut })
+		super({ peN, peOut, mode })
 
         if(mode === 'start'){
             this.dataExport = ''

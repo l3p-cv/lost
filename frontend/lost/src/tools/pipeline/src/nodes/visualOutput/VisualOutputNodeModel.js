@@ -6,7 +6,7 @@ export default class VisualOutputNodeModel extends BaseNodeModel {
     constructor(params, mode) {
 		const { peN, peOut, id, state, visualOutput } = params
 
-		super({ peN, peOut })
+		super({ peN, peOut, mode })
 
         if(mode === 'start'){
 			// what is this?

@@ -6,7 +6,7 @@ export default class ScriptNodeModel extends BaseNodeModel {
     constructor(params, mode) {
 		const { peN, peOut, id, state, script } = params
 
-		super({ peN, peOut })
+		super({ peN, peOut, mode })
 		
         this.id = id
 

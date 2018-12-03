@@ -66,6 +66,12 @@ export default class BaseNodePresenter {
 				$(this.modal.html.root).modal()                    
 			}
         })
+		// update dagre d3 node on modal close.
+		if(this.modal){
+			$(this.modal.html.root).on('hidden.bs.modal', () => {
+				this.graph.updateNode(this)
+			})
+		}
         
         this.initViewBinding()
         this.initModelBinding()

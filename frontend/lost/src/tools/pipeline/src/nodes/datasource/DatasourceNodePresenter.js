@@ -3,6 +3,7 @@ import BaseNodePresenter from '../BaseNodePresenter'
 import DatasourceNodeModel from './DatasourceNodeModel'
 import DatasourceNodeRunningView from './DatasourceNodeRunningView'
 import DatasourceNodeStartView from './DatasourceNodeStartView'
+
 import DatasourceNodeRunningModal from './DatasourceNodeRunningModal'
 import DatasourceNodeStartModal from './DatasourceNodeStartModal'
 
@@ -24,19 +25,22 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
 			modal = new DatasourceNodeRunningModal(model)
 		}
         super({ graph, model, view, modal })
-
-		if(mode === 'start'){
+    }
+    /**
+     * @override
+     */
+    initViewBinding(){
+		if(this.model.mode === 'start'){
 			$(this.modal.html.root).on('hidden.bs.modal', () => {
 				let path = $(this.modal.html.refs['file-tree']).treeview('getSelected')
 				if(path.length === 1){
 					path = path[0].text
 				}
 				this.model.state.path.update(path)
-
 				this.graph.updateNode(this)           
 			})
 		}
-		if(mode === 'running'){
+		if(this.model.mode === 'running'){
 			$(this.modal.html.refs['more-information-link']).on('click', () =>{
 				$(this.modal.html.refs['collapse-this']).collapse('toggle')
 				$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
@@ -46,29 +50,20 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
     /**
      * @override
      */
-    initViewBinding(){
-        if(this.view instanceof DatasourceNodeRunningView){
-			// ??
-            $(this.view.html.root).on('click', $event => {
-                console.warn('CLICK')
-            })
-			// ??
-            this.model.state.on('update', text => {
-                this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
-                    ${ text === 'script_error'   ? 'bg-red'      : '' }
-                    ${ text === 'pending'        ? 'bg-blue'     : '' }
-                    ${ text === 'in_progress'    ? 'bg-orange'   : '' }
-                    ${ text === 'finished'       ? 'bg-green'    : '' }`)
-                this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
-            })
-            this.model.state.on('update', text => {
-                this.modal.html.refs['state'].textContent = text
-            })
-        }
-    }
-    /**
-     * @override
-     */
     initModelBinding(){
+		// DUPLICATION?
+		if(this.model.mode === 'running'){
+			this.model.state.on('update', text => {
+				this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
+					${ text === 'script_error'   ? 'bg-red'      : '' }
+					${ text === 'pending'        ? 'bg-blue'     : '' }
+					${ text === 'in_progress'    ? 'bg-orange'   : '' }
+					${ text === 'finished'       ? 'bg-green'    : '' }`)
+				this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
+			})
+			this.model.state.on('update', text => {
+				this.modal.html.refs['state'].textContent = text
+			})
+		}
     }
 }

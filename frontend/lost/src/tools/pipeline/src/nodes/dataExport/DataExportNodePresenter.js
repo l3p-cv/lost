@@ -25,8 +25,12 @@ export default class DataExportNodePresenter extends BaseNodePresenter {
     /**
      * @override
      */
-    initViewBinding(){
-        if(this.view instanceof DataExportRunningView){
+    initViewBinding(){}
+    /**
+     * @override
+     */
+    initModelBinding(){
+		if(this.model.mode === 'running'){
             this.model.state.on('update', text => {
                 this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
                     ${ text === 'script_error'   ? 'bg-red'      : '' }
@@ -35,11 +39,6 @@ export default class DataExportNodePresenter extends BaseNodePresenter {
                     ${ text === 'finished'       ? 'bg-green'    : '' }`)
                 this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
             })
-        }
-    }
-    /**
-     * @override
-     */
-    initModelBinding(){
+		}
     }
 }
