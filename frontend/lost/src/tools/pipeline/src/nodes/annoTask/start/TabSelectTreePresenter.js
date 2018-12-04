@@ -30,9 +30,26 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
         }))
 
         // VIEW BINDINGS
-        $(this.view.html.refs['table-tree']).find('tbody').on('click', 'tr', (e) => {
-			// load labels
+        $(this.view.html.refs['data-table']).find('tbody').on('click', 'tr', $event => {
 
+			// mark row as selected.
+			this.view.selectRow($event.currentTarget)
+
+			// get tree id of selected row as integer.
+			// use it to find the related label tree.
+			// update the nodes model.
+			const treeId = parseInt($($event.currentTarget.children[0]).text())
+			const treeData = appModel.state
+				.selectedTemplate.value
+				.availableLabelTrees.find(tree => tree.idx === treeId)
+			if(treeData){
+				nodeModel.state.selectedLabelTree.update(treeData)
+			} else {
+				throw new Error(`Label tree with id ${treeId} not found in selected pipeline template.`)
+			}
+			
+			// show next tab pane
+            nodeModel.controls.show4.update(true)
         })
     }
     isValidated(){

@@ -17,10 +17,8 @@ const attributeMap = new Map([
 		title: 'Choose Directory',
 		content: /*html*/`
 			<div class='form-group' data-ref='raw-file-root'>
-				// file-tree
 				<label>Select Folder:</label>
 				<input data-ref='search-bar' type='text' class='form-control'>
-				// <p data-ref='available'>Path is not avaiable<p>
 				<div data-ref='file-tree'></div>
 			</div>
 		`

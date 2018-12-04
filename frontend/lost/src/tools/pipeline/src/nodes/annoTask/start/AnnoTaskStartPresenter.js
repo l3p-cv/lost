@@ -15,7 +15,12 @@ export default class AnnoTaskStartPresenter extends BaseNodePresenter {
     /**
      * @override
      */
-    initViewBinding(){}
+    initViewBinding(){
+		$(this.modal.html.root).on('hidden.bs.modal', () => {
+			this.view.html.refs['name'].textContent = this.model.state.name
+			this.graph.updateNode(this)
+		})
+	}
     /**
      * @override
      */

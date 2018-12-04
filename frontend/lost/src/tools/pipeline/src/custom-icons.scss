@@ -1,4 +1,10 @@
+// rename this file ?
+
 .required {
-	padding: 0rem 0.4rem
-	// add * icon via after/before
+	padding: 0rem 0.4rem;
+	&:after {
+		content: '*';
+		font-weight: bold;
+		padding: 0 0.3rem;
+	}
 }

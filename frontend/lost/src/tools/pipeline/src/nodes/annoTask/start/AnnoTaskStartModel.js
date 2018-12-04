@@ -10,10 +10,15 @@ export default class AnnoTaskStartModel extends BaseNodeModel {
 
 		this.state = {
 			name: annoTask.name,
-			assignee: '',
 			instructions: annoTask.instructions,
+			// group name
+			assignee: '',
+			// group id
 			workerId: undefined,
+			selectedLabelTree: new Observable([]),
+			// whats this?
 			labelLeaves: [],
+			// whats this?
 			groups: [],
 		}		
 

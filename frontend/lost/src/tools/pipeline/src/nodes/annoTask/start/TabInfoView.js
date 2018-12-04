@@ -10,29 +10,26 @@ export default class TabInfoView extends WizardTabView {
             content: /*html*/`
                 <form class='form-horizontal form-label-left' novalidate='true'>
                     <div class='item form-group'>
-                        <label class='control-label' for='anno_name'>
+                        <label class='control-label required'>
                             Name
-							// use css after!
-                            <span class='required'>*</span>
                         </label>
-                        <div class=''>          
-                            <input type='text' data-ref='name' name='anno_name' value='${name}'
-                                required='required' class='form-control'
-                                placeholder='name'>
-                        </div>
-                    </div>
-                    
+						<input 
+							class='form-control'
+							data-ref='name' 
+							type='text' 
+							value='${name}'
+							placeholder='name'>
+                    </div>       
                     <div class='item form-group'>
-                        <label class='control-label' for='anno_instructions'>
+                        <label class='control-label required'>
                             Instructions
-							// use css after!
-                            <span class='required'>*</span>
                         </label>
-                        <div class=''>
-                            <input data-ref='instructions' type='text' name='anno_instructions' value='${instructions}'
-                                required='required' class='form-control'
-                                placeholder='instructions'>
-                        </div>
+						<input
+							class='form-control'
+							data-ref='instructions'
+							type='text'
+						 	value='${instructions}'
+							placeholder='instructions'>
                     </div>        
                 </form>
             `,

@@ -23,10 +23,10 @@ export default class TabSelectTreeView extends WizardTabView {
             paging: false,
             scrollX: true,
             order: [[ 3, 'asc' ]],         
-            columnDefs:[{
-                targets: [0],
-                visible: false,
-            }],
+            // columnDefs:[{
+            //     targets: [0],
+            //     visible: false,
+            // }],
         })
     }
 	updateTable(data){
@@ -37,5 +37,7 @@ export default class TabSelectTreeView extends WizardTabView {
 	adjustDataTable(){
 		this.table.columns.adjust()
 	}
-
+	selectRow(row: HTMLTableRowElement){
+		row.classList.toggle('selected', true)
+	}
 }

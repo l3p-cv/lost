@@ -2,36 +2,44 @@ import { WizardTabView } from 'l3p-frontend'
 
 import "./TabTreeStyle.scss"
 
+// for more information about bootstrap-tree usage see import comments in DatasourceStartModal.js
+import 'bootstrap-tree'
+import 'bootstrap-tree/dist/bootstrap-treeview.min.css'
 
-class TabTreeView extends WizardTabView {
+
+export default class TabTreeView extends WizardTabView {
     constructor(){
         super({
             title: 'Select Labels',
             icon: 'fa fa-tag fa-1x',
             content: /*html*/`
-                <div class='container-fluid'>
-                    <div class='row'>
-                        <div data-ref='table-container' class='col-sm-3 table-container-tab4'>
-                            <p data-ref='instruction' class='instruction-text-tab4'>
-                                To add a lable, hold ctrl and click on a label in graph
-                            </p>        
-                            
-                            <table style='width:100%' data-ref='label-datatable' class='table table-striped table-bordered'>
-                                <thead>
-                                    <tr>
-                                        <th>id</th>
-                                        <th>Label</th>
-                                        <th>Max Label</th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                        <div data-ref='tree-container' id='tree-container' class='col-sm-9 tree-container-tab4'></div>
-                    </div>
-                </div>
+                <div class='form-group' data-ref='raw-file-root'>
+				<label>Select Folder:</label>
+				<input data-ref='search-bar' type='text' class='form-control'>
+				<div data-ref='file-tree'></div>
+			</div>
             `,
-        })        
+        })
     }
+	isInitialized(){
+		return this.html.refs['file-tree'].childNodes.length > 0
+	}
+	update(data){
+		if(this.isInitialized()){
+			$(this.html.refs['file-tree']).treeview('remove') 
+		}
+		$(this.html.refs['file-tree']).treeview({ 
+			data,
+			icon: 'fa folder',
+			selectedIcon: 'fa folder-open',
+		})
+		$(this.html.refs['file-tree']).treeview('collapseAll')
+		
+		// expand node on select & set data.
+		$(this.html.refs['file-tree']).on('nodeSelected', ($event, node) => {
+			if(!node.state.expanded){
+				$(this.html.refs['file-tree']).treeview('expandNode', node.nodeId)
+			}
+		})
+	}
 }
-
-export default TabTreeView

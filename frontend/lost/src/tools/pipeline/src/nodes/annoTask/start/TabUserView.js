@@ -13,8 +13,8 @@ export default class TabUserView extends WizardTabView {
 						<thead>
 							<tr>
 								<th>ID</th>								
-								<th>Icon</th>
 								<th>Name</th>								
+								<th>Icon</th>
 							</tr>
 						</thead>
 						<tbody></tbody>
@@ -32,7 +32,6 @@ export default class TabUserView extends WizardTabView {
 	adjustDataTable(){
 		this.table.columns.adjust()
 	}
-	// crap, should use data tables for this?
 	selectRow(row: HTMLTableRowElement){
 		row.classList.toggle('selected', true)
 	}

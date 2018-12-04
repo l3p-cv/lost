@@ -30,9 +30,9 @@ export default class TabUserPresenter extends WizardTabPresenter {
 			this.view.selectRow($event.currentTarget)
 			
 			// update model on selection
-            nodeModel.annoTask.workerId = parseInt($($event.currentTarget.children[0]).text())
-            nodeModel.meta.assignee = $($event.currentTarget.children[1]).text()  
-			
+            nodeModel.state.workerId = parseInt($($event.currentTarget.children[0]).text())
+            nodeModel.state.assignee = $($event.currentTarget.children[1]).text()
+
 			// show next tab pane
             nodeModel.controls.show3.update(true)
         })
