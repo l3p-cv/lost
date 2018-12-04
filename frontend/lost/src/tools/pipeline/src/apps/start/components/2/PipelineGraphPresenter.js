@@ -1,12 +1,12 @@
-import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import { WizardTabPresenter } from 'l3p-frontend'
 
 import Graph from 'pipRoot/Graph'
-import DatasourceNodePresenter from 'pipRoot/nodes/datasource/DatasourceNodePresenter'
-import AnnoTaskNodePresenter from 'pipRoot/nodes/annoTask/AnnoTaskNodePresenter'
-import DataExportNodePresenter from 'pipRoot/nodes/dataExport/DataExportNodePresenter'
-import VisualOutputNodePresenter from 'pipRoot/nodes/visualOutput/VisualOutputNodePresenter'
-import ScriptNodePresenter from 'pipRoot/nodes/script/ScriptNodePresenter'
-import LoopNodePresenter from 'pipRoot/nodes/loop/LoopNodePresenter'
+import DatasourceStartPresenter from 'pipRoot/nodes/datasource/start/DatasourceStartPresenter'
+import AnnoTaskStartPresenter from 'pipRoot/nodes/annoTask/start/AnnoTaskStartPresenter'
+import DataExportStartPresenter from 'pipRoot/nodes/dataExport/start/DataExportStartPresenter'
+import VisualOutputStartPresenter from 'pipRoot/nodes/visualOutput/start/VisualOutputStartPresenter'
+import ScriptStartPresenter from 'pipRoot/nodes/script/start/ScriptStartPresenter'
+import LoopStartPresenter from 'pipRoot/nodes/loop/start/LoopStartPresenter'
 
 import PipelineGraphView from './PipelineGraphView'
 import ConfigPipelinePresener from '../3/ConfigPipelinePresenter'
@@ -54,17 +54,17 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         let nodes = []
         elements.forEach(element => {
             if ('datasource' in element) {
-                nodes.push(new DatasourceNodePresenter(this.graph, element, mode))
+                nodes.push(new DatasourceStartPresenter(this.graph, element, mode))
             } else if ('script' in element) {
-                nodes.push(new ScriptNodePresenter(this.graph, element, mode))
+                nodes.push(new ScriptStartPresenter(this.graph, element, mode))
             } else if ('annoTask' in element) {
-                nodes.push(new AnnoTaskNodePresenter(this.graph, element, mode))
+                nodes.push(new AnnoTaskStartPresenter(this.graph, element, mode))
             } else if ('dataExport' in element) {
-                nodes.push(new DataExportNodePresenter(this.graph, element, mode))
+                nodes.push(new DataExportStartPresenter(this.graph, element, mode))
             } else if ('visualOutput' in element) {
-                nodes.push(new VisualOutputNodePresenter(this.graph, element, mode))
+                nodes.push(new VisualOutputStartPresenter(this.graph, element, mode))
             } else if ('loop' in element) {
-                nodes.push(new LoopNodePresenter(this.graph, element, mode))
+                nodes.push(new LoopStartPresenter(this.graph, element, mode))
             }
         })
 		
@@ -79,7 +79,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
 		// add edges
         nodes.forEach(({ node }) => {
-            if (node.constructor.name === 'LoopNodePresenter') {
+            if (node.constructor.name === 'LoopStartPresenter') {
                 this.graph.addEdge(node.model.peN, node.model.loop.peJumpId, true)
             }
             if (node.model.peOut !== null) {
@@ -98,7 +98,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 	    this.graph.centerGraph()
     }
 	getNodes(){
-		if(this.graph.dagreD3Graph){
+		if(this.graph && this.graph.dagreD3Graph){
 			return this.graph.dagreD3Graph._nodes
 		}
 		return null

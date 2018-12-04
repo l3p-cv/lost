@@ -67,8 +67,10 @@ export default class BaseNodePresenter {
 			}
         })
 		// update dagre d3 node on modal close.
+		// update color on modal close.
 		if(this.modal){
 			$(this.modal.html.root).on('hidden.bs.modal', () => {
+				this.view.setColor(this.isValidated())
 				this.graph.updateNode(this)
 			})
 		}

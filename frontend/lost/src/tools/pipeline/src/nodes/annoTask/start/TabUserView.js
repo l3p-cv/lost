@@ -1,4 +1,4 @@
-import { WizardTabView } from 'pipRoot/l3pfrontend/index'
+import { WizardTabView } from 'l3p-frontend'
 import './TabUserStyle.scss'
 
 
@@ -32,7 +32,6 @@ export default class TabUserView extends WizardTabView {
 	adjustDataTable(){
 		this.table.columns.adjust()
 	}
-
 	// crap, should use data tables for this?
 	selectRow(row: HTMLTableRowElement){
 		row.classList.toggle('selected', true)

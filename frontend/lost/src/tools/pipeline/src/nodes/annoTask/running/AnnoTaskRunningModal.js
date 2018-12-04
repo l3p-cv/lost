@@ -1,4 +1,5 @@
-import { BaseModal } from 'pipRoot/l3pfrontend/index'
+import { BaseModal } from 'l3p-frontend'
+
 
 export default class AnnoTaskRunningModal extends BaseModal {
     constructor(nodeModel){       

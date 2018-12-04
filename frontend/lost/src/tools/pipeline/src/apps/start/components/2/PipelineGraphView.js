@@ -1,6 +1,7 @@
-import { WizardTabView } from 'pipRoot/l3pfrontend/index'
+import { WizardTabView } from 'l3p-frontend'
 
 import './PipelineGraph.scss'
+
 
 class PipelineGraphTab extends WizardTabView {
     constructor(){

@@ -1,5 +1,5 @@
 
-import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import { WizardTabPresenter } from 'l3p-frontend'
 import * as http from 'pipCore/http'
 import appModel from '../../appModel'
 import PipelineGraphView from './PipelineGraphView'

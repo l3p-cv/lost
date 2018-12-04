@@ -1,4 +1,4 @@
-import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
+import { NodeTemplate } from 'l3p-frontend'
 import './Graph.scss'
 
 import * as d3 from 'd3'

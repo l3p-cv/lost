@@ -10,7 +10,7 @@ import '../../../node_modules/sweetalert2/dist/sweetalert2.css'
 import appModel from './appModel'
 import * as http from 'pipRoot/http'
 
-import { Wizard } from 'pipRoot/l3pfrontend/index'
+import { Wizard } from 'l3p-frontend'
 import SelectPipelineTab from './components/1/SelectPipelinePresenter'
 import PipelineGraphTab from './components/2/PipelineGraphPresenter'
 import ConfigPipelineTab from './components/3/ConfigPipelinePresenter'
@@ -42,7 +42,7 @@ export default function init(token){
 
 
 // // temporary, during layout repair | REMOVE LATER
-// import { BaseModal } from 'pipRoot/l3pfrontend/index'
+// import { BaseModal } from 'l3p-frontend'
 // import 'bootstrap'
 // class TempModal extends BaseModal {
 // 	constructor(params: any){

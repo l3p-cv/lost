@@ -1,5 +1,4 @@
-import { WizardTabView } from 'pipRoot/l3pfrontend/index'
-import AnnoTaskNodeModel from '../AnnoTaskNodeModel';
+import { WizardTabView } from 'l3p-frontend'
 
 
 export default class TabInfoView extends WizardTabView {

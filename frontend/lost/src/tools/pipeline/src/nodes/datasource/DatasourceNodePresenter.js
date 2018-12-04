@@ -1,6 +1,6 @@
-import BaseNodePresenter from '../BaseNodePresenter'
+import BaseNodePresenter from '../../BaseNodePresenter'
 
-import DatasourceNodeModel from './DatasourceNodeModel'
+import DatasourceNodeModel from './DatasourceStartModel'
 import DatasourceNodeRunningView from './DatasourceNodeRunningView'
 import DatasourceNodeStartView from './DatasourceNodeStartView'
 
@@ -31,15 +31,15 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
      */
     initViewBinding(){
 		if(this.model.mode === 'start'){
-			// PATH TO MODEL
+			// change path in model.
 			$(this.modal.html.root).on('hidden.bs.modal', () => {
 				let path = $(this.modal.html.refs['file-tree']).treeview('getSelected')
-				console.log({path})
 				if(path.length === 1){
 					path = path[0].text
 				}
 				this.model.state.path.update(path)
-				this.graph.updateNode(this)           
+				// position?
+				this.graph.updateNode(this)
 			})
 		}
 		if(this.model.mode === 'running'){
@@ -53,9 +53,9 @@ export default class DatasourceNodePresenter extends BaseNodePresenter {
      * @override
      */
     initModelBinding(){
-		// PATH TO VIEW
+		// change path in view.
 		if(this.model.mode === 'start'){
-			this.model.state.path.on('update', (path) => this.view.setSource(path))
+			this.model.state.path.on('update', (path) => this.view.update(path))
 		}
 		// DUPLICATION?
 		if(this.model.mode === 'running'){

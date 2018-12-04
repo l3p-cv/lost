@@ -1,4 +1,4 @@
-import { WizardTabView } from 'pipRoot/l3pfrontend/index'
+import { WizardTabView } from 'l3p-frontend'
 
 class StartPipelineTab extends WizardTabView {
     constructor(){

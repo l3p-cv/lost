@@ -1,5 +1,5 @@
 import './BaseNodeStyle.scss'
-import { NodeTemplate } from 'pipRoot/l3pfrontend/index'
+import { NodeTemplate } from 'l3p-frontend'
 
 
 const DEFAULTS = {
@@ -69,6 +69,7 @@ export default class BaseNodeView {
 		this.setColor(validated)
 	}
 	setColor(validated){
+		console.log("setcolor:", validated)
 		if(validated){
 			if(this.colorValidated){
 				this.html.refs['header'].classList.toggle(`bg-${this.colorInvalidated}`, false)

@@ -1,4 +1,4 @@
-import { http } from 'pipRoot/l3pfrontend/index'
+import { http } from 'l3p-frontend'
 import swal from 'sweetalert2'
 import appModel from './apps/start/appModel'
 import { API_URL } from 'root/settings'

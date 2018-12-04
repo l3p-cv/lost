@@ -1,6 +1,9 @@
-import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import { WizardTabPresenter } from 'l3p-frontend'
+
 import TabSelectTreeView from './TabSelectTreeView'
+
 import appModel from 'apps/start/appModel'
+
 
 export default class TabSelectTreePresenter extends WizardTabPresenter {
     constructor(nodeModel: AnnoTaskNodeModel) {

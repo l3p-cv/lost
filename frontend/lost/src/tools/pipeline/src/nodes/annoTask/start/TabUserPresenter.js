@@ -1,4 +1,5 @@
-import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import { WizardTabPresenter } from 'l3p-frontend'
+
 import TabUserView from './TabUserView'
 
 import appModel from 'apps/start/appModel'

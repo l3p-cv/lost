@@ -1,6 +1,6 @@
-import { BaseModal } from 'pipRoot/l3pfrontend/index'
+import { BaseModal } from 'l3p-frontend'
 
-import { Wizard } from 'pipRoot/l3pfrontend/index'
+import { Wizard } from 'l3p-frontend'
 import TabInfoPresenter from './TabInfoPresenter'
 import TabUserPresenter from './TabUserPresenter'
 import TabSelectTreePresenter from './TabSelectTreePresenter'

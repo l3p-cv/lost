@@ -1,9 +1,9 @@
-import { WizardTabPresenter } from 'pipRoot/l3pfrontend/index'
+import { WizardTabPresenter } from 'l3p-frontend'
 import appModel from '../../appModel'
 import swal from 'sweetalert2'
 import SelectPipelineView from './SelectPipelineView'
 import * as http from 'pipRoot/http'
-import { ContextMenu } from 'pipRoot/l3pfrontend/index'
+import { ContextMenu } from 'l3p-frontend'
 
 
 import moment from 'moment'
@@ -47,11 +47,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 if (that.rawData[0].logfilePath) {
                     window.location = window.location.origin + '/' + that.rawData[0].logfilePath
                 } else {
-                    swal({
-                        type: 'error',
-                        title: 'Oops...',
-                        text: 'Logfile does not exist',
-                    })
+					// sweet alert was here
                 }
             }
 
