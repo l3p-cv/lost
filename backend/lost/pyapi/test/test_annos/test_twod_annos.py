@@ -3,13 +3,14 @@ from lost.db import model, dtype
 from lost.db.access import DBMan
 from lost.logic import config
 import json
+import datetime
+from lost.utils import testils
 
 REF_BBOX = [0.1, 0.1, 0.2, 0.2]
 REF_POINT = [0.1, 0.1]
 REF_LINE = [[0.1,0.1],[0.2,0.2]]
 REF_POLYGON = [[0.1,0.1],[0.2,0.1],[0.15,0.2]]
 
-dbm = DBMan(config.LOSTConfig())
 
 def check_bbox(ref, to_check):
     '''Check if two boxes are equal'''
@@ -39,6 +40,7 @@ def check_polygon(ref, to_check):
 
 @pytest.fixture(scope='module')
 def simple_bbox_anno():
+    dbm = DBMan(config.LOSTConfig())
     twod_anno = model.TwoDAnno(
         data=json.dumps(
             {
@@ -56,15 +58,35 @@ def simple_bbox_anno():
     dbm.delete(twod_anno)
     dbm.commit()
 
-class TestTwoDAnnos(object):
+@pytest.fixture
+def full_bbox_anno():
+    dbm = DBMan(config.LOSTConfig())
+    test_user = testils.get_user(dbm)
+    tree = testils.get_voc_label_tree(dbm)
+    label_leaf_id = tree.get_child_vec(tree.root.idx)[0]
+    twod_anno = model.TwoDAnno(
+        data=json.dumps(
+            {
+                'x':REF_BBOX[0],
+                'y':REF_BBOX[1],
+                'w':REF_BBOX[2],
+                'h':REF_BBOX[3]
+            }
+        ),
+        dtype=dtype.TwoDAnno.BBOX,
+        annotator=test_user.groups[0],
+        label_leaf_id=label_leaf_id
+    )
+    dbm.add(twod_anno)
+    dbm.commit()
+    yield twod_anno
+    dbm.delete(twod_anno.label)
+    dbm.delete(twod_anno)
+    dbm.commit()
+    # testils.delete_user(dbm, test_user)
 
-    def test_get_anno_vec(self, simple_bbox_anno):
-        vec = simple_bbox_anno.get_anno_vec()
-        print(vec)
-        assert vec[0] == REF_BBOX[0]
-        assert vec[1] == REF_BBOX[1]
-        assert vec[2] == REF_BBOX[2]
-        assert vec[3] == REF_BBOX[3]
+
+class TestTwoDAnnos(object):
 
     def test_bbox_property(self):
         bbox_anno = model.TwoDAnno()
@@ -98,8 +120,6 @@ class TestTwoDAnnos(object):
             for j, ref in enumerate(point):
                 assert ref == anno.polygon[i][j]
 
-class TestImageAnnos(object):
-
     def test_get_anno_vec(self):
         img_anno = model.ImageAnno()
         anno = model.TwoDAnno()
@@ -131,4 +151,39 @@ class TestImageAnnos(object):
         print('Check Polygon')
         polygon_list = img_anno.get_anno_vec(anno_type='polygon')
         check_polygon(REF_POLYGON, polygon_list[0])
+    
+    def test_to_dict_flat(self, full_bbox_anno):
+        bbox = full_bbox_anno
+        my_dict = bbox.to_dict()
+        assert my_dict['anno.data'] == bbox.data
+        assert my_dict['anno.lbl.name'] == bbox.label.label_leaf.name
+        assert my_dict['anno.lbl.idx'] == bbox.label.label_leaf.idx
+        assert my_dict['anno.lbl.external_id'] == bbox.label.label_leaf.external_id
 
+    def test_to_dict_hierarchical(self, full_bbox_anno):
+        bbox = full_bbox_anno
+        my_dict = bbox.to_dict(style='hierarchical')
+        assert my_dict['anno.lbl.name'] == bbox.label.label_leaf.name
+        assert my_dict['anno.lbl.idx'] == bbox.label.label_leaf.idx
+        assert my_dict['anno.lbl.external_id'] == bbox.label.label_leaf.external_id
+        assert my_dict['anno.data']['x'] == REF_BBOX[0]
+        assert my_dict['anno.data']['y'] == REF_BBOX[1]
+        assert my_dict['anno.data']['w'] == REF_BBOX[2]
+        assert my_dict['anno.data']['h'] == REF_BBOX[3]
+        
+    def test_to_df(self, full_bbox_anno):
+        bbox = full_bbox_anno
+        df = bbox.to_df()
+        assert df['anno.data'].values[0] == bbox.data
+        assert df['anno.lbl.name'].values[0] == bbox.label.label_leaf.name
+        assert df['anno.lbl.idx'].values[0] == bbox.label.label_leaf.idx
+        assert df['anno.lbl.external_id'].values[0] == bbox.label.label_leaf.external_id
+
+    def test_to_vec(self, full_bbox_anno):
+        bbox = full_bbox_anno
+        assert check_bbox(REF_BBOX, bbox.to_vec('anno.data'))
+        assert bbox.to_vec('anno.lbl.idx') == full_bbox_anno.label.label_leaf_id
+        vec = bbox.to_vec(['anno.lbl.name','anno.lbl.idx', 'anno.lbl.external_id'])
+        assert vec[0] == bbox.label.label_leaf.name
+        assert vec[1] == bbox.label.label_leaf.idx
+        assert vec[2] == bbox.label.label_leaf.external_id

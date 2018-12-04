@@ -87,9 +87,19 @@ class FileMan(object):
             shutil.rmtree(i_path)
 
     def rm_pipe_context_path(self, pipe):
-        p_path = self.get_pipe_context_path()
+        p_path = self.get_pipe_context_path(pipe=pipe)
         if os.path.exists(p_path):
             shutil.rmtree(p_path)
+    
+    def rm_pipe_log_path(self, pipe):
+        '''Remove log file for pipe
+        
+        Args:
+            pipe (:class:`lost.db.model.Pipe`): The pipeline where
+                the log file should be deleted for.'''
+        path = self.get_pipe_log_path(pipe.idx)
+        if os.path.exists(path):
+            os.remove(path)
 
     def get_instance_path(self, pipe_element):
         return self.create_instance_path(pipe_element)

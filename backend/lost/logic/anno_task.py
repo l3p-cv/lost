@@ -1,14 +1,15 @@
 import json
 from lost.db import model, state, dtype
 from datetime import datetime
+from lost.pyapi import pipe_elements
 
-def update_anno_task(data_man, anno_task_id):
+def update_anno_task(dbm, anno_task_id, user_id=None):
     remaining = None
     available = None
     response = dict()
-    anno_task = data_man.get_anno_task(anno_task_id=anno_task_id)
+    anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
     if anno_task.dtype == dtype.AnnoTask.SIA or anno_task.dtype == dtype.AnnoTask.MIA :
-        pipe_element=data_man.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
+        pipe_element=dbm.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
         #TODO: count only from current iteration remaining annos
         remaining = None
         available = None
@@ -17,13 +18,13 @@ def update_anno_task(data_man, anno_task_id):
         if anno_task.dtype == dtype.AnnoTask.MIA:
             config = json.loads(anno_task.configuration)
             if config['type'] == 'annoBased':
-                remaining, available = __get_two_d_anno_counts(data_man, anno_task_id, pipe_element.iteration)
+                remaining, available = __get_two_d_anno_counts(dbm, anno_task_id, pipe_element.iteration)
             elif config['type'] == 'imageBased':
-                remaining, available = __get_image_anno_counts(data_man, anno_task_id, pipe_element.iteration)
+                remaining, available = __get_image_anno_counts(dbm, anno_task_id, pipe_element.iteration)
 
         # in case of SIA always count imageBased
         else:
-            remaining, available = __get_image_anno_counts(data_man, anno_task_id, pipe_element.iteration)
+            remaining, available = __get_image_anno_counts(dbm, anno_task_id, pipe_element.iteration)
 
         if available:
             try:
@@ -34,135 +35,137 @@ def update_anno_task(data_man, anno_task_id):
             progress = float(100)
         response['progress'] = int(progress)
         response['remainingAnnos'] = remaining
-        annotask = data_man.get_anno_task(anno_task_id)
+        annotask = dbm.get_anno_task(anno_task_id)
         annotask.progress = progress
-        data_man.save_obj(annotask)
+        if user_id:
+            annotask.last_activity = datetime.now()
+            annotask.last_annotater_id = user_id
+        dbm.save_obj(annotask)
         return response
 
-def __get_image_anno_counts(data_man, anno_task_id, iteration):
-    remaining = data_man.count_image_remaining_annos(anno_task_id=anno_task_id).r
+def __get_image_anno_counts(dbm, anno_task_id, iteration):
+    remaining = dbm.count_image_remaining_annos(anno_task_id=anno_task_id).r
     available = None
-    for r in data_man.count_all_image_annos(anno_task_id=anno_task_id, iteration=iteration)[0]:
+    for r in dbm.count_all_image_annos(anno_task_id=anno_task_id, iteration=iteration)[0]:
             available = r
     return remaining, available
 
-def __get_two_d_anno_counts(data_man, anno_task_id, iteration):
-    remaining = data_man.count_two_d_remaining_annos(anno_task_id=anno_task_id).r
+def __get_two_d_anno_counts(dbm, anno_task_id, iteration):
+    remaining = dbm.count_two_d_remaining_annos(anno_task_id=anno_task_id).r
     available = None
-    for r in data_man.count_all_two_d_annos(anno_task_id=anno_task_id, iteration=iteration)[0]:
+    for r in dbm.count_all_two_d_annos(anno_task_id=anno_task_id, iteration=iteration)[0]:
             available = r
     return remaining, available
 
 
-def set_finished(data_man, anno_task_id):
-    anno_task = data_man.get_anno_task(anno_task_id=anno_task_id)
-    pipe_e = data_man.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
+def set_finished(dbm, anno_task_id):
+    anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
+    pipe_e = dbm.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
     if anno_task.state == state.AnnoTask.FINISHED:
         return "already finished"
     if anno_task.state == state.AnnoTask.IN_PROGRESS or \
     anno_task.state == state.AnnoTask.PAUSED:
         
-        progress = update_anno_task(data_man, anno_task_id)
+        progress = update_anno_task(dbm, anno_task_id)
         if progress['remainingAnnos'] is None:
             return "error: annotations not found"
         if int(progress['remainingAnnos']) == 0:
             anno_task.progress = progress['progress']
             anno_task.state = state.AnnoTask.FINISHED
-            data_man.add(anno_task)
+            dbm.add(anno_task)
             pipe_e.state = state.PipeElement.FINISHED
-            data_man.add(pipe_e)
-            data_man.commit()
-            return "succeeded"
+            dbm.add(pipe_e)
+            dbm.commit()
+            return "success"
         else:
             return "not finished, remaining: " + str(progress['remainingAnnos'])
 
-def get_current_annotask(db_man, user):
-        current_task = dict()
-        current_task['name'] = "nothing_available"
-        anno_task = user.choosen_annotask
-                
-        # check if respective pipeline is not in progress           
-        pipe_element = db_man.get_pipe_element(pipe_e_id=anno_task.pipe_element_id) 
-        pipe = db_man.get_pipe(pipe_id=pipe_element.pipe_id)
-        if pipe.state != state.Pipe.IN_PROGRESS:
-            return current_task
+def get_current_annotask(dbm, user):
+        if user.choosen_anno_task:
+            anno_task = user.choosen_anno_task
+            return __get_at_info(dbm, anno_task)
+        return "no annotask choosen"
 
-        current_task['id'] = anno_task.idx
-        current_task['name'] = anno_task.name
-        current_task['instructions'] = anno_task.instructions
-        current_task['remainingAnnos'] = None
-        if anno_task.dtype == dtype.AnnoTask.MIA:
-            config = json.loads(anno_task.configuration)
-            if config['type'] == 'imageBased':
-                current_task['remainingAnnos'] = db_man.count_image_remaining_annos(anno_task_id=anno_task_id).r
-            elif config['type'] == 'annoBased':
-                current_task['remainingAnnos'] = db_man.count_two_d_remaining_annos(anno_task_id=anno_task_id).r
-        else:
-            current_task['remainingAnnos'] = db_man.count_image_remaining_annos(anno_task_id=anno_task_id).r
-        if anno_task.progress == None:
-            current_task['progress'] = 0
-        else:
-            current_task['progress'] = int(anno_task.progress)
-
-        return current_task
-
-def get_available_annotasks(db_man, group_ids):
+def get_available_annotasks(dbm, group_ids):
     ''' get all available  annotation task for user
 
     Args:
-        data_man: Project Manager
+        dbm: Project Manager
         user_id(int): user id
         anno_type(int): type of annotation task
 
     Returns:
         json with all data of the available tasks
     '''
-    available_tasks = dict()
-    available_tasks['annotask_available'] = list()
-    for annotask in db_man.get_available_annotask(group_ids):
-        if annotask.pipe_element_id is None:
-            raise Exception("No PipeElement for AnnoTask")
-        pipeelement = db_man.get_pipe_element(pipe_e_id=annotask.pipe_element_id)
-        task = db_man.get_pipe(pipe_id=pipeelement.pipe_id)
-        at = dict()
-        at['DT_RowId'] = annotask.idx
-        at['name'] = annotask.name
-        at['task_name'] = task.name
-        at['assigned_to'] = "All Groups"
-        if annotask.group_id and annotask.group_id != -1:
-            at['assigned_to'] = annotask.group.name
-        at['progress'] = "0 %"
-        if annotask.progress:
-            at['progress'] = str(int(annotask.progress)) + " %"
-        at['date'] = annotask.timestamp
-        if annotask.manager:
-            at['author'] = manager.first_name +" "+ manager.last_name
-        else:
-            at['author'] = "Unknown"
-        if annotask.dtype == dtype.AnnoTask.MIA:
-            config = json.loads(annotask.configuration)
-            if config['type'] == 'imageBased':
-                at['size'] = db_man.count_image_remaining_annos(anno_task_id=annotask.idx).r
-            elif config['type'] == 'annoBased':
-                at['size'] = db_man.count_two_d_remaining_annos(anno_task_id=annotask.idx).r
-        else:
-            at['size'] = db_man.count_image_remaining_annos(anno_task_id=annotask.idx).r
+    available_annotasks = list()
+    for annotask in dbm.get_available_annotask(group_ids):
+        available_annotasks.append(__get_at_info(dbm,annotask))
+    return available_annotasks
 
-        # for r in db_man.count_all_image_annos(anno_task_id=annotask.idx, iteration=pipeelement.iteration)[0]:
-        #     at['size'] = r
-        available_tasks['annotask_available'].append(at)
-    return available_tasks
+def __get_at_info(dbm, annotask):
+    if annotask.pipe_element_id is None:
+        raise Exception("No PipeElement for AnnoTask")
+    pipeelement = dbm.get_pipe_element(pipe_e_id=annotask.pipe_element_id)
+    pipeline = dbm.get_pipe(pipe_id=pipeelement.pipe_id)
+    at = dict()
+    at['name'] = annotask.name
+    at['id'] = annotask.idx
+    at['pipelineName'] = pipeline.name
+    at['pipelineCreator'] = pipeline.manager.user_name
+    at['group'] = annotask.group.name
+    at['instructions'] = annotask.instructions
+    at['createdAt'] = annotask.timestamp
+    at['lastActivity'] = annotask.last_activity
+    at['lastAnnotater'] = annotask.last_annotater.user_name
+    at['type'] = None
+    at['finished'] = None
+    at['size'] = None
+    if annotask.dtype == dtype.AnnoTask.MIA:
+        at['type'] = 'MIA'
+        config = json.loads(annotask.configuration)
+        if config['type'] == 'imageBased':
+            remaining, available = __get_image_anno_counts(dbm, annotask.idx, pipeelement.iteration)
+            at['finished'] = available-remaining
+            at['size'] = available
+        elif config['type'] == 'annoBased':
+            remaining, available = __get_twod_anno_counts(dbm, annotask.idx, pipeelement.iteration)
+            at['finished'] = available - remaining
+            at['size'] = available
+    else:
+        at['type'] = 'SIA'
+        remaining, available = __get_image_anno_counts(dbm, annotask.idx, pipeelement.iteration)
+        at['finished'] = available - remaining
+        at['size'] = available
+    at['statistic'] = dict()
+    at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement)
+    at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, annotask)
+    return at
 
-def choose_annotask(db_man, anno_task_id, user_id):
+def choose_annotask(dbm, anno_task_id, user_id):
     # first delete all previous choosen annotasks
-        for chat in db_man.get_choosen_annotask(user_id):
-            db_man.delete(chat)
-            db_man.commit()
+        for chat in dbm.get_choosen_annotask(user_id):
+            dbm.delete(chat)
+            dbm.commit()
         # choose new one
         newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
-        db_man.save_obj(newcat)
+        dbm.save_obj(newcat)
 
-def has_annotation(db_man, anno_task_id):
-    if db_man.count_annos(anno_task_id) > 0:
+def has_annotation(dbm, anno_task_id):
+    if dbm.count_annos(anno_task_id) > 0:
         return True
     else: return False
+
+def __get_seconds_per_anno(dbm, annotask):
+    return 6.78
+
+def __get_amount_per_label(dbm, pipeelement, type):
+    dist = list()
+    annotask = pipe_elements.AnnoTask(pipeelement, dbm)
+    
+    df_list = []
+    for img_anno in annotask.outp.img_annos:
+        df_list.append(img_anno.to_df())
+    pd.concat(df_list)
+
+
+    return dist

@@ -142,7 +142,7 @@ class ImagesPerDay extends Component {
                 // height: 300 + 'px',
                 // marginTop: 40 + 'px'
             }}>
-                <Line data={mainChart} options={mainChartOpts} height={100}/>
+                <Line data={mainChart} options={mainChartOpts} height={50}/>
             </div>
 
         )

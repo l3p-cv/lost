@@ -57,11 +57,11 @@ class TestLabelTree(object):
 
     def test_get_child_vec(self, tree_plus_childs):
         t = tree_plus_childs
-        id_vec = t.get_child_vec(t.root.idx, style='external_id')
+        id_vec = t.get_child_vec(t.root.idx, columns='external_id')
         assert CHILD_COW_EXTERNAL_ID in id_vec
         assert CHILD_HORSE_EXTERNAL_ID in id_vec
 
-        vec = t.get_child_vec(t.root.idx, style=['external_id', 'name'])
+        vec = t.get_child_vec(t.root.idx, columns=['external_id', 'name'])
         print('vec', vec)
         for e in vec:
             if CHILD_COW_EXTERNAL_ID in e:

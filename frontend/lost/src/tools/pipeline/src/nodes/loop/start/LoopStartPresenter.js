@@ -9,8 +9,8 @@ export default class LoopStartPresenter extends BaseNodePresenter {
     constructor(graph, data, mode) {      
         super(graph)
 		const model = new LoopStartModel(data, mode)
-		const view = new LoopStartView(this.model)
-		const modal = new LoopStartModal(this.model)
+		const view = new LoopStartView(model)
+		const modal = new LoopStartModal(model)
 		super({ graph, model, view, modal })
     }
     /**

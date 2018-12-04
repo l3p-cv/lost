@@ -3,8 +3,8 @@ from lost.db import model, access, state, dtype
 from datetime import datetime
 import igraph
 
-class PipeMan(object):
-    '''A PipeMan object maps to one pipeline in the portal an manages it.
+class PipeEngine(object):
+    '''A PipeEngine object maps to one pipeline in the portal an manages it.
 
     Each pipline belongs to one Pipe.
     '''

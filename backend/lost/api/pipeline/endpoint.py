@@ -83,7 +83,7 @@ class Pipeline(Resource):
 class PipelineStart(Resource):
     #@api.marshal_with(pipeline_start)
     @jwt_required 
-    def get(self, pipeline_id):
+    def post(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)

@@ -19,7 +19,7 @@ import traceback
 import lost.logic.log
 import logging
 
-class PipeMan(pipe_model.PipeMan):
+class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig):
         '''
         :type dbm: lost.db.access.DBMan

@@ -1,12 +1,15 @@
 from flask_restplus import Resource
+from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
-#from lost.api.user.api_definition import anno_task, anno_task_list
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
+from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
 
+
 namespace = api.namespace('annotask', description='AnnoTask API.')
+
 
 @namespace.route('')
 class Available(Resource):
@@ -21,9 +24,28 @@ class Available(Resource):
             return "You are not authorized.", 401
         else:
             group_ids = [g.idx for g in user.groups]
-            annotask_list = annotask_service.get_available_annotask(dbm, group_ids)
+            annotask_list = annotask_service.get_available_annotasks(dbm, group_ids)
             dbm.close_session()
-            return annotask_list
+            import json
+            with open('/code/backend/lost/api/annotask/test/annoTasks.json') as f:
+                data = json.load(f)
+            return data
+            # return annotask_list
+
+    @api.expect(annotask_parser)
+    @jwt_required 
+    def post(self):
+        args = annotask_parser.parse_args(request)
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            annotask_service.choose_annotask(dbm, args.get('id') ,user.idx)
+            dbm.close_session()
+            return "success"
 
 @namespace.route('/working')
 class Working(Resource):
@@ -39,4 +61,9 @@ class Working(Resource):
         else:
             working_task = annotask_service.get_current_annotask(dbm, user)
             dbm.close_session()
-            return user.choosen_anno_task
+            import json
+            with open('/code/backend/lost/api/annotask/test/workingOnAnnoTask.json') as f:
+                data = json.load(f)
+            return data
+            # return user.choosen_anno_task
+
