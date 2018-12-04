@@ -28,9 +28,6 @@ const treeColumns = [
                 Header: 'Description',
                 accessor: 'description'
             }, {
-                Header: 'Group',
-                accessor: 'groupName'
-            }, {
                 Header: 'Controls'
             }
         ]

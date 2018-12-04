@@ -34,6 +34,7 @@
     "react-chartjs-2": "^2.7.2",
     "react-contexify": "^4.0.0",
     "react-dom": "^16.5.2",
+    "react-graph-vis": "^1.0.2",
     "react-loadable": "^5.5.0",
     "react-notifications": "^1.4.3",
     "react-redux": "^5.1.0",
