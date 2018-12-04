@@ -39,27 +39,3 @@ export default function init(token){
         appModel.data.pipelineTemplates.update(response.templates)
     })
 }
-
-
-// // temporary, during layout repair | REMOVE LATER
-// import { BaseModal } from 'l3p-frontend'
-// import 'bootstrap'
-// class TempModal extends BaseModal {
-// 	constructor(params: any){
-// 		super({
-// 			title: 'my title',
-// 			id: 'some-id',
-// 			classes: 'hodor and fodor',
-// 			content: /*html*/`
-// 				<h2>some content</h2>
-// 				<p>
-// 					Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-// 				</p>
-// 			`
-// 		})
-// 		document.body.appendChild(this.view.fragment)
-// 		$(this.view.root).modal()
-// 	}
-// }
-// const modal = new TempModal()
-// console.log(modal)

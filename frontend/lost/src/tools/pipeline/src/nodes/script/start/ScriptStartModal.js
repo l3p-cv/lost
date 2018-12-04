@@ -65,5 +65,11 @@ export default class ScriptStartModal extends BaseModal {
                 })
             })
         }
+
+		// add 'more info' collapse functionallity.
+		$(this.html.refs['more-information-link']).on('click', () => {
+			$(this.html.refs['collapse-this']).collapse('toggle')
+			$(this.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+		})
     }
 }

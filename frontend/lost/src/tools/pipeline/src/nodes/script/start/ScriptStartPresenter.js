@@ -16,10 +16,10 @@ export default class ScriptStartPresenter extends BaseNodePresenter {
      * @override
      */
     initViewBinding(){
-		// add collapse functionallity.
-		$(this.modal.html.refs['more-information-link']).on('click', () => {
-			$(this.modal.html.refs['collapse-this']).collapse('toggle')
-			$(this.modal.html.refs['more-information-icon']).toggleClass('fa-chevron-down fa-chevron-up')
+		$(this.modal.html.root).on('hidden.bs.modal', () => {
+			console.log('validated?', this.isValidated())
+			this.view.setColor(this.isValidated())
+			this.graph.updateNode(this)
 		})
 	}
 	/**
