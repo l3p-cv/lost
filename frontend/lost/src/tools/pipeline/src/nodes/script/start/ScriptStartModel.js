@@ -12,6 +12,12 @@ export default class ScriptStartModel extends BaseNodeModel {
 		// data structure?
         this.script = script   
     }
+	isValidated(){
+		if(this.script.arguments){
+			return this.script.arguments.every(argument => argument.lenght > 0)
+		}
+		return true
+	}
 	getOutput(){
 		return {
 			peN: this.peN,

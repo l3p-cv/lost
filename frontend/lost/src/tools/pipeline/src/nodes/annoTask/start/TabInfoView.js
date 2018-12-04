@@ -35,4 +35,7 @@ export default class TabInfoView extends WizardTabView {
             `,
         })
     }
+	getName(){
+		return this.view.html.refs['name']
+	}
 }

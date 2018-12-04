@@ -24,4 +24,10 @@ export default class AnnoTaskStartView extends BaseNodeView {
 			]
 		})
     }
+	updateName(name){
+		this.html.refs['name'].textContent = name
+	}
+	updateAssignee(assignee){
+		this.html.refs['assignee'].textContent = assignee
+	}
 }

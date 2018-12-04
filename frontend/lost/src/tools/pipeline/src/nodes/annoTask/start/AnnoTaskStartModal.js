@@ -19,26 +19,31 @@ export default class AnnoTaskStartModal extends BaseModal {
 		
         this.wizard = new Wizard(this.html.ids['anno-task-modal-wizard'])  
 
-        let tab1 = new TabInfoPresenter(nodeModel)
-        let tab2 = new TabUserPresenter(nodeModel)
-        let tab3 = new TabSelectTreePresenter(nodeModel)
-        let tab4 = new TabTreePresenter(nodeModel)
+        this.tab1 = new TabInfoPresenter(nodeModel)
+        this.tab2 = new TabUserPresenter(nodeModel)
+        this.tab3 = new TabSelectTreePresenter(nodeModel)
+        this.tab4 = new TabTreePresenter(nodeModel)
 		
-        tab4.requiresValid(tab3)
-		tab2.on('after-activate', () => {
-			tab2.adjustDataTable()
+        this.tab4.requiresValid(this.tab3)
+		this.tab2.on('after-activate', () => {
+			this.tab2.adjustDataTable()
 		})
-		tab3.on('after-activate', () => {
-			tab3.adjustDataTable()
+		this.tab3.on('after-activate', () => {
+			this.tab3.adjustDataTable()
 		})
 
 		this.wizard.add([
-          tab1,
-          tab2,
-          tab3,
-          tab4
+          this.tab1,
+          this.tab2,
+          this.tab3,
+          this.tab4
         ])
-		
+	}
+	getName(){
+		return this.tab1.getName()
+	}
+	getAssignee(){
+		return this.tab2.getAssignee()
 	}
 }
   

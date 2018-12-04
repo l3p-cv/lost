@@ -40,5 +40,4 @@ export default class TabUserPresenter extends WizardTabPresenter {
 	adjustDataTable(){
 		this.view.adjustDataTable()
 	}
-
 }

@@ -4,7 +4,7 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 export default class DatasourceStartModel extends BaseNodeModel {
     constructor(params: any, mode: String) {
-		const { peN, peOut, id, state, datasource } = params	
+		const { peN, peOut, datasource } = params	
 	
 		super({ peN, peOut, mode })
 	
@@ -16,8 +16,7 @@ export default class DatasourceStartModel extends BaseNodeModel {
 		}
     }
 	isValidated(){
-		// any side effects possible?
-		return !this.state.path.isInInitialState
+		return !(this.state.path.isInInitialState) && (this.state.path.value.length > 0)
 	}
 	getOutput(){
 		return {

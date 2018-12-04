@@ -1,5 +1,3 @@
-import 'webpack-jquery-ui/tooltip'
-
 import { BaseModal } from 'l3p-frontend'
 
 
@@ -58,13 +56,8 @@ export default class ScriptStartModal extends BaseModal {
                 </div>
             `
         })
-        
-        $(`[data-toggle='tooltip']`).tooltip({
-            html: true,
-            placement: 'right',
-            container: 'body',
-        })
 
+		// update each argument in table on input.
         if(nodeModel.script.arguments !== null) {
             Object.keys(nodeModel.script.arguments).forEach(element => {
                 $(this.html.refs[element]).on('input', (e) =>{

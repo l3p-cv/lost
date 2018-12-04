@@ -67,13 +67,13 @@ export default class BaseNodePresenter {
 			}
         })
 		// update dagre d3 node on modal close.
-		// update color on modal close.
-		if(this.modal){
-			$(this.modal.html.root).on('hidden.bs.modal', () => {
-				this.view.setColor(this.isValidated())
-				this.graph.updateNode(this)
-			})
-		}
+		// should be done in each node presenter, graph update should be called last.
+		// if(this.modal){
+		// 	$(this.modal.html.root).on('hidden.bs.modal', () => {
+		// 		this.view.setColor(this.isValidated())
+		// 		this.graph.updateNode(this)
+		// 	})
+		// }
         
         this.initViewBinding()
         this.initModelBinding()

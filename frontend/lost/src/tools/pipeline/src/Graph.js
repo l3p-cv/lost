@@ -126,20 +126,18 @@ export default class Graph {
         this.setNode(node)
     }
     addEdge(from, to, redline){
-        // loop true or false peJump to draw red line
         if(redline === true) {
-            var edge_style = 'stroke: #f66; stroke-width: 3px; stroke-dasharray: 5, 5;'
-            var edge_arrow_style = 'fill: #f66; stroke: none;'
-        } else {
-            edge_style = ''
-            edge_arrow_style = ''
+			this.dagreD3Graph.setEdge(from, to, {
+				label: '',
+				style: 'fill: none; stroke: #f66; stroke-width: 3px; stroke-dasharray: 5, 5;',
+				arrowheadStyle: 'fill: #f66; stroke: none;',
+			})
         }
-
-        this.dagreD3Graph.setEdge(from, to, {
-            label: '',
-            style: edge_style,
-            arrowheadStyle: edge_arrow_style,
-        })
+		else {
+			this.dagreD3Graph.setEdge(from, to, {
+				label: '',
+			})
+        }
         
         this.render()
     }

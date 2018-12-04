@@ -11,7 +11,7 @@ export default class LoopStartView extends BaseNodeView {
 			content: [
 				{
 					attribute: 'Max Iterations',
-					value: model.loop.maxIteration,
+					value: model.loop.max_iteration,
 				},
 			],
 		})

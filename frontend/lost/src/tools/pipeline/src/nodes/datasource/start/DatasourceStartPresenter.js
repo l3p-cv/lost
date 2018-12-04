@@ -18,12 +18,9 @@ export default class DatasourceStartPresenter extends BaseNodePresenter {
     initViewBinding(){
 		// change path in model.
 		$(this.modal.html.root).on('hidden.bs.modal', () => {
-			let path = $(this.modal.html.refs['file-tree']).treeview('getSelected')
-			if(path.length === 1){
-				path = path[0].text
-			}
+			const path = this.modal.getSelectedPath()
 			this.model.state.path.update(path)
-			// position?
+			this.view.setColor(this.isValidated())
 			this.graph.updateNode(this)
 		})
     }

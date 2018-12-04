@@ -31,8 +31,15 @@ export default class AnnoTaskStartModel extends BaseNodeModel {
 		}
     }
 	isValidated(){
-		// not finished
-		return false
+		const { name, instructions, assignee, workerId, selectedLabelTree } = this.state
+		let result = true
+		result = result && name.length > 0
+		result = result && instructions.length > 0
+		result = result && assignee.length > 0
+		result = result && !isNaN(workerId)
+		result = result && !selectedLabelTree.isInInitialState
+		// label selection still missing here.
+		return result
 	}
 	getOutput(){
 		return this.state

@@ -1,7 +1,9 @@
 import { WizardTabPresenter } from 'l3p-frontend'
-import appModel from '../../appModel'
-import SelectPipelineView from './SelectPipelineView'
 import * as http from 'pipRoot/http'
+
+import appModel from '../../appModel'
+
+import SelectPipelineView from './SelectPipelineView'
 
 
 
@@ -23,7 +25,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         })
     }
     isValidated(){
-        return this.tableLoaded
+		return !appModel.state.selectedTemplate.isInInitialState
     }
     updateTable(data){
         this.view.updateTable(data.map(template => {

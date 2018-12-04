@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import {
 	Row,
 	Col,
+	Card,
+	CardBody,
 } from 'reactstrap'
 
 
@@ -19,9 +21,13 @@ class SingleImageAnnotation extends Component {
 	render(){
 		return (
 			<Row>
-				<Col>
-					<div ref={this.mount} id='start-pipeline'></div>
-				</Col>
+				<Col xs='12' sm='12' lg='12'>
+                    <Card>
+                        <CardBody>
+							<div ref={this.mount} id='start-pipeline'></div>
+                        </CardBody>
+                    </Card>
+                </Col>
 			</Row>
 		)
 	}
