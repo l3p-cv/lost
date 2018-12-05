@@ -14,7 +14,6 @@ export default class TabInfoPresenter extends WizardTabPresenter {
 
 		// VIEW BINDINGS
         $(this.view.html.refs['name']).on('input', ($event) => {
-			this.isValidated()
             nodeModel.state.name = $event.target.value
         })
         $(this.view.html.refs['instructions']).on('input', ($event) => {

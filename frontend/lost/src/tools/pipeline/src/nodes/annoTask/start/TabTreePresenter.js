@@ -1,7 +1,8 @@
-import { WizardTabPresenter, mapTree } from 'l3p-frontend'
+import { WizardTabPresenter } from 'l3p-frontend'
+import flattenTree from 'utils/graph-vis/flattenTree'
 
 import TabTreeView from './TabTreeView'
-
+console.log({flattenTree})
 
 export default class TabTreePresenter extends WizardTabPresenter {
     constructor(nodeModel: AnnoTaskNodeModel) {
@@ -15,12 +16,8 @@ export default class TabTreePresenter extends WizardTabPresenter {
 		nodeModel.state.selectedLabelTree.on('update', (data) => {
 			console.log('raw data:', data)
 			// map data for bootstrap-tree.
-			data = mapTree(data, {
-				childrenKey: 'children',
-				map: [['children', 'nodes'], ['name', 'text']]
-			})
-			data = [ data ]
-			console.log('will update my views bootstrap-tree with:', data)
+			data = flattenTree(data)
+			console.log('flattend data:', data)
 			this.view.update(data)
 		})
     }
