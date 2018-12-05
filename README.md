@@ -1,19 +1,21 @@
 # LOST - Label Objects and Save Time
+What is lost?
 
-## How To Start
-TODO
+# Getting Started
+If you feel LOST here is the place to get started.
 
-## Tech Stack
+## Docker Setup
 
-### Frontend
-1. React, Redux, Reactstrap + CORE UI
+## Getting data into LOST
+### Images
+### Labels
 
-### Backend
-1. FLASK, SQLAlchemy, RESTplus
-2. Celery
-3. RabbitMQ
-4. MySQL Database
+## Start annotating
 
-### Other
-1. CI: GitLab-CI
-2. Docker / Docker-Compose
+# For Developers
+
+## General
+[Develop](docs/develop.md)
+
+## Python API for Pipeline Development
+Link to API docs
