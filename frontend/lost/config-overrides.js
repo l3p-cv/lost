@@ -14,6 +14,7 @@ function absolutePath(pathString){
 module.exports = (config, env) => {
 	// LOST aliases
 	config.resolve.alias["root"] = absolutePath("./src/")
+	config.resolve.alias["utils"] = absolutePath("./src/utils")
 
 	// SIA aliases
 	config.resolve.alias["siaRoot"] = absolutePath("./src/tools/sia/src/")
