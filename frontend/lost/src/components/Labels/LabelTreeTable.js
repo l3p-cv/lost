@@ -9,7 +9,6 @@ class LabelTreeTable extends Component {
 
     render() {
         const data = this.props.labelTrees
-        console.log(data)
         return (
             <React.Fragment>
                 <ReactTable
