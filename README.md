@@ -1,32 +1,21 @@
 # LOST - Label Objects and Save Time
+What is lost?
 
-## How To Start
-TODO
+# Getting Started
+If you feel LOST here is the place to get started.
 
-## Tech Stack
+## Docker Setup
 
-### Frontend
-1. React, Redux, Reactstrap + CORE UI
+## Getting data into LOST
+### Images
+### Labels
 
-### Backend
-1. FLASK, SQLAlchemy, RESTplus
-2. Celery
-3. RabbitMQ
-4. MySQL Database
+## Start annotating
 
-### Other
-1. CI: GitLab-CI
-2. Docker / Docker-Compose
+# For Developers
 
-# Git Workflow and Versioning
+## General
+[Develop](docs/develop.md)
 
-## Branches
-We use version numbers according to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (see also [A-Simple-Guide-To-SemVer](https://www.jvandemo.com/a-simple-guide-to-semantic-versioning/)).
-Sematic versioning is also used by prominent open source projects like [TensorFlow](https://www.tensorflow.org/programmers_guide/version_compat).
-
-Each Minor version will have its own branch in git for example: *1.0* (Major.Minor)
-Each developer is responsible that the code he merges will not break our application!
-
-## Releases
-Each release will get a *tag* with *Major.Minor.Patch* version number in git.
-Pre-releases are indicated by *Major.Minor.Patch-PreReleaseNumber*
+## Python API for Pipeline Development
+Link to API docs
