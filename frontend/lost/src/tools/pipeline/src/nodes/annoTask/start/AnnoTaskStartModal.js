@@ -24,7 +24,10 @@ export default class AnnoTaskStartModal extends BaseModal {
         this.tab3 = new TabSelectTreePresenter(nodeModel)
         this.tab4 = new TabTreePresenter(nodeModel)
 		
-        this.tab4.requiresValid(this.tab3)
+		this.tab2.requiresValid(this.tab1)
+		this.tab3.requiresValid([this.tab1, this.tab2])
+        this.tab4.requiresValid([this.tab1, this.tab2, this.tab3])
+
 		this.tab2.on('after-activate', () => {
 			this.tab2.adjustDataTable()
 		})

@@ -8,7 +8,8 @@ import appModel from 'apps/start/appModel'
 export default class TabUserPresenter extends WizardTabPresenter {
     constructor(nodeModel: AnnoTaskNodeModel) {
         super()
-
+		
+		this.model = nodeModel
 		// add icon to groups, pass groups to view to create a data table
 		const groups = appModel.state.selectedTemplate.value.availableGroups.map(group => {
 			const { id, groupName, isUserDefault } = group
@@ -37,6 +38,12 @@ export default class TabUserPresenter extends WizardTabPresenter {
             nodeModel.controls.show3.update(true)
         })
     }
+	isValidated(){
+		let result = true
+		result = result && !isNaN(this.model.state.workerId)
+		result = result && this.model.state.assignee.length > 0
+		return result
+	}
 	adjustDataTable(){
 		this.view.adjustDataTable()
 	}
