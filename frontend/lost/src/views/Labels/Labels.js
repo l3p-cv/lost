@@ -18,7 +18,17 @@ const {getLabelTrees} = actions
   
 
 class Label extends Component {
+    constructor(props){
+        super(props)
+        this.selectTree = this.selectTree.bind(this)
+        this.state = {
+            selectedTreeId: null
+        }
+    }
  
+    selectTree(id){
+        this.setState({selectedTreeId: id})
+    }
     componentDidMount() {
         this.props.getLabelTrees()
     }
@@ -33,12 +43,12 @@ class Label extends Component {
                         </CardHeader>
                             <CardBody className='pb-0'>
                             <CreateLabelTree></CreateLabelTree>
-                            <LabelTreeTable labelTrees={this.props.trees}></LabelTreeTable>
+                            <LabelTreeTable labelTrees={this.props.trees} callback={this.selectTree}></LabelTreeTable>
                         </CardBody> 
                         </Card>
                         <Card>
                             <CardBody>
-                            <LabelTree labelTree={this.props.trees[4]}></LabelTree>
+                            <LabelTree labelTree={this.props.trees[this.state.selectedTreeId]}></LabelTree>
                             </CardBody>
                         </Card>
                     </Col>

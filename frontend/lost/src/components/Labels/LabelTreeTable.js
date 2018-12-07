@@ -3,7 +3,22 @@ import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 
 class LabelTreeTable extends Component {
-
+    constructor(props){
+        super(props)
+        this.getProps = this.getProps.bind(this)
+    }
+    getProps(state, rowInfo, column) {
+        return {
+            onClick: (e, handleOriginal) => {
+                if (handleOriginal) {
+                    handleOriginal()
+                }
+                this.props.callback(rowInfo.index)
+    
+            }
+        }
+    }
+    
     render() {
         const data = this.props.labelTrees
         return (
@@ -31,7 +46,9 @@ class LabelTreeTable extends Component {
                     }
                 ]}
                     defaultPageSize={10}
-                    className='-striped -highlight'/>
+                    className='-striped -highlight'
+                    getTrProps={(state, rowInfo, column) => this.getProps(state, rowInfo, column)}
+                    />
             </React.Fragment>
 
         )

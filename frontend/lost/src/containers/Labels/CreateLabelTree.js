@@ -28,18 +28,15 @@ class CreateLabelTree extends Component {
 
         this.handleCreateLabelName = this
             .handleCreateLabelName
-            .bind(this);
+            .bind(this)
         this.handleCreateLabelDescription = this
             .handleCreateLabelDescription
-            .bind(this);
-        this.handleCreateLabelAbbreviation = this
-            .handleCreateLabelAbbreviation
-            .bind(this);
-        this.handleCreateLabelExtID = this
-            .handleCreateLabelExtID
-            .bind(this);
+            .bind(this)
         this.handleCreateSave = this
             .handleCreateSave
+            .bind(this)
+        this.handleCreateClear = this
+            .handleCreateClear
             .bind(this)
 
     }
@@ -51,12 +48,6 @@ class CreateLabelTree extends Component {
     }
     handleCreateLabelDescription(e) {
         this.setState({createLabeldescription: e.target.value})
-    }
-    handleCreateLabelAbbreviation(e) {
-        this.setState({createLabelabbreviation: e.target.value})
-    }
-    handleCreateLabelExtID(e) {
-        this.setState({createLabelextID: e.target.value})
     }
 
     handleCreateSave(e) {
@@ -102,18 +93,8 @@ class CreateLabelTree extends Component {
                                 placeholder="description"
                                 value={this.state.createLabeldescription}
                                 onChange={this.handleCreateLabelDescription}></Input>
-                            <Input
-                                type="text"
-                                placeholder="abbreviation"
-                                value={this.state.createLabelabbreviation}
-                                onChange={this.handleCreateLabelAbbreviation}></Input>
-                            <Input
-                                type="text"
-                                placeholder="external ID"
-                                value={this.state.createLabelextID}
-                                onChange={this.handleCreateLabelExtID}></Input>
                             <InputGroupAddon addonType="append">
-                                <Button className='btn-info' onClick={this.handleCreateSave}>Save</Button>
+                                <Button className='btn-info' onClick={this.handleCreateSave}>Create</Button>
                                 <Button className='btn-danger' onClick={this.handleCreateClear}>&nbsp;Clear&nbsp;</Button>
                             </InputGroupAddon>
                         </InputGroup>
