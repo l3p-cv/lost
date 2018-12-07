@@ -1,6 +1,9 @@
 import TYPES from '../types/index'
 const INITIAL_STATE = {
-    trees: []
+    trees: [],
+    createLabelMessage: '',
+    updateLabelMessage: '',
+    deleteLabelMessage: '',
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -9,6 +12,43 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 trees: action.payload
+            }
+        case TYPES.UPDATE_LABEL_SUCCESS:
+            return {
+                ...state,
+                updateLabelMessage: 'success'
+            }
+        case TYPES.UPDATE_LABEL_FAILED:
+            return {
+                ...state,
+                updateLabelMessage: action.payload
+            }
+        case TYPES.CREATE_LABEL_SUCCESS:
+            return {
+                ...state,
+                createLabelMessage: 'success'
+            }
+        case TYPES.CREATE_LABEL_FAILED:
+            return {
+                ...state,
+                createLabelMessage: action.payload
+            }
+        case TYPES.DELETE_LABEL_SUCCESS:
+            return {
+                ...state,
+                deleteLabelMessage: 'success'
+            }
+        case TYPES.DELETE_LABEL_FAILED:
+            return {
+                ...state,
+                deleteLabelMessage: action.payload
+            }
+        case TYPES.CLEAN_LABEL_MESSAGES:
+            return {
+                ...state,
+                deleteLabelMessage: '',
+                updateLabelMessage: '',
+                createLabelMessage: ''
             }
         default:
             return state

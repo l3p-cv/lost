@@ -81,7 +81,6 @@ class Pipeline(Resource):
 
 @namespace.route('/start')
 class PipelineStart(Resource):
-    #@api.marshal_with(pipeline_start)
     @jwt_required 
     def post(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)

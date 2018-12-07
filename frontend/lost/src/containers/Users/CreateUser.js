@@ -97,7 +97,7 @@ class CreateUser extends Component {
                             onChange={this.handleCreatePassword}></Input>
                         <UserGroupDropdown groups={this.props.groups} callback={this.createUserCheckGroup}/>
                         <UserRolesDropdown callback={this.createUserCheckRole}/>
-                        <InputGroupAddon addonType="append"><Button className='btn-info' onClick={this.handleCreate}>Create</Button>
+                        <InputGroupAddon addonType="append"><Button className='btn-info' onClick={this.handleCreate}>Save</Button>
                         </InputGroupAddon>
                     </InputGroup>
                 </Col>

@@ -3,6 +3,7 @@ from flask_restplus import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.api.label.api_definition import label_leaf
+from lost.api.label.parsers import update_label_parser, create_label_parser
 from lost.db import model, roles, access
 from lost.settings import LOST_CONFIG
 from lost.logic.label import LabelTree
@@ -29,12 +30,52 @@ class LabelTrees(Resource):
             return trees
 
 
+@namespace.route('')
+class LabelEditNew(Resource):
+    @api.expect(update_label_parser)
+    @jwt_required 
+    def patch(self):
+        args = update_label_parser.parse_args()
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            label = dbm.get_label_leaf(int(args.get('id')))
+            label.name = args.get('name')
+            label.description = args.get('description')
+            label.abbreviation = args.get('abbreviation')
+            label.external_id = args.get('external_id')
+            dbm.save_obj(label)
+            dbm.close_session()
+            return 'success'
+
+    @api.expect(create_label_parser)
+    @jwt_required 
+    def post(self):
+        args = create_label_parser.parse_args()
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            label = model.LabelLeaf(name=args.get('name'),abbreviation=args.get('abbreviation'), \
+            description=args.get('description'),external_id=args.get('external_id'), parent_leaf_id=args.get('parent_leaf_id'))
+            dbm.save_obj(label)
+            dbm.close_session()
+            return "success"
+
+
 @namespace.route('/<int:label_leaf_id>')
-@namespace.param('label_leaf_id', 'The label leaf identifier')
+@namespace.param('label_leaf_id', 'The group identifier')
 class Label(Resource):
     @api.marshal_with(label_leaf)
     @jwt_required 
-    def get(self, label_leaf_id):
+    def get(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -45,4 +86,19 @@ class Label(Resource):
             re = dbm.get_label_leaf(label_leaf_id)
             dbm.close_session()
             return re
+
+    @jwt_required 
+    def delete(self,label_leaf_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            label = dbm.get_label_leaf(label_leaf_id)
+            dbm.delete(label)
+            dbm.commit()
+            dbm.close_session()
+            return "success"
 

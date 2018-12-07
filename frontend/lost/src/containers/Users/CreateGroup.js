@@ -77,7 +77,7 @@ class CreateGroup extends Component {
                             value={this.state.createGroupName}
                             onChange={this.handleCreateGroupName}></Input>
                         <InputGroupAddon addonType="append">
-                            <Button className='btn-info' onClick={this.handleCreate}>Create</Button>
+                            <Button className='btn-info' onClick={this.handleCreate}>Save</Button>
                         </InputGroupAddon>
                     </InputGroup>
                 </Col>

@@ -12,3 +12,4 @@ export const getLabelTrees = () => async dispatch => {
        
     }
 }
+

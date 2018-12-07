@@ -32,8 +32,7 @@ class Label extends Component {
                         </CardHeader>
                             <CardBody className='pb-0'>
                             <LabelTreeTable labelTrees={this.props.trees}></LabelTreeTable>
-    
-                              </CardBody> 
+                        </CardBody> 
                         </Card>
                         <Card>
                             <CardBody>
