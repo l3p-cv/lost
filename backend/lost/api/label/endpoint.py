@@ -64,7 +64,10 @@ class LabelEditNew(Resource):
             return "You are not authorized.", 401
         else:
             label = model.LabelLeaf(name=args.get('name'),abbreviation=args.get('abbreviation'), \
-            description=args.get('description'),external_id=args.get('external_id'), parent_leaf_id=args.get('parent_leaf_id'))
+            description=args.get('description'),external_id=args.get('external_id'), 
+            is_root=args.get('is_root'))
+            if args.get('parent_leaf_id'):
+                label.parent_leaf_id = args.get('parent_leaf_id'),
             dbm.save_obj(label)
             dbm.close_session()
             return "success"

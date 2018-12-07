@@ -10,6 +10,7 @@ import {
 } from 'reactstrap'
 import LabelTreeTable from '../../components/Labels/LabelTreeTable';
 import LabelTree from '../../components/Labels/LabelTree';
+import CreateLabelTree from '../../containers/Labels/CreateLabelTree';
 
 
 
@@ -31,12 +32,13 @@ class Label extends Component {
                             Label Trees
                         </CardHeader>
                             <CardBody className='pb-0'>
+                            <CreateLabelTree></CreateLabelTree>
                             <LabelTreeTable labelTrees={this.props.trees}></LabelTreeTable>
                         </CardBody> 
                         </Card>
                         <Card>
                             <CardBody>
-                            <LabelTree labelTree={this.props.trees[0]}></LabelTree>
+                            <LabelTree labelTree={this.props.trees[4]}></LabelTree>
                             </CardBody>
                         </Card>
                     </Col>

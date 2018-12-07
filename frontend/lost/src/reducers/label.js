@@ -4,6 +4,7 @@ const INITIAL_STATE = {
     createLabelMessage: '',
     updateLabelMessage: '',
     deleteLabelMessage: '',
+    createLabelTreeMessage: '',
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -43,12 +44,23 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 deleteLabelMessage: action.payload
             }
+        case TYPES.CREATE_LABEL_TREE_SUCCESS:
+            return {
+                ...state,
+                createLabelTreeMessage: 'success'
+            }
+        case TYPES.CREATE_LABEL_TREE_FAILED:
+            return {
+                ...state,
+                createLabelTreeMessage: action.payload
+            }
         case TYPES.CLEAN_LABEL_MESSAGES:
             return {
                 ...state,
                 deleteLabelMessage: '',
                 updateLabelMessage: '',
-                createLabelMessage: ''
+                createLabelMessage: '',
+                createLabelTreeMessage: '',
             }
         default:
             return state

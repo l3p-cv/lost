@@ -105,7 +105,6 @@ class EditLabel extends Component {
 
     handleCreateLabelName(e) {
         this.setState({
-            ...this.state.createLabel,
             createLabelname: e.target.value
         })
     }
@@ -162,6 +161,7 @@ class EditLabel extends Component {
     }
     handleCreateSave() {
         const saveData = {
+            is_root: false,
             name: this.state.createLabelname,
             description: this.state.createLabeldescription,
             abbreviation: this.state.createLabelabbreviation,

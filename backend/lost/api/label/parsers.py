@@ -27,9 +27,12 @@ update_label_parser.add_argument('external_id',
 
 
 create_label_parser = reqparse.RequestParser()
+create_label_parser.add_argument('is_root',
+                           type=bool,
+                           required=True,
+                           help="Weather this Label is the beginning of a Label Tree.")
 create_label_parser.add_argument('parent_leaf_id',
                            type=int,
-                           required=True,
                            help="Label Leaf id of the parent Leaf.")
 create_label_parser.add_argument('name',
                            type=str,

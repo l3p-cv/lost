@@ -1,9 +1,6 @@
 import React, {Component} from 'react'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
-import LabelTreeContextMenu from './LabelTreeContextMenu'
-import {NotificationManager, NotificationContainer} from 'react-notifications'
-import 'react-notifications/lib/notifications.css';
 
 class LabelTreeTable extends Component {
 
@@ -29,18 +26,12 @@ class LabelTreeTable extends Component {
                             }, {
                                 Header: 'Date',
                                 accessor: 'timestamp'
-                            }, {
-                                Cell: row => (<LabelTreeContextMenu userId={row.original.idx}/>),
-                                maxWidth: 35,
-                                filterable: false,
-                                sortable: false
                             }
                         ]
                     }
                 ]}
                     defaultPageSize={10}
                     className='-striped -highlight'/>
-                <NotificationContainer/>
             </React.Fragment>
 
         )

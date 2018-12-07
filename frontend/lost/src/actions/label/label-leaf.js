@@ -23,7 +23,17 @@ export const createLabel = (data) => async dispatch => {
         const newLabelTrees = await axios.get(API_URL + '/label/tree')
         dispatch({ type: TYPES.GET_LABEL_TREES, payload: newLabelTrees.data})
     } catch(e){
-        dispatch({ type: TYPES.CREATE_LABEL_FAILED, payload: e.response.data})
+        dispatch({ type: TYPES.CREATE_LABEL_FAILED, payload: e.response.data.message})
+    }
+}
+export const createLabelTree = (data) => async dispatch => {
+    try {
+        const response = await axios.post(API_URL + '/label', data)
+        dispatch({ type: TYPES.CREATE_LABEL_TREE_SUCCESS, payload: response.data})
+        const newLabelTrees = await axios.get(API_URL + '/label/tree')
+        dispatch({ type: TYPES.GET_LABEL_TREES, payload: newLabelTrees.data})
+    } catch(e){
+        dispatch({ type: TYPES.CREATE_LABEL_TREE_FAILED, payload: e.response.data.message})
     }
 }
 
