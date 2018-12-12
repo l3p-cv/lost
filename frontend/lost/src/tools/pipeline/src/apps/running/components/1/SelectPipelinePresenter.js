@@ -1,204 +1,156 @@
 import { WizardTabPresenter } from 'l3p-frontend'
-import appModel from '../../appModel'
-import swal from 'sweetalert2'
-import SelectPipelineView from './SelectPipelineView'
-import * as http from 'pipRoot/http'
-import { ContextMenu } from 'l3p-frontend'
-
 
 import moment from 'moment'
 
+import * as http from 'pipRoot/http'
+import appModel from '../../appModel'
 
+import SelectPipelineView from './SelectPipelineView'
 
+// DEV TESTS
+import { ContextMenu } from 'pipRoot/l3pfrontend/index'
+// DEV TESTS
 
-let templateDatatable
 class SelectPipelinePresenter extends WizardTabPresenter {
-    constructor() {
+    constructor(){
         super()
-        this.view = SelectPipelineView
-        let that = this
-        this.isTabValidated = false
 
-        // MODEL-BINDING
+        this.view = SelectPipelineView
+
+        // MODEL-BINDINGS
+		// data table update.
         appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
 
-        // VIEW-BINDING
-        $(this.view.html.refs['templatetable']).on('click', 'tbody td', (e) => {
-            let templateId = templateDatatable.row($(e.currentTarget).parent()).data()[0]
-            if ($(e.currentTarget).text() !== 'Delete Pipeline') {
+        // VIEW-BINDINGS
+		// load template.
+        $(this.view.html.refs['templatetable']).on('click', 'tbody row', (e) => {
+        	const templateId = this.view.table.row($(e.currentTarget).parent()).data()[0]
+            if($(e.currentTarget).text() !== 'Delete Pipeline'){
                 this.selectTemplate(templateId)
             }
         })
-        $(this.view.html.refs['templatetable']).on('contextmenu', 'tbody td', (e) => {
+
+		// delete pipeline.
+        $(this.view.html.refs['templatetable']).on('click', 'button', function (){
+            const templateId = this.view.table.row($(this).parents('tr')).data()
+            http.deletePipe(templateId)
+        })
+
+		// open row contextmenu.
+        $(this.view.html.refs['templatetable']).on('contextmenu', 'tbody row', (e) => {
             e.preventDefault()
-            let templateId = templateDatatable.row($(e.currentTarget).parent()).data()[0]
-            let row = templateDatatable.row($(e.currentTarget).parent())
+            const templateId = this.view.table.row($(e.currentTarget).parent()).data()[0]
+            const row = this.view.table.row($(e.currentTarget).parent())
 
             function deletePipeline(){
                 http.deletePipe(templateId).then((isSuccess) => {
-                    if (isSuccess === 'cancel') {
+                    if(isSuccess === 'cancel'){
                         return
-                    } else if (isSuccess) {
+                    } else {
                         row.remove().draw(false)                        
                     }
                 })
             }
             function downloadLogfile(){
-                if (that.rawData[0].logfilePath) {
-                    window.location = window.location.origin + '/' + that.rawData[0].logfilePath
-                } else {
-					// sweet alert was here
+                if(this.rawData[0].logfilePath){
+                    window.location = window.location.origin + '/' + this.rawData[0].logfilePath
                 }
             }
 
             if(appModel.isCompleted){
-                let cm = new ContextMenu(e, {
-                    name: 'Delete Pipeline',
-                    icon: 'fa fa-trash',
-                    fn: () => {
-                        deletePipeline()
-                    },
-                },
-                {
-                    name:'Download Logfile',
-                    icon:'fa fa-download',
-                    fn: () =>{
-                        downloadLogfile()
-                    }
-                })
-            }else{
-                let cm = new ContextMenu(e, {
-                    name: 'Delete Pipeline',
-                    icon: 'fa fa-trash',
-                    fn: () => {
-                        deletePipeline()
-                    }
-                },
-                {
-                    id: 'pause',
-                    name: 'Pause Pipeline',
-                    icon: 'fa fa-pause',
-                    fn: () => {
-                        http.pausePipe({'pipeId': templateId}).then((isSuccess)=>{
-                            if(isSuccess){
-                                location.reload()
-                            }
-                        })   
-                    }
-                },
-                {
-                    id: 'play',
-                    name: 'Play Pipeline',
-                    icon: 'fa fa-play',
-                    fn: () => {
-                         http.playPipe({'pipeId': templateId}).then((isSuccess)=>{
-                            if(isSuccess){
-                                location.reload()
-                            }
-                        })                          
-                    }
-                },
-                {
-                    name:'Download Logfile',
-                    icon:'fa fa-download',
-                    fn: () =>{
-                        downloadLogfile()
-                    }
-                })
+                ContextMenu(e, 
+					{
+						name: 'Delete Pipeline',
+						icon: 'fa fa-trash',
+						fn: () => deletePipeline(),
+					},
+					{
+						name:'Download Logfile',
+						icon:'fa fa-download',
+						fn: () => downloadLogfile(),
+					}
+				)
+            } else {
+                ContextMenu(e, 
+					{
+						name: 'Delete Pipeline',
+						icon: 'fa fa-trash',
+						fn: () => deletePipeline(),
+					},
+					{
+						id: 'pause',
+						name: 'Pause Pipeline',
+						icon: 'fa fa-pause',
+						fn: () => {
+							http.pausePipe({'pipeId': templateId}).then(success => {
+								if(success){
+									window.location.reload()
+								}
+							})   
+						}
+					},
+					{
+						id: 'play',
+						name: 'Play Pipeline',
+						icon: 'fa fa-play',
+						fn: () => {
+							http.playPipe({'pipeId': templateId}).then(success => {
+								if(success){
+									window.location.reload()
+								}
+							})                          
+						}
+					},
+					{
+						name:'Download Logfile',
+						icon:'fa fa-download',
+						fn: () => downloadLogfile(),
+					}
+				)
             }
-
-        })
-        $(this.view.html.refs['templatetable']).on('click', 'button', function () {
-            let templateId = templateDatatable.row($(this).parents('tr')).data()
-            //http.deletePipe(templateId)
         })
     }
-    validate() {
-        super.validate(() => {
-            return true
-        })
-    }
-    updateTable(rawData) {
+    updateTable(rawData){
+		// TO MODEL???
+		// update data. 
         this.rawData = rawData
-        // If user Start pipe --> show graph
-        let pathname = window.location.pathname
-        let loadThisTemplate =  pathname.substring(pathname.lastIndexOf('/') +1 , pathname.length)
-        if(!isNaN(parseInt(loadThisTemplate))){
-            this.selectTemplate(parseInt(loadThisTemplate))            
-        }
+		// TO MODEL???
 
-        if (rawData !== undefined) {
-            const data = rawData.map(pipe => {
-                if(pipe.progress === 'ERROR'){
-                    pipe.progress = `<span class='label label-danger'>${pipe.progress}</span>`                    
-                }else if(pipe.progress === 'PAUSED'){
-                    pipe.progress = `<span class='label label-warning'>${pipe.progress}</span>`                                        
-                }
-                let date  = new Date(pipe.date)
-                let formatedDate = moment(date).format('MMMM Do YYYY, HH:mm:ss')
-                return [
-                    pipe.id,
-                    pipe.name,
-                    pipe.description,
-                    pipe.templateName,
-                    pipe.creatorName,
-                    pipe.progress,
-                    formatedDate,
-                ]
-            })
+        // if user starts a pipe, show its graph.
+        const pathname = window.location.pathname
+		const templateId = parseInt(pathname.substring(pathname.lastIndexOf('/') + 1 , pathname.length))
+		this.selectTemplate(templateId)
 
-            templateDatatable = $(this.view.html.refs['templatetable']).DataTable({
-                data,
-                order: [[ 6, 'desc' ]],                         
-                columnDefs: [{
-                    targets: [0],
-                    visible: false,
-                },
-                {
-                    targets:[5],
-                    type: 'date',
-
-                    
-                }],
-                columns: [{
-                        title: 'ID'
-                    },
-                    {
-                        title: 'Name'
-                    },
-                    {
-                        title: 'Description'
-                    },
-                    {
-                        title: 'Template Name'
-                    },
-                    {
-                        title: 'Author'
-                    },
-                    {
-                        title: 'Progress'
-                    },
-                    {
-                        title: 'Date'
-                    },
-                ]
-            })
-
-
-        }
-    }
-    selectTemplate(id: Node) {
-        let requestGraph = () => {
-			this.isTabValidated = true
-			http.requestPipeline(id).then(response => {
-				appModel.state.selectedPipe.update(response)
+		// update data table.
+		this.view.updateTable(
+			rawData.map(pipe => {
+				const { id, name, description, templateName, creatorName } = pipe
+				let { progress, date } = pipe
+				progress = /*html*/`
+					<span class='label ${progress === 'ERROR' ? 'label-danger' : 'label-warning'}'>
+						${progress}
+					</span>
+				`
+				date = moment(new Date(date)).format('MMMM Do YYYY, HH:mm:ss')
+				return [
+					id,
+					name,
+					description,
+					templateName,
+					creatorName,
+					progress,
+					date,
+				]
 			})
-        }
-        requestGraph()
+		)
     }
-
-    isValidated(){
-        return (this.isTabValidated)
+	adjustDataTable(){
+		this.view.adjustDataTable()
+	}
+    selectTemplate(id: Node){
+		http.requestPipeline(id).then(response => {
+			appModel.state.selectedPipe.update(response)
+		})
     }
 }
 export default new SelectPipelinePresenter()

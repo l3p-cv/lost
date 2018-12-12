@@ -25,17 +25,8 @@ export default class DatasourceRunningPresenter extends BaseNodePresenter {
      * @override
      */
     initModelBinding(){
-		// DUPLICATION?
 		this.model.state.on('update', text => {
-			this.view.parentNode.querySelector(`[data-ref='state']`).setAttribute('class', `panel-footer 
-				${ text === 'script_error'   ? 'bg-red'      : '' }
-				${ text === 'pending'        ? 'bg-blue'     : '' }
-				${ text === 'in_progress'    ? 'bg-orange'   : '' }
-				${ text === 'finished'       ? 'bg-green'    : '' }`)
-			this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
-		})
-		this.model.state.on('update', text => {
-			this.modal.html.refs['state'].textContent = text
+			this.modal.html.refs['status'].textContent = text
 		})
     }
 }

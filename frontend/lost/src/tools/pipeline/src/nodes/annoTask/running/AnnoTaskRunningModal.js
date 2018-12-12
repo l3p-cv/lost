@@ -41,7 +41,7 @@ export default class AnnoTaskRunningModal extends BaseModal {
                                     <tr><td><strong>Type: </td><td>${nodeModel.annoTask.type}</td></tr>    
                                     <tr>
                                         <td><strong>State: </strong></td>
-                                        <td data-ref='state' class='word-break'>${nodeModel.state.value.replace('_', ' ')}</td>
+                                        <td data-ref='status' class='word-break'>${nodeModel.state.value.replace('_', ' ')}</td>
                                     </tr>                          
                                 </tbody>
                             </table>

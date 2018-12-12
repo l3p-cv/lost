@@ -16,10 +16,12 @@ const DEFAULTS = {
 export default class BaseNodeView {
 	constructor(params){
 		params = Object.assign({}, DEFAULTS, params)
-		const { header, footer, validated } = params
+		const { header, footer } = params
 		const { icon, title, colorInvalidated, colorValidated } = header
-		let { content } = params
+
+		let { content, validated } = params
 		content = Array.isArray(content) ? content : [ content ]
+		// validated = validated || true
 
 		// The parent node reference will be added by Graph.js calling BaseNodePresenter.init().
         this.parentNode = undefined
@@ -74,19 +76,24 @@ export default class BaseNodeView {
 				// footer shows status of running pipeline nodes.
 				${footer ? /*html*/`
 					<div class='card-footer' data-ref='footer'>
-						<div data-ref='state' class='panel-footer 
+						<div data-ref='status' class='panel-footer 
 							${ footer.state === 'script_error'   ? 'bg-red '  	: 	' ' }
 							${ footer.state === 'pending'        ? 'bg-blue '  	: 	' ' }
 							${ footer.state === 'in_progress'    ? 'bg-orange '	: 	' ' }
 							${ footer.state === 'finished'       ? 'bg-green ' 	: 	' ' }
 							'>
-							<p2 data-ref='state-text' class='color-white footer-text'>${footer.text}</p2>
+							<p2 data-ref='status-text' class='color-white footer-text'>${footer.text}</p2>
 						</div>
 					</div>
 				` : ``}
             </div>
 		`)
 		this.setColor(validated)
+	}
+	updateRefs(refs: any){
+		for(const ref in refs){
+			this.html.refs[ref] = refs[ref]
+		}
 	}
 	setColor(validated: Boolean){
 		if(validated){
@@ -101,8 +108,18 @@ export default class BaseNodeView {
 			}
 		}
 	}
-	// WONT WORK PROPABLY CAUSE WE NEED TO ADDRESS THE DAGRE GRAPH NODES VIA PARENT NODE QUERY SELECTOR.
 	updateProgress(progress: Number){
-		// this.html.refs['state-text'].
+		progress = progress ? progress : 0
+		this.html.refs['progress-bar'].style.width = `${progress}%`
+		this.html.refs['progress-bar-text'].textContent = `${progress}`
+	}
+	updateStaus(status: String){
+		this.html.refs['status'].setAttribute('class', `panel-footer 
+			${ status === 'script_error'   ? 'bg-red'      : '' }
+			${ status === 'pending'        ? 'bg-blue'     : '' }
+			${ status === 'in_progress'    ? 'bg-orange'   : '' }
+			${ status === 'finished'       ? 'bg-green'    : '' }
+		`)
+		this.view.html.refs('status-text').textContent = status.replace('_', ' ')
 	}
 }

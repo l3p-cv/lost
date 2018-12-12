@@ -1,24 +1,25 @@
 import { WizardTabView } from 'l3p-frontend'
 
+
 class ConfigPipelineTab extends WizardTabView {
     constructor(){
-        const config = {
+        super({
             title: 'Enter Pipe Name and Description',
             icon: 'fa fa-list-alt',
             content: /*html*/`
-                <label for='pipe_name'>Name *:</label>
-                <input data-ref='input-name' type='text' id='pipe_name' class='form-control' name='pipe_name' required=''>
-                <label for='pipe_description'>Description *:</label>
-                <input data-ref='input-description' type='text' id='pipe_description' class='form-control' name='pipe_description' data-parsley-trigger='change' required=''>
+                <label class='required colon'>Name</label>
+                <input class='form-control' data-ref='input-name'>
+                <label class='required colon'>Description</label>
+                <input class='form-control' data-ref='input-description'>
+				
                 <div class='ln_solid'></div>
-        
+
                 <ul class='list-inline pull-right'>
-                    <li><button type='button' class='btn btn-default prev-step'>Previous</button></li>
-                    <li><button type='button' class='btn btn-primary next-step'>Save and continue</button></li>
+                    <li><button class='btn btn-default prev-step'>Previous</button></li>
+                    <li><button class='btn btn-primary next-step'>Save and continue</button></li>
                 </ul>
             `,
-        }
-        super(config)
+        })
     }
 }
 export default new ConfigPipelineTab()

@@ -41,7 +41,7 @@ export default class LoopRunningModal extends BaseModal {
                     <tr>
                         <td>
                             <strong>Status: </td>
-                        <td data-ref= 'state'>${nodeModel.state.value.replace('_', ' ')}</td>
+                        <td data-ref= 'status'>${nodeModel.state.value.replace('_', ' ')}</td>
                     </tr>
                 </table>`   
         }

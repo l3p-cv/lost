@@ -68,7 +68,7 @@ export default class DatasourceRunningModal extends BaseModal {
                                             <tr><td><strong>Pipe Element ID: </td><td>${nodeModel.datasource.id}</td></tr>
                                             <tr>
                                                 <td><strong>State: </strong></td>
-                                                <td data-ref='state' class='word-break'>${nodeModel.state.value.replace('_', ' ')}</td>
+                                                <td data-ref='status' class='word-break'>${nodeModel.state.value.replace('_', ' ')}</td>
                                             </tr>                            
                                         </tbody>
                                     </table>
