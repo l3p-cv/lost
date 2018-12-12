@@ -3,10 +3,10 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 
 export default class ScriptRunningModel extends BaseNodeModel {
-    constructor(params, mode) {
+    constructor(params) {
 		const { peN, peOut, id, state, script } = params
 
-		super({ peN, peOut, mode })
+		super({ peN, peOut })
 		
         this.id = id
 

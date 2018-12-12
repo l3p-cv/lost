@@ -6,8 +6,8 @@ import DatasourceRunningModal from './DatasourceRunningModal'
 
 
 export default class DatasourceRunningPresenter extends BaseNodePresenter {
-    constructor(graph: Graph, data: any, mode: String){
-		const model = new DatasourceRunningModel(data, mode)
+    constructor(graph: Graph, data: any){
+		const model = new DatasourceRunningModel(data)
 		const view = new DatasourceRunningView(model)
 		const modal = new DatasourceRunningModal(model)
         super({ graph, model, view, modal })

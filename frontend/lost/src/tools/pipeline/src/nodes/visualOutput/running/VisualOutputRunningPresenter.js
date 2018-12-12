@@ -6,8 +6,8 @@ import VisualOutputRunningModal from './VisualOutputRunningModal'
 
 
 export default class VisualOutputRunningPresenter extends BaseNodePresenter {
-    constructor(graph, data, mode){
-		const model = new VisualOutputRunningModel(data, mode)
+    constructor(graph, data){
+		const model = new VisualOutputRunningModel(data)
 		const view = new VisualOutputRunningView(model)
 		const modal = new VisualOutputRunningModal(model)
         super({ graph, model, view, modal })

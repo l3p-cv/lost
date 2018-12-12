@@ -2,10 +2,10 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 
 export default class ScriptStartModel extends BaseNodeModel {
-    constructor(params, mode) {
+    constructor(params) {
 		const { peN, peOut, id, script } = params
 
-		super({ peN, peOut, mode })
+		super({ peN, peOut })
 		
         this.id = id
 
@@ -14,8 +14,7 @@ export default class ScriptStartModel extends BaseNodeModel {
     }
 	isValidated(){
 		if(this.script.arguments){
-			console.log(this.script.arguments)
-			return Object.values(this.script.arguments).every(argument => (argument.value.lenght > 0))
+			return Object.values(this.script.arguments).every(argument => (argument.value.length > 0))
 		}
 		return true
 	}

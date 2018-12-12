@@ -6,8 +6,8 @@ import AnnoTaskRunningModal from './AnnoTaskRunningModal'
 
 
 export default class AnnoTaskRunningPresenter extends BaseNodePresenter {
-    constructor(graph: Graph, data: any, mode: String){
-		const model = new AnnoTaskRunningModel(data, mode)
+    constructor(graph: Graph, data: any){
+		const model = new AnnoTaskRunningModel(data)
 		const view = new AnnoTaskRunningView(model)
 		const modal = new AnnoTaskRunningModal(model)
         super({ graph, model, view, modal })

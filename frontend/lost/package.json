@@ -55,7 +55,8 @@
     "react-scripts": "^2.0.4"
   },
   "scripts": {
-    "start": "react-app-rewired start",
+	"install:tools": "npm install --prefix frontend/lost/src/tools/sia -d && npm install --prefix frontend/lost/src/tools/pipeline -d",
+    "start": "npm run install:tools && react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "test:debug": "react-app-rewired --inspect-brk test --runInBand",

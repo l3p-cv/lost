@@ -6,6 +6,7 @@ export default class TabInfoPresenter extends WizardTabPresenter {
     constructor(nodeModel: AnnoTaskNodeModel){
         super()
 		
+		this.model = nodeModel
         this.view = new TabInfoView(nodeModel)
 
 		// MODEL BINDINGS
@@ -19,4 +20,10 @@ export default class TabInfoPresenter extends WizardTabPresenter {
             nodeModel.state.instructions = $event.target.value
         })
     }
+	isValidated(){
+		let result = true
+		result = result && this.model.state.name.length > 0
+		result = result && this.model.state.instructions.length > 0
+		return result
+	}
 }

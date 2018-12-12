@@ -3,10 +3,10 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 
 export default class VisualOutputRunningModel extends BaseNodeModel {
-    constructor(params, mode) {
+    constructor(params) {
 		const { peN, peOut, id, state, visualOutput } = params
 
-		super({ peN, peOut, mode })
+		super({ peN, peOut })
 
 		this.id = id
 		// what is this?

@@ -1,10 +1,8 @@
-import { WizardTabView } from 'l3p-frontend'
-
 import "./TabTreeStyle.scss"
 
-// for more information about bootstrap-tree usage see import comments in DatasourceStartModal.js
-import 'bootstrap-tree'
-import 'bootstrap-tree/dist/bootstrap-treeview.min.css'
+import { WizardTabView } from 'l3p-frontend'
+import { Network } from "vis"
+// http://visjs.org/docs/network/
 
 
 export default class TabTreeView extends WizardTabView {
@@ -13,33 +11,53 @@ export default class TabTreeView extends WizardTabView {
             title: 'Select Labels',
             icon: 'fa fa-tag fa-1x',
             content: /*html*/`
-                <div class='form-group' data-ref='raw-file-root'>
-				<label>Select Folder:</label>
-				<input data-ref='search-bar' type='text' class='form-control'>
-				<div data-ref='file-tree'></div>
-			</div>
+				<div data-ref='vis-graph'></div>
             `,
         })
+
+		// http://visjs.org/docs/network/nodes.html#
+		this.options = {
+			autoResize: true,
+			height: '500px',
+			layout: {
+				hierarchical: {
+					enabled: true,
+					sortMethod: 'directed',
+				},
+			},
+			nodes: {
+				// override node hovering and selection style change: only style parents.
+				chosen: {
+					node: (values, id) =>{
+						if(!this.isLeaf(id)){
+							values.borderWidth = 3
+						}
+					},
+					label: (values, id) =>{
+						if(!this.isLeaf(id)){
+							values.mod = 'bold'
+						}
+					},
+				},
+			},
+			edges: {
+				// disable edge hovering and selection.
+				chosen: {
+					edge: false,
+				},
+			},
+			interaction: {
+				hover: false,
+				hoverConnectedEdges: false,
+				selectConnectedEdges: false,
+			}
+		}
     }
-	isInitialized(){
-		return this.html.refs['file-tree'].childNodes.length > 0
+	isLeaf(nodeId){
+		const connectedEdges = this.graph.getConnectedEdges(nodeId)
+		return (connectedEdges.length <= 2)
 	}
 	update(data){
-		if(this.isInitialized()){
-			$(this.html.refs['file-tree']).treeview('remove') 
-		}
-		$(this.html.refs['file-tree']).treeview({ 
-			data,
-			icon: 'fa folder',
-			selectedIcon: 'fa folder-open',
-		})
-		$(this.html.refs['file-tree']).treeview('collapseAll')
-		
-		// expand node on select & set data.
-		$(this.html.refs['file-tree']).on('nodeSelected', ($event, node) => {
-			if(!node.state.expanded){
-				$(this.html.refs['file-tree']).treeview('expandNode', node.nodeId)
-			}
-		})
+		this.graph = new Network(this.html.refs['vis-graph'], data, this.options)
 	}
 }

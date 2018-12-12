@@ -1,5 +1,4 @@
 import { WizardTabView } from 'l3p-frontend'
-import './TabUserStyle.scss'
 
 
 export default class TabUserView extends WizardTabView {

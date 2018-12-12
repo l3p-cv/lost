@@ -3,10 +3,10 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 
 export default class LoopRunningModel extends BaseNodeModel {
-    constructor(params, mode) {
+    constructor(params) {
 		const { peN, peOut, id, state, loop } = params
 
-		super({ peN, peOut, mode })
+		super({ peN, peOut })
 
 		this.id = id
 

@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import Graph from 'react-graph-vis';
-import flattenTree from 'utils/graph-vis/flattenTree'
-import EditLabel from '../../containers/Labels/EditLabel';
+import mapTreeToGraph from 'libs/graph-vis/mapTreeToGraph'
 
 const options = {
     autoResize: true,
@@ -48,7 +47,7 @@ class LabelTree extends Component {
         }
         const tree = this.props.labelTree
         if (tree) {
-            const graph = flattenTree(tree)
+            const graph = mapTreeToGraph(tree)
             return (
                 <React.Fragment>
                     <EditLabel label={this.state.selectedLabel} clearSelectedLabel={this.clearSelectedLabel}></EditLabel>

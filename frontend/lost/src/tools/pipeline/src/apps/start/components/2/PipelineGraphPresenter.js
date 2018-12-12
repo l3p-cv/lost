@@ -9,7 +9,6 @@ import ScriptStartPresenter from 'pipRoot/nodes/script/start/ScriptStartPresente
 import LoopStartPresenter from 'pipRoot/nodes/loop/start/LoopStartPresenter'
 
 import PipelineGraphView from './PipelineGraphView'
-import ConfigPipelinePresener from '../3/ConfigPipelinePresenter'
 import appModel from '../../appModel'
 
 
@@ -30,9 +29,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
     }
     loadTemplate(data: any) {
         // Reset the Data when graph was loaded seecond time
-        ConfigPipelinePresener.reset()
-
-        this.isThereGraph = true
+        appModel.reset()
 
         // the graph must be initialized after switching tabs. 
         // the svg gets resized to its target container. 
@@ -43,33 +40,25 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // create and render the graph
         this.graph = new Graph(this.view.html.refs['dagre'])
 
-        // dont recreate the graph it it allready exists
-		// if(this.graph !== undefined){
-		// 	this.graph.remove()
-		// }
-
-        // data.requestTemplate()
-        const elements = data.elements
-        const mode = 'start'        
-        let nodes = []
-        elements.forEach(element => {
+        appModel.state.pipelineElements = data.elements.map(element => {
             if ('datasource' in element) {
-                nodes.push(new DatasourceStartPresenter(this.graph, element, mode))
+                return new DatasourceStartPresenter(this.graph, element)
             } else if ('script' in element) {
-                nodes.push(new ScriptStartPresenter(this.graph, element, mode))
+                return new ScriptStartPresenter(this.graph, element)
             } else if ('annoTask' in element) {
-                nodes.push(new AnnoTaskStartPresenter(this.graph, element, mode))
+                return new AnnoTaskStartPresenter(this.graph, element)
             } else if ('dataExport' in element) {
-                nodes.push(new DataExportStartPresenter(this.graph, element, mode))
+                return new DataExportStartPresenter(this.graph, element)
             } else if ('visualOutput' in element) {
-                nodes.push(new VisualOutputStartPresenter(this.graph, element, mode))
+                return new VisualOutputStartPresenter(this.graph, element)
             } else if ('loop' in element) {
-                nodes.push(new LoopStartPresenter(this.graph, element, mode))
+                return new LoopStartPresenter(this.graph, element)
             }
-        })
+			throw new Error(`Unknown element data. Not implemented.`)
+		})
 		
 		// add nodes and add their generated ids (generated in Graph.js)
-		nodes = nodes.map(node => {
+		appModel.state.pipelineElements = appModel.state.pipelineElements.map(node => {
             const nodeId = this.graph.addNode(node)
 			return {
 				id: nodeId,
@@ -78,7 +67,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 		})
 
 		// add edges
-        nodes.forEach(({ node }) => {
+        appModel.state.pipelineElements.forEach(({ node }) => {
             if (node.constructor.name === 'LoopStartPresenter') {
                 this.graph.addEdge(node.model.peN, node.model.loop.peJumpId, true)
             }
@@ -91,27 +80,17 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
 		
 		// finish node creation by using the node ids... blablabla explain this bullshit
-		nodes.forEach(({ node, id }) => {
+		appModel.state.pipelineElements.forEach(({ node, id }) => {
 			node.init(document.getElementById(id))
 		})
     
 	    this.graph.centerGraph()
     }
-	getNodes(){
-		if(this.graph && this.graph.dagreD3Graph){
-			return this.graph.dagreD3Graph._nodes
-		}
-		return null
-	}
 	isValidated(){
-		const nodes = this.getNodes()
-		if(nodes){
-			return Object.values(nodes).every(graphNode => {
-				console.log('validating node:', graphNode.node)
-				return graphNode.node.model.isValidated()
-			})
-		}
-		return false
+		return appModel.state.pipelineElements.every(element => {
+			console.log('validating pipeline element:', element.node.model)
+			return element.node.model.isValidated()
+		})
 	}
 }
 export default new PipelineGraphPresenter()

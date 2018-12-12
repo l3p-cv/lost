@@ -6,8 +6,8 @@ import ScriptStartModal from './ScriptStartModal'
 
 
 export default class ScriptStartPresenter extends BaseNodePresenter {
-    constructor(graph, data, mode) {
-		const model = new ScriptStartModel(data, mode)
+    constructor(graph, data) {
+		const model = new ScriptStartModel(data)
 		const view = new ScriptStartView(model)
 		const modal = new ScriptStartModal(model)
         super({ graph, model, view, modal })

@@ -5,8 +5,8 @@ import DataExportStartView from './DataExportStartView'
 
 
 export default class DataExportStartPresenter extends BaseNodePresenter {
-    constructor(graph, data, mode){
-		const model = new DataExportStartModel(data, mode)
+    constructor(graph, data){
+		const model = new DataExportStartModel(data)
 		const view = new DataExportStartView(model)
         super({ graph, model, view })
     }

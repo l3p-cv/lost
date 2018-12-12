@@ -1,14 +1,15 @@
 import { Observable } from 'l3p-frontend'
 
 export default {
-    isDebug: undefined,
     data: {
         pipelineTemplates: new Observable({}),
     },
     state: {
-        selectedTemplateId: new Observable(-1),	// used?
         selectedTemplate: new Observable({}),
-        checkNodesValidation: new Observable(false),
+		pipelineElements: [],
+		pipelineName: new Observable(''),
+		pipelineDescription: new Observable(''),
+		// web token.
         token: undefined,
     },
     controls: {
@@ -17,4 +18,17 @@ export default {
         show3: new Observable(false),
         show4: new Observable(false),
     },
+	reset(){
+		this.state.pipelineName.reset()
+		this.state.pipelineDescription.reset()
+	},
+	getOutput(){
+		const { selectedTemplate, pipelineElements, pipelineName, pipelineDescription } = this.state
+		return {
+			templateId: selectedTemplate.value.id,
+			elements: pipelineElements.map(element => element.node.model.getOutput()),
+			name: pipelineName.value,
+			description: pipelineDescription.value,
+		}
+	}
 }

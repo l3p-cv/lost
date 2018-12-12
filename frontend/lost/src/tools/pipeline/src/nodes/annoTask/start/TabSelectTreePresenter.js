@@ -9,6 +9,7 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
     constructor(nodeModel: AnnoTaskNodeModel) {
         super()
 		
+		this.model = nodeModel
         this.view = new TabSelectTreeView(this.model)
 
         // MODEL BINDINGS
@@ -53,7 +54,7 @@ export default class TabSelectTreePresenter extends WizardTabPresenter {
         })
     }
     isValidated(){
-		return true
+		return !this.model.state.selectedLabelTree.isInInitialState
     }
 	adjustDataTable(){
 		this.view.adjustDataTable()

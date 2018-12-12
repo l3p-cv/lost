@@ -6,8 +6,8 @@ import DatasourceNodeStartModal from './DatasourceStartModal'
 
 
 export default class DatasourceStartPresenter extends BaseNodePresenter {
-    constructor(graph: Graph, data: any, mode: String){
-		const model = new DatasourceNodeModel(data, mode)
+    constructor(graph: Graph, data: any){
+		const model = new DatasourceNodeModel(data)
 		const view = new DatasourceNodeStartView(model)
 		const modal = new DatasourceNodeStartModal(model)
         super({ graph, model, view, modal })

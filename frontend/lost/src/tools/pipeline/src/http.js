@@ -78,9 +78,34 @@ export function deletePipe(id) {
         }
     })
 }
-export function startPipe(pipeJson) {
-    return http.post(URLS.POST_START_PIPELINE, pipeJson, appModel.state.token)
+
+// NO CREDENTIALS
+function post(url, data, token) {
+    const request = new Request(url, {
+        method: "POST",
+        // credentials: "include",
+        headers: new Headers({
+            "Content-Type" : "application/json",
+            "Authorization": `Bearer ${token}`,
+        }),
+        body: JSON.stringify(data ? data : {}),
+    })
+    console.log(`POST: ${url}`)
+    console.dir(data)
+    return fetch(request).then((response) => handleJsonResponse(response))
 }
+function handleJsonResponse(response){
+    if(response.ok){
+        return response.json()
+    } else {
+        throw new Error(`Network response was not ok. Response status: ${response.status}: ${response.statusText}.`)
+    }
+}
+export function startPipe(data) {
+    return http.post(URLS.POST_START_PIPELINE, data, appModel.state.token)
+}
+
+
 export function pausePipe(id) {
     return http.post(URLS.POST_PAUSE_PIPELINE, id, appModel.state.token).then((result) => {
         if (result === 'error') {

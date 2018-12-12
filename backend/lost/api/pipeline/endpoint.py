@@ -10,10 +10,12 @@ from lost.logic.pipeline import service as pipeline_service
 from lost.logic import template as template_service
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
+
+
 @namespace.route('/template')
 class TemplateList(Resource):
     @api.marshal_with(templates)
-    @jwt_required 
+    @jwt_required
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -26,10 +28,11 @@ class TemplateList(Resource):
             dbm.close_session()
             return re
 
+
 @namespace.route('/template/<int:template_id>')
 @namespace.param('template_id', 'The id of the template.')
 class Template(Resource):
-    @api.marshal_with(template,skip_none=True)
+    @api.marshal_with(template, skip_none=True)
     @jwt_required
     def get(self, template_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -44,10 +47,11 @@ class Template(Resource):
             dbm.close_session()
             return re
 
+
 @namespace.route('')
 class PipelineList(Resource):
     @api.marshal_with(pipelines)
-    @jwt_required 
+    @jwt_required
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -61,11 +65,12 @@ class PipelineList(Resource):
             dbm.close_session()
             return re
 
+
 @namespace.route('/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
 class Pipeline(Resource):
     @api.marshal_with(pipeline)
-    @jwt_required 
+    @jwt_required
     def get(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -79,10 +84,12 @@ class Pipeline(Resource):
             dbm.close_session()
             return re
 
+
 @namespace.route('/start')
 class PipelineStart(Resource):
-    @jwt_required 
-    def post(self, pipeline_id):
+    # @api.marshal_with(pipeline_start)
+    @jwt_required
+    def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -92,7 +99,9 @@ class PipelineStart(Resource):
 
         else:
             data = request.data
-            pipeline_service.start(dbm, data ,identity)
+            # quick and dirty here, data was binary but should be dictonary without using json.loads locally.
+            import json
+            data = json.loads(data)
+            pipeline_service.start(dbm, data, identity)
             dbm.close_session()
             return "success"
-
