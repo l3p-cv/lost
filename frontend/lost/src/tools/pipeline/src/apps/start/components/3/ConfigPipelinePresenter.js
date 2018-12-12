@@ -10,36 +10,24 @@ class ConfigPipelineTab extends WizardTabPresenter {
         super()
         this.view = ConfigPipelineView
 
-		// TO MODEL
-        this.name = ''
-        this.description = ''
-		// TO MODEL
-		
         // MODEL BINDING
         appModel.controls.show3.on('update', () => this.show())
+		appModel.state.pipelineName.on('update', name => this.view.updateName(name))
+		appModel.state.pipelineDescription.on('update', description => this.view.updateDescription(description))
 
         // VIEW BINDING
         $(this.view.html.refs['name']).on('input', (e)=>{
-            this.name = $(e.currentTarget).val()
+            appModel.state.pipelineName.update($(e.currentTarget).val())
         })
         $(this.view.html.refs['description']).on('input', (e)=>{
-            this.description = $(e.currentTarget).val()      
+            appModel.state.pipelineDescription.update($(e.currentTarget).val())
         })
-    }
-	// WHAT IS THIS FOR?
-    reset(){
-		// TO MODEL
-        this.name = null
-        this.description = null
-		// TO MODEL
-        $(this.view.html.refs['name']).val(this.name)
-        $(this.view.html.refs['description']).val(this.description)
-    }
-	// NOT FINISHED
+	}
     isValidated(){
+		const { pipelineName, pipelineDescription } = appModel.state
 		let result = true
-		result = result && this.name.length > 0
-		result = result && this.description.length > 0
+		result = result && pipelineName.value.length > 0
+		result = result && pipelineDescription.value.length > 0
         return result
     }
 }

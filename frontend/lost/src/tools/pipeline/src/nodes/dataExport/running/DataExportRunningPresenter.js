@@ -6,8 +6,8 @@ import DataExportRunningModal from './DataExportRunningModal'
 
 
 export default class DataExportRunningPresenter extends BaseNodePresenter {
-    constructor(graph, data, mode){
-		const model = new DataExportRunningModel(data, mode)
+    constructor(graph, data){
+		const model = new DataExportRunningModel(data)
 		const view = new DataExportRunningView(model)
 		const modal = new DataExportRunningModal(model)
         super({ graph, model, view, modal })

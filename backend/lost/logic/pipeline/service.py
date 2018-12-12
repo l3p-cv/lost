@@ -1,6 +1,7 @@
-import json, os
+import json
+import os
 from datetime import datetime
-from lost.db import model, access, state, dtype 
+from lost.db import model, access, state, dtype
 from lost.logic.template import combine_arguments
 from lost.logic import file_man
 __author__ = "Gereon Reus"
@@ -8,9 +9,13 @@ __author__ = "Gereon Reus"
 ############################ start ################################
 #                                                                 #
 ###################################################################
+
+
 def start(db_man, data, manager_id):
-    #data = json.loads(data)
+    # data = json.loads(data)
     # load template
+    print('---------------------------------')
+    print('data',data)
     template = db_man.get_pipe_template(data['templateId'])
     # initialize pipe starter
     pipe_starter = PipeStarter(template, data, manager_id)
@@ -347,7 +352,7 @@ def serialize_elements(db_man, pipe_serialize, pipe_id):
         ########## ANNO_TASK #############
         elif pe.dtype == dtype.PipeElement.ANNO_TASK:
             anno_task = db_man.get_anno_task(pipe_element_id=pe.idx)
-            #TODO: if all_users - will throw an error at this time
+            # TODO: if all_users - will throw an error at this time
             anno_task_user_name = "All Users"
             if anno_task.annotater_id:
                 anno_task_user_name = anno_task.annotater.first_name + " " + anno_task.annotater.last_name
@@ -399,7 +404,7 @@ class PipeSerialize(object):
         pe_json['id'] = pe.idx
         pe_json['peN'] = pe.idx
         pe_json['peOut'] = list()
-        #get all output elements of element
+        # get all output elements of element
         for rlink in pe.pe_outs:
             pe_json['peOut'].append(rlink.idx)
         # dependent on state set string
@@ -453,7 +458,7 @@ class PipeSerialize(object):
         model_leaf_json['framework'] = model_leaf.framework
         model_leaf_json['architecture'] = model_leaf.architecture
         model_leaf_json['parentId'] = model_leaf.parent_id
-        #TODO: ORM relationship to model tree
+        # TODO: ORM relationship to model tree
         model_leaf_json['modelTreeName'] = model_leaf.model_tree.name
         return model_leaf_json
     def __ds_pipe_element(self, pipe_element_id):
@@ -482,7 +487,7 @@ class PipeSerialize(object):
         script_json['arguments'] = None
         if pe.arguments:
             script_json['arguments'] = json.loads(pe.arguments)
-        #TODO: executors
+        # TODO: executors
         script_json['executors'] = script.executors
         script_json['progress'] = pe.progress
         script_json['errorMsg'] = pe.error_msg

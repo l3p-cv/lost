@@ -12,8 +12,6 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         super()
         this.view = SelectPipelineView
 
-        this.tableLoaded = false
-
         // MODEL-BINDING
         appModel.controls.show1.on('update', () => this.show())
         appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
@@ -38,7 +36,6 @@ class SelectPipelinePresenter extends WizardTabPresenter {
                 new Date(date),
             ]
         }))
-        this.tableLoaded = true
     }
 	adjustDataTable(){
 		this.view.adjustDataTable()

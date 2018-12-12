@@ -16,6 +16,10 @@ import PipelineGraphTab from './components/2/PipelineGraphPresenter'
 import ConfigPipelineTab from './components/3/ConfigPipelinePresenter'
 import StartPipelineTab from './components/4/StartPipelinePresenter'
 
+const DEBUG = true
+if(DEBUG){
+	window.appModel = appModel
+}
 
 const wizard = new Wizard('start-pipeline')
 PipelineGraphTab.requiresValid(SelectPipelineTab)

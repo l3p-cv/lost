@@ -16,5 +16,11 @@ class ConfigPipelineTab extends WizardTabView {
         }
         super(config)
     }
+	updateName(name: String){
+		this.html.refs['name'].value = name
+	}
+	updateDescription(description: String){
+		this.html.refs['description'].value = description
+	}
 }
 export default new ConfigPipelineTab()

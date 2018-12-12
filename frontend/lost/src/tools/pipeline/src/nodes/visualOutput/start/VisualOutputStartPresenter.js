@@ -5,8 +5,8 @@ import VisualOutputStartView from './VisualOutputStartView'
 
 
 export default class VisualOutputStartPresenter extends BaseNodePresenter {
-    constructor(graph, data, mode){
-		const model = new VisualOutputStartModel(data, mode)
+    constructor(graph, data){
+		const model = new VisualOutputStartModel(data)
 		const view = new VisualOutputStartView(model) 
         super({ graph, model, view })
     }

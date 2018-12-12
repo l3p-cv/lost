@@ -6,9 +6,9 @@ import LoopRunningModal from './LoopRunningModal'
 
 
 export default class LoopRunningPresenter extends BaseNodePresenter {
-    constructor(graph, data, mode) {      
+    constructor(graph, data) {      
         super(graph)
-		const model = new LoopRunningModel(data, mode)
+		const model = new LoopRunningModel(data)
 		const view = new LoopRunningView(this.model)
 		const modal = new LoopRunningModal(this.model)
 		super({ graph, model, view, modal })

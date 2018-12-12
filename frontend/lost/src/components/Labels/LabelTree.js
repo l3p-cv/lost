@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import Graph from 'react-graph-vis';
-import flattenTree from 'utils/graph-vis/flattenTree'
+import mapTreeToGraph from 'libs/graph-vis/mapTreeToGraph'
 
 const options = {
     autoResize: true,
@@ -28,7 +28,7 @@ class LabelTree extends Component {
     render() {
         const tree = this.props.labelTree
         if(tree){
-            const graph = flattenTree(tree)
+            const graph = mapTreeToGraph(tree)
             console.log(graph)
             return (<Graph graph={graph} options={options} events={events}/>)
         } else {

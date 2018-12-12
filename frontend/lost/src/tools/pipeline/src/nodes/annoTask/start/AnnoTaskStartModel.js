@@ -3,24 +3,25 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 
 export default class AnnoTaskStartModel extends BaseNodeModel {
-    constructor(params, mode) {
+    constructor(params) {
 		const { peN, peOut, annoTask } = params
 
-		super({ peN, peOut, mode })
+		super({ peN, peOut })
 
 		this.state = {
+			// wizzard tab 1.
 			name: annoTask.name,
 			instructions: annoTask.instructions,
-			// group name
+			// wizzard tab 2.
+			// - assignee = group name
 			assignee: '',
-			// group id
+			// - workerId = group id
 			workerId: undefined,
+			// wizzard tab 3.
 			selectedLabelTree: new Observable([]),
-			// whats this?
-			labelLeaves: [],
-			// whats this?
-			groups: [],
-		}		
+			// wizzard tab 4.
+			selectedLabels: [],
+		}
 
 		// for wizard navigation
 		this.controls = {
@@ -42,6 +43,11 @@ export default class AnnoTaskStartModel extends BaseNodeModel {
 		return result
 	}
 	getOutput(){
-		return this.state
+		const { name, instructions, assignee, workerId, selectedLabelTree, selectedLabels } = this.state
+		return {
+			name, instructions, assignee, workerId,
+			selectedLabelTree: selectedLabelTree.value.idx,
+			selectedLabels,
+		}
 	}
 }

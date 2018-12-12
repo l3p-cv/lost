@@ -3,10 +3,10 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 
 export default class DatasourceStartModel extends BaseNodeModel {
-    constructor(params: any, mode: String) {
+    constructor(params: any) {
 		const { peN, peOut, datasource } = params	
 	
-		super({ peN, peOut, mode })
+		super({ peN, peOut })
 	
 		// { type: String, fileTree: any }
 		this.datasource = datasource
