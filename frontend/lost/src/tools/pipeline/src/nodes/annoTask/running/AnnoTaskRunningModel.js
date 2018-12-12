@@ -10,6 +10,7 @@ export default class AnnoTaskRunningModel extends BaseNodeModel {
 
 		this.id = id
 		this.annoTask = annoTask
+		
 		// for progress bar updates
 		this.state = new Observable(state)
 		this.progress = new Observable(annoTask.progress ? annoTask.progress : 0)

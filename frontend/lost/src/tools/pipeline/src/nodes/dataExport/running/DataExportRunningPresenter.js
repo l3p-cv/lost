@@ -1,6 +1,6 @@
 import BaseNodePresenter from '../../BaseNodePresenter'
 
-import DataExportRunningModel from './DataExportStartModel'
+import DataExportRunningModel from './DataExportRunningModel'
 import DataExportRunningView from './DataExportRunningView'
 import DataExportRunningModal from './DataExportRunningModal'
 

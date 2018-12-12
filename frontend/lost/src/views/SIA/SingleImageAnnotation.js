@@ -1,11 +1,5 @@
 import React, { Component } from "react"
 import {connect} from 'react-redux'
-import ReactDOM from "react-dom"
-
-import * as appView from '../../tools/sia/src/appView'
-import * as controlsView from '../../tools/sia/src/components/controls/controlsView'
-
-import LabelSelect from "../../components/LabelSelect/LabelSelect"
 import { 
     CardHeader,
     Card,
@@ -13,11 +7,18 @@ import {
     Col,
     Row
 } from 'reactstrap'
+
+import * as appView from '../../tools/sia/src/appView'
+import * as controlsView from '../../tools/sia/src/components/controls/controlsView'
+
 import WorkingOnSIA from '../../components/AnnoTask/WorkingOnSIA'
 
+import ReactDOM from "react-dom"
+import LabelSelect from "../../components/LabelSelect/LabelSelect"
 
 import actions from '../../actions'
-const {getWorkingOnAnnoTask} = actions
+const { getWorkingOnAnnoTask } = actions
+
 
 class SingleImageAnnotation extends Component {
 	constructor(props){
@@ -43,8 +44,8 @@ class SingleImageAnnotation extends Component {
 					<Row>
 						<Col  xs='12' sm='12' lg='12'>
 							<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
-					<div ref={this.mount} id="sia-mount"></div>
-					</Col>
+							<div ref={this.mount} id="sia-mount"></div>
+						</Col>
 					</Row>
 					  </CardBody> 
 				</Card>

@@ -1,18 +1,18 @@
 
 import { WizardTabPresenter } from 'l3p-frontend'
-import * as http from 'pipCore/http'
+import * as http from 'pipRoot/http'
 import appModel from '../../appModel'
 import PipelineGraphView from './PipelineGraphView'
 
 import Graph from 'pipRoot/Graph'
 
-import DatasourceNodePresenter from 'pipRoot/nodes/datasource/DatasourceNodePresenter'
-import AnnoTaskNodePresenter from 'pipRoot/nodes/annoTask/AnnoTaskNodePresenter'
-import DataExportNodePresenter from 'pipRoot/nodes/dataExport/DataExportNodePresenter'
-import VisualOutputNodePresenter from 'pipRoot/nodes/visualOutput/VisualOutputNodePresenter'
+import DatasourceNodePresenter from 'pipRoot/nodes/datasource/running/DatasourceRunningPresenter'
+import AnnoTaskNodePresenter from 'pipRoot/nodes/annoTask/running/AnnoTaskRunningPresenter'
+import DataExportNodePresenter from 'pipRoot/nodes/dataExport/running/DataExportRunningPresenter'
+import VisualOutputNodePresenter from 'pipRoot/nodes/visualOutput/running/VisualOutputRunningPresenter'
 
-import ScriptNodePresenter from 'pipRoot/nodes/script/ScriptNodePresenter'
-import LoopNodePresenter from 'pipRoot/nodes/loop/LoopNodePresenter'
+import ScriptNodePresenter from 'pipRoot/nodes/script/running/ScriptRunningPresenter'
+import LoopNodePresenter from 'pipRoot/nodes/loop/running/LoopRunningPresenter'
 
 import swal from 'sweetalert2'
 
@@ -187,7 +187,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         if(!appModel.isCompleted){
             let refresh = setInterval(() => {
                 $(this.view.html.refs['update-label']).fadeIn(200)
-                 http.requestRunningPipe(this.appData.id)
+                 http.requestPipeline(this.appData.id)
                  .then((appData) => {
                     // tooltip would stay opened, if we wouldn't hide it on update.
                     $('.tooltip').tooltip('hide')                  

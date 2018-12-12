@@ -39,6 +39,7 @@ export default class AnnoTaskRunningPresenter extends BaseNodePresenter {
 				${ text === 'finished'       ? 'bg-green'    : '' }`)
 			this.view.parentNode.querySelector(`[data-ref='state-text']`).textContent = text.replace('_', ' ')
 		})
+		// update modal
 		this.model.progress.on('update', number => {
 			this.modal.html.refs['progress-bar'].style.width = `${number}%`
 			this.modal.html.refs['progress-bar-text'].textContent = `${number? number: 0}%`

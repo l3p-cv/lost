@@ -189,29 +189,10 @@ class SelectPipelinePresenter extends WizardTabPresenter {
     }
     selectTemplate(id: Node) {
         let requestGraph = () => {
-            if (typeof id === 'number') {
-                this.isTabValidated = true
-                // Completed                
-                if(appModel.isCompleted){
-                    http.requestCompletedPipe(id).then(response => {
-                        appModel.state.selectedPipe.update(response)
-                    })
-                }else{
-                    // Running
-                    http.requestRunningPipe(id).then(response => {
-                        if(typeof response === 'string'){
-                            swal(
-                                'Oops...',
-                                response,
-                                'error'
-                              )
-                        }else{
-                            appModel.state.selectedPipe.update(response)                            
-                        }
-                        //response = JSON.parse(response)
-                    })
-                }
-            }
+			this.isTabValidated = true
+			http.requestPipeline(id).then(response => {
+				appModel.state.selectedPipe.update(response)
+			})
         }
         requestGraph()
     }

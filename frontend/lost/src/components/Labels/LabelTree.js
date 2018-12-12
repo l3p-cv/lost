@@ -49,10 +49,7 @@ class LabelTree extends Component {
         if (tree) {
             const graph = mapTreeToGraph(tree)
             return (
-                <React.Fragment>
-                    <EditLabel label={this.state.selectedLabel} clearSelectedLabel={this.clearSelectedLabel}></EditLabel>
-                    <Graph graph={graph} options={options} events={events}/>
-                </React.Fragment>
+				<Graph graph={graph} options={options} events={events}/>
             )
         } else {
             return (
