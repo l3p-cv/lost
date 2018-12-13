@@ -51,7 +51,10 @@ export default class TabTreePresenter extends WizardTabPresenter {
 		})
 		this.view.graph.setSelection({ nodes: Array.from(this.selectedNodeIds) })
 		// update model
-		this.model.state.selectedLabels = Array.from(this.selectedNodeIds)	
+		this.model.state.selectedLabels = Array.from(this.selectedNodeIds).map(id => ({
+			id,
+			maxLabels: '3', // wired.
+		}))
 	}
 	isValidated(){
 		return this.selectedNodeIds.size > 0

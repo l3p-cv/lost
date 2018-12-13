@@ -2,6 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class BaseNodeModel extends BaseModal {
-	constructor(){
+	constructor(params){
+		const { status, progress } = params
 	}
 }

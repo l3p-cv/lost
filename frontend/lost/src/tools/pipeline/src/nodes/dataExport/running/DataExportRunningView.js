@@ -10,8 +10,8 @@ export default class AnnoTaskRunningView extends BaseNodeView {
 			},
 			content: { icon: 'fa fa-cloud-download' },
 			footer: {
-				state: model.state.value,
-				text: model.state.value.replace('_', ' '),
+				state: model.status.value,
+				text: model.status.value.replace('_', ' '),
 			},
 		})
     }

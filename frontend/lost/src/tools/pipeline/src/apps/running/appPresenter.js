@@ -19,9 +19,14 @@ if(DEBUG){
 	window.appModel = appModel
 }
 
-
 const wizard = new Wizard('running-pipelines')
+
 PipelineGraphTab.requiresValid(SelectPipelineTab)
+
+SelectPipelineTab.on('after-activate', () => {
+	SelectPipelineTab.adjustDataTable()
+})
+
 wizard.add([
     SelectPipelineTab, 
     PipelineGraphTab, 

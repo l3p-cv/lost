@@ -34,7 +34,7 @@ export default class AnnoTaskRunningPresenter extends BaseNodePresenter {
 			this.modal.html.refs['progress-bar-text'].textContent = `${number? number: 0}%`
 			// METHODS!!!
 		})
-		this.model.state.on('update', text => {
+		this.model.status.on('update', text => {
 			// METHODS!!!
 			this.modal.html.refs['status'].textContent = text
 			// METHODS!!!

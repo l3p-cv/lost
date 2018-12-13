@@ -17,7 +17,7 @@ export default class LoopRunningPresenter extends BaseNodePresenter {
      * @override
      */
     initViewBinding(){
-		this.model.state.on('update', text => {
+		this.model.status.on('update', text => {
 			this.modal.html.refs['status'].textContent = text
 		})
     }

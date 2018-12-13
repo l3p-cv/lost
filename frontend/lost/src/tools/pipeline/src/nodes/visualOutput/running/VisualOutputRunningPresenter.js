@@ -21,7 +21,7 @@ export default class VisualOutputRunningPresenter extends BaseNodePresenter {
      */
     initModelBinding(){
 		// DUPLICATION?
-		this.model.state.on('update', text => {
+		this.model.status.on('update', text => {
 			this.view.parentNode.querySelector(`[data-ref='status']`).setAttribute('class', `panel-footer 
 				${ text === 'script_error'   ? 'bg-red'      : '' }
 				${ text === 'pending'        ? 'bg-blue'     : '' }

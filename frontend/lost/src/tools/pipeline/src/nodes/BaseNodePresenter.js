@@ -1,5 +1,3 @@
-// import swal from 'sweetalert2'
-
 
 export default class BaseNodePresenter {
     /**
@@ -59,21 +57,22 @@ export default class BaseNodePresenter {
      * @param {*} parentNode The root node of this node inside the graph. 
      */
     init(parentNode: HTMLElement){
-		// update views element references, cause they got lost.
-		Object.keys(this.view.html.refs).forEach(key => {
-			this.view.html.refs[key] = parentNode.querySelector(`[data-ref='${key}']`)
-		})
+		// update the views root element reference, cause it gets lost when appending to dagreD3 graph.
+		// Object.keys(this.view.html.refs).forEach(key => {
+		// 	this.view.html.refs[key] = parentNode.querySelector(`[data-ref='${key}']`)
+		// })
+		this.view.html.root = parentNode
 
 		// bind state and progress updates to view, in case the node has such.
-		if(this.model.state){
-			this.model.state.on('update', status => this.view.updateStatus(status))
+		if(this.model.status){
+			this.model.status.on('update', status => this.view.updateStatus(status))
 		}
 		if(this.model.progress){
 			this.model.progress.on('update', progress => this.view.updateProgress(progress))
 		}
         
         // open modal on double click.
-        $(this.view.parentNode).on('dblclick', () => {
+        $(this.view.html.root).on('dblclick', () => {
 			if(this.modal){
 				$(this.modal.html.root).modal()                    
 			}

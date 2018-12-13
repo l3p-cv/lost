@@ -16,7 +16,7 @@ export default class LoopStartModal extends BaseModal {
                             <td>
                                 <input ${nodeModel.loop.maxIteration 
                                     ? '' 
-                                    : `disabled placeholder='exit condition is in script'`}
+                                    : `placeholder='exit condition is in script' disabled`}
                                     data-ref='max-iteration'
                                     class='labelmax form-control'
                                     type='number'

@@ -40,7 +40,7 @@ export default class ScriptRunningPresenter extends BaseNodePresenter {
 				this.modal.html.refs['error-msg-text'].textContent = ''
 			}
 		})
-		this.model.state.on('update', text => {
+		this.model.status.on('update', text => {
 			this.modal.html.refs['status'].textContent = text
 		})
     }

@@ -56,7 +56,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
             }
 			throw new Error(`Unknown element data. Not implemented.`)
 		})
-		
+		console.log(appModel.state.pipelineElements.map(element => element.model))
 		// add nodes and add their generated ids (generated in Graph.js)
 		appModel.state.pipelineElements = appModel.state.pipelineElements.map(node => {
             const nodeId = this.graph.addNode(node)

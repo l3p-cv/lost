@@ -3,14 +3,7 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 export default class ScriptStartModel extends BaseNodeModel {
     constructor(params) {
-		const { peN, peOut, id, script } = params
-
-		super({ peN, peOut })
-		
-        this.id = id
-
-		// data structure?
-        this.script = script
+		super(params)
     }
 	isValidated(){
 		if(this.script.arguments){
@@ -19,11 +12,11 @@ export default class ScriptStartModel extends BaseNodeModel {
 		return true
 	}
 	getOutput(){
-		return {
-			peN: this.peN,
-			script: {
-				arguments: this.script.arguments
-			}
-		}
+		const output = Object.getOwnPropertyNames(this).reduce((result, key) => {
+			result[key] = this[key]
+			return result
+		}, {})
+		output.script.isDebug = false
+		return output
 	}
 }

@@ -76,6 +76,7 @@ def handle_multiple_result_links(db_man, pipe_starter, pe_n):
     existing_result_links = db_man.get_resultlinks_pe_out(pe_id)
     for result_link in existing_result_links:
         handle_result_links(db_man, pipe_starter, pe_n, result_link.result_id)
+
 class PipeStarter(object):
     def __init__(self, template, data, manager_id):
         self.pipe = model.Pipe()
@@ -103,7 +104,7 @@ class PipeStarter(object):
                         description=self.data['description'],
                         manager_id=self.manager_id,
                         is_debug_mode=is_debug_mode,
-                        group_id=self.data['groupId'],
+                        group_id=self.manager_id,
                         timestamp=self.timestamp_now
                         )
         self.pipe = pipe
@@ -212,7 +213,8 @@ class PipeStarter(object):
         loop = model.Loop()
         loop.iteration = 0
         loop.isBreakLoop = False
-        loop.max_iteration = template_element['loop']['maxIteration']
+		# frontend sent: { maxIteration: 3 }, backend had { max_iteration: 3 } 
+        loop.max_iteration = template_element['loop']['max_iteration']
         loop.pe_jump_id = pe_jump_id
         loop.pipe_element_id = pe_id
         return loop
@@ -272,6 +274,7 @@ def __serialize_pipes(db_man, debug_mode, pipes):
     pipes_json["pipes"] = list()
 
     for pipe in pipes:
+        print("FIND PIPE USER:", pipe)  
         # filter pipes with debug mode
         if debug_mode:
             if not pipe.is_debug_mode:

@@ -9,7 +9,7 @@ class SelectPipelineView extends WizardTabView {
             title: 'Choose a Template',
             icon: 'fa fa-puzzle-piece fa-1x',
             content: /*html*/`
-				<h2>Use right mouse click to open a context menu.</h2>
+				<p>Use right mouse click to open a context menu for each row.</p>
                 <table data-ref="data-table" class='table table-striped table-bordered'>
                     <thead>
                         <tr>

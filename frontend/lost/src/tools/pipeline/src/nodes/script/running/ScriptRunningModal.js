@@ -3,7 +3,7 @@ import { BaseModal } from 'l3p-frontend'
 
 export default class ScriptRunningModal extends BaseModal {
     constructor(nodeModel){
-		const { peN, script, progress, id, errorMsg, state } = nodeModel
+		const { peN, script, progress, id, errorMsg, status } = nodeModel
         super({
             id: peN,
             title: 'Script',
@@ -34,7 +34,7 @@ export default class ScriptRunningModal extends BaseModal {
 
 				// hidden information.
                 <a class='cursor-pointer ${ script.errorMsg !== null ? `color-red` : `` }' data-ref='more-information-link'>
-                    <u>More informations</u> &nbsp;
+                    <u>More information</u> &nbsp;
                     <i data-ref='more-information-icon' class='fa fa-chevron-down '></i>
                 </a>
                 <div class='panel-group'>
@@ -64,8 +64,8 @@ export default class ScriptRunningModal extends BaseModal {
                                             <td class='word-break'>${script.path}</td>
                                         </tr>
                                         <tr>
-                                            <td class='colon'><strong>State</strong></td>
-                                            <td data-ref='status' class='word-break'>${state.value.replace('_', ' ')}</td>
+                                            <td class='colon'><strong>Status</strong></td>
+                                            <td data-ref='status' class='word-break'>${status.value.replace('_', ' ')}</td>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -25,7 +25,7 @@ export default class DatasourceRunningPresenter extends BaseNodePresenter {
      * @override
      */
     initModelBinding(){
-		this.model.state.on('update', text => {
+		this.model.status.on('update', text => {
 			this.modal.html.refs['status'].textContent = text
 		})
     }

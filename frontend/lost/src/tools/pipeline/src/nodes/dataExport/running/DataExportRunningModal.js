@@ -3,8 +3,9 @@ import { BaseModal } from 'l3p-frontend'
 
 export default class DataExportRunningModal extends BaseModal {
     constructor(nodeModel){
-        const params = {
-            visible: `${nodeModel.dataExport.length === 0 ? `false`:`true`}`,
+		const { dataExport } = nodeModel
+        super({
+            visible: dataExport.length === 0 ? false : true,
             title: 'Export',
             content: /*html*/`
                 <table class='table table-hover'>
@@ -15,7 +16,7 @@ export default class DataExportRunningModal extends BaseModal {
                         </tr>
                     </thead>
                     <tbody>
-                        ${nodeModel.dataExport.map(element => `
+                        ${dataExport.map(element => /*html*/`
                             <tr>
                                 <td>
                                     <strong>${element.iteration}<strong>
@@ -32,7 +33,6 @@ export default class DataExportRunningModal extends BaseModal {
                     </tbody>
                 </table>
             `   
-        }
-        super(params)
+        })
     }
 }
