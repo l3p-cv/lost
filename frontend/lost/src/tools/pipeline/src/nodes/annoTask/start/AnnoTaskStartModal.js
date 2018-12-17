@@ -8,7 +8,7 @@ import TabTreePresenter from './TabTreePresenter'
 
 
 export default class AnnoTaskStartModal extends BaseModal {
-    constructor(nodeModel: AnnotaskStartNodeModel){
+    constructor(nodeModel: AnnotaskStartModel){
         super({
 			id: 'anno-task-modal',
 			title: 'Annotation Task',

@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class DataExportRunningModal extends BaseModal {
-    constructor(nodeModel){
+    constructor(nodeModel: DataExportRunningModel){
 		const { dataExport } = nodeModel
         super({
             visible: dataExport.length === 0 ? false : true,

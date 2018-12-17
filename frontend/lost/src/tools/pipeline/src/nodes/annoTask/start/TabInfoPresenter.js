@@ -3,7 +3,7 @@ import TabInfoView from './TabInfoView'
 
 
 export default class TabInfoPresenter extends WizardTabPresenter {
-    constructor(nodeModel: AnnoTaskNodeModel){
+    constructor(nodeModel: AnnotaskStartModel){
         super()
 		
 		this.model = nodeModel

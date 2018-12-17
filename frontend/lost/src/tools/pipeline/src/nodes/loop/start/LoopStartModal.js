@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class LoopStartModal extends BaseModal {
-    constructor(nodeModel){
+    constructor(nodeModel: LoopStartModel){
         super({
             visible: false,
             title: 'Loop',

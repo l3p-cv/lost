@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class DatasourceStartView extends BaseNodeView {
-    constructor(model) {
+    constructor(model: DatasourceRunningModel) {
 		super({
 			header: {
 				icon: 'fa fa-hdd-o',

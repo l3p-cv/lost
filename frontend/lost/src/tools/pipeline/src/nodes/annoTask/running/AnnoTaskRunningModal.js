@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class AnnoTaskRunningModal extends BaseModal {
-    constructor(nodeModel){
+    constructor(nodeModel: AnnoTaskRunningModel){
 		const { annoTask, progress, status } = nodeModel
         super({
             title: 'Annonation Task',

@@ -6,7 +6,7 @@ import appModel from 'apps/start/appModel'
 
 
 export default class TabUserPresenter extends WizardTabPresenter {
-    constructor(nodeModel: AnnoTaskNodeModel) {
+    constructor(nodeModel: AnnotaskStartModel) {
         super()
 		
 		this.model = nodeModel

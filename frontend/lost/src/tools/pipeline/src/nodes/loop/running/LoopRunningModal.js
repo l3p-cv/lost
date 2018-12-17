@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class LoopRunningModal extends BaseModal {
-    constructor(nodeModel){
+    constructor(nodeModel: LoopRunningModel){
 		const { id, loop, status } = nodeModel
         super({
             id: `${nodeModel.peN}`,

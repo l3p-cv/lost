@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class VisualOutputStartView extends BaseNodeView {
-    constructor(model) {
+    constructor() {
 		super({
 			header: {
 				icon: 'fa fa-bar-chart',

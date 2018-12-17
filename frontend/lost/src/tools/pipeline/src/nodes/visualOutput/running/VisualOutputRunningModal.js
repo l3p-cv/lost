@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class VisualOutputRunningModal extends BaseModal {
-    constructor(nodeModel){
+    constructor(nodeModel: VisualOutputRunningModel){
 		const { visualOutput } = nodeModel
         super({
             visible: visualOutput.length === 0 ? false : true,

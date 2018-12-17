@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class DatasourceRunningModal extends BaseModal {
-    constructor(nodeModel: DatasourceNodeModel){
+    constructor(nodeModel: DatasourceRunningModel){
 		const { id, status, datasource } = nodeModel
         super({
 			title: 'Datasource',

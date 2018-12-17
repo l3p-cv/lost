@@ -14,7 +14,7 @@ import 'bootstrap-tree/dist/bootstrap-treeview.min.css'
 
 
 export default class DatasourceStartModal extends BaseModal {
-    constructor(nodeModel: DatasourceNodeModel){
+    constructor(nodeModel: DatasourceStartModel){
 		// init modal html
 		super({
 			title: 'Choose Directory',

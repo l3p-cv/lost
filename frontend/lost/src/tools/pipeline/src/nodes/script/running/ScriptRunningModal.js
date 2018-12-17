@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class ScriptRunningModal extends BaseModal {
-    constructor(nodeModel){
+    constructor(nodeModel: ScriptRunningModel){
 		const { peN, script, progress, id, errorMsg, status } = nodeModel
         super({
             id: peN,

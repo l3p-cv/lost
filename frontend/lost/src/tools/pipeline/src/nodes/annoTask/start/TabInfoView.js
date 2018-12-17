@@ -2,7 +2,7 @@ import { WizardTabView } from 'l3p-frontend'
 
 
 export default class TabInfoView extends WizardTabView {
-    constructor({ state }: AnnoTaskNodeModel){
+    constructor({ state }: AnnotaskStartModel){
 		const { name, instructions } = state
         super({
             title: 'Fill Out',

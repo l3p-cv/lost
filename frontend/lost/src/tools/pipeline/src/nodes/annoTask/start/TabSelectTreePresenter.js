@@ -6,11 +6,11 @@ import appModel from 'apps/start/appModel'
 
 
 export default class TabSelectTreePresenter extends WizardTabPresenter {
-    constructor(nodeModel: AnnoTaskNodeModel) {
+    constructor(nodeModel: AnnotaskStartModel) {
         super()
 		
 		this.model = nodeModel
-        this.view = new TabSelectTreeView(this.model)
+        this.view = new TabSelectTreeView()
 
         // MODEL BINDINGS
         nodeModel.controls.show3.on('update', () => this.show())

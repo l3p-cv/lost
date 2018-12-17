@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class AnnoTaskStartView extends BaseNodeView {
-    constructor(model) {
+    constructor(model: AnnotaskStartModel){
 		super({
 			header: {
 				icon: 'fa fa-pencil',

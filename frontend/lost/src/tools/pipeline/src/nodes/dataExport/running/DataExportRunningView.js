@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class AnnoTaskRunningView extends BaseNodeView {
-    constructor(model) {
+    constructor(model: DataExportRunningModel) {
 		super({
 			header: {
 				icon: 'fa fa-cloud-download',

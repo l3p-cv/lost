@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class LoopRunningView extends BaseNodeView {
-    constructor(model) {
+    constructor(model: LoopRunningModel) {
 		super({
 			header: {
 				icon: 'fa fa-refresh',
