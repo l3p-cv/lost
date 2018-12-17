@@ -374,8 +374,9 @@ class DBMan(object):
             return self.session.query(model.Datasource)\
             .filter(model.Datasource.name==name).first()
         elif pipe_element_id is not None:
-            return self.session.query(model.Datasource)\
-           .filter(model.Datasource.pipe_element_id==pipe_element_id).first()
+            query_result = self.session.query(model.Datasource)\
+               .filter(model.Datasource.pipe_element_id==pipe_element_id)
+            return query_result.first()
         else:
             raise Exception('Need to specify one of the method parameters')
 

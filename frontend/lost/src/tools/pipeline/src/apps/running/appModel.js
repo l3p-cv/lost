@@ -2,11 +2,9 @@ import { Observable } from 'l3p-frontend'
 
 export default {
     state: {
-        selectedTemplateId: new Observable(-1),
-        selectedTemplate: new Observable({}),
-        selectedPipe: new Observable({}),
+        pipelines: new Observable({}),
+        selectedPipeline: new Observable({}),
+		// auth token from redux.
+		token: undefined,
     },
-    data: {
-        pipelineTemplates: new Observable({}),
-    }
 }

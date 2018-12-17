@@ -41,7 +41,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 		this.view.adjustDataTable()
 	}
     selectTemplate(id){
-		http.requestTemplate(id).then(response => {
+		http.requestTemplate(id, appModel.state.token).then(response => {
 			appModel.state.selectedTemplate.update(response)
 		})
 	}

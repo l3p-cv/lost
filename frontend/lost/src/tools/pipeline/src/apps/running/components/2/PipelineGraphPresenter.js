@@ -22,24 +22,23 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         this.view = PipelineGraphView
 
         // MODEL BINDINGS
-        appModel.state.selectedPipe.on('update', (data) => this.loadTemplate(data))
+        appModel.state.selectedPipeline.on('update', (data) => this.show())
+        appModel.state.selectedPipeline.on('update', (data) => this.showPipeline(data))
 
         // VIEW BINDINGS
         // Delete Pipe
         $(this.view.html.refs['btn-delete-pipeline']).on('click', () => {
             let id = this.appData.id
             // result can be cancel, true, false
-            http.deletePipe(id).then((success) => {
+            http.deletePipe(id, appModel.state.token).then(result => {
 				// ?????????????
-                if(success === 'cancel') return
+                if(result === 'cancel') return
             })
         })
         // Pause Pipe
         $(this.view.html.refs['btn-pause-pipe']).on('click', () => {
-            http.pausePipe({
-                pipeId: this.appData.id
-            }).then((success) => {
-                if(success){
+            http.pausePipe({ pipeId: this.appData.id }, appModel.state.token).then(result => {
+                if(result){
 					// VIEW METHOD!
                     $(this.view.html.refs['btn-play-pipe']).prop('disabled', false)
                     $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
@@ -48,12 +47,11 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                 }
             })
         })
-        // Play Pipe
+        // Show Pipe
         $(this.view.html.refs['btn-play-pipe']).on('click', () => {
-            http.playPipe({
-                pipeId: this.appData.id
-            }).then((success) => {
-                if(success){
+            http.requestPipeline(this.appData.id, appModel.state.token).then(result => {
+				console.log(result)
+                if(result){
 					// VIEW METHOD!
                     $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
                     $(this.view.html.refs['btn-pause-pipe']).prop('disabled', false)
@@ -77,7 +75,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
     }
 
 	// COMPARE WITH START PIPELINE CHANGES!
-    loadTemplate(appData: any){
+    showPipeline(appData: any){
         // the appData reference is used in the toolbar view bindings (see constructor).
         this.appData = appData
         
@@ -131,6 +129,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // create nodes from data.
         const mode = 'running'
         this.nodes = new Map()
+		console.log(appData)
         appData.elements.forEach(nodeData => {
             if('datasource' in nodeData){
                 this.nodes.set(nodeData.id, new DatasourceRunningPresenter(this.graph, nodeData, mode))
@@ -171,7 +170,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         if(!appModel.isCompleted){
             let refresh = setInterval(() => {
                 $(this.view.html.refs['update-label']).fadeIn(200)
-                 http.requestPipeline(this.appData.id).then((appData) => {
+                 http.requestPipeline(this.appData.id, appModel.state.token).then((appData) => {
                     // tooltip would stay opened, if we wouldn't hide it on update.
                     $('.tooltip').tooltip('hide')
 

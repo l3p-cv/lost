@@ -32,12 +32,14 @@ wizard.add([
     PipelineGraphTab, 
 ])  
 
-export default function init() {
-	http.requestPipelines().then((response) => {
+
+export default function init(token){
+    appModel.state.token = token
+	http.requestPipelines(appModel.state.token).then((response) => {
 		if(!response.pipes){
 			console.log(response)
 			throw new Error(`Backend returned no running pipelines.`)
 		}
-		appModel.data.pipelineTemplates.update(response.pipes)
+		appModel.state.pipelines.update(response.pipes)
 	})
 }

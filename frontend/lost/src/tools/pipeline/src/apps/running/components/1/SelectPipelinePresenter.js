@@ -19,31 +19,25 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 
         // MODEL-BINDINGS
 		// data table update.
-        appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
+        appModel.state.pipelines.on('update', (data) => this.updateTable(data))
 
         // VIEW-BINDINGS
-		// load template.
-        $(this.view.html.refs['templatetable']).on('click', 'tbody row', (e) => {
-        	const templateId = this.view.table.row($(e.currentTarget).parent()).data()[0]
+		// load pipeline.
+        $(this.view.html.refs['data-table']).on('click', 'tbody td', (e) => {
+        	const pipelineId = this.view.table.row($(e.currentTarget).parent()).data()[0]
             if($(e.currentTarget).text() !== 'Delete Pipeline'){
-                this.selectTemplate(templateId)
+                this.showPipeline(pipelineId)
             }
         })
 
-		// delete pipeline.
-        $(this.view.html.refs['templatetable']).on('click', 'button', function (){
-            const templateId = this.view.table.row($(this).parents('tr')).data()
-            http.deletePipe(templateId)
-        })
-
-		// open row contextmenu.
-        $(this.view.html.refs['templatetable']).on('contextmenu', 'tbody row', (e) => {
+		// open contextmenu.
+        $(this.view.html.refs['data-table']).on('contextmenu', 'tbody td', (e) => {
             e.preventDefault()
-            const templateId = this.view.table.row($(e.currentTarget).parent()).data()[0]
+            const pipelineId = this.view.table.row($(e.currentTarget).parent()).data()[0]
             const row = this.view.table.row($(e.currentTarget).parent())
 
             function deletePipeline(){
-                http.deletePipe(templateId).then((isSuccess) => {
+                http.deletePipe(pipelineId, appModel.state.token).then((isSuccess) => {
                     if(isSuccess === 'cancel'){
                         return
                     } else {
@@ -53,7 +47,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
             }
             function downloadLogfile(){
                 if(this.rawData[0].logfilePath){
-                    window.location = window.location.origin + '/' + this.rawData[0].logfilePath
+                    window.location = `${window.location.origin}/${this.rawData[0].logfilePath}`
                 }
             }
 
@@ -82,24 +76,19 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 						name: 'Pause Pipeline',
 						icon: 'fa fa-pause',
 						fn: () => {
-							http.pausePipe({'pipeId': templateId}).then(success => {
-								if(success){
-									window.location.reload()
-								}
-							})   
+							console.warn('no backend service available atm?')
+							// http.pausePipe({ 'pipeId': pipelineId }, appModel.state.token).then(result => {
+							// 	if(result){
+							// 		window.location.reload()
+							// 	}
+							// })   
 						}
 					},
 					{
-						id: 'play',
-						name: 'Play Pipeline',
+						id: 'show',
+						name: 'Show Pipeline',
 						icon: 'fa fa-play',
-						fn: () => {
-							http.playPipe({'pipeId': templateId}).then(success => {
-								if(success){
-									window.location.reload()
-								}
-							})                          
-						}
+						fn: () => this.showPipeline(pipelineId)
 					},
 					{
 						name:'Download Logfile',
@@ -113,13 +102,9 @@ class SelectPipelinePresenter extends WizardTabPresenter {
     updateTable(rawData){
 		// TO MODEL???
 		// update data. 
+		// only used for log file.
         this.rawData = rawData
 		// TO MODEL???
-
-        // if user starts a pipe, show its graph.
-        const pathname = window.location.pathname
-		const templateId = parseInt(pathname.substring(pathname.lastIndexOf('/') + 1 , pathname.length))
-		this.selectTemplate(templateId)
 
 		// update data table.
 		this.view.updateTable(
@@ -147,14 +132,11 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 	adjustDataTable(){
 		this.view.adjustDataTable()
 	}
-    selectTemplate(id: Node){
-		http.requestPipeline(id).then(response => {
-			appModel.state.selectedPipe.update(response)
+    showPipeline(id: Number){
+		console.log('will request pipeline with id:', id)
+		http.requestPipeline(id, appModel.state.token).then(response => {
+			appModel.state.selectedPipeline.update(response)
 		})
     }
 }
 export default new SelectPipelinePresenter()
-
-
-
-

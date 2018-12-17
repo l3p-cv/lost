@@ -39,7 +39,7 @@ wizard.add([
 
 export default function init(token){
     appModel.state.token = token
-    http.requestTemplates().then((response) => {
+    http.requestTemplates(token).then((response) => {
         appModel.data.pipelineTemplates.update(response.templates)
     })
 }

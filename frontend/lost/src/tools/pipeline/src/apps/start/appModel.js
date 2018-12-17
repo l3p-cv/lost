@@ -9,7 +9,7 @@ export default {
 		pipelineElements: [],
 		pipelineName: new Observable(''),
 		pipelineDescription: new Observable(''),
-		// web token.
+		// auth token from redux.
         token: undefined,
     },
     controls: {
