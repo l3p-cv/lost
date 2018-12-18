@@ -17,6 +17,7 @@ import PipelineGraphTab from './components/2/PipelineGraphPresenter'
 const DEBUG = true
 if(DEBUG){
 	window.appModel = appModel
+	console.warn('DISABLE DEBUG MODE IN PRODUCTION')
 }
 
 const wizard = new Wizard('running-pipelines')
@@ -33,8 +34,9 @@ wizard.add([
 ])  
 
 
-export default function init(token){
+export default function init({ token, polling }){
     appModel.state.token = token
+	appModel.options.polling.update(polling)
 	http.requestPipelines(appModel.state.token).then((response) => {
 		if(!response.pipes){
 			console.log(response)

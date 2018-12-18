@@ -16,19 +16,14 @@ class PipelineGraphPresenter extends WizardTabPresenter {
     constructor() {
         super()
         this.view = PipelineGraphView
-
-        this.validated = false
         
         // MODEL-BINDING
-        appModel.controls.show2.on('update', () => this.show())  
-        appModel.state.selectedTemplate.on('update', (data) => this.loadTemplate(data))
+        appModel.state.selectedTemplate.on('update', () => this.show())
+        appModel.state.selectedTemplate.on('update', (data) => this.showTemplate(data))
     }
-    // @override
-    isValidated(){
-        return this.validated 
-    }
-    loadTemplate(data: any) {
-        // Reset the Data when graph was loaded seecond time
+	// this method is similar to PipelineGraphPresenter.showPipeline of running-pipes-application.
+    showTemplate(data: any) {
+        // reset the the observable state data.
         appModel.reset()
 
         // the graph must be initialized after switching tabs. 
@@ -37,7 +32,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // the graph wont render well this way.
         this.show()
         
-        // create and render the graph
+        // create and render the graph.
         this.graph = new Graph(this.view.html.refs['dagre'])
 
         appModel.state.pipelineElements = data.elements.map(element => {
@@ -56,7 +51,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
             }
 			throw new Error(`Unknown element data. Not implemented.`)
 		})
-		console.log(appModel.state.pipelineElements.map(element => element.model))
+
 		// add nodes and add their generated ids (generated in Graph.js)
 		appModel.state.pipelineElements = appModel.state.pipelineElements.map(node => {
             const nodeId = this.graph.addNode(node)
@@ -79,11 +74,12 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 			this.graph.render()
         })
 		
-		// finish node creation by using the node ids... blablabla explain this bullshit
+		// initialize every node. the nodes root reference will be updated.
 		appModel.state.pipelineElements.forEach(({ node, id }) => {
 			node.init(document.getElementById(id))
 		})
-    
+		
+		// center the graph.
 	    this.graph.centerGraph()
     }
 	isValidated(){

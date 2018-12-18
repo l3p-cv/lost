@@ -1,7 +1,8 @@
 import { http } from 'l3p-frontend'
-import swal from 'sweetalert2'
+
 import { API_URL } from 'root/settings'
 
+// test data for running pipelines.
 const DEV = false
 const DUMMY_DATA = {
 	requestPipelines: [
@@ -130,92 +131,41 @@ const URLS = {
     POST_PLAY_PIPELINE: `${BASE_URL}/play/`,
 }
 
-export function requestTemplates(token) {
+// START
+export function requestTemplates(token: String){
     return http.get(URLS.GET_TEMPLATES, token)
 }
-export function requestTemplate(id: Number, token) {
-    if (id === undefined || isNaN(id)) {
-        throw new Error('invalid id.')
-    }
+export function requestTemplate(id: Number, token: String){
     return http.get(URLS.GET_TEMPLATE(id), token)
 }
-export function requestPipelines(token){
-	if(DEV){
-		return Promise.resolve(DUMMY_DATA.requestPipelines[0])
-	} else {
-	    return http.get(URLS.GET_PIPELINES, token)
-	}
-}
-export function requestPipeline(id: Number, token){
-	if(DEV){
-		return Promise.resolve(DUMMY_DATA.requestPipeline[0])
-	} else {
-		if (id === undefined || isNaN(id)) {
-			throw new Error('invalid id.')
-		}
-		return http.get(URLS.GET_PIPELINE(id), token)
-	}
-}
-// remove swal
-export function deletePipe(id, token) {
-    return swal({
-        title: 'Are you sure to delete this pipe? ',
-        text: 'You will not be able to revert this!',
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-        confirmButtonClass: 'btn btn-success',
-        cancelButtonClass: 'btn btn-danger',
-        buttonsStyling: false
-    }).then(function () {
-        swal({
-            title: 'Delete Pipeline!',
-            onOpen: () => {
-                swal.showLoading()
-            }
-        })
-        return http.del(URLS.POST_DELETE_PIPELINE + id, token).then((result) => {
-            swal.closeModal()
-            if (result === 'error') {
-                swal({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Delete Pipeline failed. Please contact admin.',
-                })
-                return false
-            } else {
-
-                return true
-            }
-        })
-    }, function (dismiss) {
-        // dismiss can be 'cancel', 'overlay',
-        // 'close', and 'timer'
-        if (dismiss === 'cancel') {
-            return 'cancel'
-        }
-    })
-}
-
-export function startPipe(data, token) {
+export function startPipe(data: any, token: String){
     return http.post(URLS.POST_START_PIPELINE, data, token)
 }
 
-
-export function pausePipe(id, token) {
-    return http.post(URLS.POST_PAUSE_PIPELINE, id, token).then((result) => {
-        if (result === 'error') {
-            swal({
-                type: 'error',
-                title: 'Oops...',
-                text: 'Pause Pipeline failed. Please contact admin.',
-            })
-            return false
-        } else {
-            return true
-        }
+// RUNNING
+export function requestPipelines(token: String){
+	if(DEV){
+		return Promise.resolve(DUMMY_DATA.requestPipelines[0])
+	}
+	return http.get(URLS.GET_PIPELINES, token)
+}
+export function requestPipeline(id: Number, token: String){
+	if(DEV){
+		return Promise.resolve(DUMMY_DATA.requestPipeline[0])
+	}
+	return http.get(URLS.GET_PIPELINE(id), token)
+}
+export function deletePipe(id: Number, token: String){
+	return http.del(URLS.POST_DELETE_PIPELINE + id, token).then(response => {
+		console.log('delete service not finished')
+		console.log(response)
+		return response
+	})
+}
+export function pausePipe(id: Number, token: String){
+    return http.post(URLS.POST_PAUSE_PIPELINE, id, token).then(response => {
+		console.log('pause service not finished')
+		console.log(response)
+		return response
     })
 }

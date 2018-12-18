@@ -13,9 +13,12 @@ export default class ScriptRunningView extends BaseNodeView {
 					attribute: 'Name',
 					value: model.script.name,
 				},
+				{
+					progress: model.progress.value,
+				},
 			],
 			footer: {
-				state: model.status.value,
+				status: model.status.value,
 				text: model.status.value.replace('_', ' '),
 			},
 		})

@@ -12,12 +12,6 @@ export default {
 		// auth token from redux.
         token: undefined,
     },
-    controls: {
-        show1: new Observable(false),
-        show2: new Observable(false),
-        show3: new Observable(false),
-        show4: new Observable(false),
-    },
 	reset(){
 		this.state.pipelineName.reset()
 		this.state.pipelineDescription.reset()

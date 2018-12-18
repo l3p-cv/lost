@@ -18,7 +18,7 @@ export default class LoopRunningView extends BaseNodeView {
 				},
 			],
 			footer: {
-				state: model.status.value,
+				status: model.status.value,
 				text: model.status.value.replace('_', ' '),
 			},
 		})

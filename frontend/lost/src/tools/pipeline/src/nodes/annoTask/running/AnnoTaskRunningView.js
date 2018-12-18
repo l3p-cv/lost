@@ -11,16 +11,15 @@ export default class AnnoTaskRunningView extends BaseNodeView {
 			content: [
 				{
 					attribute: 'Name',
-					value: model.status.name,
+					value: model.annoTask.name,
 					ref: 'name',
 				},
 				{
 					progress: model.progress.value,
-					ref: 'progress',
 				},
 			],
 			footer: {
-				state: model.status.value,
+				status: model.status.value,
 				text: model.status.value.replace('_', ' '),
 			},
 		})

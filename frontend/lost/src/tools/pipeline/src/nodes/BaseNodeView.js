@@ -45,44 +45,44 @@ export default class BaseNodeView {
                 </div>
 				// content derives from objects or html strings.
                 <div class='card-body'>
-					${content.map(row => {
-						if(typeof(row) === 'object'){
-							if(row.icon){
-								return /*html*/`
-									<i class='${row.icon}'></i>
-								`
+					<div class='card-grid'>
+						${content.map(row => {
+							if(typeof(row) === 'object'){
+								if(row.icon !== undefined){
+									return /*html*/`
+										<i class='grid-all-columns ${row.icon}'></i>
+									`
+								}
+								if(row.progress !== undefined){
+									return /*html*/`
+										<div class='progress grid-all-columns' data-ref='progress-bar'>
+											<span class='progress-text' data-ref='progress-bar-text'>
+												${row.progress ? row.progress : 0}%
+											<span>
+										</div>
+									`
+								}
+								if(row.attribute !== undefined){
+									return /*html*/`
+										<div class='attribute'>${row.attribute}</div>
+										<div ${row.ref ? `data-ref='${row.ref}'` : ''}>${row.value}</div>
+									`
+								}
 							}
-							if(row.progress){
-								return /*html*/`
-									<div data-ref='progress-bar' class='progress-bar' role='progressbar'
-                            			style='width:${row.progress}%'
-									>
-										<p data-ref='progress-bar-text' class='color-black'>
-											${row.progress ? row.progress : 0}%
-										<p>
-                        			</div>
-								`
-							}
-							if(row.attribute){
-								return /*html*/`
-									<div class='attribute'>${row.attribute}</div>
-									<div ${row.ref ? `data-ref='${row.ref}'` : ''}>${row.value}</div>
-								`
-							}
-						}
-						return row
-					}).join('\n')}
+							return row
+						}).join('\n')}
+					</div>
                 </div>
 				// footer shows status of running pipeline nodes.
 				${footer ? /*html*/`
 					<div class='card-footer' data-ref='footer'>
-						<div data-ref='status' class='panel-footer 
-							${ footer.state === 'script_error'   ? 'bg-red '  	: 	' ' }
-							${ footer.state === 'pending'        ? 'bg-blue '  	: 	' ' }
-							${ footer.state === 'in_progress'    ? 'bg-orange '	: 	' ' }
-							${ footer.state === 'finished'       ? 'bg-green ' 	: 	' ' }
+						<div data-ref='status' class='status 
+							${ footer.status === 'script_error'   ? 'bg-red'  	: 	'' }
+							${ footer.status === 'pending'        ? 'bg-blue'  	: 	'' }
+							${ footer.status === 'in_progress'    ? 'bg-orange'	: 	'' }
+							${ footer.status === 'finished'       ? 'bg-green' 	: 	'' }
 							'>
-							<p2 data-ref='status-text' class='color-white footer-text'>${footer.text}</p2>
+							<span class='status-text' data-ref='status-text'>${footer.text}</span>
 						</div>
 					</div>
 				` : ``}
@@ -109,17 +109,21 @@ export default class BaseNodeView {
 		}
 	}
 	updateProgress(progress: Number){
-		progress = progress ? progress : 0
-		this.html.refs['progress-bar'].style.width = `${progress}%`
-		this.html.refs['progress-bar-text'].textContent = `${progress}`
+		if(this.html.refs['progress-bar']){
+			progress = progress ? progress : 0
+			this.html.refs['progress-bar'].style.width = `${progress}%`
+			this.html.refs['progress-bar-text'].textContent = `${progress}`
+		}
 	}
-	updateStaus(status: String){
-		this.html.refs['status'].setAttribute('class', `panel-footer 
-			${ status === 'script_error'   ? 'bg-red'      : '' }
-			${ status === 'pending'        ? 'bg-blue'     : '' }
-			${ status === 'in_progress'    ? 'bg-orange'   : '' }
-			${ status === 'finished'       ? 'bg-green'    : '' }
-		`)
-		this.view.html.refs('status-text').textContent = status.replace('_', ' ')
+	updateStatus(status: String){
+		if(this.html.refs['status']){
+			this.html.refs['status'].setAttribute('class', `panel-footer 
+				${ status === 'script_error'   ? 'bg-red'      : '' }
+				${ status === 'pending'        ? 'bg-blue'     : '' }
+				${ status === 'in_progress'    ? 'bg-orange'   : '' }
+				${ status === 'finished'       ? 'bg-green'    : '' }
+			`)
+			this.html.refs['status-text'].textContent = status.replace('_', ' ')
+		}
 	}
 }

@@ -14,9 +14,6 @@ export default class TabTreePresenter extends WizardTabPresenter {
 		// these will be converted to label and then passed to the model.
 		this.selectedNodeIds = new Set()
 
-		// show this tab.
-		nodeModel.controls.show4.on('update', () => this.show())
-        
 		// update label selection tree, and add event listener.
 		nodeModel.state.selectedLabelTree.on('update', (tree) => {
 			this.visData = mapTreeToGraph(tree, {
@@ -35,8 +32,12 @@ export default class TabTreePresenter extends WizardTabPresenter {
 
 			// create graph.
 			this.view.update(this.visData)
+			
 			// add event listener.
 			this.view.graph.on('select', (data) => this.onLabelSelect(data))
+
+			// show.
+			this.show()
 		})
     }
 	onLabelSelect(data){

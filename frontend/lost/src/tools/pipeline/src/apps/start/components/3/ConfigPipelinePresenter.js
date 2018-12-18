@@ -11,7 +11,6 @@ class ConfigPipelineTab extends WizardTabPresenter {
         this.view = ConfigPipelineView
 
         // MODEL BINDING
-        appModel.controls.show3.on('update', () => this.show())
 		appModel.state.pipelineName.on('update', name => this.view.updateName(name))
 		appModel.state.pipelineDescription.on('update', description => this.view.updateDescription(description))
 

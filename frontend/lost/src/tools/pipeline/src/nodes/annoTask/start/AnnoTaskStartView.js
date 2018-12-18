@@ -18,7 +18,7 @@ export default class AnnoTaskStartView extends BaseNodeView {
 				},
 				{
 					attribute: 'Assignee',
-					value: model.state.assignee,
+					value: model.state.assignee.value,
 					ref: 'assignee',
 				},
 			]

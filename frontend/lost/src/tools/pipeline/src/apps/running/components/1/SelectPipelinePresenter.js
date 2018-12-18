@@ -1,15 +1,14 @@
-import { WizardTabPresenter } from 'l3p-frontend'
-
-import moment from 'moment'
+import { WizardTabPresenter, ContextMenu } from 'l3p-frontend'
 
 import * as http from 'pipRoot/http'
 import appModel from '../../appModel'
 
 import SelectPipelineView from './SelectPipelineView'
 
-// DEV TESTS
-import { ContextMenu } from 'pipRoot/l3pfrontend/index'
-// DEV TESTS
+
+// time and date conversion.
+import moment from 'moment'
+
 
 class SelectPipelinePresenter extends WizardTabPresenter {
     constructor(){
@@ -24,92 +23,56 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         // VIEW-BINDINGS
 		// load pipeline.
         $(this.view.html.refs['data-table']).on('click', 'tbody td', (e) => {
-        	const pipelineId = this.view.table.row($(e.currentTarget).parent()).data()[0]
-            if($(e.currentTarget).text() !== 'Delete Pipeline'){
-                this.showPipeline(pipelineId)
-            }
+			// get id of selected pipeline.
+        	const id = this.view.table.row($(e.currentTarget).parent()).data()[0]
+
+			// show pipeline.
+			this.showPipeline(id)
         })
 
 		// open contextmenu.
         $(this.view.html.refs['data-table']).on('contextmenu', 'tbody td', (e) => {
             e.preventDefault()
-            const pipelineId = this.view.table.row($(e.currentTarget).parent()).data()[0]
-            const row = this.view.table.row($(e.currentTarget).parent())
 
-            function deletePipeline(){
-                http.deletePipe(pipelineId, appModel.state.token).then((isSuccess) => {
-                    if(isSuccess === 'cancel'){
-                        return
-                    } else {
-                        row.remove().draw(false)                        
-                    }
-                })
-            }
-            function downloadLogfile(){
-                if(this.rawData[0].logfilePath){
-                    window.location = `${window.location.origin}/${this.rawData[0].logfilePath}`
-                }
-            }
+			// get id of selected pipeline.
+            const id = this.view.table.row($(e.currentTarget).parent()).data()[0]
 
-            if(appModel.isCompleted){
-                ContextMenu(e, 
-					{
-						name: 'Delete Pipeline',
-						icon: 'fa fa-trash',
-						fn: () => deletePipeline(),
-					},
-					{
-						name:'Download Logfile',
-						icon:'fa fa-download',
-						fn: () => downloadLogfile(),
-					}
-				)
-            } else {
-                ContextMenu(e, 
-					{
-						name: 'Delete Pipeline',
-						icon: 'fa fa-trash',
-						fn: () => deletePipeline(),
-					},
-					{
-						id: 'pause',
-						name: 'Pause Pipeline',
-						icon: 'fa fa-pause',
-						fn: () => {
-							console.warn('no backend service available atm?')
-							// http.pausePipe({ 'pipeId': pipelineId }, appModel.state.token).then(result => {
-							// 	if(result){
-							// 		window.location.reload()
-							// 	}
-							// })   
-						}
-					},
-					{
-						id: 'show',
-						name: 'Show Pipeline',
-						icon: 'fa fa-play',
-						fn: () => this.showPipeline(pipelineId)
-					},
-					{
-						name:'Download Logfile',
-						icon:'fa fa-download',
-						fn: () => downloadLogfile(),
-					}
-				)
-            }
+			// open context menu.
+			ContextMenu(e, 
+				{
+					name: 'Delete Pipeline',
+					icon: 'fa fa-trash',
+					fn: () => this.deletePipeline(id),
+				},
+				{
+					id: 'pause',
+					name: 'Pause Pipeline',
+					icon: 'fa fa-pause',
+					fn: () => this.pausePipeline(id),
+				},
+				{
+					id: 'show',
+					name: 'Show Pipeline',
+					icon: 'fa fa-play',
+					fn: () => this.showPipeline(id)
+				},
+				{
+					name:'Download Logfile',
+					icon:'fa fa-download',
+					fn: () => this.downloadLogfile(id),
+				}
+			)
         })
     }
-    updateTable(rawData){
-		// TO MODEL???
-		// update data. 
-		// only used for log file.
-        this.rawData = rawData
-		// TO MODEL???
-
+	isValidated(){
+		return !appModel.state.selectedPipeline.isInInitialState
+	}
+    updateTable(data: Array<any>){
 		// update data table.
-		this.view.updateTable(
-			rawData.map(pipe => {
+		this.view.updateTable(data.map(pipe => {
 				const { id, name, description, templateName, creatorName } = pipe
+				
+				// modify progress and date.
 				let { progress, date } = pipe
 				progress = /*html*/`
 					<span class='label ${progress === 'ERROR' ? 'label-danger' : 'label-warning'}'>
@@ -117,6 +80,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 					</span>
 				`
 				date = moment(new Date(date)).format('MMMM Do YYYY, HH:mm:ss')
+
 				return [
 					id,
 					name,
@@ -133,10 +97,18 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 		this.view.adjustDataTable()
 	}
     showPipeline(id: Number){
-		console.log('will request pipeline with id:', id)
 		http.requestPipeline(id, appModel.state.token).then(response => {
 			appModel.state.selectedPipeline.update(response)
 		})
     }
+	deletePipeline(id: Number){
+		alert('not implemented.')
+	}
+	pausePipeline(id: Number){
+		alert('not implemented.')
+	}
+	downloadPipeline(id: Number){
+		alert('not implemented.')
+	}
 }
 export default new SelectPipelinePresenter()

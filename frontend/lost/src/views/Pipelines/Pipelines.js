@@ -16,7 +16,13 @@ class SingleImageAnnotation extends Component {
 	}
 	componentDidMount(){
 		const init = require('../../tools/pipeline/src/apps/running/appPresenter.js').default
-		init(this.props.token)
+		init({
+			token: this.props.token,
+			polling: {
+				enabled: true,
+				rate: 500,
+			},
+		})
 	}
 	render(){
 		return (

@@ -10,7 +10,7 @@ export default class VisualOutputRunningView extends BaseNodeView {
 			},
 			content: { icon: 'fa fa-bar-chart' },
 			footer: {
-				state: model.status.value,
+				status: model.status.value,
 				text: model.status.value.replace('_', ' '),
 			},
 		})
