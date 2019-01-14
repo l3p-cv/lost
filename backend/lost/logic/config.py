@@ -10,6 +10,7 @@ class LOSTConfig(object):
         self.lost_db_name = os.environ['LOST_DB_NAME']
         self.lost_db_pwd = os.environ['LOST_DB_PASSWORD']
         self.executor = os.environ['LOST_EXECUTOR']
+        self.pipe_schedule = os.environ['PIPE_SCHEDULE']
 
         self.lost_db_port = '3306'
         if "LOST_DB_PORT" in os.environ:

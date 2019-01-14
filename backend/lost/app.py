@@ -19,6 +19,10 @@ from lost.taskman import make_celery
 
 app = Flask(__name__)
 
+app.config['CELERY_BROKER_URL'] = settings.CELERY_BROKER_URL
+app.config['CELERY_RESULT_BACKEND'] = settings.CELERY_RESULT_BACKEND
+celery = make_celery(app)
+
 def configure_app(app):
     app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTPLUS_SWAGGER_EXPANSIONS
     app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VAL
@@ -37,8 +41,7 @@ def configure_app(app):
     app.config['USER_EMAIL_SENDER_NAME'] = settings.USER_EMAIL_SENDER_NAME
     app.config['USER_EMAIL_SENDER_EMAIL'] = settings.USER_EMAIL_SENDER_EMAIL
     app.config['CORS_HEADERS'] = settings.CORS_HEADERS
-    app.config['CELERY_BROKER_URL'] = settings.CELERY_BROKER_URL
-    app.config['CELERY_RESULT_BACKEND'] = settings.CELERY_RESULT_BACKEND
+   
 
 def init_app(app):
     configure_app(app)
@@ -65,7 +68,6 @@ def init_app(app):
     api.add_namespace(label_namespace)
     app.register_blueprint(blueprint)
     CORS(app)
-    celery = make_celery(app)
 
 
 def main():

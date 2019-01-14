@@ -49,8 +49,18 @@ if [ ${DEV} = "True" ]; then
   nginx="service nginx start"
   eval $nginx &
 
+  # celery cronjob.
+  celery="celery -A app.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_beat_web.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
+  eval $celery &
+
+  #start a celery worker.
+  worker="celery -A app.celery worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_default_worker.log"
+  eval $worker &
+
+
   endpoint="python3 /code/backend/lost/app.py"
   eval $endpoint 
+
 
 else
   echo "Production version not yet supported."

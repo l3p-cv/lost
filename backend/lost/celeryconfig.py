@@ -1,7 +1,7 @@
 from celery.schedules import crontab
+from lost.settings import LOST_CONFIG
 
-
-CELERY_IMPORTS = ('lost.tasks.testtask')
+CELERY_IMPORTS = ('lost.logic.tasks')
 CELERY_TASK_RESULT_EXPIRES = 30
 CELERY_TIMEZONE = 'UTC'
 
@@ -10,9 +10,9 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 CELERYBEAT_SCHEDULE = {
-    'test-celery': {
-        'task': 'lost.tasks.testtask.print_hello',
+    'exec_pipe': {
+        'task': 'lost.logic.tasks.exec_pipe',
         # Every minute
-        'schedule': crontab(minute="*"),
+          'schedule': 15
     }
 }
