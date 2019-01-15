@@ -323,7 +323,7 @@ def get_running_pipe(db_man, identity, pipe_id, media_url):
         json content of running pipe
     '''
     pipe = db_man.get_pipe(pipe_id)
-    if pipe is None or pipe.state == state.Pipe.FINISHED:
+    if pipe is None: #or pipe.state == state.Pipe.FINISHED
         error_msg = "Pipe with ID '"+ str(pipe_id) + "' does not exist."
         try:
             raise PipeNotFoundError(error_msg)

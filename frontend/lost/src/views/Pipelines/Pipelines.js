@@ -9,20 +9,25 @@ import {
 } from 'reactstrap'
 
 
-class SingleImageAnnotation extends Component {
+class Pipelines extends Component {
 	constructor(props){
 		super(props)
 		this.mount = React.createRef()
 	}
+	
 	componentDidMount(){
 		const init = require('../../tools/pipeline/src/apps/running/appPresenter.js').default
 		init({
 			token: this.props.token,
 			polling: {
 				enabled: true,
-				rate: 500,
+				rate: 1000,
 			},
 		})
+		
+		if(document.getElementById('running-pipelines').innerHTML==""){
+			window.location.reload()
+		}
 	}
 	render(){
 		return (
@@ -43,4 +48,4 @@ function mapStateToProps(state) {
     return { token: state.auth.token, }
 }
 
-export default connect(mapStateToProps)(SingleImageAnnotation);
+export default connect(mapStateToProps)(Pipelines);

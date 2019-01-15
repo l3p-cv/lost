@@ -12,7 +12,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERYBEAT_SCHEDULE = {
     'exec_pipe': {
         'task': 'lost.logic.tasks.exec_pipe',
-        # Every minute
-          'schedule': 15
+        'schedule': LOST_CONFIG.pipe_schedule
+    },
+       'release_annos': {
+        'task': 'lost.logic.tasks.release_annos',
+        # Every half our
+          'schedule': 1800
     }
 }
