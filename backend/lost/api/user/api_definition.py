@@ -20,7 +20,7 @@ user = api.model('User', {
     'new_password': fields.String(required=True, description='User password'),
     'groups': fields.List(fields.Nested(group)), 
     'roles': fields.List(fields.Nested(user_role)),
-    'choosen_anno_task': fields.Raw()
+    # 'choosen_anno_task': fields.Raw()
 })
 
 user_login = api.model('UserLogin', {

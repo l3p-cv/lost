@@ -44,7 +44,7 @@ class User(Base, UserMixin):
 
     roles = relationship('Role', secondary='user_roles', lazy='joined')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
-    choosen_anno_task = relationship('AnnoTask', secondary='choosen_anno_task', lazy='joined')
+    choosen_anno_task = relationship('AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
     
     def __init__(self, user_name, password, email=None, first_name=None, last_name=None, email_confirmed_at=None):
         self.user_name = user_name

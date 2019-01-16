@@ -27,10 +27,10 @@ class Available(Resource):
             annotask_list = annotask_service.get_available_annotasks(dbm, group_ids)
             dbm.close_session()
             import json
-            with open('/code/backend/lost/api/annotask/test/annoTasks.json') as f:
-                data = json.load(f)
-            return data
-            # return annotask_list
+            #with open('/code/backend/lost/api/annotask/test/annoTasks.json') as f:
+            #    data = json.load(f)
+            #return data
+            return annotask_list
 
     @api.expect(annotask_parser)
     @jwt_required 
@@ -62,8 +62,7 @@ class Working(Resource):
             working_task = annotask_service.get_current_annotask(dbm, user)
             dbm.close_session()
             import json
-            with open('/code/backend/lost/api/annotask/test/workingOnAnnoTask.json') as f:
-                data = json.load(f)
-            return data
-            # return user.choosen_anno_task
-
+            #with open('/code/backend/lost/api/annotask/test/workingOnAnnoTask.json') as f:
+            #    data = json.load(f)
+            #return data
+            return working_task

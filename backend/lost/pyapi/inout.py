@@ -578,7 +578,8 @@ class ScriptOutput(Output):
                     img_sim_class=sim_class,
                     img_label=label,
                     frame_n=frame_n,
-                    video_path=video_path)
+                    video_path=video_path,
+                    anno_task_id=pe.anno_task.idx)
                 # if pe.anno_task.dtype == dtype.AnnoTask.MIA:
                 #     rel_img_path = self._script.file_man.make_path_relative(img_path)
                 #     img_anno = model.ImageAnno(anno_task_id=pe.anno_task.idx,

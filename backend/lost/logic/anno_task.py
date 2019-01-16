@@ -2,6 +2,7 @@ import json
 from lost.db import model, state, dtype
 from datetime import datetime
 from lost.pyapi import pipe_elements
+import pandas as pd
 
 def update_anno_task(dbm, anno_task_id, user_id=None):
     remaining = None
@@ -116,7 +117,9 @@ def __get_at_info(dbm, annotask):
     at['instructions'] = annotask.instructions
     at['createdAt'] = annotask.timestamp
     at['lastActivity'] = annotask.last_activity
-    at['lastAnnotater'] = annotask.last_annotater.user_name
+    at['lastAnnotater'] = "N/A"
+    if annotask.last_annotater:
+        at['lastAnnotater'] = annotask.last_annotater.user_name
     at['type'] = None
     at['finished'] = None
     at['size'] = None
@@ -156,16 +159,17 @@ def has_annotation(dbm, anno_task_id):
     else: return False
 
 def __get_seconds_per_anno(dbm, annotask):
-    return 6.78
+    return "not implemented"
 
-def __get_amount_per_label(dbm, pipeelement, type):
+def __get_amount_per_label(dbm, pipeelement):
     dist = list()
     annotask = pipe_elements.AnnoTask(pipeelement, dbm)
     
     df_list = []
     for img_anno in annotask.outp.img_annos:
         df_list.append(img_anno.to_df())
-    pd.concat(df_list)
+    if len(df_list) > 0:
+        pd.concat(df_list)
 
 
     return dist
