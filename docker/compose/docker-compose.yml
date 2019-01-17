@@ -1,7 +1,7 @@
 version: '2'
 services:
     lost:
-      image: gitlab.l3portal.de:5555/l3p-cv/lost/test/lost:${LOST_VERSION}
+      image: l3pcv/lost-test:${LOST_VERSION}
       container_name: lost
       command: bash /entrypoint.sh
       env_file:
