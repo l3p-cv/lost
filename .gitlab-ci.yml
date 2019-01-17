@@ -66,4 +66,3 @@ release-lost:
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-
