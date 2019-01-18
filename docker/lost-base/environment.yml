@@ -62,6 +62,7 @@ dependencies:
     - pytz==2018.7
     - scikit-image
     - six==1.11.0
+    - sk-video
     - sqlalchemy==1.2.13
     - urwid==2.0.1
     - werkzeug==0.14.1
