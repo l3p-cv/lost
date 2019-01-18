@@ -60,6 +60,7 @@ dependencies:
     - pyjwt==1.6.4
     - pymysql==0.9.2
     - pytz==2018.7
+    - scikit-image
     - six==1.11.0
     - sqlalchemy==1.2.13
     - urwid==2.0.1
