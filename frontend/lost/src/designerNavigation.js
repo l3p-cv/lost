@@ -19,11 +19,11 @@ export default {
       url: '/start-pipeline',
       icon: 'fa fa-plus',
     },
-    {
-      name: 'Pipelines',
-      url: '/pipelines',
-      icon: 'fa fa-tasks',
-    },
+    // {
+    //   name: 'Pipelines',
+    //   url: '/pipelines',
+    //   icon: 'fa fa-tasks',
+    // },
     {
       title: true,
       name: 'Project',
@@ -32,11 +32,11 @@ export default {
         attributes: {},
       },
     },
-    {
-      name: 'Media',
-      url: '/media',
-      icon: 'fa fa-upload',
-    },
+    // {
+    //   name: 'Media',
+    //   url: '/media',
+    //   icon: 'fa fa-upload',
+    // },
     {
       name: 'Labels',
       url: '/labels',

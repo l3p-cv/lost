@@ -1,5 +1,3 @@
-// import swal from 'sweetalert2'
-
 
 export default class BaseNodePresenter {
     /**
@@ -25,9 +23,11 @@ export default class BaseNodePresenter {
         if(this.initialized){
             // get all real current node html content
             let content = $(this.view.parentNode).find('foreignObject')[0].firstElementChild.childNodes
+			
             // and add it to a new fragment
             this.fragment = document.createDocumentFragment()
             content.forEach(n => this.fragment.appendChild(n))
+
             // then rerender the node by adding it again 
             this.graph.updateNode(this)
         } else {
@@ -57,25 +57,31 @@ export default class BaseNodePresenter {
      * @param {*} parentNode The root node of this node inside the graph. 
      */
     init(parentNode: HTMLElement){
-        // bind view events to actions.
-        this.view.parentNode = parentNode
+		// update the views root element reference, cause it gets lost when appending to dagreD3 graph.
+		// Object.keys(this.view.html.refs).forEach(key => {
+		// 	this.view.html.refs[key] = parentNode.querySelector(`[data-ref='${key}']`)
+		// })
+		this.view.html.root = parentNode
+
+		// bind state and progress updates to view, in case the node has such.
+		if(this.model.status){
+			this.model.status.on('update', status => this.view.updateStatus(status))
+		}
+		if(this.model.progress){
+			this.model.progress.on('update', progress => this.view.updateProgress(progress))
+		}
         
         // open modal on double click.
-        $(this.view.parentNode).on('dblclick', (e) => {
+        $(this.view.html.root).on('dblclick', () => {
 			if(this.modal){
 				$(this.modal.html.root).modal()                    
 			}
         })
-		// update dagre d3 node on modal close.
-		// should be done in each node presenter, graph update should be called last.
-		// if(this.modal){
-		// 	$(this.modal.html.root).on('hidden.bs.modal', () => {
-		// 		this.view.setColor(this.isValidated())
-		// 		this.graph.updateNode(this)
-		// 	})
-		// }
         
+		// execute specific subclass view bindings.
         this.initViewBinding()
+		
+		// execute specific subclass model bindings.
         this.initModelBinding()
 
         this.initialized = true

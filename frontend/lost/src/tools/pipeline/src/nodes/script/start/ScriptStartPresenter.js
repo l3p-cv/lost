@@ -17,7 +17,6 @@ export default class ScriptStartPresenter extends BaseNodePresenter {
      */
     initViewBinding(){
 		$(this.modal.html.root).on('hidden.bs.modal', () => {
-			console.log('validated?', this.isValidated())
 			this.view.setColor(this.isValidated())
 			this.graph.updateNode(this)
 		})

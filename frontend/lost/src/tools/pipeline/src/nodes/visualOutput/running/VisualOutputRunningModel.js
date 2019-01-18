@@ -6,12 +6,9 @@ export default class VisualOutputRunningModel extends BaseNodeModel {
     constructor(params) {
 		const { peN, peOut, id, state, visualOutput } = params
 
-		super({ peN, peOut })
+		super({ peN, peOut, id, visualOutput })
 
-		this.id = id
-		// what is this?
-		this.visualOutput = visualOutput
 		// for progress bar updates
-		this.state = new Observable(state)
+		this.status = new Observable(state)
     }
 }

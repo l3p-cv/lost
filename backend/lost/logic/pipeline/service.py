@@ -4,6 +4,7 @@ from datetime import datetime
 from lost.db import model, access, state, dtype
 from lost.logic.template import combine_arguments
 from lost.logic import file_man
+from lost.utils.dump import dump
 __author__ = "Gereon Reus"
 
 ############################ start ################################
@@ -76,6 +77,7 @@ def handle_multiple_result_links(db_man, pipe_starter, pe_n):
     existing_result_links = db_man.get_resultlinks_pe_out(pe_id)
     for result_link in existing_result_links:
         handle_result_links(db_man, pipe_starter, pe_n, result_link.result_id)
+
 class PipeStarter(object):
     def __init__(self, template, data, manager_id):
         self.pipe = model.Pipe()
@@ -103,7 +105,7 @@ class PipeStarter(object):
                         description=self.data['description'],
                         manager_id=self.manager_id,
                         is_debug_mode=is_debug_mode,
-                        group_id=self.data['groupId'],
+                        group_id=self.manager_id,
                         timestamp=self.timestamp_now
                         )
         self.pipe = pipe
@@ -212,7 +214,8 @@ class PipeStarter(object):
         loop = model.Loop()
         loop.iteration = 0
         loop.isBreakLoop = False
-        loop.max_iteration = template_element['loop']['maxIteration']
+          # frontend sent: { maxIteration: 3 }, backend had { max_iteration: 3 } 
+        loop.max_iteration = template_element['loop']['max_iteration']
         loop.pe_jump_id = pe_jump_id
         loop.pipe_element_id = pe_id
         return loop
@@ -261,16 +264,17 @@ def get_pipelines(db_man, group_ids, debug_mode=False):
     Returns: 
         JSON with all meta info about the pipelines.
     '''
-
+    
+    # dump(group_ids, "--- printing group_ids ---") 
     pipes = db_man.get_pipes(group_ids)
-    return __serialize_pipes(db_man, debug_mode, pipes)
+    result = __serialize_pipes(db_man, debug_mode, pipes)
+    return result
 ############################ get_completed_pipes ##################
 #                                                                 #
 ###################################################################
 def __serialize_pipes(db_man, debug_mode, pipes):
     pipes_json = dict()
     pipes_json["pipes"] = list()
-
     for pipe in pipes:
         # filter pipes with debug mode
         if debug_mode:
@@ -282,7 +286,7 @@ def __serialize_pipes(db_man, debug_mode, pipes):
         progress = calculate_progress(db_man, pipe.idx)
         creator_name = "Unknown"
         if pipe.manager_id:
-            creator_name = pipe.user.first_name + " " + pipe.user.last_name
+            creator_name = pipe.group.name 
         if pipe.state == state.Pipe.ERROR:
             progress = "ERROR"
         if pipe.state == state.Pipe.PAUSED:
@@ -290,7 +294,7 @@ def __serialize_pipes(db_man, debug_mode, pipes):
         pipe_json = {'id': pipe.idx,
                      'name': pipe.name,
                      'description': pipe.description,
-                     'date': pipe.timestamp,
+                     'date': pipe.timestamp.strftime("%b %d %Y %H:%M:%S"),
                      'progress': progress,
                      'creatorName': creator_name,
                      'isDebug': pipe.is_debug_mode,
@@ -307,7 +311,7 @@ def __get_template_name(db_man, template_id):
 ############################ get_running_pipe #####################
 #                                                                 #
 ###################################################################
-def get_running_pipe(db_man, pipe_id, media_url, is_running):
+def get_running_pipe(db_man, identity, pipe_id, media_url):
     ''' read out a single running pipe
 
     Args:
@@ -318,8 +322,8 @@ def get_running_pipe(db_man, pipe_id, media_url, is_running):
     Returns:
         json content of running pipe
     '''
-    pipe = db_man.get_pipe(pipe_id) 
-    if pipe is None or (is_running and pipe.state == state.Pipe.FINISHED):
+    pipe = db_man.get_pipe(pipe_id)
+    if pipe is None: #or pipe.state == state.Pipe.FINISHED
         error_msg = "Pipe with ID '"+ str(pipe_id) + "' does not exist."
         try:
             raise PipeNotFoundError(error_msg)
@@ -340,6 +344,7 @@ def get_running_pipe(db_man, pipe_id, media_url, is_running):
     return pipe_serialize.pipe_json
 
 def serialize_elements(db_man, pipe_serialize, pipe_id):
+    print("PIPE ID:", pipe_id)
     for pe in db_man.get_pipe_elements(pipe_id):
         # dependent on dtype fill json with relevant information
         ########## DATASOURCE #############
@@ -354,8 +359,8 @@ def serialize_elements(db_man, pipe_serialize, pipe_id):
             anno_task = db_man.get_anno_task(pipe_element_id=pe.idx)
             # TODO: if all_users - will throw an error at this time
             anno_task_user_name = "All Users"
-            if anno_task.annotater_id:
-                anno_task_user_name = anno_task.annotater.first_name + " " + anno_task.annotater.last_name
+            if anno_task.group_id:
+                anno_task_user_name = anno_task.group.name
             leaves = db_man.get_all_required_label_leaves(anno_task.idx)
             pipe_serialize.add_anno_task(pe, anno_task, anno_task_user_name, leaves)
         
@@ -386,14 +391,13 @@ class PipeSerialize(object):
         self.pipe_json = dict()
         self.pipe_json['elements'] = list()
         
-
     def add_global_info(self, pipe, manager_name, progress):
         self.pipe_json['id'] = pipe.idx
         self.pipe_json['name'] = pipe.name
         self.pipe_json['description'] = pipe.description
         self.pipe_json['managerName'] = manager_name
         self.pipe_json['templateId'] = pipe.pipe_template_id
-        self.pipe_json['timestamp'] = pipe.timestamp
+        self.pipe_json['timestamp'] = pipe.timestamp.strftime("%b %d %Y %H:%M:%S")
         self.pipe_json['isDebug'] = pipe.is_debug_mode
         self.pipe_json['logfilePath'] = pipe.logfile_path
         self.pipe_json['progress'] = progress
@@ -427,6 +431,10 @@ class PipeSerialize(object):
         # create datasource json
         datasource_json = dict()
         # fill datasource with info
+        # DEBUG
+        print("--- DATASOURCE ---")
+        print(datasource)
+        dump(datasource, "--- dump ---") 
         datasource_json['id'] = datasource.idx
         if datasource.dtype == dtype.Datasource.DATASET:
             datasource_json['type'] = "dataset"
@@ -480,10 +488,13 @@ class PipeSerialize(object):
         script_json['name'] = script.name
         script_json['description'] = script.description
         script_json['path'] = script.path
-        if script.language == dtype.ScriptLanguage.PYTHON2:
-            script_json['language'] = "python2"
-        elif script.language == dtype.ScriptLanguage.PYTHON3:
-            script_json['language'] = "python3"
+        # * language was not defined in any pipeline definition file i looked at.
+        print("cartok: (warning) made script.language optional in service.py add_script.")
+        if hasattr(script, 'language'): 
+            if script.language == dtype.ScriptLanguage.PYTHON2:
+                script_json['language'] = "python2"
+            elif script.language == dtype.ScriptLanguage.PYTHON3:
+                script_json['language'] = "python3"
         script_json['arguments'] = None
         if pe.arguments:
             script_json['arguments'] = json.loads(pe.arguments)
@@ -521,7 +532,6 @@ class PipeSerialize(object):
             leaf_json = dict()
             leaf_json['id'] = leaf.idx
             leaf_json['name'] = leaf.name
-            leaf_json['cssClass'] = leaf.css_class
             anno_task_json['labelLeaves'].append(leaf_json)
 
         pe_json['annoTask'] = anno_task_json

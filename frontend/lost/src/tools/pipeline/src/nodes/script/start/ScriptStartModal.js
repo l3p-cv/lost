@@ -2,7 +2,7 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class ScriptStartModal extends BaseModal {
-    constructor(nodeModel: ScriptNodeModel) {
+    constructor(nodeModel: ScriptStartModel) {
         super({
             title: 'Script',
             content: /*html*/`

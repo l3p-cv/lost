@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class ScriptStartView extends BaseNodeView {
-    constructor(model) {
+    constructor(model: ScriptStartModel) {
 		super({
 			header: {
 				icon: 'fa fa-rocket',

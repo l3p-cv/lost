@@ -13,7 +13,6 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         this.view = SelectPipelineView
 
         // MODEL-BINDING
-        appModel.controls.show1.on('update', () => this.show())
         appModel.data.pipelineTemplates.on('update', (data) => this.updateTable(data))
 
         // VIEW-BINDING
@@ -41,7 +40,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 		this.view.adjustDataTable()
 	}
     selectTemplate(id){
-		http.requestTemplate(id).then(response => {
+		http.requestTemplate(id, appModel.state.token).then(response => {
 			appModel.state.selectedTemplate.update(response)
 		})
 	}

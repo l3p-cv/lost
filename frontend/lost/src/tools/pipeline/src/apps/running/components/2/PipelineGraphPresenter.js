@@ -1,242 +1,214 @@
+import { WizardTabPresenter, NodeTemplate } from 'l3p-frontend'
 
-import { WizardTabPresenter } from 'l3p-frontend'
-import * as http from 'pipCore/http'
-import appModel from '../../appModel'
-import PipelineGraphView from './PipelineGraphView'
-
+import * as http from 'pipRoot/http'
 import Graph from 'pipRoot/Graph'
 
-import DatasourceNodePresenter from 'pipRoot/nodes/datasource/DatasourceNodePresenter'
-import AnnoTaskNodePresenter from 'pipRoot/nodes/annoTask/AnnoTaskNodePresenter'
-import DataExportNodePresenter from 'pipRoot/nodes/dataExport/DataExportNodePresenter'
-import VisualOutputNodePresenter from 'pipRoot/nodes/visualOutput/VisualOutputNodePresenter'
+import appModel from '../../appModel'
 
-import ScriptNodePresenter from 'pipRoot/nodes/script/ScriptNodePresenter'
-import LoopNodePresenter from 'pipRoot/nodes/loop/LoopNodePresenter'
+import PipelineGraphView from './PipelineGraphView'
 
-import swal from 'sweetalert2'
+import DatasourceRunningPresenter from 'pipRoot/nodes/datasource/running/DatasourceRunningPresenter'
+import AnnoTaskRunningPresenter from 'pipRoot/nodes/annoTask/running/AnnoTaskRunningPresenter'
+import DataExportRunningPresenter from 'pipRoot/nodes/dataExport/running/DataExportRunningPresenter'
+import VisualOutputRunningPresenter from 'pipRoot/nodes/visualOutput/running/VisualOutputRunningPresenter'
+import ScriptRunningPresenter from 'pipRoot/nodes/script/running/ScriptRunningPresenter'
+import LoopRunningPresenter from 'pipRoot/nodes/loop/running/LoopRunningPresenter'
 
 
 class PipelineGraphPresenter extends WizardTabPresenter {
-    constructor() {
+    constructor(){
         super()
         this.view = PipelineGraphView
 
-        // VIEW-BINDING
-        // Delete Pipe
+        // MODEL BINDINGS
+        appModel.state.selectedPipeline.on('update', (data) => this.show())
+        appModel.state.selectedPipeline.on('update', (data) => this.showPipeline(data))
+
+        // VIEW BINDINGS
+        // Delete Pipe.
         $(this.view.html.refs['btn-delete-pipeline']).on('click', () => {
-            let id = this.appData.id
-            // result can be cancel, true, false
-            http.deletePipe(id).then((isSuccess) => {
-                if (isSuccess === 'cancel') {
-                    return
-                } else if (isSuccess) {
-                    if (appModel.isDebug && appModel.isCompleted) {
-                        window.location = '/pipeline/debug/completed'
-                    } else if(appModel.isDebug && !appModel.isCompleted) {
-                        window.location = '/pipeline/debug/running'
-                    }else if(appModel.isCompleted){
-                        window.location = '/pipeline/completed'
-                    }else{
-                        window.location = '/pipeline/running'
-                    }
-                }
+			// remove later
+			alert('not implemented')
+			return
+			// remove later
+            let id = appModel.state.selectedPipeline.value.id
+
+            // delete response can be cancel, true or false.
+            http.deletePipe(id, appModel.state.token).then(response => {
+				if(response === true){
+				}
+				if(response === false){
+				}
+				if(response === "cancel"){
+				}
             })
         })
-        // Pause Pipe
+        // Pause Pipeline Updates.
         $(this.view.html.refs['btn-pause-pipe']).on('click', () => {
-            http.pausePipe({
-                'pipeId': this.appData.id
-            }).then((isSuccess) => {
-                if (isSuccess) {
-                    $(this.view.html.refs['btn-play-pipe']).prop('disabled', false)
-                    $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
-                    $(this.graph.svg.refs['title']).show()
+			// remove later
+			alert('not implemented')
+			this.view.togglePlayPause({ running: false })
+			return
+			// remove later
+			const { selectedPipeline, token } = appModel.state
+            http.pausePipe(selectedPipeline.value.id, token).then(result => {
+				// > whats this check like?
+                if(result){
+					this.view.togglePlayPause({ running: false })
                 }
             })
         })
-        // Play Pipe
+        // Continue Pipeline Updates.
         $(this.view.html.refs['btn-play-pipe']).on('click', () => {
-            http.playPipe({
-                'pipeId': this.appData.id
-            }).then((isSuccess) => {
-                if (isSuccess) {
-                    $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
-                    $(this.view.html.refs['btn-pause-pipe']).prop('disabled', false)
-                    $(this.graph.svg.refs['title']).hide()
+			// remove later
+			alert('not implemented')
+			this.view.togglePlayPause({ running: true })
+			return
+			// remove later
+			const { selectedPipeline, token } = appModel.state
+            http.requestPipeline(selectedPipeline.value.id, token).then(result => {
+				// > whats this check like?
+                if(result){
+					this.view.togglePlayPause({ running: true })
                 }
             })
 
         })
-        // Download Logfile
+        // Download Logfile.
         $(this.view.html.refs['btn-download-logfile']).on('click', () => {
-            if (this.appData.logfilePath) {
-                window.location = window.location.origin + '/' + this.appData.logfilePath
-            } else {
-                swal({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: 'Logfile does not exist',
-                })
-            }
+			alert('not implemented')
         })
-        // Toggle Infobox
+        // Toggle Infobox.
         $(this.view.html.refs['btn-toggle-infobox']).on('click', () => {
-            console.log('==================this.graph.svg.refs==================')
-            console.log(this.graph.svg.refs)
-            console.log('====================================')
+			// USE VIEW METHODS
             $(this.graph.svg.refs['title']).slideToggle('slow')
-            $(this.view.html.refs['btn-toggle-infobox-icon']).toggleClass('fa-toggle-on fa-toggle-off')
+            $(this.view.html.refs['btn-toggle-infobox-icon']).toggleClass('fa fa-toggle-on fa-toggle-off')
+			// USE VIEW METHODS
         })
-
-        // MODEL-BINDING
-        appModel.state.selectedPipe.on('update', (data) => this.loadTemplate(data))
     }
-    loadTemplate(appData: any){
-        // the appData reference is used in the toolbar view bindings (see constructor).
-        this.appData = appData
-        
+	// this method is similar to PipelineGraphPresenter.showTemplate of start-pipe-application.
+    showPipeline(data: any){
         // the graph must be initialized after switching tabs. 
         // the svg gets resized to its target container. 
         // if the container is displayed=none, it has no width.
         // the graph wont render well this way.
         this.show()
 
-        // create / re-create the graph
-        if(this.graph){
-            this.graph.remove()
-        } 
+       	// create and render the graph.
         this.graph = new Graph(this.view.html.refs['dagre'])
 
-        // @model-binding: should this be updated automatically ?
-        if(appModel.isCompleted) {
-            $(this.view.html.refs['btn-pause-pipeline']).remove()
-        }
-
-        // @refactor: somehow ?
-        console.log('ADDED')
-        $(this.graph.svg.refs['title']).append(`
+		// REWORK THE INFO TABLE!
+		// add pipeline information table to the graph's title.
+		// console.log(this.graph.svg)
+        this.graph.svg.root.appendChild(new NodeTemplate(/*html*/`
             <table class='table table-borderless'>
                 <h3 style='text-align: center'><span class='label label-warning'>PAUSED</span></h3>
                 <tbody>
-                    <tr><td>Name:</td><td>${appData.name}</td></tr> 
-                    <tr><td>Author:</td><td>${appData.userName}</td></tr> 
-                    <tr><td>Id:</td><td>${appData.id}</td></tr> 
-                    <tr><td>Date:</td><td>${new Date(appData.timestamp)}</td></tr>             
-                    <tr><td>Description:</td><td>${appData.description}</td></tr> 
+                    <tr><td>Name:</td><td>${data.name}</td></tr> 
+                    <tr><td>Author:</td><td>${data.userName}</td></tr> 
+                    <tr><td>Id:</td><td>${data.id}</td></tr> 
+                    <tr><td>Date:</td><td>${new Date(data.timestamp)}</td></tr>             
+                    <tr><td>Description:</td><td>${data.description}</td></tr> 
                 </tbody>  
             </table>
-        `)
+        `).fragment)
 
         // handle pipeline progress information.
-        if (appData.progress === 'PAUSED') {
-            $(this.graph.svg.refs['title']).show()
-            $(this.view.html.refs['btn-play-pipe']).prop('disabled', false)
-            $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
+        if(data.progress === 'PAUSED'){
+			this.view.togglePlayPause({ running: false })
         } else {
-            $(this.graph.svg.refs['title']).hide()
-            $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
-            $(this.view.html.refs['btn-pause-pipe']).prop('disabled', false)
+			this.view.togglePlayPause({ running: true })
         }
-
-        if(appModel.isCompleted){
-            $(this.view.html.refs['btn-play-pipe']).prop('disabled', true)
-            $(this.view.html.refs['btn-pause-pipe']).prop('disabled', true)
-        }
-
+		
         // create nodes from data.
-        const mode = 'running'
-        this.nodes = new Map()
-        appData.elements.forEach(nodeData => {
-            if ('datasource' in nodeData) {
-                this.nodes.set(nodeData.id, new DatasourceNodePresenter(this.graph, nodeData, mode))
-            } else if ('script' in nodeData) {
-                this.nodes.set(nodeData.id, new ScriptNodePresenter(this.graph, nodeData, mode))
-            } else if ('annoTask' in nodeData) {
-                this.nodes.set(nodeData.id, new AnnoTaskNodePresenter(this.graph, nodeData, mode))
-            } else if ('dataExport' in nodeData) {
-                this.nodes.set(nodeData.id, new DataExportNodePresenter(this.graph, nodeData, mode))
-            } else if ('visualOutput' in nodeData) {
-                this.nodes.set(nodeData.id, new VisualOutputNodePresenter(this.graph, nodeData, mode))
-            } else if ('loop' in nodeData) {
-                this.nodes.set(nodeData.id, new LoopNodePresenter(this.graph, nodeData, mode))
+		appModel.state.pipelineElements = data.elements.map(element => {
+            if ('datasource' in element) {
+                return new DatasourceRunningPresenter(this.graph, element)
+            } else if ('script' in element) {
+                return new ScriptRunningPresenter(this.graph, element)
+            } else if ('annoTask' in element) {
+                return new AnnoTaskRunningPresenter(this.graph, element)
+            } else if ('dataExport' in element) {
+                return new DataExportRunningPresenter(this.graph, element)
+            } else if ('visualOutput' in element) {
+                return new VisualOutputRunningPresenter(this.graph, element)
+            } else if ('loop' in element) {
+                return new LoopRunningPresenter(this.graph, element)
             }
-        })
+			throw new Error(`Unknown element data. Not implemented.`)
+		})
 
-        // add nodes and edges to the graph.
-        this.nodes.forEach(n => this.graph.addNode(n))
-        this.nodes.forEach(n => {
-            if (n.constructor.name === 'LoopNodePresenter') {
-                this.graph.addEdge(n.model.peN, n.model.loop.peJumpId, true)
+		// add nodes and add their generated ids (generated in Graph.js)
+		appModel.state.pipelineElements = appModel.state.pipelineElements.map(node => {
+            const nodeId = this.graph.addNode(node)
+			return {
+				id: nodeId,
+				node: node,
+			}
+		})
+
+		// add edges
+        appModel.state.pipelineElements.forEach(({ node }) => {
+            if (node.constructor.name === 'LoopStartPresenter') {
+                this.graph.addEdge(node.model.peN, node.model.loop.peJumpId, true)
             }
-            n.model.peOut.forEach(e => {
-                this.graph.addEdge(n.model.peN, e)
-            })
-        })
-
-        this.graph.centerGraph()
-
-        // enable tooltips after drawing all nodes.
-        $(`[data-toggle='tooltip']`).tooltip({
-            html: true,
-            placement: 'right',
-            container: 'body'
-        })
-
-        // update polling.
-        if(!appModel.isCompleted){
-            let refresh = setInterval(() => {
-                $(this.view.html.refs['update-label']).fadeIn(200)
-                 http.requestRunningPipe(this.appData.id)
-                 .then((appData) => {
-                    // tooltip would stay opened, if we wouldn't hide it on update.
-                    $('.tooltip').tooltip('hide')                  
-                    if(typeof appData === 'string'){
-                        clearInterval(refresh)
-                        swal({
-                            type: 'success',
-                            title: 'Pipeline finished',
-                            text: 'Go to Finished Pipes Tab',
-                        })
-                        $(this.view.html.refs['update-label']).delay(500).fadeOut(200)
-                        return
-                    }
-                    // update the model of each graph node.
-                    appData.elements.forEach(nodeData => {
-                        const node = this.nodes.get(nodeData.id)
-                        node.model.state.update(nodeData.state)
-                        switch(node.__proto__.constructor.name){
-                            case 'AnnoTaskNodePresenter':
-                                node.model.progress.update(nodeData.annoTask.progress ? nodeData.annoTask.progress : 0)
-                                break
-                            case 'ScriptNodePresenter':
-                                node.model.progress.update(nodeData.script.progress ? nodeData.script.progress : 0)
-                                node.model.errorMsg.update(nodeData.script.errorMsg ? nodeData.script.errorMsg : '')
-                                break
-                        }
-                    })
-                    // not thefinest solution add event Listenet Modal on close
-                    $(`[data-toggle='tooltip']`).tooltip({
-                        html: true,
-                        placement: 'right',
-                        container: 'body'
-                    })
-                    $(this.view.html.refs['update-label']).delay(500).fadeOut(200)
-                }).catch((error) => {
-                    clearInterval(refresh)
+            if (node.model.peOut !== null) {
+                node.model.peOut.forEach(e => {
+                    this.graph.addEdge(node.model.peN, e)
                 })
-            }, 1000)
-        }
-    }
-    validate() {
-        super.validate(() => {
-            return true
+            }
+			this.graph.render()
         })
+		
+		// initialize every node. the nodes root reference will be updated.
+		appModel.state.pipelineElements.forEach(({ node, id }) => {
+			node.init(document.getElementById(id))
+		})
+		
+		// center the graph.
+		this.graph.centerGraph()
+        
+		// enable update polling.
+		if(appModel.options.polling.value.enabled){
+			this.enableUpdate(appModel.options.polling.value.rate || 1000)
+		}
     }
-    deactivate() {
-        super.deactivate(() => {
-            // destroy graph (remove Modals)
-        })
-    }
+	enableUpdate(rate: Number){
+		this.updateIntervalId = setInterval(() => {
+			// change update information label.
+			$(this.view.html.refs['update-label']).fadeIn(200)
+
+			// request update.
+			const { selectedPipeline, token } = appModel.state
+			http.requestPipeline(selectedPipeline.value.id, token).then(response => {
+				// stop polling if backend has no data (returns a status string)
+				if(typeof response === 'string'){
+					clearInterval(this.updateIntervalId)
+					$(this.view.html.refs['update-label']).delay(500).fadeOut(200)
+					return
+				}
+
+				// update the model of each graph node.
+				appModel.state.pipelineElements.forEach((element, i) => {
+					element = element.node
+					const newData = response.elements[i]
+					element.model.status.update(newData.state)
+					if(element instanceof AnnoTaskRunningPresenter){
+						element.model.progress.update(newData.annoTask.progress ? newData.annoTask.progress : 0)
+					}
+					if(element instanceof ScriptRunningPresenter){
+						element.model.progress.update(newData.script.progress ? newData.script.progress : 0)
+						element.model.errorMsg.update(newData.script.errorMsg ? newData.script.errorMsg : '')
+					}
+				})
+				
+				// change update information label.
+				$(this.view.html.refs['update-label']).delay(500).fadeOut(200)
+			}).catch((error) => {
+				clearInterval(this.updateIntervalId)
+				throw error
+			})
+		}, rate)
+	}
 }
 export default new PipelineGraphPresenter()

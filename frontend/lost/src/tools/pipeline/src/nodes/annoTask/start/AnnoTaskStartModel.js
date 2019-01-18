@@ -5,16 +5,20 @@ import BaseNodeModel from '../../BaseNodeModel'
 export default class AnnoTaskStartModel extends BaseNodeModel {
     constructor(params) {
 		const { peN, peOut, annoTask } = params
+		// some parts of the annotation task may be configurated in frontend.
+		// those are hold in this.state.
+		// only a fraction (everything that is not in this.state) is passed to super.
+		const { type, configuration } = annoTask
+		super({ peN, peOut, annoTask: { type, configuration } })
 
-		super({ peN, peOut })
-
+		console.log({annoTask})
 		this.state = {
 			// wizzard tab 1.
 			name: annoTask.name,
 			instructions: annoTask.instructions,
 			// wizzard tab 2.
 			// - assignee = group name
-			assignee: '',
+			assignee: new Observable(''),
 			// - workerId = group id
 			workerId: undefined,
 			// wizzard tab 3.
@@ -22,32 +26,35 @@ export default class AnnoTaskStartModel extends BaseNodeModel {
 			// wizzard tab 4.
 			selectedLabels: [],
 		}
-
-		// for wizard navigation
-		this.controls = {
-			show1: new Observable(true),
-			show2: new Observable(false),
-			show3: new Observable(false),
-			show4: new Observable(false),
-		}
     }
 	isValidated(){
 		const { name, instructions, assignee, workerId, selectedLabelTree } = this.state
 		let result = true
 		result = result && name.length > 0
 		result = result && instructions.length > 0
-		result = result && assignee.length > 0
+		result = result && assignee.value.length > 0
 		result = result && !isNaN(workerId)
 		result = result && !selectedLabelTree.isInInitialState
 		// label selection still missing here.
 		return result
 	}
 	getOutput(){
-		const { name, instructions, assignee, workerId, selectedLabelTree, selectedLabels } = this.state
+		const { peN, peOut } = this
+		const { name, instructions, assignee, workerId, selectedLabelTree, selectedLabels: labelLeaves } = this.state
+		const { type, configuration } = this.annoTask
 		return {
-			name, instructions, assignee, workerId,
-			selectedLabelTree: selectedLabelTree.value.idx,
-			selectedLabels,
+			peN,
+			peOut,
+			annoTask: {
+				assignee: assignee.value,
+				configuration,
+				workerId,
+				instructions,
+				name,
+				selectedLabelTree: selectedLabelTree.value.idx,
+				labelLeaves,
+				type,
+			}
 		}
 	}
 }

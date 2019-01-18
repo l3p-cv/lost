@@ -1,4 +1,4 @@
-ARG base_image=gitlab.l3portal.de:5555/l3p-cv/lost/base/lost-base:latest
+ARG base_image=l3pcv/lost-base:latest
 FROM $base_image
 # Add Code 
 ADD /docker/lost/entrypoint.sh /

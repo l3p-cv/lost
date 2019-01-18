@@ -6,15 +6,10 @@ export default class ScriptRunningModel extends BaseNodeModel {
     constructor(params) {
 		const { peN, peOut, id, state, script } = params
 
-		super({ peN, peOut })
+		super({ peN, peOut, id, script })
 		
-        this.id = id
-
-		// data structure?
-        this.script = script
-        
 		// for progress bar updates
-		this.state = new Observable(state)
+		this.status = new Observable(state)
 		this.progress = new Observable(script.progress ? script.progress : 0)
 		this.errorMsg = new Observable(script.errorMsg ? script.errorMsg : '')
     }

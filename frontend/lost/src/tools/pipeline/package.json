@@ -11,7 +11,7 @@
     "datatables.net": "^1.10.19",
     "datatables.net-bs4": "^1.10.19",
     "jquery": "^3.2.1",
-    "l3p-frontend": "^3.2.8",
+    "l3p-frontend": "^3.2.10",
     "list.js": "^1.5.0",
     "lodash-es": "^4.17.10",
     "moment": "^2.21.0",
@@ -22,5 +22,8 @@
     "sweetalert2": "^6.11.5",
     "vis": "^4.21.0",
     "webpack-jquery-ui": "^2.0.1"
+  },
+  "devDependencies": {
+    "sinon": "^7.2.2"
   }
 }

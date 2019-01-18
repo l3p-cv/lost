@@ -12,12 +12,9 @@ class StartPipelineTab extends WizardTabPresenter {
         super()
         this.view = StartPipelineView
         
-        // MODEL BINDING
-        appModel.controls.show4.on('update', () => this.show())
-        
         // VIEW BINDING
         $(this.view.html.refs.btnStartPipe).on('click', () => {
-            http.startPipe(appModel.getOutput()).then(response => {
+            http.startPipe(appModel.getOutput(), appModel.state.token).then(response => {
 				alert('started pipeline')
             })
         })

@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class DatasourceStartView extends BaseNodeView {
-    constructor(model) {
+    constructor(model: DatasourceRunningModel) {
 		super({
 			header: {
 				icon: 'fa fa-hdd-o',
@@ -24,6 +24,7 @@ export default class DatasourceStartView extends BaseNodeView {
 		})
     }
 	update(source: String){
+		console.log("UPDAT PATH", source)
 		this.html.refs['source'].textContent = source
 	}
 }

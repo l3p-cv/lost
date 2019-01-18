@@ -2,7 +2,7 @@ import BaseNodeView from '../../BaseNodeView'
 
 
 export default class AnnoTaskStartView extends BaseNodeView {
-    constructor(model) {
+    constructor(model: AnnotaskStartModel){
 		super({
 			header: {
 				icon: 'fa fa-pencil',
@@ -18,7 +18,7 @@ export default class AnnoTaskStartView extends BaseNodeView {
 				},
 				{
 					attribute: 'Assignee',
-					value: model.state.assignee,
+					value: model.state.assignee.value,
 					ref: 'assignee',
 				},
 			]

@@ -2,7 +2,7 @@ import { WizardTabView } from 'l3p-frontend'
 
 
 export default class TabSelectTreeView extends WizardTabView {
-    constructor(model) {
+    constructor() {
         super({
             title: 'Select Label Tree',
             icon: 'fa fa-database fa-1x',

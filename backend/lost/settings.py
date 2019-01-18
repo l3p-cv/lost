@@ -32,3 +32,6 @@ USER_EMAIL_SENDER_EMAIL = "noreply@example.com"
 CORS_HEADERS = 'Content-Type'
 
 DATA_URL = 'data/'
+
+CELERY_BROKER_URL = 'amqp://'+LOST_CONFIG.rabbitmq_ip+':'+LOST_CONFIG.rabbitmq_port
+CELERY_RESULT_BACKEND = 'amqp://'+LOST_CONFIG.rabbitmq_ip+':'+LOST_CONFIG.rabbitmq_port

@@ -1,20 +1,51 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
+import { connect } from 'react-redux'
 
-// import * as appView from '../tools/pipeline/src/'
+import {
+	Row,
+	Col,
+	Card,
+	CardBody,
+} from 'reactstrap'
 
-export default class SingleImageAnnotation extends Component {
+
+class Pipelines extends Component {
 	constructor(props){
 		super(props)
 		this.mount = React.createRef()
 	}
+	
 	componentDidMount(){
-		// require('../tools/pipeline/src/')
-		// this.mount.current.appendChild(appView.html.fragment)
+		const init = require('../../tools/pipeline/src/apps/running/appPresenter.js').default
+		init({
+			token: this.props.token,
+			polling: {
+				enabled: true,
+				rate: 1000,
+			},
+		})
+		
+		if(document.getElementById('running-pipelines').innerHTML==""){
+			window.location.reload()
+		}
 	}
 	render(){
 		return (
-			<div ref={this.mount} id='start-pipeline-mount'>foo</div>
+			<Row>
+				<Col xs='12' sm='12' lg='12'>
+                    <Card>
+                        <CardBody>
+							<div ref={this.mount} id='running-pipelines'></div>
+                        </CardBody>
+                    </Card>
+                </Col>
+			</Row>
 		)
 	}
 }
+
+function mapStateToProps(state) {
+    return { token: state.auth.token, }
+}
+
+export default connect(mapStateToProps)(Pipelines);

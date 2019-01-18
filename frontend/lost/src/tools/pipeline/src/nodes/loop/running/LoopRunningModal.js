@@ -2,8 +2,9 @@ import { BaseModal } from 'l3p-frontend'
 
 
 export default class LoopRunningModal extends BaseModal {
-    constructor(nodeModel){
-        const params = {
+    constructor(nodeModel: LoopRunningModel){
+		const { id, loop, status } = nodeModel
+        super({
             id: `${nodeModel.peN}`,
             title: 'Loop',
             content: /*html*/`
@@ -11,40 +12,40 @@ export default class LoopRunningModal extends BaseModal {
                     <tr>
                         <td>
                             <strong>Element ID: </td>
-                        <td>${nodeModel.id}</td>
+                        	<td>${id}</td>
                     </tr>
                     <tr>
                         <td>
                             <strong>Loop ID: </td>
-                        <td>${nodeModel.loop.id}</td>
+                        <td>${loop.id}</td>
                     </tr>
                     <tr>
                         <td>
-                            <strong>is Breakloop: </td>
-                        <td>${nodeModel.loop.isBreakLoop}</td>
+                            <strong>Breakloop: </td>
+                        <td>${loop.isBreakLoop}</td>
                     </tr>
                     <tr>
                         <td>
                             <strong>Iteration: </td>
-                        <td>${nodeModel.loop.iteration}</td>
+                        <td>${loop.iteration}</td>
                     </tr>
                     <tr>
                         <td>
                             <strong>Max Iteration: </td>
-                        <td>${nodeModel.loop.maxIteration?nodeModel.loop.maxIteration: Number.POSITIVE_INFINITY}</td>
+                        <td>${loop.maxIteration ? loop.maxIteration : Number.POSITIVE_INFINITY}</td>
                     </tr>
                     <tr>
                         <td>
-                            <strong>pe Jump Id: </td>
-                        <td>${nodeModel.loop.peJumpId}</td>
+                            <strong>Jump Id: </td>
+                        	<td>${loop.peJumpId}</td>
                     </tr>
                     <tr>
                         <td>
                             <strong>Status: </td>
-                        <td data-ref= 'state'>${nodeModel.state.value.replace('_', ' ')}</td>
+                        <td data-ref= 'status'>${status.value.replace('_', ' ')}</td>
                     </tr>
-                </table>`   
-        }
-        super(params)
+                </table>
+			`   
+        })
     }
 }

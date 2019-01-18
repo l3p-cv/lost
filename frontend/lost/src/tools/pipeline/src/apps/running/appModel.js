@@ -1,20 +1,16 @@
 import { Observable } from 'l3p-frontend'
 
 export default {
-    isDebug: undefined,
-    isCompleted: undefined,
-    environment: {
-        rules: {
-        },
-    },
+	options: {
+		polling: new Observable({
+		 	enabled: false,
+			rate: 1000,
+		})
+	},
     state: {
-        selectedTemplateId: new Observable(-1),
-        selectedTemplate: new Observable({}),
-        selectedPipe: new Observable({}),
+        pipelines: new Observable({}),
+        selectedPipeline: new Observable({}),
+		// auth token from redux.
+		token: undefined,
     },
-    controls: {
-    },
-    data: {
-        pipelineTemplates: new Observable({}),
-    }
 }

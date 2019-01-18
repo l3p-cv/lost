@@ -4,13 +4,7 @@ import BaseNodeModel from '../../BaseNodeModel'
 
 export default class DatasourceStartModel extends BaseNodeModel {
     constructor(params: any) {
-		const { peN, peOut, datasource } = params	
-	
-		super({ peN, peOut })
-	
-		// { type: String, fileTree: any }
-		this.datasource = datasource
-
+		super(params)
 		this.state = {
 			path: new Observable(''),
 		}
@@ -19,9 +13,14 @@ export default class DatasourceStartModel extends BaseNodeModel {
 		return !(this.state.path.isInInitialState) && (this.state.path.value.length > 0)
 	}
 	getOutput(){
+		const { peN } = this
+		let { datasource } = this
+		datasource = Object.assign({}, datasource, { 
+			rawFilePath: this.state.path.value,
+		})
 		return {
-			peN: this.peN,
-			path: this.state.path.value,
+			datasource,
+			peN,
 		}
 	}
 }

@@ -8,7 +8,7 @@ from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic.pipeline import service as pipeline_service
 from lost.logic import template as template_service
-
+from lost.utils.dump import dump
 namespace = api.namespace('pipeline', description='Pipeline API.')
 
 
@@ -50,7 +50,8 @@ class Template(Resource):
 
 @namespace.route('')
 class PipelineList(Resource):
-    @api.marshal_with(pipelines)
+    # marshal caused problems json string was fine, api returned { pipelines: null }.
+    # @api.marshal_with(pipelines) 
     @jwt_required
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -59,17 +60,22 @@ class PipelineList(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        else:
+        else: 
+            # for group in user.groups:
+            #     print("--- printing group of user.groups ---")
+            #     print(group) 
             group_ids = [g.idx for g in user.groups]
             re = pipeline_service.get_pipelines(dbm, group_ids)
             dbm.close_session()
+            # print("--- PipelineList result ---")
+            # print(re) 
             return re
 
 
 @namespace.route('/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
 class Pipeline(Resource):
-    @api.marshal_with(pipeline)
+    # @api.marshal_with(pipeline)
     @jwt_required
     def get(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -78,9 +84,8 @@ class Pipeline(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-
         else:
-            re = pipeline_service.get_pipeline(dbm, identity)
+            re = pipeline_service.get_running_pipe(dbm, identity, pipeline_id, DATA_URL)
             dbm.close_session()
             return re
 
@@ -96,7 +101,6 @@ class PipelineStart(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-
         else:
             data = request.data
             # quick and dirty here, data was binary but should be dictonary without using json.loads locally.

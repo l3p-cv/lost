@@ -1,4 +1,5 @@
 import { WizardTabView } from 'l3p-frontend'
+
 import './PipelineGraph.scss'
 
 
@@ -8,46 +9,54 @@ class PipelineGraphTab extends WizardTabView {
 			title: 'Fill out Elements',
 			icon: 'fa fa-pencil',
 			content: /*html*/`
-				<div class='btn-toolbar toolbar' role='toolbar'>
-					<div class='btn-group pull-left' role='group'>
-						<p 
-						style= 'margin:0; line-height:2.3em; color:red; display:none;' // INLINE STYLE
-						data-ref='update-label'>UPDATE</p>
-					</div>
-					<div class='btn-group pull-right' role='group'>
-						<button data-ref='btn-toggle-infobox' type='button' class='btn btn-sm btn-default'>
-						<i data-ref='btn-toggle-infobox-icon' class='fa fa-toggle-on'></i> &nbsp;&nbsp;
-						<span>Toggle Infobox<span>
+				// update indicator.
+				<div class='update-indicator'>
+					<label data-ref='update-label'>update</label>
+				</div>
+
+				// toolbar (customized bootstrap flexbox).
+				<div class='toolbar'>
+					<div class='btn-group toolbar'>
+						<button class='btn btn-default' data-ref='btn-toggle-infobox'>
+							<i class='fa fa-toggle-on' data-ref='btn-toggle-infobox-icon'></i>
+							<span>Toggle Infobox<span>
 						</button>
-					</div>
-					<div class='btn-group pull-right' role='group'>
-						<button data-ref='btn-delete-pipeline' type='button' class='btn btn-sm btn-default'>
-						<i class='fa fa-trash'></i> &nbsp;&nbsp; // WHAT
-						<span>Delete Pipeline<span>
+						<button class='btn btn-default' data-ref='btn-delete-pipeline'>
+							<i class='fa fa-trash'></i>
+							<span>Delete Pipeline<span>
 						</button>
-					</div>
-					<div class='btn-group pull-right' role='group'>
-						<button data-ref='btn-download-logfile' type='button' class='btn btn-sm btn-default'>
-						<i class='fa fa-download'></i> &nbsp;&nbsp; // WHAT
-						<span>Download Logfile<span>
+						<button class='btn btn-default' data-ref='btn-download-logfile'>
+							<i class='fa fa-download'></i>
+							<span>Download Logfile<span>
 						</button>
-					</div>
-					<div class='btn-group pull-right' role='group'>
-						<button data-ref='btn-pause-pipe' type='button' class='btn btn-sm btn-default'>
-						<i class='fa fa-pause'></i> &nbsp;&nbsp; // WHAT
-						<span>Pause Pipeline<span>
+						<button class='btn btn-default' data-ref='btn-pause-pipe'>
+							<i class='fa fa-pause'></i>
+							<span>Pause Pipeline<span>
 						</button>
-					</div>
-					<div class='btn-group pull-right' role='group'>
-						<button data-ref='btn-play-pipe' type='button' class='btn btn-sm btn-default'>
-						<i class='fa fa-play'></i>&nbsp;&nbsp;
-						<span>Play Pipeline<span>
+						<button class='btn btn-default' data-ref='btn-play-pipe'>
+							<i class='fa fa-play'></i>
+							<span>Continue Pipeline<span>
 						</button>
 					</div>
 				</div>
+
+				// graph container.
 				<div data-ref='dagre'></div>
 			`,
 		})
+	}
+	togglePlayPause({ running }){
+		if(running){
+			// enable pause button.
+			this.html.refs['btn-pause-pipe'].classList.toggle('disabled', false)
+			// disable play button.
+			this.html.refs['btn-play-pipe'].classList.toggle('disabled', true)
+		} else {
+			// enable play button.
+			this.html.refs['btn-play-pipe'].classList.toggle('disabled', false)
+			// disable pause button.
+			this.html.refs['btn-pause-pipe'].classList.toggle('disabled', true)
+		}
 	}
 }
 export default new PipelineGraphTab()
