@@ -51,7 +51,7 @@ class TwoDSerialize(object):
         self.anno_task_id = anno_task_id
         self.file_man = FileMan(self.db_man.lostconfig)
         self.proposedLabel = proposedLabel
-     def serialize(self):
+    def serialize(self):
         directory = os.path.join(self.file_man.two_d_path, str(self.anno_task_id))
         if not os.path.exists(directory):
             os.makedirs(directory)
