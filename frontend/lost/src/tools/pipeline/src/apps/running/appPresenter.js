@@ -20,21 +20,18 @@ if(DEBUG){
 	console.warn('DISABLE DEBUG MODE IN PRODUCTION')
 }
 
-const wizard = new Wizard('running-pipelines')
-
-PipelineGraphTab.requiresValid(SelectPipelineTab)
-
-SelectPipelineTab.on('after-activate', () => {
-	SelectPipelineTab.adjustDataTable()
-})
-
-wizard.add([
-    SelectPipelineTab, 
-    PipelineGraphTab, 
-])  
 
 
+const wizard = new Wizard("mount-point-running-pipelines")
 export default function init({ token, polling }){
+	PipelineGraphTab.requiresValid(SelectPipelineTab)
+	SelectPipelineTab.on('after-activate', () => {
+		SelectPipelineTab.adjustDataTable()
+	})
+	wizard.add([
+		SelectPipelineTab, 
+		PipelineGraphTab, 
+	])  
     appModel.state.token = token
 	appModel.options.polling.update(polling)
 	http.requestPipelines(appModel.state.token).then((response) => {

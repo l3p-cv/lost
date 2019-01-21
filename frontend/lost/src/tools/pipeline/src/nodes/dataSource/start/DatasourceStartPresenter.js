@@ -20,8 +20,6 @@ export default class DatasourceStartPresenter extends BaseNodePresenter {
 		$(this.modal.html.root).on('hidden.bs.modal', () => {
 			const path = this.modal.getSelectedPath()
 			this.model.state.path.update(path)
-			this.view.setColor(this.isValidated())
-			this.graph.updateNode(this)
 		})
     }
     /**
@@ -29,6 +27,9 @@ export default class DatasourceStartPresenter extends BaseNodePresenter {
      */
     initModelBinding(){
 		// change path in view.
-		this.model.state.path.on('update', (path) => this.view.update(path))
+		this.model.state.path.on('update', (path) => {
+			this.view.update(path)
+			this.view.setColor(this.isValidated())
+		})
     }
 }

@@ -18,10 +18,12 @@ html.ids["sia-content-wrapper"].appendChild(propertiesView.html.fragment)
 html.ids["sia-content-wrapper"].appendChild(imageView.html.fragment)
 // moved mounting to SIA Component
 
+// REMOVE
 export function show(){
     // document.getElementById("bba-progress-bar").style.display = "block"
     // html.ids["sia-app-hide-plane"].style.display = "none"
 }
+// REMOVE
 export function hide(){
     // document.getElementById("bba-progress-bar").style.display = "none"
     // html.ids["sia-app-hide-plane"].style.display = "block"

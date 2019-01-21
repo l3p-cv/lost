@@ -8,13 +8,7 @@ import {
     Row
 } from 'reactstrap'
 
-import * as appView from '../../tools/sia/src/appView'
-import * as controlsView from '../../tools/sia/src/components/controls/controlsView'
-
 import WorkingOnSIA from '../../components/AnnoTask/WorkingOnSIA'
-
-import ReactDOM from "react-dom"
-import LabelSelect from "../../components/LabelSelect/LabelSelect"
 
 import actions from '../../actions'
 const { getWorkingOnAnnoTask } = actions
@@ -27,27 +21,29 @@ class SingleImageAnnotation extends Component {
 	}
 	componentDidMount(){
 		this.props.getWorkingOnAnnoTask()
-		require("../../tools/sia/src/appPresenter")
-		this.mount.current.appendChild(appView.html.fragment)
-		this.mount.current.appendChild(controlsView.html.fragment)
-		// ReactDOM.render(<LabelSelect/>, document.getElementById('sia-propview-label-select-mountpoint'))
+		const init = require("../../tools/sia/src/appPresenter").default
+		init({
+			mountPoint: this.mount.current,
+			updateAnnotationStatus: getWorkingOnAnnoTask,
+			props: this.props,
+		})
 	}
 	render(){
 		return (
 			<Row>
 			<Col>
 				<Card>
-				<CardHeader>
-					Single Image Annotation
-				</CardHeader>
+					<CardHeader>
+						Single Image Annotation
+					</CardHeader>
 					<CardBody>
-					<Row>
-						<Col  xs='12' sm='12' lg='12'>
-							<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
-							<div ref={this.mount} id="sia-mount"></div>
-						</Col>
-					</Row>
-					  </CardBody> 
+						<Row>
+							<Col xs='12'>
+								<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
+								<div ref={this.mount}></div>
+							</Col>
+						</Row>
+					</CardBody> 
 				</Card>
 			</Col>
 		</Row>

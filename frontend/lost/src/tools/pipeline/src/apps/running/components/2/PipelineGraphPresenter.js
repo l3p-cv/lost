@@ -7,7 +7,7 @@ import appModel from '../../appModel'
 
 import PipelineGraphView from './PipelineGraphView'
 
-import DatasourceRunningPresenter from 'pipRoot/nodes/datasource/running/DatasourceRunningPresenter'
+import DatasourceRunningPresenter from 'pipRoot/nodes/dataSource/running/DatasourceRunningPresenter'
 import AnnoTaskRunningPresenter from 'pipRoot/nodes/annoTask/running/AnnoTaskRunningPresenter'
 import DataExportRunningPresenter from 'pipRoot/nodes/dataExport/running/DataExportRunningPresenter'
 import VisualOutputRunningPresenter from 'pipRoot/nodes/visualOutput/running/VisualOutputRunningPresenter'

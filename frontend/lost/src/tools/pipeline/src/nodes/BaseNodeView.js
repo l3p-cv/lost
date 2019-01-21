@@ -97,7 +97,9 @@ export default class BaseNodeView {
 		this.setColor(validated)
 	}
 	updateRefs(parent: HTMLElement){
+		this.html.root = parent
 		for(const ref in this.html.refs){
+			console.log("update reference: ", ref)
 			this.html.refs[ref] = parent.querySelector(`[data-ref='${ref}']`)
 		}
 	}
@@ -123,7 +125,6 @@ export default class BaseNodeView {
 		}
 	}
 	updateStatus(status: String){
-
 		console.log('base node view update status', status)
 		// console.log(this.html.refs['status'])
 		if(this.html.refs['status']){

@@ -115,11 +115,12 @@ export default class Graph {
                 labelType: 'html',
                 label: node.view.html.fragment,
                 shape: 'rect',
-                padding: 0
-            }
+                padding: 0,
+            },
         )
 		
         this.render()
+		
 		// the node id will be used to get back the node references after rendering (this.render).
 		return nodeId
     }

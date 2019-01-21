@@ -20,7 +20,6 @@ export default class AnnoTaskStartPresenter extends BaseNodePresenter {
 			this.view.updateName(this.model.state.name)
 			this.view.updateAssignee(this.model.state.assignee.value)
 			this.view.setColor(this.isValidated())
-			this.graph.updateNode(this)
 		})
 	}
     /**

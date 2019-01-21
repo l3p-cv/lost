@@ -204,7 +204,7 @@ function createShortcutHTML(keys: array) {
 }
 
 
-export const html = new NodeTemplate(`
+export const html = new NodeTemplate(/*html*/`
     <div class="container sia-user-manual">
         <div class="row">
             <h2>

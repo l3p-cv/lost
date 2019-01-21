@@ -9,6 +9,8 @@ import * as math from "shared/math"
 import DoublyLinkedList from "dbly-linked-list"
 
 export default {
+	// a property to hold stuff from the sia react component.
+	reactComponent: {},
     config: new Observable({
         tools: {
             point: true,
@@ -64,7 +66,7 @@ export default {
             lines: new Observable([]),
             polygons: new Observable([]),
             bBoxes: new Observable([]),
-        }
+        },
     },
     controls: {
         moveStep: 1,
@@ -300,7 +302,7 @@ export default {
         labels.push(DrawableDefaults.LABEL)
         this.data.labelList.update(labels)
     },
-    
+
     cleanSession(){
         console.log("%c cleaning session storage ", "background: #282828; color: #FE8019")
         sessionStorage.removeItem("sia-annotation-id")
