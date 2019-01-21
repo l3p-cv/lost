@@ -128,7 +128,7 @@ def get_label_trees(db_man, group_id):
     return label_trees_json
 def get_configuration(db_man, group_id):
     at = get_sia_anno_task(db_man,group_id)
-    return at.configuration
+    return json.loads(at.configuration)
 def get_sia_anno_task(db_man, group_id):
     for cat in db_man.get_choosen_annotask(group_id):
         if cat.anno_task.dtype == dtype.AnnoTask.SIA:
