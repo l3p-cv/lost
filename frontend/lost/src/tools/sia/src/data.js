@@ -53,7 +53,7 @@ export function requestLabels() {
 
 // NEEDS ADAPTION TO NEW REACT COMPONENT
 export function requestAnnotationProgress() {
-    return http.get("/annotask/api/sia/current", appModel.reactComponent.token)
+    return http.get("http://localhost/api/annotask/working", appModel.reactComponent.token)
 }
 
 

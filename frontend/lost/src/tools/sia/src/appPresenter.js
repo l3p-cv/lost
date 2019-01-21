@@ -186,31 +186,30 @@ imagePresenter.image.addEventListener("load", () => {
 
 function load(){
     if(BACKEND) {
-        data.requestAnnotationProgress().then((ATStatus) => {
-            console.log("%c ATStatus: ", "background: #282828; color: #FE8019", ATStatus)
-            if(ATStatus.name === "nothing_available"){
+        data.requestAnnotationProgress().then((status) => {
+            console.log("%c annotation status: ", "background: #282828; color: #FE8019")
+			console.log({status})
+            if(status.name === "nothing_available"){
                 handleNothingAvailable()
             } else {
                 // remove stored data when switching pipelines,
                 let lastKnownAnnotationId = JSON.parse(sessionStorage.getItem("sia-annotation-id"))
-                if(lastKnownAnnotationId && (lastKnownAnnotationId !== ATStatus.id)){
+                if(lastKnownAnnotationId && (lastKnownAnnotationId !== status.id)){
                     console.warn("The saved state is from another session.")
                     appModel.cleanSession()
                 }
-                // init:
                 // get labels and annotation data.
-                console.log("%c init ", "background: #282828; color: #FE8019")
                 Promise.all([
                     data.requestLabels(),
                     data.requestInitialAnnotation(),
                 ]).then((responses) => {
                     let [labels, annotations] = responses
-                    console.log("%c update via request ", "background: #282828; color: #FE8019")
-                    console.log("labels:", labels)
-                    console.log("annotations:", annotations)
+                    console.log("%c annotation data: ", "background: #282828; color: #FE8019")
+                    console.log({labels})
+                    console.log({annotations})
                     appModel.updateLabels(labels)
                     appModel.updateAnnotations(annotations)
-                    sessionStorage.setItem("sia-annotation-id", JSON.stringify(ATStatus.id))
+                    sessionStorage.setItem("sia-annotation-id", JSON.stringify(status.id))
                 }).catch((error)=>{
                     // when reaching this state, no pipline was selected, hide app.
                     appView.hide()
@@ -409,6 +408,8 @@ function filterKeyStrokes($event){
 }
 
 export default function init({ mountPoint, updateAnnotationStatus, props, token }){
+	console.log("%c init ", "background: #282828; color: #FE8019")
+
 	// set web token.
 	appModel.reactComponent.token = token
 

@@ -2,16 +2,9 @@ import $ from "cash-dom"
 
 import "./image.styles.scss"
 import { NodeTemplate } from "l3p-frontend"
-import { STATE } from "drawables/drawable.statics"
 
-import appModel from "../../appModel"
 import PointPresenter from "drawables/point/PointPresenter"
 
-
-function drawImage(width: Number = 0, height: Number = 0){
-    html.ids["sia-imgview-svg-image"].setAttribute("width", width) 
-    html.ids["sia-imgview-svg-image"].setAttribute("height", height) 
-}
 
 /**
  * The image-view component has:
@@ -45,7 +38,7 @@ export const html = new NodeTemplate(`
         </div>
     </div>
 `)
-// @todo: make depend on menubar height (variable)
+// @todo: make dependend on menubar height (variable)
 export const padding = {
     top: 40,
     side: 20,
@@ -60,8 +53,6 @@ export const container = html.ids["sia-imgview-svg-container"]
 export function updateImage(imgPath: String){
     html.ids["sia-imgview-svg-image"].setAttribute("href", imgPath)
     image.src = imgPath
-    // @strange: resize instead or something?
-    drawImage()
 }
 export function updateInfo(info: any){
     const { name, id, number, amount } = info
@@ -127,7 +118,8 @@ export function resize(width: Number, height: Number){
     $(html.ids["sia-image-info"]).width(width)
 
     // resize image
-    drawImage(width, height)
+	html.ids["sia-imgview-svg-image"].setAttribute("width", width) 
+    html.ids["sia-imgview-svg-image"].setAttribute("height", height) 
 
     // resize svg
     html.ids["sia-imgview-svg"].setAttribute("width", width)
