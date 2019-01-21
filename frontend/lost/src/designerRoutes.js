@@ -37,9 +37,9 @@ const MyProfile = Loadable({
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+  { path: '/dashboard', name: 'Dashboard', component: Pipelines }, // first version just with pipelines in dashboard
   { path: '/start-pipeline', name: 'Start a Pipeline', component: StartPipeline },
-  { path: '/pipelines', name: 'Pipelines', component: Pipelines },
+  // { path: '/pipelines', name: 'Pipelines', component: Pipelines },
   { path: '/labels', name: 'Manage Labels', component: Label },
   { path: '/users', name: 'Manage Users', component: User },
   { path: '/profile', name: 'My Profile', component: MyProfile },

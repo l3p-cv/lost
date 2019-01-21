@@ -66,7 +66,7 @@ class Input(object):
             for img_anno in result.img_annos:
                 yield img_anno
     
-    def get_anno_vec(self, columns='all'):
+    def to_vec(self, columns='all'):
         '''Get a vector of all Annotations related to this object.
 
         Args:
@@ -110,7 +110,7 @@ class Input(object):
                 vec_list += img_anno.to_vec(columns)
         return vec_list
 
-    def get_anno_df(self):
+    def to_df(self):
         '''Get a pandas DataFrame of all annotations related to this object.
 
         Returns:
@@ -578,7 +578,8 @@ class ScriptOutput(Output):
                     img_sim_class=sim_class,
                     img_label=label,
                     frame_n=frame_n,
-                    video_path=video_path)
+                    video_path=video_path,
+                    anno_task_id=pe.anno_task.idx)
                 # if pe.anno_task.dtype == dtype.AnnoTask.MIA:
                 #     rel_img_path = self._script.file_man.make_path_relative(img_path)
                 #     img_anno = model.ImageAnno(anno_task_id=pe.anno_task.idx,

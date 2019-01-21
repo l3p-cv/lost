@@ -6,7 +6,7 @@ import './SelectPipeline.scss'
 class SelectPipelineView extends WizardTabView {
     constructor(){
         super({
-            title: 'Choose a Template',
+            title: 'Choose a Pipeline',
             icon: 'fa fa-puzzle-piece fa-1x',
             content: /*html*/`
 				<p>Use right mouse click to open a context menu for each row.</p>

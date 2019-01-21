@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import Graph from 'react-graph-vis';
 import mapTreeToGraph from 'libs/graph-vis/mapTreeToGraph'
+import EditLabel from '../../containers/Labels/EditLabel'
 
 const options = {
     autoResize: true,
@@ -49,7 +50,7 @@ class LabelTree extends Component {
         if (tree) {
             const graph = mapTreeToGraph(tree)
             return (
-				<Graph graph={graph} options={options} events={events}/>
+                <Graph graph={graph} options={options} events={events}/>
             )
         } else {
             return (
