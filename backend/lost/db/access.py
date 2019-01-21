@@ -263,18 +263,18 @@ class DBMan(object):
         return self.session.query(model.ImageAnno)\
             .filter(model.ImageAnno.anno_task_id==anno_task_id).all()
 
-    def get_image_annotations_by_state(self, anno_task_id, state, user_id, amount):
-        ''' Get all Image Anno by annotask, state and user id
+    def get_image_annotations_by_state(self, anno_task_id, state, group_id, amount):
+        ''' Get all Image Anno by annotask, state and group_id
         '''
         if (amount > 0):
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
                                                           model.ImageAnno.anno_task_id== anno_task_id,\
-                                                          model.ImageAnno.user_id==user_id)\
+                                                          model.ImageAnno.group_id==group_id)\
                                                           .limit(amount).all()
         else:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
                                                           model.ImageAnno.anno_task_id== anno_task_id,\
-                                                          model.ImageAnno.user_id==user_id).all()
+                                                          model.ImageAnno.group_id==group_id).all()
 
 
     def get_image_annotation_by_sim_class(self, anno_task_id, sim_class, amount):

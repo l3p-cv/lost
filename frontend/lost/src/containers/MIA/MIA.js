@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
+import Control from './Control'
 
 class MIA extends Component{
     render(){
-        return(<div>IN MIA</div>)
+        return(<div><Control></Control></div>)
     }
 }
 
