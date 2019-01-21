@@ -19,25 +19,24 @@ import StartPipelineTab from './components/4/StartPipelinePresenter'
 const DEBUG = true
 if(DEBUG){
 	window.appModel = appModel
+	console.warn('DISABLE DEBUG MODE IN PRODUCTION')
 }
 
-const wizard = new Wizard('start-pipeline')
-PipelineGraphTab.requiresValid(SelectPipelineTab)
-ConfigPipelineTab.requiresValid(PipelineGraphTab)
-StartPipelineTab.requiresValid(ConfigPipelineTab)
 
-SelectPipelineTab.on('after-activate', () => {
-	SelectPipelineTab.adjustDataTable()
-})
-
-wizard.add([
-    SelectPipelineTab, 
-    PipelineGraphTab, 
-    ConfigPipelineTab, 
-    StartPipelineTab,
-])
-
-export default function init(token){
+const wizard = new Wizard("mount-point-start-pipeline")
+export default function init({ token }){
+	PipelineGraphTab.requiresValid(SelectPipelineTab)
+	ConfigPipelineTab.requiresValid(PipelineGraphTab)
+	StartPipelineTab.requiresValid(ConfigPipelineTab)
+	SelectPipelineTab.on('after-activate', () => {
+		SelectPipelineTab.adjustDataTable()
+	})
+	wizard.add([
+		SelectPipelineTab, 
+		PipelineGraphTab, 
+		ConfigPipelineTab, 
+		StartPipelineTab,
+	])
     appModel.state.token = token
     http.requestTemplates(token).then((response) => {
         appModel.data.pipelineTemplates.update(response.templates)

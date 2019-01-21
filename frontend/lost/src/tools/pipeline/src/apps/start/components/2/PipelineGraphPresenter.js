@@ -1,7 +1,7 @@
 import { WizardTabPresenter } from 'l3p-frontend'
 
 import Graph from 'pipRoot/Graph'
-import DatasourceStartPresenter from 'pipRoot/nodes/datasource/start/DatasourceStartPresenter'
+import DatasourceStartPresenter from 'pipRoot/nodes/dataSource/start/DatasourceStartPresenter'
 import AnnoTaskStartPresenter from 'pipRoot/nodes/annoTask/start/AnnoTaskStartPresenter'
 import DataExportStartPresenter from 'pipRoot/nodes/dataExport/start/DataExportStartPresenter'
 import VisualOutputStartPresenter from 'pipRoot/nodes/visualOutput/start/VisualOutputStartPresenter'
@@ -34,7 +34,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         
         // create and render the graph.
         this.graph = new Graph(this.view.html.refs['dagre'])
-
         appModel.state.pipelineElements = data.elements.map(element => {
             if ('datasource' in element) {
                 return new DatasourceStartPresenter(this.graph, element)
@@ -84,7 +83,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
     }
 	isValidated(){
 		return appModel.state.pipelineElements.every(element => {
-			console.log('validating pipeline element:', element.node.model)
+			// console.log('validating pipeline element:', element.node.model)
 			return element.node.model.isValidated()
 		})
 	}

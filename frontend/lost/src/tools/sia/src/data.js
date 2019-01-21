@@ -1,7 +1,7 @@
 import appModel from "./appModel"
 import { http } from "l3p-frontend"
 
-const BACKEND_URL = "/sia/annotation/"
+const BACKEND_URL = "/api/sia/"
 const REQUEST_STRINGS = {
     GET_CONFIG: BACKEND_URL + "configuration",
     GET_CATEGORIES: BACKEND_URL + "label",

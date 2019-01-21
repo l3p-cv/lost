@@ -16,14 +16,14 @@ import * as toolbarPresenter from "components/toolbar/toolbarPresenter"
 import * as controlsPresenter from "components/controls/controlsPresenter"
 
 import * as imageView from "components/image/imageView"
+import * as controlsView from "components/controls/controlsView"
 
-state.init({ logging: false })
-state.setHistorySize(50)
-
-const CONFIG = false
-const BACKEND = false
+// app init configuration
+const CONFIG = true
+const BACKEND = true
 const DEBUG = true
-// dummy labels if no backend
+
+// dummy data
 const CATEGORIES = { 
     labelTrees: [
         {
@@ -60,7 +60,6 @@ const CATEGORIES = {
         }
     ]
 }
-// dummy data if no backend
 const DATA = ((o: any) => {
     return {
         image: {
@@ -133,6 +132,7 @@ const DATA = ((o: any) => {
     polygons: true,
 })
 
+// expose modules to window object
 if(DEBUG){
     window.SIA = {
         math,
@@ -151,7 +151,39 @@ if(DEBUG){
         l3pcore: require("l3p-frontend")
     }
     window.NodeTemplate = NodeTemplate
+	console.warn('DISABLE DEBUG MODE IN PRODUCTION')
 }
+
+// MODEL BINDINGS
+appModel.data.drawables.on("update", () => handleDataUpdate(appModel.data))
+
+// VIEW BINDINGS
+$(window).on("resize", resize)
+$(window).on("contextmenu", ($event) => $event.preventDefault())
+$(window).on("mousedown mouseup click", ($event) => filterMouseButtons($event))
+$(window).on("keydown", ($event) => filterKeyStrokes($event))
+$(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
+    data.sendData(appModel.getResponseData()).then(() => {
+        data.finish().then((message) => {
+            if(message !== "succeeded"){
+                alert(message)
+                throw new Error(message)
+            } else {
+                appModel.cleanSession()
+                window.AT.setFinished()
+                handleNothingAvailable()
+                console.log("%c application finished with status: ", "background: #282828; color: #FE8019", message)
+            }
+        })
+    })
+})
+imagePresenter.image.addEventListener("load", () => {
+    appView.show()
+    resize()
+    appModel.ui.resized.update(true)
+    appModel.ui.resized.reset()
+})
+
 
 function validateConfig(config: any){
     if(config.tools.bbox){
@@ -164,43 +196,7 @@ function validateConfig(config: any){
     }
     return config
 }
-if(!CONFIG){
-    console.warn("NO CONFIG MODE: will not load backend config.")
-    let config = appModel.config.value
-    config = Object.assign(config, {
-        tools: {
-            point: true,
-            line: true,
-            polygon: true,
-            bbox: true,
-        },
-        actions: {
-            drawing: true,
-            labeling: true,
-            edit: {
-                label: true,
-                bounds: true,
-                delete: true,
-            }
-        }
-    })
-    appModel.config.update(validateConfig(config))
-    init()
-} else {
-    data.requestConfig().then(config => {
-        config = JSON.parse(config)
-        console.log("%c successfully requested config: ", "background: #282828; color: #FE8019", config)
-        appModel.config.update(validateConfig(config))
-        init()
-    }).catch(error => {
-        // make config optional
-        console.log(error.message)
-        appModel.config.update(appModel.config.value)
-        init()
-    })
-}
-
-function init(){
+function load(){
     if(BACKEND) {
         data.requestAnnotationProgress().then((ATStatus) => {
             console.log("%c ATStatus: ", "background: #282828; color: #FE8019", ATStatus)
@@ -239,38 +235,6 @@ function init(){
         appModel.updateAnnotations(DATA)
     }
 }
-
-/* model binding */
-appModel.data.drawables.on("update", () => handleDataUpdate(appModel.data))
-
-/* view binding */
-$(window).on("resize", resize)
-$(window).on("contextmenu", ($event) => $event.preventDefault())
-$(window).on("mousedown mouseup click", ($event) => filterMouseButtons($event))
-$(window).on("keydown", ($event) => filterKeyStrokes($event))
-$(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
-    data.sendData(appModel.getResponseData()).then(() => {
-        data.finish().then((message) => {
-            if(message !== "succeeded"){
-                alert(message)
-                throw new Error(message)
-            } else {
-                appModel.cleanSession()
-                window.AT.setFinished()
-                handleNothingAvailable()
-                console.log("%c application finished with status: ", "background: #282828; color: #FE8019", message)
-            }
-        })
-    })
-})
-imagePresenter.image.addEventListener("load", () => {
-    appView.show()
-    resize()
-    appModel.ui.resized.update(true)
-    appModel.ui.resized.reset()
-})   
-
-
 function resize(){
     // requirement
     if(!appModel.data.image.url.isInInitialState && imageView.image !== null){
@@ -456,3 +420,55 @@ function filterKeyStrokes($event){
     }
 }
 
+export default function init({ mountPoint, updateAnnotationStatus, props }){
+	// init redo undo.
+	state.init({ logging: false })
+	state.setHistorySize(50)
+	
+	// mount views.
+	mountPoint.appendChild(appView.html.fragment)
+	mountPoint.appendChild(controlsView.html.fragment)
+
+	// TESTING NEW ANNOTATION STATUS COMPONENT
+	appModel.reactComponent.updateAnnotationStatus = updateAnnotationStatus
+	appModel.reactComponent.props = props
+	// TESTING NEW ANNOTATION STATUS COMPONENT
+
+	// init app configuration, followed by app data initialization.
+	if(!CONFIG){
+		console.warn("NO CONFIG MODE: will not load backend config.")
+		let config = appModel.config.value
+		config = Object.assign(config, {
+			tools: {
+				point: true,
+				line: true,
+				polygon: true,
+				bbox: true,
+			},
+			actions: {
+				drawing: true,
+				labeling: true,
+				edit: {
+					label: true,
+					bounds: true,
+					delete: true,
+				}
+			}
+		})
+		appModel.config.update(validateConfig(config))
+		load()
+	}
+	else {
+		data.requestConfig().then(config => {
+			config = JSON.parse(config)
+			console.log("%c successfully requested config: ", "background: #282828; color: #FE8019", config)
+			appModel.config.update(validateConfig(config))
+			load()
+		}).catch(error => {
+			// make config optional
+			console.log(error.message)
+			appModel.config.update(appModel.config.value)
+			load()
+		})
+	}
+}

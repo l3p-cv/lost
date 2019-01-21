@@ -24,7 +24,6 @@ export default class DatasourceStartView extends BaseNodeView {
 		})
     }
 	update(source: String){
-		console.log("UPDAT PATH", source)
 		this.html.refs['source'].textContent = source
 	}
 }

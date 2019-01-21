@@ -43,10 +43,14 @@ export default class BaseNodePresenter {
     init(parentNode: HTMLElement){
 		console.log('init node')
 		// update the views root element reference, cause it gets lost when appending to dagreD3 graph.
-		this.view.html.root = parentNode
-		Object.keys(this.view.html.refs).forEach(key => {
-			this.view.html.refs[key] = this.view.html.root.querySelector(`[data-ref='${key}']`)
-		})
+		// this.view.html.root = parentNode
+		// Object.keys(this.view.html.refs).forEach(key => {
+		// 	// console.log("updating ref: ", key)
+		// 	// console.log("updating to: ", this.view.html.root.querySelector(`[data-ref='${key}']`))
+		// 	this.view.html.refs[key] = this.view.html.root.querySelector(`[data-ref='${key}']`)
+		// })
+		// not called elsewhere...
+		this.view.updateRefs(parentNode)
 
 		// bind state and progress updates to view, in case the node has such.
 		if(this.model.status){
