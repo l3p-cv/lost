@@ -115,14 +115,14 @@ def get_label_trees(db_man, group_id):
         label_tree_json['id'] = rll.label_leaf.idx
         label_tree_json['name'] = rll.label_leaf.description
         label_tree_json['description'] = rll.label_leaf.description
-        label_tree_json['cssClass'] = rll.label_leaf.css_class
+        #label_tree_json['cssClass'] = rll.label_leaf.css_class
         label_tree_json['labelLeaves'] = list()
         for label_leaf in db_man.get_all_child_label_leaves(rll.label_leaf.idx):#type: lost.db.model.LabelLeaf
             label_leaf_json = dict()
             label_leaf_json['id'] = label_leaf.idx
             label_leaf_json['name'] = label_leaf.name
             label_leaf_json['description'] = label_leaf.description
-            label_leaf_json['cssClass'] = label_leaf.css_class
+            #label_leaf_json['cssClass'] = label_leaf.css_class
             label_tree_json['labelLeaves'].append(label_leaf_json)
         label_trees_json['labelTrees'].append(label_tree_json)
     return label_trees_json
