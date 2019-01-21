@@ -9,25 +9,25 @@ import skimage.io
 
 __author__ = "Gereon Reus"
 
-def get_next(db_man, user_id,max_amount):
+def get_next(db_man, default_group_id, max_amount):
     """ Get next ImageAnnos 
     :type db_man: lost.db.access.DBMan
     """
-    at = __get_mia_anno_task(db_man, user_id)
+    at = __get_mia_anno_task(db_man, default_group_id)
     if at:
         config = json.loads(at.configuration)
         if config['type'] == 'annoBased':
-            return __get_next_two_d_anno(db_man, user_id, at, max_amount)
+            return __get_next_two_d_anno(db_man, default_group_id, at, max_amount)
         elif config['type'] == 'imageBased':    
-            return __get_next_image_anno(db_man, user_id, at, max_amount)
-
+            return __get_next_image_anno(db_man, default_group_id, at, max_amount)
     images = dict()
     images['images'] = list()
     return images
 
 class ImageSerialize(object):
-    def __init__(self, annos, user_id,proposedLabel=True):
+    def __init__(self, db_man, annos, user_id,proposedLabel=True):
         self.mia_json = dict()
+        self.db_man = db_man
         self.annos = annos
         self.user_id = user_id
         self.proposedLabel = proposedLabel
@@ -255,7 +255,7 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = ImageSerialize(annos, user_id)
+        image_serialize = ImageSerialize(db_man, annos, user_id)
         image_serialize.serialize()
         return image_serialize.mia_json
         #################### get view locked ########################
@@ -281,7 +281,7 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = ImageSerialize(annos, user_id, proposedLabel=False)
+        image_serialize = ImageSerialize(db_man, annos, user_id, proposedLabel=False)
         image_serialize.serialize()
         return image_serialize.mia_json
     # -- fill with new annos if size < max_amount
@@ -304,7 +304,7 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
             anno.user_id = user_id
             db_man.add(anno)
         db_man.commit()
-        image_serialize = ImageSerialize(annos, user_id)
+        image_serialize = ImageSerialize(db_man, annos, user_id)
         image_serialize.serialize()
         return image_serialize.mia_json
 
