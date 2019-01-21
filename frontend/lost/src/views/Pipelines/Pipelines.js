@@ -20,7 +20,7 @@ class SingleImageAnnotation extends Component {
 			token: this.props.token,
 			polling: {
 				enabled: true,
-				rate: 500,
+				rate: 5000,
 			},
 		})
 	}
