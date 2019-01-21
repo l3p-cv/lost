@@ -58,5 +58,14 @@ class PipelineGraphTab extends WizardTabView {
 			this.html.refs['btn-pause-pipe'].classList.toggle('disabled', true)
 		}
 	}
+	toggleInfoBox({ enabled }){
+		if(enabled){
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-on', true)
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-off', false)
+		} else {
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-on', false)
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-off', true)
+		}
+	}
 }
 export default new PipelineGraphTab()

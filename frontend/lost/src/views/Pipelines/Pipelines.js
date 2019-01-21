@@ -24,8 +24,8 @@ class Pipelines extends Component {
 				rate: 1000,
 			},
 		})
-		
-		if(document.getElementById('running-pipelines').innerHTML==""){
+		// re-render quick fix.
+		if(document.getElementById('running-pipelines').innerHTML === ""){
 			window.location.reload()
 		}
 	}

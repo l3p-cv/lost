@@ -13,6 +13,12 @@ const DEFAULTS = {
 	footer: undefined,
 	validated: false,
 }
+const COLOR_MAP = {
+	'script_error': 'bg-red',
+	'pending': 'bg-blue',
+	'in_progress': 'bg-orange',
+	'finished': 'bg-green',
+}
 export default class BaseNodeView {
 	constructor(params){
 		params = Object.assign({}, DEFAULTS, params)
@@ -90,9 +96,9 @@ export default class BaseNodeView {
 		`)
 		this.setColor(validated)
 	}
-	updateRefs(refs: any){
-		for(const ref in refs){
-			this.html.refs[ref] = refs[ref]
+	updateRefs(parent: HTMLElement){
+		for(const ref in this.html.refs){
+			this.html.refs[ref] = parent.querySelector(`[data-ref='${ref}']`)
 		}
 	}
 	setColor(validated: Boolean){
@@ -109,6 +115,7 @@ export default class BaseNodeView {
 		}
 	}
 	updateProgress(progress: Number){
+		// console.log('base node view update progress:', progress)
 		if(this.html.refs['progress-bar']){
 			progress = progress ? progress : 0
 			this.html.refs['progress-bar'].style.width = `${progress}%`
@@ -116,13 +123,19 @@ export default class BaseNodeView {
 		}
 	}
 	updateStatus(status: String){
+
+		console.log('base node view update status', status)
+		// console.log(this.html.refs['status'])
 		if(this.html.refs['status']){
-			this.html.refs['status'].setAttribute('class', `panel-footer 
-				${ status === 'script_error'   ? 'bg-red'      : '' }
-				${ status === 'pending'        ? 'bg-blue'     : '' }
-				${ status === 'in_progress'    ? 'bg-orange'   : '' }
-				${ status === 'finished'       ? 'bg-green'    : '' }
-			`)
+			const newColor = COLOR_MAP[status]
+			// UNDEFINED?
+			console.log({newColor})
+			const invalidColors = Object.values(COLOR_MAP).filter(color => color !== newColor)
+			// remove current backround (one of 'invalidColors').
+			invalidColors.forEach(color => this.html.refs['status'].classList.toggle(color, false))
+			// set new color ('newColor').
+			this.html.refs['status'].classList.toggle(newColor, true)
+			// set new status text.
 			this.html.refs['status-text'].textContent = status.replace('_', ' ')
 		}
 	}

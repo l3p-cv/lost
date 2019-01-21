@@ -27,52 +27,17 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // VIEW BINDINGS
         // Delete Pipe.
         $(this.view.html.refs['btn-delete-pipeline']).on('click', () => {
-			// remove later
 			alert('not implemented')
-			return
-			// remove later
-            let id = appModel.state.selectedPipeline.value.id
-
-            // delete response can be cancel, true or false.
-            http.deletePipe(id, appModel.state.token).then(response => {
-				if(response === true){
-				}
-				if(response === false){
-				}
-				if(response === "cancel"){
-				}
-            })
         })
         // Pause Pipeline Updates.
         $(this.view.html.refs['btn-pause-pipe']).on('click', () => {
-			// remove later
-			alert('not implemented')
 			this.view.togglePlayPause({ running: false })
-			return
-			// remove later
-			const { selectedPipeline, token } = appModel.state
-            http.pausePipe(selectedPipeline.value.id, token).then(result => {
-				// > whats this check like?
-                if(result){
-					this.view.togglePlayPause({ running: false })
-                }
-            })
+			alert('not implemented')
         })
         // Continue Pipeline Updates.
         $(this.view.html.refs['btn-play-pipe']).on('click', () => {
-			// remove later
 			alert('not implemented')
 			this.view.togglePlayPause({ running: true })
-			return
-			// remove later
-			const { selectedPipeline, token } = appModel.state
-            http.requestPipeline(selectedPipeline.value.id, token).then(result => {
-				// > whats this check like?
-                if(result){
-					this.view.togglePlayPause({ running: true })
-                }
-            })
-
         })
         // Download Logfile.
         $(this.view.html.refs['btn-download-logfile']).on('click', () => {
@@ -80,14 +45,16 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
         // Toggle Infobox.
         $(this.view.html.refs['btn-toggle-infobox']).on('click', () => {
-			// USE VIEW METHODS
-            $(this.graph.svg.refs['title']).slideToggle('slow')
-            $(this.view.html.refs['btn-toggle-infobox-icon']).toggleClass('fa fa-toggle-on fa-toggle-off')
-			// USE VIEW METHODS
+			// NOT FINISHED:
+			// need to store state in model.
+			this.view.toggleInfoBox({ enabled: false })
         })
     }
 	// this method is similar to PipelineGraphPresenter.showTemplate of start-pipe-application.
     showPipeline(data: any){
+		// cancel previous update interval.
+		this.cancelUpdate()
+
         // the graph must be initialized after switching tabs. 
         // the svg gets resized to its target container. 
         // if the container is displayed=none, it has no width.
@@ -96,6 +63,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
        	// create and render the graph.
         this.graph = new Graph(this.view.html.refs['dagre'])
+		appModel.state.graph = this.graph
 
 		// REWORK THE INFO TABLE!
 		// add pipeline information table to the graph's title.
@@ -157,7 +125,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                     this.graph.addEdge(node.model.peN, e)
                 })
             }
-			this.graph.render()
+			// this.graph.render()
         })
 		
 		// initialize every node. the nodes root reference will be updated.
@@ -173,7 +141,15 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 			this.enableUpdate(appModel.options.polling.value.rate || 1000)
 		}
     }
+	cancelUpdate(){
+		// cancel previous update interval.
+		if(this.updateIntervalId !== undefined){
+			clearInterval(this.updateIntervalId)
+		}
+	}
 	enableUpdate(rate: Number){
+		console.log('enable update')
+		// start new update interval.
 		this.updateIntervalId = setInterval(() => {
 			// change update information label.
 			$(this.view.html.refs['update-label']).fadeIn(200)
@@ -187,18 +163,31 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 					$(this.view.html.refs['update-label']).delay(500).fadeOut(200)
 					return
 				}
-
+				console.log('new data update:', response)
 				// update the model of each graph node.
 				appModel.state.pipelineElements.forEach((element, i) => {
 					element = element.node
 					const newData = response.elements[i]
-					element.model.status.update(newData.state)
-					if(element instanceof AnnoTaskRunningPresenter){
-						element.model.progress.update(newData.annoTask.progress ? newData.annoTask.progress : 0)
-					}
-					if(element instanceof ScriptRunningPresenter){
-						element.model.progress.update(newData.script.progress ? newData.script.progress : 0)
-						element.model.errorMsg.update(newData.script.errorMsg ? newData.script.errorMsg : '')
+					if(i === 0){
+						console.log('--- model update check ---')
+						console.log('model status before:', element.model.status.value)						
+						element.model.status.update(newData.state)
+						console.log('model status after:', element.model.status.value)						
+						console.log('--- view reference check ---')
+						window.hodor = element.view.html
+						console.log(element.view.html.refs)
+						console.log(element.view.html.root)
+						console.log(element.view.html.refs['status'])
+						console.log(element.view.html.root.querySelector(`[data-ref='status']`))
+					} else {
+						element.model.status.update(newData.state)
+						if(element instanceof AnnoTaskRunningPresenter){
+							element.model.progress.update(newData.annoTask.progress ? newData.annoTask.progress : 0)
+						}
+						if(element instanceof ScriptRunningPresenter){
+							element.model.progress.update(newData.script.progress ? newData.script.progress : 0)
+							element.model.errorMsg.update(newData.script.errorMsg ? newData.script.errorMsg : '')
+						}
 					}
 				})
 				

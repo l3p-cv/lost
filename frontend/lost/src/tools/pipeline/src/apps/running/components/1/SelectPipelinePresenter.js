@@ -17,7 +17,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
         this.view = SelectPipelineView
 
         // MODEL-BINDINGS
-		// data table update.
+		// update data-tables table.
         appModel.state.pipelines.on('update', (data) => this.updateTable(data))
 
         // VIEW-BINDINGS
