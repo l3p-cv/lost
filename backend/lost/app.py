@@ -7,6 +7,7 @@ from lost.api.api import api
 from lost.api.user.endpoint import namespace as user_namespace
 from lost.api.group.endpoint import namespace as group_namespace
 from lost.api.sia.endpoint import namespace as sia_namespace
+from lost.api.mia.endpoint import namespace as mia_namespace
 from lost.api.pipeline.endpoint import namespace as pipeline_namespace
 from lost.api.annotask.endpoint import namespace as annotask_namespace
 from lost.api.label.endpoint import namespace as label_namespace
@@ -63,6 +64,7 @@ def init_app(app):
     api.add_namespace(user_namespace)
     api.add_namespace(group_namespace)
     api.add_namespace(sia_namespace)
+    api.add_namespace(mia_namespace)
     api.add_namespace(pipeline_namespace)
     api.add_namespace(annotask_namespace)
     api.add_namespace(label_namespace)

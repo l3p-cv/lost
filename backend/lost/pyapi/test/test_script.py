@@ -56,7 +56,7 @@ class TestScriptApi(object):
             anno_types=['bbox'],
             anno_labels=[lbl_vec[2]]
             )
-        df = s.outp.get_anno_df()
+        df = s.outp.to_df()
         df1 = df[df['img.img_path']==IMG_PATH1]
         assert len(df1) == len(REF_BBOXES)
         df2 = df[df['img.img_path']==IMG_PATH2]
@@ -67,5 +67,3 @@ class TestScriptApi(object):
             if img_anno.img_path == IMG_PATH2:
                 bbox2 = img_anno.to_vec('anno.data')[0]
                 assert check_bbox(REF_BBOXES[0], bbox2)
-        # df = s.outp.get_anno_df()
-        # print (df)

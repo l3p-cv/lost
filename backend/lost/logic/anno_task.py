@@ -85,7 +85,7 @@ def get_current_annotask(dbm, user):
         if user.choosen_anno_task:
             anno_task = user.choosen_anno_task
             return __get_at_info(dbm, anno_task)
-        return "no annotask choosen"
+        return None
 
 def get_available_annotasks(dbm, group_ids):
     ''' get all available  annotation task for user

@@ -454,6 +454,8 @@ class ScriptOutput(Output):
                 this video.
             anno_task_id (int): Id of the assigned annotation task.
         '''
+        if img_sim_class is None:
+            img_sim_class = 1
         if video_path is not None:
             video_path = self._script.get_rel_path(video_path)
         rel_img_path = self._script.file_man.make_path_relative(img_path)
@@ -490,6 +492,8 @@ class ScriptOutput(Output):
                 if len(anno_sim_classes) != len(annos):
                     raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
                 anno.sim_class = anno_sim_classes[i]
+            else:
+                anno.sim_class = 1
             img_anno.twod_annos.append(anno)
     
     def add_annos(self, img_path, img_label=None, img_sim_class=None, 
