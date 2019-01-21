@@ -66,7 +66,7 @@ class Input(object):
             for img_anno in result.img_annos:
                 yield img_anno
     
-    def get_anno_vec(self, columns='all'):
+    def to_vec(self, columns='all'):
         '''Get a vector of all Annotations related to this object.
 
         Args:
@@ -110,7 +110,7 @@ class Input(object):
                 vec_list += img_anno.to_vec(columns)
         return vec_list
 
-    def get_anno_df(self):
+    def to_df(self):
         '''Get a pandas DataFrame of all annotations related to this object.
 
         Returns:
