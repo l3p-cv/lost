@@ -184,18 +184,6 @@ imagePresenter.image.addEventListener("load", () => {
     appModel.ui.resized.reset()
 })
 
-
-function validateConfig(config: any){
-    if(config.tools.bbox){
-        const { minArea, minAreaType } = config.drawables.bbox
-        if(!(minArea && minAreaType)){
-            console.warn("Config does not provide both minArea and minAreaType for bboxes. Defaulting to 4x4 px, absolute.", config)
-            config.drawables.bbox.minArea = 4*4
-            config.drawables.bbox.minAreaType = "abs"
-        }
-    }
-    return config
-}
 function load(){
     if(BACKEND) {
         data.requestAnnotationProgress().then((ATStatus) => {
@@ -420,7 +408,10 @@ function filterKeyStrokes($event){
     }
 }
 
-export default function init({ mountPoint, updateAnnotationStatus, props }){
+export default function init({ mountPoint, updateAnnotationStatus, props, token }){
+	// set web token.
+	appModel.reactComponent.token = token
+
 	// init redo undo.
 	state.init({ logging: false })
 	state.setHistorySize(50)
@@ -455,20 +446,17 @@ export default function init({ mountPoint, updateAnnotationStatus, props }){
 				}
 			}
 		})
-		appModel.config.update(validateConfig(config))
+		appModel.config.update(config)
 		load()
 	}
 	else {
 		data.requestConfig().then(config => {
-			config = JSON.parse(config)
 			console.log("%c successfully requested config: ", "background: #282828; color: #FE8019", config)
-			appModel.config.update(validateConfig(config))
+			appModel.config.update(config)
 			load()
 		}).catch(error => {
-			// make config optional
-			console.log(error.message)
-			appModel.config.update(appModel.config.value)
-			load()
+			console.error(error)
+			alert("SIA configuration is invalid or http communication failed.")
 		})
 	}
 }

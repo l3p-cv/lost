@@ -4,9 +4,6 @@ import * as DrawableDefaults from "drawables/drawable.defaults"
 
 import * as MenuDefaults from "drawables/menu/menu.defaults"
 
-import * as math from "shared/math"
-
-import DoublyLinkedList from "dbly-linked-list"
 
 export default {
 	// a property to hold stuff from the sia react component.

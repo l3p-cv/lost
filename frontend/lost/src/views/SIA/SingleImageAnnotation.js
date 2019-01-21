@@ -26,34 +26,34 @@ class SingleImageAnnotation extends Component {
 			mountPoint: this.mount.current,
 			updateAnnotationStatus: getWorkingOnAnnoTask,
 			props: this.props,
+			token: this.props.token,
 		})
 	}
 	render(){
 		return (
 			<Row>
-			<Col>
-				<Card>
-					<CardHeader>
-						Single Image Annotation
-					</CardHeader>
-					<CardBody>
-						<Row>
-							<Col xs='12'>
-								<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
-								<div ref={this.mount}></div>
-							</Col>
-						</Row>
-					</CardBody> 
-				</Card>
-			</Col>
-		</Row>
-			
+				<Col>
+					<Card>
+						<CardHeader>
+							Single Image Annotation
+						</CardHeader>
+						<CardBody>
+							<Row>
+								<Col xs='12'>
+									<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
+									<div ref={this.mount}></div>
+								</Col>
+							</Row>
+						</CardBody> 
+					</Card>
+				</Col>
+			</Row>
 		)
 	}
 }
 
 function mapStateToProps(state) {
-    return ({workingOnAnnoTask: state.annoTask.workingOnAnnoTask})
+    return ({ workingOnAnnoTask: state.annoTask.workingOnAnnoTask, token: state.auth.token })
 }
 
 export default connect(mapStateToProps, {getWorkingOnAnnoTask})(SingleImageAnnotation)
