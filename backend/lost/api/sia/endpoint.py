@@ -30,7 +30,7 @@ class First(Resource):
             dbm.close_session()
             return re
 
-@namespace.route('/next/<int:last_img_id>')
+@namespace.route('/next/<string:last_img_id>')
 @namespace.param('last_img_id', 'The id of the last annotated image.')
 class Next(Resource):
     @api.marshal_with(sia_anno)
@@ -48,6 +48,7 @@ class Next(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
+            last_img_id = int(last_img_id)
             re = sia.get_next(dbm, default_group_id,last_img_id, DATA_URL)
             dbm.close_session()
             return re
@@ -70,7 +71,7 @@ class Prev(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            re = sia.get_prev(dbm, default_group_id,last_img_id, DATA_URL)
+            re = sia.get_previous(dbm, default_group_id,last_img_id, DATA_URL)
             dbm.close_session()
             return re
 
