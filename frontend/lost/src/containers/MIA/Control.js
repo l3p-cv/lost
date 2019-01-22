@@ -15,13 +15,15 @@ import {
     DropdownItem
 } from 'reactstrap'
 
+const {miaZoomIn, miaZoomOut, miaAmount} = actions
+
 class Control extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             dropdownOpen: false,
-            labelName: ''
+            maxAmount: 10,
         }
 
         this.handleLabelName = this
@@ -33,6 +35,15 @@ class Control extends Component {
         this.toggle = this
             .toggle
             .bind(this)
+        this.handleZoomIn = this
+            .handleZoomIn
+            .bind(this)
+        this.handleZoomOut = this
+            .handleZoomOut
+            .bind(this)
+        this.handleMaxAmount = this
+            .handleMaxAmount
+            .bind(this)
     }
     toggle(){
         this.setState({dropdownOpen:!this.state.dropdownOpen})
@@ -43,6 +54,19 @@ class Control extends Component {
 
     handleLabelName(e){
         console.log(e)
+    }
+
+    handleZoomIn(){
+        this.props.miaZoomIn(this.props.zoom)
+    }
+
+    handleZoomOut(){
+        this.props.miaZoomOut(this.props.zoom)
+    }
+
+    handleMaxAmount(e){
+        this.setState({maxAmount: e.target.innerText})
+        this.props.miaAmount(this.state.maxAmount)
     }
      render() {
         return (
@@ -65,21 +89,21 @@ class Control extends Component {
                 </Col>
                 <Col xs='4' sm='4' lg='4'>
                     <ButtonGroup className="float-right"> 
-                            <Button className='btn-default' onClick={this.handleAddLabel}><i className="fa fa-search-plus"></i></Button>
-                            <Button className='btn-default' onClick={this.handleAddLabel}><i className="fa fa-search-minus"></i></Button>
+                            <Button className='btn-default' onClick={this.handleZoomIn}><i className="fa fa-search-plus"></i></Button>
+                            <Button className='btn-default' onClick={this.handleZoomOut}><i className="fa fa-search-minus"></i></Button>
                             <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
                             <DropdownToggle caret>
                                 Amount
                             </DropdownToggle>
                             <DropdownMenu>
-                                <DropdownItem>1</DropdownItem>
-                                <DropdownItem>5</DropdownItem>
-                                <DropdownItem>10</DropdownItem>
-                                <DropdownItem>20</DropdownItem>
-                                <DropdownItem>50</DropdownItem>
-                                <DropdownItem>100</DropdownItem>
-                                <DropdownItem>150</DropdownItem>
-                                <DropdownItem>200</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>1</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>5</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>10</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>20</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>50</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>100</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>150</DropdownItem>
+                                <DropdownItem onClick={this.handleMaxAmount}>200</DropdownItem>
                             </DropdownMenu>
                             </ButtonDropdown>
                     </ButtonGroup>
@@ -90,7 +114,7 @@ class Control extends Component {
 }
 
 function mapStateToProps(state) {
-    return ({createMessage: state.group.createMessage})
+    return ({zoom: state.mia.zoom})
 }
 
-export default connect(mapStateToProps, )(Control)
+export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount})(Control)

@@ -48,20 +48,21 @@ def __get_image_anno_counts(dbm, anno_task_id, iteration):
     remaining = dbm.count_image_remaining_annos(anno_task_id=anno_task_id).r
     available = None
     for r in dbm.count_all_image_annos(anno_task_id=anno_task_id, iteration=iteration)[0]:
-            available = r
+        available = r
     return remaining, available
 
 def __get_two_d_anno_counts(dbm, anno_task_id, iteration):
     remaining = dbm.count_two_d_remaining_annos(anno_task_id=anno_task_id).r
     available = None
     for r in dbm.count_all_two_d_annos(anno_task_id=anno_task_id, iteration=iteration)[0]:
-            available = r
+        available = r
     return remaining, available
 
 
 def set_finished(dbm, anno_task_id):
     anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
     pipe_e = dbm.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
+
     if anno_task.state == state.AnnoTask.FINISHED:
         return "already finished"
     if anno_task.state == state.AnnoTask.IN_PROGRESS or \
@@ -77,6 +78,9 @@ def set_finished(dbm, anno_task_id):
             pipe_e.state = state.PipeElement.FINISHED
             dbm.add(pipe_e)
             dbm.commit()
+            for chat in dbm.get_choosen_annotask(anno_task_id=anno_task_id):
+                dbm.delete(chat)
+                dbm.commit()
             return "success"
         else:
             return "not finished, remaining: " + str(progress['remainingAnnos'])
@@ -146,10 +150,13 @@ def __get_at_info(dbm, annotask):
 
 def choose_annotask(dbm, anno_task_id, user_id):
     # first delete all previous choosen annotasks
-        for chat in dbm.get_choosen_annotask(user_id):
-            dbm.delete(chat)
-            dbm.commit()
-        # choose new one
+    for chat in dbm.get_choosen_annotask(user_id):
+        dbm.delete(chat)
+        dbm.commit()
+    # choose new one
+    anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
+    if anno_task.state == state.AnnoTask.IN_PROGRESS or \
+    anno_task.state == state.AnnoTask.PAUSED:
         newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
         dbm.save_obj(newcat)
 
