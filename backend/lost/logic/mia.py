@@ -9,17 +9,17 @@ import skimage.io
 
 __author__ = "Gereon Reus"
 
-def get_next(db_man, default_group_id, max_amount):
+def get_next(db_man, default_user_id, max_amount):
     """ Get next ImageAnnos 
     :type db_man: lost.db.access.DBMan
     """
-    at = __get_mia_anno_task(db_man, default_group_id)
+    at = __get_mia_anno_task(db_man, default_user_id)
     if at:
         config = json.loads(at.configuration)
         if config['type'] == 'annoBased':
-            return __get_next_two_d_anno(db_man, default_group_id, at, max_amount)
+            return __get_next_two_d_anno(db_man, default_user_id, at, max_amount)
         elif config['type'] == 'imageBased':    
-            return __get_next_image_anno(db_man, default_group_id, at, max_amount)
+            return __get_next_image_anno(db_man, default_user_id, at, max_amount)
     images = dict()
     images['images'] = list()
     return images
@@ -244,25 +244,25 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount):
                     image_serialize.serialize()
                     return image_serialize.mia_json
 
-def __get_next_image_anno(db_man, group_id, at, max_amount):
+def __get_next_image_anno(db_man, user_id, at, max_amount):
 
     ## image annotations
 
     #################### get locked priority ########################
     annos = db_man.get_image_annotations_by_state(at.idx,\
-    state.Anno.LOCKED_PRIORITY, group_id, max_amount)
+    state.Anno.LOCKED_PRIORITY, user_id, max_amount)
     print("Locked Prio")
     print(len(annos))
     if len(annos) > 0:
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = ImageSerialize(db_man, annos, group_id)
+        image_serialize = ImageSerialize(db_man, annos, user_id)
         image_serialize.serialize()
         return image_serialize.mia_json
         #################### get view locked ########################
     annos = db_man.get_image_annotations_by_state(at.idx, \
-    state.Anno.LOCKED, group_id, 0)
+    state.Anno.LOCKED, user_id, 0)
     print("Locked View")
     print(len(annos))
     if len(annos) > 0:
@@ -278,14 +278,14 @@ def __get_next_image_anno(db_man, group_id, at, max_amount):
             for tanno in tempannos:
                 tanno.state = state.Anno.LOCKED
                 tanno.timestamp_lock = datetime.now()
-                tanno.group_id = group_id
+                tanno.user_id = user_id
                 annos.append(tanno)
                 db_man.add(tanno)
             db_man.commit()
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = ImageSerialize(db_man, annos, group_id, proposedLabel=False)
+        image_serialize = ImageSerialize(db_man, annos, user_id, proposedLabel=False)
         image_serialize.serialize()
         return image_serialize.mia_json
     # -- fill with new annos if size < max_amount
@@ -307,14 +307,14 @@ def __get_next_image_anno(db_man, group_id, at, max_amount):
         for anno in annos:
             anno.state = state.Anno.LOCKED
             anno.timestamp_lock = datetime.now()
-            anno.group_id = group_id
+            anno.user_id = user_id
             db_man.add(anno)
         db_man.commit()
-        image_serialize = ImageSerialize(db_man, annos, group_id)
+        image_serialize = ImageSerialize(db_man, annos, user_id)
         image_serialize.serialize()
         return image_serialize.mia_json
 
-def __update_image_annotation(db_man, group_id, data):
+def __update_image_annotation(db_man, user_id, data):
     anno_time = None
     anno_count = len(list(filter(lambda x: x['isActive'] is True, data['images'])))
     for img in data['images']:
@@ -325,13 +325,13 @@ def __update_image_annotation(db_man, group_id, data):
             if anno_time is None and anno_count > 0:
                 anno_time = (image.timestamp-image.timestamp_lock).total_seconds()
                 anno_time = anno_time/anno_count
-            image.group_id = group_id
+            image.user_id = user_id
             image.anno_time = anno_time
             db_man.add(image)
             for label in data['labels']:
                 lab = model.Label(dtype=dtype.Label.IMG_ANNO,
                                 label_leaf_id=label['id'],
-                                annotater_id=group_id,
+                                annotater_id=user_id,
                                 timestamp=image.timestamp,
                                 timestamp_lock=image.timestamp_lock,
                                 anno_time=anno_time,
@@ -342,7 +342,7 @@ def __update_image_annotation(db_man, group_id, data):
             db_man.add(image)
         db_man.commit()
 
-def __update_two_d_annotation(db_man, group_id, data):
+def __update_two_d_annotation(db_man, user_id, data):
     anno_time = None
     anno_count = len(list(filter(lambda x: x['isActive'] is True, data['images'])))
     for img in data['images']:
@@ -353,13 +353,13 @@ def __update_two_d_annotation(db_man, group_id, data):
             if anno_time is None and anno_count > 0:
                 anno_time = (two_d_anno.timestamp-two_d_anno.timestamp_lock).total_seconds()
                 anno_time = anno_time/anno_count
-            two_d_anno.group_id = group_id
+            two_d_anno.user_id = user_id
             two_d_anno.anno_time = anno_time
             db_man.add(two_d_anno)
             for label in data['labels']:
                 lab = model.Label(dtype=dtype.Label.TWO_D_ANNO,
                                 label_leaf_id=label['id'],
-                                annotater_id=group_id,
+                                annotater_id=user_id,
                                 timestamp=two_d_anno.timestamp,
                                 timestamp_lock=two_d_anno.timestamp_lock,
                                 anno_time=anno_time,
@@ -370,14 +370,14 @@ def __update_two_d_annotation(db_man, group_id, data):
             db_man.add(two_d_anno)
         db_man.commit()
 
-def get_proposed_label(db_man, anno, group_id):
+def get_proposed_label(db_man, anno, user_id):
     if anno:
-        at = __get_mia_anno_task(db_man, group_id)
+        at = __get_mia_anno_task(db_man, user_id)
         config = json.loads(at.configuration)
         try:
             if 'showProposedLabel' in config:
                 if config['showProposedLabel'] == True:
-                    label_trees = get_label_trees(db_man, group_id)
+                    label_trees = get_label_trees(db_man, user_id)
                     for tree in label_trees['labelTrees']:
                         for leaf in tree['labelLeaves']:
                             if leaf['id'] == anno.sim_class:
@@ -386,15 +386,15 @@ def get_proposed_label(db_man, anno, group_id):
             return None
     return None
 
-def get_config(db_man, group_id):
+def get_config(db_man, user_id):
     '''Get annotation tast config.
 
     Args:
         db_man (Object): Database manager object.
-        group_id (int): Id of the user.
+        user_id (int): Id of the user.
     Returns:
         dict: configuration dictionary.
     '''
-    at = __get_mia_anno_task(db_man, group_id)
+    at = __get_mia_anno_task(db_man, user_id)
     config = json.loads(at.configuration)
     return config

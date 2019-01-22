@@ -5,8 +5,6 @@ import 'bootstrap'
 import 'datatables.net'
 import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 
-import '../../../node_modules/sweetalert2/dist/sweetalert2.css'
-
 import appModel from './appModel'
 import * as http from 'pipRoot/http'
 
