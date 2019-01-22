@@ -62,6 +62,7 @@ def __get_two_d_anno_counts(dbm, anno_task_id, iteration):
 def set_finished(dbm, anno_task_id):
     anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
     pipe_e = dbm.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
+
     if anno_task.state == state.AnnoTask.FINISHED:
         return "already finished"
     if anno_task.state == state.AnnoTask.IN_PROGRESS or \
@@ -76,6 +77,9 @@ def set_finished(dbm, anno_task_id):
             dbm.add(anno_task)
             pipe_e.state = state.PipeElement.FINISHED
             dbm.add(pipe_e)
+            dbm.commit()
+            for chat in dbm.get_choosen_annotask(anno_task_id=anno_task_id):
+            dbm.delete(chat)
             dbm.commit()
             return "success"
         else:
@@ -150,8 +154,11 @@ def choose_annotask(dbm, anno_task_id, user_id):
             dbm.delete(chat)
             dbm.commit()
         # choose new one
-        newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
-        dbm.save_obj(newcat)
+        anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
+        if anno_task.state == state.AnnoTask.IN_PROGRESS or \
+        anno_task.state == state.AnnoTask.PAUSED:
+            newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
+            dbm.save_obj(newcat)
 
 def has_annotation(dbm, anno_task_id):
     if dbm.count_annos(anno_task_id) > 0:
