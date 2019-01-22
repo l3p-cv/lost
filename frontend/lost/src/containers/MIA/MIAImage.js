@@ -31,7 +31,7 @@ class MIAImage extends Component{
     }
 
     render(){
-        return(<div><img src={this.state.image.data} /></div>)
+        return(<img src={this.state.image.data} className='mia-image' height={this.props.height}/>)
     }
 
 }
