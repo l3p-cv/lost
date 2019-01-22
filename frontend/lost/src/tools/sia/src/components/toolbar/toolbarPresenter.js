@@ -466,7 +466,7 @@ appModel.config.on("update", config => {
                                 h = h / hImg
                                 x = (x / wImg) + (w / 2)
                                 y = (y / hImg) + (h / 2)
-                                newBox = new BoxPresenter ({
+                                newBox = new BoxPresenter({
                                     status: STATE.NEW,
                                     data: { x, y, w, h }
                                 })

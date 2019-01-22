@@ -1,10 +1,9 @@
-import { Observable, mouse } from "l3p-frontend"
+import { Observable } from "l3p-frontend"
 import * as math from "shared/math"
 
 import BOX_DEFAULTS from "./box.defaults"
 
 import DrawableModel from "../DrawableModel"
-import DRAWABLE_DEFAULTS from "../drawable.defaults"
 
 import imageInterface from "components/image/imageInterface"
 import appModel from "../../appModel"
@@ -14,6 +13,7 @@ export default class BoxModel extends DrawableModel {
         super(anno)
         const { imgW, imgH } = imageInterface.getDimensions()
         // validate and fix the annotation data. (defaults)
+        const minSideLength = BoxModel.getSquareMinSideLength()
         const bounds = (anno.data !== undefined) 
             ? anno.data 
             : {
@@ -24,7 +24,6 @@ export default class BoxModel extends DrawableModel {
             }
 
         // validate and init relative bounds.
-        const minSideLength = BoxModel.getSquareMinSideLength()
         const { x, y, w, h, left, right, top, bottom } = this.validate(bounds, {
             minW: minSideLength / imgW,
             minH: minSideLength / imgH,
@@ -75,10 +74,8 @@ export default class BoxModel extends DrawableModel {
                     const minBoxArea = cfg.drawables.bbox.minArea * originalImageArea
                     const minBoxSideLength = Math.sqrt(minBoxArea)
                     return math.ceilEven(minBoxSideLength)
-                    break
                 case "abs":
                     return math.ceilEven(Math.sqrt(cfg.drawables.bbox.minArea))
-                    break
             }
         }
     }

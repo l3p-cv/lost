@@ -9,18 +9,13 @@ import DrawablePresenter from "../DrawablePresenter"
 import BOX_DEFAULTS from "./box.defaults"
 import * as MENU_DEFAULTS from "../menu/menu.defaults"
 
-import DRAWABLE_DEFAULTS from "../drawable.defaults"
 import BoxModel from "./BoxModel"
-import BoxView from "./BoxView"
+import imageInterface from "components/image/imageInterface"
 
+import BoxView from "./BoxView"
+import MenuPresenter from "../menu/MenuPresenter"
 import appModel from "../../appModel"
 
-import imageInterface from "components/image/imageInterface"
-import DrawableModel from "../DrawableModel"
-
-import MenuPresenter from "../menu/MenuPresenter"
-
-import * as SVG from "drawables/svg"
 
 export default class BoxPresenter extends DrawablePresenter {
     constructor(annotationData: any){

@@ -1726,7 +1726,7 @@ export function resetSelection(){
 }
 
 export function resize(width: Number, height: Number){
-    // console.log("canvas size:", width, height)
+    console.log("canvas size:", width, height)
     imageView.resize(width, height)
 
     // resize drawables

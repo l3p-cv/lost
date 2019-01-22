@@ -375,11 +375,11 @@ class SiaUpdate(object):
         two_d_json['anno_time'] = two_d.anno_time
         two_d_json['data'] = two_d.data
         label_list_json = list()
-        for label in two_d.labels:
+        if two_d.label:
             label_json = dict()
-            label_json['id'] = label.idx
-            label_json['label_leaf_id'] = label.label_leaf.idx
-            label_json['label_leaf_name'] = label.label_leaf.name
+            label_json['id'] = two_d.label.idx
+            label_json['label_leaf_id'] = two_d.label.label_leaf.idx
+            label_json['label_leaf_name'] = two_d.label.label_leaf.name
             label_list_json.append(label_json)
 
         two_d_json['labels'] = label_list_json
@@ -440,32 +440,32 @@ class SiaSerialize(object):
                 bbox_json = dict()
                 bbox_json['id'] = two_d_anno.idx
                 bbox_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    bbox_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    bbox_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 bbox_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['bBoxes'].append(bbox_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POINT:
                 point_json = dict()
                 point_json['id'] = two_d_anno.idx
                 point_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    point_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    point_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 point_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['points'].append(point_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.LINE:
                 line_json = dict()
                 line_json['id'] = two_d_anno.idx
                 line_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    line_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    line_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 line_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['lines'].append(line_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
                 polygon_json = dict()
                 polygon_json['id'] = two_d_anno.idx
                 polygon_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    polygon_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    polygon_json['labelIds'].append(two_d_anno.label_leaf_id)
                 polygon_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['polygons'].append(polygon_json)
         return self.sia_json

@@ -35,7 +35,6 @@ export default class BoxView extends DrawableView {
     constructor(config: any) {
         const { bounds } = config
         const { x, y, w, h } = bounds
-		console.trace(config)
 
         const borderWidth = BOX_DEFAULTS.strokeWidth
         const wb = w + (2 * borderWidth)

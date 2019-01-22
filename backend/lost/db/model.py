@@ -136,10 +136,10 @@ class TwoDAnno(Base):
     dtype = Column(Integer)
     sim_class = Column(Integer)
     iteration = Column(Integer)
-    user_id = Column(Integer, ForeignKey('group.idx'))
+    user_id = Column(Integer, ForeignKey('user.idx'))
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     label = relationship('Label', uselist=False) #type: Label
-    annotator = relationship('Group', uselist=False) #type: Group
+    annotator = relationship('User', uselist=False) #type: Group
     confidence = Column(Float)
     anno_time = Column(Float)
 

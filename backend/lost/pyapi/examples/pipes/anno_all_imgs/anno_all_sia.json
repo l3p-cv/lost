@@ -43,7 +43,8 @@
           },
           "drawables": {
             "bbox": {
-              "minArea": 0.001234
+              "minArea": 0.001234,
+			  "minAreaType": "rel"
             }
           }
         }

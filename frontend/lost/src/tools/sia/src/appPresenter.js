@@ -167,7 +167,7 @@ $(window).on("keydown", ($event) => filterKeyStrokes($event))
 $(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
     data.sendData(appModel.getResponseData()).then(() => {
         data.finish().then((message) => {
-            if(message !== "succeeded"){
+            if(message !== "success"){
                 alert(message)
                 throw new Error(message)
             } else {
@@ -226,11 +226,10 @@ function load(){
 }
 function resize(){
     // requirement
-    if(!appModel.data.image.url.isInInitialState && imageView.image !== null){
-
+    if(!appModel.data.image.rawLoadedImage.isInInitialState && imageView.image !== null){
         // preparation
-        let imageWidth = imageView.image.width
-        let imageHeight = imageView.image.height
+        let imageWidth = appModel.data.image.rawLoadedImage.value.width
+        let imageHeight = appModel.data.image.rawLoadedImage.value.height
 
         // looking for
         let imageRatio;
@@ -251,7 +250,7 @@ function resize(){
             imageView.hide() // @add-container-for-that? (getting the top value from boundingClientRect)
 
             // scroll into view to be able to use getBoundingClientRect for calculations
-            appView.html.ids["sia-drawer-content"].scrollIntoView(true)
+			document.querySelector("main div.card-header").scrollIntoView(true)
 
             if(isPortrait){
                 // console.log("is portrait")
@@ -292,14 +291,15 @@ function resize(){
                 // console.log("toolbar should be row")
 
                 // calculate height
-                availHeight = window.innerHeight 
+                availHeight = window.innerHeight
                     - propertiesPresenter.getBounds().bottom
                     - toolbarPresenter.getHeight()
-                    - (2 * Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap")))
+                    - (2 * Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap")))
                     - 30 // image info height (approx)
                     - imageView.padding.top
                     - imageView.padding.bottom
                     - LAYOUT.space
+
                 optimalImageHeight = availHeight
                 optimalImageWidth = optimalImageHeight * imageRatio
                 // console.log("avail height:", availHeight)
@@ -314,9 +314,10 @@ function resize(){
                 appView.html.ids["sia-content-wrapper"].classList.toggle("sia-layout-landscape-toolbar-below", false)
                 appView.html.ids["sia-content-wrapper"].classList.toggle("sia-layout-landscape-toolbar-on-side", true)
                 toolbarPresenter.setLayout("column")
+
+                // recalculate height again (and width as it depends)
                 const requiredWidth = toolbarPresenter.getWidth()
                     + Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap"))
-                // recalculate height again (and width as it depends)
                 if(remainingWidth > requiredWidth){
                     // console.log("enough space to set toolbar on side")
                     // calculate height
@@ -333,7 +334,7 @@ function resize(){
                     // calculate width
                     availWidth = document.getElementById("sia-content-wrapper").clientWidth
                         - toolbarPresenter.getWidth()
-                        - Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap"))
+                        - Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap"))
                         - 2 * imageView.padding.side
                     applyMinimumRules()
                 } 
@@ -364,10 +365,11 @@ function resize(){
             // apply scale factor
             newImageHeight *= LAYOUT.scaleFactor
             newImageWidth *= LAYOUT.scaleFactor
-
+			console.log({newImageWidth, newImageHeight})
             // floor even width and height
             newImageWidth = math.floorEven(newImageWidth)
             newImageHeight = math.floorEven(newImageHeight)
+			console.log({newImageWidth, newImageHeight})
 
             // finish
             imageView.show()

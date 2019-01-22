@@ -118,8 +118,8 @@ export function resize(width: Number, height: Number){
     $(html.ids["sia-image-info"]).width(width)
 
     // resize image
-	html.ids["sia-imgview-svg-image"].setAttribute("width", width) 
-    html.ids["sia-imgview-svg-image"].setAttribute("height", height) 
+	html.ids["sia-imgview-svg-image"].setAttribute("width", width)
+    html.ids["sia-imgview-svg-image"].setAttribute("height", height)
 
     // resize svg
     html.ids["sia-imgview-svg"].setAttribute("width", width)

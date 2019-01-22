@@ -1,6 +1,6 @@
 import appModel from "./appModel"
-import { http } from "l3p-frontend"
-// import { http } from "root/l3p-frontend"
+// import { http } from "l3p-frontend"
+import { http } from "root/l3p-frontend"
 
 import { API_URL } from 'root/settings'
 
@@ -93,7 +93,7 @@ export function requestAnnotationProgress() {
 	})
 }
 export function finish(){
-    return http.post({
+    return http.get({
 		url: REQUEST_STRINGS.POST_FINISH,
 		token: appModel.reactComponent.token,
 	})
