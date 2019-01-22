@@ -263,18 +263,18 @@ class DBMan(object):
         return self.session.query(model.ImageAnno)\
             .filter(model.ImageAnno.anno_task_id==anno_task_id).all()
 
-    def get_image_annotations_by_state(self, anno_task_id, state, group_id, amount):
-        ''' Get all Image Anno by annotask, state and group_id
+    def get_image_annotations_by_state(self, anno_task_id, state, user_id, amount):
+        ''' Get all Image Anno by annotask, state and user_id
         '''
         if (amount > 0):
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
                                                           model.ImageAnno.anno_task_id== anno_task_id,\
-                                                          model.ImageAnno.group_id==group_id)\
+                                                          model.ImageAnno.user_id==user_id)\
                                                           .limit(amount).all()
         else:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.state==state,\
                                                           model.ImageAnno.anno_task_id== anno_task_id,\
-                                                          model.ImageAnno.group_id==group_id).all()
+                                                          model.ImageAnno.user_id==user_id).all()
 
 
     def get_image_annotation_by_sim_class(self, anno_task_id, sim_class, amount):
@@ -457,23 +457,23 @@ class DBMan(object):
                                                        model.ImageAnno.state==state.Anno.UNLOCKED, \
                                                        model.ImageAnno.iteration==iteration).first()
 
-    def get_next_locked_sia_anno(self, anno_task_id, group_id, iteration):
+    def get_next_locked_sia_anno(self, anno_task_id, user_id, iteration):
         ''' Get next sia annotation of an anno_task
         '''
-        # sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND state=%d AND group_id=%d AND iteration=%d LIMIT 2"\
-        #  %(anno_task_id, state.Anno.LOCKED, group_id, iteration)
+        # sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND state=%d AND user_id=%d AND iteration=%d LIMIT 2"\
+        #  %(anno_task_id, state.Anno.LOCKED, user_id, iteration)
         return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
                                                        model.ImageAnno.state==state.Anno.LOCKED, \
-                                                       model.ImageAnno.group_id==group_id, \
+                                                       model.ImageAnno.user_id==user_id, \
                                                        model.ImageAnno.iteration==iteration).all()
 
-    def get_next_sia_anno_by_last_anno(self, anno_task_id, group_id, img_anno_id, iteration):
+    def get_next_sia_anno_by_last_anno(self, anno_task_id, user_id, img_anno_id, iteration):
         ''' Get next sia annotation of an anno_task
         '''
-        # sql = "SELECT * FROM image_anno WHERE group_id=%d AND anno_task_id=%d AND idx>%d AND iteration=%d LIMIT 1"\
-        #  %(group_id, anno_task_id, img_anno_id, iteration)
+        # sql = "SELECT * FROM image_anno WHERE user_id=%d AND anno_task_id=%d AND idx>%d AND iteration=%d LIMIT 1"\
+        #  %(user_id, anno_task_id, img_anno_id, iteration)
         return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
-                                                       model.ImageAnno.group_id== group_id, \
+                                                       model.ImageAnno.user_id== user_id, \
                                                        model.ImageAnno.idx > img_anno_id, \
                                                        model.ImageAnno.iteration==iteration).first()
 
@@ -483,13 +483,13 @@ class DBMan(object):
         return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id==img_anno_id,\
                                                             model.TwoDAnno.iteration==iteration).all()
 
-    def get_previous_sia_anno(self, anno_task_id, group_id, img_anno_id, iteration):
+    def get_previous_sia_anno(self, anno_task_id, user_id, img_anno_id, iteration):
         ''' Get a previous image annotation by current annotation id
         '''
         sql = "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
          FROM image_anno WHERE idx<%d\
-         AND group_id=%d)"\
-         %(iteration, anno_task_id, img_anno_id, group_id)
+         AND user_id=%d)"\
+         %(iteration, anno_task_id, img_anno_id, user_id)
         img_anno = self.session.execute(sql).first()
         if img_anno:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()
@@ -526,20 +526,20 @@ class DBMan(object):
         elif pipe_element_id:
             return self.session.query(model.Loop)\
             .filter(model.Loop.pipe_element_id==pipe_element_id).first()
-    def get_last_sia_anno(self, anno_task_id , iteration, group_id):
+    def get_last_sia_anno(self, anno_task_id , iteration, user_id):
         ''' Get last locked sia annotation
         '''
         sql = "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
-         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND group_id=%d)"\
-         %(iteration, anno_task_id, group_id)
+         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d)"\
+         %(iteration, anno_task_id, user_id)
         return self.session.execute(sql).first()
 
-    def get_first_sia_anno(self, anno_task_id, iteration, group_id ):
+    def get_first_sia_anno(self, anno_task_id, iteration, user_id ):
         ''' Get first sia annotation of an user
         '''
         sql = "SELECT * FROM image_anno WHERE idx=(SELECT min(idx)\
-         FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND group_id=%d )"\
-         %(anno_task_id, iteration, group_id)
+         FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND user_id=%d )"\
+         %(anno_task_id, iteration, user_id)
         return self.session.execute(sql).first()
     
     def get_all_label_trees(self):
@@ -581,18 +581,18 @@ class DBMan(object):
         .filter(model.ImageAnno.anno_task_id == anno_task_id).first()[0]
     
 
-    def get_two_d_annotations_by_state(self, anno_task_id, state, group_id, amount):
+    def get_two_d_annotations_by_state(self, anno_task_id, state, user_id, amount):
         ''' Get all TwoDAnno by annotask, state and user id
         '''
         if (amount > 0):
             return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state,\
                                                             model.TwoDAnno.anno_task_id== anno_task_id,\
-                                                            model.TwoDAnno.group_id==group_id)\
+                                                            model.TwoDAnno.user_id==user_id)\
                                                             .limit(amount).all()
         else:
             return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.state==state,\
                                                             model.TwoDAnno.anno_task_id== anno_task_id,\
-                                                            model.TwoDAnno.group_id==group_id).all()
+                                                            model.TwoDAnno.user_id==user_id).all()
 
     def get_two_d_anno_by_sim_class(self, anno_task_id, sim_class, amount):
         ''' Get unlocked image annotations by sim_class and anno task
