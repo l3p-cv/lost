@@ -18,15 +18,11 @@ class First(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx        
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
         else:
-            re = sia.get_first(dbm, default_group_id, DATA_URL)
+            re = sia.get_first(dbm, identity, DATA_URL)
             dbm.close_session()
             return re
 
@@ -39,17 +35,13 @@ class Next(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx   
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
             last_img_id = int(last_img_id)
-            re = sia.get_next(dbm, default_group_id,last_img_id, DATA_URL)
+            re = sia.get_next(dbm, identity,last_img_id, DATA_URL)
             dbm.close_session()
             return re
 
@@ -62,16 +54,12 @@ class Prev(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx   
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            re = sia.get_previous(dbm, default_group_id,last_img_id, DATA_URL)
+            re = sia.get_previous(dbm, identity,last_img_id, DATA_URL)
             dbm.close_session()
             return re
 
@@ -83,17 +71,13 @@ class Update(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx   
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
             data = request.data
-            re = sia.update(dbm, data, default_group_id)
+            re = sia.update(dbm, data, identity)
             dbm.close_session()
             return re
 
@@ -104,16 +88,12 @@ class Finish(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx   
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            re = sia.finish(dbm, default_group_id)
+            re = sia.finish(dbm, identity)
             dbm.close_session()
             return re
 
@@ -125,16 +105,12 @@ class Junk(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx   
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            re = sia.get_prev(dbm, default_group_id,img_id)
+            re = sia.get_prev(dbm, identity,img_id)
             dbm.close_session()
             return re
 
@@ -146,15 +122,11 @@ class Label(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx   
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
         else:
-            re = sia.get_label_trees(dbm, default_group_id)
+            re = sia.get_label_trees(dbm, identity)
             dbm.close_session()
             return re
 
@@ -166,14 +138,10 @@ class Configuration(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx   
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
         else:
-            re = sia.get_configuration(dbm, default_group_id)
+            re = sia.get_configuration(dbm, identity)
             dbm.close_session()
             return re

@@ -14,13 +14,13 @@ __author__ = "Gereon Reus"
 # except Exception:
 #     print("Port Already in Use")
 
-def get_first(db_man, group_id, media_url):
+def get_first(db_man, user_id, media_url):
     """ Get first image anno.
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, group_id)
+    at = get_sia_anno_task(db_man, user_id)
     iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
-    tmp_anno = db_man.get_first_sia_anno(at.idx, iteration, group_id)
+    tmp_anno = db_man.get_first_sia_anno(at.idx, iteration, user_id)
     if tmp_anno:
         image_anno_id = tmp_anno.idx
         image_anno = db_man.get_image_anno(image_anno_id)
@@ -30,36 +30,36 @@ def get_first(db_man, group_id, media_url):
                 image_anno.state = state.Anno.LOCKED
             elif image_anno.state == state.Anno.LABELED:
                 image_anno.state = state.Anno.LABELED_LOCKED
-            is_last_image = __is_last_image__(db_man, group_id, at.idx, iteration, image_anno.idx)
+            is_last_image = __is_last_image__(db_man, user_id, at.idx, iteration, image_anno.idx)
             current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
-            sia_serialize = SiaSerialize(image_anno, group_id, media_url, True, is_last_image, current_image_number, total_image_amount)
+            sia_serialize = SiaSerialize(image_anno, user_id, media_url, True, is_last_image, current_image_number, total_image_amount)
             db_man.save_obj(image_anno)
             return sia_serialize.serialize()
     else:
         return "nothing available"
-def get_next(db_man, group_id, img_id, media_url):
+def get_next(db_man, user_id, img_id, media_url):
     # ptvsd.wait_for_attach()
     # ptvsd.break_into_debugger()
     """ Get next ImageAnno with all its TwoDAnnos
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, group_id)
+    at = get_sia_anno_task(db_man, user_id)
     if at:
         image_anno = None
         iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
         if int(img_id) == -1:
-            tmp_annos =  db_man.get_next_locked_sia_anno(at.idx, group_id, iteration)
+            tmp_annos =  db_man.get_next_locked_sia_anno(at.idx, user_id, iteration)
             if len(tmp_annos) > 0:
                 image_anno = tmp_annos[0]
             if image_anno is None:
                 image_anno = db_man.get_next_unlocked_sia_anno(at.idx, iteration)
                 if image_anno is None:
-                    tmp_anno = db_man.get_last_sia_anno(at.idx, iteration, group_id)
+                    tmp_anno = db_man.get_last_sia_anno(at.idx, iteration, user_id)
                     if tmp_anno:
                         image_anno_id = tmp_anno.idx
                         image_anno = db_man.get_image_anno(image_anno_id)
         else:
-            image_anno = db_man.get_next_sia_anno_by_last_anno(at.idx, group_id, img_id, iteration)
+            image_anno = db_man.get_next_sia_anno_by_last_anno(at.idx, user_id, img_id, iteration)
             if image_anno is None:
                 image_anno = db_man.get_next_unlocked_sia_anno(at.idx, iteration)
         if image_anno:
@@ -69,27 +69,27 @@ def get_next(db_man, group_id, img_id, media_url):
                 image_anno.state = state.Anno.LOCKED
             elif image_anno.state == state.Anno.LABELED:
                 image_anno.state = state.Anno.LABELED_LOCKED
-            image_anno.group_id = group_id
+            image_anno.user_id = user_id
             db_man.save_obj(image_anno)
-            first_image_anno = db_man.get_first_sia_anno(at.idx, iteration, group_id)
+            first_image_anno = db_man.get_first_sia_anno(at.idx, iteration, user_id)
             if first_image_anno is not None and first_image_anno.idx != image_anno.idx:
                 is_first_image = False
-            is_last_image = __is_last_image__(db_man, group_id, at.idx, iteration, image_anno.idx) 
+            is_last_image = __is_last_image__(db_man, user_id, at.idx, iteration, image_anno.idx) 
             current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
-            sia_serialize = SiaSerialize(image_anno, group_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
+            sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
             db_man.save_obj(image_anno)
             return sia_serialize.serialize()
     return "nothing available"
-def get_previous(db_man, group_id, img_id, media_url):
+def get_previous(db_man, user_id, img_id, media_url):
     """ Get previous image anno
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, group_id)
+    at = get_sia_anno_task(db_man, user_id)
     iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
-    image_anno = db_man.get_previous_sia_anno(at.idx, group_id, img_id, iteration)
+    image_anno = db_man.get_previous_sia_anno(at.idx, user_id, img_id, iteration)
     is_last_image = False
     is_first_image = False
-    first_anno = db_man.get_first_sia_anno(at.idx, iteration, group_id)
+    first_anno = db_man.get_first_sia_anno(at.idx, iteration, user_id)
     if image_anno is None:
         if first_anno:
             image_anno = db_man.get_image_anno(img_anno_id=first_anno.idx)
@@ -99,15 +99,15 @@ def get_previous(db_man, group_id, img_id, media_url):
         image_anno.timestamp_lock = datetime.now()
         db_man.save_obj(image_anno)
         current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
-        sia_serialize = SiaSerialize(image_anno, group_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
+        sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
         return sia_serialize.serialize()
     else:
         return "nothing available"
-def get_label_trees(db_man, group_id):
+def get_label_trees(db_man, user_id):
     """
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, group_id)
+    at = get_sia_anno_task(db_man, user_id)
     label_trees_json = dict()
     label_trees_json['labelTrees'] = list()
     for rll in db_man.get_all_required_label_leaves(at.idx): #type: lost.db.model.RequiredLabelLeaf
@@ -126,11 +126,11 @@ def get_label_trees(db_man, group_id):
             label_tree_json['labelLeaves'].append(label_leaf_json)
         label_trees_json['labelTrees'].append(label_tree_json)
     return label_trees_json
-def get_configuration(db_man, group_id):
-    at = get_sia_anno_task(db_man,group_id)
+def get_configuration(db_man, user_id):
+    at = get_sia_anno_task(db_man,user_id)
     return json.loads(at.configuration)
-def get_sia_anno_task(db_man, group_id):
-    for cat in db_man.get_choosen_annotask(group_id):
+def get_sia_anno_task(db_man, user_id):
+    for cat in db_man.get_choosen_annotask(user_id):
         if cat.anno_task.dtype == dtype.AnnoTask.SIA:
             return cat.anno_task
     return None
@@ -144,19 +144,19 @@ def get_image_progress(db_man, anno_task, img_id):
 
     return current_image_number, total_image_amount
 
-def __is_last_image__(db_man, group_id, at_id, iteration, img_id):
+def __is_last_image__(db_man, user_id, at_id, iteration, img_id):
     """
         :type db_man: lost.db.access.DBMan
     """
     # three ways to check
     # first: are there some next locked annos for that user ?
-    image_annos = db_man.get_next_locked_sia_anno(at_id, group_id, iteration)
+    image_annos = db_man.get_next_locked_sia_anno(at_id, user_id, iteration)
     if image_annos:
         # has to be more than one, current viewed image is not part of condition
         if len(image_annos) > 1:
             return False
     # second: are we in a previous view ? - check for next allready labeled anno by last anno
-    image_anno = db_man.get_next_sia_anno_by_last_anno(at_id, group_id, img_id, iteration)
+    image_anno = db_man.get_next_sia_anno_by_last_anno(at_id, user_id, img_id, iteration)
     if image_anno:
         return False
     # third: is there one next free anno for that user ?
@@ -164,31 +164,31 @@ def __is_last_image__(db_man, group_id, at_id, iteration, img_id):
     if image_anno:
         # found one - lock it !
         img = db_man.get_image_anno(image_anno.idx)
-        img.group_id = group_id
+        img.user_id = user_id
         img.state = state.Anno.LOCKED
         db_man.save_obj(img)
         return False
     else:
         return True
 
-def update(db_man, data, group_id):
+def update(db_man, data, user_id):
     """ Update Image and TwoDAnnotation from SIA
     :type db_man: lost.db.access.DBMan
     """
-    sia_update = SiaUpdate(db_man, data, group_id)
+    sia_update = SiaUpdate(db_man, data, user_id)
     return sia_update.update()
-def finish(db_man, group_id):
-    at = get_sia_anno_task(db_man, group_id)
+def finish(db_man, user_id):
+    at = get_sia_anno_task(db_man, user_id)
     if at.idx: 
         return set_finished(db_man, at.idx)
     else:
         return "error: anno_task not found"
 
-def junk(db_man, group_id, img_id):
+def junk(db_man, user_id, img_id):
     image_anno = db_man.get_image_anno(img_id) #type: lost.db.model.ImageAnno
     if image_anno:
         image_anno.state = state.Anno.JUNK
-        image_anno.group_id = group_id
+        image_anno.user_id = user_id
         image_anno.timestamp = datetime.now()
         db_man.save_obj(image_anno)
         return "success"
@@ -196,15 +196,15 @@ def junk(db_man, group_id, img_id):
         return "error: image_anno not found"
 
 class SiaUpdate(object):
-    def __init__(self, db_man, data, group_id):
+    def __init__(self, db_man, data, user_id):
         """
         :type db_man: lost.db.access.DBMan
         """
         self.timestamp = datetime.now()
         self.db_man = db_man
         self.sia_history_path = FileMan(self.db_man.lostconfig).sia_history_path
-        self.group_id = group_id
-        self.at = get_sia_anno_task(db_man, group_id) #type: lost.db.model.AnnoTask
+        self.user_id = user_id
+        self.at = get_sia_anno_task(db_man, user_id) #type: lost.db.model.AnnoTask
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
         self.image_anno = self.db_man.get_image_annotation(data['imgId'])
         self.image_anno.timestamp = self.timestamp
@@ -280,7 +280,7 @@ class SiaUpdate(object):
         for drawable in drawables:
             if drawable['status'] == "database":
                 two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
-                two_d.group_id = self.group_id
+                two_d.user_id = self.user_id
                 two_d.state = state.Anno.LABELED
                 two_d.timestamp = self.timestamp
                 two_d.timestamp_lock = self.image_anno.timestamp_lock
@@ -304,7 +304,7 @@ class SiaUpdate(object):
                                     timestamp_lock=self.image_anno.timestamp_lock,
                                     anno_time=average_anno_time,
                                     data=json.dumps(drawable['data']),
-                                    group_id=self.group_id,
+                                    user_id=self.user_id,
                                     iteration=self.iteration,
                                     dtype=two_d_type,
                                     state=state.Anno.LABELED)
@@ -324,7 +324,7 @@ class SiaUpdate(object):
                 two_d.timestamp = self.timestamp
                 two_d.timestamp_lock = self.image_anno.timestamp_lock
                 two_d.data = json.dumps(drawable['data'])
-                two_d.group_id = self.group_id
+                two_d.user_id = self.user_id
                 if two_d.anno_time is None:
                     two_d.anno_time = 0.0
                 two_d.anno_time += average_anno_time
@@ -367,7 +367,7 @@ class SiaUpdate(object):
     def __serialize_two_d_json(self, two_d):
         two_d_json = dict()
         two_d_json['id'] = two_d.idx
-        two_d_json['group_id'] = two_d.group_id
+        two_d_json['user_id'] = two_d.user_id
         if two_d.annotator:
             two_d_json['user_name'] = two_d.annotator.first_name + " " + two_d.annotator.last_name 
         else: 
@@ -392,7 +392,7 @@ class SiaUpdate(object):
         self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
         self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
         self.history_json['image_anno_time'] = self.image_anno.anno_time
-        self.history_json['group_id'] = self.group_id
+        self.history_json['user_id'] = self.user_id
         self.history_json['user_name'] = None
         if self.image_anno.annotator:
             self.history_json['user_name'] = self.image_anno.annotator.first_name + " " + self.image_anno.annotator.last_name
@@ -412,10 +412,10 @@ class SiaUpdate(object):
             json.dump(data, f)
 
 class SiaSerialize(object):
-    def __init__(self, image_anno, group_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount):
+    def __init__(self, image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount):
         self.sia_json = dict()
         self.image_anno = image_anno #type: lost.db.model.ImageAnno
-        self.group_id = group_id
+        self.user_id = user_id
         self.media_url = media_url
         self.is_first_image = is_first_image
         self.is_last_image = is_last_image

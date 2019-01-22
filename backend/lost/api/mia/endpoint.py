@@ -17,16 +17,12 @@ class Next(Resource):
     def get(self, max_amount):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        default_group_id = None
-        for g in user.groups:
-            if g.is_user_default:
-                default_group_id = g.idx        
+        user = dbm.get_user_by_id(identity)     
         if not user.has_role(roles.ANNOTATER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
         else:
-            re = mia.get_next(dbm, default_group_id, max_amount)
+            re = mia.get_next(dbm, identity, max_amount)
             dbm.close_session()
             return re
 
