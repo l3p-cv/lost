@@ -172,7 +172,6 @@ $(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
                 throw new Error(message)
             } else {
                 appModel.cleanSession()
-                window.AT.setFinished()
                 handleNothingAvailable()
                 console.log("%c application finished with status: ", "background: #282828; color: #FE8019", message)
             }
