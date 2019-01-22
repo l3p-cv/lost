@@ -4,15 +4,7 @@ import "./properties.styles.scss"
 import { NodeTemplate } from "l3p-frontend"
 
 
-function drawImage(){
-    const ctx = html.refs["canvas"].getContext("2d")
-    // used on image update and?
-    ctx.clearRect(0, 0, html.refs["canvas"].width, html.refs["canvas"].height)
-    ctx.drawImage(image,
-        0, 0, image.width, image.height,
-        0, 0, html.refs["canvas"].width, html.refs["canvas"].height
-    )
-}
+
 
 export const html = new NodeTemplate(`
     <div id="sia-propview-container">
@@ -175,7 +167,6 @@ export function setLayout(layout: String){
     }
 }
 export function setLabel(id: String){
-    console.log("setLabel:", id)
     html.ids["sia-propview-label-select"].value = id
 }
 export function setDescription(description: String){

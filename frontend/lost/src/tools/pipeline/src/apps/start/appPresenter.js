@@ -37,7 +37,7 @@ export default function init({ token }){
 		ConfigPipelineTab, 
 		StartPipelineTab,
 	])
-    appModel.state.token = token
+    appModel.reactComponent.token = token
     http.requestTemplates(token).then((response) => {
         appModel.data.pipelineTemplates.update(response.templates)
     })

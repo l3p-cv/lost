@@ -14,7 +14,7 @@ class StartPipelineTab extends WizardTabPresenter {
         
         // VIEW BINDING
         $(this.view.html.refs.btnStartPipe).on('click', () => {
-            http.startPipe(appModel.getOutput(), appModel.state.token).then(response => {
+            http.startPipe(appModel.getOutput(), appModel.reactComponent.token).then(response => {
 				alert('started pipeline')
             })
         })

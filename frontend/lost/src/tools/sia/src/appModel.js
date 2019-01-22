@@ -108,8 +108,8 @@ export default {
 			// update image data.
 			// image id and url must stay in this sequence.
             this.data.image.id = data.image.id
-            this.data.image.url.update(`${API_URL}/data/${data.image.url}`)
-            this.data.image.isFirst = (data.image.isFIrst) ? data.image.isFIrst : false
+            this.data.image.url.update(`${API_URL}${data.image.url}`)
+            this.data.image.isFirst = (data.image.isFirst) ? data.image.isFirst : false
             this.data.image.isLast = (data.image.isLast) ? data.image.isLast : false
             this.data.image.number = data.image.number
             this.data.image.amount = data.image.amount

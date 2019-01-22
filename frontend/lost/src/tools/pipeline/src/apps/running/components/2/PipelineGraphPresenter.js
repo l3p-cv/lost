@@ -155,8 +155,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 			$(this.view.html.refs['update-label']).fadeIn(200)
 
 			// request update.
-			const { selectedPipeline, token } = appModel.state
-			http.requestPipeline(selectedPipeline.value.id, token).then(response => {
+			http.requestPipeline(appModel.state.selectedPipeline.value.id, appModel.reactComponent.token).then(response => {
 				// stop polling if backend has no data (returns a status string)
 				if(typeof response === 'string'){
 					clearInterval(this.updateIntervalId)

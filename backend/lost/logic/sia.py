@@ -394,8 +394,8 @@ class SiaUpdate(object):
         self.history_json['image_anno_time'] = self.image_anno.anno_time
         self.history_json['group_id'] = self.group_id
         self.history_json['user_name'] = None
-        if self.image_anno.annotator:
-            self.history_json['user_name'] = self.image_anno.annotator.first_name + " " + self.image_anno.annotator.last_name
+        #if self.image_anno.annotator:
+        #    self.history_json['user_name'] = self.image_anno.annotator.first_name + " " + self.image_anno.annotator.last_name
         json_file_path = os.path.join(self.sia_history_path, str(self.at.idx) + '_' + self.at.name + '.json')
         if not os.path.exists(json_file_path):
             with open(json_file_path, 'w') as f:

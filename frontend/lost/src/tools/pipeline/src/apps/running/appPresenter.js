@@ -32,9 +32,9 @@ export default function init({ token, polling }){
 		SelectPipelineTab, 
 		PipelineGraphTab, 
 	])  
-    appModel.state.token = token
+    appModel.reactComponent.token = token
 	appModel.options.polling.update(polling)
-	http.requestPipelines(appModel.state.token).then((response) => {
+	http.requestPipelines(appModel.reactComponent.token).then((response) => {
 		if(!response.pipes){
 			console.log(response)
 			throw new Error(`Backend returned no running pipelines.`)

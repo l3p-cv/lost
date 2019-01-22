@@ -12,6 +12,7 @@ import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import DrawablePresenter from "drawables/DrawablePresenter"
 
 import appModel from "../../appModel"
+import * as http from "../../http"
 import * as imageView from "./imageView"
 
 
@@ -64,16 +65,19 @@ appModel.config.on("update", config => {
         }
     })
 })
-
-appModel.data.image.url.on("update", (url) => imageView.updateImage(url))
-appModel.data.image.info.on("update", (info) => imageView.updateInfo(info))
+appModel.data.image.url.on("update", url => {
+	http.requestImage(url).then(blob => {
+		const objectURL = window.URL.createObjectURL(blob)
+		imageView.updateImage(objectURL)
+	})
+})
+appModel.data.image.info.on("update", info => imageView.updateInfo(info))
 Object.values(appModel.state.drawables).forEach(observable => {
     observable.on("update", (drawables) => addDrawables(drawables))
     observable.on("reset", (drawables) => removeDrawables(drawables))
     observable.on("add", (drawable) => addDrawable(drawable))
     observable.on("remove", (drawable) => removeDrawable(drawable))
 })
-
 appModel.state.boxEventActive.on("update", boxEventInfo => {
     Object.values(appModel.state.drawables).forEach(list => {
         list.value.forEach(drawable => {
@@ -99,7 +103,6 @@ appModel.state.boxEventActive.on("update", boxEventInfo => {
         })   
     })
 })
-
 
 $(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
     alert("Function not completely implemented.")
@@ -1594,11 +1597,8 @@ export function createDrawables(drawablesRawData: any){
     appModel.state.drawableIdList.length = 0
     appModel.state.selectedDrawableId = undefined
     
-    // create new drawables
-    const containsData = Object.values(drawablesRawData).find(d => d && d.length > 0) !== undefined
-
-    // create 'DrawablePresenter's
-    if(containsData === true){
+    // create drawables
+    if(Object.values(drawablesRawData).find(d => d && d.length > 0) !== undefined){
         Object.keys(drawablesRawData).forEach(key => {
             let drawablesRaw = drawablesRawData[key]
             if(drawablesRaw === undefined){
@@ -1608,7 +1608,7 @@ export function createDrawables(drawablesRawData: any){
             // determine constructor
             switch(key){
                 case "bBoxes":
-                bulkCreate(BoxPresenter, key, drawablesRaw) 
+               	bulkCreate(BoxPresenter, key, drawablesRaw) 
                 break
                 case "points":
                 bulkCreate(PointPresenter, key, drawablesRaw)

@@ -7,6 +7,7 @@ from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
+import json
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -77,7 +78,7 @@ class Prev(Resource):
 
 @namespace.route('/update')
 class Update(Resource):
-    @api.expect(sia_update)
+    # @api.expect(sia_update)
     @jwt_required 
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -92,7 +93,7 @@ class Update(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            data = request.data
+            data = json.loads(request.data)
             re = sia.update(dbm, data, default_group_id)
             dbm.close_session()
             return re

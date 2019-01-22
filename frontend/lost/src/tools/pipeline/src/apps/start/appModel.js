@@ -1,6 +1,9 @@
 import { Observable } from 'l3p-frontend'
 
 export default {
+	reactComponent: {
+		token: undefined,
+	},
     data: {
         pipelineTemplates: new Observable({}),
     },
@@ -9,8 +12,6 @@ export default {
 		pipelineElements: [],
 		pipelineName: new Observable(''),
 		pipelineDescription: new Observable(''),
-		// auth token from redux.
-        token: undefined,
     },
 	reset(){
 		this.state.pipelineName.reset()

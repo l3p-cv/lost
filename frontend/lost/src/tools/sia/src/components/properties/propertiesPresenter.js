@@ -5,9 +5,10 @@ import { mouse, keyboard } from "l3p-frontend"
 import * as propertiesView from "./propertiesView"
 
 import appModel from "../../appModel"
+import * as http from "../../http"
 import * as modals from "../../modals"
 
-import * as data from "siaRoot/data"
+import * as data from "siaRoot/http"
 
 import DrawablePresenter from "drawables/DrawablePresenter"
 import PointPresenter from "../../drawables/point/PointPresenter"
@@ -17,7 +18,12 @@ import imageInterface from "components/image/imageInterface"
 import * as imagePresenter from "../image/imagePresenter"
 
 // STATE BASED UPDATES
-appModel.data.image.url.on("update", (imgPath) => propertiesView.image.src = imgPath)
+appModel.data.image.url.on("update", url => {
+	http.requestImage(url).then(blob => {
+		const objectURL = window.URL.createObjectURL(blob)
+		propertiesView.image.src = objectURL
+	})
+})
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)

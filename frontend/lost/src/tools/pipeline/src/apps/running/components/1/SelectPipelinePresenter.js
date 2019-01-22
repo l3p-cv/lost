@@ -97,7 +97,7 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 		this.view.adjustDataTable()
 	}
     showPipeline(id: Number){
-		http.requestPipeline(id, appModel.state.token).then(response => {
+		http.requestPipeline(id, appModel.reactComponent.token).then(response => {
 			appModel.state.selectedPipeline.update(response)
 		})
     }

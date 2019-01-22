@@ -2,7 +2,7 @@ import $ from "cash-dom"
 
 import { NodeTemplate, mouse, keyboard, state } from "l3p-frontend"
 
-import * as data from "siaRoot/data"
+import * as data from "siaRoot/http"
 import * as math from "shared/math"
 
 import { LAYOUT } from "./app.defaults"
@@ -17,6 +17,7 @@ import * as controlsPresenter from "components/controls/controlsPresenter"
 
 import * as imageView from "components/image/imageView"
 import * as controlsView from "components/controls/controlsView"
+
 
 // app init configuration
 const CONFIG = true
@@ -136,6 +137,7 @@ const DATA = ((o: any) => {
 if(DEBUG){
     window.SIA = {
         math,
+		http: require("./http"),
         appModel,
         appView,
         appPresenter: this,
