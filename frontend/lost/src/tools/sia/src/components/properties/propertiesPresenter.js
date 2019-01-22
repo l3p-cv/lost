@@ -273,6 +273,8 @@ function updateData(action: String){
             console.log("data:", data)
             appModel.updateLabels(categories)
             appModel.updateAnnotations(data)
+			// update react annotation status bar.
+			appModel.reactComponent.props.getWorkingOnAnnoTask()
         }).catch((reason) => {
             console.error(reason)
         })

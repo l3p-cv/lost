@@ -13,7 +13,6 @@ import * as modals from "./modals"
 import * as imagePresenter from "components/image/imagePresenter"
 import * as propertiesPresenter from "components/properties/propertiesPresenter"
 import * as toolbarPresenter from "components/toolbar/toolbarPresenter"
-import * as controlsPresenter from "components/controls/controlsPresenter"
 
 import * as imageView from "components/image/imageView"
 import * as controlsView from "components/controls/controlsView"
@@ -387,13 +386,8 @@ function handleDataUpdate(data: any){
     }
 }
 function handleNothingAvailable(){
-    console.log("handle nothing available")
-    controlsPresenter.hide()
-    propertiesPresenter.hide()
-    toolbarPresenter.hide()
-    imagePresenter.removeDrawables()
-    imageView.hide()
-    appView.show()
+	appModel.cleanSession()
+	window.location.href = window.location.href.replace(/\/[\w-]+$/, "/dashboard")
 }
 function filterMouseButtons($event){
     // return on right or middle mouse button, prevent context menu.
@@ -424,10 +418,8 @@ export default function init({ mountPoint, updateAnnotationStatus, props, token 
 	mountPoint.appendChild(appView.html.fragment)
 	mountPoint.appendChild(controlsView.html.fragment)
 
-	// TESTING NEW ANNOTATION STATUS COMPONENT
-	appModel.reactComponent.updateAnnotationStatus = updateAnnotationStatus
 	appModel.reactComponent.props = props
-	// TESTING NEW ANNOTATION STATUS COMPONENT
+	props.getWorkingOnAnnoTask()
 
 	// init app configuration, followed by app data initialization.
 	if(!CONFIG){
@@ -460,7 +452,7 @@ export default function init({ mountPoint, updateAnnotationStatus, props, token 
 			load()
 		}).catch(error => {
 			console.error(error)
-			alert("SIA configuration is invalid or http communication failed.")
+			handleNothingAvailable()
 		})
 	}
 }

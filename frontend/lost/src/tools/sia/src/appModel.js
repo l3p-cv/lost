@@ -306,6 +306,9 @@ export default {
         console.log("%c cleaning session storage ", "background: #282828; color: #FE8019")
         sessionStorage.removeItem("sia-annotation-id")
         sessionStorage.removeItem("sia-first-image-loaded")
+		this.data.image.rawLoadedImage.reset()
+		this.data.image.url.reset()
+		this.data.image.info.reset()
         Object.values(this.state.drawables).forEach(data => data.reset())
         this.ui.zoom.reset()
     },
