@@ -4,6 +4,8 @@ import * as DrawableDefaults from "drawables/drawable.defaults"
 
 import * as MenuDefaults from "drawables/menu/menu.defaults"
 
+import { API_URL } from 'root/settings'
+
 
 export default {
 	// a property to hold stuff from the sia react component.
@@ -103,21 +105,21 @@ export default {
     
     updateAnnotations(data: any){
         if(data !== "nothing available"){
-            // RAW DATA
+			// update image data.
+			// image id and url must stay in this sequence.
             this.data.image.id = data.image.id
-            // It's important that imgPath is updated after updating imgId.
-            // See imagePresenter imgPath binding.
-            this.data.image.url.update(data.image.url)
+            this.data.image.url.update(`${API_URL}/data/${data.image.url}`)
             this.data.image.isFirst = (data.image.isFIrst) ? data.image.isFIrst : false
             this.data.image.isLast = (data.image.isLast) ? data.image.isLast : false
             this.data.image.number = data.image.number
             this.data.image.amount = data.image.amount
-            // REQUEST DRAWABLES INDEPENDENTLY TO BE ABLE TO 
-            // HAVE PROPPER INIT ROUTINE. 
+
+			// update drawables.
             this.data.drawables.reset()
             Object.values(this.state.drawables).forEach(obs => obs.reset())
             this.data.drawables.update(data.drawables)
-            // IMAGE INFO (for status bar)
+
+			// create and update some status data.
             this.data.image.info.update({
                 name: (() => {
                     let name = data.image.url

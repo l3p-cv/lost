@@ -3,7 +3,7 @@ import { http } from "l3p-frontend"
 
 import { API_URL } from 'root/settings'
 
-const BASE_URL = `${API_URL}/sia/`
+const BASE_URL = `${API_URL}/api/sia`
 const REQUEST_STRINGS = {
     GET_CONFIG: BASE_URL + "configuration",
     GET_CATEGORIES: BASE_URL + "label",
