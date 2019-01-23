@@ -404,7 +404,7 @@ function filterKeyStrokes($event){
     }
 }
 
-export default function init({ mountPoint, updateAnnotationStatus, props, token }){
+export default function init({ siaMount, actionsMount, updateAnnotationStatus, props, token }){
 	console.log("%c init ", "background: #282828; color: #FE8019")
 
 	// set web token.
@@ -415,8 +415,8 @@ export default function init({ mountPoint, updateAnnotationStatus, props, token 
 	state.setHistorySize(50)
 	
 	// mount views.
-	mountPoint.appendChild(appView.html.fragment)
-	mountPoint.appendChild(controlsView.html.fragment)
+	siaMount.appendChild(appView.html.fragment)
+	actionsMount.appendChild(controlsView.html.fragment)
 
 	appModel.reactComponent.props = props
 	props.getWorkingOnAnnoTask()

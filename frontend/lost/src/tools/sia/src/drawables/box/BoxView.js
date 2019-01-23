@@ -40,7 +40,7 @@ export default class BoxView extends DrawableView {
         const wb = w + (2 * borderWidth)
         const hb = h + (2 * borderWidth)
         super(
-            new NodeTemplate(`
+            new NodeTemplate(/*html*/`
                 <svg class="sia-bbox drawable">
                     <g data-ref="position-node" transform="translate(${x-(w/2)}, ${y-(h/2)})">
                         <g data-ref="container-node" transform="translate(${-borderWidth}, ${-borderWidth})">

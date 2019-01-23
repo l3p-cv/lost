@@ -12,7 +12,7 @@ import PointPresenter from "drawables/point/PointPresenter"
  * - a notification if no more images are available
  * - a svg for the drawing area
  */
-export const html = new NodeTemplate(`
+export const html = new NodeTemplate(/*html*/`
     <div id="sia-imgview">
         <div id="sia-imgview-container">
             <div id="sia-imgview-svg-padding"> // overflow: hidden
@@ -28,8 +28,6 @@ export const html = new NodeTemplate(`
                     <i class="fa fa-trash"></i>
                 </button>
                 <span data-ref="image-name"></span>
-                <span data-ref="image-id"></span>
-                <div data-ref="space"></div>
                 <span data-ref="image-progress"></span>
             </div>
         </div>
@@ -45,7 +43,7 @@ export const padding = {
     bottom: 10,
 }
 html.ids["sia-imgview-svg-padding"].style.padding = `${padding.top}px ${padding.side}px ${padding.bottom}px ${padding.side}px`
-html.ids["sia-image-info"].style.paddingLeft = `${padding.side}px`
+html.ids["sia-image-info"].style.padding = `0px ${padding.side}px`
 
 export const image = new Image()
 export const container = html.ids["sia-imgview-svg-container"]
@@ -56,11 +54,8 @@ export function updateImage(imgPath: String){
 }
 export function updateInfo(info: any){
     const { name, id, number, amount } = info
-    if(name){
-        html.refs["image-name"].textContent = name
-    }
-    if(id){
-        html.refs["image-id"].textContent = `( id: ${id} )`
+    if(name && id){
+        html.refs["image-name"].textContent = `${name}  ( id:${id} )`
     }
     if(number && amount){
         html.refs["image-progress"].textContent = `${number}/${amount}`
@@ -109,8 +104,6 @@ export function hide(){
 }
 export function show(){
     html.root.style.display = "grid"
-    html.ids["sia-imgview-svg-container"].style.display = "block"
-    html.ids["sia-image-info"].style.display = "flex"
 }
 
 export function resize(width: Number, height: Number){

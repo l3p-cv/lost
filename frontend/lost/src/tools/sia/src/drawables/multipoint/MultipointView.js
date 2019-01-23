@@ -10,7 +10,7 @@ export default class MultipointView extends DrawableView {
     constructor(model: any){
         super()
         this.type = model.type
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
             <svg class="sia-multipoint drawable">
                 <g data-ref="position-node">
                     <g data-ref="container-node" 

@@ -6,7 +6,7 @@ import { NodeTemplate } from "l3p-frontend"
 
 
 
-export const html = new NodeTemplate(`
+export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
 
         <!-- canvas -->
@@ -142,7 +142,7 @@ export function updateLabels(labels: Array<any> = []){
     html.ids["sia-propview-label-select"].innerHTML = ""
 
     // create one option node for every label in the models label list
-    const options = new NodeTemplate(`
+    const options = new NodeTemplate(/*html*/`
         ${
             labels.map(label => {
                 return `

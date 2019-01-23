@@ -130,7 +130,7 @@ imageView.image.addEventListener("load", () => {
             header.scrollIntoView(true)
         }
     } else {
-        document.body.scrollIntoView(true)
+        document.querySelector("main div.card-header").scrollIntoView(true)
         sessionStorage.setItem("sia-first-image-loaded", JSON.stringify(true))
     }
 }, false)
@@ -463,7 +463,7 @@ function enableSelect(){
                 selectDrawable(next)
 
                 // align browser view. 
-                document.getElementById("sia-drawer-panel").scrollIntoView(true)
+                document.querySelector("main div.card-header").scrollIntoView(true)
             }
         }
     })

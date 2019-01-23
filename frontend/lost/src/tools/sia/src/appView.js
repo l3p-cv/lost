@@ -5,7 +5,7 @@ import * as imageView from "./components/image/imageView"
 import * as propertiesView from "./components/properties/propertiesView"
 import * as toolbarView from "./components/toolbar/toolbarView"
 
-export const html = new NodeTemplate(`
+export const html = new NodeTemplate(/*html*/`
     <div id="sia-drawer-panel" class="container">
         <div id="sia-drawer-content" class="row">
             <div id="sia-content-wrapper"></div>

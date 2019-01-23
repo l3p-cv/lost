@@ -3,7 +3,7 @@ import $ from "cash-dom"
 import { NodeTemplate } from "l3p-frontend"
 import * as appModel from "../../appModel"
 
-export const html = new NodeTemplate(`
+export const html = new NodeTemplate(/*html*/`
     <div id="sia-toolbar-container">
         <button class="btn btn-default" data-ref="point" id="sia-tool-point">
             <img src="/assets/icons/l3p-vector-dot.svg"/>

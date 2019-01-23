@@ -3,7 +3,7 @@ import "bootstrap"
 import { NodeTemplate } from "l3p-frontend"
 
 
-export const lastImageModal = new NodeTemplate(`
+export const lastImageModal = new NodeTemplate(/*html*/`
     <div id="sia-finish-task-modal" class="modal fade">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
