@@ -12,26 +12,63 @@ class MIAImage extends Component{
         this.state = {
             image: {
                 id: this.props.image.id,
-                is_active: true,
-                data: ''
-            }
+                data: '',
+            },
+            is_active: true,
+            clicks: 0,
+            timer: undefined
         }
+        this.imageClick = this
+        .imageClick
+        .bind(this)
+        this.imageDoubleClick = this
+        .imageDoubleClick
+        .bind(this)
     } 
     componentDidMount(){
         const image = this.props.getMiaImage(this.props.image.path)
         image.then(response=>
-        this.setState({image: {data:window.URL.createObjectURL(response)}})
+        this.setState({image: {...this.state.image, data:window.URL.createObjectURL(response)}})
         )
     }
 
-    handleClick(){
+    
+  imageClick = () => {
+    let newClicks = this.state.clicks + 1
+    let timer = undefined
+    this.setState({clicks: newClicks})
+    if (newClicks == 1){
+        this.setState({timer:setTimeout(() => {
+            // reset.
+            this.setState({clicks: 0})
+            console.log("Click")
+            if (this.state.is_active) {
+                this.setState({is_active: false})
+               
+            } else {
+                this.setState({is_active: true})
+            }
+        }, 250)})
 
-        this.setState({image:{is_active: !this.state.image.is_active}})
-        this.props.callback(this.state.image)
     }
+    else{
+        clearTimeout(this.state.timer)
+        this.setState({clicks: 0})
+        console.log("dblClick")
+    }
+    
+  }   
+  imageDoubleClick = () => {
+    console.log("sdfdsfdsf")
+  }  
+    // imageClick(){
+    //     console.log(this.state.image.id)
+    //     this.setState({image:{is_active: !this.state.image.is_active}})
+    //     //this.props.callback(this.state.image)
+    // }
 
     render(){
-        return(<img src={this.state.image.data} className='mia-image' height={this.props.height}/>)
+        return(<img onClick={this.imageClick}  src={this.state.image.data} className='mia-image' height={this.props.height}/>)
     }
 
 }

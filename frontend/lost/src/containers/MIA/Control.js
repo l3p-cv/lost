@@ -15,7 +15,7 @@ import {
     DropdownItem
 } from 'reactstrap'
 
-const {miaZoomIn, miaZoomOut, miaAmount} = actions
+const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos} = actions
 
 class Control extends Component {
 
@@ -23,7 +23,6 @@ class Control extends Component {
         super(props);
         this.state = {
             dropdownOpen: false,
-            maxAmount: 10,
         }
 
         this.handleLabelName = this
@@ -65,8 +64,8 @@ class Control extends Component {
     }
 
     handleMaxAmount(e){
-        this.setState({maxAmount: e.target.innerText})
-        this.props.miaAmount(this.state.maxAmount)
+        this.props.miaAmount(e.target.innerText)
+        this.props.getMiaAnnos(e.target.innerText)
     }
      render() {
         return (
@@ -117,4 +116,4 @@ function mapStateToProps(state) {
     return ({zoom: state.mia.zoom})
 }
 
-export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount})(Control)
+export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos})(Control)

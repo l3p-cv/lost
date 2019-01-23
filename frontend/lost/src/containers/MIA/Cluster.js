@@ -5,15 +5,21 @@ import actions from '../../actions'
 
 import './Cluster.scss';
 
-const {getMiaAnnos,getMiaImage} = actions
+const {getMiaAnnos,getMiaImage, getWorkingOnAnnoTask} = actions
 
 class Cluster extends Component{
     constructor(props){
         super(props)
 
     }
-    componentWillMount(){
+    componentDidMount(){
         this.props.getMiaAnnos(this.props.maxAmount)
+    }
+    componentWillReceiveProps(props){
+        if(props.images.length === 0){
+            this.props.getMiaAnnos(this.props.maxAmount)
+            this.props.getWorkingOnAnnoTask()
+        }
     }
     render(){
         if(this.props.images.length > 0){
@@ -26,7 +32,13 @@ class Cluster extends Component{
                 })}
            </div>)
         }else{
-            return(<div>No more Images ...</div>)
+            return(
+                <div style={{display: 'flex', justifyContent: 'center'}}>
+                    <div>
+                        <i className="fa fa-image fa-spin fa-4x"></i>
+                    </div>
+                </div>
+            )
         }
     }
 }
@@ -34,5 +46,4 @@ class Cluster extends Component{
 function mapStateToProps(state){
     return({images: state.mia.images, maxAmount: state.mia.maxAmount, zoom: state.mia.zoom})
 }
-export default connect(mapStateToProps, {getMiaAnnos, getMiaImage})(Cluster)
-
+export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask})(Cluster)
