@@ -35,7 +35,7 @@ def full_img_anno():
             }
         ),
         dtype=dtype.TwoDAnno.BBOX,
-        annotator=test_user.groups[0],
+        annotator=test_user,
         label_leaf_id=label_vec[0]
     )
     twod_anno2 = model.TwoDAnno(
@@ -46,11 +46,11 @@ def full_img_anno():
             }
         ),
         dtype=dtype.TwoDAnno.POINT,
-        annotator=test_user.groups[0],
+        annotator=test_user,
         label_leaf_id=label_vec[1]
     )
     line = model.TwoDAnno(
-        annotator=test_user.groups[0],
+        annotator=test_user,
         label_leaf_id=label_vec[4]
     )
     line.line = REF_LINE
