@@ -1,16 +1,10 @@
 
-import { NodeTemplate, getElementStyle } from "l3p-frontend"
-import * as math from "shared/math"
+import { NodeTemplate } from "l3p-frontend"
 
 import "./box.styles.scss"
 import BOX_DEFAULTS from "./box.defaults"
 
-import { EVENT_COMPUTATION_SETTINGS, STATE } from "../drawable.statics"
-import DRAWABLE_DEFAULTS from "../drawable.defaults"
-
 import DrawableView from "../DrawableView"
-
-import * as SVG from "../svg"
 
 
 /**
@@ -39,16 +33,14 @@ export default class BoxView extends DrawableView {
      * @param: config: { label: String, bounds: any }
      */
     constructor(config: any) {
-        const { bounds, menuView } = config
+        const { bounds } = config
         const { x, y, w, h } = bounds
-        let { label } = config
-        label = label !== undefined ? label : ""
 
         const borderWidth = BOX_DEFAULTS.strokeWidth
         const wb = w + (2 * borderWidth)
         const hb = h + (2 * borderWidth)
         super(
-            new NodeTemplate(`
+            new NodeTemplate(/*html*/`
                 <svg class="sia-bbox drawable">
                     <g data-ref="position-node" transform="translate(${x-(w/2)}, ${y-(h/2)})">
                         <g data-ref="container-node" transform="translate(${-borderWidth}, ${-borderWidth})">

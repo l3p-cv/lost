@@ -5,8 +5,6 @@ import 'bootstrap'
 import 'datatables.net'
 import 'datatables.net-bs4/css/dataTables.bootstrap4.css'
 
-import '../../../node_modules/sweetalert2/dist/sweetalert2.css'
-
 import appModel from './appModel'
 import * as http from 'pipRoot/http'
 
@@ -20,24 +18,21 @@ if(DEBUG){
 	console.warn('DISABLE DEBUG MODE IN PRODUCTION')
 }
 
-const wizard = new Wizard('running-pipelines')
-
-PipelineGraphTab.requiresValid(SelectPipelineTab)
-
-SelectPipelineTab.on('after-activate', () => {
-	SelectPipelineTab.adjustDataTable()
-})
-
-wizard.add([
-    SelectPipelineTab, 
-    PipelineGraphTab, 
-])  
 
 
+const wizard = new Wizard("mount-point-running-pipelines")
 export default function init({ token, polling }){
-    appModel.state.token = token
+	PipelineGraphTab.requiresValid(SelectPipelineTab)
+	SelectPipelineTab.on('after-activate', () => {
+		SelectPipelineTab.adjustDataTable()
+	})
+	wizard.add([
+		SelectPipelineTab, 
+		PipelineGraphTab, 
+	])  
+    appModel.reactComponent.token = token
 	appModel.options.polling.update(polling)
-	http.requestPipelines(appModel.state.token).then((response) => {
+	http.requestPipelines(appModel.reactComponent.token).then((response) => {
 		if(!response.pipes){
 			console.log(response)
 			throw new Error(`Backend returned no running pipelines.`)

@@ -7,6 +7,7 @@ from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
+import json
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -26,7 +27,7 @@ class First(Resource):
             dbm.close_session()
             return re
 
-@namespace.route('/next/<int:last_img_id>')
+@namespace.route('/next/<string:last_img_id>')
 @namespace.param('last_img_id', 'The id of the last annotated image.')
 class Next(Resource):
     @api.marshal_with(sia_anno)
@@ -40,6 +41,7 @@ class Next(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
+            last_img_id = int(last_img_id)
             re = sia.get_next(dbm, identity,last_img_id, DATA_URL)
             dbm.close_session()
             return re
@@ -58,13 +60,13 @@ class Prev(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            re = sia.get_prev(dbm, identity,last_img_id, DATA_URL)
+            re = sia.get_previous(dbm, identity,last_img_id, DATA_URL)
             dbm.close_session()
             return re
 
 @namespace.route('/update')
 class Update(Resource):
-    @api.expect(sia_update)
+    # @api.expect(sia_update)
     @jwt_required 
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -75,7 +77,7 @@ class Update(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
 
         else:
-            data = request.data
+            data = json.loads(request.data)
             re = sia.update(dbm, data, identity)
             dbm.close_session()
             return re
@@ -115,7 +117,7 @@ class Junk(Resource):
 
 @namespace.route('/label')
 class Label(Resource):
-    @api.marshal_with(label_trees)
+    #@api.marshal_with(label_trees)
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)

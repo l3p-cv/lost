@@ -13,6 +13,7 @@ const DEFAULT_PARAMS = {
 }
 
 let initCounter = 0
+
 export default class Graph {
     constructor(mountPoint: Node | String, options: any){
         initCounter++
@@ -91,14 +92,20 @@ export default class Graph {
 		// center the graph
 		// STILL NEED TO SCALE DEPENDING ON GRAPH HEIGHT
         this.d3SelectionGroup.attr('transform', `translate(${x}, ${y})`)
+		// tests:
         // this.d3SelectionGroup.attr('transform', `translate(${x}, ${y}) scale(${0.5})`)
 		// this.d3SelectionSvg.call(this.d3Zoom.scaleTo, 0.5)
-        this.render()
     }
     render(){
+		// calling render will cause all node views to loose their element references.
         dagreD3.render()(this.d3SelectionGroup, this.dagreD3Graph)
     }
-	setNode(node: NodePresenter){
+	fillGraph(nodes: Array<ElementPresenters>, mode: String){
+		// THIS METHOD COULD REPLACE:
+		// running pipelines: 	PipelineGraphPresenter.showPipeline()
+		// start pipeline: 		PipelineGraphPresenter.showTemplate()
+	}
+    addNode(node: NodePresenter){
         // the nodeId is the id of the grouping element created by dagree
         const nodeId = `${this.id}-node-${node.model.peN}`
         this.dagreD3Graph.setNode(
@@ -108,22 +115,14 @@ export default class Graph {
                 labelType: 'html',
                 label: node.view.html.fragment,
                 shape: 'rect',
-                padding: 0
-            }
+                padding: 0,
+            },
         )
+		
         this.render()
-    }
-    addNode(node: NodePresenter){
-        const nodeId = `${this.id}-node-${node.model.peN}`
-        this.setNode(node)
-		// REMOVED & REPLACED BY DIFFERENT APPROACH, SEE PipelineGraphPresenter
-        // give the node the created parents id
-        // so that it can be used for events (click)
-        // node.init(document.getElementById(nodeId))
+		
+		// the node id will be used to get back the node references after rendering (this.render).
 		return nodeId
-    }
-    updateNode(node: NodePresenter){
-        this.setNode(node)
     }
     addEdge(from, to, redline){
         if(redline === true) {
@@ -138,7 +137,7 @@ export default class Graph {
 				label: '',
 			})
         }
-        
+
         this.render()
     }
 }

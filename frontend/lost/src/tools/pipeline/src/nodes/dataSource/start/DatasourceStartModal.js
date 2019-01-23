@@ -103,7 +103,7 @@ export default class DatasourceStartModal extends BaseModal {
 		})
 
 		// focus searchbar when modal opens.
-		$(this.html.root).on('shown.bs.modal',() => {
+		$(this.html.root).on('shown.bs.modal', () => {
 			if(this.html.refs['search-bar']){
 				this.html.refs['search-bar'].focus()
 			}

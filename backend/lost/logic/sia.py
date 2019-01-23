@@ -107,29 +107,28 @@ def get_label_trees(db_man, user_id):
     """
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, user_id)
+    at = __get_mia_anno_task(db_man, user_id)
     label_trees_json = dict()
-    label_trees_json['labelTrees'] = list()
-    for rll in db_man.get_all_required_label_leaves(at.idx): #type: lost.db.model.RequiredLabelLeaf
-        label_tree_json = dict()
-        label_tree_json['id'] = rll.label_leaf.idx
-        label_tree_json['name'] = rll.label_leaf.description
-        label_tree_json['description'] = rll.label_leaf.description
-        label_tree_json['cssClass'] = rll.label_leaf.css_class
-        label_tree_json['labelLeaves'] = list()
-        for label_leaf in db_man.get_all_child_label_leaves(rll.label_leaf.idx):#type: lost.db.model.LabelLeaf
-            label_leaf_json = dict()
-            label_leaf_json['id'] = label_leaf.idx
-            label_leaf_json['name'] = label_leaf.name
-            label_leaf_json['description'] = label_leaf.description
-            label_leaf_json['cssClass'] = label_leaf.css_class
-            label_tree_json['labelLeaves'].append(label_leaf_json)
-        label_trees_json['labelTrees'].append(label_tree_json)
-    return label_trees_json
+    label_trees_json['labels'] = list()
+    if at:
+        for rll in db_man.get_all_required_label_leaves(at.idx): #type: lost.db.model.RequiredLabelLeaf
+            for label_leaf in db_man.get_all_child_label_leaves(rll.label_leaf.idx): #type: lost.db.model.LabelLeaf
+                label_leaf_json = dict()
+                label_leaf_json['id'] = label_leaf.idx
+                label_leaf_json['label'] = label_leaf.name
+                label_leaf_json['nameAndClass'] = label_leaf.name + " (" + rll.label_leaf.name + ")"
+                label_leaf_json['description'] = label_leaf.description
+                label_trees_json['labels'].append(label_leaf_json)
+        return label_trees_json
+    else: 
+        label_trees = dict()
+        label_trees['labels'] = list()
+        return label_trees
+        
 def get_configuration(db_man, user_id):
     at = get_sia_anno_task(db_man,user_id)
-    return at.configuration
-def get_sia_anno_task(db_man, user_id):
+    return json.loads(at.configuration)
+def get_sia_anno_task(db_man, user_id): 
     for cat in db_man.get_choosen_annotask(user_id):
         if cat.anno_task.dtype == dtype.AnnoTask.SIA:
             return cat.anno_task
@@ -375,11 +374,11 @@ class SiaUpdate(object):
         two_d_json['anno_time'] = two_d.anno_time
         two_d_json['data'] = two_d.data
         label_list_json = list()
-        for label in two_d.labels:
+        if two_d.label:
             label_json = dict()
-            label_json['id'] = label.idx
-            label_json['label_leaf_id'] = label.label_leaf.idx
-            label_json['label_leaf_name'] = label.label_leaf.name
+            label_json['id'] = two_d.label.idx
+            label_json['label_leaf_id'] = two_d.label.label_leaf.idx
+            label_json['label_leaf_name'] = two_d.label.label_leaf.name
             label_list_json.append(label_json)
 
         two_d_json['labels'] = label_list_json
@@ -440,32 +439,32 @@ class SiaSerialize(object):
                 bbox_json = dict()
                 bbox_json['id'] = two_d_anno.idx
                 bbox_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    bbox_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    bbox_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 bbox_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['bBoxes'].append(bbox_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POINT:
                 point_json = dict()
                 point_json['id'] = two_d_anno.idx
                 point_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    point_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    point_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 point_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['points'].append(point_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.LINE:
                 line_json = dict()
                 line_json['id'] = two_d_anno.idx
                 line_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    line_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    line_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 line_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['lines'].append(line_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
                 polygon_json = dict()
                 polygon_json['id'] = two_d_anno.idx
                 polygon_json['labelIds'] = list()
-                for label in two_d_anno.labels: #type: lost.db.model.Label
-                    polygon_json['labelIds'].append(label.label_leaf_id)
+                if two_d_anno.label: #type: lost.db.model.Label
+                    polygon_json['labelIds'].append(two_d_anno.label_leaf_id)
                 polygon_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['polygons'].append(polygon_json)
         return self.sia_json

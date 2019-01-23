@@ -204,65 +204,59 @@ function createShortcutHTML(keys: array) {
 }
 
 
-export const html = new NodeTemplate(`
+export const html = new NodeTemplate(/*html*/`
     <div class="container sia-user-manual">
         <div class="row">
             <h2>
                 <i class="fa fa-keyboard-o" aria-hidden="true"></i>
                 <div style="display:inline-block; padding-left: 1rem">User Manual</div>
             </h2>
-            // @disabled: lost integration
-            // <ul class="nav navbar-right panel_toolbox">
-            //     <li><a class="collapse-link"><i id="sia-collapse-manual" class="fa fa-chevron-up"></i></a></li>
-            // </ul>
             <div class="clearfix"></div>
         </div>
         <div class="row">
-            <div>
-                <div class="sia-user-manual">
-                    <h2>Mouse</h2>
-                    ${
-                        data.mouse.map(x => `
-                            <div class="sia-table-wrapper">
-                                <h4>${x.text}</h4>
-                                <table class="table table-striped table-responsive">
-                                    ${
-                                        x.entrys.map((entry, index) =>
-                                            `
-                                            <tr><th>button:</th><td><div class="sia-key">${entry.button}</div></td></tr>
-                                            <tr><th>description:</th><td><div>${entry.description}</div></td></tr>
-                                            `
-                                        ).join("")
-                                    }
-                                </table>
-                            </div>`
-                        ).join("")
-                    }
-                </div>
-                <hr/>
-                <div class="sia-user-manual">
-                    <h2>Keyboard</h2>
-                    ${
-                        data.keyboard.map(x => `
-                            <div class="sia-table-wrapper">
-                                <h4>${x.text}</h4>
-                                <table class="table table-striped table-responsive">
-                                    ${
-                                        x.entrys.map((entry, index) =>
-                                            `
-                                            <tr><th>shortcut:</th><td>${createShortcutHTML(entry.keystrokes)}</td></tr>
-                                            <tr><th>description:</th><td><div>${entry.description}</div></td></tr>
-                                            <tr><th>precondition:</th><td><div>${entry.precondition}</div></td></tr>
-                                            `
-                                        ).join("")
-                                    }
-                                </table>
-                            </div>`
-                        ).join("")
-                    }
-                    <div class="clearfix"></div>
-                </div>
-            </div>
+			<div class="sia-user-manual">
+				<h2>Mouse</h2>
+				${
+					data.mouse.map(x => `
+						<div class="sia-table-wrapper">
+							<h4>${x.text}</h4>
+							<table class="table table-striped table-responsive">
+								${
+									x.entrys.map((entry, index) =>
+										`
+										<tr><th>button:</th><td><div class="sia-key">${entry.button}</div></td></tr>
+										<tr><th>description:</th><td><div>${entry.description}</div></td></tr>
+										`
+									).join("")
+								}
+							</table>
+						</div>`
+					).join("")
+				}
+			</div>
+			<hr/>
+			<div class="sia-user-manual">
+				<h2>Keyboard</h2>
+				${
+					data.keyboard.map(x => `
+						<div class="sia-table-wrapper">
+							<h4>${x.text}</h4>
+							<table class="table table-striped table-responsive">
+								${
+									x.entrys.map((entry, index) =>
+										`
+										<tr><th>shortcut:</th><td>${createShortcutHTML(entry.keystrokes)}</td></tr>
+										<tr><th>description:</th><td><div>${entry.description}</div></td></tr>
+										<tr><th>precondition:</th><td><div>${entry.precondition}</div></td></tr>
+										`
+									).join("")
+								}
+							</table>
+						</div>`
+					).join("")
+				}
+				<div class="clearfix"></div>
+			</div>
         </div>
     </div>
 `)

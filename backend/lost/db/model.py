@@ -115,7 +115,7 @@ class TwoDAnno(Base):
         sim_class (int): The similarity class this anno belong to.
             It is used to cluster similar annos in MIA.
         iteration (int): The iteration of a loop when this anno was created.
-        group_id (int): Id of the annotator.
+        user_id (int): Id of the annotator.
         img_anno_id (int) : ID of ImageAnno this TwoDAnno is appended to
         data (Text): drawing data (for e.g. x,y, width, height) of anno - depends on dtype
         dtype (int): type of TwoDAnno (for e.g. bbox, polygon)
@@ -136,22 +136,22 @@ class TwoDAnno(Base):
     dtype = Column(Integer)
     sim_class = Column(Integer)
     iteration = Column(Integer)
-    group_id = Column(Integer, ForeignKey('group.idx'))
+    user_id = Column(Integer, ForeignKey('user.idx'))
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     label = relationship('Label', uselist=False) #type: Label
-    annotator = relationship('Group', uselist=False) #type: Group
+    annotator = relationship('User', uselist=False) #type: Group
     confidence = Column(Float)
     anno_time = Column(Float)
 
     def __init__(self, anno_task_id=None,
-                 group_id=None, timestamp=None, state=None,
+                 user_id=None, timestamp=None, state=None,
                  track_n=None, sim_class=None,
                  img_anno_id=None, timestamp_lock=None, 
                  iteration=0, data=None, dtype=None,
                  confidence=None, anno_time=None, annotator=None,
                  label_leaf_id=None):
         self.anno_task_id = anno_task_id
-        self.group_id = group_id
+        self.user_id = user_id
         self.timestamp = timestamp
         self.timestamp_lock = timestamp_lock
         self.state = state
@@ -193,7 +193,7 @@ class TwoDAnno(Base):
                     'anno.dtype': 'bbox', 
                     'anno.sim_class': None, 
                     'anno.iteration': 0, 
-                    'anno.group_id': 47, 
+                    'anno.user_id': 47, 
                     'anno.img_anno_id': None, 
                     'anno.annotator': 'test', 
                     'anno.confidence': None, 
@@ -218,7 +218,7 @@ class TwoDAnno(Base):
                     'anno.dtype': 'bbox', 
                     'anno.sim_class': None, 
                     'anno.iteration': 0, 
-                    'anno.group_id': 46, 
+                    'anno.user_id': 46, 
                     'anno.img_anno_id': None, 
                     'anno.annotator': 'test', 
                     'anno.confidence': None, 
@@ -241,7 +241,7 @@ class TwoDAnno(Base):
             'anno.dtype': None,
             'anno.sim_class': self.sim_class,
             'anno.iteration': self.iteration,
-            'anno.group_id': self.group_id,
+            'anno.user_id': self.user_id,
             'anno.img_anno_id': self.img_anno_id,
             'anno.annotator': None,
             'anno.confidence': self.confidence,
@@ -288,7 +288,7 @@ class TwoDAnno(Base):
                 ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                 'anno.dtype', 'anno.sim_class', 
-                'anno.iteration', 'anno.group_id', 'anno.img_anno_id', 
+                'anno.iteration', 'anno.user_id', 'anno.img_anno_id', 
                 'anno.annotator', 'anno.confidence', 'anno.anno_time', 
                 'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
                 'anno.data']
@@ -304,7 +304,7 @@ class TwoDAnno(Base):
                 ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                 'anno.dtype', 'anno.sim_class', 
-                'anno.iteration', 'anno.group_id', 'anno.img_anno_id', 
+                'anno.iteration', 'anno.user_id', 'anno.img_anno_id', 
                 'anno.annotator', 'anno.confidence', 'anno.anno_time', 
                 'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
                 'anno.data']
@@ -571,7 +571,7 @@ class ImageAnno(Base):
             ImageAnno belongs to.
         state (enum): See :class:`lost.db.state.Anno`
         result_id: Id of the related result.
-        group_id (int): Id of the annotator.
+        user_id (int): Id of the annotator.
     """
     __tablename__ = "image_anno"
 
@@ -586,19 +586,19 @@ class ImageAnno(Base):
     img_path = Column(String(4096))
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
-    group_id = Column(Integer, ForeignKey('group.idx'))
+    user_id = Column(Integer, ForeignKey('user.idx'))
     label = relationship('Label', uselist=False)
     twod_annos = relationship('TwoDAnno')
-    annotator = relationship('Group', uselist=False)
+    annotator = relationship('User', uselist=False)
     anno_time = Column(Float)
-    def __init__(self, anno_task_id=None, group_id=None,
+    def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, label_leaf_id=None, state=None,
                  sim_class=None, result_id=None, img_path=None,
                  frame_n=None,
                  video_path=None,
                  iteration=0, anno_time=None):
         self.anno_task_id = anno_task_id
-        self.group_id = group_id
+        self.user_id = user_id
         self.timestamp = timestamp
         self.state = state
         self.sim_class = sim_class
@@ -640,13 +640,13 @@ class ImageAnno(Base):
                     'img.idx', 'img.anno_task_id', 'img.timestamp', 
                     'img.timestamp_lock', 'img.state', 'img.sim_class', 
                     'img.frame_n', 'img.video_path', 'img.img_path', 
-                    'img.result_id', 'img.iteration', 'img.group_id', 
+                    'img.result_id', 'img.iteration', 'img.user_id', 
                     'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
                     'img.lbl.external_id', 'img.annotator', 'anno.idx', 
                     'anno.anno_task_id', 'anno.timestamp', 
                     'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                     'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                    'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                    'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
                     'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
                     'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
                 ])
@@ -668,7 +668,7 @@ class ImageAnno(Base):
                     'img.idx', 'img.anno_task_id', 'img.timestamp', 
                     'img.timestamp_lock', 'img.state', 'img.sim_class', 
                     'img.frame_n', 'img.video_path', 'img.img_path', 
-                    'img.result_id', 'img.iteration', 'img.group_id', 
+                    'img.result_id', 'img.iteration', 'img.user_id', 
                     'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
                     'img.lbl.external_id', 'img.annotator', 'img.twod_annos'
                 ])
@@ -677,7 +677,7 @@ class ImageAnno(Base):
                     'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                     'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                     'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                    'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                    'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
                     'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
                     'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
                 ])
@@ -695,7 +695,7 @@ class ImageAnno(Base):
             'img.img_path': self.img_path,
             'img.result_id': self.result_id,
             'img.iteration': self.iteration,
-            'img.group_id': self.group_id,
+            'img.user_id': self.user_id,
             'img.anno_time': self.anno_time,
             'img.lbl.idx': None, 
             'img.lbl.name': None,
@@ -741,13 +741,13 @@ class ImageAnno(Base):
                 'img.idx', 'img.anno_task_id', 'img.timestamp', 
                 'img.timestamp_lock', 'img.state', 'img.sim_class', 
                 'img.frame_n', 'img.video_path', 'img.img_path', 
-                'img.result_id', 'img.iteration', 'img.group_id', 
+                'img.result_id', 'img.iteration', 'img.user_id', 
                 'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
                 'img.lbl.external_id', 'img.annotator', 'anno.idx', 
                 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                 'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
                 'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
                 'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
         '''
@@ -761,13 +761,13 @@ class ImageAnno(Base):
                 'img.idx', 'img.anno_task_id', 'img.timestamp', 
                 'img.timestamp_lock', 'img.state', 'img.sim_class', 
                 'img.frame_n', 'img.video_path', 'img.img_path', 
-                'img.result_id', 'img.iteration', 'img.group_id', 
+                'img.result_id', 'img.iteration', 'img.user_id', 
                 'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
                 'img.lbl.external_id', 'img.annotator', 'anno.idx', 
                 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                 'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
+                'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
                 'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
                 'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
         

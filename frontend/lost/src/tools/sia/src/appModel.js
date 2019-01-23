@@ -4,11 +4,12 @@ import * as DrawableDefaults from "drawables/drawable.defaults"
 
 import * as MenuDefaults from "drawables/menu/menu.defaults"
 
-import * as math from "shared/math"
+import { API_URL } from 'root/settings'
 
-import DoublyLinkedList from "dbly-linked-list"
 
 export default {
+	// a property to hold stuff from the sia react component.
+	reactComponent: {},
     config: new Observable({
         tools: {
             point: true,
@@ -64,7 +65,7 @@ export default {
             lines: new Observable([]),
             polygons: new Observable([]),
             bBoxes: new Observable([]),
-        }
+        },
     },
     controls: {
         moveStep: 1,
@@ -104,21 +105,21 @@ export default {
     
     updateAnnotations(data: any){
         if(data !== "nothing available"){
-            // RAW DATA
+			// update image data.
+			// image id and url must stay in this sequence.
             this.data.image.id = data.image.id
-            // It's important that imgPath is updated after updating imgId.
-            // See imagePresenter imgPath binding.
-            this.data.image.url.update(data.image.url)
-            this.data.image.isFirst = (data.image.isFIrst) ? data.image.isFIrst : false
+            this.data.image.url.update(`${API_URL}${data.image.url}`)
+            this.data.image.isFirst = (data.image.isFirst) ? data.image.isFirst : false
             this.data.image.isLast = (data.image.isLast) ? data.image.isLast : false
             this.data.image.number = data.image.number
             this.data.image.amount = data.image.amount
-            // REQUEST DRAWABLES INDEPENDENTLY TO BE ABLE TO 
-            // HAVE PROPPER INIT ROUTINE. 
+
+			// update drawables.
             this.data.drawables.reset()
             Object.values(this.state.drawables).forEach(obs => obs.reset())
             this.data.drawables.update(data.drawables)
-            // IMAGE INFO (for status bar)
+
+			// create and update some status data.
             this.data.image.info.update({
                 name: (() => {
                     let name = data.image.url
@@ -300,11 +301,14 @@ export default {
         labels.push(DrawableDefaults.LABEL)
         this.data.labelList.update(labels)
     },
-    
+
     cleanSession(){
         console.log("%c cleaning session storage ", "background: #282828; color: #FE8019")
         sessionStorage.removeItem("sia-annotation-id")
         sessionStorage.removeItem("sia-first-image-loaded")
+		this.data.image.rawLoadedImage.reset()
+		this.data.image.url.reset()
+		this.data.image.info.reset()
         Object.values(this.state.drawables).forEach(data => data.reset())
         this.ui.zoom.reset()
     },

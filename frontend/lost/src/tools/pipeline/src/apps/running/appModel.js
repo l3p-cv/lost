@@ -1,6 +1,9 @@
 import { Observable } from 'l3p-frontend'
 
 export default {
+	reactComponent: {
+		token: undefined,
+	},
 	options: {
 		polling: new Observable({
 		 	enabled: false,
@@ -10,7 +13,5 @@ export default {
     state: {
         pipelines: new Observable({}),
         selectedPipeline: new Observable({}),
-		// auth token from redux.
-		token: undefined,
     },
 }

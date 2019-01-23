@@ -15,11 +15,20 @@ class SingleImageAnnotation extends Component {
 		this.mount = React.createRef()
 	}
 	componentDidMount(){
+		// the app will get mounted when requiring it.
+		// theirfore we use a page reload quickfix below.
+		// mounting via method did not work.
 		const init = require('../../tools/pipeline/src/apps/start/appPresenter.js').default
-		init(this.props.token)
-		if(document.getElementById('start-pipeline').innerHTML==""){
+		init({
+			token: this.props.token,
+		})
+
+		// re-render quick fix.
+		if(this.mount.current.childNodes.length === 0){
 			window.location.reload()
 		}
+	}
+	componentWillUnmount(){
 	}
 	render(){
 		return (
@@ -27,7 +36,7 @@ class SingleImageAnnotation extends Component {
 				<Col xs='12' sm='12' lg='12'>
                     <Card>
                         <CardBody>
-							<div ref={this.mount} id='start-pipeline'></div>
+							<div ref={this.mount} id="mount-point-start-pipeline"></div>
                         </CardBody>
                     </Card>
                 </Col>

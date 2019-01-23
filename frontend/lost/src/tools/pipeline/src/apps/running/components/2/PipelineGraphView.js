@@ -6,7 +6,7 @@ import './PipelineGraph.scss'
 class PipelineGraphTab extends WizardTabView {
 	constructor(){
 		super({
-			title: 'Fill out Elements',
+			title: 'Inspect Pipeline Elements',
 			icon: 'fa fa-pencil',
 			content: /*html*/`
 				// update indicator.
@@ -56,6 +56,15 @@ class PipelineGraphTab extends WizardTabView {
 			this.html.refs['btn-play-pipe'].classList.toggle('disabled', false)
 			// disable pause button.
 			this.html.refs['btn-pause-pipe'].classList.toggle('disabled', true)
+		}
+	}
+	toggleInfoBox({ enabled }){
+		if(enabled){
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-on', true)
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-off', false)
+		} else {
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-on', false)
+			this.html.refs['btn-toggle-infobox-icon'].classList.toggle('fa-toggle-off', true)
 		}
 	}
 }

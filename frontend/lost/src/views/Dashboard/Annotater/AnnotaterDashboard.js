@@ -33,7 +33,6 @@ class AnnotaterDashboard extends Component {
         }
     }
     renderWorkingOn() {
-        console.log(this.props.workingOnAnnoTask)
         if (this.props.workingOnAnnoTask !== null) {
             return (
                 <Row>

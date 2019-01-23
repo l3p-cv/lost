@@ -6,7 +6,7 @@ import './StartPipeline.scss'
 class StartPipelineTab extends WizardTabView {
     constructor() {
         const config = {
-            title: 'Last Step: Start your Pipe!',            
+            title: 'Start the Pipeline',            
             icon: 'fa fa-check',
             content: /*html*/`
 				// INLINE STYLE...

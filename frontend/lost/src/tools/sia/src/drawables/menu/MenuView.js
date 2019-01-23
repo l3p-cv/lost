@@ -15,7 +15,7 @@ export default class MenuView {
         this.labelPadding = label.padding
         this.display = display
         const position = display.bar ? bar.relativePosition : { x: 0, y: 0 }
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
             <svg>
                 <g class="drawable-menubar drawable-menubar-not-selected drawable-menubar-locked" 
                     transform="translate(${position.x},${position.y})">

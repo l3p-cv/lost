@@ -122,7 +122,6 @@ class PipeImporter(object):
                             db_script.arguments = json.dumps(script_arguments)
                             db_script.executors = json.dumps(script_executors)
                             db_script.description = script.description
-                            db_script.language = script.language
                             self.dbm.save_obj(db_script)
                             logging.info('Updated script: {}'.format(db_script.name))
                 os.chdir(oldwd) # Change dir back to old working directory.                

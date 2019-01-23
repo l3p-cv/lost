@@ -1,0 +1,39 @@
+$image-border-width: 10px;
+$image-margin: 14px;
+
+@keyframes zoom {
+    0%  { transform: scale(1); }
+    100%  { transform: scale(2.2); }
+}
+
+#nothing-available{
+    grid-area: multiimage;
+    justify-self: start;
+    width: 100%;
+}
+#mia-images{
+    grid-area: multiimage;
+    margin: 2em 0;
+}
+.mia-image{
+    cursor:pointer;
+    margin-bottom: $image-margin;
+    margin-right: $image-margin;
+    max-width: 720px;
+    max-height: 400px;
+    min-width: 20px;
+    width: auto;
+    &-zoomed {
+        position: relative;
+        z-index: 2;
+        border: $image-border-width solid #fff;
+        margin-right: $image-margin - ($image-border-width * 2);
+        margin-bottom: $image-margin - ($image-border-width * 2);
+        box-sizing: content-box;
+        animation: zoom 1s;
+        transform: scale(2.2);
+    }
+    &-inactive {
+        opacity: 0.2;
+    }
+}

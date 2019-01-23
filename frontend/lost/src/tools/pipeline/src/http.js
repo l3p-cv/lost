@@ -1,4 +1,5 @@
 import { http } from 'l3p-frontend'
+// import { http } from 'root/l3p-frontend'
 
 import { API_URL } from 'root/settings'
 
@@ -122,24 +123,35 @@ const DUMMY_DATA = {
 const BASE_URL = `${API_URL}/pipeline`
 const URLS = {
     GET_TEMPLATES: `${BASE_URL}/template`,
-    GET_TEMPLATE: (id) => `${BASE_URL}/template/${id}`,
+    GET_TEMPLATE: id => `${BASE_URL}/template/${id}`,
     GET_PIPELINES: `${BASE_URL}`,
-    GET_PIPELINE: (id) => `${BASE_URL}/${id}`,
+    GET_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_START_PIPELINE: `${BASE_URL}/start`,
-    POST_DELETE_PIPELINE: `${BASE_URL}/delete/`,
-    POST_PAUSE_PIPELINE: `${BASE_URL}/pause/`,
-    POST_PLAY_PIPELINE: `${BASE_URL}/play/`,
+    POST_DELETE_PIPELINE: id => `${BASE_URL}/delete/${id}`,
+    POST_PAUSE_PIPELINE: id => `${BASE_URL}/pause/${id}`,
+    POST_PLAY_PIPELINE: id => `${BASE_URL}/play/${id}`,
 }
 
 // START
 export function requestTemplates(token: String){
-    return http.get(URLS.GET_TEMPLATES, token)
+    return http.get({
+		url: URLS.GET_TEMPLATES,
+		token,
+	})
 }
 export function requestTemplate(id: Number, token: String){
-    return http.get(URLS.GET_TEMPLATE(id), token)
+    return http.get({
+		url: URLS.GET_TEMPLATE(id),
+		token,
+	})
 }
 export function startPipe(data: any, token: String){
-    return http.post(URLS.POST_START_PIPELINE, data, token)
+    return http.post({
+		url: URLS.POST_START_PIPELINE,
+		data,
+		token,
+		type: "application/json",
+	})
 }
 
 // RUNNING
@@ -147,25 +159,29 @@ export function requestPipelines(token: String){
 	if(DEV){
 		return Promise.resolve(DUMMY_DATA.requestPipelines[0])
 	}
-	return http.get(URLS.GET_PIPELINES, token)
+	return http.get({
+		url: URLS.GET_PIPELINES,
+		token,
+	})
 }
 export function requestPipeline(id: Number, token: String){
 	if(DEV){
 		return Promise.resolve(DUMMY_DATA.requestPipeline[0])
 	}
-	return http.get(URLS.GET_PIPELINE(id), token)
+	return http.get({
+		url: URLS.GET_PIPELINE(id),
+		token,
+	})
 }
 export function deletePipe(id: Number, token: String){
-	return http.del(URLS.POST_DELETE_PIPELINE + id, token).then(response => {
-		console.log('delete service not finished')
-		console.log(response)
-		return response
+	return http.del({
+		url: URLS.POST_DELETE_PIPELINE(id),
+		token,
 	})
 }
 export function pausePipe(id: Number, token: String){
-    return http.post(URLS.POST_PAUSE_PIPELINE, id, token).then(response => {
-		console.log('pause service not finished')
-		console.log(response)
-		return response
-    })
+    return http.post({
+		url: URLS.POST_PAUSE_PIPELINE(id),
+		token,
+	})
 }

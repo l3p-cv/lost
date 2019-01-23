@@ -17,24 +17,8 @@ export default class BaseNodePresenter {
 	        this.modal = modal
 		}
         this.initialized = false
+		// MODEL AND VIEW BINDINGS: are in init Method here for reasons.
     }
-    update(){
-        // recreate fragment
-        if(this.initialized){
-            // get all real current node html content
-            let content = $(this.view.parentNode).find('foreignObject')[0].firstElementChild.childNodes
-			
-            // and add it to a new fragment
-            this.fragment = document.createDocumentFragment()
-            content.forEach(n => this.fragment.appendChild(n))
-
-            // then rerender the node by adding it again 
-            this.graph.updateNode(this)
-        } else {
-            throw new Error('only update the node after it was initialized.')
-        }
-    }
-
 	/**
      * This method binds all view events.
      * Must be overriden!
@@ -57,11 +41,16 @@ export default class BaseNodePresenter {
      * @param {*} parentNode The root node of this node inside the graph. 
      */
     init(parentNode: HTMLElement){
+		console.log('init node')
 		// update the views root element reference, cause it gets lost when appending to dagreD3 graph.
+		// this.view.html.root = parentNode
 		// Object.keys(this.view.html.refs).forEach(key => {
-		// 	this.view.html.refs[key] = parentNode.querySelector(`[data-ref='${key}']`)
+		// 	// console.log("updating ref: ", key)
+		// 	// console.log("updating to: ", this.view.html.root.querySelector(`[data-ref='${key}']`))
+		// 	this.view.html.refs[key] = this.view.html.root.querySelector(`[data-ref='${key}']`)
 		// })
-		this.view.html.root = parentNode
+		// not called elsewhere...
+		this.view.updateRefs(parentNode)
 
 		// bind state and progress updates to view, in case the node has such.
 		if(this.model.status){

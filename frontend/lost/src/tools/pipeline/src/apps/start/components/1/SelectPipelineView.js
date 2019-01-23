@@ -5,7 +5,7 @@ import './SelectPipeline.scss'
 class SelectPipelineView extends WizardTabView {
     constructor(){
         super({
-            title: 'Choose a Template',
+            title: 'Choose a Pipeline Template',
             icon: 'fa fa-puzzle-piece fa-1x',
             content: /*html*/`
                 <table data-ref="data-table" class='table table-striped table-bordered'>

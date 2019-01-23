@@ -2,7 +2,7 @@ import $ from "cash-dom"
 
 import { NodeTemplate, mouse, keyboard, state } from "l3p-frontend"
 
-import * as data from "siaRoot/data"
+import * as data from "siaRoot/http"
 import * as math from "shared/math"
 
 import { LAYOUT } from "./app.defaults"
@@ -13,17 +13,17 @@ import * as modals from "./modals"
 import * as imagePresenter from "components/image/imagePresenter"
 import * as propertiesPresenter from "components/properties/propertiesPresenter"
 import * as toolbarPresenter from "components/toolbar/toolbarPresenter"
-import * as controlsPresenter from "components/controls/controlsPresenter"
 
 import * as imageView from "components/image/imageView"
+import * as controlsView from "components/controls/controlsView"
 
-state.init({ logging: false })
-state.setHistorySize(50)
 
-const CONFIG = false
-const BACKEND = false
+// app init configuration
+const CONFIG = true
+const BACKEND = true
 const DEBUG = true
-// dummy labels if no backend
+
+// dummy data
 const CATEGORIES = { 
     labelTrees: [
         {
@@ -60,7 +60,6 @@ const CATEGORIES = {
         }
     ]
 }
-// dummy data if no backend
 const DATA = ((o: any) => {
     return {
         image: {
@@ -133,9 +132,11 @@ const DATA = ((o: any) => {
     polygons: true,
 })
 
+// expose modules to window object
 if(DEBUG){
     window.SIA = {
         math,
+		http: require("./http"),
         appModel,
         appView,
         appPresenter: this,
@@ -151,85 +152,64 @@ if(DEBUG){
         l3pcore: require("l3p-frontend")
     }
     window.NodeTemplate = NodeTemplate
+	console.warn('DISABLE DEBUG MODE IN PRODUCTION')
 }
 
-function validateConfig(config: any){
-    if(config.tools.bbox){
-        const { minArea, minAreaType } = config.drawables.bbox
-        if(!(minArea && minAreaType)){
-            console.warn("Config does not provide both minArea and minAreaType for bboxes. Defaulting to 4x4 px, absolute.", config)
-            config.drawables.bbox.minArea = 4*4
-            config.drawables.bbox.minAreaType = "abs"
-        }
-    }
-    return config
-}
-if(!CONFIG){
-    console.warn("NO CONFIG MODE: will not load backend config.")
-    let config = appModel.config.value
-    config = Object.assign(config, {
-        tools: {
-            point: true,
-            line: true,
-            polygon: true,
-            bbox: true,
-        },
-        actions: {
-            drawing: true,
-            labeling: true,
-            edit: {
-                label: true,
-                bounds: true,
-                delete: true,
+// MODEL BINDINGS
+appModel.data.drawables.on("update", () => handleDataUpdate(appModel.data))
+
+// VIEW BINDINGS
+$(window).on("resize", resize)
+$(window).on("contextmenu", ($event) => $event.preventDefault())
+$(window).on("mousedown mouseup click", ($event) => filterMouseButtons($event))
+$(window).on("keydown", ($event) => filterKeyStrokes($event))
+$(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
+    data.sendData(appModel.getResponseData()).then(() => {
+        data.finish().then((message) => {
+            if(message !== "success"){
+                alert(message)
+                throw new Error(message)
+            } else {
+                appModel.cleanSession()
+                handleNothingAvailable()
+                console.log("%c application finished with status: ", "background: #282828; color: #FE8019", message)
             }
-        }
+        })
     })
-    appModel.config.update(validateConfig(config))
-    init()
-} else {
-    data.requestConfig().then(config => {
-        config = JSON.parse(config)
-        console.log("%c successfully requested config: ", "background: #282828; color: #FE8019", config)
-        appModel.config.update(validateConfig(config))
-        init()
-    }).catch(error => {
-        // make config optional
-        console.log(error.message)
-        appModel.config.update(appModel.config.value)
-        init()
-    })
-}
+})
+imagePresenter.image.addEventListener("load", () => {
+    resize()
+    appModel.ui.resized.update(true)
+    appModel.ui.resized.reset()
+})
 
-function init(){
+function load(){
     if(BACKEND) {
-        data.requestAnnotationProgress().then((ATStatus) => {
-            console.log("%c ATStatus: ", "background: #282828; color: #FE8019", ATStatus)
-            if(ATStatus.name === "nothing_available"){
+        data.requestAnnotationProgress().then((status) => {
+			appView.hide()
+            console.log("%c annotation status: ", "background: #282828; color: #FE8019")
+			console.log({status})
+            if(status.name === "nothing_available"){
                 handleNothingAvailable()
             } else {
                 // remove stored data when switching pipelines,
                 let lastKnownAnnotationId = JSON.parse(sessionStorage.getItem("sia-annotation-id"))
-                if(lastKnownAnnotationId && (lastKnownAnnotationId !== ATStatus.id)){
+                if(lastKnownAnnotationId && (lastKnownAnnotationId !== status.id)){
                     console.warn("The saved state is from another session.")
                     appModel.cleanSession()
                 }
-                // init:
                 // get labels and annotation data.
-                console.log("%c init ", "background: #282828; color: #FE8019")
                 Promise.all([
                     data.requestLabels(),
                     data.requestInitialAnnotation(),
                 ]).then((responses) => {
                     let [labels, annotations] = responses
-                    console.log("%c update via request ", "background: #282828; color: #FE8019")
-                    console.log("labels:", labels)
-                    console.log("annotations:", annotations)
+                    console.log("%c annotation data: ", "background: #282828; color: #FE8019")
+                    console.log({labels})
+                    console.log({annotations})
                     appModel.updateLabels(labels)
                     appModel.updateAnnotations(annotations)
-                    sessionStorage.setItem("sia-annotation-id", JSON.stringify(ATStatus.id))
-                }).catch((error)=>{
-                    // when reaching this state, no pipline was selected, hide app.
-                    appView.hide()
+                    sessionStorage.setItem("sia-annotation-id", JSON.stringify(status.id))
                 })
             }
         })
@@ -239,45 +219,12 @@ function init(){
         appModel.updateAnnotations(DATA)
     }
 }
-
-/* model binding */
-appModel.data.drawables.on("update", () => handleDataUpdate(appModel.data))
-
-/* view binding */
-$(window).on("resize", resize)
-$(window).on("contextmenu", ($event) => $event.preventDefault())
-$(window).on("mousedown mouseup click", ($event) => filterMouseButtons($event))
-$(window).on("keydown", ($event) => filterKeyStrokes($event))
-$(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
-    data.sendData(appModel.getResponseData()).then(() => {
-        data.finish().then((message) => {
-            if(message !== "succeeded"){
-                alert(message)
-                throw new Error(message)
-            } else {
-                appModel.cleanSession()
-                window.AT.setFinished()
-                handleNothingAvailable()
-                console.log("%c application finished with status: ", "background: #282828; color: #FE8019", message)
-            }
-        })
-    })
-})
-imagePresenter.image.addEventListener("load", () => {
-    appView.show()
-    resize()
-    appModel.ui.resized.update(true)
-    appModel.ui.resized.reset()
-})   
-
-
 function resize(){
     // requirement
-    if(!appModel.data.image.url.isInInitialState && imageView.image !== null){
-
+    if(!appModel.data.image.rawLoadedImage.isInInitialState && imageView.image !== null){
         // preparation
-        let imageWidth = imageView.image.width
-        let imageHeight = imageView.image.height
+        let imageWidth = appModel.data.image.rawLoadedImage.value.width
+        let imageHeight = appModel.data.image.rawLoadedImage.value.height
 
         // looking for
         let imageRatio;
@@ -295,10 +242,10 @@ function resize(){
             isPortrait = !isLandscape
 
             // hide the image for caluclations
-            imageView.hide() // @add-container-for-that? (getting the top value from boundingClientRect)
+            imageView.hide()
 
             // scroll into view to be able to use getBoundingClientRect for calculations
-            appView.html.ids["sia-drawer-content"].scrollIntoView(true)
+			document.querySelector("main div.card-header").scrollIntoView(true)
 
             if(isPortrait){
                 // console.log("is portrait")
@@ -313,9 +260,7 @@ function resize(){
                 // calculate height
                 availHeight = window.innerHeight 
                     - propertiesPresenter.getBounds().top
-                    - 30 // image info height (approx)
-                    - imageView.padding.top
-                    - imageView.padding.bottom
+                    - (35 + 10)  // info bar: button height + margin-top
                     - LAYOUT.space
                 // console.log("avail height:", availHeight)
                 optimalImageHeight = availHeight
@@ -325,7 +270,6 @@ function resize(){
                 availWidth = document.getElementById("sia-content-wrapper").clientWidth 
                     - propertiesPresenter.getWidth()
                     - toolbarPresenter.getWidth()
-                    - 2 * imageView.padding.side
                 applyMinimumRules()
             }
             else {
@@ -339,20 +283,18 @@ function resize(){
                 // console.log("toolbar should be row")
 
                 // calculate height
-                availHeight = window.innerHeight 
+                availHeight = window.innerHeight
                     - propertiesPresenter.getBounds().bottom
                     - toolbarPresenter.getHeight()
-                    - (2 * Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap")))
-                    - 30 // image info height (approx)
-                    - imageView.padding.top
-                    - imageView.padding.bottom
+                    - (2 * Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap")))
+					- (35 + 10)  // info bar: button height + margin-top
                     - LAYOUT.space
+
                 optimalImageHeight = availHeight
                 optimalImageWidth = optimalImageHeight * imageRatio
                 // console.log("avail height:", availHeight)
                 // calculate width
                 availWidth = document.getElementById("sia-content-wrapper").clientWidth
-                    - 2 * imageView.padding.side
                 applyMinimumRules()
                 
                 // additional step (set toolbar aside if enough space)
@@ -361,18 +303,17 @@ function resize(){
                 appView.html.ids["sia-content-wrapper"].classList.toggle("sia-layout-landscape-toolbar-below", false)
                 appView.html.ids["sia-content-wrapper"].classList.toggle("sia-layout-landscape-toolbar-on-side", true)
                 toolbarPresenter.setLayout("column")
-                const requiredWidth = toolbarPresenter.getWidth()
-                    + Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap"))
+
                 // recalculate height again (and width as it depends)
+                const requiredWidth = toolbarPresenter.getWidth()
+                    + Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap"))
                 if(remainingWidth > requiredWidth){
                     // console.log("enough space to set toolbar on side")
                     // calculate height
                     availHeight = window.innerHeight 
                         - propertiesPresenter.getBounds().bottom
-                        - Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap"))
-                        - 30 // image info height (approx)
-                        - imageView.padding.top
-                        - imageView.padding.bottom
+                        - Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap"))
+						- (35 + 10)  // info bar: button height + margin-top
                         - LAYOUT.space
                     optimalImageHeight = availHeight
                     optimalImageWidth = optimalImageHeight * imageRatio
@@ -380,8 +321,7 @@ function resize(){
                     // calculate width
                     availWidth = document.getElementById("sia-content-wrapper").clientWidth
                         - toolbarPresenter.getWidth()
-                        - Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap"))
-                        - 2 * imageView.padding.side
+                        - Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap"))
                     applyMinimumRules()
                 } 
                 // if not enough space is available aside, reset to default
@@ -411,12 +351,15 @@ function resize(){
             // apply scale factor
             newImageHeight *= LAYOUT.scaleFactor
             newImageWidth *= LAYOUT.scaleFactor
+			// console.log({newImageWidth, newImageHeight})
 
             // floor even width and height
             newImageWidth = math.floorEven(newImageWidth)
             newImageHeight = math.floorEven(newImageHeight)
+			// console.log({newImageWidth, newImageHeight})
 
             // finish
+			appView.show()
             imageView.show()
             imagePresenter.resize(newImageWidth, newImageHeight)
             propertiesPresenter.resize()
@@ -433,13 +376,8 @@ function handleDataUpdate(data: any){
     }
 }
 function handleNothingAvailable(){
-    console.log("handle nothing available")
-    controlsPresenter.hide()
-    propertiesPresenter.hide()
-    toolbarPresenter.hide()
-    imagePresenter.removeDrawables()
-    imageView.hide()
-    appView.show()
+	appModel.cleanSession()
+	window.location.href = window.location.href.replace(/\/[\w-]+$/, "/dashboard")
 }
 function filterMouseButtons($event){
     // return on right or middle mouse button, prevent context menu.
@@ -456,3 +394,55 @@ function filterKeyStrokes($event){
     }
 }
 
+export default function init({ siaMount, actionsMount, updateAnnotationStatus, props, token }){
+	console.log("%c init ", "background: #282828; color: #FE8019")
+
+	// set web token.
+	appModel.reactComponent.token = token
+
+	// init redo undo.
+	state.init({ logging: false })
+	state.setHistorySize(50)
+	
+	// mount views.
+	siaMount.appendChild(appView.html.fragment)
+	actionsMount.appendChild(controlsView.html.fragment)
+
+	appModel.reactComponent.props = props
+	props.getWorkingOnAnnoTask()
+
+	// init app configuration, followed by app data initialization.
+	if(!CONFIG){
+		console.warn("NO CONFIG MODE: will not load backend config.")
+		let config = appModel.config.value
+		config = Object.assign(config, {
+			tools: {
+				point: true,
+				line: true,
+				polygon: true,
+				bbox: true,
+			},
+			actions: {
+				drawing: true,
+				labeling: true,
+				edit: {
+					label: true,
+					bounds: true,
+					delete: true,
+				}
+			}
+		})
+		appModel.config.update(config)
+		load()
+	}
+	else {
+		data.requestConfig().then(config => {
+			console.log("%c successfully requested config: ", "background: #282828; color: #FE8019", config)
+			appModel.config.update(config)
+			load()
+		}).catch(error => {
+			console.error(error)
+			handleNothingAvailable()
+		})
+	}
+}

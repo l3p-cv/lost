@@ -2,19 +2,9 @@ import $ from "cash-dom"
 
 import "./properties.styles.scss"
 import { NodeTemplate } from "l3p-frontend"
+import { ReactDOM } from "react-dom"
 
-
-function drawImage(){
-    const ctx = html.refs["canvas"].getContext("2d")
-    // used on image update and?
-    ctx.clearRect(0, 0, html.refs["canvas"].width, html.refs["canvas"].height)
-    ctx.drawImage(image,
-        0, 0, image.width, image.height,
-        0, 0, html.refs["canvas"].width, html.refs["canvas"].height
-    )
-}
-
-export const html = new NodeTemplate(`
+export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
 
         <!-- canvas -->
@@ -28,7 +18,6 @@ export const html = new NodeTemplate(`
                 <option value="wakaterimashta">wakaterimashta</option>
                 <option value="wakata">wakata</option>
             </select>
-            // <div id="sia-propview-label-select-mountpoint"></div>
             <textarea id="sia-propview-description" class="form-control" rows="3" placeholder="Description" disabled></textarea>
         </div>
 
@@ -77,7 +66,7 @@ export function init(){
 }
 
 export function updateTable(drawable: DrawablePresenter){
-    switch(drawable.getClassName()){
+    switch(drawable.getCplassName()){
         case "PointPresenter":
             // show x and y
             html.refs["attr-text-1"].textContent = ""
@@ -150,7 +139,7 @@ export function updateLabels(labels: Array<any> = []){
     html.ids["sia-propview-label-select"].innerHTML = ""
 
     // create one option node for every label in the models label list
-    const options = new NodeTemplate(`
+    const options = new NodeTemplate(/*html*/`
         ${
             labels.map(label => {
                 return `
@@ -175,7 +164,6 @@ export function setLayout(layout: String){
     }
 }
 export function setLabel(id: String){
-    console.log("setLabel:", id)
     html.ids["sia-propview-label-select"].value = id
 }
 export function setDescription(description: String){

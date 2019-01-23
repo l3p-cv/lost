@@ -14,7 +14,7 @@
       "peOut" : [2],
       "script" : {
         "path": "anno_all_imgs.py",
-        "description" : "Request ImageAnnotations for all images in an rawFile",
+        "description" : "Request ImageAnnotations for all images in an rawFile"
       }
     },
     {

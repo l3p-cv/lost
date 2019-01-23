@@ -5,6 +5,7 @@ import label from './label'
 import group from './group'
 import user from './user'
 import annoTask from './annoTask'
+import mia from './mia'
 
 export default combineReducers({
     auth,
@@ -12,5 +13,6 @@ export default combineReducers({
     group,
     user,
     annoTask,
+    mia,
     form: formReducer
 })
