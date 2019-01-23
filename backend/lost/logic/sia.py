@@ -107,25 +107,24 @@ def get_label_trees(db_man, user_id):
     """
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, user_id)
+    at = __get_mia_anno_task(db_man, user_id)
     label_trees_json = dict()
-    label_trees_json['labelTrees'] = list()
-    for rll in db_man.get_all_required_label_leaves(at.idx): #type: lost.db.model.RequiredLabelLeaf
-        label_tree_json = dict()
-        label_tree_json['id'] = rll.label_leaf.idx
-        label_tree_json['name'] = rll.label_leaf.description
-        label_tree_json['description'] = rll.label_leaf.description
-        #label_tree_json['cssClass'] = rll.label_leaf.css_class
-        label_tree_json['labelLeaves'] = list()
-        for label_leaf in db_man.get_all_child_label_leaves(rll.label_leaf.idx):#type: lost.db.model.LabelLeaf
-            label_leaf_json = dict()
-            label_leaf_json['id'] = label_leaf.idx
-            label_leaf_json['name'] = label_leaf.name
-            label_leaf_json['description'] = label_leaf.description
-            #label_leaf_json['cssClass'] = label_leaf.css_class
-            label_tree_json['labelLeaves'].append(label_leaf_json)
-        label_trees_json['labelTrees'].append(label_tree_json)
-    return label_trees_json
+    label_trees_json['labels'] = list()
+    if at:
+        for rll in db_man.get_all_required_label_leaves(at.idx): #type: lost.db.model.RequiredLabelLeaf
+            for label_leaf in db_man.get_all_child_label_leaves(rll.label_leaf.idx): #type: lost.db.model.LabelLeaf
+                label_leaf_json = dict()
+                label_leaf_json['id'] = label_leaf.idx
+                label_leaf_json['label'] = label_leaf.name
+                label_leaf_json['nameAndClass'] = label_leaf.name + " (" + rll.label_leaf.name + ")"
+                label_leaf_json['description'] = label_leaf.description
+                label_trees_json['labels'].append(label_leaf_json)
+        return label_trees_json
+    else: 
+        label_trees = dict()
+        label_trees['labels'] = list()
+        return label_trees
+        
 def get_configuration(db_man, user_id):
     at = get_sia_anno_task(db_man,user_id)
     return json.loads(at.configuration)

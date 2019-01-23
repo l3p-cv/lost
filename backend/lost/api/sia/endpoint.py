@@ -117,7 +117,7 @@ class Junk(Resource):
 
 @namespace.route('/label')
 class Label(Resource):
-    @api.marshal_with(label_trees)
+    #@api.marshal_with(label_trees)
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
