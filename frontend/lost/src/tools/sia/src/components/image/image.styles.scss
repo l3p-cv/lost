@@ -4,27 +4,26 @@ svg:not(:root) {
 }
 #sia-imgview {
     grid-area: imageview;        
-    #sia-imgview-svg-padding {
-        overflow: hidden;
-    }
-    #sia-imgview-svg-container {
-        // @zoom: needed to set overflow on hidden.
-        overflow: visible;
-        position: relative;
-        canvas {
-            z-index: 0;
-        }
-        #sia-imgview-svg {
-            overflow: visible;
-            position: relative;
-        }
-    }
-    #sia-image-info {
+	
+	#sia-imgview-svg-container {
+		overflow: hidden;
+		position: relative;
+		canvas {
+			z-index: 0;
+		}
+		#sia-imgview-svg {
+			overflow: visible;
+			position: relative;
+		}
+	}
+    
+	[data-ref="image-info"] {
 		display: grid;
-		grid-template-rows: auto;
+		grid-template-rows: 35px;
 		grid-template-columns: auto auto auto;
 		align-items: center;
-        padding-bottom: 0.5rem;
+		// align to the 
+		margin-top: 10px;
         [data-ref="sia-delete-junk-btn"] {
 			justify-self: start;
         }
@@ -34,9 +33,5 @@ svg:not(:root) {
         [data-ref="image-progress"] {
 			justify-self: end;
         }
-    }
-    #sia-imgview-no-more-images {
-        display: none;
-        background-color: white;
     }
 }

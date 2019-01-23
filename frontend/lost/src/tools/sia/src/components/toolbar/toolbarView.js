@@ -1,7 +1,7 @@
 import $ from "cash-dom"
 
 import { NodeTemplate } from "l3p-frontend"
-import * as appModel from "../../appModel"
+
 
 export const html = new NodeTemplate(/*html*/`
     <div id="sia-toolbar-container">

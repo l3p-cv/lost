@@ -266,7 +266,7 @@ function updateData(action: String){
         Promise.all([
             data.requestLabels(),
             requestData(),
-        ]).then((responses)=>{
+        ]).then((responses) => {
             let [categories, data] = responses
             console.log("%c update via request ", "background: #282828; color: #FE8019")
             console.log("categories:", categories)

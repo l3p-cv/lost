@@ -178,7 +178,6 @@ $(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
     })
 })
 imagePresenter.image.addEventListener("load", () => {
-    appView.show()
     resize()
     appModel.ui.resized.update(true)
     appModel.ui.resized.reset()
@@ -187,6 +186,7 @@ imagePresenter.image.addEventListener("load", () => {
 function load(){
     if(BACKEND) {
         data.requestAnnotationProgress().then((status) => {
+			appView.hide()
             console.log("%c annotation status: ", "background: #282828; color: #FE8019")
 			console.log({status})
             if(status.name === "nothing_available"){
@@ -210,9 +210,6 @@ function load(){
                     appModel.updateLabels(labels)
                     appModel.updateAnnotations(annotations)
                     sessionStorage.setItem("sia-annotation-id", JSON.stringify(status.id))
-                }).catch((error)=>{
-                    // when reaching this state, no pipline was selected, hide app.
-                    appView.hide()
                 })
             }
         })
@@ -245,7 +242,7 @@ function resize(){
             isPortrait = !isLandscape
 
             // hide the image for caluclations
-            imageView.hide() // @add-container-for-that? (getting the top value from boundingClientRect)
+            imageView.hide()
 
             // scroll into view to be able to use getBoundingClientRect for calculations
 			document.querySelector("main div.card-header").scrollIntoView(true)
@@ -263,9 +260,7 @@ function resize(){
                 // calculate height
                 availHeight = window.innerHeight 
                     - propertiesPresenter.getBounds().top
-                    - 30 // image info height (approx)
-                    - imageView.padding.top
-                    - imageView.padding.bottom
+                    - (35 + 10)  // info bar: button height + margin-top
                     - LAYOUT.space
                 // console.log("avail height:", availHeight)
                 optimalImageHeight = availHeight
@@ -275,7 +270,6 @@ function resize(){
                 availWidth = document.getElementById("sia-content-wrapper").clientWidth 
                     - propertiesPresenter.getWidth()
                     - toolbarPresenter.getWidth()
-                    - 2 * imageView.padding.side
                 applyMinimumRules()
             }
             else {
@@ -293,9 +287,7 @@ function resize(){
                     - propertiesPresenter.getBounds().bottom
                     - toolbarPresenter.getHeight()
                     - (2 * Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap")))
-                    - 30 // image info height (approx)
-                    - imageView.padding.top
-                    - imageView.padding.bottom
+					- (35 + 10)  // info bar: button height + margin-top
                     - LAYOUT.space
 
                 optimalImageHeight = availHeight
@@ -303,7 +295,6 @@ function resize(){
                 // console.log("avail height:", availHeight)
                 // calculate width
                 availWidth = document.getElementById("sia-content-wrapper").clientWidth
-                    - 2 * imageView.padding.side
                 applyMinimumRules()
                 
                 // additional step (set toolbar aside if enough space)
@@ -315,16 +306,14 @@ function resize(){
 
                 // recalculate height again (and width as it depends)
                 const requiredWidth = toolbarPresenter.getWidth()
-                    + Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap"))
+                    + Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap"))
                 if(remainingWidth > requiredWidth){
                     // console.log("enough space to set toolbar on side")
                     // calculate height
                     availHeight = window.innerHeight 
                         - propertiesPresenter.getBounds().bottom
-                        - Number.parseInt(getComputedStyle(appView.html.root).getPropertyValue("grid-row-gap"))
-                        - 30 // image info height (approx)
-                        - imageView.padding.top
-                        - imageView.padding.bottom
+                        - Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap"))
+						- (35 + 10)  // info bar: button height + margin-top
                         - LAYOUT.space
                     optimalImageHeight = availHeight
                     optimalImageWidth = optimalImageHeight * imageRatio
@@ -333,7 +322,6 @@ function resize(){
                     availWidth = document.getElementById("sia-content-wrapper").clientWidth
                         - toolbarPresenter.getWidth()
                         - Number.parseInt(getComputedStyle(appView.html.ids["sia-content-wrapper"]).getPropertyValue("grid-row-gap"))
-                        - 2 * imageView.padding.side
                     applyMinimumRules()
                 } 
                 // if not enough space is available aside, reset to default
@@ -363,13 +351,15 @@ function resize(){
             // apply scale factor
             newImageHeight *= LAYOUT.scaleFactor
             newImageWidth *= LAYOUT.scaleFactor
-			console.log({newImageWidth, newImageHeight})
+			// console.log({newImageWidth, newImageHeight})
+
             // floor even width and height
             newImageWidth = math.floorEven(newImageWidth)
             newImageHeight = math.floorEven(newImageHeight)
-			console.log({newImageWidth, newImageHeight})
+			// console.log({newImageWidth, newImageHeight})
 
             // finish
+			appView.show()
             imageView.show()
             imagePresenter.resize(newImageWidth, newImageHeight)
             propertiesPresenter.resize()
