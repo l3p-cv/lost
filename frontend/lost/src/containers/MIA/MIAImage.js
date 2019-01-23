@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import actions from '../../actions'
 
 
-const {getMiaImage} = actions
+const {getMiaImage, miaToggleActive} = actions
 
 
 class MIAImage extends Component{
@@ -14,15 +14,12 @@ class MIAImage extends Component{
                 id: this.props.image.id,
                 data: '',
             },
-            is_active: true,
             clicks: 0,
-            timer: undefined
+            timer: undefined,
+            classes: '',
         }
         this.imageClick = this
         .imageClick
-        .bind(this)
-        this.imageDoubleClick = this
-        .imageDoubleClick
         .bind(this)
     } 
     componentDidMount(){
@@ -41,12 +38,13 @@ class MIAImage extends Component{
         this.setState({timer:setTimeout(() => {
             // reset.
             this.setState({clicks: 0})
-            console.log("Click")
-            if (this.state.is_active) {
-                this.setState({is_active: false})
+            if (this.props.image.is_active) {
+                this.props.miaToggleActive({image: {...this.props.image, is_active:false }})
+                this.setState({classes: `${this.state.classes} mia-image-inactive`})
                
             } else {
-                this.setState({is_active: true})
+                this.props.miaToggleActive({image: {...this.props.image, is_active:true }})
+                this.setState({classes: this.state.classes.replace(' mia-image-inactive', '')})
             }
         }, 250)})
 
@@ -54,23 +52,20 @@ class MIAImage extends Component{
     else{
         clearTimeout(this.state.timer)
         this.setState({clicks: 0})
-        console.log("dblClick")
+        if(this.state.classes.includes(' mia-image-zoomed')){
+            this.setState({classes: this.state.classes.replace(' mia-image-zoomed', '')})
+        }
+        else{
+            this.setState({classes: `${this.state.classes} mia-image-zoomed`})
+        }
     }
     
   }   
-  imageDoubleClick = () => {
-    console.log("sdfdsfdsf")
-  }  
-    // imageClick(){
-    //     console.log(this.state.image.id)
-    //     this.setState({image:{is_active: !this.state.image.is_active}})
-    //     //this.props.callback(this.state.image)
-    // }
 
     render(){
-        return(<img onClick={this.imageClick}  src={this.state.image.data} className='mia-image' height={this.props.height}/>)
+        return(<img onClick={this.imageClick}  src={this.state.image.data} className={`mia-image ${this.state.classes}`} height={this.props.height}/>)
     }
 
 }
 
-export default connect(null, {getMiaImage})(MIAImage)
+export default connect(null, {getMiaImage, miaToggleActive})(MIAImage)

@@ -41,7 +41,10 @@ export const miaZoomOut = (zoom) => dispatch =>{
 }
 
 export const miaAmount = (amount) => dispatch =>{
-    console.log(amount)
     localStorage.setItem('mia-max-amount', amount)
     dispatch({type: TYPES.MIA_AMOUNT, payload: amount})
+}
+
+export const miaToggleActive = (payload) => dispatch => {
+    dispatch({type: TYPES.MIA_TOGGLE_ACTIVE, payload: payload.image})
 }

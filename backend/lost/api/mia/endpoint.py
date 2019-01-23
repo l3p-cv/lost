@@ -26,6 +26,21 @@ class Next(Resource):
             dbm.close_session()
             return re
 
+@namespace.route('/label')
+class Label(Resource):
+    @api.marshal_with(label_trees)
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+        else:
+            re = mia.get_label_trees(dbm, identity)
+            dbm.close_session()
+            return re
 # @namespace.route('/label')
 # @namespace.route('/update')
 # @namespace.route('/finish')

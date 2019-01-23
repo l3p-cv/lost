@@ -33,4 +33,7 @@ $image-margin: 14px;
         animation: zoom 1s;
         transform: scale(2.2);
     }
+    &-inactive {
+        opacity: 0.2;
+    }
 }

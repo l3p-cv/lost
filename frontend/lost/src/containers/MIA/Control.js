@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import actions from '../../actions'
+import Autocomplete from 'react-autocomplete'
 import {
     Col,
     Row,
@@ -23,6 +24,7 @@ class Control extends Component {
         super(props);
         this.state = {
             dropdownOpen: false,
+            value: ''
         }
 
         this.handleLabelName = this
@@ -74,10 +76,27 @@ class Control extends Component {
             }}>
                 <Col xs='5' sm='5' lg='5'>
                     <InputGroup>
-                        <Input
-                            placeholder="label name"
-                            value={this.state.labelName}
-                            onChange={this.handleLabelName}></Input>
+                        <Autocomplete
+                            items={[
+                            { id: 'foo', label: 'foo' },
+                            { id: 'bar', label: 'bar' },
+                            { id: 'baz', label: 'baz' },
+                            ]}
+                            shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
+                            getItemValue={item => item.label}
+                            renderInput={(props) => {return <input {...props} className='form-control'/>}} 
+                            renderItem={(item, highlighted) =>
+                            <div
+                                key={item.id}
+                                style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}}
+                            >
+                                {item.label}
+                            </div>
+                            }
+                            value={this.state.value}
+                            onChange={e => this.setState({ value: e.target.value })}
+                            onSelect={value => this.setState({ value })}
+                        />
                         <InputGroupAddon addonType="append">
                             <Button className='btn-default' onClick={this.handleAddLabel}><i className="fa fa-plus"></i><br /></Button>
                         </InputGroupAddon>
