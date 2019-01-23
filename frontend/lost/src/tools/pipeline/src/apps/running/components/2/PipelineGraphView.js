@@ -6,7 +6,7 @@ import './PipelineGraph.scss'
 class PipelineGraphTab extends WizardTabView {
 	constructor(){
 		super({
-			title: 'Fill out Elements',
+			title: 'Inspect Pipeline Elements',
 			icon: 'fa fa-pencil',
 			content: /*html*/`
 				// update indicator.

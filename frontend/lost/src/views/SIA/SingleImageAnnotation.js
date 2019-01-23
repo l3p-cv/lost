@@ -17,13 +17,15 @@ const { getWorkingOnAnnoTask } = actions
 class SingleImageAnnotation extends Component {
 	constructor(props){
 		super(props)
-		this.mount = React.createRef()
+		this.siaMount = React.createRef()
+		this.actionsMount = React.createRef()
 	}
 	componentDidMount(){
 		this.props.getWorkingOnAnnoTask()
 		const init = require("../../tools/sia/src/appPresenter").default
 		init({
-			mountPoint: this.mount.current,
+			siaMount: this.siaMount.current,
+			actionsMount: this.actionsMount.current,
 			updateAnnotationStatus: getWorkingOnAnnoTask,
 			props: this.props,
 			token: this.props.token,
@@ -41,7 +43,20 @@ class SingleImageAnnotation extends Component {
 							<Row>
 								<Col xs='12'>
 									<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
-									<div ref={this.mount}></div>
+									{/* the mount point needs to stay positioned relative (see sia hide plane) */}
+									<div ref={this.siaMount} style={{position: "relative"}}></div>
+								</Col>
+							</Row>
+						</CardBody> 
+					</Card>
+					<Card>
+						<CardHeader>
+							Action Reference
+						</CardHeader>
+						<CardBody>
+							<Row>
+								<Col xs='12'>
+									<div ref={this.actionsMount}></div>
 								</Col>
 							</Row>
 						</CardBody> 

@@ -2,9 +2,7 @@ import $ from "cash-dom"
 
 import "./properties.styles.scss"
 import { NodeTemplate } from "l3p-frontend"
-
-
-
+import { ReactDOM } from "react-dom"
 
 export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
@@ -20,7 +18,6 @@ export const html = new NodeTemplate(/*html*/`
                 <option value="wakaterimashta">wakaterimashta</option>
                 <option value="wakata">wakata</option>
             </select>
-            // <div id="sia-propview-label-select-mountpoint"></div>
             <textarea id="sia-propview-description" class="form-control" rows="3" placeholder="Description" disabled></textarea>
         </div>
 
@@ -69,7 +66,7 @@ export function init(){
 }
 
 export function updateTable(drawable: DrawablePresenter){
-    switch(drawable.getClassName()){
+    switch(drawable.getCplassName()){
         case "PointPresenter":
             // show x and y
             html.refs["attr-text-1"].textContent = ""

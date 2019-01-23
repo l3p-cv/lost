@@ -4,7 +4,7 @@ import { WizardTabView } from 'l3p-frontend'
 class ConfigPipelineTab extends WizardTabView {
     constructor(){
         const config = {
-            title: 'Enter Pipe Name and Description',
+            title: 'Enter Name and Description',
             icon: 'fa fa-list-alt',
             content: /*html*/`
                 <label class='required colon'>Name</label>
