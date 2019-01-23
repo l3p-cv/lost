@@ -3,6 +3,7 @@ const INITIAL_STATE = {
     images: [],
     maxAmount: 10,
     zoom: 100,
+    labels: [],
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -34,6 +35,11 @@ export default function (state = INITIAL_STATE, action) {
             return{
                 ...state,
                 images: newImages
+            }
+        case TYPES.GET_MIA_LABEL:
+            return {
+                ...state,
+                labels: action.payload.labels
             }
         default:
             return state

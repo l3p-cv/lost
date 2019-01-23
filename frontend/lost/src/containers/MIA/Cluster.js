@@ -5,7 +5,7 @@ import actions from '../../actions'
 
 import './Cluster.scss';
 
-const {getMiaAnnos,getMiaImage, getWorkingOnAnnoTask} = actions
+const {getMiaAnnos,getMiaImage, getWorkingOnAnnoTask, getMiaLabel} = actions
 
 class Cluster extends Component{
     constructor(props){
@@ -19,6 +19,7 @@ class Cluster extends Component{
         if(props.images.length === 0){
             this.props.getMiaAnnos(this.props.maxAmount)
             this.props.getWorkingOnAnnoTask()
+            this.props.getMiaLabel()
         }
     }
     render(){
@@ -46,4 +47,4 @@ class Cluster extends Component{
 function mapStateToProps(state){
     return({images: state.mia.images, maxAmount: state.mia.maxAmount, zoom: state.mia.zoom})
 }
-export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask})(Cluster)
+export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel})(Cluster)

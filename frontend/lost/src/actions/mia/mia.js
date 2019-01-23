@@ -48,3 +48,10 @@ export const miaAmount = (amount) => dispatch =>{
 export const miaToggleActive = (payload) => dispatch => {
     dispatch({type: TYPES.MIA_TOGGLE_ACTIVE, payload: payload.image})
 }
+
+export const getMiaLabel = () => async dispatch => {
+    try {
+        const response = await axios.get(API_URL + '/mia/label')
+        dispatch({type: TYPES.GET_MIA_LABEL, payload: response.data})
+    } catch (e) {console.log(e)}
+}

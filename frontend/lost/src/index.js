@@ -21,7 +21,8 @@ const store = createStore(reducers, {
     mia: {
         maxAmount: localStorage.getItem('mia-max-amount') ? localStorage.getItem('mia-max-amount'): 10 ,
         zoom: localStorage.getItem('mia-zoom') ? localStorage.getItem('mia-zoom'): 120,
-        images: []
+        images: [],
+        labels: []
     }
 }, applyMiddleware(reduxThunk))
 

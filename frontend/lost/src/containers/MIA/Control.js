@@ -16,7 +16,7 @@ import {
     DropdownItem
 } from 'reactstrap'
 
-const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos} = actions
+const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel} = actions
 
 class Control extends Component {
 
@@ -69,19 +69,19 @@ class Control extends Component {
         this.props.miaAmount(e.target.innerText)
         this.props.getMiaAnnos(e.target.innerText)
     }
+    componentDidMount(){
+        this.props.getMiaLabel()
+    }
      render() {
+         console.log(this.props)
         return (
             <Row style={{
-                padding: '0 0 10px 0'
+                padding: '0 0 25px 0'
             }}>
                 <Col xs='5' sm='5' lg='5'>
                     <InputGroup>
                         <Autocomplete
-                            items={[
-                            { id: 'foo', label: 'foo' },
-                            { id: 'bar', label: 'bar' },
-                            { id: 'baz', label: 'baz' },
-                            ]}
+                            items={this.props.labels}
                             shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                             getItemValue={item => item.label}
                             renderInput={(props) => {return <input {...props} className='form-control'/>}} 
@@ -132,7 +132,7 @@ class Control extends Component {
 }
 
 function mapStateToProps(state) {
-    return ({zoom: state.mia.zoom})
+    return ({zoom: state.mia.zoom, labels: state.mia.labels})
 }
 
-export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos})(Control)
+export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel})(Control)
