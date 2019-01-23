@@ -18,7 +18,7 @@ export default class PointView extends DrawableView{
         const { position, isNoAnnotation } = config
         const { x, y } = position
         this.isNoAnnotation = isNoAnnotation
-        this.html = new NodeTemplate(`
+        this.html = new NodeTemplate(/*html*/`
             <svg class="sia-point drawable">
                 <g data-ref="position-node" transform="translate(${x},${y})">
                     <g data-ref="container-node" 

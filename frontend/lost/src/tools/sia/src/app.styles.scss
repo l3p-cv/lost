@@ -6,22 +6,32 @@ svg {
     top:0;
 }
 
-#sia-drawer-content{
-    margin-top: 1em;
-    overflow: hidden;
+[data-ref="sia-hide-plane"] {
+	z-index: 1000;
+	background-color: white;
+	position: absolute;
+	height: 100%;
+	width: 100%;
 }
-#sia-content-wrapper {
-    width: 100%;
-    -moz-user-select: -moz-none !important;
-    -khtml-user-select: none !important;
-    -webkit-user-select: none !important;
-    -o-user-select: none !important;
-    user-select: none !important;
+#sia-drawer-panel {
+	position: relative;
+	[data-ref="sia-drawer-content"] {
+		margin-top: 1em;
+		overflow: hidden;
+		#sia-content-wrapper {
+			width: 100%;
+			-moz-user-select: -moz-none !important;
+			-khtml-user-select: none !important;
+			-webkit-user-select: none !important;
+			-o-user-select: none !important;
+			user-select: none !important;
 
-    // remove jquery button margin
-    button {
-        margin: 0;
-    }
+			// remove jquery button margin
+			button {
+				margin: 0;
+			}
+		}
+	}
 }
 
 .sia-layout-portrait {

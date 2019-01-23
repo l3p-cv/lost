@@ -4,47 +4,34 @@ svg:not(:root) {
 }
 #sia-imgview {
     grid-area: imageview;        
-    #sia-imgview-svg-padding {
-        overflow: hidden;
-    }
-    #sia-imgview-svg-container {
-        // @zoom: needed to set overflow on hidden.
-        overflow: visible;
-        position: relative;
-        canvas {
-            z-index: 0;
-        }
-        #sia-imgview-svg {
-            overflow: visible;
-            position: relative;
-        }
-    }
-    #sia-image-info {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        align-items: flex-end;
-        height: 2.6rem;
-        padding-bottom: 0.5rem;
-        button {
-            flex-shrink: 2;
-            padding: 2px 6px; 
-            font-size: 100%;
-            margin-right: 1rem;
+	
+	#sia-imgview-svg-container {
+		overflow: hidden;
+		position: relative;
+		canvas {
+			z-index: 0;
+		}
+		#sia-imgview-svg {
+			overflow: visible;
+			position: relative;
+		}
+	}
+    
+	[data-ref="image-info"] {
+		display: grid;
+		grid-template-rows: 35px;
+		grid-template-columns: auto auto auto;
+		align-items: center;
+		// align to the 
+		margin-top: 10px;
+        [data-ref="sia-delete-junk-btn"] {
+			justify-self: start;
         }
         [data-ref="image-name"] {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 60%;
-            padding-right: 1.2rem;
+			justify-self: center;
         }
-        [data-ref="space"] {
-            flex-grow: 1;
+        [data-ref="image-progress"] {
+			justify-self: end;
         }
-    }
-    #sia-imgview-no-more-images {
-        display: none;
-        background-color: white;
     }
 }
