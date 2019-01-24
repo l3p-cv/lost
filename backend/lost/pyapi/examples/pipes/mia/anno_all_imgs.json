@@ -1,6 +1,6 @@
 {
+  "description" : "This pipeline selects all images of an rawFile for an annotation task",
   "author" : "Jonas Jaeger",
-  "description" : "Annotate all images in a folder with the MIA annotation tool.",
   "pipe-schema-version" : 0.0,
   "elements" : [
     {
@@ -20,18 +20,28 @@
     },
     {
       "peN" : 2,
-      "peOut" : null,
+      "peOut" : [3],
       "annoTask" : {
         "name" : "MultiImageAnnoation",
         "type" : "mia",
         "instructions" : "Please assign a class labels to all presented images.",
         "configuration": {
-          "type": "imageBased",
-          "showProposedLabel" : false,
-          "drawBox" : false,
-          "addContext" : 0.0
+          "type": "imageBased"
         }
       }
+    },
+    {
+      "peN" : 3,
+      "peOut" : [4],
+      "script" : {
+        "path": "export_csv.py",
+        "description" : "Export all annotations to csv file"
+      }
+    },
+    {
+      "peN" : 4,
+      "peOut" : null,
+      "dataExport" : {}
     }
   ]
 }
