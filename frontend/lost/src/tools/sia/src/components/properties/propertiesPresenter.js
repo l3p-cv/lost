@@ -17,7 +17,10 @@ import imageInterface from "components/image/imageInterface"
 
 import * as imagePresenter from "../image/imagePresenter"
 
-// STATE BASED UPDATES
+
+// strange
+propertiesView.init()
+
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)
@@ -27,13 +30,28 @@ appModel.data.image.url.on("update", url => {
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
-
-// DATA BASED UPDATES
-propertiesView.init()
+// quickfix: for?
+appModel.data.image.info.on("update", () => {
+    const data = appModel.data
+    if(data.image.isFirst){
+        console.log("handling first image")
+        handleFirstImage()
+    } else {
+        console.log("handling not fist image")
+        handleNotFirstImage()
+    }
+    if(data.image.isLast){
+        console.log("handling last image")
+        handleLastImage()
+    } else {
+        console.log("handling not last image")
+        handleNotLastImage()
+    }
+})
 appModel.data.labelList.on("update", propertiesView.updateLabels)
-
-
-// LABEL
+appModel.state.selectedLabel.on("update", label => {
+	propertiesView.setDescription(label.description)
+})
 appModel.config.on("update", config => {
     let labelingEnabled = undefined
     if(config.actions.labeling){
@@ -267,12 +285,12 @@ function updateData(action: String){
             data.requestLabels(),
             requestData(),
         ]).then((responses) => {
-            let [categories, data] = responses
+            let [labels, annotations] = responses
             console.log("%c update via request ", "background: #282828; color: #FE8019")
-            console.log("categories:", categories)
-            console.log("data:", data)
-            appModel.updateLabels(categories)
-            appModel.updateAnnotations(data)
+            console.log({labels})
+            console.log({annotations})
+            appModel.updateLabels(labels.labels)
+            appModel.updateAnnotations(annotations)
 			// update react annotation status bar.
 			appModel.reactComponent.props.getWorkingOnAnnoTask()
         }).catch((reason) => {
@@ -280,86 +298,21 @@ function updateData(action: String){
         })
     })
 }
-// quickfix
-appModel.data.image.info.on("update", () => {
-    const data = appModel.data
-    if(data.image.isFirst){
-        console.log("handling first image")
-        handleFirstImage()
-    } else {
-        console.log("handling not fist image")
-        handleNotFirstImage()
-    }
-    if(data.image.isLast){
-        console.log("handling last image")
-        handleLastImage()
-    } else {
-        console.log("handling not last image")
-        handleNotLastImage()
-    }
-})
 
 function enableLabeling(){
     propertiesView.enableLabeling()
-   
-    // add dropdown open shortcut
     $(window).on("keydown.openLabelSelect", $event => {
         if(keyboard.isShortcutHit($event, { mod: "Control", key: "L" })){
-            console.log("ctrl + l")
-            imagePresenter.disableChange()
-            // don't set cursor to browser adress line
+            // prevent default (focus browser adress line)
             $event.preventDefault()
             // open the dropdown
-            // propertiesView.html.ids["sia-propview-label-select"].click()
+            propertiesView.html.refs["label-select"].querySelector("input").focus()
         }
-    })
-    // add label change listener.
-    $(propertiesView.html.ids["sia-propview-label-select"]).on("change", $event => {
-        // @todo: replace with id (add id to views)
-        // find label object by name and update description
-        // @improve this section
-        let optionId = $event.target.value
-        let labelObj = appModel.data.labelList.value.find(l => parseInt(l.id) === parseInt(optionId))
-        if(labelObj){
-            // save label in appModel and session.
-            appModel.state.selectedLabel = labelObj
-            // update description view.
-            propertiesView.setDescription(labelObj.description)
-            // update current drawable label.
-            if(appModel.isADrawableSelected()){
-                const drawable = appModel.getSelectedDrawable()
-                if(drawable.isLabelable()){
-                    drawable.setLabel(labelObj)
-                    drawable.setChanged()
-                    if(drawable.parent){
-                        drawable.parent.setLabel(labelObj)
-                        drawable.setChanged()
-                    }
-                }
-            }
-        } else { 
-            throw  new Error(`Could not find label by id: ${optionId}.`)
-        }
-
-        imagePresenter.enableChange()
     })
 }
 function disableLabeling(){
-    $(window).off("keydown.openLabelSelect")
     propertiesView.disableLabeling()
-}
-
-function enableAllButtons(){
-    propertiesView.enableFirstButton()
-    propertiesView.enableLastButton()
-    propertiesView.enablePrevButton()
-    propertiesView.enableNextButton()
-}
-function disableAllButtons(){
-    propertiesView.disableFirstButton()
-    propertiesView.disableLastButton()
-    propertiesView.disablePrevButton()
-    propertiesView.disableNextButton()
+    $(window).off("keydown.openLabelSelect")
 }
 
 function attachDrawable(drawable: DrawablePresenter){
@@ -373,14 +326,14 @@ function attachDrawable(drawable: DrawablePresenter){
         drawable.model.actBounds.on("update", updateTable)
 
         // enable label and description and set the boxes label by id + description
-        propertiesView.setLabel(drawable.model.label.id)
-        propertiesView.setDescription(drawable.model.label.description)
+		appModel.state.selectedLabel.update(drawable.model.label)
     }
 }
 function detachDrawable(drawable: DrawablePresenter){
     if(drawable instanceof DrawablePresenter){
         drawable.model.actBounds.off("update", updateCanvas)
         drawable.model.actBounds.off("update", updateTable)
+        propertiesView.resetDescription()
         propertiesView.resetCanvas()
         propertiesView.resetTable()
     }

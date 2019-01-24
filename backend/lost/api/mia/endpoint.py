@@ -7,6 +7,7 @@ from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG
 from lost.logic import mia
+import json
 
 namespace = api.namespace('mia', description='MIA Annotation API.')
 
@@ -41,6 +42,36 @@ class Label(Resource):
             re = mia.get_label_trees(dbm, identity)
             dbm.close_session()
             return re
-# @namespace.route('/label')
-# @namespace.route('/update')
-# @namespace.route('/finish')
+
+@namespace.route('/update')
+class Update(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+
+        else:
+            data = json.loads(request.data)
+            re = mia.update(dbm, identity, data)
+            dbm.close_session()
+            return re
+
+@namespace.route('/finish')
+class Finish(Resource):
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+
+        else:
+            re = mia.finish(dbm, identity)
+            dbm.close_session()
+            return re

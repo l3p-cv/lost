@@ -4,6 +4,7 @@ const INITIAL_STATE = {
     maxAmount: 10,
     zoom: 100,
     labels: [],
+    selectedLabel: undefined
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -40,6 +41,15 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 labels: action.payload.labels
+            }
+        case TYPES.MIA_SELECT_LABEL:
+            return {
+                ...state, 
+                selectedLabel: action.payload
+            }
+        case TYPES.MIA_UPDATE:
+            return {
+                ... state
             }
         default:
             return state

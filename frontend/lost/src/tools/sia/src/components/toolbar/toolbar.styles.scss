@@ -6,7 +6,7 @@ $btn-background-unselected-color: #797979;
 $btn-background-selected-color:#E6E6E6;
 $btn-background-hover-color: #E6E6E6;
 
-.sia-tool-selected{
+.sia-tool-selected {
     border-color: $btn-border-selected-color;
     background-color: $btn-background-selected-color;
 }
@@ -57,4 +57,6 @@ $btn-background-hover-color: #E6E6E6;
     align-self: center;
     justify-content: start;
     align-items: center;
+	// add bottom padding to display bootstrap glow properly.
+	padding-bottom: 0.5rem;
 }

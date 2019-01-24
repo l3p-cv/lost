@@ -2,6 +2,9 @@
  /bin/bash -c "source /opt/conda/bin/activate lost"
 source /opt/conda/bin/activate lost
 
+# clean celery lock
+rm -rf /tmp/celerybeat.pid
+
  # init env vars 
 if [ -z "${LOST_DB_IP}" ]; then
   export LOST_DB_IP="db-lost"
