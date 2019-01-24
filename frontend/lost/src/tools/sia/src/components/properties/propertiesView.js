@@ -82,7 +82,7 @@ class LabelSelect extends Component {
 				items={this.state.labels}
 				getItemValue={label => label.name}
 				renderInput={props => {
-					console.log(props)
+					// console.log(props)
 					return <input {...props} className='form-control'/>
 				}} 
 				renderItem={(item, highlighted) => {
@@ -96,7 +96,7 @@ class LabelSelect extends Component {
 					)
 				}}
 				onChange={(e, value) => {
-						console.log("select.onChange")
+						// console.log("select.onChange")
 						const displayedValue = value
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
 						this.setState({
@@ -107,7 +107,7 @@ class LabelSelect extends Component {
 				}
 				onSelect={displayedValue => {
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
-						console.log("select.onSelect:", selectedLabel)
+						// console.log("select.onSelect:", selectedLabel)
 						this.setState({
 							selectedLabel,
 							displayedValue,
@@ -115,15 +115,15 @@ class LabelSelect extends Component {
 					}
 				}
 				inputProps={{
-					onKeyDown: e => {
-						console.log("input.onKeyDown", e.key)
-					},
-					onInput: e => {
-						console.log("input.onInput")
-					},
-					onChange: e => {
-						console.log("input.onChange")
-					},
+					// onKeyDown: e => {
+					// 	console.log("input.onKeyDown", e.key)
+					// },
+					// onInput: e => {
+					// 	console.log("input.onInput")
+					// },
+					// onChange: e => {
+					// 	console.log("input.onChange")
+					// },
 					onFocus: e => {
 						imagePresenter.disableChange()
 					},

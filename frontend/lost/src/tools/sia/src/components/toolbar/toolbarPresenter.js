@@ -372,7 +372,7 @@ appModel.config.on("update", config => {
                         line = undefined
                         polygon = undefined
                     }
-                    $(imageInterface.getSVGEmbeddedImage()).on("mouseup.createPolygonPoint", ($event) => {
+                    $(imageInterface.getSVG()).on("mouseup.createPolygonPoint", ($event) => {
                         // console.log("create polygon handler (triggered)")
                         $event.preventDefault()
                         // @QUICK-FIX-1: when selected, and adding points by ctrl or alt feature, no new drawable should be created.
