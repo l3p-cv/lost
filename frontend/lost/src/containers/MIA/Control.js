@@ -5,9 +5,7 @@ import Autocomplete from 'react-autocomplete'
 import {
     Col,
     Row,
-    Input,
     InputGroup,
-    InputGroupAddon,
     Button,
     ButtonGroup,
     ButtonDropdown,
@@ -16,7 +14,9 @@ import {
     DropdownItem
 } from 'reactstrap'
 
-const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel} = actions
+import './Tag.scss';
+
+const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
 
 class Control extends Component {
 
@@ -27,9 +27,6 @@ class Control extends Component {
             value: ''
         }
 
-        this.handleLabelName = this
-            .handleLabelName
-            .bind(this)
         this.handleAddLabel = this
             .handleAddLabel
             .bind(this)
@@ -45,16 +42,25 @@ class Control extends Component {
         this.handleMaxAmount = this
             .handleMaxAmount
             .bind(this)
+        this.handleSubmit = this
+            .handleSubmit
+            .bind(this)
     }
     toggle(){
         this.setState({dropdownOpen:!this.state.dropdownOpen})
     }
-    handleAddLabel(e){
-        console.log(e)
+
+    handleAddLabel(label){
+        this.props.setMiaSelectedLabel(label)
     }
 
-    handleLabelName(e){
-        console.log(e)
+    handleSubmit(){
+        const updateData = {
+            images: this.props.images,
+            labels: [this.props.selectedLabel]
+        }
+        this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
+
     }
 
     handleZoomIn(){
@@ -68,23 +74,33 @@ class Control extends Component {
     handleMaxAmount(e){
         this.props.miaAmount(e.target.innerText)
         this.props.getMiaAnnos(e.target.innerText)
+        this.props.setMiaSelectedLabel(undefined)
     }
     componentDidMount(){
         this.props.getMiaLabel()
+        this.props.setMiaSelectedLabel(undefined)
+    }
+    renderSelectedLabel(){
+        if(this.props.selectedLabel){
+            return(
+                <div className="mia-tag"> 
+                <div>{this.props.selectedLabel.label}</div>
+            </div>
+            )
+        }
     }
      render() {
-         console.log(this.props)
         return (
             <Row style={{
                 padding: '0 0 25px 0'
             }}>
-                <Col xs='5' sm='5' lg='5'>
+                <Col xs='7' sm='7' lg='7'>
                     <InputGroup>
                         <Autocomplete
                             items={this.props.labels}
                             shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                             getItemValue={item => item.label}
-                            renderInput={(props) => {return <input {...props} className='form-control'/>}} 
+                            renderInput={(props) => {return <input {...props} style={{width: '300px'}} className='form-control'/>}} 
                             renderItem={(item, highlighted) =>
                             <div
                                 key={item.id}
@@ -95,17 +111,16 @@ class Control extends Component {
                             }
                             value={this.state.value}
                             onChange={e => this.setState({ value: e.target.value })}
-                            onSelect={value => this.setState({ value })}
+                            onSelect={(value, label) => this.handleAddLabel(label)}
                         />
-                        <InputGroupAddon addonType="append">
-                            <Button className='btn-default' onClick={this.handleAddLabel}><i className="fa fa-plus"></i><br /></Button>
-                        </InputGroupAddon>
+                    
+                    {this.renderSelectedLabel()}
                     </InputGroup>
                 </Col>
-                <Col xs='3' sm='3' lg='3'>
-                <Button className='btn-info' onClick={this.handleAddLabel}><i className="fa fa-check"></i> Submit</Button>
+                <Col xs='2' sm='2' lg='2'>
+                <Button disabled={this.props.selectedLabel ? false:true} className='btn-info' onClick={this.handleSubmit}><i className="fa fa-check"></i> Submit</Button>
                 </Col>
-                <Col xs='4' sm='4' lg='4'>
+                <Col xs='3' sm='3' lg='3'>
                     <ButtonGroup className="float-right"> 
                             <Button className='btn-default' onClick={this.handleZoomIn}><i className="fa fa-search-plus"></i></Button>
                             <Button className='btn-default' onClick={this.handleZoomOut}><i className="fa fa-search-minus"></i></Button>
@@ -132,7 +147,7 @@ class Control extends Component {
 }
 
 function mapStateToProps(state) {
-    return ({zoom: state.mia.zoom, labels: state.mia.labels})
+    return ({zoom: state.mia.zoom, maxAmount: state.mia.maxAmount, labels: state.mia.labels, selectedLabel: state.mia.selectedLabel, images: state.mia.images})
 }
 
-export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel})(Control)
+export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)

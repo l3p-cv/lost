@@ -29,7 +29,14 @@ class MIAImage extends Component{
         )
     }
 
-    
+   
+componentWillReceiveProps(props){
+    if (props.image.is_active) {
+        this.setState({classes: this.state.classes.replace(' mia-image-inactive', '')})
+    } else {
+        this.setState({classes: `${this.state.classes} mia-image-inactive`})
+    }
+}
   imageClick = () => {
     let newClicks = this.state.clicks + 1
     let timer = undefined
@@ -40,11 +47,9 @@ class MIAImage extends Component{
             this.setState({clicks: 0})
             if (this.props.image.is_active) {
                 this.props.miaToggleActive({image: {...this.props.image, is_active:false }})
-                this.setState({classes: `${this.state.classes} mia-image-inactive`})
                
             } else {
                 this.props.miaToggleActive({image: {...this.props.image, is_active:true }})
-                this.setState({classes: this.state.classes.replace(' mia-image-inactive', '')})
             }
         }, 250)})
 
@@ -63,7 +68,8 @@ class MIAImage extends Component{
   }   
 
     render(){
-        return(<img onClick={this.imageClick}  src={this.state.image.data} className={`mia-image ${this.state.classes}`} height={this.props.height}/>)
+        console.log(this.props)
+        return(<img id={this.props.key} onClick={this.imageClick}  src={this.state.image.data} className={`mia-image ${this.state.classes}`} height={this.props.height}/>)
     }
 
 }

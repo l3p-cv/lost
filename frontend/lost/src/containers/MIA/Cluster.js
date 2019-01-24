@@ -4,8 +4,15 @@ import MIAImage from './MIAImage'
 import actions from '../../actions'
 
 import './Cluster.scss';
+import {
+    Alert,
+    Button,
+    Spinner
+} from 'reactstrap'
+import { createHashHistory } from 'history'
 
-const {getMiaAnnos,getMiaImage, getWorkingOnAnnoTask, getMiaLabel} = actions
+const {getMiaAnnos,getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia} = actions
+const history = createHashHistory()
 
 class Cluster extends Component{
     constructor(props){
@@ -16,11 +23,44 @@ class Cluster extends Component{
         this.props.getMiaAnnos(this.props.maxAmount)
     }
     componentWillReceiveProps(props){
-        if(props.images.length === 0){
-            this.props.getMiaAnnos(this.props.maxAmount)
-            this.props.getWorkingOnAnnoTask()
-            this.props.getMiaLabel()
+            if(props.workingOnAnnoTask){
+                const {size, finished} = props.workingOnAnnoTask
+                if((size - finished) > 0){
+                    if(props.images.length === 0){
+                        this.props.getMiaAnnos(this.props.maxAmount)
+                        this.props.getMiaLabel()
+                    }
+                }
+            }
+            else {   
+                this.props.getWorkingOnAnnoTask()
+            }
+    }
+
+    renderFinishTask(){
+        if(this.props.workingOnAnnoTask){
+            const {size, finished} = this.props.workingOnAnnoTask
+            if((size - finished) === 0){
+                return(
+                    <div style={{display: 'flex', justifyContent: 'center'}}>
+                    <div>
+                       <Alert color="success">
+                            No more images available. Please press finish in order to continue the pipeline.
+                        </Alert>
+                        <Button color="primary" size="lg" onClick={()=>this.props.finishMia(history.push('/dashboard'))}><i className="fa fa-check"></i> Finish Task</Button>{' '}
+                    </div>
+                </div>
+                )
+            }
         }
+        return(
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+                <div>
+                <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}/>
+                    {/* <i className="fa fa-image fa-spin fa-4x"></i> */}
+                </div>
+            </div>
+        )       
     }
     render(){
         if(this.props.images.length > 0){
@@ -33,18 +73,16 @@ class Cluster extends Component{
                 })}
            </div>)
         }else{
-            return(
-                <div style={{display: 'flex', justifyContent: 'center'}}>
-                    <div>
-                        <i className="fa fa-image fa-spin fa-4x"></i>
-                    </div>
-                </div>
-            )
+           return(
+               <React.Fragment>
+               {this.renderFinishTask()}
+               </React.Fragment>
+               )
         }
     }
 }
 
 function mapStateToProps(state){
-    return({images: state.mia.images, maxAmount: state.mia.maxAmount, zoom: state.mia.zoom})
+    return({images: state.mia.images, maxAmount: state.mia.maxAmount, zoom: state.mia.zoom, workingOnAnnoTask: state.annoTask.workingOnAnnoTask,})
 }
-export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel})(Cluster)
+export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia})(Cluster)

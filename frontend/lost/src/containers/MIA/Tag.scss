@@ -10,13 +10,17 @@ $width-padding: 7px;
 .mia-tag {
     cursor: default;
     display: inline-block;
-    border: 1px solid #999;
-    border-radius: 3px;
+    border: 2px solid #FC6A6C;
+    border-radius: 4px;
     margin-right: 6px;
+    margin-left: 10px;
     &:last-child{
         margin-right: unset;
     }
     div {
+        margin-top: 3px;
+        text-align: center;
+        vertical-align: middle;
         display: inline-block;
     }
     div:first-child {
