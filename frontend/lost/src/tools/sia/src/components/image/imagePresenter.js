@@ -232,9 +232,10 @@ function enableCamera(){
         }
     })
     // enable camera
+	// F5 and dev console BUG!, maybe should add the handler when mouse is in svg.!
     $(window).on("keydown.camera", $event => {
         // dont use default browser behaviour on spacebar (scroll down)
-        $event.preventDefault()
+        // $event.preventDefault()
         // quickfixed. event still fireing unneded
         if(!cameraEnabled.value && keyboard.isKeyHit($event, "space")){
             // console.log("enable camera")
@@ -244,7 +245,6 @@ function enableCamera(){
         }
     })
     // disable camera
-	// F5 and dev console BUG!, maybe should add the handler when mouse is in svg.!
     $(window).on("keyup.camera", $event => {
         // quickfixed. event still fireing unneded (@cameraEnabled)
         if(cameraEnabled.value && keyboard.isKeyHit($event, "space")){

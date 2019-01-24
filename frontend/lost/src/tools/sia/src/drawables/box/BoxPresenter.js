@@ -1,13 +1,11 @@
 import { throttle } from "lodash-es"
 import { mouse } from "l3p-frontend"
-import * as math from "shared/math"
 
-import { EVENT_COMPUTATION_SETTINGS, CURSOR_UPDATE_FREQ, STATE } from "../drawable.statics"
+import { CURSOR_UPDATE_FREQ } from "../drawable.statics"
 
 import DrawablePresenter from "../DrawablePresenter"
 
 import BOX_DEFAULTS from "./box.defaults"
-import * as MENU_DEFAULTS from "../menu/menu.defaults"
 
 import BoxModel from "./BoxModel"
 import imageInterface from "components/image/imageInterface"

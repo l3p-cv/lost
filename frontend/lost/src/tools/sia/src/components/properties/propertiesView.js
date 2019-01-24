@@ -2,7 +2,7 @@ import $ from "cash-dom"
 
 import "./properties.styles.scss"
 import { NodeTemplate } from "l3p-frontend"
-import appModel from "../../appModel";
+import appModel from "../../appModel"
 
 export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
@@ -80,23 +80,19 @@ class LabelSelect extends Component {
 		return (
 			<Autocomplete
 				items={this.state.labels}
+				value={this.state.displayedValue}
 				getItemValue={label => label.name}
-				renderInput={props => {
-					// console.log(props)
-					return <input {...props} className='form-control'/>
-				}} 
-				renderItem={(item, highlighted) => {
-					return (
+				renderInput={props => <input {...props} className='form-control'/>} 
+				renderItem={(item, highlighted) =>
 						<div
 							key={item.id}
 							style={{ backgroundColor: highlighted ? '#eee' : 'transparent' }}
 						>
 							{item.name}
 						</div>
-					)
-				}}
+				}
+				shouldItemRender={(item, value) => item.name.toLowerCase().indexOf(value.toLowerCase()) > -1}
 				onChange={(e, value) => {
-						// console.log("select.onChange")
 						const displayedValue = value
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
 						this.setState({
@@ -107,7 +103,6 @@ class LabelSelect extends Component {
 				}
 				onSelect={displayedValue => {
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
-						// console.log("select.onSelect:", selectedLabel)
 						this.setState({
 							selectedLabel,
 							displayedValue,
@@ -115,15 +110,6 @@ class LabelSelect extends Component {
 					}
 				}
 				inputProps={{
-					// onKeyDown: e => {
-					// 	console.log("input.onKeyDown", e.key)
-					// },
-					// onInput: e => {
-					// 	console.log("input.onInput")
-					// },
-					// onChange: e => {
-					// 	console.log("input.onChange")
-					// },
 					onFocus: e => {
 						imagePresenter.disableChange()
 					},

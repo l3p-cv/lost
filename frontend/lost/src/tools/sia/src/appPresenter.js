@@ -1,4 +1,4 @@
-import $ from "cash-dom"
+import $ from "jquery"
 
 import { NodeTemplate, mouse, keyboard, state } from "l3p-frontend"
 

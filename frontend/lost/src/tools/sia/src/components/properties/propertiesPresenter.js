@@ -243,7 +243,7 @@ function keyRequestPreviousData($event){
         key: "ArrowLeft"
     })){
         $event.preventDefault()
-        $event.stopPropagation()
+        // $event.stopPropagation()
         propertiesView.disableNavigationButtons()
         updateData("previous")
     }
