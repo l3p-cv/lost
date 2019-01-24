@@ -8,7 +8,7 @@
     -o-user-select: none !important;
     user-select: none !important;
 
-    #sia-propview-canvas-container{
+	[data-ref="canvas-area"] {
         grid-area: first;
         display: grid;
         grid-template-columns: auto;
@@ -24,7 +24,7 @@
         }
     }
 
-    #sia-propview-label-and-descr-container{
+	[data-ref="label-area"] {
         grid-area: second;
         display: grid;
         grid-template-columns: auto;
@@ -54,7 +54,7 @@
         }
     }
 
-    #sia-propview-bounds-and-buttons-container{
+	[data-ref="properties-area"] {
         grid-area: third;
         display: grid;
         grid-template-columns: repeat(2, 50%);
@@ -68,11 +68,11 @@
         align-items: center;
         justify-items: center;
 
-        strong{
-            margin: 0em 0.5em;
+        strong {
+            margin-right: 0.3em;
         }
         strong, span {
-            font-size: 120%;
+            font-size: 100%;
         }
         button{
             width: 90%;
