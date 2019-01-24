@@ -74,7 +74,7 @@ def full_bbox_anno():
             }
         ),
         dtype=dtype.TwoDAnno.BBOX,
-        annotator=test_user.groups[0],
+        annotator=test_user,
         label_leaf_id=label_leaf_id
     )
     dbm.add(twod_anno)

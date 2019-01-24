@@ -107,7 +107,7 @@ def get_label_trees(db_man, user_id):
     """
     :type db_man: lost.db.access.DBMan
     """
-    at = __get_mia_anno_task(db_man, user_id)
+    at = get_sia_anno_task(db_man, user_id)
     label_trees_json = dict()
     label_trees_json['labels'] = list()
     if at:
