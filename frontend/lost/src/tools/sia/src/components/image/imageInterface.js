@@ -1,8 +1,8 @@
 
 // special layer, not using any other view imports.
+// should rewrite this to match nodetemplate id or ref api.
 let image = undefined
 let svg = undefined
-let container = undefined
 let drawableContainer = undefined
 export default {
     getSVG(){
