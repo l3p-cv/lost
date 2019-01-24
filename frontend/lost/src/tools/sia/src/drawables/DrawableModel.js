@@ -60,9 +60,9 @@ export default class DrawableModel {
         this.labelIds = (annotationData.labelIds && annotationData.labelIds.length >= 1)
                 ? annotationData.labelIds
                 : [-1]
-        if(this.status.has(STATE.NEW) && appModel.state.selectedLabel !== undefined){
-            this.label = appModel.state.selectedLabel
-            this.labelIds.push(DEFAULTS.label.id)
+        if(this.status.has(STATE.NEW) && !appModel.state.isInInitialState){
+            this.label = appModel.state.selectedLabel.value
+            this.labelIds = [-1]
         } else {
             this.label = appModel.getLabelById(this.labelIds[0])
         }

@@ -207,7 +207,7 @@ function load(){
                     console.log("%c annotation data: ", "background: #282828; color: #FE8019")
                     console.log({labels})
                     console.log({annotations})
-                    appModel.updateLabels(labels)
+                    appModel.updateLabels(labels.labels)
                     appModel.updateAnnotations(annotations)
                     sessionStorage.setItem("sia-annotation-id", JSON.stringify(status.id))
                 })
@@ -222,6 +222,8 @@ function load(){
 function resize(){
     // requirement
     if(!appModel.data.image.rawLoadedImage.isInInitialState && imageView.image !== null){
+		appView.hide()
+		
         // preparation
         let imageWidth = appModel.data.image.rawLoadedImage.value.width
         let imageHeight = appModel.data.image.rawLoadedImage.value.height

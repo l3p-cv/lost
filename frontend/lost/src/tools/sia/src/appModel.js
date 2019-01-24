@@ -59,7 +59,7 @@ export default {
         colorTable: undefined,  // type will be 'Map'
         imageData: null,        // type will be 'ImageData' 
         boxEventActive: new Observable(false),
-        selectedLabel: undefined,
+        selectedLabel: new Observable(DrawableDefaults.LABEL),
         drawables: {
             points: new Observable([]),
             lines: new Observable([]),
@@ -133,7 +133,17 @@ export default {
             })
         }
     },
-
+    updateLabels(labels: Array<any>){
+		labels = labels.map(label => ({
+			id: label.id,
+			description: label.description,
+			name: label.label,
+		}))
+		// add default "no label" label as first element. 
+        labels.unshift(DrawableDefaults.LABEL)
+		this.data.labelList.update(labels)
+    },
+	
     getDrawableById(mountId: Number){
         if(mountId === undefined){
             throw new Error(`empty parameter 'moundId' is undefined.`)
@@ -289,17 +299,6 @@ export default {
         if(drawable){
             this.deleteDrawable(drawable)
         }
-    },
-    updateLabels(categories: Array<any>){
-        this.data.categories = categories.labelTrees
-        this.updateLabelList(categories.labelTrees)
-    },
-    updateLabelList(labelTrees: Array<any>){
-        const labels = []
-        labelTrees.forEach(tree => tree.labelLeaves.forEach(label => labels.push(label)))
-        // add default label.
-        labels.push(DrawableDefaults.LABEL)
-        this.data.labelList.update(labels)
     },
 
     cleanSession(){

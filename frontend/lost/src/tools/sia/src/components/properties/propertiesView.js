@@ -2,7 +2,7 @@ import $ from "cash-dom"
 
 import "./properties.styles.scss"
 import { NodeTemplate } from "l3p-frontend"
-import { ReactDOM } from "react-dom"
+import appModel from "../../appModel";
 
 export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
@@ -14,11 +14,8 @@ export const html = new NodeTemplate(/*html*/`
 
         <!-- labelselect, description -->
         <div data-ref="label-area" id="sia-propview-label-and-descr-container">
-            <select class="btn btn-default" id="sia-propview-label-select">
-                <option value="wakaterimashta">wakaterimashta</option>
-                <option value="wakata">wakata</option>
-            </select>
-            <textarea id="sia-propview-description" class="form-control" rows="3" placeholder="Description" disabled></textarea>
+			<div data-ref="label-select"></div>
+            <textarea data-ref="label-description" class="form-control" rows="3" placeholder="Description" disabled></textarea>
         </div>
 
         <!-- bounds and buttons -->
@@ -56,6 +53,90 @@ export const html = new NodeTemplate(/*html*/`
         </div>
     </div>
 `)
+
+// create a react component that embedds a react auto complete component.
+// this will get rendered each time updateLabels() gets called. 
+import React, { Component } from "react"
+import ReactDOM from "react-dom"
+import Autocomplete from 'react-autocomplete'
+import * as imagePresenter from "../image/imagePresenter"
+class LabelSelect extends Component {
+	constructor(props){
+		super(props)
+		this.state = {
+			labels: appModel.data.labelList.value,
+			selectedLabel: appModel.state.selectedLabel.value,
+			displayedValue: appModel.state.selectedLabel.value.name,
+		}
+	}
+	componentDidMount(){
+		appModel.data.labelList.on("update", labels => this.setState({ labels }) )
+		appModel.state.selectedLabel.on("update", label => this.setState({
+			selectedLabel: label,
+			displayedValue: label.name,
+		}))
+	}
+	render(){
+		return (
+			<Autocomplete
+				items={this.state.labels}
+				getItemValue={label => label.name}
+				renderInput={props => {
+					console.log(props)
+					return <input {...props} className='form-control'/>
+				}} 
+				renderItem={(item, highlighted) => {
+					return (
+						<div
+							key={item.id}
+							style={{ backgroundColor: highlighted ? '#eee' : 'transparent' }}
+						>
+							{item.name}
+						</div>
+					)
+				}}
+				onChange={(e, value) => {
+						console.log("select.onChange")
+						const displayedValue = value
+						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
+						this.setState({
+							selectedLabel,
+							displayedValue,
+						})
+					}
+				}
+				onSelect={displayedValue => {
+						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
+						console.log("select.onSelect:", selectedLabel)
+						this.setState({
+							selectedLabel,
+							displayedValue,
+						})
+					}
+				}
+				inputProps={{
+					onKeyDown: e => {
+						console.log("input.onKeyDown", e.key)
+					},
+					onInput: e => {
+						console.log("input.onInput")
+					},
+					onChange: e => {
+						console.log("input.onChange")
+					},
+					onFocus: e => {
+						imagePresenter.disableChange()
+					},
+					onBlur: e => {
+						imagePresenter.enableChange()
+					},
+				}}
+			/>
+		)
+	}
+}
+ReactDOM.render(<LabelSelect />, html.refs["label-select"])
+
 export const image = new Image()
 
 export function init(){
@@ -66,7 +147,7 @@ export function init(){
 }
 
 export function updateTable(drawable: DrawablePresenter){
-    switch(drawable.getCplassName()){
+    switch(drawable.getClassName()){
         case "PointPresenter":
             // show x and y
             html.refs["attr-text-1"].textContent = ""
@@ -134,21 +215,9 @@ export function updateCanvas(values: any){
 
     ctx.restore()
 }
-export function updateLabels(labels: Array<any> = []){
-    // remove all options from select
-    html.ids["sia-propview-label-select"].innerHTML = ""
 
-    // create one option node for every label in the models label list
-    const options = new NodeTemplate(/*html*/`
-        ${
-            labels.map(label => {
-                return `
-                    <option value="${label.id}">${label.name}</option>
-                `
-            })
-        }
-    `)
-    html.ids["sia-propview-label-select"].appendChild(options.fragment)
+export function updateLabels(){
+	// ReactDOM.render(LabelSelectInstance, html.refs["label-select"])
 }
 
 export function setLayout(layout: String){
@@ -163,11 +232,8 @@ export function setLayout(layout: String){
             break
     }
 }
-export function setLabel(id: String){
-    html.ids["sia-propview-label-select"].value = id
-}
 export function setDescription(description: String){
-    html.ids["sia-propview-description"].textContent = description
+    html.refs["label-description"].textContent = description
 }
 export function setNextButtonState(state: String){
     switch(state){
@@ -222,15 +288,19 @@ export function resetLabel(){
     // html.ids["sia-propview-label-select"].innerText = "No Drawable selected"
 }
 export function resetDescription(){
-    html.ids["sia-propview-description"].innerHTML = "Select or create a Drawable to edit it."
+    html.refs["label-description"].textContent = "Select or create a Drawable to edit it."
     disableDescription()
 }
 
+// those methods are called when processing the config... 
+// at that moment the component is not rendered... 
+// leads to big questions...
 export function enableLabeling(){
-    html.ids["sia-propview-label-select"].disabled = false
+// LabelSelectInstance.enable()
+    // html.refs["label-select"].querySelector("input").disabled = false
 }
 export function enableDescription(){
-    html.ids["sia-propview-description"].disabled = false
+    html.refs["label-description"].disabled = false
 }
 export function enableNavigationButtons(){
     enableFirstButton()    
@@ -252,10 +322,11 @@ export function enableLastButton(){
 }
 
 export function disableLabeling(){
-    html.ids["sia-propview-label-select"].disabled = true
+// LabelSelectInstance.disable()
+	// html.refs["label-select"].querySelector("input").disabled = true
 }
 export function disableDescription(){
-    html.ids["sia-propview-description"].disabled = true
+    html.refs["label-description"].disabled = true
 }
 export function disableNavigationButtons(){
     disableFirstButton()    

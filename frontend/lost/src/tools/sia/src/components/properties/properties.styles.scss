@@ -34,7 +34,7 @@
             "description";
         grid-column-gap: 1em;
         
-        #sia-propview-label-select {
+        [data-ref="label-select"] {
             grid-area: label;
             &:focus{
                 background-color: $COLOR_HIGHLIGHT;
@@ -46,8 +46,7 @@
                 text-shadow: 0 0 0 #FFF;
             }
         }
-
-        #sia-propview-description {
+        [data-ref="label-description"] {
             grid-area: description;
             resize: none;
             cursor: text;
