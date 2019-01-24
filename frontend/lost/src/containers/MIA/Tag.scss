@@ -36,3 +36,26 @@ $width-padding: 7px;
         }
     }
 }
+
+.menu {
+    position: absolute;
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid #cccccc;
+  }
+  
+  .item {
+    padding: 2px 6px;
+    cursor: default;
+  }
+  
+  .item-highlighted {
+    color: white;
+    background-color: #4095bf;
+  }
+  
+  .item-header {
+    background-color: #eeeeee;
+    color: #454545;
+    font-weight: bold;
+  }

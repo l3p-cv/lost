@@ -103,15 +103,15 @@ class Control extends Component {
                             renderInput={(props) => {return <input {...props} style={{width: '300px'}} className='form-control'/>}} 
                             renderItem={(item, highlighted) =>
                             <div
+                                className={`item ${highlighted ? 'item-highlighted' : ''}`}
                                 key={item.id}
-                                style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}}
                             >
                                 {item.label}
                             </div>
                             }
                             value={this.state.value}
                             onChange={e => this.setState({ value: e.target.value })}
-                            onSelect={(value, label) => this.handleAddLabel(label)}
+                            onSelect={(value, label) => {this.setState({ value: value });this.handleAddLabel(label)}}
                         />
                     
                     {this.renderSelectedLabel()}

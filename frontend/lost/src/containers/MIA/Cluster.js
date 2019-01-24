@@ -56,8 +56,8 @@ class Cluster extends Component{
         return(
             <div style={{display: 'flex', justifyContent: 'center'}}>
                 <div>
-                <Spinner color="primary" style={{ width: '3rem', height: '3rem' }}/>
-                    {/* <i className="fa fa-image fa-spin fa-4x"></i> */}
+                {/* <Spinner color="primary" /> */}
+                    <i className="fa fa-image fa-spin fa-4x"></i>
                 </div>
             </div>
         )       

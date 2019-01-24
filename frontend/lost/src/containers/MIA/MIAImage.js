@@ -45,6 +45,7 @@ componentWillReceiveProps(props){
         this.setState({timer:setTimeout(() => {
             // reset.
             this.setState({clicks: 0})
+            this.setState({classes: this.state.classes.replace(' mia-image-zoomed', '')})
             if (this.props.image.is_active) {
                 this.props.miaToggleActive({image: {...this.props.image, is_active:false }})
                
@@ -68,7 +69,6 @@ componentWillReceiveProps(props){
   }   
 
     render(){
-        console.log(this.props)
         return(<img id={this.props.key} onClick={this.imageClick}  src={this.state.image.data} className={`mia-image ${this.state.classes}`} height={this.props.height}/>)
     }
 
