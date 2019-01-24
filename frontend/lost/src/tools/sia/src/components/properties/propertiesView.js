@@ -8,18 +8,18 @@ export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
 
         <!-- canvas -->
-        <div data-ref="canvas-area" id="sia-propview-canvas-container" class="sia-propview-canvas-border">
+        <div data-ref="canvas-area" class="sia-propview-canvas-border">
             <canvas data-ref="canvas"></canvas>
         </div>
 
         <!-- labelselect, description -->
-        <div data-ref="label-area" id="sia-propview-label-and-descr-container">
+        <div data-ref="label-area">
 			<div data-ref="label-select"></div>
             <textarea data-ref="label-description" class="form-control" rows="3" placeholder="Description" disabled></textarea>
         </div>
 
         <!-- bounds and buttons -->
-        <div data-ref="properties-area" id="sia-propview-bounds-and-buttons-container">
+        <div data-ref="properties-area">
             <div data-ref="attr-1">
                 <strong data-ref="attr-text-1"></strong>
                 <span data-ref="attr-value-1"></span>
@@ -161,14 +161,14 @@ export function updateTable(drawable: DrawablePresenter){
             break
         case "BoxPresenter":
             // show x, y, w, h
-            html.refs["attr-text-1"].textContent = "X"
-            html.refs["attr-text-2"].textContent = "Y"
-            html.refs["attr-text-3"].textContent = "W"
-            html.refs["attr-text-4"].textContent = "H"
-            html.refs["attr-value-1"].textContent = Math.round(drawable.getX())
-            html.refs["attr-value-2"].textContent = Math.round(drawable.getY())
-            html.refs["attr-value-3"].textContent = Math.round(drawable.getW())
-            html.refs["attr-value-4"].textContent = Math.round(drawable.getH())
+            html.refs["attr-text-1"].textContent = "W"
+            html.refs["attr-text-2"].textContent = "H"
+            html.refs["attr-text-3"].textContent = "X"
+            html.refs["attr-text-4"].textContent = "Y"
+            html.refs["attr-value-1"].textContent = Math.round(drawable.getW())
+            html.refs["attr-value-2"].textContent = Math.round(drawable.getH())
+            html.refs["attr-value-3"].textContent = Math.round(drawable.getX())
+            html.refs["attr-value-4"].textContent = Math.round(drawable.getY())
             break
         case "MultipointPresenter":
             // show left, right, top, bottom
@@ -302,6 +302,7 @@ export function enableLabeling(){
 export function enableDescription(){
     html.refs["label-description"].disabled = false
 }
+
 export function enableNavigationButtons(){
     enableFirstButton()    
     enableLastButton()    
@@ -328,6 +329,7 @@ export function disableLabeling(){
 export function disableDescription(){
     html.refs["label-description"].disabled = true
 }
+
 export function disableNavigationButtons(){
     disableFirstButton()    
     disableLastButton()    
@@ -348,10 +350,10 @@ export function disableLastButton(){
 }
 
 export function showCanvasBorder(){
-    $(html.ids["sia-propview-canvas-container"]).toggleClass("sia-propview-canvas-border", true)
+    $(html.refs["canvas-area"]).toggleClass("sia-propview-canvas-border", true)
 }
 export function hideCanvasBorder(){
-    $(html.ids["sia-propview-canvas-container"]).toggleClass("sia-propview-canvas-border", false)
+    $(html.refs["canvas.area"]).toggleClass("sia-propview-canvas-border", false)
 }
 
 export function hide(){

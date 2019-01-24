@@ -59,11 +59,6 @@
         display: grid;
         grid-template-columns: repeat(2, 50%);
         grid-template-rows: repeat(4, 22%);
-        grid-template-areas:
-            "attr_1 attr_2"
-            "attr_3 attr_4"
-            "btn_1 btn_2"
-            "btn_3 btn_4";
         grid-row-gap: 4%;
         align-items: center;
         justify-items: center;
@@ -76,30 +71,6 @@
         }
         button{
             width: 90%;
-        }
-        div:nth-child(1){
-            grid-area: attr_1;
-        }
-        div:nth-child(2){
-            grid-area: attr_2;
-        }
-        div:nth-child(3){
-            grid-area: attr_3;
-        }
-        div:nth-child(4){
-            grid-area: attr_4;
-        }
-        button::nth-child(1){
-            grid-area: btn_1;
-        }
-        button::nth-child(2){
-            grid-area: btn_2;
-        }
-        button::nth-child(3){
-            grid-area: btn_3;
-        }
-        button::nth-child(4){
-            grid-area: btn_4;
         }
     }
 }
