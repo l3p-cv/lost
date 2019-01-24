@@ -24,7 +24,7 @@ class Available(Resource):
             return "You are not authorized.", 401
         else:
             group_ids = [g.idx for g in user.groups]
-            annotask_list = annotask_service.get_available_annotasks(dbm, group_ids)
+            annotask_list = annotask_service.get_available_annotasks(dbm, group_ids, identity)
             dbm.close_session()
             import json
             #with open('/code/backend/lost/api/annotask/test/annoTasks.json') as f:

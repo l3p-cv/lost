@@ -261,7 +261,7 @@ class TwoDAnno(Base):
         except:
             pass
         try:
-            anno_dict['anno.annotator'] = self.annotator.name
+            anno_dict['anno.annotator'] = self.annotator.first_name + ' ' + self.annotator.last_name
         except:
             pass
 
@@ -700,7 +700,7 @@ class ImageAnno(Base):
             'img.lbl.idx': None, 
             'img.lbl.name': None,
             'img.lbl.external_id': None,
-            'img.annotator': None
+            'img.annotator': None,
         }
         try:
             img_dict['img.lbl.idx'] = self.label.label_leaf.idx 
@@ -709,7 +709,7 @@ class ImageAnno(Base):
         except:
             pass
         try:
-            img_dict['img.annotator'] = self.annotator.name
+            img_dict['img.annotator'] = self.annotator.first_name + ' ' + self.annotator.last_name
         except:
             pass
         if style == 'hierarchical':

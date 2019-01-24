@@ -88,10 +88,10 @@ def set_finished(dbm, anno_task_id):
 def get_current_annotask(dbm, user):
         if user.choosen_anno_task:
             anno_task = user.choosen_anno_task
-            return __get_at_info(dbm, anno_task)
+            return __get_at_info(dbm, anno_task, user.idx)
         return None
 
-def get_available_annotasks(dbm, group_ids):
+def get_available_annotasks(dbm, group_ids, user_id):
     ''' get all available  annotation task for user
 
     Args:
@@ -104,10 +104,10 @@ def get_available_annotasks(dbm, group_ids):
     '''
     available_annotasks = list()
     for annotask in dbm.get_available_annotask(group_ids):
-        available_annotasks.append(__get_at_info(dbm,annotask))
+        available_annotasks.append(__get_at_info(dbm, annotask, user_id))
     return available_annotasks
 
-def __get_at_info(dbm, annotask):
+def __get_at_info(dbm, annotask, user_id):
     if annotask.pipe_element_id is None:
         raise Exception("No PipeElement for AnnoTask")
     pipeelement = dbm.get_pipe_element(pipe_e_id=annotask.pipe_element_id)
@@ -127,25 +127,35 @@ def __get_at_info(dbm, annotask):
     at['type'] = None
     at['finished'] = None
     at['size'] = None
+    at['statistic'] = dict()
+    at['statistic']['amountPerLabel'] = []
+    at['statistic']['secondsPerAnno'] = None
     if annotask.dtype == dtype.AnnoTask.MIA:
         at['type'] = 'MIA'
         config = json.loads(annotask.configuration)
         if config['type'] == 'imageBased':
             remaining, available = __get_image_anno_counts(dbm, annotask.idx, pipeelement.iteration)
-            at['finished'] = available-remaining
+            finished = available-remaining
+            at['finished'] = finished
             at['size'] = available
+            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, 'annoBased')
+            at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'imageBased')
         elif config['type'] == 'annoBased':
             remaining, available = __get_twod_anno_counts(dbm, annotask.idx, pipeelement.iteration)
-            at['finished'] = available - remaining
+            finished = available-remaining
+            at['finished'] = finished
             at['size'] = available
+            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, 'annoBased')
+            at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
     else:
         at['type'] = 'SIA'
         remaining, available = __get_image_anno_counts(dbm, annotask.idx, pipeelement.iteration)
-        at['finished'] = available - remaining
+        finished = available-remaining
+        at['finished'] = finished
         at['size'] = available
-    at['statistic'] = dict()
-    at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement)
-    at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, annotask)
+        at['statistic']['amountPerLabel'] =  __get_amount_per_label(dbm, pipeelement, 'annoBased')
+        at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
+    
     return at
 
 def choose_annotask(dbm, anno_task_id, user_id):
@@ -165,18 +175,26 @@ def has_annotation(dbm, anno_task_id):
         return True
     else: return False
 
-def __get_seconds_per_anno(dbm, annotask):
-    return "not implemented"
+def __get_seconds_per_anno(dbm, pipeelement, user_id, anno_type):
+    mean_time = dbm.mean_anno_time(pipeelement.anno_task.idx, user_id, anno_type)[0]
+    if mean_time is not None:
+        return '{:.2f}'.format(mean_time)
+    return None
 
-def __get_amount_per_label(dbm, pipeelement):
+def __get_amount_per_label(dbm, pipeelement, anno_type):
     dist = list()
-    annotask = pipe_elements.AnnoTask(pipeelement, dbm)
-    
-    df_list = []
-    for img_anno in annotask.outp.img_annos:
-        df_list.append(img_anno.to_df())
-    if len(df_list) > 0:
-        pd.concat(df_list)
-
-
     return dist
+    # nice but not applicable since it is too slow
+    # if finished > 0:
+    #     df = annotask.inp.to_df()
+    #     df = df[~df['img.lbl.name'].isnull()]
+    #     count = df['img.lbl.name'].value_counts()
+    #     for idx, val in count.items():
+    #         dist.append({
+    #             'label': idx,
+    #             'amount': val
+    #         })
+    
+    # return dist
+
+
