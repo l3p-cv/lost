@@ -244,6 +244,7 @@ function enableCamera(){
         }
     })
     // disable camera
+	// F5 and dev console BUG!, maybe should add the handler when mouse is in svg.!
     $(window).on("keyup.camera", $event => {
         // quickfixed. event still fireing unneded (@cameraEnabled)
         if(cameraEnabled.value && keyboard.isKeyHit($event, "space")){
