@@ -232,22 +232,18 @@ function enableCamera(){
         }
     })
     // enable camera
-	// F5 and dev console BUG!, maybe should add the handler when mouse is in svg.!
-    $(window).on("keydown.camera", $event => {
-        // dont use default browser behaviour on spacebar (scroll down)
-        // $event.preventDefault()
-        // quickfixed. event still fireing unneded
-        if(!cameraEnabled.value && keyboard.isKeyHit($event, "space")){
+    $(svg).on("mousedown", $event => {
+        if(!cameraEnabled.value && mouse.button.isMid($event.button)){
             // console.log("enable camera")
+	        $event.preventDefault()
             disableChange()
             disableSelect()
             cameraEnabled.update(true)
         }
     })
     // disable camera
-    $(window).on("keyup.camera", $event => {
-        // quickfixed. event still fireing unneded (@cameraEnabled)
-        if(cameraEnabled.value && keyboard.isKeyHit($event, "space")){
+    $(window).on("mouseup", $event => {
+        if(cameraEnabled.value && mouse.button.isMid($event.button)){
             // console.log("disable camera")
             if(appModel.config.value.actions.edit.bounds){
                 enableChange()
@@ -259,7 +255,7 @@ function enableCamera(){
     // start
     let lastCameraUpdateCall = undefined
     $(svg).on("mousedown.camera", $event => {
-        if(!mouse.button.isLeft($event.button)){
+        if(mouse.button.isRight($event.button)){
             return
         }
         // quickfixed. event still fireing unneded (@cameraEnabled)
@@ -313,12 +309,10 @@ function enableCamera(){
             })
             // stop move
             $(window).one("mouseup", $event => {
-                if(mouse.button.isLeft($event.button)){
-                    // console.log("stop")
-                    // console.log("MOUSE: resetting initial mousecursor")
-                    mouse.unsetGlobalCursor()
-                    $(window).off("mousemove.camera")
-                }
+				// console.log("stop")
+				// console.log("MOUSE: resetting initial mousecursor")
+				mouse.unsetGlobalCursor()
+				$(window).off("mousemove.camera")
             })
         }
     })
