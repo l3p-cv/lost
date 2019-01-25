@@ -21,7 +21,7 @@ SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
 TWO_D_ANNO_PATH = MEDIA_ROOT_PATH + "two_d_annos/"
 JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
-APP_LOG_PATH = "logs/{}-lost.log"
+APP_LOG_PATH = "logs/cron-{}-lost.log"
 
 class FileMan(object):
     def __init__(self, lostconfig):
