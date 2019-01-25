@@ -16,7 +16,7 @@ import {
 
 import './Tag.scss';
 
-const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
+const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
 
 class Control extends Component {
 
@@ -46,11 +46,18 @@ class Control extends Component {
         this.handleSubmit = this
             .handleSubmit
             .bind(this)
+        this.handleReverse = this
+            .handleReverse
+            .bind(this)
     }
     toggle(){
         this.setState({dropdownOpen:!this.state.dropdownOpen})
     }
-
+    handleReverse(){
+        this.props.images.map((image) => {
+            this.props.miaToggleActive({image: {...image, is_active:!image.is_active }})
+        })
+    }
     handleAddLabel(label){
         this.props.setMiaSelectedLabel(label)
     }
@@ -125,6 +132,7 @@ class Control extends Component {
                 </Col>
                 <Col xs='3' sm='3' lg='3'>
                     <ButtonGroup className="float-right"> 
+                            <Button className='btn-default' onClick={this.handleReverse}><i className="fa fa-arrows-h"></i> Reverse</Button>
                             <Button className='btn-default' onClick={this.handleZoomIn}><i className="fa fa-search-plus"></i></Button>
                             <Button className='btn-default' onClick={this.handleZoomOut}><i className="fa fa-search-minus"></i></Button>
                             <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
@@ -153,4 +161,4 @@ function mapStateToProps(state) {
     return ({zoom: state.mia.zoom, maxAmount: state.mia.maxAmount, labels: state.mia.labels, selectedLabel: state.mia.selectedLabel, images: state.mia.images})
 }
 
-export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)
+export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)
