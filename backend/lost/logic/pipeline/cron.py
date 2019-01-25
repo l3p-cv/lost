@@ -75,11 +75,18 @@ class PipeEngine(pipe_model.PipeEngine):
 
     def exec_script(self, pipe_e):
         try:
-            #try to import script before execution to catch import errors
+            #try to import script before execution to catch import errors, 
+            #inconsistent use of tabs, etc. 
             script_path = os.path.join(self.lostconfig.project_path, pipe_e.script.path)
-            sys.path.append(os.path.split(script_path)[0])
-            # custom_script = importlib.machinery.SourceFileLoader(os.path.basename(script_path).replace('.py',''),
-            #                                  script_path).load_module()
+            cmd_check = 'bash /code/backend/lost/logic/pipeline/check_script.sh {} "{}"'.format(
+                script_path, self.lostconfig.py3_init)
+            self.logger.info('cmd_check: {}'.format(cmd_check))
+            p = subprocess.Popen(cmd_check, stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE, shell=True)
+            out, err = p.communicate()
+            if p.returncode != 0:
+                raise Exception(err.decode('utf-8'))
+
             cmd = self.__gen_run_cmd("python3", pipe_e)
             start_script_path = self.file_man.get_instance_path(pipe_e)
             start_script_path = os.path.join(start_script_path, 'start.sh')
