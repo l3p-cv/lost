@@ -37,18 +37,18 @@ tested for Ubuntu):
 3. Clone LOST:
     .. code-block:: bash
 
-        git clone git@github.com:l3p-cv/lost.git
+        git clone https://github.com/l3p-cv/lost.git
 4. Run quick_setup script:
     .. code-block:: bash
 
         cd lost/docker/quick_setup/
         # python3 quick_setup.py path/to/install/lost lost_release
-        python3 quick_setup.py /home/user/lost 0.0.0
+        python3 quick_setup.py ~/lost 0.0.0
 5. Run LOST:
     .. code-block:: bash
 
         # Change to directory where LOST was installed in previous step
-        cd /home/user/lost 
+        cd ~/lost 
         # Start LOST
         docker-compose up
 6. Open a browser and navigate to **localhost**
