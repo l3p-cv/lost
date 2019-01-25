@@ -42,6 +42,7 @@ appModel.config.on("update", config => {
     $(window).on("keydown.redo", redo)
     // toggle
     appModel.controls.creationEvent.on("change", (isActive) => {
+		console.log("creationEvent:", isActive)
         if(!isActive){
             // initially enable
             if(appModel.isADrawableSelected()){
@@ -78,30 +79,22 @@ Object.values(appModel.state.drawables).forEach(observable => {
     observable.on("add", (drawable) => addDrawable(drawable))
     observable.on("remove", (drawable) => removeDrawable(drawable))
 })
-appModel.state.boxEventActive.on("update", boxEventInfo => {
+appModel.state.creationEventStarted.on("update", props => {
+	console.log("creationEventStarted:", props)
     Object.values(appModel.state.drawables).forEach(list => {
         list.value.forEach(drawable => {
-            // problem here is:
-            // - if i have a drawable selected
-            //   and i create a new drawable
-            //   isActive gets triggered but the currently selected drawable stays the same
-            // > but i need this rule to prevent "flickering" if a drawable is selected
-            // => i could pass an object to boxEventActive with the info about the event
-            //    or just pass the event name:
-            //    1. { isActive: true, eventType: "create" }
-            //    1. { isActive: true, eventType: "change" }
-            const { isActive, eventType } = boxEventInfo
-            if(drawable.model.isSelected === false || eventType === "create"){
+            const { isActive, eventType } = props
+            // if(drawable.model.isSelected === false || eventType === "create"){
+            // if(drawable.model.isSelected === false || eventType === "create"){
                 if(isActive === true){
-                    $(drawable.view.rootNode).off("mouseenter")
-                    $(drawable.view.rootNode).off("mouseleave")                        
+					drawable.disableHover()
                 } else {
-                    $(drawable.view.rootNode).on("mouseenter", () => drawable.hover())
-                    $(drawable.view.rootNode).on("mouseleave", () => drawable.unhover())                        
+					drawable.enableHover()
                 }
-            }
+            // }
         })   
     })
+	// disableSelect()
 })
 
 $(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
@@ -260,7 +253,6 @@ function enableCamera(){
         }
         // quickfixed. event still fireing unneded (@cameraEnabled)
         if(zoomLevel > 0 && (cameraEnabled.value || !$event.target.closest(".drawable"))){
-            // console.log("enable")
             // console.log("MOUSE: setting initial mousecursor")
             mouse.setGlobalCursor(mouse.CURSORS.ALL_SCROLL, {
                 noPointerEvents: true,
@@ -481,7 +473,7 @@ function disableSelect(){
     $(window).off("keydown.selectDrawable")
     $(window).off("keydown.resetSelection")
 }
-function enableDelete(){
+export function enableDelete(){
     $(window).on("keydown.drawableDelete", ($event) => {
         if(keyboard.isKeyHit($event, "Delete")) {
             if(appModel.isADrawableSelected()) {
@@ -566,7 +558,7 @@ function enableDelete(){
         }
     })
 }
-function disableDelete(){
+export function disableDelete(){
     $(window).off("keydown.drawableDelete")
 }
 
@@ -1102,7 +1094,7 @@ export function enableChange(drawable: DrawablePresenter){
                         }
 
                         // disable hover effect of all other boxes
-                        appModel.state.boxEventActive.update({ isActive: true, type: "change" })
+                        appModel.state.creationEventStarted.update({ isActive: true, type: "change" })
                         
                         // init context
                         mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
@@ -1224,7 +1216,7 @@ export function enableChange(drawable: DrawablePresenter){
                             $(window).off("mouseup.changeBoxEnd")
 
                             // reenable hover effect of all other boxes
-                            appModel.state.boxEventActive.update({ isActive: false, type: "change" })
+                            appModel.state.creationEventStarted.update({ isActive: false, type: "change" })
 
                             // add redo
                             // if user does mouse down and up without mousemove, the stateElement won't be cameraInitialized.

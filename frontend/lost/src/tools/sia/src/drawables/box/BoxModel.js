@@ -182,6 +182,9 @@ export default class BoxModel extends DrawableModel {
 
         // @quickfix-opt-1: skip area validation on box init (relative values indicate it).
         // if(valueType !== "rel" && !BoxModel.areaValid(w, h, valueType)){
+		// 		// ...
+		// }
+		
         // @quickfix-opt-2: skip area validation on creation event.
         if(appModel.controls.creationEvent.value === false && !BoxModel.areaValid(w, h, valueType)){
             // console.warn("area not valid")

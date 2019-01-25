@@ -58,7 +58,7 @@ export default {
         // a color table, changes on every image
         colorTable: undefined,  // type will be 'Map'
         imageData: null,        // type will be 'ImageData' 
-        boxEventActive: new Observable(false),
+        creationEventStarted: new Observable(false),
         selectedLabel: new Observable(DrawableDefaults.LABEL),
         drawables: {
             points: new Observable([]),

@@ -1,7 +1,7 @@
 import $ from "cash-dom"
 
 import "./properties.styles.scss"
-import { NodeTemplate } from "l3p-frontend"
+import { NodeTemplate, keyboard } from "l3p-frontend"
 import appModel from "../../appModel"
 
 export const html = new NodeTemplate(/*html*/`
@@ -65,13 +65,20 @@ class LabelSelect extends Component {
 		super(props)
 		this.state = {
 			labels: appModel.data.labelList.value,
+			previousLabel: appModel.state.selectedLabel.value,
 			selectedLabel: appModel.state.selectedLabel.value,
 			displayedValue: appModel.state.selectedLabel.value.name,
 		}
 	}
 	componentDidMount(){
-		appModel.data.labelList.on("update", labels => this.setState({ labels }) )
+		appModel.data.labelList.on("update", labels => this.setState({ labels }))
 		appModel.state.selectedLabel.on("update", label => this.setState({
+			previousLabel: label,
+			selectedLabel: label,
+			displayedValue: label.name,
+		}))
+		appModel.state.selectedLabel.on("update", label => this.setState({
+			previousLabel: label,
 			selectedLabel: label,
 			displayedValue: label.name,
 		}))
@@ -82,19 +89,32 @@ class LabelSelect extends Component {
 				items={this.state.labels}
 				value={this.state.displayedValue}
 				getItemValue={label => label.name}
-				renderInput={props => <input {...props} className='form-control'/>} 
-				renderItem={(item, highlighted) =>
+				renderInput={props => {
+					return (
+						<input {...props} className='form-control'/>
+					)
+				}} 
+				renderItem={(item, highlighted) => {
+					return (
 						<div
 							key={item.id}
 							style={{ backgroundColor: highlighted ? '#eee' : 'transparent' }}
 						>
 							{item.name}
 						</div>
-				}
-				shouldItemRender={(item, value) => item.name.toLowerCase().indexOf(value.toLowerCase()) > -1}
+					)
+				}}
+				shouldItemRender={(item, value) => {
+					if(appModel.state.selectedLabel.value.name === this.state.displayedValue){
+						return true
+					} else {
+						return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1
+					}
+				}}
 				onChange={(e, value) => {
 						const displayedValue = value
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
+						// can lead to undefined selectedLabel
 						this.setState({
 							selectedLabel,
 							displayedValue,
@@ -103,18 +123,50 @@ class LabelSelect extends Component {
 				}
 				onSelect={displayedValue => {
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
+						appModel.state.selectedLabel.update(selectedLabel)
 						this.setState({
+							previousLabel: selectedLabel,
 							selectedLabel,
 							displayedValue,
 						})
 					}
 				}
 				inputProps={{
+					onKeyDown: e => {
+						if(keyboard.isKeyHit(e, ["Escape", "Tab"])){
+							document.activeElement.blur()
+						}
+						if(keyboard.isKeyHit(e, ["Escape", "Tab", "Enter"])){
+							// if entered text was not valid select last label
+							if(this.state.selectedLabel === undefined){
+								console.log("hodor:", this.state)
+								this.setState(state => {
+									return { 
+										selectedLabel: state.previousLabel,
+										displayedValue: state.previousLabel.name,
+									}
+								})
+							}
+						}
+					},
+					onKeyUp: e => {
+						// its important that removing element focus happens on key up,
+						// else the component wont select a label that you 
+						// navigated to and want to select with enter key.
+						if(keyboard.isKeyHit(e, "Enter")){
+							// only leave if you entered a valid label
+							if(this.state.selectedLabel !== undefined){
+								document.activeElement.blur()
+							}
+						}
+					},
 					onFocus: e => {
 						imagePresenter.disableChange()
+						imagePresenter.disableDelete()
 					},
 					onBlur: e => {
 						imagePresenter.enableChange()
+						imagePresenter.enableDelete()
 					},
 				}}
 			/>
@@ -125,12 +177,6 @@ ReactDOM.render(<LabelSelect />, html.refs["label-select"])
 
 export const image = new Image()
 
-export function init(){
-    resetCanvas()
-    resetLabel()
-    resetDescription()
-    resetTable()
-}
 
 export function updateTable(drawable: DrawablePresenter){
     switch(drawable.getClassName()){
@@ -200,10 +246,6 @@ export function updateCanvas(values: any){
     }
 
     ctx.restore()
-}
-
-export function updateLabels(){
-	// ReactDOM.render(LabelSelectInstance, html.refs["label-select"])
 }
 
 export function setLayout(layout: String){
