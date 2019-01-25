@@ -40,3 +40,6 @@ def __release_project_annos(dbm):
                 anno.state = state.Anno.UNLOCKED
                 dbm.add(anno)
         dbm.commit()
+
+if __name__ == "__main__":
+    exec_pipe()

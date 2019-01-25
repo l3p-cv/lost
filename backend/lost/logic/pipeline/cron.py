@@ -18,6 +18,8 @@ import importlib
 import traceback
 import lost.logic.log
 import logging
+from celery.utils.log import get_task_logger
+
 
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig):
@@ -28,8 +30,10 @@ class PipeEngine(pipe_model.PipeEngine):
         super().__init__(dbm=dbm, pipe=pipe)
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
         self.file_man = FileMan(self.lostconfig)
-        # self.logger = lost.logic.log.get_file_logger('lost.cron', 
-        #                                 self.file_man.app_log_path)
+        # self.logger = lost.logic.log.get_file_logger(
+        #     'Executor: {}'.format(self.lostconfig.executor), 
+        #     self.file_man.app_log_path)
+        self.logger = get_task_logger(__name__)
 
     def process_annotask(self, pipe_e):
         anno_task = self.dbm.get_anno_task(pipe_element_id=pipe_e.idx)
@@ -37,9 +41,9 @@ class PipeEngine(pipe_model.PipeEngine):
            anno_task.state == state.AnnoTask.PAUSED:
            if not at_man.has_annotation(self.dbm, anno_task.idx):
                 at_man.set_finished(self.dbm, anno_task.idx)
-                print('No Annotations have been requested for AnnoTask {}'\
+                self.logger.warning('No Annotations have been requested for AnnoTask {}'\
                     .format(anno_task.idx))
-                print("%d: AnnoTask has been finished (ID: %d, Name: %s)"\
+                self.logger.warning("%d: AnnoTask has been finished (ID: %d, Name: %s)"\
                                 %(self.pipe.idx, anno_task.idx, anno_task.name))
             # if pipe_e.anno_task.dtype == dtype.AnnoTask.MIA:
             #     if anno_task.progress is None:
@@ -59,7 +63,7 @@ class PipeEngine(pipe_model.PipeEngine):
         if anno_task.state == state.AnnoTask.PENDING:
             anno_task.state = state.AnnoTask.IN_PROGRESS
             self.dbm.save_obj(anno_task)
-            print("%d: AnnoTask IN_PROGRESS (ID: %d, Name: %s)"\
+            self.logger.info("%d: AnnoTask IN_PROGRESS (ID: %d, Name: %s)"\
                          %(self.pipe.idx, anno_task.idx, anno_task.name))
 
     def __gen_run_cmd(self, program, pipe_e):
@@ -82,12 +86,12 @@ class PipeEngine(pipe_model.PipeEngine):
             with open(start_script_path, 'w') as sfile:
                 sfile.write(cmd)
             p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE, shell=True)
-            print("%d: Started script\n%s"%(self.pipe.idx, cmd))
+            self.logger.info("{}: Started script\n{}".format(self.pipe.idx, cmd))
         except:
-            print('{}: Could not start script: {}'.format(self.pipe.idx,
+            self.logger.error('{}: Could not start script: {}'.format(self.pipe.idx,
                                                                    pipe_e.script.path))
             msg = traceback.format_exc()
-            print(msg)
+            self.logger.error(msg)
             script_api.report_script_err(pipe_e, self.pipe, self.dbm, msg)
 
     def make_debug_session(self, pipe_e):
@@ -104,12 +108,12 @@ class PipeEngine(pipe_model.PipeEngine):
         dsession_str += "<br>If you want to EDIT go to: " + script_path
         pipe_e.debug_session = dsession_str
         self.dbm.save_obj(pipe_e)
-        print('Created debug script: {}'.format(debug_file_path))
-        print(pipe_e.debug_session)
+        self.logger.info('Created debug script: {}'.format(debug_file_path))
+        self.logger.info(pipe_e.debug_session)
 
     def __release_loop_iteration(self, pipe_e):
         pipe_e.loop.iteration += 1
-        print('{}: Run loop with id {} in iteration {}'.format(self.pipe.idx,
+        self.logger.info('{}: Run loop with id {} in iteration {}'.format(self.pipe.idx,
                                                                       pipe_e.loop.idx,
                                                                       pipe_e.loop.iteration))
         loop_pes = self.get_loop_pes(pipe_e.loop.pe_jump, pipe_e)
@@ -132,7 +136,7 @@ class PipeEngine(pipe_model.PipeEngine):
         if pipe_e.loop.break_loop:
             pipe_e.state = state.PipeElement.FINISHED
             self.dbm.add(pipe_e)
-            print('{}: Break loop with id {}'.format(self.pipe.idx,
+            self.logger.info('{}: Break loop with id {}'.format(self.pipe.idx,
                                                             pipe_e.loop.idx))
             return
         if pipe_e.loop.max_iteration is not None:
@@ -142,7 +146,7 @@ class PipeEngine(pipe_model.PipeEngine):
                 self.__release_loop_iteration(pipe_e)
             else:
                 pipe_e.state = state.PipeElement.FINISHED
-                print('{}: Loop ({}) terminated. Max iterations = {}'\
+                self.logger.info('{}: Loop ({}) terminated. Max iterations = {}'\
                              .format(self.pipe.idx, pipe_e.loop.idx,
                                      pipe_e.loop.max_iteration))
         else:
@@ -234,6 +238,7 @@ class PipeEngine(pipe_model.PipeEngine):
     def process_pipeline(self):
         try:
             p = self.pipe
+            # print('Process pipe: {}'.format(self.pipe.name))
             if p.is_locked is None:
                p.is_locked = False
             if not p.is_locked:
@@ -275,7 +280,7 @@ class PipeEngine(pipe_model.PipeEngine):
                     self.pipe.state = state.Pipe.FINISHED
                     self.pipe.timestamp_finished = datetime.now()
                     self.dbm.save_obj(self.pipe)
-                    print("%d: Task is finished (Name: %s)"%(self.pipe.idx,
+                    self.logger.info("%d: Task is finished (Name: %s)"%(self.pipe.idx,
                                                                     self.pipe.name))
                     return None
                 else:
