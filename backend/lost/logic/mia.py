@@ -129,9 +129,8 @@ def update(db_man, user_id, data):
             __update_two_d_annotation(db_man, user_id, data)
         elif config['type'] == 'imageBased':
             __update_image_annotation(db_man, user_id, data)            
-            
 
-        return update_anno_task(db_man, at.idx)
+        return update_anno_task(db_man, at.idx, user_id)
     # get all labels
     # get all active images
     # add labels

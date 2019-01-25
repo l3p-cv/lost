@@ -119,8 +119,12 @@ def __get_at_info(dbm, annotask, user_id):
     at['pipelineCreator'] = pipeline.manager.user_name
     at['group'] = annotask.group.name
     at['instructions'] = annotask.instructions
-    at['createdAt'] = annotask.timestamp
-    at['lastActivity'] = annotask.last_activity
+    at['createdAt'] = None
+    if annotask.timestamp:
+        at['createdAt'] = annotask.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+    at['lastActivity'] = None
+    if annotask.last_activity:
+        at['lastActivity'] = annotask.last_activity.strftime("%Y-%m-%d %H:%M:%S")
     at['lastAnnotater'] = "N/A"
     if annotask.last_annotater:
         at['lastAnnotater'] = annotask.last_annotater.user_name
@@ -167,6 +171,9 @@ def choose_annotask(dbm, anno_task_id, user_id):
     anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
     if anno_task.state == state.AnnoTask.IN_PROGRESS or \
     anno_task.state == state.AnnoTask.PAUSED:
+        if not anno_task.timestamp:
+            anno_task.timestamp = datetime.now()
+            dbm.save_obj(anno_task)
         newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
         dbm.save_obj(newcat)
 

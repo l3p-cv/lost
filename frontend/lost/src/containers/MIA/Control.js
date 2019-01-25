@@ -24,7 +24,8 @@ class Control extends Component {
         super(props);
         this.state = {
             dropdownOpen: false,
-            value: ''
+            value: '',
+            loading: true
         }
 
         this.handleAddLabel = this
@@ -60,6 +61,8 @@ class Control extends Component {
             labels: [this.props.selectedLabel]
         }
         this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
+        this.props.setMiaSelectedLabel(undefined)
+        this.setState({value:''})
 
     }
 
