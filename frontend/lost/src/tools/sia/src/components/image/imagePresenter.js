@@ -35,8 +35,33 @@ appModel.config.on("update", config => {
 		$(window).off("keydown.redo").on("keydown.redo", redo)	
 	}
 })
-// disable redo and undo listeners during drawable creation
-// disable delete during drawable creation
+
+// during drawable change
+// - hide other drawables
+appModel.controls.changeEvent.on("change", isActive => {
+	if(isActive){
+		// hide other drawables
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value)
+				.filter(drawable => drawable !== appModel.getSelectedDrawable())
+				.forEach(drawable => {
+					drawable.hide()
+				})
+		})
+	} else {
+		// show other drawables
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.show()
+			})
+		})
+	}
+})
+
+// during drawable creation
+// - hide other drawables
+// - disable ordinary delete
+// - (disable redo and undo)
 appModel.controls.creationEvent.on("change", isActive => {
 	if(isActive){
 		// the toolbars multipoint drawable creation has its own delete handlers 
@@ -47,8 +72,8 @@ appModel.controls.creationEvent.on("change", isActive => {
 				drawable.hide()
 			})
 		})
-		$(window).off("keydown.undo")
-		$(window).off("keydown.redo")
+		// $(window).off("keydown.undo")
+		// $(window).off("keydown.redo")
 	} else {
 		enableDelete()
 		// show other drawables
@@ -57,8 +82,8 @@ appModel.controls.creationEvent.on("change", isActive => {
 				drawable.show()
 			})
 		})
-		$(window).on("keydown.undo", undo)
-		$(window).on("keydown.redo", redo)
+		// $(window).on("keydown.undo", undo)
+		// $(window).on("keydown.redo", redo)
 	}
 })
 appModel.data.image.url.on("update", url => {
@@ -68,6 +93,8 @@ appModel.data.image.url.on("update", url => {
 	})
 })
 appModel.data.image.info.on("update", info => imageView.updateInfo(info))
+
+// add and remove drawables when data changes
 Object.values(appModel.state.drawables).forEach(observable => {
     observable.on("update", (drawables) => addDrawables(drawables))
     observable.on("reset", (drawables) => removeDrawables(drawables))
@@ -124,6 +151,7 @@ appModel.data.drawables.on("update", () => {
     zoomLevel = 0
     oldZoom = 1
     newZoom = undefined
+	appModel.ui.zoom.reset()
 })
 
 $(svg).on("wheel", $event => {
@@ -193,27 +221,24 @@ function enableCamera(){
     // add cursors
     cameraEnabled.on("update", (enabled) => {
         if(enabled){
-            // console.log("KEY: setting initial mousecursor")
             mouse.setGlobalCursor(mouse.CURSORS.ALL_SCROLL, {
-                noPointerEvents: false,
+                noPointerEvents: true,
                 noSelection: true,
             })
         } else {
-            // console.log("KEY: resetting initial mousecursor")
             mouse.unsetGlobalCursor()
         }
     })
-    // enable camera
+    // enable camera on mid mouse button
     $(svg).on("mousedown", $event => {
         if(!cameraEnabled.value && mouse.button.isMid($event.button)){
-            // console.log("enable camera")
 	        $event.preventDefault()
             disableChange()
             disableSelect()
             cameraEnabled.update(true)
         }
     })
-    // disable camera
+    // disable camera on mid mouse button
     $(window).on("mouseup", $event => {
         if(cameraEnabled.value && mouse.button.isMid($event.button)){
             // console.log("disable camera")
@@ -224,7 +249,7 @@ function enableCamera(){
             cameraEnabled.update(false)
         }
     })
-    // start
+    // move camera on left or mid mouse button
     let lastCameraUpdateCall = undefined
     $(svg).on("mousedown.camera", $event => {
         if(mouse.button.isRight($event.button)){
@@ -232,17 +257,15 @@ function enableCamera(){
         }
         // quickfixed. event still fireing unneded (@cameraEnabled)
         if(zoomLevel > 0 && (cameraEnabled.value || !$event.target.closest(".drawable"))){
-            // console.log("MOUSE: setting initial mousecursor")
-            mouse.setGlobalCursor(mouse.CURSORS.ALL_SCROLL, {
-                noPointerEvents: true,
-                noSelection: true,
-            })
+            disableChange()
+            disableSelect()
+			cameraEnabled.update(true)
 
             let mousePrev = mouse.getMousePosition($event, svg)
             let mouseCurr = mouse.getMousePosition($event, svg)
             // move
             $(window).on("mousemove.camera", $event => {
-                // console.log("move")
+                console.log("move")
                 mouseCurr = mouse.getMousePosition($event, svg)
                 let distance = {
                     x: mousePrev.x - mouseCurr.x,
@@ -280,9 +303,11 @@ function enableCamera(){
             })
             // stop move
             $(window).one("mouseup", $event => {
-				// console.log("stop")
-				// console.log("MOUSE: resetting initial mousecursor")
-				mouse.unsetGlobalCursor()
+				if(appModel.config.value.actions.edit.bounds){
+					enableChange()
+				}
+				enableSelect()
+				cameraEnabled.update(false)
 				$(window).off("mousemove.camera")
             })
         }
@@ -1590,6 +1615,7 @@ export function disableChange(drawable: DrawablePresenter){
     }
 }
 
+// mutates appModel
 export function createDrawables(drawablesRawData: any){
     console.log("%c creating drawables from raw data: ", "background: #282828; color: #FE8019", drawablesRawData)
     // reset current drawable if any
@@ -1662,25 +1688,29 @@ export function createDrawables(drawablesRawData: any){
         console.log("%c No drawables in data. ", "background: #282828; color: #FE8019")
     }
 }
-export function addDrawable(drawable: DrawablePresenter){
+
+// does not mutate appModel
+function addDrawable(drawable: DrawablePresenter){
     if(!drawable.model.status.has(STATE.DELETED)){
         imageView.addDrawable(drawable)
     }
 }
-export function addDrawables(drawables: Array<DrawablePresenter>){
+// does not mutate appModel
+function addDrawables(drawables: Array<DrawablePresenter>){
     drawables = drawables.filter(d => !d.model.status.has(STATE.DELETED))
     imageView.addDrawables(drawables)
 }
-// @caching: toolbarPresenter multipoint drawable creation handler 
-// should remove unwanted points completely.
-export function removeDrawable(drawable: DrawablePresenter){
+// does not mutate appModel
+function removeDrawable(drawable: DrawablePresenter){
     imageView.removeDrawable(drawable.view)
 }
-export function removeDrawables(){
+// does not mutate appModel
+function removeDrawables(){
     Object.values(appModel.state.drawables).forEach(drawables => {
         drawables.value.forEach(d => imageView.removeDrawable(d.view))
     })
 }
+// mutates appModel
 export function selectDrawable(next: Drawable){
     const curr = appModel.getSelectedDrawable()
     // Don't re-select a drawable if it is allready selected. 
@@ -1712,6 +1742,7 @@ export function selectDrawable(next: Drawable){
         }
     }
 }
+// mutates appModel
 export function resetSelection(){
     const drawable = appModel.getSelectedDrawable()
     if(drawable instanceof DrawablePresenter){

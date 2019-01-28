@@ -345,14 +345,14 @@ function detachDrawable(drawable: DrawablePresenter){
 export function handleLastImage(){
     propertiesView.disableLastButton()
     propertiesView.setNextButtonState("finish")
-    $(propertiesView.html.refs["btn-next"]).on("click", modals.showLastImageModal)
+    $(propertiesView.html.refs["btn-next"]).on("click", modals.show)
     $(window).off("keydown", keyRequestPreviousData).on("keydown", keyRequestPreviousData)
     $(window).off("keydown", keyRequestNextData)
 }
 export function handleNotLastImage(){
     propertiesView.enableLastButton()
     propertiesView.setNextButtonState("default")
-    $(propertiesView.html.refs["btn-next"]).off("click", modals.showLastImageModal)
+    $(propertiesView.html.refs["btn-next"]).off("click", modals.show)
     $(window).off("keydown", keyRequestPreviousData).on("keydown", keyRequestPreviousData)
     $(window).off("keydown", keyRequestNextData).on("keydown", keyRequestNextData)
 }

@@ -165,7 +165,7 @@ $(window).on("resize", resize)
 $(window).on("contextmenu", ($event) => $event.preventDefault())
 $(window).on("mousedown mouseup click", ($event) => filterMouseButtons($event))
 $(window).on("keydown", ($event) => filterKeyStrokes($event))
-$(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
+$(modals.finishModal.html.refs["ok-button"]).on("click", $event => {
     data.sendData(appModel.getResponseData()).then(() => {
         data.finish().then((message) => {
             if(message !== "success"){

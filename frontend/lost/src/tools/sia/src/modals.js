@@ -1,33 +1,21 @@
 import $ from "jquery"
 import "bootstrap"
-import { NodeTemplate } from "l3p-frontend"
+import { BaseModal } from "l3p-frontend"
 
-
-export const lastImageModal = new NodeTemplate(/*html*/`
-    <div id="sia-finish-task-modal" class="modal fade">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title">Do you realy want to finish?</h1>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <h4>If you finish the annotation task now, you can no longer change the current task.</h4>
-                </div>
-                <div class="modal-footer">
-                    <button data-ref="finish-button" type="button" class="btn btn-primary" data-dismiss="modal" data-target="#sia-finish-task-modal">Finish</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-target="#sia-finish-task-modal">Abort</button>
-                </div>
-            </div>
-        </div>
-    </div>
-`)
-export function showLastImageModal(){
-	console.log($(lastImageModal.root))
-    $(lastImageModal.root).modal()
+class FinishModal extends BaseModal {
+	constructor(params){
+		super({
+			title: "Finish Annotation Task",
+			content: /*html*/`
+				<p>You can not return to the annotation task to make corrections after finishing it.</p>
+			`,
+		})
+	}
+}
+export const finishModal = new FinishModal()
+// should integrate mounting and show method to BaseModal.
+export function show(){
+    $(finishModal.html.root).modal()
 }
 
-
-document.body.appendChild(lastImageModal.fragment)
+document.body.appendChild(finishModal.html.fragment)

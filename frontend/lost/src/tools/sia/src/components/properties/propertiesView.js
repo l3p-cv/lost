@@ -129,6 +129,7 @@ class LabelSelect extends Component {
 							selectedLabel,
 							displayedValue,
 						})
+						document.activeElement.blur()
 					}
 				}
 				inputProps={{
@@ -139,7 +140,6 @@ class LabelSelect extends Component {
 						if(keyboard.isKeyHit(e, ["Escape", "Tab", "Enter"])){
 							// if entered text was not valid select last label
 							if(this.state.selectedLabel === undefined){
-								console.log("hodor:", this.state)
 								this.setState(state => {
 									return { 
 										selectedLabel: state.previousLabel,

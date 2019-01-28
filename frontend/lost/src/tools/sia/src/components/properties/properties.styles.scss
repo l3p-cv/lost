@@ -7,6 +7,8 @@
     -webkit-user-select: none !important;
     -o-user-select: none !important;
     user-select: none !important;
+	// apply bootstrap border glow padding.
+	padding: 0.2rem;
 
 	[data-ref="canvas-area"] {
         grid-area: first;
@@ -35,10 +37,12 @@
         grid-column-gap: 1em;
         
         [data-ref="label-select"] {
+			// need to set z-index, to see long lists.
+			z-index: 1;
             grid-area: label;
             &:focus{
                 background-color: $COLOR_HIGHLIGHT;
-                /* remove the outline if selected */
+                // remove the outline if selected.
                 outline: none !important;
                 -moz-outline: none !important;
                 color: #FFF;

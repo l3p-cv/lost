@@ -63,51 +63,47 @@ appModel.config.on("update", config => {
                         if(keyboard.isAModifierHit($event)){
                             return
                         }
-                        if(appModel.controls.tool.value === "sia-tool-point"){
-                            if(mouse.button.isRight($event.button)){
-                                // console.warn("create point handler(executed)")
-                                $event.preventDefault()
-                                const { imgW, imgH } = imageInterface.getDimensions()
-                                let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
-                                // calculate the real mouseposition (@zoom)
-                                const svg = imageInterface.getSVG()
-                                const zoom = appModel.ui.zoom.value
-                                mousepos = {
-                                    x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                                    y: (mousepos.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                                }
-                                const point = new PointPresenter({
-                                    data: {
-                                        x: (mousepos.x / imgW),
-                                        y: (mousepos.y / imgH),
-                                    }
-                                })
-                                // add redo and undo
-                                state.add(new state.StateElement({
-                                    do: {
-                                        data: { point },
-                                        fn: (data) => {
-                                            const { point } = data
-                                            appModel.addDrawable(point)
-                                            imagePresenter.selectDrawable(point)
-                                        }
-                                    },
-                                    undo: {
-                                        data: { point },
-                                        fn: (data) => {
-                                            const { point } = data
-                                            point.delete()
-                                            appModel.deleteDrawable(point)
-                                        }
-                                    }
-                                }))
-                                appModel.addDrawable(point)
-                                imagePresenter.selectDrawable(point)
-								// if(appModel.controls.changeEvent.value === false){
-									appModel.controls.creationEvent.update(false)
-								// }
-                            }
-                        }
+						if(mouse.button.isRight($event.button)){
+							// console.warn("create point handler(executed)")
+							$event.preventDefault()
+							const { imgW, imgH } = imageInterface.getDimensions()
+							let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
+							// calculate the real mouseposition (@zoom)
+							const svg = imageInterface.getSVG()
+							const zoom = appModel.ui.zoom.value
+							mousepos = {
+								x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
+								y: (mousepos.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
+							}
+							const point = new PointPresenter({
+								data: {
+									x: (mousepos.x / imgW),
+									y: (mousepos.y / imgH),
+								}
+							})
+							// add redo and undo
+							state.add(new state.StateElement({
+								do: {
+									data: { point },
+									fn: (data) => {
+										const { point } = data
+										appModel.addDrawable(point)
+										imagePresenter.selectDrawable(point)
+									}
+								},
+								undo: {
+									data: { point },
+									fn: (data) => {
+										const { point } = data
+										point.delete()
+										appModel.deleteDrawable(point)
+									}
+								}
+							}))
+							appModel.addDrawable(point)
+							imagePresenter.selectDrawable(point)
+							appModel.controls.creationEvent.update(false)
+						}
                     })
                     break
                 case "sia-tool-line":
@@ -115,7 +111,7 @@ appModel.config.on("update", config => {
                     var currentPoint = undefined
                     var line = undefined
                     function addLinePoint($event){
-                        // console.warn("create line handler (executed add)")
+                        console.warn("create line handler (executed add)")
                         const { imgW, imgH } = imageInterface.getDimensions()
                         let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
                         // calculate the real mouseposition (@zoom)
@@ -131,8 +127,27 @@ appModel.config.on("update", config => {
                                 data: { x: mousepos.x / imgW, y: mousepos.y / imgH }, 
                                 isNoAnnotation: true,
                             })
-                            imagePresenter.addDrawable(firstPoint)
+							state.add(new state.StateElement({
+                                do: {
+                                    data: { $event },
+                                    fn: (data) => {
+										console.log("redo point")
+                                        const { $event } = data
+										addLinePoint($event)
+										window.one = $event
+                                    },
+                                },
+                                undo: {
+                                    data: { firstPoint },
+                                    fn: (data) => {
+										deleteLinePoint()
+                                    },
+                                }
+                            }))
+                            // imagePresenter.addDrawable(firstPoint)
+                            appModel.addDrawable(firstPoint)
                             imagePresenter.selectDrawable(firstPoint)
+							console.log("added line point")
                         }
                         // else if no line was created before, create a initial line, and show it, remove the initial point.
                         else if(!line) {
@@ -140,12 +155,31 @@ appModel.config.on("update", config => {
                                 data: [ firstPoint.model.relBounds, { x: mousepos.x / imgW, y: mousepos.y / imgH } ],
                                 type: "line",
                             })
+							console.log("creat eline")
+							state.add(new state.StateElement({
+                                do: {
+                                    data: { $event },
+                                    fn: (data) => {
+										console.log("redo point")
+                                        const { $event } = data
+										addLinePoint($event)
+										window.two = $event
+                                    },
+                                },
+                                undo: {
+                                    data: { line },
+                                    fn: (data) => {
+										deleteLinePoint()
+                                    },
+                                }
+                            }))
 							// hide menubar during creation
 							if(line.menuBar){
 								line.menuBar.hide()
 							}
-                            imagePresenter.removeDrawable(firstPoint)
-                            // when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
+                            // imagePresenter.removeDrawable(firstPoint)
+                            // imagePresenter.addDrawable(line)
+                            appModel.deleteDrawable(firstPoint)
                             appModel.addDrawable(line)
                             // select the second point of the line as indicator.
                             imagePresenter.selectDrawable(line.model.points[1])
@@ -154,21 +188,37 @@ appModel.config.on("update", config => {
                         else {
                             currentPoint = line.addPoint(mousepos)
                             if(currentPoint){
+								state.add(new state.StateElement({
+									do: {
+										data: { $event },
+										fn: (data) => {
+											const { $event } = data
+											addLinePoint($event)
+										},
+									},
+									undo: {
+										data: { line },
+										fn: (data) => {
+											deleteLinePoint()
+										},
+									}
+								}))
                                 imagePresenter.selectDrawable(currentPoint)
                             }
                         }
                     }
                     function deleteLinePoint(){
-						console.log("toolbar delete line point")
                         // first point
                         if(firstPoint && !line){
-                            imagePresenter.removeDrawable(firstPoint)
+                            // imagePresenter.removeDrawable(firstPoint)
+                            appModel.deleteDrawable(firstPoint)
                             firstPoint = undefined
-							finishLine()
+							appModel.controls.creationEvent.update(false)
                         }
                         // second point
                         if(line && line.model.points.length === 2){
-                            // remove the line from model and image view (event bound).
+                            // remove the line from view
+                            // imagePresenter.removeDrawable(line)
                             appModel.deleteDrawable(line)
                             line = undefined
                             // re-create the first point, add and select it.
@@ -176,7 +226,8 @@ appModel.config.on("update", config => {
                                 data: firstPoint.model.relBounds, 
                                 isNoAnnotation: true,
                             })
-                            imagePresenter.addDrawable(firstPoint)
+                            // imagePresenter.addDrawable(firstPoint)
+                            appModel.addDrawable(firstPoint)
                             imagePresenter.selectDrawable(firstPoint)
                         }
                         // 3+n point
@@ -205,6 +256,7 @@ appModel.config.on("update", config => {
                                     },
                                 }
                             }))
+							appModel.addDrawable(line)
                             appModel.selectDrawable(line)
                             line.model.points[line.model.points.length-1].unselect()
                             line.select()
@@ -212,17 +264,15 @@ appModel.config.on("update", config => {
 							if(line.menuBar){
 								line.menuBar.show()
 							}
-                        } else if(firstPoint){
-                            imagePresenter.removeDrawable(firstPoint)
+                        } else {
+							throw new Error("tried to finish line but line was undefined.")
                         }
 
                         // reset creation context
                         line = undefined
                         firstPoint = undefined
-						
-						// if(appModel.controls.changeEvent.value === false){
-							appModel.controls.creationEvent.update(false)
-						// }
+
+						appModel.controls.creationEvent.update(false)
                     }
                     $(imageInterface.getSVG()).on("mousedown.createLinePoint", ($event) => {
 						if(mouse.button.isRight($event.button)){
@@ -299,7 +349,8 @@ appModel.config.on("update", config => {
                                 data: { x: mousepos.x / imgW, y: mousepos.y / imgH }, 
                                 isNoAnnotation: true,
                             })
-                            imagePresenter.addDrawable(firstPoint)
+                            // imagePresenter.addDrawable(firstPoint)
+                            appModel.addDrawable(firstPoint)
                             imagePresenter.selectDrawable(firstPoint)
                         }
                         // else if no line was created before, create a initial line, and show it, remove the initial point.
@@ -312,9 +363,11 @@ appModel.config.on("update", config => {
 							if(line.menuBar){
 								line.menuBar.hide()
 							}
-                            imagePresenter.removeDrawable(firstPoint)
+                            // imagePresenter.removeDrawable(firstPoint)
+                            appModel.deleteDrawable(firstPoint)
                             // when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
-                            imagePresenter.addDrawable(line)
+                            // imagePresenter.addDrawable(line)
+                            appModel.addDrawable(line)
                             imagePresenter.selectDrawable(line.model.points[1])
                         }
                         else if(!polygon){
@@ -326,7 +379,8 @@ appModel.config.on("update", config => {
 							if(polygon.menuBar){
 								polygon.menuBar.hide()
 							}
-                            imagePresenter.removeDrawable(line)
+                            // imagePresenter.removeDrawable(line)
+                            appModel.deleteDrawable(line)
                             // when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
                             appModel.addDrawable(polygon)
                             imagePresenter.selectDrawable(polygon.model.points[2])
@@ -342,20 +396,23 @@ appModel.config.on("update", config => {
                     function deletePolygonPoint(){
 						// first point
 						if(firstPoint && !line){
-							imagePresenter.removeDrawable(firstPoint)
+							// imagePresenter.removeDrawable(firstPoint)
+							appModel.deleteDrawable(firstPoint)
 							firstPoint = undefined
 						}
 						// second point
 						else if(line && !polygon){
 							// remove the line from model and image view (event bound).
-							imagePresenter.removeDrawable(line)
+							// imagePresenter.removeDrawable(line)
+							appModel.deleteDrawable(line)
 							line = undefined
 							// re-create the first point, add and select it.
 							firstPoint = new PointPresenter({
 								data: firstPoint.model.relBounds, 
 								isNoAnnotation: true,
 							})
-							imagePresenter.addDrawable(firstPoint)
+							// imagePresenter.addDrawable(firstPoint)
+							appModel.addDrawable(firstPoint)
 							imagePresenter.selectDrawable(firstPoint)
 						}
 						// third point
@@ -368,7 +425,8 @@ appModel.config.on("update", config => {
 								data: line.model.relPointData,
 								type: "line",
 							})
-							imagePresenter.addDrawable(line)
+							// imagePresenter.addDrawable(line)
+							appModel.addDrawable(line)
 							imagePresenter.selectDrawable(line.model.points[1])
 						}
 						// 4+n point
@@ -405,9 +463,11 @@ appModel.config.on("update", config => {
 								polygon.menuBar.show()
 							}
                         } else if(line){
-                            imagePresenter.removeDrawable(line)
+                            // imagePresenter.removeDrawable(line)
+                            appModel.deleteDrawable(line)
                         } else if(firstPoint){
-                            imagePresenter.removeDrawable(firstPoint)
+                            // imagePresenter.removeDrawable(firstPoint)
+                            appModel.deleteDrawable(firstPoint)
                         }
 
                         // reset creation context
