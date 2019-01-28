@@ -7,13 +7,6 @@ from datetime import datetime
 from lost.logic.file_man import FileMan
 __author__ = "Gereon Reus"
 
-# import ptvsd
-# try:
-#     ptvsd.enable_attach(secret='my_secret',address = ('0.0.0.0', 3500))
-#     print("Started Debug Server")
-# except Exception:
-#     print("Port Already in Use")
-
 def get_first(db_man, user_id, media_url):
     """ Get first image anno.
     :type db_man: lost.db.access.DBMan
@@ -276,7 +269,7 @@ class SiaUpdate(object):
                 error_msg = "Status: '" + str(drawable['status']) + "' is not valid."
                 raise SiaStatusNotFoundError(error_msg)
 
-        for drawable in drawables:
+        for drawable in drawables: 
             if drawable['status'] == "database":
                 two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
                 two_d.user_id = self.user_id

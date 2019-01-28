@@ -241,8 +241,6 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
     #################### get locked priority ########################
     annos = db_man.get_image_annotations_by_state(at.idx,\
     state.Anno.LOCKED_PRIORITY, user_id, max_amount)
-    print("Locked Prio")
-    print(len(annos))
     if len(annos) > 0:
         for anno in annos:
             anno.timestamp_lock = datetime.now()
@@ -253,8 +251,6 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         #################### get view locked ########################
     annos = db_man.get_image_annotations_by_state(at.idx, \
     state.Anno.LOCKED, user_id, 0)
-    print("Locked View")
-    print(len(annos))
     if len(annos) > 0:
         while int(len(annos)) > max_amount:
             annos[len(annos)-1].state = state.Anno.UNLOCKED
@@ -291,8 +287,6 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         images['images'] = list()
         return images
     annos = db_man.get_image_annotation_by_sim_class(at.idx, sim_class, max_amount)
-    print("New")
-    print(len(annos)) 
     if len(annos) > 0:
         for anno in annos:
             anno.state = state.Anno.LOCKED

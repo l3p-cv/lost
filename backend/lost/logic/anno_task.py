@@ -131,6 +131,15 @@ def __get_at_info(dbm, annotask, user_id):
     at['type'] = None
     at['finished'] = None
     at['size'] = None
+    at['status'] = None
+    if annotask.state == state.AnnoTask.PENDING:
+        at['status'] = 'pending'
+    elif annotask.state == state.AnnoTask.IN_PROGRESS:
+        at['status'] = 'inProgress'
+    elif annotask.state == state.AnnoTask.FINISHED:
+        at['status'] = 'finished'
+    elif annotask.state == state.AnnoTask.PAUSED:
+        at['status'] = 'paused'
     at['statistic'] = dict()
     at['statistic']['amountPerLabel'] = []
     at['statistic']['secondsPerAnno'] = None

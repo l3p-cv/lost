@@ -1101,6 +1101,7 @@ class PipeElement(Base):
     progress = Column(Float)
     arguments = Column(Text)
     loop = relationship("Loop",foreign_keys='Loop.pipe_element_id', uselist=False)
+    pipe = relationship("Pipe", uselist=False)
     datasource = relationship('Datasource', uselist=False)
     
     def __init__(self, idx=None, state=None, dtype=None,
