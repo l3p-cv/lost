@@ -68,6 +68,7 @@ class LabelSelect extends Component {
 			previousLabel: appModel.state.selectedLabel.value,
 			selectedLabel: appModel.state.selectedLabel.value,
 			displayedValue: appModel.state.selectedLabel.value.name,
+			enabled: appModel.config.value.actions.labeling,
 		}
 	}
 	componentDidMount(){
@@ -82,6 +83,9 @@ class LabelSelect extends Component {
 			selectedLabel: label,
 			displayedValue: label.name,
 		}))
+		appModel.config.on("update", config => {
+			this.setState({ enabled: config.actions.labeling })
+		})
 	}
 	render(){
 		return (
@@ -91,7 +95,7 @@ class LabelSelect extends Component {
 				getItemValue={label => label.name}
 				renderInput={props => {
 					return (
-						<input {...props} className='form-control'/>
+						<input {...props} className='form-control' disabled={!this.state.enabled}/>
 					)
 				}} 
 				renderItem={(item, highlighted) => {
@@ -173,7 +177,8 @@ class LabelSelect extends Component {
 		)
 	}
 }
-ReactDOM.render(<LabelSelect />, html.refs["label-select"])
+const LabelSelectInstance = <LabelSelect />
+ReactDOM.render(LabelSelectInstance, html.refs["label-select"])
 
 export const image = new Image()
 
@@ -312,23 +317,19 @@ export function resetTable(){
     html.refs["attr-value-3"].textContent = ""
     html.refs["attr-value-4"].textContent = ""
 }
-export function resetLabel(){
-    // html.ids["sia-propview-label-select"].innerText = "No Drawable selected"
-}
+
 export function resetDescription(){
     html.refs["label-description"].textContent = "Select or create a Drawable to edit it."
-    disableDescription()
 }
 
 // those methods are called when processing the config... 
 // at that moment the component is not rendered... 
 // leads to big questions...
 export function enableLabeling(){
-// LabelSelectInstance.enable()
+	// not rendered yet, below does not work anymore since we use a react component now.
     // html.refs["label-select"].querySelector("input").disabled = false
-}
-export function enableDescription(){
-    html.refs["label-description"].disabled = false
+	// cant use methods like this for the react element
+	// LabelSelectInstance.enable()
 }
 
 export function enableNavigationButtons(){
@@ -351,11 +352,10 @@ export function enableLastButton(){
 }
 
 export function disableLabeling(){
-// LabelSelectInstance.disable()
+	// not rendered yet, below does not work anymore since we use a react component now.
 	// html.refs["label-select"].querySelector("input").disabled = true
-}
-export function disableDescription(){
-    html.refs["label-description"].disabled = true
+	// cant use methods like this for the react element
+	// LabelSelectInstance.disable()
 }
 
 export function disableNavigationButtons(){
