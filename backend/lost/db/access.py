@@ -672,8 +672,8 @@ class DBMan(object):
     
     def mean_anno_time(self, anno_task_id, user_id, anno_type):
         if anno_type == 'imageBased':
-            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE user_id={} AND anno_task_id={}".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={}".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
             return self.session.execute(sql).first()
