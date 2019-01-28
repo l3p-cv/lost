@@ -297,7 +297,6 @@ function updateData(action: String){
 }
 
 function enableLabeling(){
-    propertiesView.enableLabeling()
     $(window).on("keydown.openLabelSelect", $event => {
         if(keyboard.isShortcutHit($event, { 
 			mod: "Control",
@@ -313,7 +312,6 @@ function enableLabeling(){
     })
 }
 function disableLabeling(){
-    propertiesView.disableLabeling()
     $(window).off("keydown.openLabelSelect")
 }
 
