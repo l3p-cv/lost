@@ -24,6 +24,9 @@ function resetFocus(){
 	document.activeElement.blur()
 }
 /* model binding */
+appModel.controls.tool.on("update", () => {
+	imagePresenter.resetSelection()
+})
 appModel.config.on("update", config => {
     if(config.actions.drawing){
         show()
@@ -45,15 +48,18 @@ appModel.config.on("update", config => {
             switch(toolId){
                 case "sia-tool-point":
                     $(imageInterface.getSVG()).on("mousedown.createPoint", ($event) => {
+                        if(keyboard.isAModifierHit($event)){
+                            return
+                        }
 						if(mouse.button.isRight($event.button)){
-							// disable hover effect of all other drawables
-							appModel.state.creationEventStarted.update({ isActive: true, type: "create" })
+							if(appModel.controls.changeEvent.value === false){
+								appModel.controls.creationEvent.update(true)
+							}
 						}
 					})
                     $(imageInterface.getSVG()).on("mouseup.createPoint", ($event) => {
 						// resetFocus()
                         // console.log("create point handler (triggered)")
-                        // QUICK FIX:
                         if(keyboard.isAModifierHit($event)){
                             return
                         }
@@ -97,8 +103,9 @@ appModel.config.on("update", config => {
                                 }))
                                 appModel.addDrawable(point)
                                 imagePresenter.selectDrawable(point)
-								// reenable hover effect of all other drawables
-                                appModel.state.creationEventStarted.update({ isActive: false, type: "create" }) 
+								// if(appModel.controls.changeEvent.value === false){
+									appModel.controls.creationEvent.update(false)
+								// }
                             }
                         }
                     })
@@ -109,7 +116,6 @@ appModel.config.on("update", config => {
                     var line = undefined
                     function addLinePoint($event){
                         // console.warn("create line handler (executed add)")
-                        appModel.controls.creationEvent.update(true)
                         const { imgW, imgH } = imageInterface.getDimensions()
                         let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
                         // calculate the real mouseposition (@zoom)
@@ -134,6 +140,10 @@ appModel.config.on("update", config => {
                                 data: [ firstPoint.model.relBounds, { x: mousepos.x / imgW, y: mousepos.y / imgH } ],
                                 type: "line",
                             })
+							// hide menubar during creation
+							if(line.menuBar){
+								line.menuBar.hide()
+							}
                             imagePresenter.removeDrawable(firstPoint)
                             // when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
                             appModel.addDrawable(line)
@@ -149,13 +159,15 @@ appModel.config.on("update", config => {
                         }
                     }
                     function deleteLinePoint(){
+						console.log("toolbar delete line point")
                         // first point
                         if(firstPoint && !line){
                             imagePresenter.removeDrawable(firstPoint)
                             firstPoint = undefined
+							finishLine()
                         }
                         // second point
-                        else if(line && line.model.points.length === 2){
+                        if(line && line.model.points.length === 2){
                             // remove the line from model and image view (event bound).
                             appModel.deleteDrawable(line)
                             line = undefined
@@ -196,24 +208,27 @@ appModel.config.on("update", config => {
                             appModel.selectDrawable(line)
                             line.model.points[line.model.points.length-1].unselect()
                             line.select()
+							// show menu bar after creation
+							if(line.menuBar){
+								line.menuBar.show()
+							}
                         } else if(firstPoint){
                             imagePresenter.removeDrawable(firstPoint)
                         }
-                        // @QUICK-FIX-2: when finishing, the change events will be activated each time a drawable gets selected.
-                        // @QUICK-FIX-2: need to reselect this drawable.
-                        // @QUICK-FIX-2: unselect:
-                        imagePresenter.resetSelection()
-                        appModel.controls.creationEvent.update(false)
-                        // @QUICK-FIX-2: reselect:
-                        imagePresenter.selectDrawable(line)
+
                         // reset creation context
                         line = undefined
                         firstPoint = undefined
+						
+						// if(appModel.controls.changeEvent.value === false){
+							appModel.controls.creationEvent.update(false)
+						// }
                     }
                     $(imageInterface.getSVG()).on("mousedown.createLinePoint", ($event) => {
 						if(mouse.button.isRight($event.button)){
-							// disable hover effect of all other drawables
-							appModel.state.creationEventStarted.update({ isActive: true, type: "create" })
+							if(appModel.controls.changeEvent.value === false){
+								appModel.controls.creationEvent.update(true)
+							}
 						}
 					})
                     $(imageInterface.getSVG()).on("mouseup.createLinePoint", ($event) => {
@@ -230,36 +245,38 @@ appModel.config.on("update", config => {
                             addLinePoint($event)
                         }
                     })
+					// left mouse button is also used in point change event handlers (imagePresenter)
                     $(window).on("dblclick.finishLine", ($event) => {
-                        if(firstPoint !== undefined || line !== undefined){
-                            // if(!$event.target.closest("#sia-imgview-svg")){
-                            // @uncomment: felt ugly to be forced to click on a free area to finish drawing.
-							console.log("dblclick?:", $event)
-                            if(mouse.button.isLeft($event.button)){
-								resetFocus()
-                                finishLine()
-								// reenable hover effect of all other drawables
-                                appModel.state.creationEventStarted.update({ isActive: false, type: "create" }) 
-                            }
-                        }
+						if(appModel.controls.creationEvent.value === true){
+							if(appModel.controls.changeEvent.value === false){
+								if(firstPoint !== undefined || line !== undefined){
+									if(mouse.button.isLeft($event.button)){
+										resetFocus()
+										finishLine()
+									}
+								}
+							}
+						}
                     })
                     $(window).on("keydown.finishLine", ($event) => {
-                        if(appModel.controls.creationEvent.value){
-                            if(keyboard.isKeyHit($event, ["Escape", "Tab", "Enter"])){
-								resetFocus()
-                                finishLine()
-								// reenable hover effect of all other drawables
-								appModel.state.creationEventStarted.update({ isActive: false, type: "create" }) 
-                            }
+                        if(appModel.controls.creationEvent.value === true){
+	                        if(appModel.controls.changeEvent.value === false){
+								if(keyboard.isKeyHit($event, ["Escape", "Enter"])){
+									resetFocus()
+									finishLine()
+								}
+							}
                         }
                     })
                     $(window).on("keydown.deleteLinePoint", ($event) => {
-                        if(appModel.controls.creationEvent.value){
-                            if(keyboard.isKeyHit($event, "delete")){
-								resetFocus()
-                                deleteLinePoint()
-                            }
-                        }
+                        if(appModel.controls.creationEvent.value === true){
+							if(appModel.controls.changeEvent.value === false){
+								if(keyboard.isKeyHit($event, "Delete")){
+									resetFocus()
+									deleteLinePoint()
+								}
+							}
+						}
                     })
                     break
                 case "sia-tool-polygon":
@@ -267,7 +284,6 @@ appModel.config.on("update", config => {
                     var line = undefined
                     let polygon = undefined
                     function addPolygonPoint($event){
-                        appModel.controls.creationEvent.update(true)
                         const { imgW, imgH } = imageInterface.getDimensions()
                         let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
                         // calculate the real mouseposition (@zoom)
@@ -292,6 +308,10 @@ appModel.config.on("update", config => {
                                 data: [ firstPoint.model.relBounds, { x: mousepos.x / imgW, y: mousepos.y / imgH } ],
                                 type: "line",
                             })
+							// hide the menu bar during creation
+							if(line.menuBar){
+								line.menuBar.hide()
+							}
                             imagePresenter.removeDrawable(firstPoint)
                             // when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
                             imagePresenter.addDrawable(line)
@@ -302,6 +322,10 @@ appModel.config.on("update", config => {
                                 data: [ firstPoint.model.relBounds, line.model.relPointData[1], { x: mousepos.x / imgW, y: mousepos.y / imgH } ],
                                 type: "polygon",
                             })
+							// hide the menu bar during creation
+							if(polygon.menuBar){
+								polygon.menuBar.hide()
+							}
                             imagePresenter.removeDrawable(line)
                             // when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
                             appModel.addDrawable(polygon)
@@ -315,44 +339,42 @@ appModel.config.on("update", config => {
                             }
                         }
                     }
-                    function deletePolygonPoint($event){
-                        if(keyboard.isKeyHit($event, "Delete")){
-                            // first point
-                            if(firstPoint && !line){
-                                imagePresenter.removeDrawable(firstPoint)
-                                firstPoint = undefined
-                            }
-                            // second point
-                            else if(line && !polygon){
-                                // remove the line from model and image view (event bound).
-                                imagePresenter.removeDrawable(line)
-                                line = undefined
-                                // re-create the first point, add and select it.
-                                firstPoint = new PointPresenter({
-                                    data: firstPoint.model.relBounds, 
-                                    isNoAnnotation: true,
-                                })
-                                imagePresenter.addDrawable(firstPoint)
-                                imagePresenter.selectDrawable(firstPoint)
-                            }
-                            // third point
-                            else if(polygon && polygon.model.points.length === 3){
-                                // remove the polygon
-                                appModel.deleteDrawable(polygon)
-                                polygon = undefined
-                                // recreate the line and add the line
-                                line = new MultipointPresenter({
-                                    data: line.model.relPointData,
-                                    type: "line",
-                                })
-                                imagePresenter.addDrawable(line)
-                                imagePresenter.selectDrawable(line.model.points[1])
-                            }
-                            // 4+n point
-                            else if(polygon) {
-                                polygon.removePoint(polygon.model.points[polygon.model.points.length - 1])
-                                imagePresenter.selectDrawable(polygon.model.points[polygon.model.points.length - 1])
-                            }
+                    function deletePolygonPoint(){
+						// first point
+						if(firstPoint && !line){
+							imagePresenter.removeDrawable(firstPoint)
+							firstPoint = undefined
+						}
+						// second point
+						else if(line && !polygon){
+							// remove the line from model and image view (event bound).
+							imagePresenter.removeDrawable(line)
+							line = undefined
+							// re-create the first point, add and select it.
+							firstPoint = new PointPresenter({
+								data: firstPoint.model.relBounds, 
+								isNoAnnotation: true,
+							})
+							imagePresenter.addDrawable(firstPoint)
+							imagePresenter.selectDrawable(firstPoint)
+						}
+						// third point
+						else if(polygon && polygon.model.points.length === 3){
+							// remove the polygon
+							appModel.deleteDrawable(polygon)
+							polygon = undefined
+							// recreate the line and add the line
+							line = new MultipointPresenter({
+								data: line.model.relPointData,
+								type: "line",
+							})
+							imagePresenter.addDrawable(line)
+							imagePresenter.selectDrawable(line.model.points[1])
+						}
+						// 4+n point
+						else if(polygon) {
+							polygon.removePoint(polygon.model.points[polygon.model.points.length - 1])
+							imagePresenter.selectDrawable(polygon.model.points[polygon.model.points.length - 1])
                         }
                     }
                     function finishPolygon(){
@@ -378,23 +400,28 @@ appModel.config.on("update", config => {
                             appModel.selectDrawable(polygon)
                             polygon.model.points[polygon.model.points.length-1].unselect()
                             polygon.select()
+							// show menu bar after creation
+							if(polygon.menuBar){
+								polygon.menuBar.show()
+							}
                         } else if(line){
                             imagePresenter.removeDrawable(line)
                         } else if(firstPoint){
                             imagePresenter.removeDrawable(firstPoint)
                         }
-                        // @QUICK-FIX-2: when finishing, the change events will be activated each time a drawable gets selected.
-                        // @QUICK-FIX-2: need to reselect this drawable.
-                        // @QUICK-FIX-2: unselect:
-                        imagePresenter.resetSelection()
-                        appModel.controls.creationEvent.update(false)
-                        // @QUICK-FIX-2: reselect:
-                        imagePresenter.selectDrawable(polygon)
+
                         // reset creation context
                         firstPoint = undefined
                         line = undefined
                         polygon = undefined
                     }
+                    $(imageInterface.getSVG()).on("mousedown.createPolygonPoint", ($event) => {
+						if(mouse.button.isRight($event.button)){
+							if(appModel.controls.changeEvent.value === false){
+								appModel.controls.creationEvent.update(true)
+							}
+						}
+					})
                     $(imageInterface.getSVG()).on("mouseup.createPolygonPoint", ($event) => {
 						resetFocus()
                         // console.log("create polygon handler (triggered)")
@@ -417,23 +444,29 @@ appModel.config.on("update", config => {
                             if(mouse.button.isLeft($event.button)){
 								resetFocus()
                                 finishPolygon()
+								// if(appModel.controls.changeEvent.value === false){
+									appModel.controls.creationEvent.update(false)
+								// }
                             }
                         }
                     })
                     $(window).on("keydown.finishPolygon", ($event) => {
                         if(appModel.controls.creationEvent.value){
-                            if(keyboard.isKeyHit($event, ["Escape", "Tab", "Enter"])){
+                            if(keyboard.isKeyHit($event, ["Escape", "Enter"])){
                                 // console.warn("create polygon handler (executed finish)")
 								resetFocus()
                                 finishPolygon()
+								// if(appModel.controls.changeEvent.value === false){
+									appModel.controls.creationEvent.update(false)
+								// }
                             }
                         }
                     })
                     $(window).on("keydown.deletePolygonPoint", ($event) => {
                         if(appModel.controls.creationEvent.value){
-                            if(keyboard.isKeyHit($event, "delete")){
+                            if(keyboard.isKeyHit($event, "Delete")){
 								resetFocus()
-                                deletePolygonPoint($event)
+                                deletePolygonPoint()
                             }
                         }
                     })
@@ -459,9 +492,6 @@ appModel.config.on("update", config => {
                                 // reset validation.
                                 $(window).off("mousemove", validate)
                                 Timer.unlock()
-
-								// important fix, not explained why.
-                                appModel.controls.creationEvent.update(true)
 
                                 // check in which direction the user draws the box, create and add it
                                 // calculate the real mouseposition (@zoom)
@@ -494,12 +524,16 @@ appModel.config.on("update", config => {
                                     status: STATE.NEW,
                                     data: { x, y, w, h }
                                 })
+								// hide the menu bar during creation
+								if(newBox.menuBar){
+									newBox.menuBar.hide()
+								}
+
                                 // add the box hidden.
                                 appModel.addDrawable(newBox)
                                 // select the box.
                                 imagePresenter.selectDrawable(newBox)
 
-                                appModel.controls.creationEvent.update(false)
                                 // start the update on mousemove and show the box.
                                 $(window).on("mousemove", update)
                             }
@@ -576,13 +610,14 @@ appModel.config.on("update", config => {
                             if(!mouse.button.isRight($event.button)){
                                 return
                             } else {
+								if(appModel.controls.changeEvent.value === false){
+									appModel.controls.creationEvent.update(true)
+								}
+
                                 // console.warn("create box handler (code executed)")
 								resetFocus()
                                 $event.preventDefault()
                             
-                                // disable hover effect of all other drawables
-                                // appModel.state.creationEventStarted.update({ isActive: true, type: "create" })
-                                
                                 // set a global cursor.
                                 mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
                                     noPointerEvents: true,
@@ -659,8 +694,14 @@ appModel.config.on("update", config => {
                                     }
                                 }))
 
-                                // reenable hover effect of all other boxes
-                                appModel.state.creationEventStarted.update({ isActive: false, type: "create" }) 
+								// show the menu bar during creation
+								if(newBox.menuBar){
+									newBox.menuBar.show()
+								}
+
+								// if(appModel.controls.changeEvent.value === false){
+									appModel.controls.creationEvent.update(false)
+								// }
                             }
                         }       
                     })
@@ -677,16 +718,18 @@ appModel.config.on("update", config => {
                     $(imageInterface.getSVG()).off("mouseup.createPoint")
                     break
                 case "sia-tool-line":
+                    $(imageInterface.getSVG()).off("mousedown.createLinePoint")
                     $(imageInterface.getSVG()).off("mouseup.createLinePoint")
                     $(window).off("keydown.deleteLinePoint")
                     $(window).off("keydown.finishLine")
-                    $(window).off("mousedown.finishLine")
+                    $(window).off("dblclick.finishLine")
                     break
                 case "sia-tool-polygon":
+                    $(imageInterface.getSVG()).off("mousedown.createPolygonPoint")
                     $(imageInterface.getSVG()).off("mouseup.createPolygonPoint")
                     $(window).off("keydown.deletePolygonPoint")
                     $(window).off("keydown.finishPolygon")
-                    $(window).off("mousedown.finishPolygon")
+                    $(window).off("dblclick.finishPolygon")
                     break
                 case "sia-tool-bbox":
                     $(imageInterface.getSVG()).off("mousedown.createBoxStart")

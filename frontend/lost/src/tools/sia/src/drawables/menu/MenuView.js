@@ -184,6 +184,12 @@ export default class MenuView {
         }
     }
 
+	hide(){
+		this.html.root.style.display = "none"
+	}
+	show(){
+		this.html.root.style.display = "block"
+	}
 
     // // @feature
     // // @move: to presenter?

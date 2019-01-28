@@ -33,6 +33,13 @@ export default class DrawablePresenter {
         // INIT VIEW
         // hover effect
 		this.enableHover()
+		appModel.controls.creationEvent.on("change", isActive => {
+			if(isActive){
+				this.disableHover()
+			} else {
+				this.enableHover()
+			}
+		})
 
         // VALIDATE PRESENTER
         if(this.getX === undefined){

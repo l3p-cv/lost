@@ -97,7 +97,12 @@ export default class MenuPresenter {
         this.view.setWidth(this.model.bar.width, this.model.drawable.isDeletable() ? this.model.bar.iconSize : this.model.bar.borderWidth + this.model.label.padding)
     }
     
-
+	hide(){
+		this.view.hide()
+	}
+	show(){
+		this.view.show()
+	}
 
     // // @feature
     // setHeight(){

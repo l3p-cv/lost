@@ -18,53 +18,48 @@ import * as imageView from "./imageView"
 
 appModel.config.on("update", config => {
     enableSelect()
-    enableDelete()
-    appModel.controls.creationEvent.on("change", (isActive) => {
-        if(!isActive){
-            enableSelect()
-            enableDelete()
-        } else {
-            disableSelect()
-            disableDelete()
-        }
-    })
-
-    // if drawing is allowed new drawables may be created, changed, labeled, deleted
-    // if previously (different annotation "session") created drawables exist editing change is only allowed if bounds is true (appmodel.config.value.actions.edit.bounds)
-    // initially enable
-    if(appModel.isADrawableSelected()){
-        enableChange(appModel.getSelectedDrawable())
-    }
-    appModel.state.selectedDrawable.on("update", enableChange)
-    appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
-    // enable redo and undo
-    $(window).on("keydown.undo", undo)
-    $(window).on("keydown.redo", redo)
-    // toggle
-    appModel.controls.creationEvent.on("change", (isActive) => {
-		console.log("creationEvent:", isActive)
-        if(!isActive){
-            // initially enable
-            if(appModel.isADrawableSelected()){
-                enableChange(appModel.getSelectedDrawable())
-            }
-            appModel.state.selectedDrawable.on("update", enableChange)
-            appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
-            // enable redo and undo
-            $(window).on("keydown.undo", undo)
-            $(window).on("keydown.redo", redo)
-        } else {
-            // initially disable
-            if(appModel.isADrawableSelected()){
-                disableChange(appModel.getSelectedDrawable())
-            }
-            appModel.state.selectedDrawable.off("update", enableChange)
-            appModel.state.selectedDrawable.off(["before-update", "reset"], disableChange)
-            // disable redo and undo
-            $(window).off("keydown.undo")
-            $(window).off("keydown.redo")
-        }
-    })
+	if(config.actions.edit.bounds){
+		// enable change on current selected drawable
+		if(appModel.isADrawableSelected()){
+			enableChange(appModel.getSelectedDrawable())
+		}
+		appModel.state.selectedDrawable.on("update", enableChange)
+		appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
+	}
+	if(config.actions.edit.delete){
+	    enableDelete()
+	}
+	if(config.actions.drawing || config.actions.edit.bounds || config.actions.edit.delete){
+		// enable redo and undo
+		$(window).off("keydown.undo").on("keydown.undo", undo)
+		$(window).off("keydown.redo").on("keydown.redo", redo)	
+	}
+})
+// disable redo and undo listeners during drawable creation
+// disable delete during drawable creation
+appModel.controls.creationEvent.on("change", isActive => {
+	if(isActive){
+		// the toolbars multipoint drawable creation has its own delete handlers 
+		disableDelete()
+		// hide other drawables
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.hide()
+			})
+		})
+		$(window).off("keydown.undo")
+		$(window).off("keydown.redo")
+	} else {
+		enableDelete()
+		// show other drawables
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.show()
+			})
+		})
+		$(window).on("keydown.undo", undo)
+		$(window).on("keydown.redo", redo)
+	}
 })
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
@@ -79,23 +74,7 @@ Object.values(appModel.state.drawables).forEach(observable => {
     observable.on("add", (drawable) => addDrawable(drawable))
     observable.on("remove", (drawable) => removeDrawable(drawable))
 })
-appModel.state.creationEventStarted.on("update", props => {
-	console.log("creationEventStarted:", props)
-    Object.values(appModel.state.drawables).forEach(list => {
-        list.value.forEach(drawable => {
-            const { isActive, eventType } = props
-            // if(drawable.model.isSelected === false || eventType === "create"){
-            // if(drawable.model.isSelected === false || eventType === "create"){
-                if(isActive === true){
-					drawable.disableHover()
-                } else {
-					drawable.enableHover()
-                }
-            // }
-        })   
-    })
-	// disableSelect()
-})
+
 
 $(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
     alert("Function not completely implemented.")
@@ -202,8 +181,8 @@ imageView.image.addEventListener("load", () => {
 // initially enable camera feature
 enableCamera()
 // toggle camera feature
-appModel.controls.creationEvent.on("update", creationActive => {
-    if(creationActive){
+appModel.controls.creationEvent.on("change", isActive => {
+    if(isActive){
         disableCamera()
     } else {
         enableCamera()
@@ -475,8 +454,9 @@ function disableSelect(){
 }
 export function enableDelete(){
     $(window).on("keydown.drawableDelete", ($event) => {
-        if(keyboard.isKeyHit($event, "Delete")) {
-            if(appModel.isADrawableSelected()) {
+        if(keyboard.isKeyHit($event, "Delete")){
+            if(appModel.isADrawableSelected()){
+				console.log("image delete drawable")
                 $event.preventDefault()
                 const selectedDrawable = appModel.getSelectedDrawable()
                 if(selectedDrawable.isDeletable()){
@@ -569,7 +549,7 @@ export function enableChange(drawable: DrawablePresenter){
             // console.warn("enabled change handlers")
             let frameRequestDrawableMove = undefined
             const keyMoveDrawable = ($event, drawable) => {
-                if (frameRequestDrawableMove !== undefined) cancelAnimationFrame(frameRequestDrawableMove)
+                if(frameRequestDrawableMove !== undefined) cancelAnimationFrame(frameRequestDrawableMove)
 
                 // @QUICKFIX: don't move if switching to next or prev image via keyboard shortcut.
                 if(keyboard.isModifierHit($event, ["Ctrl", "Alt"])){
@@ -597,7 +577,10 @@ export function enableChange(drawable: DrawablePresenter){
                             noPointerEvents: true,
                             noSelection: true,
                         })
-                        $(window).one("keyup", () => mouse.unsetGlobalCursor())
+						// hide multipoint drawable point while moving it
+						if(drawable.parent){
+							drawable.hide()
+						}
                         switch ($event.key) {
                             case "w":
                             case "W":
@@ -624,6 +607,13 @@ export function enableChange(drawable: DrawablePresenter){
                                 return
                         }
                         drawable.setChanged()
+						$(window).one("keyup", () => {
+							mouse.unsetGlobalCursor()
+							// show multipoint drawable point after moving it
+                            if(drawable.parent){
+                                drawable.show()
+                            }
+						})
                     })
                 } catch(error) {
                     console.error(error.message)
@@ -640,6 +630,7 @@ export function enableChange(drawable: DrawablePresenter){
                         $event.preventDefault()
                         return
                     }
+					appModel.controls.changeEvent.update(true)
                     // this key check looks like it is just duplication but it is not.
                     if(keyboard.isModifierHit($event, "Control")){
                         let mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
@@ -686,16 +677,18 @@ export function enableChange(drawable: DrawablePresenter){
                         mouse.unsetGlobalCursor()
                         $(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.lineInsertPoint")
                         $(window).off("keyup.lineInsertPointEnd")
+						appModel.controls.changeEvent.update(false)
                     }
                 })
             }
             const handleLinePointAdd = ($event, drawable) => {
                 mouse.setGlobalCursor(mouse.CURSORS.CREATE.class)
                 $(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.lineInsertPoint", ($event) => {
-                    if (!mouse.button.isRight($event.button)) {
+                    if(!mouse.button.isRight($event.button)){
                         $event.preventDefault()
                         return
                     }
+					appModel.controls.changeEvent.update(true)
                     // this key check looks like it is just duplication but it is not.            
                     if(keyboard.isModifierHit($event, "Alt", true)){
                         let mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
@@ -718,6 +711,7 @@ export function enableChange(drawable: DrawablePresenter){
                         mouse.unsetGlobalCursor()
                         $(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.lineInsertPoint")
                         $(window).off("keyup.lineInsertPointEnd")
+						appModel.controls.changeEvent.update(false)
                     }
                 })
             }
@@ -735,6 +729,7 @@ export function enableChange(drawable: DrawablePresenter){
                             $event.preventDefault()
                             return
                         }
+						appModel.controls.changeEvent.update(true)
                         // console.warn("point change handler (start)")
                         mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
                         // calculate the real mouseposition (@zoom)
@@ -833,12 +828,20 @@ export function enableChange(drawable: DrawablePresenter){
                             mousepos = undefined
                             savedStartState = false
                             stateElement = undefined
+
+							// quick-fix: left mouse button is also used during multipoint drawable creation
+							// setting a timeout here for multipoint drawable creation not to finish (dblclick lmb)
+							// when moving improperly set points.
+							setTimeout(() => {
+								appModel.controls.changeEvent.update(false)
+							}, 500)
                         })
                     })
 
                     // Key
                     $(window).on("keydown.movePoint", $event => {
                         if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
+							appModel.controls.changeEvent.update(true)
                             if(!savedStartState){
                                 stateElement = new state.StateElement()
                                 // add undo
@@ -880,7 +883,8 @@ export function enableChange(drawable: DrawablePresenter){
                                     }
                                 })
                             }
-                            keyMoveDrawable($event, drawable)    
+                            keyMoveDrawable($event, drawable)
+							appModel.controls.changeEvent.update(false)
                         }
                     })
 
@@ -916,6 +920,7 @@ export function enableChange(drawable: DrawablePresenter){
                             $event.preventDefault()
                             return
                         }
+						appModel.controls.changeEvent.update(true)
                         // console.warn("drawable change handler (start)")
                         mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
                         // calculate the real mouseposition (@zoom)
@@ -1001,12 +1006,17 @@ export function enableChange(drawable: DrawablePresenter){
                             mousepos = undefined
                             savedStartState = false
                             stateElement = undefined
+
+							setTimeout(() => {
+								appModel.controls.changeEvent.update(false)
+							}, 300)
                         })
                     })
 
                     // Key
                     $(window).on("keydown.moveDrawable", $event => {
                         if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
+							appModel.controls.changeEvent.update(true)
                             if(!savedStartState){
                                 stateElement = new state.StateElement()
                                 // add undo
@@ -1048,7 +1058,8 @@ export function enableChange(drawable: DrawablePresenter){
                                     }
                                 })
                             }
-                            keyMoveDrawable($event, drawable)    
+                            keyMoveDrawable($event, drawable)
+							appModel.controls.changeEvent.update(false)
                         }
                     })
 
@@ -1087,15 +1098,13 @@ export function enableChange(drawable: DrawablePresenter){
                             return
                         }
                         // console.warn("box change handler (start)")
+						appModel.controls.changeEvent.update(true)
                         
                         // set move cursor if mouse on menubar to move the box.
                         if($event.target.closest(`[data-ref="menu"]`)){
                             drawable.setCursor(mouse.CURSORS.MOVE)
                         }
 
-                        // disable hover effect of all other boxes
-                        appModel.state.creationEventStarted.update({ isActive: true, type: "change" })
-                        
                         // init context
                         mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
                         // calculate the real mouseposition (@zoom)
@@ -1215,9 +1224,6 @@ export function enableChange(drawable: DrawablePresenter){
                             $(window).off("mousemove.changeBoxUpdate")
                             $(window).off("mouseup.changeBoxEnd")
 
-                            // reenable hover effect of all other boxes
-                            appModel.state.creationEventStarted.update({ isActive: false, type: "change" })
-
                             // add redo
                             // if user does mouse down and up without mousemove, the stateElement won't be cameraInitialized.
                             if(savedStartState){
@@ -1250,7 +1256,9 @@ export function enableChange(drawable: DrawablePresenter){
                             mouseStart = undefined
                             mousePrev = undefined
                             mousepos = undefined
-                            distance = { x: undefined, y: undefined }          
+                            distance = { x: undefined, y: undefined }
+
+							appModel.controls.changeEvent.update(false) 
                         })
                     })
 
@@ -1258,6 +1266,7 @@ export function enableChange(drawable: DrawablePresenter){
                     let frameRequestBoxEdgeScaling = undefined
                     // scale
                     $(window).on("keydown.selectBoxEdge", $event => {
+						appModel.controls.changeEvent.update(true)
                         if(keyboard.isModifierHit($event, "Alt")){
                             // prevent scrolling when using arrow keys
                             $event.preventDefault()
@@ -1304,6 +1313,7 @@ export function enableChange(drawable: DrawablePresenter){
                                 }
                             }
                         }
+						appModel.controls.changeEvent.update(false)
                     })
                     $(window).on("keydown.scaleBoxEdge", $event => {
                         let moveStep = undefined
@@ -1315,7 +1325,7 @@ export function enableChange(drawable: DrawablePresenter){
                             appModel.controls.currentMoveStep = moveStep
                         }
                         if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-                            
+                            appModel.controls.changeEvent.update(true)
                             $event.preventDefault()
                             if (frameRequestBoxEdgeScaling !== undefined) cancelAnimationFrame(frameRequestBoxEdgeScaling)
                             if(drawable.isEdgeSelected() && keyboard.isModifierNotHit($event, "Alt")){
@@ -1445,11 +1455,12 @@ export function enableChange(drawable: DrawablePresenter){
                                     frameRequestBoxEdgeScaling = undefined
                                 }
                             }
+							appModel.controls.changeEvent.update(false)
                         }
                     })
                     $(window).on("keyup.scaleBoxEdge", $event => {
                         if(keyboard.isModifierNotHit($event, "Alt") && drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-                            
+                            appModel.controls.changeEvent.update(true)
                             // add redo
                             stateElement.addRedo({
                                 data: {
@@ -1473,11 +1484,13 @@ export function enableChange(drawable: DrawablePresenter){
                             }
                             stateElement = undefined
                             savedStartState = false
+							appModel.controls.changeEvent.update(false)
                         }
                     })
                     // move
                     $(window).on("keydown.keyMoveBox", $event => {
                         if(!drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
+							appModel.controls.changeEvent.update(true)
                             if(!savedStartState){
                                 stateElement = new state.StateElement()
                                 stateElement.addUndo({
@@ -1496,11 +1509,12 @@ export function enableChange(drawable: DrawablePresenter){
                                 savedStartState = true
                             }
                             keyMoveDrawable($event, drawable)    
+							appModel.controls.changeEvent.update(false)
                         }
                     })
                     $(window).on("keyup.keyMoveBox", $event => {
                         if(!drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-                            
+                            appModel.controls.changeEvent.update(true)
                             if(!appModel.controls.creationEvent.value && savedStartState){
                                 stateElement.addRedo({
                                     data: {
@@ -1519,6 +1533,7 @@ export function enableChange(drawable: DrawablePresenter){
                                 stateElement = undefined
                                 savedStartState = false
                             }
+							appModel.controls.changeEvent.update(false)
                         }
                     })
                     break

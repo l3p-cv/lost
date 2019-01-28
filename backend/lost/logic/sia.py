@@ -464,7 +464,7 @@ class SiaSerialize(object):
                 polygon_json['id'] = two_d_anno.idx
                 polygon_json['labelIds'] = list()
                 if two_d_anno.label: #type: lost.db.model.Label
-                    polygon_json['labelIds'].append(two_d_anno.label_leaf_id)
+                    polygon_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 polygon_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['polygons'].append(polygon_json)
         return self.sia_json

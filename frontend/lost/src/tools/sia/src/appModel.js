@@ -58,7 +58,6 @@ export default {
         // a color table, changes on every image
         colorTable: undefined,  // type will be 'Map'
         imageData: null,        // type will be 'ImageData' 
-        creationEventStarted: new Observable(false),
         selectedLabel: new Observable(DrawableDefaults.LABEL),
         drawables: {
             points: new Observable([]),
@@ -73,7 +72,9 @@ export default {
         currentMoveStep: 1, // same as moveStep per default
         tool: new Observable(""),
         // @move: to appModel.event
+		// @rename: \w+EventRunning
         creationEvent: new Observable(false),
+        changeEvent: new Observable(false),
     },
     data: {
         image: {
