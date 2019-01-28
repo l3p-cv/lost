@@ -13,8 +13,8 @@
       "peN": 1,
       "peOut": [2],
       "script": {
-        "path": "request_bba_preboxed.py",
-        "description": "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes."
+        "path": "request_loop_annos.py",
+        "description": "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes if desired."
       }
     },
     {
@@ -42,8 +42,8 @@
           },
           "drawables": {
             "bbox": {
-              "minArea": 0.001234,
-			  "minAreaType": "rel"
+              "minArea": 25,
+              "minAreaType": "abs"
             }
           }
         }
@@ -59,14 +59,38 @@
     },
     {
       "peN" : 4,
-      "peOut" : null,
+      "peOut" : [5],
       "annoTask" : {
         "name" : "MultiImageAnnotation",
         "type" : "mia",
         "instructions" : "Please assign a class labels to all presented images.",
         "configuration":{
-          "type": "annoBased"
+          "type": "annoBased",
+          "drawBox": false,
+          "addContext": 0.0
         }
+      }
+    },
+    {
+      "peN": 5,
+      "peOut": [6],
+      "script": {
+        "path": "export_csv.py",
+        "description": "Export all annotations to a csv file.",
+        "language": "python3"
+      }
+    },
+    {
+      "peN": 6,
+      "peOut": [7],
+      "dataExport": {}
+    },
+    {
+      "peN": 7,
+      "peOut": null,
+      "loop": {
+        "maxIteration": null,
+        "peJumpId": 1
       }
     }
   ]

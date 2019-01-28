@@ -43,7 +43,7 @@
     "react-router-dom": "^4.3.1",
     "react-table": "^6.8.6",
     "react-test-renderer": "^16.5.2",
-    "reactstrap": "^6.5.0",
+    "reactstrap": "^7.1.0",
     "redux": "^4.0.1",
     "redux-form": "^7.4.2",
     "redux-thunk": "^2.3.0",

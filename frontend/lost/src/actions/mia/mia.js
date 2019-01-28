@@ -55,3 +55,26 @@ export const getMiaLabel = () => async dispatch => {
         dispatch({type: TYPES.GET_MIA_LABEL, payload: response.data})
     } catch (e) {console.log(e)}
 }
+
+export const setMiaSelectedLabel = (label) => dispatch => {
+    dispatch({type: TYPES.MIA_SELECT_LABEL, payload: label})
+}
+
+export const updateMia = (data, getMiaAnnos, getWorkingAnnoTask, maxAmount) => async dispatch => {
+    try {
+        const response = await axios.post(API_URL + '/mia/update', data)
+        getMiaAnnos(maxAmount)
+        getWorkingAnnoTask()
+    } catch (e) {console.log(e)}
+}
+
+export const finishMia = (callback, getWorkingAnnoTask) => async dispatch => {
+    try {
+        const response = await axios.get(API_URL + '/mia/finish')
+        
+        if(callback){
+            callback()
+        }
+        getWorkingAnnoTask()
+    } catch (e) {console.log(e)}
+}

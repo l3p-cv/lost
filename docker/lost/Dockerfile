@@ -6,3 +6,4 @@ ADD /docker/lost/pytest.sh /
 ADD /docker/lost/nginx/prod.conf /etc/nginx/conf.d/default.conf
 ADD /backend/ /code/backend
 ADD /frontend/ /code/frontend
+ADD /docs/ /code/docs

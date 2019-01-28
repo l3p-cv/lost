@@ -129,9 +129,8 @@ def update(db_man, user_id, data):
             __update_two_d_annotation(db_man, user_id, data)
         elif config['type'] == 'imageBased':
             __update_image_annotation(db_man, user_id, data)            
-            
 
-        return update_anno_task(db_man, at.idx)
+        return update_anno_task(db_man, at.idx, user_id)
     # get all labels
     # get all active images
     # add labels
@@ -307,10 +306,10 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
 
 def __update_image_annotation(db_man, user_id, data):
     anno_time = None
-    anno_count = len(list(filter(lambda x: x['isActive'] is True, data['images'])))
+    anno_count = len(list(filter(lambda x: x['is_active'] is True, data['images'])))
     for img in data['images']:
         image = db_man.get_image_annotation(img_anno_id=img['id'])
-        if img['isActive']:
+        if img['is_active']:
             image.state = state.Anno.LABELED
             image.timestamp = datetime.now()
             if anno_time is None and anno_count > 0:

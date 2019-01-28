@@ -251,7 +251,7 @@ class SiaUpdate(object):
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         self.__update_history_json_file()
-        update_anno_task(self.db_man, self.at.idx)
+        update_anno_task(self.db_man, self.at.idx, self.user_id)
         return "success"
     def __update_drawables(self, drawables, two_d_type):
         drawable_json = dict()

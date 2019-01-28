@@ -18,7 +18,13 @@ class AnnotaterDashboard extends Component {
         this
             .props
             .getWorkingOnAnnoTask()
+        this.timer = setInterval(()=>  this.props.getAnnoTasks(), 1000)
     }
+    componentWillUnmount() {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+
     chooseAnnoTask(id, type) {
         if (type === "MIA") {
             this

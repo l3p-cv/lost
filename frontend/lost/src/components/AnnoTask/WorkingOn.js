@@ -3,10 +3,12 @@ import {Progress} from 'reactstrap'
 import {getColor} from './utils'
 import {Button, Col ,Row} from 'reactstrap'
 
+import { createHashHistory } from 'history'
+const history = createHashHistory()
 
 class WorkingOn extends Component {
-    handleContinue(id){
-        console.log('Handle Continue OnClick, ID: ', id)
+    handleContinue(type){
+        history.push(`/${type.toLowerCase()}`)
     }
     render() {
         let progress = Math.floor((this.props.annoTask.finished / this.props.annoTask.size) * 100)
@@ -46,7 +48,7 @@ class WorkingOn extends Component {
                 <Progress className='progress-xs' color={getColor(progress)} value={progress}/>
                 <br/>
                 <br/>
-                <Button onClick={()=>this.handleContinue(this.props.annoTask.id) }className='btn btn-info'>Continue</Button>
+                <Button onClick={()=>this.handleContinue(this.props.annoTask.type) }className='btn btn-info'>Continue</Button>
             </div>
         )
     }
