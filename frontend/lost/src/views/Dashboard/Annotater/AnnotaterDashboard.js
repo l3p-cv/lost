@@ -83,7 +83,7 @@ class AnnotaterDashboard extends Component {
                                     callBack={(id, type) => this.chooseAnnoTask(id, type)}></MyAnnoTasks>
                             </CardBody>
                         </Card>
-                        <Card>
+                        {/* <Card>
                             <CardHeader>
                                 Statistics
                             </CardHeader>
@@ -94,7 +94,7 @@ class AnnotaterDashboard extends Component {
                                 <br/>
                                 <ImagesPerDay></ImagesPerDay>
                             </CardBody>
-                        </Card>
+                        </Card> */}
                     </Col>
                 </Row>
             </div>
