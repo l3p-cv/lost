@@ -9,9 +9,9 @@ from lost.logic.pipeline.cron import exec_script
 def exec_pipe():
     celery_cron.exec_pipe()
     
-@task
-def release_annos():
-    celery_cron.release_annos()
+# @task
+# def release_annos():
+#     celery_cron.release_annos()
 
 @task
 def celery_exec_script(pipe_element_id):
