@@ -1,6 +1,6 @@
 import { Observable } from "l3p-frontend"
 
-import * as DEFAULTS from "./point.defaults"
+import DEFAULTS from "./point.defaults"
 import { toHslaString } from "shared/color"
 import appModel from "../../appModel"
 
@@ -63,19 +63,22 @@ export default class PointModel extends DrawableModel {
         this.actBounds.update(coord)
     }
     // @override: use point opacity defaults
-    setColor(label: any){
-        if(label){
-            this.color = appModel.getLabelColor(label)
-        } else {
-            this.color = appModel.getLabelColor(this.label)
+    updateColor(label: any){
+		const baseColor = label !== undefined
+			? appModel.getLabelColor(label)
+			: appModel.getLabelColor(this.label)
+
+		this.color = {
+            raw: baseColor,
+            fill: {
+                selected: toHslaString(baseColor, DEFAULTS.opacity.selected.fill),
+                unselected: toHslaString(baseColor, DEFAULTS.opacity.notSelected.fill),
+            },
+            stroke: {
+                selected: toHslaString(baseColor, DEFAULTS.opacity.selected.stroke),
+                unselected: toHslaString(baseColor, DEFAULTS.opacity.notSelected.stroke),
+            },   
         }
-        // create color strings for fill and stroke, depending on selection.
-        this.fillColor = (this.isSelected) 
-            ? toHslaString(this.color, DEFAULTS.opacity.selected.fill)
-            : toHslaString(this.color, DEFAULTS.opacity.notSelected.fill)
-        this.strokeColor = (this.isSelected) 
-            ? toHslaString(this.color, DEFAULTS.opacity.selected.stroke)
-            : toHslaString(this.color, DEFAULTS.opacity.notSelected.stroke)
     }
     // @required-extensible
     getResponseData(){

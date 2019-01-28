@@ -1,22 +1,42 @@
-export const baseRadius = 4
-export function getRadius(isNoAnnotation, baseRadiusOverride){
-    return isNoAnnotation 
-        ? 0
-        : baseRadiusOverride ? baseRadiusOverride : baseRadius
-}
-export function getOutlineRadius(isNoAnnotation, baseRadiusOverride){
-    return isNoAnnotation 
-        ? baseRadiusOverride ? baseRadiusOverride + 2 : baseRadius + 2
-        : baseRadiusOverride ? baseRadiusOverride + 6 : baseRadius + 6
-}
-export let strokeWidth = baseRadius
-export const opacity = {
-    selected: {
-        fill: 1,
-        stroke: 0.3,
-    },
-    notSelected: {
-        fill: 0.5,
-        stroke: 0.5,
-    }
+import appModel from "siaRoot/appModel"
+
+export default {
+	minRadius: 1,
+	maxRadius: 3,
+	getRadius(isNoAnnotation){
+		let radius = appModel.ui.zoom.value * this.maxRadius
+		radius = radius < this.minRadius ? this.minRadius : radius
+		radius = radius > this.maxRadius ? this.maxRadius : radius
+		return radius
+	},
+	getOutlineRadius(isNoAnnotation){
+		const minOffset = 1.5
+		const maxOffset = 4
+		
+		let offset = appModel.ui.zoom.value * maxOffset
+		offset = offset < minOffset ? minOffset : offset
+		offset = offset > maxOffset ? maxOffset : offset
+
+		let radius = this.getRadius()
+		
+		return radius + offset
+	},
+	getStrokeWidth(){
+		const min = 1
+		const max = 4
+		let width = appModel.ui.zoom.value * max
+		width = width < min ? min : width
+		width = width > max ? max : width
+		return width
+	},
+	opacity: {
+		selected: {
+			fill: 0,
+			stroke: 1,
+		},
+		notSelected: {
+			fill: 0.8,
+			stroke: 0.6,
+		}
+	}
 }

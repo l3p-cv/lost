@@ -53,6 +53,14 @@ export default class DrawablePresenter {
         } else {
             this.setColor()
         }
+		
+		// react to zoom changes if implemented
+		if(this.onZoomChange){
+			appModel.ui.zoom.on("update", (zoom) => this.onZoomChange(zoom), this)
+		}
+		if(this.view.onZoomChange){
+			appModel.ui.zoom.on("update", (zoom) => this.view.onZoomChange(zoom), this)
+		}
     }
 	enableHover(){
 		$(this.view.rootNode).on("mouseover.hover", () => this.bringToFront())

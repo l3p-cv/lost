@@ -2,7 +2,7 @@
 import { NodeTemplate } from "l3p-frontend"
 
 import "./box.styles.scss"
-import BOX_DEFAULTS from "./box.defaults"
+import DEFAULTS from "./box.defaults"
 
 import DrawableView from "../DrawableView"
 
@@ -36,11 +36,11 @@ export default class BoxView extends DrawableView {
         const { bounds } = config
         const { x, y, w, h } = bounds
 
-        const borderWidth = BOX_DEFAULTS.strokeWidth
+        const borderWidth = DEFAULTS.getStrokeWidth()
         const wb = w + (2 * borderWidth)
         const hb = h + (2 * borderWidth)
         super(
-            new NodeTemplate(/*html*/`
+            new NodeTemplate(`
                 <svg class="sia-bbox drawable">
                     <g data-ref="position-node" transform="translate(${x-(w/2)}, ${y-(h/2)})">
                         <g data-ref="container-node" transform="translate(${-borderWidth}, ${-borderWidth})">
@@ -122,7 +122,7 @@ export default class BoxView extends DrawableView {
     setBounds(bounds: any){
         // this.show() // @FIREFOX REASONS getBBox() of hidden graphic.
         const { x, y, w, h } = bounds
-        const borderWidth = BOX_DEFAULTS.strokeWidth
+        const borderWidth = DEFAULTS.getStrokeWidth()
         const hb = h + 2 * borderWidth
         const wb = w + 2 * borderWidth
 
@@ -141,8 +141,6 @@ export default class BoxView extends DrawableView {
         this.html.refs["border-left"].setAttribute("points", `0,${hb} 0,0 ${borderWidth},${borderWidth} ${borderWidth},${hb-borderWidth}`)
 
         // update position
-        // this.menuBar.setPosition()
-        // this.menuBar.setWidth(this.model.actBounds.value.w + (2 * BOX_DEFAULTS.strokeWidth))
         this.setPosition(bounds)
     }
 
@@ -153,19 +151,19 @@ export default class BoxView extends DrawableView {
         switch(edge) {
             case "top":
                 this.edge = "top"
-                this.html.refs["border-top"].setAttribute("fill", BOX_DEFAULTS.border.colorActiveEdge)
+                this.html.refs["border-top"].setAttribute("fill", DEFAULTS.border.colorActiveEdge)
                 break
             case "right":
                 this.edge = "right"
-                this.html.refs["border-right"].setAttribute("fill", BOX_DEFAULTS.border.colorActiveEdge)
+                this.html.refs["border-right"].setAttribute("fill", DEFAULTS.border.colorActiveEdge)
                 break
             case "bottom":
                 this.edge = "bottom"
-                this.html.refs["border-bottom"].setAttribute("fill", BOX_DEFAULTS.border.colorActiveEdge)
+                this.html.refs["border-bottom"].setAttribute("fill", DEFAULTS.border.colorActiveEdge)
                 break
             case "left":
                 this.edge = "left"
-                this.html.refs["border-left"].setAttribute("fill", BOX_DEFAULTS.border.colorActiveEdge)
+                this.html.refs["border-left"].setAttribute("fill", DEFAULTS.border.colorActiveEdge)
                 break
             default:
                throw  new Error(`${edge} is no valid value. use "top", "right", "bottom", left" in general or null, "enable", "disable".`)

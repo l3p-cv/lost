@@ -1,30 +1,34 @@
 import { NodeTemplate, mouse } from "l3p-frontend"
 
 import DEFAULTS from "./multipoint.defaults"
-import * as POINT_DEFAULTS from "../point/point.defaults"
+import POINT_DEFAULTS from "../point/point.defaults"
 import DrawableView from "../DrawableView"
 
 
 export default class MultipointView extends DrawableView {
-    // constructor(config: any){
     constructor(model: any){
         super()
         this.type = model.type
-        this.html = new NodeTemplate(/*html*/`
+		const position = {
+			x: model.actBounds.value.left
+				- POINT_DEFAULTS.getOutlineRadius(true)
+				- POINT_DEFAULTS.strokeWidth,
+			y: model.actBounds.value.top
+				- POINT_DEFAULTS.getOutlineRadius(true)
+				- POINT_DEFAULTS.strokeWidth,
+		}
+        this.html = new NodeTemplate(`
             <svg class="sia-multipoint drawable">
                 <g data-ref="position-node">
                     <g data-ref="container-node" 
-                        transform="translate(
-                            ${model.actBounds.value.left - POINT_DEFAULTS.getOutlineRadius(true) - POINT_DEFAULTS.strokeWidth},
-                            ${model.actBounds.value.top - POINT_DEFAULTS.getOutlineRadius(true) - POINT_DEFAULTS.strokeWidth})
-                        "
+                        transform="translate(${position.x}, ${position.y})"
                     ></g>
                     <${model.type === "line" ? "polyline" : "polygon"} data-ref="cursor-node" 
                         fill="none" 
                         stroke-linecap="round"
                         stroke-linejoin="bevel"
                         stroke="transparent"
-                        stroke-width="${DEFAULTS.strokeWidth + 14}"
+                        stroke-width="${DEFAULTS.getStrokeWidth() + DEFAULTS.getCursorPadding()}"
                         points="${
                             model.actPointData.value.map(p => `${p.x},${p.y}`).join(" ") 
                         }"
@@ -34,7 +38,7 @@ export default class MultipointView extends DrawableView {
                         stroke-linecap="round"
                         stroke-linejoin="bevel"
                         stroke="black"
-                        stroke-width="${DEFAULTS.strokeWidth}"
+                        stroke-width="${DEFAULTS.getStrokeWidth()}"
                         points="${
                             model.actPointData.value.map(p => `${p.x},${p.y}`).join(" ") 
                         }"
@@ -58,6 +62,10 @@ export default class MultipointView extends DrawableView {
             cursorNode: this.cursorNode,
         }
     }
+	onZoomChange(zoom){
+		this.html.refs["cursor-node"].setAttribute("stroke-width", DEFAULTS.getStrokeWidth() + DEFAULTS.getCursorPadding())
+		this.html.refs["collision-node"].setAttribute("stroke-width", DEFAULTS.getStrokeWidth())
+	}
     hover(){}
     unhover(){}
     select(changeable: boolean){

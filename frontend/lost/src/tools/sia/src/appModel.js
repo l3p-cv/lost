@@ -46,6 +46,8 @@ export default {
         imageHeight: new Observable(0),
         menuBarHeight: MenuDefaults.bar.height,
         zoom: new Observable(1),
+		strokeWidthModifier: new Observable(1),
+		pointRadiusModifier: new Observable(1),
     },
     state: {
         // for drawable tab selection cycling

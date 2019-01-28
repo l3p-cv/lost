@@ -3,7 +3,7 @@ import DrawablePresenter from "../DrawablePresenter"
 import MultipointModel from "./MultipointModel"
 import MultipointView from "./MultipointView"
 import MULTIPOINT_DEFAULTS from "./multipoint.defaults"
-import * as POINT_DEFAULTS from "../point/point.defaults"
+import POINT_DEFAULTS from "../point/point.defaults"
 
 import PointPresenter from "../point/PointPresenter"
 import MenuPresenter from "../menu/MenuPresenter"
@@ -13,7 +13,7 @@ import imageInterface from "components/image/imageInterface"
 import DoublyLinkedList from "dbly-linked-list"
 
 import * as svg from "drawables/svg"
-
+import appModel from "siaRoot/appModel"
 
 function extendPoint(point, index, parent){
     point.parent = parent
@@ -71,8 +71,6 @@ export default class MultipointPresenter extends DrawablePresenter {
                 this.pointSelectionList.insert(point)
             }
         })
-
-        // appModel.ui.zoom.on("update", (zoom) => this.view.onZoomChange(zoom), this)
     }
     onHover(){
         this.view.hover()

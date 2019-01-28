@@ -38,25 +38,25 @@ appModel.config.on("update", config => {
 
 // during drawable change
 // - hide other drawables
-appModel.controls.changeEvent.on("change", isActive => {
-	if(isActive){
-		// hide other drawables
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value)
-				.filter(drawable => drawable !== appModel.getSelectedDrawable())
-				.forEach(drawable => {
-					drawable.hide()
-				})
-		})
-	} else {
-		// show other drawables
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.show()
-			})
-		})
-	}
-})
+// appModel.controls.changeEvent.on("change", isActive => {
+// 	if(isActive){
+// 		// hide other drawables
+// 		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+// 			Object.values(observableDrawableList.value)
+// 				.filter(drawable => drawable !== appModel.getSelectedDrawable())
+// 				.forEach(drawable => {
+// 					drawable.hide()
+// 				})
+// 		})
+// 	} else {
+// 		// show other drawables
+// 		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+// 			Object.values(observableDrawableList.value).forEach(drawable => {
+// 				drawable.show()
+// 			})
+// 		})
+// 	}
+// })
 
 // during drawable creation
 // - hide other drawables
@@ -174,16 +174,10 @@ $(svg).on("wheel", $event => {
     // in: decrease svg viewbox
     if(up){
         zoomLevel++
-        // @deactivation: see comment in l3p-frontend-core/input/mouse unsetGlobalCursor()
-        // mouse.setGlobalCursor(mouse.CURSORS.ZOOM_IN)
-        // setTimeout(mouse.unsetGlobalCursor, 100)
     }
     // out: increase svg viewbox
     else if (down){
         zoomLevel--
-        // @deactivation: see comment in l3p-frontend-core/input/mouse unsetGlobalCursor()
-        // mouse.setGlobalCursor(mouse.CURSORS.ZOOM_OUT)
-        // setTimeout(mouse.unsetGlobalCursor, 100)
     }
     newZoom = Math.ceil((1 - zoomFactor * zoomLevel) * 100) / 100
     appModel.ui.zoom.update(newZoom)
@@ -251,23 +245,23 @@ function enableCamera(){
     })
     // move camera on left or mid mouse button
     let lastCameraUpdateCall = undefined
+	let mousePrev = undefined
     $(svg).on("mousedown.camera", $event => {
         if(mouse.button.isRight($event.button)){
             return
         }
         // quickfixed. event still fireing unneded (@cameraEnabled)
         if(zoomLevel > 0 && (cameraEnabled.value || !$event.target.closest(".drawable"))){
-            disableChange()
-            disableSelect()
 			cameraEnabled.update(true)
-
-            let mousePrev = mouse.getMousePosition($event, svg)
+			mousePrev = mousePrev === undefined
+				? mouse.getMousePosition($event, svg)
+				: mousePrev
             let mouseCurr = mouse.getMousePosition($event, svg)
             // move
             $(window).on("mousemove.camera", $event => {
-                console.log("move")
+                // console.log("move")
                 mouseCurr = mouse.getMousePosition($event, svg)
-                let distance = {
+                const distance = {
                     x: mousePrev.x - mouseCurr.x,
                     y: mousePrev.y - mouseCurr.y,
                 }
@@ -303,12 +297,13 @@ function enableCamera(){
             })
             // stop move
             $(window).one("mouseup", $event => {
+				$(window).off("mousemove.camera")
 				if(appModel.config.value.actions.edit.bounds){
 					enableChange()
 				}
 				enableSelect()
+				mousePrev = undefined
 				cameraEnabled.update(false)
-				$(window).off("mousemove.camera")
             })
         }
     })
