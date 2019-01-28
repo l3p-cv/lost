@@ -34,7 +34,7 @@ def report_script_err(pipe_element, task, dbm, msg):
         pipe_element.error_msg = str(msg)
     else:
         pipe_element.error_msg += str(msg)
-    debug_info = "PipeElementID {}".format(pipe_element.idx)
+    debug_info = "\nPipeElementID = {}".format(pipe_element.idx)
     pipe_element.error_msg += debug_info
     pipe_element.state = state.PipeElement.SCRIPT_ERROR
     task.state = state.Pipe.ERROR

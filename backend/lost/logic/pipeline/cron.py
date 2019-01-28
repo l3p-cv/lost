@@ -19,7 +19,9 @@ import traceback
 import lost.logic.log
 import logging
 from celery.utils.log import get_task_logger
-from lost.logic import tasks
+from celery import task
+from lost.db.access import DBMan
+from lost.logic.config import LOSTConfig
 
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig):
@@ -72,34 +74,6 @@ class PipeEngine(pipe_model.PipeEngine):
         cmd = self.lostconfig.py3_init + " && "
         cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
         return cmd
-
-    def exec_script(self, pipe_e):
-        try:
-            #try to import script before execution to catch import errors, 
-            #inconsistent use of tabs, etc. 
-            script_path = os.path.join(self.lostconfig.project_path, pipe_e.script.path)
-            cmd_check = 'bash /code/backend/lost/logic/pipeline/check_script.sh {} "{}"'.format(
-                script_path, self.lostconfig.py3_init)
-            self.logger.info('cmd_check: {}'.format(cmd_check))
-            p = subprocess.Popen(cmd_check, stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE, shell=True)
-            out, err = p.communicate()
-            if p.returncode != 0:
-                raise Exception(err.decode('utf-8'))
-
-            cmd = self.__gen_run_cmd("python3", pipe_e)
-            start_script_path = self.file_man.get_instance_path(pipe_e)
-            start_script_path = os.path.join(start_script_path, 'start.sh')
-            with open(start_script_path, 'w') as sfile:
-                sfile.write(cmd)
-            p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE, shell=True)
-            self.logger.info("{}: Started script\n{}".format(self.pipe.idx, cmd))
-        except:
-            self.logger.error('{}: Could not start script: {}'.format(self.pipe.idx,
-                                                                   pipe_e.script.path))
-            msg = traceback.format_exc()
-            self.logger.error(msg)
-            script_api.report_script_err(pipe_e, self.pipe, self.dbm, msg)
 
     def make_debug_session(self, pipe_e):
         debug_path = self.file_man.create_debug_path(pipe_element=pipe_e)
@@ -216,16 +190,10 @@ class PipeEngine(pipe_model.PipeEngine):
                                 if self.gpu_or_not():
                                     pipe_e.state = state.PipeElement.IN_PROGRESS
                                     self.dbm.save_obj(pipe_e)
-                                    # tasks.celery_exec_script.delay(pipe_element_id)
-                                    self.exec_script(pipe_e)
+                                    celery_exec_script.delay(pipe_e.idx)
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
-                    #TODO : implement update anno task after big bang in anno task logic!
-                    # Recalculate progress of Annotask
-                    # before bigbang update method call :
                     update_anno_task(self.dbm, pipe_e.anno_task.idx)
-                    #raise NotImplementedError("UPDATE ANNO TASK NOT IMPLEMENTED YET - I TOLD YOU !")
-                    #pass
                 pipe_e.state = state.PipeElement.IN_PROGRESS
                 self.dbm.save_obj(pipe_e)
                 self.process_annotask(pipe_e)
@@ -335,4 +303,47 @@ class PipeEngine(pipe_model.PipeEngine):
                     return candidate
         return candidate
 
+def gen_run_cmd(program, pipe_e, lostconfig):
+    # script = self.dbm.get_script(pipe_e.script_id)
+    script_path = os.path.join(lostconfig.project_path, pipe_e.script.path)
+    cmd = lostconfig.py3_init + "\n"
+    cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
+    return cmd
 
+@task
+def celery_exec_script(pipe_element_id):
+    try:
+        # Collect context information for celery task
+        logger = get_task_logger(__name__)
+        lostconfig = LOSTConfig()
+        dbm = DBMan(lostconfig)
+        file_man = FileMan(lostconfig)
+        pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
+        pipe = pipe_e.pipe
+
+        cmd = gen_run_cmd("pudb3", pipe_e, lostconfig)
+        debug_script_path = file_man.get_instance_path(pipe_e)
+        debug_script_path = os.path.join(debug_script_path, 'debug.sh')
+        with open(debug_script_path, 'w') as sfile:
+            sfile.write(cmd)
+
+        cmd = gen_run_cmd("python3", pipe_e, lostconfig)
+        start_script_path = file_man.get_instance_path(pipe_e)
+        start_script_path = os.path.join(start_script_path, 'start.sh')
+        with open(start_script_path, 'w') as sfile:
+            sfile.write(cmd)
+        p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, shell=True)
+        logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))        
+        out, err = p.communicate()
+        if p.returncode != 0:
+            raise Exception(err.decode('utf-8'))
+        logger.info('{} ({}): Executed script successful: {}'.format(pipe.name, 
+            pipe.idx, pipe_e.script.path))
+
+    except:
+        logger.info('{} ({}): Exception occurred in script: {}'.format(pipe.name, 
+            pipe.idx, pipe_e.script.path))
+        msg = traceback.format_exc()
+        logger.error(msg)
+        script_api.report_script_err(pipe_e, pipe, dbm, msg)
