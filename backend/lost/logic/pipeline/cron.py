@@ -19,7 +19,7 @@ import traceback
 import lost.logic.log
 import logging
 from celery.utils.log import get_task_logger
-
+from lost.logic import tasks
 
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig):
@@ -216,6 +216,7 @@ class PipeEngine(pipe_model.PipeEngine):
                                 if self.gpu_or_not():
                                     pipe_e.state = state.PipeElement.IN_PROGRESS
                                     self.dbm.save_obj(pipe_e)
+                                    # tasks.celery_exec_script.delay(pipe_element_id)
                                     self.exec_script(pipe_e)
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
