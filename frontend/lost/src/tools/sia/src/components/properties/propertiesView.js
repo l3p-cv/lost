@@ -322,16 +322,6 @@ export function resetDescription(){
     html.refs["label-description"].textContent = "Select or create a Drawable to edit it."
 }
 
-// those methods are called when processing the config... 
-// at that moment the component is not rendered... 
-// leads to big questions...
-export function enableLabeling(){
-	// not rendered yet, below does not work anymore since we use a react component now.
-    // html.refs["label-select"].querySelector("input").disabled = false
-	// cant use methods like this for the react element
-	// LabelSelectInstance.enable()
-}
-
 export function enableNavigationButtons(){
     enableFirstButton()    
     enableLastButton()    
@@ -349,13 +339,6 @@ export function enableFirstButton(){
 }
 export function enableLastButton(){
     html.refs["btn-latest"].disabled = false
-}
-
-export function disableLabeling(){
-	// not rendered yet, below does not work anymore since we use a react component now.
-	// html.refs["label-select"].querySelector("input").disabled = true
-	// cant use methods like this for the react element
-	// LabelSelectInstance.disable()
 }
 
 export function disableNavigationButtons(){
