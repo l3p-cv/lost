@@ -12,5 +12,3 @@ RUN /bin/bash -c "source /opt/conda/bin/activate && conda env create -f environm
 RUN /bin/bash -c "source /opt/conda/bin/activate lost-cv && pip install https://github.com/OlafenwaMoses/ImageAI/releases/download/2.0.2/imageai-2.0.2-py3-none-any.whl"
 
 RUN /bin/bash -c "source /opt/conda/bin/activate lost-cv && pip install -r requirements.txt"
-
-#RUN wget https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/yolo.h5
