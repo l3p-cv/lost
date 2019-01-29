@@ -3,8 +3,11 @@ import {Progress, Table} from 'reactstrap'
 import {getColor} from './utils'
 
 class MyAnnoTasks extends Component {
-    handleRowClick(id, type){
-        this.props.callBack(id, type)
+    handleRowClick(annoTask){
+        const {id,type,status} = annoTask
+        if(status==='inProgress'){
+            this.props.callBack(id, type)
+        }
     }
 
     renderTableBody() {
@@ -12,8 +15,18 @@ class MyAnnoTasks extends Component {
             <tbody>
                 {this.props.annoTasks.map((annoTask) => {
                     let progress = Math.floor((annoTask.finished/annoTask.size)*100)
+                    if (annoTask.lastActivity){
+                        const twoWeeksAgo = new Date()
+                        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
+                        const lastActivityDate = new Date(annoTask.lastActivity)
+                        console.log(twoWeeksAgo)
+                        console.log(lastActivityDate)
+                        if(annoTask.status === 'finished' && lastActivityDate < twoWeeksAgo){
+                            return
+                        }
+                    }
                     return (
-                        <tr key={annoTask.id} style={{'cursor': 'pointer'}} onClick={() => this.handleRowClick(annoTask.id, annoTask.type)}>
+                        <tr key={annoTask.id} style={annoTask.status === 'inProgress' ? {'cursor': 'pointer'}:{'backgroundColor': '#CCCCCC'}} onClick={() => this.handleRowClick(annoTask)}>
                             <td className='text-center'>
                                 <div>{annoTask.name}</div>
                                 <div className='small text-muted'>ID: {annoTask.id}

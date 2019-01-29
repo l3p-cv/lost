@@ -122,7 +122,7 @@ class DBMan(object):
             :class:`.project.AnnoTask`
         '''
         return self.session.query(model.AnnoTask).filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
-        (model.AnnoTask.group_id.in_(group_ids))).all()
+        (model.AnnoTask.group_id.in_(group_ids))).order_by(model.AnnoTask.idx.desc()).all()
 
     def get_pipe(self, pipe_id=None, pipe_template_id=None):
         '''Get a pipe object.
@@ -672,8 +672,8 @@ class DBMan(object):
     
     def mean_anno_time(self, anno_task_id, user_id, anno_type):
         if anno_type == 'imageBased':
-            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE user_id={} AND anno_task_id={}".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={}".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
             return self.session.execute(sql).first()

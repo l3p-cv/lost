@@ -43,7 +43,6 @@ svg {
         "propview imageview toolbar";
     justify-content: start;
     align-items: center;
-    // padding-top: 3.37em;
 }
 .sia-layout-landscape {
     display: grid;
@@ -57,7 +56,6 @@ svg {
     justify-content: center;
     justify-items: center;
     align-items: start;
-    // padding-top: 0.5em;
 }
 .sia-layout-landscape-toolbar-on-side {
     grid-template-columns: repeat(2, auto); 

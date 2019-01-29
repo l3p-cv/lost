@@ -7,8 +7,10 @@
     -webkit-user-select: none !important;
     -o-user-select: none !important;
     user-select: none !important;
+	// apply bootstrap border glow padding.
+	padding: 0.2rem;
 
-    #sia-propview-canvas-container{
+	[data-ref="canvas-area"] {
         grid-area: first;
         display: grid;
         grid-template-columns: auto;
@@ -24,7 +26,7 @@
         }
     }
 
-    #sia-propview-label-and-descr-container{
+	[data-ref="label-area"] {
         grid-area: second;
         display: grid;
         grid-template-columns: auto;
@@ -35,10 +37,12 @@
         grid-column-gap: 1em;
         
         [data-ref="label-select"] {
+			// need to set z-index, to see long lists.
+			z-index: 1;
             grid-area: label;
             &:focus{
                 background-color: $COLOR_HIGHLIGHT;
-                /* remove the outline if selected */
+                // remove the outline if selected.
                 outline: none !important;
                 -moz-outline: none !important;
                 color: #FFF;
@@ -54,52 +58,23 @@
         }
     }
 
-    #sia-propview-bounds-and-buttons-container{
+	[data-ref="properties-area"] {
         grid-area: third;
         display: grid;
         grid-template-columns: repeat(2, 50%);
         grid-template-rows: repeat(4, 22%);
-        grid-template-areas:
-            "attr_1 attr_2"
-            "attr_3 attr_4"
-            "btn_1 btn_2"
-            "btn_3 btn_4";
         grid-row-gap: 4%;
         align-items: center;
         justify-items: center;
 
-        strong{
-            margin: 0em 0.5em;
+        strong {
+            margin-right: 0.3em;
         }
         strong, span {
-            font-size: 120%;
+            font-size: 100%;
         }
         button{
             width: 90%;
-        }
-        div:nth-child(1){
-            grid-area: attr_1;
-        }
-        div:nth-child(2){
-            grid-area: attr_2;
-        }
-        div:nth-child(3){
-            grid-area: attr_3;
-        }
-        div:nth-child(4){
-            grid-area: attr_4;
-        }
-        button::nth-child(1){
-            grid-area: btn_1;
-        }
-        button::nth-child(2){
-            grid-area: btn_2;
-        }
-        button::nth-child(3){
-            grid-area: btn_3;
-        }
-        button::nth-child(4){
-            grid-area: btn_4;
         }
     }
 }

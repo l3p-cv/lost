@@ -110,5 +110,8 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 	downloadPipeline(id: Number){
 		alert('not implemented.')
 	}
+	downloadLogFile(id: Number){
+		alert('not implemented.')
+	}
 }
 export default new SelectPipelinePresenter()

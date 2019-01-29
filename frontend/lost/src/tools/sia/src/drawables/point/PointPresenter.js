@@ -28,7 +28,6 @@ export default class PointPresenter extends DrawablePresenter {
                 text: this.model.label.name,
             },
         })
-        appModel.ui.zoom.on("update", (zoom) => this.view.onZoomChange(zoom), this)
     }
 
     onHover(){

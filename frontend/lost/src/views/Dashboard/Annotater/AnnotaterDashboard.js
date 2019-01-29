@@ -18,7 +18,13 @@ class AnnotaterDashboard extends Component {
         this
             .props
             .getWorkingOnAnnoTask()
+        this.timer = setInterval(()=>  this.props.getAnnoTasks(), 1000)
     }
+    componentWillUnmount() {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+
     chooseAnnoTask(id, type) {
         if (type === "MIA") {
             this
@@ -77,7 +83,7 @@ class AnnotaterDashboard extends Component {
                                     callBack={(id, type) => this.chooseAnnoTask(id, type)}></MyAnnoTasks>
                             </CardBody>
                         </Card>
-                        <Card>
+                        {/* <Card>
                             <CardHeader>
                                 Statistics
                             </CardHeader>
@@ -88,7 +94,7 @@ class AnnotaterDashboard extends Component {
                                 <br/>
                                 <ImagesPerDay></ImagesPerDay>
                             </CardBody>
-                        </Card>
+                        </Card> */}
                     </Col>
                 </Row>
             </div>

@@ -4,12 +4,10 @@ import { NodeTemplate, mouse } from "l3p-frontend"
 import DrawableView from "../DrawableView"
 import * as SVG from "../svg"
 
-import * as DEFAULTS from "./point.defaults"
-import DRAWABLE_DEFAULTS from "../drawable.defaults"
+import DEFAULTS from "./point.defaults"
 import "./point.styles.scss"
 
 import imageInterface from "components/image/imageInterface"
-
 
 
 export default class PointView extends DrawableView{
@@ -23,7 +21,7 @@ export default class PointView extends DrawableView{
                 <g data-ref="position-node" transform="translate(${x},${y})">
                     <g data-ref="container-node" 
                         transform="translate(
-                            ${-DEFAULTS.getOutlineRadius(isNoAnnotation) - DEFAULTS.strokeWidth},
+                            ${-DEFAULTS.getOutlineRadius(isNoAnnotation) - DEFAULTS.getRadius(isNoAnnotation)},
                             ${-DEFAULTS.getOutlineRadius(isNoAnnotation)})"
                     ></g>
                     <circle data-ref="collision-node"
@@ -34,7 +32,7 @@ export default class PointView extends DrawableView{
                         r="${DEFAULTS.getOutlineRadius(isNoAnnotation)}" 
                         fill="transparent"
                         stroke="black"
-                        stroke-width="${DEFAULTS.strokeWidth}"
+                        stroke-width="${DEFAULTS.getStrokeWidth()}"
                         class="drawable-collision-node drawable-disabled">
                     </circle>
                 </g>
@@ -53,13 +51,9 @@ export default class PointView extends DrawableView{
         }        
     }
     onZoomChange(zoom){
-        const baseRadiusOverride = Math.floor(zoom * DEFAULTS.baseRadius)
-        SVG.setTranslation(this.html.refs["container-node"], { 
-            x: -DEFAULTS.getOutlineRadius(this.isNoAnnotation, baseRadiusOverride) - baseRadiusOverride,
-            y: -DEFAULTS.getOutlineRadius(this.isNoAnnotation, baseRadiusOverride),
-        })
-        this.html.refs["collision-node"].setAttribute("r", `${DEFAULTS.getRadius(this.isNoAnnotation, baseRadiusOverride)}`)
-        this.html.refs["cursor-node"].setAttribute("r", `${DEFAULTS.getOutlineRadius(this.isNoAnnotation, baseRadiusOverride)}`)
+        this.html.refs["collision-node"].setAttribute("r", `${DEFAULTS.getRadius(this.isNoAnnotation)}`)
+        this.html.refs["cursor-node"].setAttribute("r", `${DEFAULTS.getOutlineRadius(this.isNoAnnotation)}`)
+        this.html.refs["cursor-node"].setAttribute("stroke-width", `${DEFAULTS.getStrokeWidth()}`)
     }
 
     hover(){
