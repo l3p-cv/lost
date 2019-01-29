@@ -1,6 +1,6 @@
 import $ from "cash-dom"
 
-import { mouse, keyboard, state } from "l3p-frontend"
+import { mouse, keyboard, state, svg as SVG } from "l3p-frontend"
 import appModel from "../../appModel"
 
 import "./toolbar.styles.scss"
@@ -9,15 +9,13 @@ import * as toolbarView from "./toolbarView"
 import imageInterface from "components/image/imageInterface"
 import * as imagePresenter from "components/image/imagePresenter"
 
-import { STATE, EVENT_COMPUTATION_SETTINGS } from "drawables/drawable.statics"
-import Timer from "shared/timer"
+import { STATE } from "drawables/drawable.statics"
 
 import PointPresenter from "drawables/point/PointPresenter"
 import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import BoxPresenter from "drawables/box/BoxPresenter"
 import BoxModel from "drawables/box/BoxModel"
 
-import * as SVG from "drawables/svg"
 function resetFocus(){
 	// no other element should be selected when creating a drawable, for
 	// example the label field could be selected.

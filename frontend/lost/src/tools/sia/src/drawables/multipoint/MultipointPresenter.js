@@ -1,3 +1,4 @@
+import { svg } from "l3p-frontend"
 import DrawablePresenter from "../DrawablePresenter"
 
 import MultipointModel from "./MultipointModel"
@@ -12,8 +13,6 @@ import imageInterface from "components/image/imageInterface"
 
 import DoublyLinkedList from "dbly-linked-list"
 
-import * as svg from "drawables/svg"
-import appModel from "siaRoot/appModel"
 
 function extendPoint(point, index, parent){
     point.parent = parent

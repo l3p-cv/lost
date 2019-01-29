@@ -1,8 +1,7 @@
 import $ from "cash-dom"
 
-import { mouse } from "l3p-frontend"
+import { mouse, svg } from "l3p-frontend"
 import "./drawable.styles.scss"
-import * as SVG from "./svg"
 
 import imageInterface from "components/image/imageInterface"
 
@@ -21,10 +20,10 @@ export default class DrawableView {
             return
         }
         if(y === undefined && x !== undefined){
-            y = SVG.getTranslationY(this.positionNode)
+            y = svg.getTranslationY(this.positionNode)
         }
         if(y !== undefined && x === undefined){
-            x = SVG.getTranslationX(this.positionNode)
+            x = svg.getTranslationX(this.positionNode)
         }
 
         // execute update.

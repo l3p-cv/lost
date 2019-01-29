@@ -1,8 +1,7 @@
 import $ from "cash-dom"
 
-import { keyboard, mouse, state, Observable } from "l3p-frontend"
+import { keyboard, mouse, state, Observable, svg as SVG } from "l3p-frontend"
 
-import * as SVG from "drawables/svg"
 import * as color from "shared/color"
 
 import { STATE } from "drawables/drawable.statics"
