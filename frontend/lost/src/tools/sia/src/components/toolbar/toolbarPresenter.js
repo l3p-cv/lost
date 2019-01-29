@@ -532,16 +532,12 @@ appModel.config.on("update", config => {
                     })
                     break
                 case "sia-tool-bbox":
-                    // control context
-                    const minDrawTime = EVENT_COMPUTATION_SETTINGS.boxCreate.MIN_DRAW_TIME
-                    let lastUpdateCall = undefined
-
-                    // calculation context
                     let newBox = undefined
                     let wImg = undefined
                     let hImg = undefined
                     let mouseStart = undefined
                     let mouseCurr = undefined
+                    let lastUpdateCall = undefined
 					let validated = false
 
 					function resetContext(){
@@ -550,6 +546,7 @@ appModel.config.on("update", config => {
 						hImg = undefined
 						mouseStart = undefined
 						mouseCurr = undefined
+						lastUpdateCall = undefined
 						validated = false
 					}
 					
@@ -601,6 +598,8 @@ appModel.config.on("update", config => {
 						// start the update on mousemove and show the box.
 						$(window).on("mousemove", update)
 						$(window).off("mousemove", validate)
+
+						// a flag to indicate that a box was created and update may execute.
 						validated = true
                     }
                     function update(e) {
@@ -656,7 +655,6 @@ appModel.config.on("update", config => {
                         })
                     }
 
-                    // create box (start)
                     $(imageInterface.getSVG()).on("mousedown.createBoxStart", ($event) => {
 						// only execute on right mouse button.
 						if(!mouse.button.isRight($event.button)){
@@ -693,7 +691,6 @@ appModel.config.on("update", config => {
 						// start event validation
 						$(window).on("mousemove", validate)
                     })
-					// create box (end)
 					$(window).on("mouseup.createBoxEnd", ($event) => {
 						if(!mouse.button.isRight($event.button)){
 							return
