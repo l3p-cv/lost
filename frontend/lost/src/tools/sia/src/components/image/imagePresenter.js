@@ -109,7 +109,10 @@ $(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
 
 export const image = imageView.image
 appModel.ui.resized.on("update", () => {
+	// (re)create drawables
     createDrawables(appModel.data.drawables.value)
+	// reset zoom
+	appModel.ui.zoom.reset()
 })
 imageView.image.addEventListener("load", () => {   
     const { colorMap } = color.getColorTable(
@@ -1482,26 +1485,31 @@ export function enableChange(drawable: DrawablePresenter){
                         if(keyboard.isModifierNotHit($event, "Alt") && drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
                             appModel.controls.changeEvent.update(true)
                             // add redo
-                            stateElement.addRedo({
-                                data: {
-                                    x: drawable.getX() / imageView.getWidth(),
-                                    y: drawable.getY() / imageView.getHeight(),
-                                    w: drawable.getW() / imageView.getWidth(),
-                                    h: drawable.getH() / imageView.getHeight(),
-                                },
-                                fn: (data) => {
-                                    selectDrawable(drawable)
-                                    drawable.setBounds({
-                                        x: data.x * imageView.getWidth(),
-                                        y: data.y * imageView.getHeight(),
-                                        w: data.w * imageView.getWidth(),
-                                        h: data.h * imageView.getHeight(),
-                                    })
-                                }
-                            })
-                            if(!appModel.controls.creationEvent.value){
-                                state.add(stateElement)
-                            }
+							// quickfix: sometimes stateElement was not yet initialized on keydown,
+							// or been sat undefined again, and not initialized again before this handler triggers.
+							// checking if it exists.
+							if(stateElement !== undefined){
+								stateElement.addRedo({
+									data: {
+										x: drawable.getX() / imageView.getWidth(),
+										y: drawable.getY() / imageView.getHeight(),
+										w: drawable.getW() / imageView.getWidth(),
+										h: drawable.getH() / imageView.getHeight(),
+									},
+									fn: (data) => {
+										selectDrawable(drawable)
+										drawable.setBounds({
+											x: data.x * imageView.getWidth(),
+											y: data.y * imageView.getHeight(),
+											w: data.w * imageView.getWidth(),
+											h: data.h * imageView.getHeight(),
+										})
+									}
+								})
+								if(!appModel.controls.creationEvent.value){
+									state.add(stateElement)
+								}
+							}
                             stateElement = undefined
                             savedStartState = false
 							appModel.controls.changeEvent.update(false)

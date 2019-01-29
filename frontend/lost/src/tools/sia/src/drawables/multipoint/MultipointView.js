@@ -12,10 +12,10 @@ export default class MultipointView extends DrawableView {
 		const position = {
 			x: model.actBounds.value.left
 				- POINT_DEFAULTS.getOutlineRadius(true)
-				- POINT_DEFAULTS.strokeWidth,
+				- POINT_DEFAULTS.getStrokeWidth(),
 			y: model.actBounds.value.top
 				- POINT_DEFAULTS.getOutlineRadius(true)
-				- POINT_DEFAULTS.strokeWidth,
+				- POINT_DEFAULTS.getStrokeWidth(),
 		}
         this.html = new NodeTemplate(`
             <svg class="sia-multipoint drawable">

@@ -135,8 +135,6 @@ class LabelSelect extends Component {
 							selectedLabel,
 							displayedValue,
 						})
-						// blur after selecting label via mouse.
-						console.log(this.root.current)
 						this.root.current.blur()
 					}
 				}
