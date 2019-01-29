@@ -14,6 +14,7 @@ services:
       environment:
         PYTHONPATH: "/code/backend"
         LOST_EXECUTOR: "web"
+        PY3_INIT: "source /opt/conda/bin/activate lost"
       links:
         - db-lost
         - rabbitmqlost
@@ -41,7 +42,7 @@ services:
       environment:
           PYTHONPATH: "/code/backend"
           L3P_EXECUTOR: "lost-cv"
-          PY3_INIT: "source /opt/conda/bin/activate lost"
+          PY3_INIT: "source /opt/conda/bin/activate lost-cv"
       links:
         - db-lost
         - rabbitmqlost

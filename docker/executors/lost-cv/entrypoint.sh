@@ -44,7 +44,7 @@ mkdir -p ${LOST_HOME}/logs
 if [ ${DEV} = "True" ]; then
   
   #start a celery worker.
-  worker="celery -A app.celery worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_cv_worker.log"
+  worker="celery -A app.celery worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/lost-cv.log"
   eval $worker &
 
 else
