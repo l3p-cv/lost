@@ -47,7 +47,7 @@ class Cluster extends Component{
                        <Alert color="success">
                             No more images available. Please press finish in order to continue the pipeline.
                         </Alert>
-                        <Button color="primary" size="lg" onClick={()=>this.props.finishMia(history.push('/dashboard'))}><i className="fa fa-check"></i> Finish Task</Button>{' '}
+                        <Button color="primary" size="lg" onClick={()=>this.props.finishMia(history.push('/dashboard'),this.props.getWorkingOnAnnoTask)}><i className="fa fa-check"></i> Finish Task</Button>{' '}
                     </div>
                 </div>
                 )
@@ -86,3 +86,13 @@ function mapStateToProps(state){
     return({images: state.mia.images, maxAmount: state.mia.maxAmount, zoom: state.mia.zoom, workingOnAnnoTask: state.annoTask.workingOnAnnoTask,})
 }
 export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia})(Cluster)
+
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milliseconds){
+        break;
+      }
+    }
+  }

@@ -15,11 +15,6 @@ import PointPresenter from "../../drawables/point/PointPresenter"
 
 import imageInterface from "components/image/imageInterface"
 
-import * as imagePresenter from "../image/imagePresenter"
-
-
-// strange
-propertiesView.init()
 
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
@@ -30,6 +25,18 @@ appModel.data.image.url.on("update", url => {
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
+appModel.state.selectedLabel.on("update", label => {
+	propertiesView.setDescription(label.description)
+	if(appModel.isADrawableSelected()){
+		const drawable = appModel.getSelectedDrawable()
+		if(drawable.parent){
+			drawable.parent.setLabel(label)
+		} else {
+			drawable.setLabel(label)
+		}
+		
+	}
+})
 // quickfix: for?
 appModel.data.image.info.on("update", () => {
     const data = appModel.data
@@ -48,10 +55,6 @@ appModel.data.image.info.on("update", () => {
         handleNotLastImage()
     }
 })
-appModel.data.labelList.on("update", propertiesView.updateLabels)
-appModel.state.selectedLabel.on("update", label => {
-	propertiesView.setDescription(label.description)
-})
 appModel.config.on("update", config => {
     let labelingEnabled = undefined
     if(config.actions.labeling){
@@ -63,12 +66,6 @@ appModel.config.on("update", config => {
         disableLabeling()
     }
 })
-
-// GLOBAL
-$(window).on("load", resize) // shouldnt be needed => appPresenter.resize()
-$(window).on("resize", resize) // shouldnt be needed => appPresenter.resize()
-
-// BUTTONS
 $(propertiesView.html.refs["btn-prev"]).on("click", ($event) => {
     // return on right or middle mouse button, prevent context menu.
     if (!mouse.button.isLeft($event.button)) {
@@ -243,7 +240,7 @@ function keyRequestPreviousData($event){
         key: "ArrowLeft"
     })){
         $event.preventDefault()
-        $event.stopPropagation()
+        // $event.stopPropagation()
         propertiesView.disableNavigationButtons()
         updateData("previous")
     }
@@ -302,11 +299,16 @@ function updateData(action: String){
 function enableLabeling(){
     propertiesView.enableLabeling()
     $(window).on("keydown.openLabelSelect", $event => {
-        if(keyboard.isShortcutHit($event, { mod: "Control", key: "L" })){
-            // prevent default (focus browser adress line)
-            $event.preventDefault()
-            // open the dropdown
-            propertiesView.html.refs["label-select"].querySelector("input").focus()
+        if(keyboard.isShortcutHit($event, { 
+			mod: "Control",
+			key: "L",
+		})){
+			// prevent default (focus browser adress line)
+			$event.preventDefault()
+			if(document.activeElement !== propertiesView.html.refs["label-select"].querySelector("input")){
+				// open the dropdown
+				propertiesView.html.refs["label-select"].querySelector("input").focus()
+			}
         }
     })
 }
@@ -343,14 +345,14 @@ function detachDrawable(drawable: DrawablePresenter){
 export function handleLastImage(){
     propertiesView.disableLastButton()
     propertiesView.setNextButtonState("finish")
-    $(propertiesView.html.refs["btn-next"]).on("click", modals.showLastImageModal)
+    $(propertiesView.html.refs["btn-next"]).on("click", modals.show)
     $(window).off("keydown", keyRequestPreviousData).on("keydown", keyRequestPreviousData)
     $(window).off("keydown", keyRequestNextData)
 }
 export function handleNotLastImage(){
     propertiesView.enableLastButton()
     propertiesView.setNextButtonState("default")
-    $(propertiesView.html.refs["btn-next"]).off("click", modals.showLastImageModal)
+    $(propertiesView.html.refs["btn-next"]).off("click", modals.show)
     $(window).off("keydown", keyRequestPreviousData).on("keydown", keyRequestPreviousData)
     $(window).off("keydown", keyRequestNextData).on("keydown", keyRequestNextData)
 }

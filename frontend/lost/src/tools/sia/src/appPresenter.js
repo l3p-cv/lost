@@ -1,4 +1,4 @@
-import $ from "cash-dom"
+import $ from "jquery"
 
 import { NodeTemplate, mouse, keyboard, state } from "l3p-frontend"
 
@@ -17,6 +17,8 @@ import * as toolbarPresenter from "components/toolbar/toolbarPresenter"
 import * as imageView from "components/image/imageView"
 import * as controlsView from "components/controls/controlsView"
 
+appModel.controls.changeEvent.on("update", value => console.log("change event:", value))
+appModel.controls.creationEvent.on("update", value => console.log("create event:", value))
 
 // app init configuration
 const CONFIG = true
@@ -163,7 +165,7 @@ $(window).on("resize", resize)
 $(window).on("contextmenu", ($event) => $event.preventDefault())
 $(window).on("mousedown mouseup click", ($event) => filterMouseButtons($event))
 $(window).on("keydown", ($event) => filterKeyStrokes($event))
-$(modals.lastImageModal.refs["finish-button"]).on("click", $event => {
+$(modals.finishModal.html.refs["ok-button"]).on("click", $event => {
     data.sendData(appModel.getResponseData()).then(() => {
         data.finish().then((message) => {
             if(message !== "success"){

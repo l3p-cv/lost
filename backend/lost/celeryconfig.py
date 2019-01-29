@@ -13,10 +13,5 @@ CELERYBEAT_SCHEDULE = {
     'exec_pipe': {
         'task': 'lost.logic.tasks.exec_pipe',
         'schedule': int(LOST_CONFIG.pipe_schedule)
-    },
-       'release_annos': {
-        'task': 'lost.logic.tasks.release_annos',
-        # Every half our
-          'schedule': 1800
     }
 }

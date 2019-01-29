@@ -1,6 +1,6 @@
 import $ from "cash-dom"
 
-import { CURSOR_UPDATE_FREQ, STATE } from "./drawable.statics"
+import { STATE } from "./drawable.statics"
 
 import appModel from "../appModel"
 
@@ -32,9 +32,14 @@ export default class DrawablePresenter {
 
         // INIT VIEW
         // hover effect
-        $(this.view.rootNode).on("mouseover", () => this.bringToFront())
-        $(this.view.rootNode).on("mouseenter", () => this.hover())
-        $(this.view.rootNode).on("mouseleave", () => this.unhover())
+		this.enableHover()
+		appModel.controls.creationEvent.on("change", isActive => {
+			if(isActive){
+				this.disableHover()
+			} else {
+				this.enableHover()
+			}
+		})
 
         // VALIDATE PRESENTER
         if(this.getX === undefined){
@@ -48,8 +53,25 @@ export default class DrawablePresenter {
         } else {
             this.setColor()
         }
+		
+		// react to zoom changes if implemented
+		if(this.onZoomChange){
+			appModel.ui.zoom.on("update", (zoom) => this.onZoomChange(zoom), this)
+		}
+		if(this.view.onZoomChange){
+			appModel.ui.zoom.on("update", (zoom) => this.view.onZoomChange(zoom), this)
+		}
     }
-
+	enableHover(){
+		$(this.view.rootNode).on("mouseover.hover", () => this.bringToFront())
+		$(this.view.rootNode).on("mouseenter.hover", () => this.hover())
+		$(this.view.rootNode).on("mouseleave.hover", () => this.unhover())
+	}
+	disableHover(){
+		$(this.view.rootNode).off("mouseover.hover")
+		$(this.view.rootNode).off("mouseenter.hover")
+		$(this.view.rootNode).off("mouseleave.hover")
+	}
     // @required-extensible
     resize(cb: Function){
         if(!this.model.status.has(STATE.DELETED)){

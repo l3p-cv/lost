@@ -68,11 +68,13 @@ export const updateMia = (data, getMiaAnnos, getWorkingAnnoTask, maxAmount) => a
     } catch (e) {console.log(e)}
 }
 
-export const finishMia = (callback) => async dispatch => {
+export const finishMia = (callback, getWorkingAnnoTask) => async dispatch => {
     try {
         const response = await axios.get(API_URL + '/mia/finish')
+        
         if(callback){
             callback()
         }
+        getWorkingAnnoTask()
     } catch (e) {console.log(e)}
 }

@@ -7,13 +7,6 @@ from datetime import datetime
 from lost.logic.file_man import FileMan
 __author__ = "Gereon Reus"
 
-# import ptvsd
-# try:
-#     ptvsd.enable_attach(secret='my_secret',address = ('0.0.0.0', 3500))
-#     print("Started Debug Server")
-# except Exception:
-#     print("Port Already in Use")
-
 def get_first(db_man, user_id, media_url):
     """ Get first image anno.
     :type db_man: lost.db.access.DBMan
@@ -251,7 +244,7 @@ class SiaUpdate(object):
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         self.__update_history_json_file()
-        update_anno_task(self.db_man, self.at.idx)
+        update_anno_task(self.db_man, self.at.idx, self.user_id)
         return "success"
     def __update_drawables(self, drawables, two_d_type):
         drawable_json = dict()
@@ -276,7 +269,7 @@ class SiaUpdate(object):
                 error_msg = "Status: '" + str(drawable['status']) + "' is not valid."
                 raise SiaStatusNotFoundError(error_msg)
 
-        for drawable in drawables:
+        for drawable in drawables: 
             if drawable['status'] == "database":
                 two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
                 two_d.user_id = self.user_id
@@ -464,7 +457,7 @@ class SiaSerialize(object):
                 polygon_json['id'] = two_d_anno.idx
                 polygon_json['labelIds'] = list()
                 if two_d_anno.label: #type: lost.db.model.Label
-                    polygon_json['labelIds'].append(two_d_anno.label_leaf_id)
+                    polygon_json['labelIds'].append(two_d_anno.label.label_leaf_id)
                 polygon_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['drawables']['polygons'].append(polygon_json)
         return self.sia_json

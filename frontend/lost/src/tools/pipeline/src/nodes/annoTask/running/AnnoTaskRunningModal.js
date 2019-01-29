@@ -5,7 +5,7 @@ export default class AnnoTaskRunningModal extends BaseModal {
     constructor(nodeModel: AnnoTaskRunningModel){
 		const { annoTask, progress, status } = nodeModel
         super({
-            title: 'Annonation Task',
+            title: 'Annotation Task',
             content: /*html*/`
                 <table class='table table-hover'>
                     <tr><td><strong>Annotation Task Name: </td><td>${annoTask.name}</td></tr>     
@@ -38,8 +38,15 @@ export default class AnnoTaskRunningModal extends BaseModal {
                                 <tbody>
                                     <tr><td><strong>Element ID: </td><td>${nodeModel.id}</td></tr>                
                                     <tr><td><strong>Annotation Task ID: </td><td>${annoTask.id}</td></tr>     
-                                    <tr><td><strong>Configurations: </td><td>${annoTask.configurations}</td></tr>  
-                                    <tr><td><strong>Type: </td><td>${annoTask.type}</td></tr>    
+                                    // <tr><td><strong>Configurations: </td><td>${annoTask.configurations}</td></tr>  
+                                    <tr><td><strong>Type: </td><td>${(() => {
+										if(annoTask.type === 'sia'){
+											return 'Single Image Annotation Task'
+										}
+										if(annoTask.type === 'mia'){
+											return 'Multi Image Annotation Task'
+										}
+									})()}</td></tr>    
                                     <tr>
                                         <td><strong>Status: </strong></td>
                                         <td data-ref='status' class='word-break'>${status.value.replace('_', ' ')}</td>
@@ -48,11 +55,13 @@ export default class AnnoTaskRunningModal extends BaseModal {
                             </table>
                         </div>
 
-                        <h4>Required Categories:</h4>
+                        <h4>Required Label Categories:</h4>
                             <div>
-                                ${annoTask.labelLeaves.map(element => `
-                                    <span class='label label-info required-categories-label'>${element.name}</span>
-                                `)}
+								<ul>
+									${annoTask.labelLeaves.map(label => /*html*/`
+										<li>${label.name}</li>
+									`).join('')}
+								</ul>
                             </div>
                         </div>
                         

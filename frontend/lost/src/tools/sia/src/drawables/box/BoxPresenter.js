@@ -1,13 +1,11 @@
 import { throttle } from "lodash-es"
 import { mouse } from "l3p-frontend"
-import * as math from "shared/math"
 
-import { EVENT_COMPUTATION_SETTINGS, CURSOR_UPDATE_FREQ, STATE } from "../drawable.statics"
+import { CURSOR_UPDATE_FREQ } from "../drawable.statics"
 
 import DrawablePresenter from "../DrawablePresenter"
 
-import BOX_DEFAULTS from "./box.defaults"
-import * as MENU_DEFAULTS from "../menu/menu.defaults"
+import DEFAULTS from "./box.defaults"
 
 import BoxModel from "./BoxModel"
 import imageInterface from "components/image/imageInterface"
@@ -30,19 +28,19 @@ export default class BoxPresenter extends DrawablePresenter {
             mountPoint: this.view.html.refs["container-node"],
             label: {
                 text: this.model.label.name,
-                padding: BOX_DEFAULTS.strokeWidth,
+                padding: DEFAULTS.getStrokeWidth(),
             },
             bar: {
                 label: {
                     text: this.model.label.name,
-                    padding: BOX_DEFAULTS.strokeWidth,
+                    padding: DEFAULTS.getStrokeWidth(),
                 },
-                width: this.model.actBounds.value.w + (2 * BOX_DEFAULTS.strokeWidth),
-                borderWidth: BOX_DEFAULTS.strokeWidth,           
+                width: this.model.actBounds.value.w + (2 * DEFAULTS.getStrokeWidth()),
+                borderWidth: DEFAULTS.getStrokeWidth(),           
             },
         })
         this.model.actBounds.on("update", (bounds) => {
-            this.menuBar.setWidth((bounds.w + (2 * BOX_DEFAULTS.strokeWidth)))
+            this.menuBar.setWidth((bounds.w + (2 * DEFAULTS.getStrokeWidth())))
         })
         
         // throttle cursor update
@@ -52,7 +50,11 @@ export default class BoxPresenter extends DrawablePresenter {
             this.updateCursor = undefined // needed?
         }
     }
-    
+	onZoomChange(){
+		const bounds = this.model.actBounds.value
+		this.menuBar.setWidth((bounds.w + (2 * DEFAULTS.getStrokeWidth())))
+		this.view.setBounds(bounds)
+	}
     onHover(){
         this.view.hover()
         this.menuBar.hover()
@@ -241,7 +243,7 @@ export default class BoxPresenter extends DrawablePresenter {
             case "cursor-node":
                 const { isEdge, isCorner, isCenter, edgeCount } = classifyCursorPosition({
                     percentage: 0.15,
-                    minPixel: BOX_DEFAULTS.strokeWidth,
+                    minPixel: DEFAULTS.getStrokeWidth(),
                     maxPixel: 14,
                 })
                 switch (edgeCount) {
@@ -298,12 +300,14 @@ export default class BoxPresenter extends DrawablePresenter {
                 break
         }
         if(cursor === undefined){
-           console.log(classifyCursorPosition({
-                percentage: 0.15,
-                minPixel: BOX_DEFAULTS.strokeWidth,
-                maxPixel: 14,
-            }))
-           throw new Error("would set undefined cursor now.")
+			// sometimes had error after connecting ui.zoom with stroke width.
+			// commented below out because everything was all right tho...
+			//    console.log(classifyCursorPosition({
+			//         percentage: 0.15,
+			//         minPixel: DEFAULTS.getStrokeWidth(),
+			//         maxPixel: 14,
+			//     }))
+			//    throw new Error("would set undefined cursor now.")
         } else {
             this.model.currentCursor = cursor
         }

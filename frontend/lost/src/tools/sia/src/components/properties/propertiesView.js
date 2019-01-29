@@ -1,25 +1,25 @@
 import $ from "cash-dom"
 
 import "./properties.styles.scss"
-import { NodeTemplate } from "l3p-frontend"
-import appModel from "../../appModel";
+import { NodeTemplate, keyboard } from "l3p-frontend"
+import appModel from "../../appModel"
 
 export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
 
         <!-- canvas -->
-        <div data-ref="canvas-area" id="sia-propview-canvas-container" class="sia-propview-canvas-border">
+        <div data-ref="canvas-area" class="sia-propview-canvas-border">
             <canvas data-ref="canvas"></canvas>
         </div>
 
         <!-- labelselect, description -->
-        <div data-ref="label-area" id="sia-propview-label-and-descr-container">
+        <div data-ref="label-area">
 			<div data-ref="label-select"></div>
             <textarea data-ref="label-description" class="form-control" rows="3" placeholder="Description" disabled></textarea>
         </div>
 
         <!-- bounds and buttons -->
-        <div data-ref="properties-area" id="sia-propview-bounds-and-buttons-container">
+        <div data-ref="properties-area">
             <div data-ref="attr-1">
                 <strong data-ref="attr-text-1"></strong>
                 <span data-ref="attr-value-1"></span>
@@ -65,25 +65,38 @@ class LabelSelect extends Component {
 		super(props)
 		this.state = {
 			labels: appModel.data.labelList.value,
+			previousLabel: appModel.state.selectedLabel.value,
 			selectedLabel: appModel.state.selectedLabel.value,
 			displayedValue: appModel.state.selectedLabel.value.name,
+			enabled: appModel.config.value.actions.labeling,
 		}
 	}
 	componentDidMount(){
-		appModel.data.labelList.on("update", labels => this.setState({ labels }) )
+		appModel.data.labelList.on("update", labels => this.setState({ labels }))
 		appModel.state.selectedLabel.on("update", label => this.setState({
+			previousLabel: label,
 			selectedLabel: label,
 			displayedValue: label.name,
 		}))
+		appModel.state.selectedLabel.on("update", label => this.setState({
+			previousLabel: label,
+			selectedLabel: label,
+			displayedValue: label.name,
+		}))
+		appModel.config.on("update", config => {
+			this.setState({ enabled: config.actions.labeling })
+		})
 	}
 	render(){
 		return (
 			<Autocomplete
 				items={this.state.labels}
+				value={this.state.displayedValue}
 				getItemValue={label => label.name}
 				renderInput={props => {
-					console.log(props)
-					return <input {...props} className='form-control'/>
+					return (
+						<input {...props} className='form-control' disabled={!this.state.enabled}/>
+					)
 				}} 
 				renderItem={(item, highlighted) => {
 					return (
@@ -95,10 +108,17 @@ class LabelSelect extends Component {
 						</div>
 					)
 				}}
+				shouldItemRender={(item, value) => {
+					if(appModel.state.selectedLabel.value.name === this.state.displayedValue){
+						return true
+					} else {
+						return item.name.toLowerCase().indexOf(value.toLowerCase()) > -1
+					}
+				}}
 				onChange={(e, value) => {
-						console.log("select.onChange")
 						const displayedValue = value
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
+						// can lead to undefined selectedLabel
 						this.setState({
 							selectedLabel,
 							displayedValue,
@@ -107,44 +127,61 @@ class LabelSelect extends Component {
 				}
 				onSelect={displayedValue => {
 						const selectedLabel = this.state.labels.find(label => label.name === displayedValue)
-						console.log("select.onSelect:", selectedLabel)
+						appModel.state.selectedLabel.update(selectedLabel)
 						this.setState({
+							previousLabel: selectedLabel,
 							selectedLabel,
 							displayedValue,
 						})
+						document.activeElement.blur()
 					}
 				}
 				inputProps={{
 					onKeyDown: e => {
-						console.log("input.onKeyDown", e.key)
+						if(keyboard.isKeyHit(e, ["Escape", "Tab"])){
+							document.activeElement.blur()
+						}
+						if(keyboard.isKeyHit(e, ["Escape", "Tab", "Enter"])){
+							// if entered text was not valid select last label
+							if(this.state.selectedLabel === undefined){
+								this.setState(state => {
+									return { 
+										selectedLabel: state.previousLabel,
+										displayedValue: state.previousLabel.name,
+									}
+								})
+							}
+						}
 					},
-					onInput: e => {
-						console.log("input.onInput")
-					},
-					onChange: e => {
-						console.log("input.onChange")
+					onKeyUp: e => {
+						// its important that removing element focus happens on key up,
+						// else the component wont select a label that you 
+						// navigated to and want to select with enter key.
+						if(keyboard.isKeyHit(e, "Enter")){
+							// only leave if you entered a valid label
+							if(this.state.selectedLabel !== undefined){
+								document.activeElement.blur()
+							}
+						}
 					},
 					onFocus: e => {
 						imagePresenter.disableChange()
+						imagePresenter.disableDelete()
 					},
 					onBlur: e => {
 						imagePresenter.enableChange()
+						imagePresenter.enableDelete()
 					},
 				}}
 			/>
 		)
 	}
 }
-ReactDOM.render(<LabelSelect />, html.refs["label-select"])
+const LabelSelectInstance = <LabelSelect />
+ReactDOM.render(LabelSelectInstance, html.refs["label-select"])
 
 export const image = new Image()
 
-export function init(){
-    resetCanvas()
-    resetLabel()
-    resetDescription()
-    resetTable()
-}
 
 export function updateTable(drawable: DrawablePresenter){
     switch(drawable.getClassName()){
@@ -161,14 +198,14 @@ export function updateTable(drawable: DrawablePresenter){
             break
         case "BoxPresenter":
             // show x, y, w, h
-            html.refs["attr-text-1"].textContent = "X"
-            html.refs["attr-text-2"].textContent = "Y"
-            html.refs["attr-text-3"].textContent = "W"
-            html.refs["attr-text-4"].textContent = "H"
-            html.refs["attr-value-1"].textContent = Math.round(drawable.getX())
-            html.refs["attr-value-2"].textContent = Math.round(drawable.getY())
-            html.refs["attr-value-3"].textContent = Math.round(drawable.getW())
-            html.refs["attr-value-4"].textContent = Math.round(drawable.getH())
+            html.refs["attr-text-1"].textContent = "W"
+            html.refs["attr-text-2"].textContent = "H"
+            html.refs["attr-text-3"].textContent = "X"
+            html.refs["attr-text-4"].textContent = "Y"
+            html.refs["attr-value-1"].textContent = Math.round(drawable.getW())
+            html.refs["attr-value-2"].textContent = Math.round(drawable.getH())
+            html.refs["attr-value-3"].textContent = Math.round(drawable.getX())
+            html.refs["attr-value-4"].textContent = Math.round(drawable.getY())
             break
         case "MultipointPresenter":
             // show left, right, top, bottom
@@ -214,10 +251,6 @@ export function updateCanvas(values: any){
     }
 
     ctx.restore()
-}
-
-export function updateLabels(){
-	// ReactDOM.render(LabelSelectInstance, html.refs["label-select"])
 }
 
 export function setLayout(layout: String){
@@ -284,24 +317,21 @@ export function resetTable(){
     html.refs["attr-value-3"].textContent = ""
     html.refs["attr-value-4"].textContent = ""
 }
-export function resetLabel(){
-    // html.ids["sia-propview-label-select"].innerText = "No Drawable selected"
-}
+
 export function resetDescription(){
     html.refs["label-description"].textContent = "Select or create a Drawable to edit it."
-    disableDescription()
 }
 
 // those methods are called when processing the config... 
 // at that moment the component is not rendered... 
 // leads to big questions...
 export function enableLabeling(){
-// LabelSelectInstance.enable()
+	// not rendered yet, below does not work anymore since we use a react component now.
     // html.refs["label-select"].querySelector("input").disabled = false
+	// cant use methods like this for the react element
+	// LabelSelectInstance.enable()
 }
-export function enableDescription(){
-    html.refs["label-description"].disabled = false
-}
+
 export function enableNavigationButtons(){
     enableFirstButton()    
     enableLastButton()    
@@ -322,12 +352,12 @@ export function enableLastButton(){
 }
 
 export function disableLabeling(){
-// LabelSelectInstance.disable()
+	// not rendered yet, below does not work anymore since we use a react component now.
 	// html.refs["label-select"].querySelector("input").disabled = true
+	// cant use methods like this for the react element
+	// LabelSelectInstance.disable()
 }
-export function disableDescription(){
-    html.refs["label-description"].disabled = true
-}
+
 export function disableNavigationButtons(){
     disableFirstButton()    
     disableLastButton()    
@@ -348,10 +378,10 @@ export function disableLastButton(){
 }
 
 export function showCanvasBorder(){
-    $(html.ids["sia-propview-canvas-container"]).toggleClass("sia-propview-canvas-border", true)
+    $(html.refs["canvas-area"]).toggleClass("sia-propview-canvas-border", true)
 }
 export function hideCanvasBorder(){
-    $(html.ids["sia-propview-canvas-container"]).toggleClass("sia-propview-canvas-border", false)
+    $(html.refs["canvas.area"]).toggleClass("sia-propview-canvas-border", false)
 }
 
 export function hide(){

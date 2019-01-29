@@ -22,8 +22,8 @@ svg:not(:root) {
 		grid-template-rows: 35px;
 		grid-template-columns: auto auto auto;
 		align-items: center;
-		// align to the 
-		margin-top: 10px;
+		padding: 0.2rem 0;
+		margin-top: 0.3rem;
         [data-ref="sia-delete-junk-btn"] {
 			justify-self: start;
         }
