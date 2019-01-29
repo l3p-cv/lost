@@ -6,7 +6,6 @@ import PointView from "./PointView"
 
 import imageInterface from "components/image/imageInterface"
 
-import appModel from "../../appModel"
 
 export default class PointPresenter extends DrawablePresenter {
     constructor(annotationData: any){

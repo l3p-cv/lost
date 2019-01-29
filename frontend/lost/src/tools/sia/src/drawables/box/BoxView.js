@@ -39,6 +39,7 @@ export default class BoxView extends DrawableView {
         const borderWidth = DEFAULTS.getStrokeWidth()
         const wb = w + (2 * borderWidth)
         const hb = h + (2 * borderWidth)
+
         super(
             new NodeTemplate(`
                 <svg class="sia-bbox drawable">
