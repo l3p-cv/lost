@@ -26,7 +26,6 @@ def get_env_config(data_path, release):
         ['LOST_DB_ROOT_PASSWORD', 'root'],
         ['PROJECT_NAME', 'myProject'],
         ['SECRET_KEY', gen_rand_string(16)],
-        ['PY3_INIT', 'echo \'hi\''],
         ['PIPE_SCHEDULE', '5']
     ]
     return config
