@@ -1000,8 +1000,8 @@ class Script(Base):
             on data in database.
         description (str): Description of this algorithm/ script.
         arguments (str): json object with key value pairs (arguments for script)
-        executors (str): json object containing the names of container which 
-                         are able to run this script
+        envs (str): json object containing the names of environments that
+            may execute this script
     """
     __tablename__ = "script"
     idx = Column(Integer, primary_key=True)
@@ -1009,16 +1009,16 @@ class Script(Base):
     path = Column(String(4096))
     description = Column(Text)
     arguments = Column(Text)
-    executors = Column(Text)
+    envs = Column(Text)
 
     def __init__(self, idx=None, name=None, path=None, description=None,
-        arguments=None, executors=None):
+        arguments=None, envs=None):
         self.idx = idx
         self.name = name
         self.path = path
         self.description = description
         self.arguments = arguments
-        self.executors = executors
+        self.envs = envs
 
 class ChoosenAnnoTask(Base):
     """Linking Table which connects Anno Tasks to Groups
@@ -1439,3 +1439,37 @@ class RequiredLabelLeaf(Base):
         self.anno_task_id = anno_task_id
         self.label_leaf_id = label_leaf_id
         self.max_labels = max_labels
+
+class Worker(Base):
+    '''Represents a container with related celery worker that executes scripts.
+
+    Attributes:
+        idx (int): ID in database.
+        env_name (str): Name that indicates the environment that is
+            installed in this worker. Each env is realted to a queue in
+            celery.
+        worker_name (str): Unique name for a container/ worker. 
+        timestamp (DateTime): Last life sign of worker.
+        register_timestamp (DateTime): Timestamp of first registration 
+            of a worker in LOST.
+        resources (str): Json containing the available resources of a 
+            worker.
+    '''
+    __tablename__ = "worker"
+    idx = Column(Integer, primary_key=True)
+    env_name = Column(String(100))
+    worker_name = Column(String(100))
+    timestamp = Column(DATETIME(fsp=6))
+    register_timestamp = Column(DATETIME(fsp=6))
+    resources = Column(Text)
+
+    def __init__(self, idx=None, env_name=None, 
+        worker_name=None, timestamp=None,
+        register_timestamp=None, resources=None):
+        self.idx = idx
+        self.env_name = env_name
+        self.worker_name = worker_name
+        self.timestamp = timestamp
+        self.register_timestamp = register_timestamp
+        self.resources = resources
+

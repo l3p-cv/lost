@@ -677,3 +677,19 @@ class DBMan(object):
         else:
             sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
             return self.session.execute(sql).first()
+
+    def get_worker(self, worker_name=None):
+        '''Get an AnnoationTask object.
+
+        Args:
+            worker_name (str): Name of the worker to get.
+
+        Returns:
+            :class:`model.Worker`
+        '''
+        if worker_name is None:
+            return self.session.query(model.Worker).all()
+        else:
+            return self.session.query(model.Worker)\
+                .filter(model.Worker.worker_name==worker_name).first()
+    

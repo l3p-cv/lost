@@ -1,7 +1,7 @@
 from lost.pyapi import script
 import os
 
-EXECUTORS = ['web']
+ENVS = ['lost']
 
 class AnnoAllImgs(script.Script):
     '''This Script requests image annotations for each image of an imageset.

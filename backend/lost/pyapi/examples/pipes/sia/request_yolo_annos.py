@@ -5,7 +5,7 @@ import random
 import urllib.request
 import shutil
 
-EXECUTORS = ['lost-cv']
+ENVS = ['lost-cv']
 ARGUMENTS = {'model_url' : { 'value':'https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/yolo.h5',
                             'help': 'Pretrained yolov3 model for ImageAI lib'},
             'conf_thresh' : { 'value' : '50',

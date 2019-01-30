@@ -9,7 +9,7 @@ from keras.models import Model
 
 from keras.preprocessing import image as keras_image
 
-EXECUTORS = ['lost-cv']
+ENVS = ['lost-cv']
 ARGUMENTS = {'n-clusters' : { 'value': 20,
                             'help': 'Expected number of clusters - should be equal to number of classes.'}
             }

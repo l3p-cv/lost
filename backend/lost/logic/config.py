@@ -9,8 +9,16 @@ class LOSTConfig(object):
         self.lost_db_user = os.environ['LOST_DB_USER']
         self.lost_db_name = os.environ['LOST_DB_NAME']
         self.lost_db_pwd = os.environ['LOST_DB_PASSWORD']
-        self.executor = os.environ['LOST_EXECUTOR']
+        # Name of the environment that is installed in this container and used to execute scripts
+        self.env_name = os.environ['ENV_NAME']
+        # Unique name for this container worker
+        self.worker_name = os.environ['WORKER_NAME']
+        # Timeout when a worker is considered to be dead
+        self.worker_timeout = os.environ['WORKER_TIMEOUT']
+        # Intervall in seconds in which a worker should give a lifesign
+        self.worker_beat = os.environ['WORKER_BEAT']
         self.pipe_schedule = os.environ['PIPE_SCHEDULE']
+        
 
         self.lost_db_port = '3306'
         if "LOST_DB_PORT" in os.environ:

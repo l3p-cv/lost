@@ -23,7 +23,7 @@
                 "arguments": {
                     "argumentName": "argumentValue"
                 },
-                "executors": ["containerOne", "containerTwo"]
+                "envs": ["containerOne", "containerTwo"]
             }
         },
         {
@@ -64,7 +64,7 @@
                 "path": "[string]",
                 "language": "[string]",
                 "arguments": "[array of object]",
-                "executors": "[array of strings]"
+                "envs": "[array of strings]"
             }
         },
         {
