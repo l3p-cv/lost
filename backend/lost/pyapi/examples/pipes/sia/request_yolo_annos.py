@@ -87,8 +87,9 @@ class RequestYoloAnnos(script.Script):
             total = float(len(file_list))
             for index, img_file in enumerate(file_list):
                 img_path = os.path.join(media_path, img_file)
-                detections = detector.detectObjectsFromImage(input_image=img_path,
-                    minimum_percentage_probability=float(self.get_arg('conf_thresh')))
+                _, detections = detector.detectObjectsFromImage(input_image=img_path,
+                    minimum_percentage_probability=float(self.get_arg('conf_thresh')),
+                    output_type='array')
                 annos = [box['box_points'] for box in detections]
                 annos = convert_annos(annos, skimage.io.imread(img_path))
                 lbls = [box['name'] for box in detections]                    
