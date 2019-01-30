@@ -151,14 +151,14 @@ def __get_at_info(dbm, annotask, user_id):
             finished = available-remaining
             at['finished'] = finished
             at['size'] = available
-            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, 'annoBased')
+            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'imageBased')
             at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'imageBased')
         elif config['type'] == 'annoBased':
             remaining, available = __get_twod_anno_counts(dbm, annotask.idx, pipeelement.iteration)
             finished = available-remaining
             at['finished'] = finished
             at['size'] = available
-            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, 'annoBased')
+            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
             at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
     else:
         at['type'] = 'SIA'
@@ -166,7 +166,7 @@ def __get_at_info(dbm, annotask, user_id):
         finished = available-remaining
         at['finished'] = finished
         at['size'] = available
-        at['statistic']['amountPerLabel'] =  __get_amount_per_label(dbm, pipeelement, 'annoBased')
+        at['statistic']['amountPerLabel'] =  __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
         at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
     
     return at
@@ -197,20 +197,18 @@ def __get_seconds_per_anno(dbm, pipeelement, user_id, anno_type):
         return '{:.2f}'.format(mean_time)
     return None
 
-def __get_amount_per_label(dbm, pipeelement, anno_type):
+def __get_amount_per_label(dbm, pipeelement, finished, anno_type):
     dist = list()
-    return dist
-    # nice but not applicable since it is too slow
-    # if finished > 0:
-    #     df = annotask.inp.to_df()
-    #     df = df[~df['img.lbl.name'].isnull()]
-    #     count = df['img.lbl.name'].value_counts()
-    #     for idx, val in count.items():
-    #         dist.append({
-    #             'label': idx,
-    #             'amount': val
-    #         })
-    
-    # return dist
-
-
+    annotask = pipe_elements.AnnoTask(pipeelement, dbm)
+    for index, row in annotask.possible_label_df.iterrows():
+        row['idx']
+        # sql count
+        result = dbm.get_amount_per_label(annotask.idx,row['idx'],anno_type)[0]
+        print(annotask.idx)
+        print(row['idx'])  
+        if result > 0: 
+            dist.append({
+                'label': row['name'],
+                'amount': result
+            })
+    return dist 

@@ -677,3 +677,11 @@ class DBMan(object):
         else:
             sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
             return self.session.execute(sql).first()
+
+    def get_amount_per_label(self, anno_task_id, label_leaf_id, anno_type):
+        if anno_type == 'imageBased':
+            sql = "SELECT COUNT(`idx`) FROM `label` WHERE `label_leaf_id`={} AND `img_anno_id` IN (SELECT `idx` FROM `image_anno` WHERE `anno_task_id`={})".format(label_leaf_id, anno_task_id)
+            return self.session.execute(sql).first()
+        else:
+            sql = "SELECT COUNT(`idx`) FROM `label` WHERE `label_leaf_id`={} AND `two_d_anno_id` IN (SELECT `idx` FROM `two_d_anno` WHERE `anno_task_id`={})".format(label_leaf_id, anno_task_id)
+            return self.session.execute(sql).first()
