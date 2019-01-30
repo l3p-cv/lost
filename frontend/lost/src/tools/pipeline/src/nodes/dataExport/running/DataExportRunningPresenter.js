@@ -1,3 +1,6 @@
+import * as http from 'pipRoot/http'
+import appModel from 'apps/running/appModel'
+
 import BaseNodePresenter from '../../BaseNodePresenter'
 
 import DataExportRunningModel from './DataExportRunningModel'
@@ -11,6 +14,23 @@ export default class DataExportRunningPresenter extends BaseNodePresenter {
 		const view = new DataExportRunningView(model)
 		const modal = new DataExportRunningModal(model)
         super({ graph, model, view, modal })
+        modal.dataExport.forEach((el, i) => {
+            $(modal.html.refs[`download-btn-${i}`]).on('click', $event => {
+                $event.preventDefault()
+           
+                http.requestDataExport(el.file_path, appModel.reactComponent.token).then(blob => {
+                        // create blob url
+                        const objectURL = window.URL.createObjectURL(blob)
+                        
+                        // simulate click on download button
+                        modal.html.refs[`download-hidden-btn-${i}`].href=objectURL
+                        modal.html.refs[`download-hidden-btn-${i}`].download=el.file_path
+                        modal.html.refs[`download-hidden-btn-${i}`].click()
+                        window.URL.revokeObjectURL(objectURL);
+                })
+            })
+
+        })
     }
     /**
      * @override
