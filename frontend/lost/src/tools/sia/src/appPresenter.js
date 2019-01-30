@@ -17,8 +17,8 @@ import * as toolbarPresenter from "components/toolbar/toolbarPresenter"
 import * as imageView from "components/image/imageView"
 import * as controlsView from "components/controls/controlsView"
 
-appModel.controls.changeEvent.on("update", value => console.log("change event:", value))
-appModel.controls.creationEvent.on("update", value => console.log("create event:", value))
+// appModel.controls.changeEvent.on("update", value => console.log("change event:", value))
+// appModel.controls.creationEvent.on("update", value => console.log("create event:", value))
 
 // app init configuration
 const CONFIG = true
