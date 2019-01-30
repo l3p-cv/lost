@@ -58,8 +58,9 @@ export const html = new NodeTemplate(/*html*/`
 // this will get rendered each time updateLabels() gets called. 
 import React, { Component } from "react"
 import ReactDOM from "react-dom"
-import Autocomplete from 'react-autocomplete'
-import * as imagePresenter from "../image/imagePresenter"
+import Autocomplete from "react-autocomplete"
+import { enableChange, disableChange } from "components/image/change-global"
+import { enableDelete, disableDelete } from "components/image/change-delete"
 class LabelSelect extends Component {
 	constructor(props){
 		super(props)
@@ -167,12 +168,12 @@ class LabelSelect extends Component {
 						}
 					},
 					onFocus: e => {
-						imagePresenter.disableChange()
-						imagePresenter.disableDelete()
+						disableChange()
+						disableDelete()
 					},
 					onBlur: e => {
-						imagePresenter.enableChange()
-						imagePresenter.enableDelete()
+						enableChange()
+						enableDelete()
 					},
 				}}
 			/>

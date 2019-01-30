@@ -11,9 +11,42 @@ import { enableBBoxCreation, disableBBoxCreation } from "./tool-bbox"
 import { enablePointCreation, disablePointCreation } from "./tool-point"
 import { disableLineCreation, enableLineCreation } from "./tool-line"
 import { enablePolygonCreation, disablePolygonCreation } from "./tool-polygon"
+import { disableDelete, enableDelete } from "components/image/change-delete"
+import { enableSelect, disableSelect } from "components/image/change-select"
+import { undo, redo } from "components/image/change-undo-redo"
+
 import { resetSelection } from "components/image/change-select"
 
-
+// during drawable creation
+// - hide other drawables
+// - disable ordinary delete
+// - (disable redo and undo)
+appModel.controls.creationEvent.on("change", isActive => {
+	if(isActive){
+		// the toolbars multipoint drawable creation has its own delete handlers 
+		disableSelect()
+		disableDelete()
+		// hide other drawables
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.hide()
+			})
+		})
+		$(window).off("keydown.undo")
+		$(window).off("keydown.redo")
+	} else {
+		enableSelect()
+		enableDelete()
+		// show other drawables
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.show()
+			})
+		})
+		$(window).off("keydown.undo").on("keydown.undo", undo)
+		$(window).off("keydown.redo").on("keydown.redo", redo)
+	}
+})
 appModel.controls.creationEvent.on("change", isActive => propertiesPresenter.onDrawableCreation(isActive))
 appModel.controls.tool.on("update", () => {
 	resetSelection()
