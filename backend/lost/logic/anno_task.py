@@ -202,10 +202,7 @@ def __get_amount_per_label(dbm, pipeelement, finished, anno_type):
     annotask = pipe_elements.AnnoTask(pipeelement, dbm)
     for index, row in annotask.possible_label_df.iterrows():
         row['idx']
-        # sql count
         result = dbm.get_amount_per_label(annotask.idx,row['idx'],anno_type)[0]
-        print(annotask.idx)
-        print(row['idx'])  
         if result > 0: 
             dist.append({
                 'label': row['name'],
