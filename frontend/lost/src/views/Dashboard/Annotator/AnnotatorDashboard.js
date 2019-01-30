@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Card, CardBody, CardHeader, Col, Row} from 'reactstrap'
-import Facts from '../../../containers/Dashboard/Annotater/Facts'
-import ImagesPerDay from '../../../containers/Dashboard/Annotater/ImagesPerDay'
+import Facts from '../../../containers/Dashboard/Annotator/Facts'
+import ImagesPerDay from '../../../containers/Dashboard/Annotator/ImagesPerDay'
 import AmountPerLabel from '../../../components/AnnoTask/AmountPerLabel'
 import MyAnnoTasks from '../../../components/AnnoTask/MyAnnoTasks'
 import WorkingOn from '../../../components/AnnoTask/WorkingOn'
@@ -10,7 +10,7 @@ import actions from '../../../actions'
 
 const {getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask} = actions
 
-class AnnotaterDashboard extends Component {
+class AnnotatorDashboard extends Component {
     componentDidMount() {
         this
             .props
@@ -106,4 +106,4 @@ class AnnotaterDashboard extends Component {
 function mapStateToProps(state) {
     return ({workingOnAnnoTask: state.annoTask.workingOnAnnoTask, annoTasks: state.annoTask.annoTasks})
 }
-export default connect(mapStateToProps, {getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask})(AnnotaterDashboard)
+export default connect(mapStateToProps, {getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask})(AnnotatorDashboard)

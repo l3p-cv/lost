@@ -70,6 +70,7 @@ class LabelSelect extends Component {
 			displayedValue: appModel.state.selectedLabel.value.name,
 			enabled: appModel.config.value.actions.labeling,
 		}
+		this.root = React.createRef()
 	}
 	componentDidMount(){
 		appModel.data.labelList.on("update", labels => this.setState({ labels }))
@@ -90,6 +91,7 @@ class LabelSelect extends Component {
 	render(){
 		return (
 			<Autocomplete
+				ref={this.root}
 				items={this.state.labels}
 				value={this.state.displayedValue}
 				getItemValue={label => label.name}
@@ -133,15 +135,15 @@ class LabelSelect extends Component {
 							selectedLabel,
 							displayedValue,
 						})
-						document.activeElement.blur()
+						this.root.current.blur()
 					}
 				}
 				inputProps={{
 					onKeyDown: e => {
 						if(keyboard.isKeyHit(e, ["Escape", "Tab"])){
-							document.activeElement.blur()
+							this.root.current.blur()
 						}
-						if(keyboard.isKeyHit(e, ["Escape", "Tab", "Enter"])){
+						if(keyboard.isKeyHit(e, ["Enter"])){
 							// if entered text was not valid select last label
 							if(this.state.selectedLabel === undefined){
 								this.setState(state => {
@@ -160,7 +162,7 @@ class LabelSelect extends Component {
 						if(keyboard.isKeyHit(e, "Enter")){
 							// only leave if you entered a valid label
 							if(this.state.selectedLabel !== undefined){
-								document.activeElement.blur()
+								this.root.current.blur()
 							}
 						}
 					},
@@ -322,12 +324,6 @@ export function resetDescription(){
     html.refs["label-description"].textContent = "Select or create a Drawable to edit it."
 }
 
-export function enableNavigationButtons(){
-    enableFirstButton()    
-    enableLastButton()    
-    enableNextButton()    
-    enablePrevButton()    
-}
 export function enableNextButton(){
     html.refs["btn-next"].disabled = false
 }
@@ -340,7 +336,7 @@ export function enableFirstButton(){
 export function enableLastButton(){
     html.refs["btn-latest"].disabled = false
 }
-
+// appModel.data.image.isFirst
 export function disableNavigationButtons(){
     disableFirstButton()    
     disableLastButton()    

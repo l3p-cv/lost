@@ -1,8 +1,7 @@
 import $ from "cash-dom"
 
-import { keyboard, mouse, state, Observable } from "l3p-frontend"
+import { keyboard, mouse, state, Observable, svg as SVG } from "l3p-frontend"
 
-import * as SVG from "drawables/svg"
 import * as color from "shared/color"
 
 import { STATE } from "drawables/drawable.statics"
@@ -14,6 +13,10 @@ import DrawablePresenter from "drawables/DrawablePresenter"
 import appModel from "../../appModel"
 import * as http from "../../http"
 import * as imageView from "./imageView"
+import { enablePointChange, disablePointChange } from "./change-point"
+import { enableMultipointChange, disableMultipointChange } from "./change-multipoint"
+import { enableBoxChange, disableBoxChange } from "./change-box"
+import { selectDrawable, resetSelection } from "./change-select"
 
 
 appModel.config.on("update", config => {
@@ -109,8 +112,10 @@ $(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
 
 export const image = imageView.image
 appModel.ui.resized.on("update", () => {
+	// (re)create drawables
     createDrawables(appModel.data.drawables.value)
 })
+
 imageView.image.addEventListener("load", () => {   
     const { colorMap } = color.getColorTable(
         imageView.image,
@@ -134,9 +139,17 @@ imageView.image.addEventListener("load", () => {
     }
 }, false)
 
-
+// =============================================================================================
 // ZOOM
 // =============================================================================================
+// reset zoom observable on resize
+$(window).on("resize", () => {
+	// quickfix: i wanted to use observables reset method, but 
+	// it currently returns the latest value instead of the initial value. 
+	// the reset handlers do not execute as expected aswell. need to fix it.
+	appModel.ui.zoom.reset()
+})
+
 const svg = imageView.html.ids["sia-imgview-svg"]
 const zoomFactor = 0.05
 const minZoom = 1
@@ -146,16 +159,18 @@ const maxZoomLevel = (minZoom / zoomFactor) - 1
 let zoomLevel = 0
 let oldZoom = 1
 let newZoom = undefined
-// reset zoom when switching between images (data updates), was needed for camera
-appModel.data.drawables.on("update", () => {
+function resetZoomContext(){
     zoomLevel = 0
     oldZoom = 1
     newZoom = undefined
-	appModel.ui.zoom.reset()
-})
+}
+// reset zoom when switching between images (data updates), or when resizing window.
+appModel.data.drawables.on("update", resetZoomContext)
+$(window).on("resize", resetZoomContext)
 
 $(svg).on("wheel", $event => {
     $event = $event.originalEvent ? $event.originalEvent : $event
+	// prevent browser from scrolling
     $event.preventDefault()
     const up = $event.deltaY < 0
     const down = !up
@@ -198,122 +213,98 @@ imageView.image.addEventListener("load", () => {
 })
 // =============================================================================================
 
+// =============================================================================================
 // CAMERA
 // =============================================================================================
 // initially enable camera feature
 enableCamera()
-// toggle camera feature
-appModel.controls.creationEvent.on("change", isActive => {
-    if(isActive){
-        disableCamera()
-    } else {
-        enableCamera()
-    }
-})
 function enableCamera(){
-    const cameraEnabled = new Observable(false)
-    // add cursors
-    cameraEnabled.on("update", (enabled) => {
-        if(enabled){
-            mouse.setGlobalCursor(mouse.CURSORS.ALL_SCROLL, {
-                noPointerEvents: true,
-                noSelection: true,
-            })
-        } else {
-            mouse.unsetGlobalCursor()
-        }
-    })
-    // enable camera on mid mouse button
-    $(svg).on("mousedown", $event => {
-        if(!cameraEnabled.value && mouse.button.isMid($event.button)){
-	        $event.preventDefault()
-            disableChange()
-            disableSelect()
-            cameraEnabled.update(true)
-        }
-    })
-    // disable camera on mid mouse button
-    $(window).on("mouseup", $event => {
-        if(cameraEnabled.value && mouse.button.isMid($event.button)){
-            // console.log("disable camera")
-            if(appModel.config.value.actions.edit.bounds){
-                enableChange()
-            }
-            enableSelect()
-            cameraEnabled.update(false)
-        }
-    })
-    // move camera on left or mid mouse button
-    let lastCameraUpdateCall = undefined
 	let mousePrev = undefined
-    $(svg).on("mousedown.camera", $event => {
-        if(mouse.button.isRight($event.button)){
-            return
-        }
-        // quickfixed. event still fireing unneded (@cameraEnabled)
-        if(zoomLevel > 0 && (cameraEnabled.value || !$event.target.closest(".drawable"))){
-			cameraEnabled.update(true)
+	let button = undefined
+	// start inside svg
+    $(svg).on("mousedown.cameraStart", $event => {
+		// don't execute on right mouse button
+		// don't execute if not zoomed
+		if(mouse.button.isRight($event.button) || zoomLevel === 0){
+			return
+		}
+		// execute if left mouse button on free space
+		// execute if mid mouse button
+		if(
+			(mouse.button.isLeft($event.button) && !$event.target.closest(".drawable"))
+			|| mouse.button.isMid($event.button)
+		){
+			// remember mouse button that was used at start
+			button = $event.button
+
+			// disable browser mid button default
+			if(mouse.button.isMid($event.button)){
+				$event.preventDefault()
+			}
+
+			// disable browser wheel scroll
+			$(window).on("wheel.cameraStart", $event => $event.preventDefault())
+
+			// set cursor
+			mouse.setGlobalCursor(mouse.CURSORS.ALL_SCROLL, {
+				noPointerEvents: true,
+				noSelection: true,
+			})
+			
+			// execute on mousemove
+			// initialize mouse start (prev) position
 			mousePrev = mousePrev === undefined
 				? mouse.getMousePosition($event, svg)
 				: mousePrev
-            let mouseCurr = mouse.getMousePosition($event, svg)
-            // move
-            $(window).on("mousemove.camera", $event => {
-                // console.log("move")
-                mouseCurr = mouse.getMousePosition($event, svg)
-                const distance = {
-                    x: mousePrev.x - mouseCurr.x,
-                    y: mousePrev.y - mouseCurr.y,
-                }
-                // smooth animation
-                if(lastCameraUpdateCall !== undefined){
-                    cancelAnimationFrame(lastCameraUpdateCall)
-                }
-                // execute
-                if(distance.x !== 0 || distance.y !== 0){
-                    lastCameraUpdateCall = requestAnimationFrame(() => {
-                        const svgWidth = parseInt(svg.getAttribute("width"))
-                        const svgHeight = parseInt(svg.getAttribute("height"))
-                        const vbXMax = svgWidth * (1 - newZoom)
-                        const vbYMax = svgHeight * (1 - newZoom)
-                        const viewBox = svg.getAttribute("viewBox").split(" ")
-                    
-                        let xDest = parseInt(viewBox[0]) + (distance.x * (vbXMax/svgWidth) * newZoom)
-                        let yDest = parseInt(viewBox[1]) + (distance.y * (vbYMax/svgHeight) * newZoom)
-                    
-                        xDest = xDest < 0 ? 0 : xDest
-                        yDest = yDest < 0 ? 0 : yDest
-                        xDest = xDest > vbXMax ? vbXMax : xDest
-                        yDest = yDest > vbYMax ? vbYMax : yDest
-
-                        SVG.setViewBox(svg, {
-                            x: xDest,
-                            y: yDest,
-                        })
-                        
-                        mousePrev = mouseCurr
-                    })
-                }
-            })
-            // stop move
-            $(window).one("mouseup", $event => {
-				$(window).off("mousemove.camera")
-				if(appModel.config.value.actions.edit.bounds){
-					enableChange()
+			$(window).on("mousemove.cameraUpdate", $event => {
+				const mouseCurr = mouse.getMousePosition($event, svg)
+				const distance = {
+					x: mousePrev.x - mouseCurr.x,
+					y: mousePrev.y - mouseCurr.y,
 				}
-				enableSelect()
-				mousePrev = undefined
-				cameraEnabled.update(false)
-            })
-        }
+				if(distance.x !== 0 || distance.y !== 0){
+					const svgWidth = parseInt(svg.getAttribute("width"))
+					const svgHeight = parseInt(svg.getAttribute("height"))
+					const vbXMax = svgWidth * (1 - newZoom)
+					const vbYMax = svgHeight * (1 - newZoom)
+					const viewBox = svg.getAttribute("viewBox").split(" ")
+				
+					let xDest = parseInt(viewBox[0]) + (distance.x * (vbXMax/svgWidth) * newZoom)
+					let yDest = parseInt(viewBox[1]) + (distance.y * (vbYMax/svgHeight) * newZoom)
+				
+					xDest = xDest < 0 ? 0 : xDest
+					yDest = yDest < 0 ? 0 : yDest
+					xDest = xDest > vbXMax ? vbXMax : xDest
+					yDest = yDest > vbYMax ? vbYMax : yDest
+					xDest = Math.round(xDest)
+					yDest = Math.round(yDest)
+
+					SVG.setViewBox(svg, {
+						x: xDest,
+						y: yDest,
+					})
+					mousePrev = mouseCurr
+				}
+			})	
+		}
     })
+	// stop inside window
+	$(window).on("mouseup.cameraStop", $event => {
+		if($event.button === button){
+			$(window).off("wheel.cameraStart")
+			$(window).off("mousemove.cameraUpdate")
+			mouse.unsetGlobalCursor()
+			mousePrev = undefined
+			button = undefined
+		}
+	})
 }
 function disableCamera(){
-    $(window).off("keydown.camera")
-    $(window).off("keyup.camera")
-    $(svg).off("mousedown.camera")
+    $(svg).off("mousedown.cameraStart")
+    $(window).off("mouseup.cameraStop")
+    $(window).off("mousemove.cameraUpdate")
 }
-
+// =============================================================================================
 
 function undo($event){
     if(keyboard.isShortcutHit($event, {
@@ -567,995 +558,15 @@ export function enableChange(drawable: DrawablePresenter){
     if(drawable instanceof DrawablePresenter){
         if(drawable.isChangable()){
             // console.warn("enabled change handlers")
-            let frameRequestDrawableMove = undefined
-            const keyMoveDrawable = ($event, drawable) => {
-                if(frameRequestDrawableMove !== undefined) cancelAnimationFrame(frameRequestDrawableMove)
-
-                // @QUICKFIX: don't move if switching to next or prev image via keyboard shortcut.
-                if(keyboard.isModifierHit($event, ["Ctrl", "Alt"])){
-                    return
-                }
-
-                // prevent browser from scrolling if using arrow keys.
-                if(keyboard.isKeyHit($event, ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"])){
-                    $event.preventDefault()
-                }
-
-                let moveStep = undefined
-                if(keyboard.isModifierHit($event, "Shift", { strict: false })){
-                    moveStep = appModel.controls.moveStepFast
-                    appModel.controls.currentMoveStep = moveStep
-                } else {
-                    moveStep = appModel.controls.moveStep
-                    appModel.controls.currentMoveStep = moveStep
-                }
-                // execute move, direction depends on key.
-                try {
-                    frameRequestDrawableMove = requestAnimationFrame(()=>{
-                        // hide cursor while moving and reset it afterwards
-                        mouse.setGlobalCursor(mouse.CURSORS.NONE.class, {
-                            noPointerEvents: true,
-                            noSelection: true,
-                        })
-						// hide multipoint drawable point while moving it
-						if(drawable.parent){
-							drawable.hide()
-						}
-                        switch ($event.key) {
-                            case "w":
-                            case "W":
-                            case "ArrowUp":
-                                drawable.move({ y: -moveStep })
-                                break
-                            case "s":
-                            case "S":
-                            case "ArrowDown":
-                                drawable.move({ y: moveStep })
-                                break
-                            case "d":
-                            case "D":
-                            case "ArrowRight":
-                                drawable.move({ x: moveStep })
-                                break
-                            case "a":
-                            case "A":
-                            case "ArrowLeft":
-                                drawable.move({ x: -moveStep })
-                                break
-                            default: 
-                                frameRequestDrawableMove = undefined
-                                return
-                        }
-                        drawable.setChanged()
-						$(window).one("keyup", () => {
-							mouse.unsetGlobalCursor()
-							// show multipoint drawable point after moving it
-                            if(drawable.parent){
-                                drawable.show()
-                            }
-						})
-                    })
-                } catch(error) {
-                    console.error(error.message)
-                    throw error
-                } finally {
-                    frameRequestDrawableMove = undefined
-                }
-                // mouse.unsetGlobalCursor()
-            }
-            const handleMultipointPointInsertion = ($event, drawable, mode) => {
-                mouse.setGlobalCursor(mouse.CURSORS.CREATE.class)
-                $(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.lineInsertPoint", ($event) => {
-                    if(!mouse.button.isRight($event.button)) {
-                        $event.preventDefault()
-                        return
-                    }
-					appModel.controls.changeEvent.update(true)
-                    // this key check looks like it is just duplication but it is not.
-                    if(keyboard.isModifierHit($event, "Control")){
-                        let mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                        // calculate the real mouseposition (@zoom)
-                        const zoom = appModel.ui.zoom.value
-                        mousepos = {
-                            x: (mousepos.x + (SVG.getViewBoxX(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
-                            y: (mousepos.y + (SVG.getViewBoxY(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
-                        }
-                        const point = drawable.insertPoint(mousepos)
-                        if(point){
-                            /*
-                                DEACTIVATED CAUSE COMPLICATED:
-                                Need to work on MultipointPresenter for this to function.
-                                A "move" command can not be redone after readding the point with this.<>>
-                                state.add({
-                                    do: {
-                                        data: { point, drawable },
-                                        fn: (data) => {
-                                            const { point, drawable } = data
-                                            drawable.insertPoint(point, "insert", point.insertionIndex)
-                                            drawable.setChanged()
-                                            selectDrawable(point)
-                                        }
-                                    },
-                                    undo: {
-                                        data: { drawable },
-                                        fn: (data) => {
-                                            const { drawable } = data
-                                            drawable.removePoint(drawable.pointSelectionList.getTailNode().getData())
-                                        }
-                                    }
-                                })
-                            */
-                            drawable.setChanged()
-                            selectDrawable(point)
-                        }
-                    }
-                })
-                $(window).on("keyup.lineInsertPointEnd", ($event) => {
-                    // @KEYBOARD: isModifierHit (checking modifiers) wont work here! modifier needs to be detected via key!
-                    // this key check looks like it is just duplication but it is not.
-                    if(keyboard.isKeyHit($event, "Control")){
-                        mouse.unsetGlobalCursor()
-                        $(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.lineInsertPoint")
-                        $(window).off("keyup.lineInsertPointEnd")
-						appModel.controls.changeEvent.update(false)
-                    }
-                })
-            }
-            const handleLinePointAdd = ($event, drawable) => {
-                mouse.setGlobalCursor(mouse.CURSORS.CREATE.class)
-                $(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.lineInsertPoint", ($event) => {
-                    if(!mouse.button.isRight($event.button)){
-                        $event.preventDefault()
-                        return
-                    }
-					appModel.controls.changeEvent.update(true)
-                    // this key check looks like it is just duplication but it is not.            
-                    if(keyboard.isModifierHit($event, "Alt", true)){
-                        let mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                        // calculate the real mouseposition (@zoom)
-                        const zoom = appModel.ui.zoom.value
-                        mousepos = {
-                            x: (mousepos.x + (SVG.getViewBoxX(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
-                            y: (mousepos.y + (SVG.getViewBoxY(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
-                        }
-                        const point = drawable.insertPoint(mousepos, "add")
-                        if(point){
-                            drawable.setChanged()
-                            selectDrawable(point)
-                        }
-                    }
-                })
-                $(window).on("keyup.lineInsertPointEnd", ($event) => {
-                    // this key check looks like it is just duplication but it is not.            
-                    if(keyboard.isKeyHit($event, "Alt")){
-                        mouse.unsetGlobalCursor()
-                        $(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.lineInsertPoint")
-                        $(window).off("keyup.lineInsertPointEnd")
-						appModel.controls.changeEvent.update(false)
-                    }
-                })
-            }
             switch(drawable.getClassName()){
                 case "PointPresenter":
-                    // mouse
-                    var mouseStart = undefined
-                    var mousePrev = undefined
-                    var mousepos = undefined
-                    var stateElement = undefined
-                    var savedStartState = false
-                    $(drawable.view.html.root).on("mousedown.movePointStart", ($event) => {
-                        // return on right or middle mouse button, prevent context menu.
-                        if (!mouse.button.isLeft($event.button)) {
-                            $event.preventDefault()
-                            return
-                        }
-						appModel.controls.changeEvent.update(true)
-                        // console.warn("point change handler (start)")
-                        mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                        // calculate the real mouseposition (@zoom)
-                        const svg = imageView.html.ids["sia-imgview-svg"]
-                        const zoom = appModel.ui.zoom.value
-                        mouseStart = {
-                            x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                            y: (mouseStart.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                        }
-                        stateElement = new state.StateElement()
-                        $(window).on("mousemove.movePointUpdate", ($event) => {
-                            // hide the point while moving
-                            if(drawable.parent){
-                                drawable.hide()
-                            }
-                            // console.warn("point change handler (update)")
-                            mouse.setGlobalCursor(mouse.CURSORS.NONE.class, {
-                                noPointerEvents: true,
-                                noSelection: true,
-                            })
-                            mousePrev = (mousePrev === undefined) ? mouseStart : mousepos
-                            mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                            // calculate the real mouseposition (@zoom)
-                            const svg = imageView.html.ids["sia-imgview-svg"]
-                            const zoom = appModel.ui.zoom.value
-                            mousepos = {
-                                x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                                y: (mousepos.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                            }
-                            if(!savedStartState){
-                                stateElement.addUndo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setPosition({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                        })
-                                    } 
-                                })
-                                savedStartState = true
-                            } 
-                            else {
-                                drawable.move({
-                                    x: mousepos.x - mousePrev.x,
-                                    y: mousepos.y - mousePrev.y,
-                                })
-                            }    
-                        })
-
-                        $(window).on("mouseup.movePointEnd", ($event) => {
-                            // return on right or middle mouse button, prevent context menu.
-                            if (!mouse.button.isLeft($event.button)) {
-                                $event.preventDefault()
-                                return
-                            }
-                            // console.warn("point change handler (end)")
-                            $(window).off("mousemove.movePointUpdate")
-                            $(window).off("mouseup.movePointEnd")
-                            // update drawable status and reselect if its a multi-point-annotation point.
-                            // show the point when finished moving
-                            drawable.setChanged()
-                            if(drawable.parent){
-                                drawable.parent.setChanged()
-                                drawable.show()
-                                selectDrawable(drawable)
-                                appModel.selectDrawable(drawable)
-                            }
-
-                            // finish setting up the 'StateElement'
-                            stateElement.addRedo({
-                                data: {
-                                    x: drawable.getX() / imageView.getWidth(),
-                                    y: drawable.getY() / imageView.getHeight(),
-                                },
-                                fn: (data) => {
-                                    selectDrawable(drawable)
-                                    drawable.setPosition({
-                                        x: data.x * imageView.getWidth(),
-                                        y: data.y * imageView.getHeight(),
-                                    })
-                                }
-                            })
-                            // make undo redo possible
-                            if(!appModel.controls.creationEvent.value){
-                                state.add(stateElement)
-                            }
-
-                            // reset
-                            mouse.unsetGlobalCursor()
-                            mouseStart = undefined
-                            mousePrev = undefined
-                            mousepos = undefined
-                            savedStartState = false
-                            stateElement = undefined
-
-							// quick-fix: left mouse button is also used during multipoint drawable creation
-							// setting a timeout here for multipoint drawable creation not to finish (dblclick lmb)
-							// when moving improperly set points.
-							setTimeout(() => {
-								appModel.controls.changeEvent.update(false)
-							}, 500)
-                        })
-                    })
-
-                    // Key
-                    $(window).on("keydown.movePoint", $event => {
-                        if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-							appModel.controls.changeEvent.update(true)
-                            if(!savedStartState){
-                                stateElement = new state.StateElement()
-                                // add undo
-                                stateElement.addUndo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setPosition({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                        })
-                                    } 
-                                })
-                                savedStartState = true
-                                $(window).one("keyup.movePoint", $event => {
-                                    if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){   
-                                        stateElement.addRedo({
-                                            data: {
-                                                x: drawable.getX() / imageView.getWidth(),
-                                                y: drawable.getY() / imageView.getHeight(),
-                                            },
-                                            fn: (data) => {
-                                                selectDrawable(drawable)
-                                                drawable.setPosition({
-                                                    x: data.x * imageView.getWidth(),
-                                                    y: data.y * imageView.getHeight(),
-                                                })
-                                            }
-                                        })
-                                        
-                                        if(!appModel.controls.creationEvent.value){
-                                            state.add(stateElement)
-                                        }
-                                        stateElement = undefined
-                                        savedStartState = false
-                                    }
-                                })
-                            }
-                            keyMoveDrawable($event, drawable)
-							appModel.controls.changeEvent.update(false)
-                        }
-                    })
-
-                    // for multi point points
-                    if(drawable.parent){
-                        // on [CTRL]
-                        $(window).on("keydown.multipointInsertPointStart", ($event) => {
-                            if(keyboard.isModifierHit($event, "Control")){
-                                handleMultipointPointInsertion($event, drawable.parent)
-                            }
-                        })
-                        if(drawable.parent.model.type === "line"){
-                            // on [ALT]
-                            $(window).on("keydown.lineAddPointStart", ($event) => {
-                                if(keyboard.isModifierHit($event, "Alt")){
-                                    handleLinePointAdd($event, drawable.parent)
-                                }
-                            })
-                        }
-                    }
+					enablePointChange(drawable)
                     break
                 case "MultipointPresenter":
-                    // mouse
-                    var mouseStart = undefined
-                    var mousePrev = undefined
-                    var mousepos = undefined
-                    var distance = { x: undefined, y: undefined }
-                    var stateElement = undefined
-                    var savedStartState = false
-                    $(drawable.view.html.root).on("mousedown.moveDrawableStart", ($event) => {
-                        // return on right or middle mouse button, prevent context menu.
-                        if (!mouse.button.isLeft($event.button)) {
-                            $event.preventDefault()
-                            return
-                        }
-						appModel.controls.changeEvent.update(true)
-                        // console.warn("drawable change handler (start)")
-                        mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                        // calculate the real mouseposition (@zoom)
-                        const svg = imageView.html.ids["sia-imgview-svg"]
-                        const zoom = appModel.ui.zoom.value
-                        mouseStart = {
-                            x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                            y: (mouseStart.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                        }
-                        stateElement = new state.StateElement()
-
-                        $(window).on("mousemove.moveDrawableUpdate", ($event) => {
-                            // console.warn("drawable move handler (update)")
-                            mouse.setGlobalCursor(mouse.CURSORS.NONE.class, {
-                                noPointerEvents: true,
-                                noSelection: true,
-                            })
-                            mousePrev = (mousePrev === undefined) ? mouseStart : mousepos
-                            mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                            // calculate the real mouseposition (@zoom)
-                            const svg = imageView.html.ids["sia-imgview-svg"]
-                            const zoom = appModel.ui.zoom.value
-                            mousepos = {
-                                x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                                y: (mousepos.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                            }
-                            if(!savedStartState){
-                                stateElement.addUndo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setPosition({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                        })
-                                    } 
-                                })
-                                savedStartState = true
-                            }
-                            drawable.move({
-                                x: mousepos.x - mousePrev.x,
-                                y: mousepos.y - mousePrev.y,
-                            })
-                        })
-
-                        $(window).on("mouseup.moveDrawableEnd", ($event) => {
-                            // return on right or middle mouse button, prevent context menu.
-                            if (!mouse.button.isLeft($event.button)) {
-                                $event.preventDefault()
-                                return
-                            }
-                            // console.warn("drawable move handler (end)")
-                            $(window).off("mousemove.moveDrawableUpdate")
-                            $(window).off("mouseup.moveDrawableEnd")
-                            
-                            // finish setting up the 'StateElement'
-                            stateElement.addRedo({
-                                data: {
-                                    x: drawable.getX() / imageView.getWidth(),
-                                    y: drawable.getY() / imageView.getHeight(),
-                                },
-                                fn: (data) => {
-                                    selectDrawable(drawable)
-                                    drawable.setPosition({
-                                        x: data.x * imageView.getWidth(),
-                                        y: data.y * imageView.getHeight(),
-                                    })
-                                }
-                            })
-                            // make undo redo possible
-                            if(!appModel.controls.creationEvent.value){
-                                state.add(stateElement)
-                            }
-
-                            // reselect if its a multi-point-annotation point.
-                            drawable.setChanged()
-                            mouse.unsetGlobalCursor()
-                            mouseStart = undefined
-                            mousePrev = undefined
-                            mousepos = undefined
-                            savedStartState = false
-                            stateElement = undefined
-
-							setTimeout(() => {
-								appModel.controls.changeEvent.update(false)
-							}, 300)
-                        })
-                    })
-
-                    // Key
-                    $(window).on("keydown.moveDrawable", $event => {
-                        if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-							appModel.controls.changeEvent.update(true)
-                            if(!savedStartState){
-                                stateElement = new state.StateElement()
-                                // add undo
-                                stateElement.addUndo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setPosition({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                        })
-                                    } 
-                                })
-                                savedStartState = true
-                                $(window).one("keyup.moveDrawable", $event => {
-                                    if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-                                        
-                                        stateElement.addRedo({
-                                            data: {
-                                                x: drawable.getX() / imageView.getWidth(),
-                                                y: drawable.getY() / imageView.getHeight(),
-                                            },
-                                            fn: (data) => {
-                                                selectDrawable(drawable)
-                                                drawable.setPosition({
-                                                    x: data.x * imageView.getWidth(),
-                                                    y: data.y * imageView.getHeight(),
-                                                })
-                                            }
-                                        })
-                                        if(!appModel.controls.creationEvent.value){
-                                            state.add(stateElement)
-                                        }
-                                        stateElement = undefined
-                                        savedStartState = false
-                                    }
-                                })
-                            }
-                            keyMoveDrawable($event, drawable)
-							appModel.controls.changeEvent.update(false)
-                        }
-                    })
-
-                    // on [CTRL]
-                    $(window).on("keydown.multipointInsertPointStart", ($event) => {
-                        if(keyboard.isModifierHit($event, "Control")){
-                            handleMultipointPointInsertion($event, drawable)
-                        }
-                    })
-                    if(drawable.model.type === "line"){
-                        // on [ALT]
-                        $(window).on("keydown.lineAddPointStart", ($event) => {
-                            if(keyboard.isModifierHit($event, "Alt")){
-                                handleLinePointAdd($event, drawable)
-                            }
-                        })
-                    }
+                    enableMultipointChange(drawable)
                     break
                 case "BoxPresenter":
-                    // mouse
-                    var mouseStart = undefined
-                    var mousePrev = undefined
-                    var mousepos = undefined
-                    var distance = { x: undefined, y: undefined }
-                    var stateElement = undefined
-                    var savedStartState = false
-                    let frameRequestBoxChange = undefined
-                    $(drawable.view.html.root).on("mousedown.changeBoxStart", ($event) => {
-                        // return on right or middle mouse button, prevent context menu.
-                        if (!mouse.button.isLeft($event.button)) {
-                            $event.preventDefault()
-                            return
-                        }
-                        // @QUICKFIX: for close button
-                        if($event.target.closest(`[data-ref="menubar-close-button"]`)){
-                            return
-                        }
-                        // console.warn("box change handler (start)")
-						appModel.controls.changeEvent.update(true)
-                        
-                        // set move cursor if mouse on menubar to move the box.
-                        if($event.target.closest(`[data-ref="menu"]`)){
-                            drawable.setCursor(mouse.CURSORS.MOVE)
-                        }
-
-                        // init context
-                        mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                        // calculate the real mouseposition (@zoom)
-                        const svg = imageView.html.ids["sia-imgview-svg"]
-                        const zoom = appModel.ui.zoom.value
-                        mouseStart = {
-                            x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                            y: (mouseStart.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                        }
-
-                        // set global cursor via class
-                        try {
-                            mouse.setGlobalCursor(drawable.model.currentCursor.class, {
-                                noPointerEvents: true,
-                                noSelection: true,
-                            })
-                        } catch(e){
-                            console.error(e)
-                            console.log(drawable)
-                            console.log(drawable.model)
-                            console.log(drawable.view.html)
-                        }
-
-                        // add the update function
-                        $(window).on("mousemove.changeBoxUpdate", ($event) => {
-                            // add undo
-                            if(!savedStartState){
-                                stateElement = new state.StateElement()
-                                stateElement.addUndo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                        w: drawable.getW() / imageView.getWidth(),
-                                        h: drawable.getH() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setBounds({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                            w: data.w * imageView.getWidth(),
-                                            h: data.h * imageView.getHeight(),
-                                        })
-                                    } 
-                                })
-                                savedStartState = true
-                            }
-                            if(frameRequestBoxChange !== undefined) cancelAnimationFrame(frameRequestBoxChange)
-                            frameRequestBoxChange = requestAnimationFrame(() => {
-                                // console.warn("box change handler (update)")
-                                // prepare update
-                                mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
-                                // calculate the real mouseposition (@zoom)
-                                const svg = imageView.html.ids["sia-imgview-svg"]
-                                const zoom = appModel.ui.zoom.value
-                                mousepos = {
-                                    x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                                    y: (mousepos.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                                }
-                                mousePrev = (mousePrev) ? mouseStart : mousepos
-                                distance.x = mousePrev.x - mousepos.x
-                                distance.y = mousePrev.y - mousepos.y
-                                // execute update
-                                switch (drawable.model.currentCursor.id) {
-                                    case mouse.CURSORS.MOVE.id:
-                                        // invert distance
-                                        distance.x = - distance.x
-                                        distance.y = - distance.y
-                                        drawable.move(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_EDGE_BOTTOM.id:
-                                        drawable.scaleBottom(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_EDGE_LEFT.id:
-                                        drawable.scaleLeft(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_EDGE_RIGHT.id:
-                                        drawable.scaleRight(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_EDGE_TOP.id:
-                                        drawable.scaleTop(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_CORNER_TOP_LEFT.id:
-                                        drawable.scaleTopLeft(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_CORNER_TOP_RIGHT.id:
-                                        drawable.scaleTopRight(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_CORNER_BOTTOM_RIGHT.id:
-                                        drawable.scaleBottomRight(distance)
-                                        drawable.setChanged()
-                                        break
-                                    case mouse.CURSORS.CURSOR_CORNER_BOTTOM_LEFT.id:
-                                        drawable.scaleBottomLeft(distance)
-                                        drawable.setChanged()
-                                        break
-                                }
-                                mouseStart = mousepos
-                            })
-                        })
-
-                        // mouse change (end)
-                        $(window).on("mouseup.changeBoxEnd", ($event) => {
-                            // return on right or middle mouse button, prevent context menu.
-                            if (!mouse.button.isLeft($event.button)) {
-                                $event.preventDefault()
-                                return
-                            }
-                            // console.warn("box change handler (end)")
-                            $(window).off("mousemove.changeBoxUpdate")
-                            $(window).off("mouseup.changeBoxEnd")
-
-                            // add redo
-                            // if user does mouse down and up without mousemove, the stateElement won't be cameraInitialized.
-                            if(savedStartState){
-                                stateElement.addRedo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                        w: drawable.getW() / imageView.getWidth(),
-                                        h: drawable.getH() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setBounds({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                            w: data.w * imageView.getWidth(),
-                                            h: data.h * imageView.getHeight(),
-                                        })
-                                    }
-                                })
-                                if(!appModel.controls.creationEvent.value){
-                                    state.add(stateElement)
-                                }
-                                savedStartState = false
-                                stateElement = undefined
-                            }
-
-                            // "reset mouse"
-                            mouse.unsetGlobalCursor()
-                            mouseStart = undefined
-                            mousePrev = undefined
-                            mousepos = undefined
-                            distance = { x: undefined, y: undefined }
-
-							appModel.controls.changeEvent.update(false) 
-                        })
-                    })
-
-                    // key
-                    let frameRequestBoxEdgeScaling = undefined
-                    // scale
-                    $(window).on("keydown.selectBoxEdge", $event => {
-						appModel.controls.changeEvent.update(true)
-                        if(keyboard.isModifierHit($event, "Alt")){
-                            // prevent scrolling when using arrow keys
-                            $event.preventDefault()
-
-                            // temporary disable box movement via keyboard
-                            $(window).off("keydown.keyMoveBox")
-
-                            // reset edge if space was used
-                            $(window).on("keydown.resetEdge", $event => {
-                                if (keyboard.isKeyHit($event, ["Space", "Enter", "Tab", "Escape"])){
-                                    $(window).off("keydown.resetEdge")
-                                    $event.preventDefault()
-                                    drawable.resetEdge()
-                                    // force re-select (Escape will unselect the drawable)
-                                    // this will re-enable box movement via keyboard
-                                    selectDrawable(drawable)
-                                }
-                            })
-                            
-                            // edge selection
-                            if (keyboard.isModifierHit($event, "Alt")) {
-                                switch ($event.key) {
-                                    case "w":
-                                    case "W":
-                                    case "ArrowUp":
-                                        drawable.selectEdge("top")
-                                        break
-                                    case "d":
-                                    case "D":
-                                    case "ArrowRight":
-                                        drawable.selectEdge("right")
-                                        break
-                                    case "s":
-                                    case "S":
-                                    case "ArrowDown":
-                                        drawable.selectEdge("bottom")
-                                        break
-                                    case "a":
-                                    case "A":
-                                    case "ArrowLeft":
-                                        drawable.selectEdge("left")
-                                        break
-                                    default: return
-                                }
-                            }
-                        }
-						appModel.controls.changeEvent.update(false)
-                    })
-                    $(window).on("keydown.scaleBoxEdge", $event => {
-                        let moveStep = undefined
-                        if(keyboard.isModifierHit($event, "Shift")){
-                            moveStep = appModel.controls.moveStepFast
-                            appModel.controls.currentMoveStep = moveStep
-                        } else {
-                            moveStep = appModel.controls.moveStep
-                            appModel.controls.currentMoveStep = moveStep
-                        }
-                        if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-                            appModel.controls.changeEvent.update(true)
-                            $event.preventDefault()
-                            if (frameRequestBoxEdgeScaling !== undefined) cancelAnimationFrame(frameRequestBoxEdgeScaling)
-                            if(drawable.isEdgeSelected() && keyboard.isModifierNotHit($event, "Alt")){
-                                // add undo
-                                if(!savedStartState){
-                                    stateElement = new state.StateElement()
-                                    stateElement.addUndo({
-                                        data: {
-                                            x: drawable.getX() / imageView.getWidth(),
-                                            y: drawable.getY() / imageView.getHeight(),
-                                            w: drawable.getW() / imageView.getWidth(),
-                                            h: drawable.getH() / imageView.getHeight(),
-                                        },
-                                        fn: (data) => {
-                                            selectDrawable(drawable)
-                                            drawable.setBounds({
-                                                x: data.x * imageView.getWidth(),
-                                                y: data.y * imageView.getHeight(),
-                                                w: data.w * imageView.getWidth(),
-                                                h: data.h * imageView.getHeight(),
-                                            })
-                                        } 
-                                    })
-                                    savedStartState = true
-                                } 
-                                try {
-                                    // scale edge
-                                    frameRequestBoxEdgeScaling = requestAnimationFrame(() => {
-                                        switch (drawable.getEdge()) {
-                                            case "right":
-                                                switch ($event.key) {
-                                                    case "d":
-                                                    case "D":
-                                                    case "ArrowRight":
-                                                        drawable.setBounds({
-                                                            w: drawable.getW() + moveStep,
-                                                            x: drawable.getX() + moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                    case "a":
-                                                    case "A":
-                                                    case "ArrowLeft":
-                                                        drawable.setBounds({
-                                                            w: drawable.getW() - moveStep,
-                                                            x: drawable.getX() - moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                }
-                                                break
-                                            case "bottom":
-                                                switch ($event.key) {
-                                                    case "w":
-                                                    case "W":
-                                                    case "ArrowUp":
-                                                        drawable.setBounds({
-                                                            h: drawable.getH() - moveStep,
-                                                            y: drawable.getY() - moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                    case "s":
-                                                    case "S":
-                                                    case "ArrowDown":
-                                                        drawable.setBounds({
-                                                            h: drawable.getH() + moveStep,
-                                                            y: drawable.getY() + moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                }
-                                                break
-                                            case "top":
-                                                switch ($event.key) {
-                                                    case "w":
-                                                    case "W":
-                                                    case "ArrowUp":
-                                                        drawable.setBounds({
-                                                            h: drawable.getH() + moveStep,
-                                                            y: drawable.getY() - moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                    case "s":
-                                                    case "S":
-                                                    case "ArrowDown":
-                                                        drawable.setBounds({
-                                                            h: drawable.getH() - moveStep,
-                                                            y: drawable.getY() + moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                }
-                                                break
-                                            case "left":
-                                                switch ($event.key) {
-                                                    case "a":
-                                                    case "A":
-                                                    case "ArrowLeft":
-                                                        drawable.setBounds({
-                                                            w: drawable.getW() + moveStep,
-                                                            x: drawable.getX() - moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                    case "d":
-                                                    case "D":
-                                                    case "ArrowRight":
-                                                        drawable.setBounds({
-                                                            w: drawable.getW() - moveStep,
-                                                            x: drawable.getX() + moveStep / 2,
-                                                        })
-                                                        drawable.setChanged()
-                                                        break
-                                                }
-                                                break
-                                            default: 
-                                                frameRequestBoxEdgeScaling = undefined
-                                                return
-                                        }
-                                    })
-                                } catch(error){
-                                    console.error(error.message)
-                                    throw error
-                                } finally{
-                                    frameRequestBoxEdgeScaling = undefined
-                                }
-                            }
-							appModel.controls.changeEvent.update(false)
-                        }
-                    })
-                    $(window).on("keyup.scaleBoxEdge", $event => {
-                        if(keyboard.isModifierNotHit($event, "Alt") && drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-                            appModel.controls.changeEvent.update(true)
-                            // add redo
-                            stateElement.addRedo({
-                                data: {
-                                    x: drawable.getX() / imageView.getWidth(),
-                                    y: drawable.getY() / imageView.getHeight(),
-                                    w: drawable.getW() / imageView.getWidth(),
-                                    h: drawable.getH() / imageView.getHeight(),
-                                },
-                                fn: (data) => {
-                                    selectDrawable(drawable)
-                                    drawable.setBounds({
-                                        x: data.x * imageView.getWidth(),
-                                        y: data.y * imageView.getHeight(),
-                                        w: data.w * imageView.getWidth(),
-                                        h: data.h * imageView.getHeight(),
-                                    })
-                                }
-                            })
-                            if(!appModel.controls.creationEvent.value){
-                                state.add(stateElement)
-                            }
-                            stateElement = undefined
-                            savedStartState = false
-							appModel.controls.changeEvent.update(false)
-                        }
-                    })
-                    // move
-                    $(window).on("keydown.keyMoveBox", $event => {
-                        if(!drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-							appModel.controls.changeEvent.update(true)
-                            if(!savedStartState){
-                                stateElement = new state.StateElement()
-                                stateElement.addUndo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setPosition({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                        })
-                                    } 
-                                })
-                                savedStartState = true
-                            }
-                            keyMoveDrawable($event, drawable)    
-							appModel.controls.changeEvent.update(false)
-                        }
-                    })
-                    $(window).on("keyup.keyMoveBox", $event => {
-                        if(!drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-                            appModel.controls.changeEvent.update(true)
-                            if(!appModel.controls.creationEvent.value && savedStartState){
-                                stateElement.addRedo({
-                                    data: {
-                                        x: drawable.getX() / imageView.getWidth(),
-                                        y: drawable.getY() / imageView.getHeight(),
-                                    },
-                                    fn: (data) => {
-                                        selectDrawable(drawable)
-                                        drawable.setPosition({
-                                            x: data.x * imageView.getWidth(),
-                                            y: data.y * imageView.getHeight(),
-                                        })
-                                    }
-                                })
-                                state.add(stateElement)
-                                stateElement = undefined
-                                savedStartState = false
-                            }
-							appModel.controls.changeEvent.update(false)
-                        }
-                    })
+                    enableBoxChange(drawable)
                     break
                 case "Object":
                     if(Object.keys(drawable).length === 0){
@@ -1582,28 +593,13 @@ export function disableChange(drawable: DrawablePresenter){
     if(drawable instanceof DrawablePresenter){
         switch(drawable.getClassName()){
             case "PointPresenter":
-                $(drawable.view.html.root).off("mousedown.movePointStart")
-                $(window).off("keydown.movePoint")
-                $(window).off("keyup.movePoint")
-                $(window).off("keydown.multipointInsertPointStart")
-                $(window).off("keydown.lineAddPointStart")
+				disablePointChange(drawable)
                 break
             case "MultipointPresenter":
-                $(drawable.view.html.root).off("mousedown.moveDrawableStart")
-                $(window).off("keydown.moveDrawable")
-                $(window).off("keyup.moveDrawable")
-                $(window).off("keydown.multipointInsertPointStart")
-                $(window).off("keydown.lineAddPointStart")
+				disableMultipointChange(drawable)
                 break
             case "BoxPresenter":
-                $(drawable.view.html.root).off("mousedown.changeBoxStart")
-                $(window).off("mousemove.changeBoxUpdate")
-                $(window).off("mouseup.changeBoxEnd")
-                $(window).off("keydown.selectBoxEdge")
-                $(window).off("keydown.scaleBoxEdge")
-                $(window).off("keyup.scaleBoxEdge")
-                $(window).off("keydown.keyMoveBox")
-                $(window).off("keyup.keyMoveBox")
+				disableBoxChange(drawable)
                 break
             default: throw new Error(`unknown drawable ${drawable} of type ${drawable.getClassName()}.`)
         }
@@ -1705,56 +701,9 @@ function removeDrawables(){
         drawables.value.forEach(d => imageView.removeDrawable(d.view))
     })
 }
-// mutates appModel
-export function selectDrawable(next: Drawable){
-    const curr = appModel.getSelectedDrawable()
-    // Don't re-select a drawable if it is allready selected. 
-    // If another drawable is currently selected unselect it.
-    if(curr instanceof DrawablePresenter && curr !== next){
-        // console.log("will unselect:", curr)
-        curr.unselect()
-        if(curr instanceof BoxPresenter){
-            curr.resetEdge()
-        }
-        if(curr.parent){
-            curr.parent.unselect()
-        }
-    }
 
-    // A drawable will only be selected if it is not allready selected.
-    if(curr !== next){
-        // console.log("will select:", next)
-        next.select()
-        appModel.selectDrawable(next)
-        if(next.parent){
-            next.parent.select()
-            if(!appModel.controls.creationEvent.value){
-                if(curr){
-                    next.parent.previousPoint = curr
-                }
-                next.parent.currentPoint = next
-            }
-        }
-    }
-}
-// mutates appModel
-export function resetSelection(){
-    const drawable = appModel.getSelectedDrawable()
-    if(drawable instanceof DrawablePresenter){
-        // console.log("reset selection:", drawable)
-        appModel.resetDrawableSelection()
-        drawable.unselect()
-        if(drawable instanceof BoxPresenter){
-            drawable.resetEdge()
-        }
-        if(drawable.parent){
-            drawable.parent.unselect()
-        }
-    }
-}
 
 export function resize(width: Number, height: Number){
-    console.log("canvas size:", width, height)
     imageView.resize(width, height)
 
     // resize drawables

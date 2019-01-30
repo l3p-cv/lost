@@ -21,7 +21,9 @@ appModel.data.image.url.on("update", url => {
 		const objectURL = window.URL.createObjectURL(blob)
 		propertiesView.image.src = objectURL
 	})
+	updateNavigationButtons()
 })
+// appModel.data.image.info.on("update", info => console.trace(info))
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
@@ -37,24 +39,11 @@ appModel.state.selectedLabel.on("update", label => {
 		
 	}
 })
-// quickfix: for?
-appModel.data.image.info.on("update", () => {
-    const data = appModel.data
-    if(data.image.isFirst){
-        console.log("handling first image")
-        handleFirstImage()
-    } else {
-        console.log("handling not fist image")
-        handleNotFirstImage()
-    }
-    if(data.image.isLast){
-        console.log("handling last image")
-        handleLastImage()
-    } else {
-        console.log("handling not last image")
-        handleNotLastImage()
-    }
-})
+// // quickfix: for?
+// // appModel.data.image.info.on("update", info => {
+// appModel.data.image.info.on("update", info => {
+
+// })
 appModel.config.on("update", config => {
     let labelingEnabled = undefined
     if(config.actions.labeling){
@@ -339,26 +328,50 @@ function detachDrawable(drawable: DrawablePresenter){
     }
 }
 
-
-export function handleLastImage(){
+export function onDrawableCreation(isActive){
+	if(isActive){
+		disableNavigationButtons()
+		// // blur label selection focus
+		// document.activeElement.blur()
+	} else {
+		updateNavigationButtons()
+	}
+}
+function updateNavigationButtons(){
+	const { isFirst, isLast } = appModel.data.image
+	if(isFirst){
+		handleFirstImage()
+	} else {
+		handleNotFirstImage()
+	}
+	if(isLast){
+		handleLastImage()
+	} else {
+		handleNotLastImage()
+	}
+}
+function disableNavigationButtons(){
+	propertiesView.disableNavigationButtons()
+}
+function handleLastImage(){
     propertiesView.disableLastButton()
     propertiesView.setNextButtonState("finish")
     $(propertiesView.html.refs["btn-next"]).on("click", modals.show)
     $(window).off("keydown", keyRequestPreviousData).on("keydown", keyRequestPreviousData)
     $(window).off("keydown", keyRequestNextData)
 }
-export function handleNotLastImage(){
+function handleNotLastImage(){
     propertiesView.enableLastButton()
     propertiesView.setNextButtonState("default")
     $(propertiesView.html.refs["btn-next"]).off("click", modals.show)
     $(window).off("keydown", keyRequestPreviousData).on("keydown", keyRequestPreviousData)
     $(window).off("keydown", keyRequestNextData).on("keydown", keyRequestNextData)
 }
-export function handleFirstImage(){
+function handleFirstImage(){
     propertiesView.disablePrevButton()
     propertiesView.disableFirstButton()
 }
-export function handleNotFirstImage(){
+function handleNotFirstImage(){
     propertiesView.enablePrevButton()
     propertiesView.enableFirstButton()
 }

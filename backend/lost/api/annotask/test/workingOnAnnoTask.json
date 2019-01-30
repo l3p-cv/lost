@@ -7,7 +7,7 @@
     "createdAt": "datetime",
     "type": "MIA",
     "lastActivity": "datetime",
-    "lastAnnotater": "jochen",
+    "lastAnnotator": "jochen",
     "finished": 240,
     "size": 450,
     "statistic": {

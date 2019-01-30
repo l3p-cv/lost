@@ -60,7 +60,7 @@ class MyAnnoTasks extends Component {
                             </td>
                             <td>
                                 <strong>{annoTask.lastActivity}</strong>
-                                <div className='small text-muted'>by {annoTask.lastAnnotater}</div>
+                                <div className='small text-muted'>by {annoTask.lastAnnotator}</div>
                             </td>
                         </tr>
                     )
