@@ -315,7 +315,7 @@ def __update_image_annotation(db_man, user_id, data):
             for label in data['labels']:
                 lab = model.Label(dtype=dtype.Label.IMG_ANNO,
                                 label_leaf_id=label['id'],
-                                annotater_id=user_id,
+                                annotator_id=user_id,
                                 timestamp=image.timestamp,
                                 timestamp_lock=image.timestamp_lock,
                                 anno_time=anno_time,
@@ -343,7 +343,7 @@ def __update_two_d_annotation(db_man, user_id, data):
             for label in data['labels']:
                 lab = model.Label(dtype=dtype.Label.TWO_D_ANNO,
                                 label_leaf_id=label['id'],
-                                annotater_id=user_id,
+                                annotator_id=user_id,
                                 timestamp=two_d_anno.timestamp,
                                 timestamp_lock=two_d_anno.timestamp_lock,
                                 anno_time=anno_time,

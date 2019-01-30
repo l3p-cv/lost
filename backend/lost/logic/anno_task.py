@@ -40,7 +40,7 @@ def update_anno_task(dbm, anno_task_id, user_id=None):
         annotask.progress = progress
         if user_id:
             annotask.last_activity = datetime.now()
-            annotask.last_annotater_id = user_id
+            annotask.last_annotator_id = user_id
         dbm.save_obj(annotask)
         return response
 
@@ -125,9 +125,9 @@ def __get_at_info(dbm, annotask, user_id):
     at['lastActivity'] = None
     if annotask.last_activity:
         at['lastActivity'] = annotask.last_activity.strftime("%Y-%m-%d %H:%M:%S")
-    at['lastAnnotater'] = "N/A"
-    if annotask.last_annotater:
-        at['lastAnnotater'] = annotask.last_annotater.user_name
+    at['lastAnnotator'] = "N/A"
+    if annotask.last_annotator:
+        at['lastAnnotator'] = annotask.last_annotator.user_name
     at['type'] = None
     at['finished'] = None
     at['size'] = None

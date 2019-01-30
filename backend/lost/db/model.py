@@ -868,7 +868,7 @@ class AnnoTask(Base):
         configuration (str): The way the Tool should be configured
 
     Warning:
-        *annotater_id = None* means that all users are assigned to this task.
+        *annotator_id = None* means that all users are assigned to this task.
     """
     __tablename__ = "anno_task"
     idx = Column(Integer, primary_key=True)
@@ -887,14 +887,14 @@ class AnnoTask(Base):
     instructions = Column(Text)
     configuration = Column(Text)
     last_activity = Column(DATETIME(fsp=6))
-    last_annotater_id = Column(Integer, ForeignKey('user.idx'))
-    last_annotater = relationship("User", foreign_keys='AnnoTask.last_annotater_id', uselist=False)
+    last_annotator_id = Column(Integer, ForeignKey('user.idx'))
+    last_annotator = relationship("User", foreign_keys='AnnoTask.last_annotator_id', uselist=False)
     req_label_leaves = relationship('RequiredLabelLeaf')
 
     def __init__(self, idx=None, manager_id=None, group_id=None, state=None,
                  progress=None, dtype=None, pipe_element_id=None,
                  timestamp=None, name=None, instructions=None,
-                 configuration=None, last_activity=None, last_annotater=None):
+                 configuration=None, last_activity=None, last_annotator=None):
         self.idx = idx
         self.manager_id = manager_id
         self.group_id = group_id
@@ -907,7 +907,7 @@ class AnnoTask(Base):
         self.instructions = instructions
         self.configuration = configuration
         self.last_activity = last_activity
-        self.last_annotater = last_annotater
+        self.last_annotator = last_annotator
 
 class Pipe(Base):
     """A general pipe (task) that defines how a video/dataset (Media) will be processed.
@@ -1384,7 +1384,7 @@ class Label(Base):
         timestamp (DateTime):
         timestamp_lock (DateTime):
         label_leaf (model.LabelLeaf): related :class:`model.LabelLeaf` object.
-        annotater_id (Integer): GroupID of Annotater who has assigned this Label.
+        annotator_id (Integer): GroupID of Annotator who has assigned this Label.
         confidence (float): Confidence of Annotation.
         anno_time (float): Time of annotaiton duration
 
@@ -1395,7 +1395,7 @@ class Label(Base):
     label_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'), nullable=False)
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     two_d_anno_id = Column(Integer, ForeignKey('two_d_anno.idx'))
-    annotater_id = Column(Integer, ForeignKey('group.idx'))
+    annotator_id = Column(Integer, ForeignKey('group.idx'))
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     label_leaf = relationship('LabelLeaf', uselist=False)
@@ -1403,7 +1403,7 @@ class Label(Base):
     anno_time = Column(Float)
 
     def __init__(self, idx=None, dtype=None, label_leaf_id=None, img_anno_id=None,
-                 two_d_anno_id=None, annotater_id=None,
+                 two_d_anno_id=None, annotator_id=None,
                  timestamp_lock=None, timestamp=None,
                  confidence=None, anno_time=None):
         self.idx = idx
@@ -1411,7 +1411,7 @@ class Label(Base):
         self.label_leaf_id = label_leaf_id
         self.img_anno_id = img_anno_id
         self.two_d_anno_id = two_d_anno_id
-        self.annotater_id = annotater_id
+        self.annotator_id = annotator_id
         self.timestamp_lock = timestamp_lock
         self.timestamp = timestamp
         self.confidence = confidence

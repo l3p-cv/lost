@@ -57,7 +57,7 @@ class UserList(Resource):
             email_confirmed_at=datetime.datetime.utcnow(),
             password= data['password'],
             )
-            anno_role = dbm.get_role_by_name(roles.ANNOTATER)
+            anno_role = dbm.get_role_by_name(roles.ANNOTATOR)
             user.roles.append(anno_role)
             user.groups.append(Group(name=user.user_name, is_user_default=True))
             
