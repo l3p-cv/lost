@@ -110,7 +110,12 @@ export const image = imageView.image
 appModel.ui.resized.on("update", () => {
 	// (re)create drawables
     createDrawables(appModel.data.drawables.value)
-	// reset zoom
+})
+// reset zoom observable on resize
+$(window).on("resize", () => {
+	// quickfix: i wanted to use observables reset method, but 
+	// it currently returns the latest value instead of the initial value. 
+	// the reset handlers do not execute as expected aswell. need to fix it.
 	appModel.ui.zoom.reset()
 })
 imageView.image.addEventListener("load", () => {   
@@ -148,13 +153,14 @@ const maxZoomLevel = (minZoom / zoomFactor) - 1
 let zoomLevel = 0
 let oldZoom = 1
 let newZoom = undefined
-// reset zoom when switching between images (data updates), was needed for camera
-appModel.data.drawables.on("update", () => {
+function resetZoomContext(){
     zoomLevel = 0
     oldZoom = 1
     newZoom = undefined
-	appModel.ui.zoom.reset()
-})
+}
+// reset zoom when switching between images (data updates), or when resizing window.
+appModel.data.drawables.on("update", resetZoomContext)
+$(window).on("resize", resetZoomContext)
 
 $(svg).on("wheel", $event => {
     $event = $event.originalEvent ? $event.originalEvent : $event
@@ -204,116 +210,88 @@ imageView.image.addEventListener("load", () => {
 // =============================================================================================
 // initially enable camera feature
 enableCamera()
-// toggle camera feature
-appModel.controls.creationEvent.on("change", isActive => {
-    if(isActive){
-        disableCamera()
-    } else {
-        enableCamera()
-    }
-})
 function enableCamera(){
-    const cameraEnabled = new Observable(false)
-    // add cursors
-    cameraEnabled.on("update", (enabled) => {
-        if(enabled){
-            mouse.setGlobalCursor(mouse.CURSORS.ALL_SCROLL, {
-                noPointerEvents: true,
-                noSelection: true,
-            })
-        } else {
-            mouse.unsetGlobalCursor()
-        }
-    })
-    // enable camera on mid mouse button
-    $(svg).on("mousedown", $event => {
-        if(!cameraEnabled.value && mouse.button.isMid($event.button)){
-	        $event.preventDefault()
-            disableChange()
-            disableSelect()
-            cameraEnabled.update(true)
-        }
-    })
-    // disable camera on mid mouse button
-    $(window).on("mouseup", $event => {
-        if(cameraEnabled.value && mouse.button.isMid($event.button)){
-            // console.log("disable camera")
-            if(appModel.config.value.actions.edit.bounds){
-                enableChange()
-            }
-            enableSelect()
-            cameraEnabled.update(false)
-        }
-    })
-    // move camera on left or mid mouse button
-    let lastCameraUpdateCall = undefined
 	let mousePrev = undefined
-    $(svg).on("mousedown.camera", $event => {
-        if(mouse.button.isRight($event.button)){
-            return
-        }
-        // quickfixed. event still fireing unneded (@cameraEnabled)
-        if(zoomLevel > 0 && (cameraEnabled.value || !$event.target.closest(".drawable"))){
-			cameraEnabled.update(true)
+	let button = undefined
+	// start inside svg
+    $(svg).on("mousedown.cameraStart", $event => {
+		// don't execute on right mouse button
+		// don't execute if not zoomed
+		if(mouse.button.isRight($event.button) || zoomLevel === 0){
+			return
+		}
+		// execute if left mouse button on free space
+		// execute if mid mouse button
+		if(
+			(mouse.button.isLeft($event.button) && !$event.target.closest(".drawable"))
+			|| mouse.button.isMid($event.button)
+		){
+			// remember mouse button that was used at start
+			button = $event.button
+
+			// disable browser mid button default
+			if(mouse.button.isMid($event.button)){
+				$event.preventDefault()
+			}
+
+			// set cursor
+			mouse.setGlobalCursor(mouse.CURSORS.ALL_SCROLL, {
+				noPointerEvents: true,
+				noSelection: true,
+			})
+			
+			// execute on mousemove
+			// initialize mouse start (prev) position
 			mousePrev = mousePrev === undefined
 				? mouse.getMousePosition($event, svg)
 				: mousePrev
-            let mouseCurr = mouse.getMousePosition($event, svg)
-            // move
-            $(window).on("mousemove.camera", $event => {
-                // console.log("move")
-                mouseCurr = mouse.getMousePosition($event, svg)
-                const distance = {
-                    x: mousePrev.x - mouseCurr.x,
-                    y: mousePrev.y - mouseCurr.y,
-                }
-                // smooth animation
-                if(lastCameraUpdateCall !== undefined){
-                    cancelAnimationFrame(lastCameraUpdateCall)
-                }
-                // execute
-                if(distance.x !== 0 || distance.y !== 0){
-                    lastCameraUpdateCall = requestAnimationFrame(() => {
-                        const svgWidth = parseInt(svg.getAttribute("width"))
-                        const svgHeight = parseInt(svg.getAttribute("height"))
-                        const vbXMax = svgWidth * (1 - newZoom)
-                        const vbYMax = svgHeight * (1 - newZoom)
-                        const viewBox = svg.getAttribute("viewBox").split(" ")
-                    
-                        let xDest = parseInt(viewBox[0]) + (distance.x * (vbXMax/svgWidth) * newZoom)
-                        let yDest = parseInt(viewBox[1]) + (distance.y * (vbYMax/svgHeight) * newZoom)
-                    
-                        xDest = xDest < 0 ? 0 : xDest
-                        yDest = yDest < 0 ? 0 : yDest
-                        xDest = xDest > vbXMax ? vbXMax : xDest
-                        yDest = yDest > vbYMax ? vbYMax : yDest
-
-                        SVG.setViewBox(svg, {
-                            x: xDest,
-                            y: yDest,
-                        })
-                        
-                        mousePrev = mouseCurr
-                    })
-                }
-            })
-            // stop move
-            $(window).one("mouseup", $event => {
-				$(window).off("mousemove.camera")
-				if(appModel.config.value.actions.edit.bounds){
-					enableChange()
+			$(window).on("mousemove.cameraUpdate", $event => {
+				const mouseCurr = mouse.getMousePosition($event, svg)
+				const distance = {
+					x: mousePrev.x - mouseCurr.x,
+					y: mousePrev.y - mouseCurr.y,
 				}
-				enableSelect()
-				mousePrev = undefined
-				cameraEnabled.update(false)
-            })
-        }
+				if(distance.x !== 0 || distance.y !== 0){
+					const svgWidth = parseInt(svg.getAttribute("width"))
+					const svgHeight = parseInt(svg.getAttribute("height"))
+					const vbXMax = svgWidth * (1 - newZoom)
+					const vbYMax = svgHeight * (1 - newZoom)
+					const viewBox = svg.getAttribute("viewBox").split(" ")
+				
+					let xDest = parseInt(viewBox[0]) + (distance.x * (vbXMax/svgWidth) * newZoom)
+					let yDest = parseInt(viewBox[1]) + (distance.y * (vbYMax/svgHeight) * newZoom)
+				
+					xDest = xDest < 0 ? 0 : xDest
+					yDest = yDest < 0 ? 0 : yDest
+					xDest = xDest > vbXMax ? vbXMax : xDest
+					yDest = yDest > vbYMax ? vbYMax : yDest
+					xDest = Math.round(xDest)
+					yDest = Math.round(yDest)
+
+					SVG.setViewBox(svg, {
+						x: xDest,
+						y: yDest,
+					})
+					mousePrev = mouseCurr
+				}
+			})	
+		}
     })
+	// stop inside window
+	$(window).on("mouseup.cameraStop", $event => {
+		if($event.button === button){
+			console.log("stop")
+			$(window).off("mousemove.cameraUpdate")
+			mouse.unsetGlobalCursor()
+			mousePrev = undefined
+			button = undefined
+		}
+	})
 }
 function disableCamera(){
-    $(window).off("keydown.camera")
-    $(window).off("keyup.camera")
-    $(svg).off("mousedown.camera")
+    $(svg).off("mousedown.cameraStart")
+    $(window).off("mouseup.cameraStop")
+    $(window).off("mousemove.cameraUpdate")
 }
 
 
@@ -1761,7 +1739,6 @@ export function resetSelection(){
 }
 
 export function resize(width: Number, height: Number){
-    console.log("canvas size:", width, height)
     imageView.resize(width, height)
 
     // resize drawables

@@ -57,9 +57,15 @@ export default class DrawablePresenter {
 		// react to zoom changes if implemented
 		if(this.onZoomChange){
 			appModel.ui.zoom.on("update", (zoom) => this.onZoomChange(zoom), this)
+			$(window).on("resize", () => {
+				this.onZoomChange(appModel.ui.zoom.initialValue)
+			})
 		}
 		if(this.view.onZoomChange){
 			appModel.ui.zoom.on("update", (zoom) => this.view.onZoomChange(zoom), this)
+			$(window).on("resize", () => {
+				this.view.onZoomChange(appModel.ui.zoom.initialValue)
+			})
 		}
     }
 	enableHover(){

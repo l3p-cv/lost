@@ -50,7 +50,7 @@ export default class MultipointPresenter extends DrawablePresenter {
                 borderWidth: MULTIPOINT_DEFAULTS.strokeWidth,           
             },
         })
-        // quickfix...
+        // quickfix: update menu bar. maybe there is a better solution.
         this.model.actBounds.on("update", (bounds) => {
             this.menuBar.setWidth(bounds.w + 2 * POINT_DEFAULTS.getRadius(false) + 2 * POINT_DEFAULTS.strokeWidth)
             svg.setTranslation(this.view.html.refs["container-node"], { 

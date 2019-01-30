@@ -1,4 +1,4 @@
-import { NodeTemplate, mouse } from "l3p-frontend"
+import { NodeTemplate, mouse, svg as SVG } from "l3p-frontend"
 
 import DEFAULTS from "./multipoint.defaults"
 import POINT_DEFAULTS from "../point/point.defaults"
@@ -50,12 +50,14 @@ export default class MultipointView extends DrawableView {
         model.points.map(p => p.view).forEach(pv => this.html.refs["points"].appendChild(pv.html.fragment))
 
         this.rootNode = this.html.root
+        this.containerNode = this.html.refs["container-node"]
         this.positionNode = this.html.refs["position-node"]
         this.collisionNode = this.html.refs["collision-node"]
         this.cursorNode = this.html.refs["cursor-node"]
 
         // cache node styles for best performance
         this.ccss = {
+	        containerNode : this.containerNode.style,
             rootNode : this.rootNode.style,
             positionNode : this.positionNode.style,
             collisionNode : this.collisionNode.style,
@@ -63,6 +65,14 @@ export default class MultipointView extends DrawableView {
         }
     }
 	onZoomChange(zoom){
+		// SVG.setTranslation(this.containerNode, {
+		// 	x: model.actBounds.value.left
+		// 		- POINT_DEFAULTS.getOutlineRadius(true)
+		// 		- POINT_DEFAULTS.getStrokeWidth(),
+		// 	y: model.actBounds.value.top
+		// 		- POINT_DEFAULTS.getOutlineRadius(true)
+		// 		- POINT_DEFAULTS.getStrokeWidth(),
+		// })
 		this.html.refs["cursor-node"].setAttribute("stroke-width", DEFAULTS.getStrokeWidth() + DEFAULTS.getCursorPadding())
 		this.html.refs["collision-node"].setAttribute("stroke-width", DEFAULTS.getStrokeWidth())
 	}
