@@ -1,8 +1,7 @@
 
-import { NodeTemplate, mouse } from "l3p-frontend"
+import { NodeTemplate, mouse, svg as SVG } from "l3p-frontend"
 
 import DrawableView from "../DrawableView"
-import * as SVG from "../svg"
 
 import DEFAULTS from "./point.defaults"
 import "./point.styles.scss"
@@ -13,23 +12,22 @@ import imageInterface from "components/image/imageInterface"
 export default class PointView extends DrawableView{
     constructor(config: any){
         super()
-        const { position, isNoAnnotation } = config
+        const { position } = config
         const { x, y } = position
-        this.isNoAnnotation = isNoAnnotation
         this.html = new NodeTemplate(/*html*/`
             <svg class="sia-point drawable">
                 <g data-ref="position-node" transform="translate(${x},${y})">
                     <g data-ref="container-node" 
                         transform="translate(
-                            ${-DEFAULTS.getOutlineRadius(isNoAnnotation) - DEFAULTS.getRadius(isNoAnnotation)},
-                            ${-DEFAULTS.getOutlineRadius(isNoAnnotation)})"
+                            ${-DEFAULTS.getOutlineRadius() - DEFAULTS.getRadius()},
+                            ${-DEFAULTS.getOutlineRadius()})"
                     ></g>
                     <circle data-ref="collision-node"
-                        r="${DEFAULTS.getRadius(isNoAnnotation)}"
+                        r="${DEFAULTS.getRadius()}"
                         fill="black">
                     </circle>
                     <circle data-ref="cursor-node"
-                        r="${DEFAULTS.getOutlineRadius(isNoAnnotation)}" 
+                        r="${DEFAULTS.getOutlineRadius()}" 
                         fill="transparent"
                         stroke="black"
                         stroke-width="${DEFAULTS.getStrokeWidth()}"
@@ -39,6 +37,7 @@ export default class PointView extends DrawableView{
             </svg>
         `)
         this.rootNode = this.html.root
+        this.containerNode = this.html.refs["container-node"]
         this.positionNode = this.html.refs["position-node"]
         this.cursorNode = this.html.refs["cursor-node"]
         this.collisionNode = this.html.refs["collision-node"]
@@ -51,9 +50,13 @@ export default class PointView extends DrawableView{
         }        
     }
     onZoomChange(zoom){
-        this.html.refs["collision-node"].setAttribute("r", `${DEFAULTS.getRadius(this.isNoAnnotation)}`)
-        this.html.refs["cursor-node"].setAttribute("r", `${DEFAULTS.getOutlineRadius(this.isNoAnnotation)}`)
-        this.html.refs["cursor-node"].setAttribute("stroke-width", `${DEFAULTS.getStrokeWidth()}`)
+		SVG.setTranslation(this.containerNode, {
+			x: -DEFAULTS.getOutlineRadius() - DEFAULTS.getRadius(),
+			y: -DEFAULTS.getOutlineRadius(),
+		})
+        this.collisionNode.setAttribute("r", `${DEFAULTS.getRadius()}`)
+        this.cursorNode.setAttribute("r", `${DEFAULTS.getOutlineRadius()}`)
+        this.cursorNode.setAttribute("stroke-width", `${DEFAULTS.getStrokeWidth()}`)
     }
 
     hover(){

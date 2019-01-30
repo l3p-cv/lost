@@ -1,6 +1,5 @@
 // @todo: add white background rect to the small label
-import { NodeTemplate } from "l3p-frontend"
-import * as svg from "../svg"
+import { NodeTemplate, svg } from "l3p-frontend"
 
 import "./menu.styles.scss"
 window.NodeTemplate = NodeTemplate

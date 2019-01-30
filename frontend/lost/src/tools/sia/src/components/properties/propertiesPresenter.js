@@ -41,17 +41,13 @@ appModel.state.selectedLabel.on("update", label => {
 appModel.data.image.info.on("update", () => {
     const data = appModel.data
     if(data.image.isFirst){
-        console.log("handling first image")
         handleFirstImage()
     } else {
-        console.log("handling not fist image")
         handleNotFirstImage()
     }
     if(data.image.isLast){
-        console.log("handling last image")
         handleLastImage()
     } else {
-        console.log("handling not last image")
         handleNotLastImage()
     }
 })

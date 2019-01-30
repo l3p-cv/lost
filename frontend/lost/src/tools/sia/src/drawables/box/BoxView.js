@@ -1,5 +1,5 @@
 
-import { NodeTemplate } from "l3p-frontend"
+import { NodeTemplate, svg as SVG } from "l3p-frontend"
 
 import "./box.styles.scss"
 import DEFAULTS from "./box.defaults"
@@ -39,13 +39,16 @@ export default class BoxView extends DrawableView {
         const borderWidth = DEFAULTS.getStrokeWidth()
         const wb = w + (2 * borderWidth)
         const hb = h + (2 * borderWidth)
+
         super(
             new NodeTemplate(`
                 <svg class="sia-bbox drawable">
                     <g data-ref="position-node" transform="translate(${x-(w/2)}, ${y-(h/2)})">
+						// apply position offset (inversed) for border to all elements
                         <g data-ref="container-node" transform="translate(${-borderWidth}, ${-borderWidth})">
                             
                             // the collision nodes boundaries are the actual data values
+                            // apply position offset to collision-node to undo the inversed offset
                             <rect data-ref="collision-node" x="${borderWidth}" y="${borderWidth}" width="${w}" height="${h}" stroke="none" stroke-width="0"/>
 
                             // the border nodes boundaries include the collision node and borders
@@ -74,7 +77,7 @@ export default class BoxView extends DrawableView {
         // box node reference workaround (adapted string template as fast as possible)
         this.rootNode = this.html.root
         this.positionNode = this.html.refs["position-node"]
-        this.containerNode= this.html.refs["container-node"]
+        this.containerNode = this.html.refs["container-node"]
         this.collisionNode = this.html.refs["collision-node"]
         this.borderNode = this.html.refs["border-node"]
         this.borderGroup = this.html.refs["border-group"]
@@ -125,6 +128,11 @@ export default class BoxView extends DrawableView {
         const borderWidth = DEFAULTS.getStrokeWidth()
         const hb = h + 2 * borderWidth
         const wb = w + 2 * borderWidth
+
+		// update position
+		SVG.setTranslation(this.containerNode, { x: -borderWidth, y: -borderWidth })
+        this.collisionNode.setAttribute("x", `${borderWidth}`)
+        this.collisionNode.setAttribute("y", `${borderWidth}`)
 
         // update widths and heights
         this.collisionNode.setAttribute("width", `${w}`)

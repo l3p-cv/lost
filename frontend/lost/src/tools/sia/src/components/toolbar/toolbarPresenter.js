@@ -1,6 +1,6 @@
 import $ from "cash-dom"
 
-import { mouse, keyboard, state } from "l3p-frontend"
+import { mouse, keyboard, state, svg as SVG } from "l3p-frontend"
 import appModel from "../../appModel"
 
 import "./toolbar.styles.scss"
@@ -9,15 +9,13 @@ import * as toolbarView from "./toolbarView"
 import imageInterface from "components/image/imageInterface"
 import * as imagePresenter from "components/image/imagePresenter"
 
-import { STATE, EVENT_COMPUTATION_SETTINGS } from "drawables/drawable.statics"
-import Timer from "shared/timer"
+import { STATE } from "drawables/drawable.statics"
 
 import PointPresenter from "drawables/point/PointPresenter"
 import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import BoxPresenter from "drawables/box/BoxPresenter"
 import BoxModel from "drawables/box/BoxModel"
 
-import * as SVG from "drawables/svg"
 function resetFocus(){
 	// no other element should be selected when creating a drawable, for
 	// example the label field could be selected.
@@ -532,79 +530,79 @@ appModel.config.on("update", config => {
                     })
                     break
                 case "sia-tool-bbox":
-                    // control context
-                    const minDrawTime = EVENT_COMPUTATION_SETTINGS.boxCreate.MIN_DRAW_TIME
-                    let lastUpdateCall = undefined
-
-                    // calculation context
                     let newBox = undefined
                     let wImg = undefined
                     let hImg = undefined
                     let mouseStart = undefined
                     let mouseCurr = undefined
-                    let mousePrev = undefined
+                    let lastUpdateCall = undefined
+					let validated = false
 
-                    function validate(e) {
-                        e.preventDefault()
-                        if(lastUpdateCall !== undefined) cancelAnimationFrame(lastUpdateCall)
-                        lastUpdateCall = requestAnimationFrame(() => {
-                            if(Timer.elapsed() > minDrawTime) {
-                                // reset validation.
-                                $(window).off("mousemove", validate)
-                                Timer.unlock()
+					function resetContext(){
+						newBox = undefined
+						wImg = undefined
+						hImg = undefined
+						mouseStart = undefined
+						mouseCurr = undefined
+						lastUpdateCall = undefined
+						validated = false
+					}
+					
+                    function validate($event) {
+						// check in which direction the user draws the box, create and add it
+						// calculate the real mouseposition (@zoom)
+						mouseCurr = mouse.getMousePosition($event, imageInterface.getSVG())
+						const svg = imageInterface.getSVG()
+						const zoom = appModel.ui.zoom.value
+						mouseCurr = {
+							x: (mouseCurr.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
+							y: (mouseCurr.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
+						}
+						let right = mouseStart.x <= mouseCurr.x
+						let down = mouseStart.y <= mouseCurr.y
 
-                                // check in which direction the user draws the box, create and add it
-                                // calculate the real mouseposition (@zoom)
-                                mouseCurr = mouse.getMousePosition(e, imageInterface.getSVG())
-                                const svg = imageInterface.getSVG()
-                                const zoom = appModel.ui.zoom.value
-                                mouseCurr = {
-                                    x: (mouseCurr.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                                    y: (mouseCurr.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                                }
-                                let right = mouseStart.x <= mouseCurr.x
-                                let down = mouseStart.y <= mouseCurr.y
+						// create a new box
+						// actual values
+						let w = BoxModel.getSquareMinSideLength()
+						let h = BoxModel.getSquareMinSideLength()
+						// console.log(w)
+						// console.log(h)
+						let x = right 
+							? mouseStart.x
+							: mouseStart.x - w
+						let y = down 
+							? mouseStart.y
+							: mouseStart.y - h
+						// relative values
+						w = w / wImg
+						h = h / hImg
+						x = (x / wImg) + (w / 2)
+						y = (y / hImg) + (h / 2)
+						newBox = new BoxPresenter({
+							status: STATE.NEW,
+							data: { x, y, w, h }
+						})
 
-                                // create a new box
-                                // actual values
-                                let w = BoxModel.getSquareMinSideLength()
-                                let h = BoxModel.getSquareMinSideLength()
-                                let x = right 
-                                    ? mouseStart.x
-                                    : mouseStart.x - w
-                                let y = down 
-                                    ? mouseStart.y
-                                    : mouseStart.y - h
-                                // relative values
-                                w = w / wImg
-                                h = h / hImg
-                                x = (x / wImg) + (w / 2)
-                                y = (y / hImg) + (h / 2)
-                                newBox = new BoxPresenter({
-                                    status: STATE.NEW,
-                                    data: { x, y, w, h }
-                                })
-								// hide the menu bar during creation
-								if(newBox.menuBar){
-									newBox.menuBar.hide()
-								}
+						// hide the menu bar during creation
+						if(newBox.menuBar){
+							newBox.menuBar.hide()
+						}
 
-                                // add the box hidden.
-                                appModel.addDrawable(newBox)
-                                // select the box.
-                                imagePresenter.selectDrawable(newBox)
+						// add the box hidden.
+						appModel.addDrawable(newBox)
+						// select the box.
+						imagePresenter.selectDrawable(newBox)
 
-                                // start the update on mousemove and show the box.
-                                $(window).on("mousemove", update)
-                            }
-                            lastUpdateCall = undefined
-                        })
+						// start the update on mousemove and show the box.
+						$(window).on("mousemove", update)
+						$(window).off("mousemove", validate)
+
+						// a flag to indicate that a box was created and update may execute.
+						validated = true
                     }
                     function update(e) {
-                        e.preventDefault()
                         if(lastUpdateCall !== undefined) cancelAnimationFrame(lastUpdateCall)
                         lastUpdateCall = requestAnimationFrame(() => {
-                            // @refactor: BoxPresenter.create(distance)
 							mouseCurr = mouse.getMousePosition(e, imageInterface.getSVG())
 							// calculate the real mouseposition (@zoom)
 							const svg = imageInterface.getSVG()
@@ -613,7 +611,6 @@ appModel.config.on("update", config => {
 								x: (mouseCurr.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
 								y: (mouseCurr.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
 							}
-							mousePrev = (mousePrev) ? mouseStart : mouseCurr
 							
 							const left = mouseCurr.x <= mouseStart.x
 							const up = mouseCurr.y <= mouseStart.y
@@ -621,9 +618,6 @@ appModel.config.on("update", config => {
 							const down = !up
 							let x, y, w, h;
 							let wDiff, hDiff;
-							
-							window.box = newBox
-							
 							if(left){
 								w = mouseStart.x - mouseCurr.x
 								wDiff = w - newBox.getW()
@@ -659,112 +653,94 @@ appModel.config.on("update", config => {
                         })
                     }
 
-                    // create box (start)
                     $(imageInterface.getSVG()).on("mousedown.createBoxStart", ($event) => {
-                        // console.log("create box handler (triggered)")
-                        // QUICK FIX:
-                        if(keyboard.isAModifierHit($event)){
-                            return
-                        }
-                        if(appModel.controls.tool.value === "sia-tool-bbox"){
-                            if(!mouse.button.isRight($event.button)){
-                                return
-                            } else {
-								if(appModel.controls.changeEvent.value === false){
-									appModel.controls.creationEvent.update(true)
-								}
+						// only execute on right mouse button.
+						if(!mouse.button.isRight($event.button)){
+							return
+						}
 
-                                // console.warn("create box handler (code executed)")
-								resetFocus()
-                                $event.preventDefault()
-                            
-                                // set a global cursor.
-                                mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
-                                    noPointerEvents: true,
-                                    noSelection: true,
-                                })
-                                
-                                // start the box create e with a
-                                // timer because drawing should have a minimum time
-                                // required to get validated.
-                                // save the mouse start position for the new box and
-                                // add the validate function to the mousemove e
-                                Timer.start()
+						// mark event.
+						if(appModel.controls.changeEvent.value === false){
+							appModel.controls.creationEvent.update(true)
+						}
 
-                                // update the context
-                                wImg = imageInterface.getWidth()
-                                hImg = imageInterface.getHeight()
-                                mouseStart = mouse.getMousePosition($event, imageInterface.getSVG())
-                           
-						        // calculate the real mouseposition (@zoom)
-                                const svg = imageInterface.getSVG()
-                                const zoom = appModel.ui.zoom.value
-                                mouseStart = {
-                                    x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
-                                    y: (mouseStart.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
-                                }
+						// quickfix: if label selection is opened, blur.
+						resetFocus()
+					
+						// set a global cursor.
+						mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
+							noPointerEvents: true,
+							noSelection: true,
+						})
 
-                                // start event validation
-                                $(window).on("mousemove", validate)
-                            }
-                        }      
+						// update the context
+						wImg = imageInterface.getWidth()
+						hImg = imageInterface.getHeight()
+						mouseStart = mouse.getMousePosition($event, imageInterface.getSVG())
+					
+						// calculate the real mouseposition (@zoom)
+						const svg = imageInterface.getSVG()
+						const zoom = appModel.ui.zoom.value
+						mouseStart = {
+							x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
+							y: (mouseStart.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
+						}
+
+						// start event validation
+						$(window).on("mousemove", validate)
                     })
-                    // create box (end)
-                    $(window).on("mouseup.createBoxEnd", ($event) => {
-                        // console.log("create box handler (triggered)")
-                        if(appModel.controls.tool.value === "sia-tool-bbox"){
-                            if(!mouse.button.isRight($event.button)){
-                                return
-                            } else {
-                                // console.warn("create box handler (code executed)")
-								resetFocus()
-                                $event.preventDefault()
-                                // at least trigger update once!
-                                update($event)
+					$(window).on("mouseup.createBoxEnd", ($event) => {
+						if(!mouse.button.isRight($event.button)){
+							return
+						}
 
-                                // removing validation is needed if the user fastclicks without dragging.
-                                $(window).off("mousemove", validate)                
-                                $(window).off("mousemove", update)
+						// need to remove validation (creation) handler aswell. if user just clicks without dragging,
+						// the handler will never get executed and therefore it will not remove itself.
+						$(window).off("mousemove", validate)
 
-                                // reset the global cursor.            
-                                mouse.unsetGlobalCursor()
+						// stop update.
+						if(lastUpdateCall !== undefined) cancelAnimationFrame(lastUpdateCall)
+						$(window).off("mousemove", update)
 
-                                // add redo and undo
-                                state.add(new state.StateElement({
-                                    do: {
-                                        data: {
-                                            box: newBox
-                                        },
-                                        fn: (data) => {
-                                            // add the box hidden.
-                                            appModel.addDrawable(data.box)
-                                            // select the box.
-                                            imagePresenter.selectDrawable(data.box)
-                                        }
-                                    },
-                                    undo: {
-                                        data: {
-                                            box: newBox
-                                        },
-                                        fn: (data) => {
-                                            data.box.delete()
-                                            appModel.deleteDrawable(data.box)
-                                            // imagePresenter.selectDrawable(appModel.state.previousDrawable)
-                                        }
-                                    }
-                                }))
+						// reset the global cursor.            
+						mouse.unsetGlobalCursor()
 
-								// show the menu bar during creation
-								if(newBox.menuBar){
-									newBox.menuBar.show()
+						// add redo undo.
+						if(validated){
+							state.add(new state.StateElement({
+								do: {
+									data: {
+										box: newBox
+									},
+									fn: (data) => {
+										// add the box hidden.
+										appModel.addDrawable(data.box)
+										// select the box.
+										imagePresenter.selectDrawable(data.box)
+									}
+								},
+								undo: {
+									data: {
+										box: newBox
+									},
+									fn: (data) => {
+										data.box.delete()
+										appModel.deleteDrawable(data.box)
+										// imagePresenter.selectDrawable(appModel.state.previousDrawable)
+									}
 								}
+							}))
 
-								// if(appModel.controls.changeEvent.value === false){
-									appModel.controls.creationEvent.update(false)
-								// }
-                            }
-                        }       
-                    })
+							// show the menu bar during creation
+							if(newBox.menuBar){
+								newBox.menuBar.show()
+							}
+						}
+
+						// reset.
+						resetContext()
+						appModel.controls.creationEvent.update(false)
+					})
                     break
                 default: throw new Error("unknown tool id:", toolId)
             }
