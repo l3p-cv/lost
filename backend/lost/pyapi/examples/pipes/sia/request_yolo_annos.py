@@ -11,7 +11,9 @@ ENVS = ['lost-cv']
 ARGUMENTS = {'model_url' : { 'value':'https://github.com/OlafenwaMoses/ImageAI/releases/download/1.0/yolo.h5',
                             'help': 'Pretrained yolov3 model for ImageAI lib'},
             'conf_thresh' : { 'value' : '50',
-                            'help': 'Confidence threshold in percent'}
+                            'help': 'Confidence threshold in percent'},
+            'map_lbls' : { 'value' : 'true',
+                            'help': 'Try to map lbls of yolo model to possible label of next annotation task'}
             }
 
 def download_model(s):
@@ -49,6 +51,20 @@ def convert_annos(annos, img):
     new[:,[1,3]] = new[:,[1,3]] / h
     return new.tolist()
 
+def map_lbls_to_lbltree(lbls, possible_labels):
+    mapped = []
+    lbl_map = {}
+    for idx, row in possible_labels.iterrows():
+        lbl_map[row['name'].lower()] = int(row['idx'])
+    for lbl in lbls:
+        lbl = lbl.lower()
+        if lbl in lbl_map:
+            mapped.append(lbl_map[lbl])
+        else:
+            mapped.append(None)
+    return mapped
+
+
 class RequestYoloAnnos(script.Script):
     '''Request annotations and yolov3 bbox proposals for each image of an imageset.
 
@@ -63,6 +79,8 @@ class RequestYoloAnnos(script.Script):
         detector.setModelPath(model_path)
         detector.loadModel()
         self.logger.info('Loaded model into memory!')
+        for annotask in self.outp.anno_tasks:
+            possible_labels = annotask.possible_label_df
         for raw_file in self.inp.raw_files:
             media_path = raw_file.path
             file_list = os.listdir(media_path)
@@ -73,9 +91,14 @@ class RequestYoloAnnos(script.Script):
                     minimum_percentage_probability=float(self.get_arg('conf_thresh')))
                 annos = [box['box_points'] for box in detections]
                 annos = convert_annos(annos, skimage.io.imread(img_path))
-                lbls = [box['name'] for box in detections]
+                lbls = [box['name'] for box in detections]                    
                 sim_classes = get_sim_classes(lbls, lbl_map)
-                self.outp.request_bbox_annos(img_path=img_path, boxes=annos, sim_classes=sim_classes)
+                if self.get_arg('map_lbls').lower() == 'true':
+                    lbl_ids = map_lbls_to_lbltree(lbls, possible_labels)
+                else:
+                    lbl_ids = None
+                self.outp.request_bbox_annos(img_path=img_path, boxes=annos, 
+                    sim_classes=sim_classes, labels=lbl_ids)
                 self.logger.info('Requested bbox annos for: {}\n{}\n{}'.format(img_path, annos, lbls))
                 self.update_progress(index*100/total)
 
