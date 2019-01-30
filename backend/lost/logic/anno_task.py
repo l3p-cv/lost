@@ -88,7 +88,7 @@ def set_finished(dbm, anno_task_id):
 def get_current_annotask(dbm, user):
         if user.choosen_anno_task:
             anno_task = user.choosen_anno_task
-            return __get_at_info(dbm, anno_task, user.idx)
+            return __get_at_info(dbm, anno_task, user.idx, True)
         return None
 
 def get_available_annotasks(dbm, group_ids, user_id):
@@ -107,7 +107,7 @@ def get_available_annotasks(dbm, group_ids, user_id):
         available_annotasks.append(__get_at_info(dbm, annotask, user_id))
     return available_annotasks
 
-def __get_at_info(dbm, annotask, user_id):
+def __get_at_info(dbm, annotask, user_id, amount_per_label=False):
     if annotask.pipe_element_id is None:
         raise Exception("No PipeElement for AnnoTask")
     pipeelement = dbm.get_pipe_element(pipe_e_id=annotask.pipe_element_id)
@@ -151,23 +151,26 @@ def __get_at_info(dbm, annotask, user_id):
             finished = available-remaining
             at['finished'] = finished
             at['size'] = available
-            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'imageBased')
-            at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'imageBased')
+            if amount_per_label:
+                at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'imageBased')
+                at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'imageBased')
         elif config['type'] == 'annoBased':
             remaining, available = __get_twod_anno_counts(dbm, annotask.idx, pipeelement.iteration)
             finished = available-remaining
             at['finished'] = finished
             at['size'] = available
-            at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
-            at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
+            if amount_per_label:
+                at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
+                at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
     else:
         at['type'] = 'SIA'
         remaining, available = __get_image_anno_counts(dbm, annotask.idx, pipeelement.iteration)
         finished = available-remaining
         at['finished'] = finished
         at['size'] = available
-        at['statistic']['amountPerLabel'] =  __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
-        at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
+        if amount_per_label:
+            at['statistic']['amountPerLabel'] =  __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
+            at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
     
     return at
 
