@@ -164,7 +164,6 @@ class PipeEngine(pipe_model.PipeEngine):
                     # else:
                     if pipe_e.state == state.PipeElement.PENDING:
                         env = self.select_env_for_script(pipe_e)
-                        self.logger.info('Selected env: {}'.format(env))
                         if env is None:
                             return
                         celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
