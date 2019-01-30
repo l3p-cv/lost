@@ -73,7 +73,7 @@ class WorkingOnSIA extends Component {
                  </div>
                 </Col>
                 <Col xs='3' md='3' xl='3'>
-                    <Button color='primary' style={{marginTop: '25px'}} onClick={this.openModal}><i class="fa fa-question-circle"></i> Show Instructions</Button>
+                    <Button color='primary' style={{marginTop: '25px'}} onClick={this.openModal}><i className="fa fa-question-circle"></i> Show Instructions</Button>
                 </Col>
                 </Row>
                 <div className='clearfix'>
@@ -91,15 +91,16 @@ class WorkingOnSIA extends Component {
                     onAfterOpen={this.afterOpenModal}
                     onRequestClose={this.closeModal}
                     style={customStyles}
+                    ariaHideApp={false}
                     contentLabel="Instructions"
                     >
                      <Card>
-                        <CardHeader><i class="fa fa-question-circle"></i> Instructions</CardHeader>
+                        <CardHeader><i className="fa fa-question-circle"></i> Instructions</CardHeader>
                         <CardBody>
                             <Alert color="info">
                                 {this.props.annoTask.instructions}
                             </Alert>
-                            <Button color='success' onClick={this.closeModal}><i class="fa fa-times"></i> Close</Button>
+                            <Button color='success' onClick={this.closeModal}><i className="fa fa-times"></i> Close</Button>
                         </CardBody>
                     </Card>                   
                 </Modal>
