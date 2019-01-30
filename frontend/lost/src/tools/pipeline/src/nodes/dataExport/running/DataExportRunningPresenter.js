@@ -24,7 +24,7 @@ export default class DataExportRunningPresenter extends BaseNodePresenter {
                         
                         // simulate click on download button
                         modal.html.refs[`download-hidden-btn-${i}`].href=objectURL
-                        modal.html.refs[`download-hidden-btn-${i}`].download=el.file_path
+                        modal.html.refs[`download-hidden-btn-${i}`].download=el.file_path.substring(el.file_path.lastIndexOf('/') + 1, el.file_path.length)
                         modal.html.refs[`download-hidden-btn-${i}`].click()
                         window.URL.revokeObjectURL(objectURL);
                 })
