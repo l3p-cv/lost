@@ -1,6 +1,6 @@
 import $ from "cash-dom"
 
-import { mouse, keyboard } from "l3p-frontend"
+import { mouse, keyboard, state } from "l3p-frontend"
 
 import * as propertiesView from "./propertiesView"
 
@@ -27,16 +27,44 @@ appModel.data.image.url.on("update", url => {
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
+// todo: observable text on change....
 appModel.state.selectedLabel.on("update", label => {
 	propertiesView.setDescription(label.description)
 	if(appModel.isADrawableSelected()){
 		const drawable = appModel.getSelectedDrawable()
+		// save state
+		state.add(new state.StateElement({
+			do: {
+				data: { drawable, label },
+				fn: (data) => {
+					const { drawable, label } = data
+					console.log("set label:", label)
+					if(drawable.parent){
+						drawable.parent.setLabel(label)
+					} else {
+						drawable.setLabel(label)
+					}
+				},
+			},
+			undo: {
+				data: { drawable, label: drawable.model.label },
+				fn: (data) => {
+					const { drawable, label } = data
+					console.log("set label:", label)
+					if(drawable.parent){
+						drawable.parent.setLabel(label)
+					} else {
+						drawable.setLabel(label)
+					}
+				},
+			},
+		}))
+		// execute
 		if(drawable.parent){
 			drawable.parent.setLabel(label)
 		} else {
 			drawable.setLabel(label)
-		}
-		
+		}		
 	}
 })
 // // quickfix: for?
