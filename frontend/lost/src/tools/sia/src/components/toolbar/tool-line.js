@@ -6,7 +6,8 @@ import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import * as imagePresenter from "components/image/imagePresenter"
+import { selectDrawable } from "components/image/change-select"
+
 
 let firstPoint = undefined
 let currentPoint = undefined
@@ -47,7 +48,7 @@ function addLinePoint($event){
 		}))
 		// imagePresenter.addDrawable(firstPoint)
 		appModel.addDrawable(firstPoint)
-		imagePresenter.selectDrawable(firstPoint)
+		selectDrawable(firstPoint)
 		console.log("added line point")
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
@@ -83,7 +84,7 @@ function addLinePoint($event){
 		appModel.deleteDrawable(firstPoint)
 		appModel.addDrawable(line)
 		// select the second point of the line as indicator.
-		imagePresenter.selectDrawable(line.model.points[1])
+		selectDrawable(line.model.points[1])
 	}
 	// else add a point to the line.
 	else {
@@ -104,7 +105,7 @@ function addLinePoint($event){
 					},
 				}
 			}))
-			imagePresenter.selectDrawable(currentPoint)
+			selectDrawable(currentPoint)
 		}
 	}
 }
@@ -129,12 +130,12 @@ function deleteLinePoint(){
 		})
 		// imagePresenter.addDrawable(firstPoint)
 		appModel.addDrawable(firstPoint)
-		imagePresenter.selectDrawable(firstPoint)
+		selectDrawable(firstPoint)
 	}
 	// 3+n point
 	else if(line){
 		line.removePoint(line.model.points[line.model.points.length - 1])
-		imagePresenter.selectDrawable(line.model.points[line.model.points.length - 1])
+		selectDrawable(line.model.points[line.model.points.length - 1])
 	}
 }
 function finishLine(){
@@ -145,7 +146,7 @@ function finishLine(){
 				fn: (data) => {
 					const { line } = data
 					appModel.addDrawable(line)
-					imagePresenter.selectDrawable(line)
+					selectDrawable(line)
 				},
 			},
 			undo: {
@@ -218,15 +219,15 @@ export function enableLineCreation(){
 			}
 		}
 	})
-	$(window).on("keydown.deleteLinePoint", ($event) => {
-		if(appModel.controls.creationEvent.value === true){
-			if(appModel.controls.changeEvent.value === false){
-				if(keyboard.isKeyHit($event, "Delete")){
-					deleteLinePoint()
-				}
-			}
-		}
-	})
+	// $(window).on("keydown.deleteLinePoint", ($event) => {
+	// 	if(appModel.controls.creationEvent.value === true){
+	// 		if(appModel.controls.changeEvent.value === false){
+	// 			if(keyboard.isKeyHit($event, "Delete")){
+	// 				deleteLinePoint()
+	// 			}
+	// 		}
+	// 	}
+	// })
 }
 export function disableLineCreation(){
 	$(imageInterface.getSVG()).off("mousedown.createLinePoint")

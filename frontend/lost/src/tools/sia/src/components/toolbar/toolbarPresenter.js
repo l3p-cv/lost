@@ -5,23 +5,18 @@ import appModel from "../../appModel"
 import "./toolbar.styles.scss"
 import * as toolbarView from "./toolbarView"
 
-import * as imagePresenter from "components/image/imagePresenter"
+import * as propertiesPresenter from "components/properties/propertiesPresenter"
 
 import { enableBBoxCreation, disableBBoxCreation } from "./tool-bbox"
 import { enablePointCreation, disablePointCreation } from "./tool-point"
 import { disableLineCreation, enableLineCreation } from "./tool-line"
 import { enablePolygonCreation, disablePolygonCreation } from "./tool-polygon"
+import { resetSelection } from "components/image/change-select"
 
-// // no other element should be selected when creating a drawable, for
-// // example the label field could be selected.
-// $(imageInterface.getSVG()).on("mousedown", $event => {
-// 	if(mouse.button.isRight($event.button)){
-// 		document.activeElement.blur()
-// 	}
-// })
-/* model binding */
+
+appModel.controls.creationEvent.on("change", isActive => propertiesPresenter.onDrawableCreation(isActive))
 appModel.controls.tool.on("update", () => {
-	imagePresenter.resetSelection()
+	resetSelection()
 })
 appModel.config.on("update", config => {
     if(config.actions.drawing){
@@ -59,7 +54,6 @@ appModel.config.on("update", config => {
         }
         // unset handler depending on tool id string.
         function disableDrawableCreation(toolId: String){
-            console.log("disable:", toolId)
             switch(toolId){
                 case "sia-tool-point":
                     disablePointCreation()
@@ -85,13 +79,11 @@ appModel.config.on("update", config => {
     }
 })
 
-/* view binding */
 $(toolbarView.html.ids["sia-toolbar-container"]).on("click", "button", ($event) => {
     appModel.controls.tool.update($event.target.closest("button").id)
 })
 
 
-/* export */
 export function setLayout(layout: String){
     toolbarView.setLayout(layout)
 }

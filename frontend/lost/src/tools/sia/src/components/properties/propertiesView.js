@@ -324,12 +324,6 @@ export function resetDescription(){
     html.refs["label-description"].textContent = "Select or create a Drawable to edit it."
 }
 
-export function enableNavigationButtons(){
-    enableFirstButton()    
-    enableLastButton()    
-    enableNextButton()    
-    enablePrevButton()    
-}
 export function enableNextButton(){
     html.refs["btn-next"].disabled = false
 }
@@ -342,7 +336,7 @@ export function enableFirstButton(){
 export function enableLastButton(){
     html.refs["btn-latest"].disabled = false
 }
-
+// appModel.data.image.isFirst
 export function disableNavigationButtons(){
     disableFirstButton()    
     disableLastButton()    

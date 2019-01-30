@@ -5,7 +5,7 @@ import PointPresenter from "drawables/point/PointPresenter"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import * as imagePresenter from "components/image/imagePresenter"
+import { selectDrawable } from "components/image/change-select"
 
 
 export function enablePointCreation(){
@@ -49,7 +49,7 @@ export function enablePointCreation(){
 					fn: (data) => {
 						const { point } = data
 						appModel.addDrawable(point)
-						imagePresenter.selectDrawable(point)
+						selectDrawable(point)
 					}
 				},
 				undo: {
@@ -62,7 +62,7 @@ export function enablePointCreation(){
 				}
 			}))
 			appModel.addDrawable(point)
-			imagePresenter.selectDrawable(point)
+			selectDrawable(point)
 			appModel.controls.creationEvent.update(false)
 		}
 	})

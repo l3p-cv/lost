@@ -7,7 +7,8 @@ import { STATE } from "drawables/drawable.statics"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import * as imagePresenter from "components/image/imagePresenter"
+import { selectDrawable } from "components/image/change-select"
+
 
 let newBox = undefined
 let wImg = undefined
@@ -70,7 +71,7 @@ function validate($event) {
 	// add the box hidden.
 	appModel.addDrawable(newBox)
 	// select the box.
-	imagePresenter.selectDrawable(newBox)
+	selectDrawable(newBox)
 
 	// start the update on mousemove and show the box.
 	$(window).on("mousemove", update)
@@ -193,7 +194,7 @@ export function enableBBoxCreation(){
 						// add the box hidden.
 						appModel.addDrawable(data.box)
 						// select the box.
-						imagePresenter.selectDrawable(data.box)
+						selectDrawable(data.box)
 					}
 				},
 				undo: {
@@ -203,7 +204,7 @@ export function enableBBoxCreation(){
 					fn: (data) => {
 						data.box.delete()
 						appModel.deleteDrawable(data.box)
-						// imagePresenter.selectDrawable(appModel.state.previousDrawable)
+						// selectDrawable(appModel.state.previousDrawable)
 					}
 				}
 			}))

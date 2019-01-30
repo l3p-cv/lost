@@ -80,15 +80,13 @@ export default {
     },
     data: {
         image: {
-            // BACKEND
-            id: undefined,
             url: new Observable(""),
+            id: undefined,
             isFirst: undefined,
             isLast: undefined,
             number: undefined,
             amount: undefined,
             rawLoadedImage: new Observable({}),
-            // FRONTEND
             info: new Observable({
                 name: "",
                 id: 0,
@@ -109,11 +107,12 @@ export default {
     updateAnnotations(data: any){
         if(data !== "nothing available"){
 			// update image data.
-			// image id and url must stay in this sequence.
-            this.data.image.id = data.image.id
-            this.data.image.url.update(`${API_URL}${data.image.url}`)
+			// image url needs to update after setting isFirst/Last and id
+			// url update handlers use isFirst/Last and id.
             this.data.image.isFirst = (data.image.isFirst) ? data.image.isFirst : false
             this.data.image.isLast = (data.image.isLast) ? data.image.isLast : false
+            this.data.image.id = data.image.id
+            this.data.image.url.update(`${API_URL}${data.image.url}`)
             this.data.image.number = data.image.number
             this.data.image.amount = data.image.amount
 
