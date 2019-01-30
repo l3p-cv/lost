@@ -328,15 +328,6 @@ function detachDrawable(drawable: DrawablePresenter){
     }
 }
 
-export function onDrawableCreation(isActive){
-	if(isActive){
-		disableNavigationButtons()
-		// // blur label selection focus
-		// document.activeElement.blur()
-	} else {
-		updateNavigationButtons()
-	}
-}
 function updateNavigationButtons(){
 	const { isFirst, isLast } = appModel.data.image
 	if(isFirst){
@@ -376,6 +367,15 @@ function handleNotFirstImage(){
     propertiesView.enableFirstButton()
 }
 
+export function onDrawableCreation(isActive){
+	if(isActive){
+		disableNavigationButtons()
+		// // blur label selection focus
+		// document.activeElement.blur()
+	} else {
+		updateNavigationButtons()
+	}
+}
 
 export function resize(){
     propertiesView.resize()

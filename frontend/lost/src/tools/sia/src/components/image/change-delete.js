@@ -6,6 +6,10 @@ import { selectDrawable } from "./change-select"
 
 
 export function enableDelete(){
+	disableDelete()
+	if(!appModel.config.value.actions.edit.delete){
+		return
+	}
     $(window).on("keydown.drawableDelete", ($event) => {
         if(keyboard.isKeyHit($event, "Delete")){
             if(appModel.isADrawableSelected()){
@@ -13,7 +17,7 @@ export function enableDelete(){
                 $event.preventDefault()
                 const selectedDrawable = appModel.getSelectedDrawable()
                 if(selectedDrawable.isDeletable()){
-                    // for multipoint drawables:
+                    // for points of multipoint drawables:
                     if(selectedDrawable.parent){
                         if(selectedDrawable.parent.model.type === "line"){
                             if(selectedDrawable.parent.model.points.length <= 2) return
@@ -24,7 +28,7 @@ export function enableDelete(){
                     } 
                     // for drawables:
                     else {
-                        // add redo and undo
+                        // save state
                         state.add(new state.StateElement({
                             do: {
                                 data: { drawable: selectedDrawable },
@@ -41,6 +45,7 @@ export function enableDelete(){
                                 }
                             }
                         }))
+						// execute
                         selectedDrawable.delete()
                         appModel.deleteDrawable(selectedDrawable)
                     }

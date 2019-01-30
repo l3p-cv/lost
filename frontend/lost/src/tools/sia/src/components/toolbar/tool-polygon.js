@@ -29,7 +29,6 @@ function addPolygonPoint($event){
 			data: { x: mousepos.x / imgW, y: mousepos.y / imgH }, 
 			isNoAnnotation: true,
 		})
-		// imagePresenter.addDrawable(firstPoint)
 		appModel.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 	}
@@ -43,10 +42,8 @@ function addPolygonPoint($event){
 		if(line.menuBar){
 			line.menuBar.hide()
 		}
-		// imagePresenter.removeDrawable(firstPoint)
 		appModel.deleteDrawable(firstPoint)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
-		// imagePresenter.addDrawable(line)
 		appModel.addDrawable(line)
 		selectDrawable(line.model.points[1])
 	}
@@ -59,7 +56,6 @@ function addPolygonPoint($event){
 		if(polygon.menuBar){
 			polygon.menuBar.hide()
 		}
-		// imagePresenter.removeDrawable(line)
 		appModel.deleteDrawable(line)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
 		appModel.addDrawable(polygon)
@@ -76,14 +72,12 @@ function addPolygonPoint($event){
 function deletePolygonPoint(){
 	// first point
 	if(firstPoint && !line){
-		// imagePresenter.removeDrawable(firstPoint)
 		appModel.deleteDrawable(firstPoint)
 		firstPoint = undefined
 	}
 	// second point
 	else if(line && !polygon){
 		// remove the line from model and image view (event bound).
-		// imagePresenter.removeDrawable(line)
 		appModel.deleteDrawable(line)
 		line = undefined
 		// re-create the first point, add and select it.
@@ -91,7 +85,6 @@ function deletePolygonPoint(){
 			data: firstPoint.model.relBounds, 
 			isNoAnnotation: true,
 		})
-		// imagePresenter.addDrawable(firstPoint)
 		appModel.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 	}
@@ -105,7 +98,6 @@ function deletePolygonPoint(){
 			data: line.model.relPointData,
 			type: "line",
 		})
-		// imagePresenter.addDrawable(line)
 		appModel.addDrawable(line)
 		selectDrawable(line.model.points[1])
 	}
@@ -143,10 +135,8 @@ function finishPolygon(){
 			polygon.menuBar.show()
 		}
 	} else if(line){
-		// imagePresenter.removeDrawable(line)
 		appModel.deleteDrawable(line)
 	} else if(firstPoint){
-		// imagePresenter.removeDrawable(firstPoint)
 		appModel.deleteDrawable(firstPoint)
 	}
 

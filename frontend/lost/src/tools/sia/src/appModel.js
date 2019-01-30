@@ -1,8 +1,8 @@
-import { Observable } from "l3p-frontend"
-import { STATE } from "drawables/drawable.statics"
-import * as DrawableDefaults from "drawables/drawable.defaults"
+import { Observable, state } from "l3p-frontend"
 
-import * as MenuDefaults from "drawables/menu/menu.defaults"
+import { STATE } from "drawables/drawable.statics"
+import * as DRAWABLE_DEFAULTS from "drawables/drawable.defaults"
+import * as MENU_DEFAULTS from "drawables/menu/menu.defaults"
 
 import { API_URL } from 'root/settings'
 
@@ -44,7 +44,7 @@ export default {
         layout: new Observable(""),
         imageWidth: new Observable(0),
         imageHeight: new Observable(0),
-        menuBarHeight: MenuDefaults.bar.height,
+        menuBarHeight: MENU_DEFAULTS.bar.height,
         zoom: new Observable(1),
 		strokeWidthModifier: new Observable(1),
 		pointRadiusModifier: new Observable(1),
@@ -60,7 +60,7 @@ export default {
         // a color table, changes on every image
         colorTable: undefined,  // type will be 'Map'
         imageData: null,        // type will be 'ImageData' 
-        selectedLabel: new Observable(DrawableDefaults.LABEL),
+        selectedLabel: new Observable(DRAWABLE_DEFAULTS.LABEL),
         drawables: {
             points: new Observable([]),
             lines: new Observable([]),
@@ -105,6 +105,8 @@ export default {
     },
     
     updateAnnotations(data: any){
+		// reset undo redo history
+		state.reset()
         if(data !== "nothing available"){
 			// update image data.
 			// image url needs to update after setting isFirst/Last and id
@@ -142,7 +144,7 @@ export default {
 			name: label.label,
 		}))
 		// add default "no label" label as first element. 
-        labels.unshift(DrawableDefaults.LABEL)
+        labels.unshift(DRAWABLE_DEFAULTS.LABEL)
 		this.data.labelList.update(labels)
     },
 	

@@ -10,6 +10,10 @@ import { enableBoxChange, disableBoxChange } from "./change-box"
 
 
 export function enableChange(drawable: DrawablePresenter){
+	disableChange()
+	if(!appModel.config.value.actions.edit.bounds){
+		return
+	}
     drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
     if(drawable instanceof DrawablePresenter){
         if(drawable.isChangable()){

@@ -48,9 +48,7 @@ appModel.controls.creationEvent.on("change", isActive => {
 	}
 })
 appModel.controls.creationEvent.on("change", isActive => propertiesPresenter.onDrawableCreation(isActive))
-appModel.controls.tool.on("update", () => {
-	resetSelection()
-})
+appModel.controls.tool.on("update", resetSelection)
 appModel.config.on("update", config => {
     if(config.actions.drawing){
         show()
@@ -108,6 +106,7 @@ appModel.config.on("update", config => {
         appModel.controls.tool.on("before-update", (prevId) => toolbarView.deactivateTool(prevId))
     }
     else {
+		console.warn("runntime disabling of tools via config update is not implemented.")
         hide()
     }
 })
