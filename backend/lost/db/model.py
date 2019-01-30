@@ -1454,6 +1454,8 @@ class Worker(Base):
             of a worker in LOST.
         resources (str): Json containing the available resources of a 
             worker.
+        in_progress (str): Json dict containing scripts that are currently
+            executed by this worker. {'pipe_element_id': 'script_path',...}
     '''
     __tablename__ = "worker"
     idx = Column(Integer, primary_key=True)
@@ -1462,14 +1464,16 @@ class Worker(Base):
     timestamp = Column(DATETIME(fsp=6))
     register_timestamp = Column(DATETIME(fsp=6))
     resources = Column(Text)
+    in_progress = Column(Text)
 
     def __init__(self, idx=None, env_name=None, 
         worker_name=None, timestamp=None,
-        register_timestamp=None, resources=None):
+        register_timestamp=None, resources=None, in_progress=None):
         self.idx = idx
         self.env_name = env_name
         self.worker_name = worker_name
         self.timestamp = timestamp
         self.register_timestamp = register_timestamp
         self.resources = resources
+        self.in_progress = in_progress
 

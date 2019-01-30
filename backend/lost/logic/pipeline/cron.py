@@ -298,6 +298,7 @@ def celery_exec_script(pipe_element_id):
         pipe_e.state = state.PipeElement.IN_PROGRESS
         dbm.save_obj(pipe_e)
         pipe = pipe_e.pipe
+        wman = WorkerMan(dbm, lostconfig)
 
         cmd = gen_run_cmd("pudb3", pipe_e, lostconfig)
         debug_script_path = file_man.get_instance_path(pipe_e)
@@ -312,8 +313,10 @@ def celery_exec_script(pipe_element_id):
             sfile.write(cmd)
         p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, shell=True)
-        logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))        
+        logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))
+        wman.add_script(pipe_e.idx, pipe_e.script.path)       
         out, err = p.communicate()
+        wman.remove_script(pipe_e.idx)       
         if p.returncode != 0:
             raise Exception(err.decode('utf-8'))
         logger.info('{} ({}): Executed script successful: {}'.format(pipe.name, 
