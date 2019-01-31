@@ -19,9 +19,9 @@ class Next(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)     
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
         else:
             re = mia.get_next(dbm, identity, max_amount)
             dbm.close_session()
@@ -35,9 +35,9 @@ class Label(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
         else:
             re = mia.get_label_trees(dbm, identity)
             dbm.close_session()
@@ -50,9 +50,9 @@ class Update(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
             data = json.loads(request.data)
@@ -67,9 +67,9 @@ class Finish(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
             re = mia.finish(dbm, identity)

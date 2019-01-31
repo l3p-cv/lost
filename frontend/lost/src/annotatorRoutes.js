@@ -6,7 +6,7 @@ function Loading() {
 }
 
 const Dashboard = Loadable({
-  loader: () => import('./views/Dashboard/Annotater/AnnotaterDashboard.js'),
+  loader: () => import('./views/Dashboard/Annotator/AnnotatorDashboard.js'),
   loading: Loading,
 });
 

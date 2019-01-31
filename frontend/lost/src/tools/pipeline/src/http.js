@@ -129,7 +129,8 @@ const URLS = {
     POST_START_PIPELINE: `${BASE_URL}/start`,
     POST_DELETE_PIPELINE: id => `${BASE_URL}/delete/${id}`,
     POST_PAUSE_PIPELINE: id => `${BASE_URL}/pause/${id}`,
-    POST_PLAY_PIPELINE: id => `${BASE_URL}/play/${id}`,
+	POST_PLAY_PIPELINE: id => `${BASE_URL}/play/${id}`,
+	GET_DATA_EXPORT: path => `${API_URL}/${path}`
 }
 
 // START
@@ -183,5 +184,13 @@ export function pausePipe(id: Number, token: String){
     return http.post({
 		url: URLS.POST_PAUSE_PIPELINE(id),
 		token,
+	})
+}
+
+export function requestDataExport(path: String, token: String){
+	return http.get({
+		url: URLS.GET_DATA_EXPORT(path),
+		token,
+		type: 'image'
 	})
 }

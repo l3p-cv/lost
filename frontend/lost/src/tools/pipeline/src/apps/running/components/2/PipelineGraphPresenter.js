@@ -17,7 +17,7 @@ import LoopRunningPresenter from 'pipRoot/nodes/loop/running/LoopRunningPresente
 
 class PipelineGraphPresenter extends WizardTabPresenter {
     constructor(){
-        super()
+		super()
         this.view = PipelineGraphView
 
         // MODEL BINDINGS

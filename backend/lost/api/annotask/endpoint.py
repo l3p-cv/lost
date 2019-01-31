@@ -19,7 +19,7 @@ class Available(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
@@ -39,7 +39,7 @@ class Available(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
@@ -55,7 +55,7 @@ class Working(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return "You are not authorized.", 401
         else:

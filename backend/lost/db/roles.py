@@ -1,2 +1,2 @@
 DESIGNER = 'Designer'
-ANNOTATER = 'Annotater'
+ANNOTATOR = 'Annotator'

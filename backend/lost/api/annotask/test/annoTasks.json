@@ -8,7 +8,7 @@
         "createdAt": "datetime",
         "type": "MIA",
         "lastActivity": "datetime",
-        "lastAnnotater": "jochen",
+        "lastAnnotator": "jochen",
         "finished": 430,
         "size": 450
     },
@@ -21,7 +21,7 @@
         "createdAt": "datetime",
         "type": "MIA",
         "lastActivity": "datetime",
-        "lastAnnotater": "jochen",
+        "lastAnnotator": "jochen",
         "finished": 150,
         "size": 450
     },
@@ -34,7 +34,7 @@
         "createdAt": "datetime",
         "type": "MIA",
         "lastActivity": "datetime",
-        "lastAnnotater": "jochen",
+        "lastAnnotator": "jochen",
         "finished": 300,
         "size": 450
     }, {
@@ -46,7 +46,7 @@
         "createdAt": "datetime",
         "type": "SIA",
         "lastActivity": "datetime",
-        "lastAnnotater": "jochen",
+        "lastAnnotator": "jochen",
         "finished": 405,
         "size": 450
     }

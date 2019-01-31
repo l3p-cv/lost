@@ -19,9 +19,9 @@ class First(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
         else:
             re = sia.get_first(dbm, identity, DATA_URL)
             dbm.close_session()
@@ -36,9 +36,9 @@ class Next(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
             last_img_id = int(last_img_id)
@@ -55,9 +55,9 @@ class Prev(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
             re = sia.get_previous(dbm, identity,last_img_id, DATA_URL)
@@ -72,9 +72,9 @@ class Update(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
             data = json.loads(request.data)
@@ -89,9 +89,9 @@ class Finish(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
             re = sia.finish(dbm, identity)
@@ -106,9 +106,9 @@ class Junk(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
             re = sia.get_prev(dbm, identity,img_id)
@@ -123,9 +123,9 @@ class Label(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
         else:
             re = sia.get_label_trees(dbm, identity)
             dbm.close_session()
@@ -139,9 +139,9 @@ class Configuration(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATER):
+        if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATER), 401
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
         else:
             re = sia.get_configuration(dbm, identity)
             dbm.close_session()

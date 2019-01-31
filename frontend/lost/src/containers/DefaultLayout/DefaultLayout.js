@@ -21,11 +21,11 @@ import {
 import desginerNavigation from '../../designerNavigation'
 // routes config
 import designerRoutes from '../../designerRoutes'
-import annotaterRoutes from '../../annotaterRoutes'
+import annotatorRoutes from '../../annotatorRoutes'
 import DefaultAside from './SubContainers/DefaultAside'
 import DefaultFooter from './SubContainers/DefaultFooter'
 import DesignerHeader from './SubContainers/DesignerHeader'
-import AnnotaterHeader from './SubContainers/AnnotaterHeader'
+import AnnotatorHeader from './SubContainers/AnnotatorHeader'
 import requireAuth from '../requireAuth'
 
 class DefaultLayout extends Component {
@@ -36,7 +36,7 @@ class DefaultLayout extends Component {
                 return this.renderDesigner()
             }
         }
-        return this.renderAnnotater()
+        return this.renderAnnotator()
 
     }
 
@@ -85,18 +85,18 @@ class DefaultLayout extends Component {
         )
     }
 
-    renderAnnotater() {
+    renderAnnotator() {
         return (
             <div className='app'>
                 <AppHeader fixed>
-                    <AnnotaterHeader/>
+                    <AnnotatorHeader/>
                 </AppHeader>
                 <div className='app-body'>
                     <main className='main'>
-                        <AppBreadcrumb appRoutes={annotaterRoutes}/>
+                        <AppBreadcrumb appRoutes={annotatorRoutes}/>
                         <Container fluid>
                             <Switch>
-                                {annotaterRoutes.map((route, idx) => {
+                                {annotatorRoutes.map((route, idx) => {
                                     return route.component
                                         ? (
                                             <Route

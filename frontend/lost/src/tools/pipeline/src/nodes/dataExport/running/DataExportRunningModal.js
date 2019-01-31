@@ -3,7 +3,7 @@ import { BaseModal } from 'l3p-frontend'
 
 export default class DataExportRunningModal extends BaseModal {
     constructor(nodeModel: DataExportRunningModel){
-		const { dataExport } = nodeModel
+        const { dataExport } = nodeModel
         super({
             visible: dataExport.length === 0 ? false : true,
             title: 'Export',
@@ -16,7 +16,7 @@ export default class DataExportRunningModal extends BaseModal {
                         </tr>
                     </thead>
                     <tbody>
-                        ${dataExport.map(element => /*html*/`
+                        ${dataExport.map((element, i) => /*html*/`
                             <tr>
                                 <td>
                                     <strong>${element.iteration}<strong>
@@ -24,9 +24,10 @@ export default class DataExportRunningModal extends BaseModal {
                             </tr>
                             <tr>
                                 <td>
-                                    <a href='/${element.file_path}' class='btn btn-info' role='button'>
+                                    <a data-ref="download-btn-${i}" href='#' class='btn btn-info' role='button'>
                                         ${element.file_path.substring(element.file_path.lastIndexOf('/') + 1, element.file_path.length)}
                                     </a>
+                                    <a data-ref="download-hidden-btn-${i}" hidden href=''></a>
                                 </td>
                             </tr>
                         `)}
@@ -34,5 +35,6 @@ export default class DataExportRunningModal extends BaseModal {
                 </table>
             `   
         })
+        this.dataExport = dataExport
     }
 }

@@ -30,7 +30,7 @@ def create_first_user(dbm):
             last_name='Admin'
         )
         user.roles.append(Role(name=roles.DESIGNER))
-        user.roles.append(Role(name=roles.ANNOTATER))
+        user.roles.append(Role(name=roles.ANNOTATOR))
         user.groups.append(Group(name=user.user_name, is_user_default=True))
         dbm.save_obj(user)
         dbm.close_session()

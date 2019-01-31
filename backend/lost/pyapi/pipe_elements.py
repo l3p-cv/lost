@@ -5,6 +5,7 @@ import os
 from lost.logic import file_man
 from lost.pyapi.pipeline import PipeInfo
 from lost.db import model
+import pandas as pd
 
 class Element(object):
 
@@ -55,32 +56,41 @@ class AnnoTask(Element):
         self._anno_task = pe.anno_task #type: lost.db.model.AnnotationTask
 
     @property
-    def req_categories(self):        
-        '''Get required label categories for this Task.
+    def idx(self):
+        return self._anno_task.idx
 
-        Returns:
-            list: [[lbl_category_id, lbl_category_name], ..., [...]]
-        '''
-        lbl_cats = list()
-        for req_cat in self._anno_task.req_label_leaves:
-            lbl_cats.append([req_cat.label_leaf.idx,
-                             req_cat.label_leaf.name])
-        return lbl_cats
+    # @property
+    # def req_categories(self):        
+    #     '''Get required label categories for this Task.
+
+    #     Returns:
+    #         list: [[lbl_category_id, lbl_category_name], ..., [...]]
+    #     '''
+    #     lbl_cats = list()
+    #     for req_cat in self._anno_task.req_label_leaves:
+    #         lbl_cats.append([req_cat.label_leaf.idx,
+    #                          req_cat.label_leaf.name])
+    #     return lbl_cats
 
     @property
-    def possible_labels(self):
-        '''Get all possible labels for this annotation task
+    def possible_label_df(self, columns='all'):
+        '''Get all possible labels for this annotation task in DataFrame format
 
         Returns:
-            list: [[lbl_id, lbl_name],...,[..]]
+            pd.DataFrame: Column names are:
+                'idx', 'name', 'abbreviation',
+                'description', 'timestamp', 'external_id',
+                'is_deleted', 'parent_leaf_id' ,'is_root'
         '''
         lbl_list = list()
         req_categories = self._anno_task.req_label_leaves
         for category in req_categories:
             parent_leaf = category.label_leaf
-            for leaf in parent_leaf.children:
-                lbl_list.append([leaf.idx, leaf.name, leaf.leaf_id])
-        return lbl_list
+            for leaf in parent_leaf.label_leaves:
+                lbl_list.append(leaf.to_df())
+        lbl_df = pd.concat(lbl_list)
+        return lbl_df
+
 
 class MIATask(AnnoTask):
     def __init__(self, pe, dbm):
