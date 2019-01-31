@@ -14,7 +14,8 @@ const customStyles = {
       transform             : 'translate(-50%, -50%)'
     },
     overlay: {
-        backgroundColor: 'rgba(0,0,0,0.75)'
+        backgroundColor: 'rgba(0,0,0,0.75)',
+        zIndex: 10,
       },
   };
   

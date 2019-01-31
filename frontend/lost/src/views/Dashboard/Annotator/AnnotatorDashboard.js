@@ -61,10 +61,10 @@ class AnnotatorDashboard extends Component {
                             </CardHeader>
                             <CardBody>
                                 <Row>
-                                    <Col xs='7' md='7' xl='7'>
+                                    <Col xs='6' md='6' xl='6'>
                                         <WorkingOn annoTask={this.props.workingOnAnnoTask}></WorkingOn>
                                     </Col>
-                                    <Col xs='5' md='5' xl='5'>
+                                    <Col xs='6' md='6' xl='6'>
                                         <AmountPerLabel data={this.props.workingOnAnnoTask.statistic.amountPerLabel}></AmountPerLabel>
                                     </Col>
                                 </Row>
