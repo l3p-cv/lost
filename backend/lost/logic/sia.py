@@ -306,6 +306,7 @@ class SiaUpdate(object):
                                      label_leaf_id=l_id,
                                      dtype=dtype.Label.TWO_D_ANNO,
                                      timestamp=self.timestamp,
+                                     annotator_id=self.user_id,
                                      timestamp_lock=self.image_anno.timestamp_lock,
                                      anno_time=average_anno_time)
                     self.db_man.save_obj(label)
@@ -336,6 +337,7 @@ class SiaUpdate(object):
                             label.anno_time = 0.0
                         label.anno_time += average_anno_time
                         label.timestamp = self.timestamp
+                        label.annotator_id=self.user_id,
                         label.timestamp_lock = self.image_anno.timestamp_lock
                         self.db_man.save_obj(label)
                 # new labels 
@@ -345,6 +347,7 @@ class SiaUpdate(object):
                                         label_leaf_id=l_id,
                                         dtype=dtype.Label.TWO_D_ANNO,
                                         timestamp=self.timestamp,
+                                        annotator_id=self.user_id,
                                         timestamp_lock=self.image_anno.timestamp_lock,
                                         anno_time=average_anno_time)
                         self.db_man.save_obj(label) 
