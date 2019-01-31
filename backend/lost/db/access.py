@@ -172,7 +172,7 @@ class DBMan(object):
             list: A list of :class:`project.Pipe` objects
         '''
         return self.session.query(model.Pipe)\
-            .filter((model.Pipe.group_id.in_(group_ids))).all()
+            .filter((model.Pipe.group_id.in_(group_ids) &  (model.Pipe.state!=state.Pipe.DELETED) )).all()
                     
     def get_all_pipeline_templates(self):
         '''Get all PipeTemplate objects in db.

@@ -3,6 +3,7 @@ from flask_restplus import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.api.pipeline.api_definition import templates, template, pipelines, pipeline
+from lost.api.pipeline import tasks
 from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
@@ -88,6 +89,19 @@ class Pipeline(Resource):
             re = pipeline_service.get_running_pipe(dbm, identity, pipeline_id, DATA_URL)
             dbm.close_session()
             return re
+    @jwt_required
+    def delete(self, pipeline_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            tasks.delete_pipe.delay(pipeline_id)
+            dbm.close_session()
+            return 'success'
+
 
 
 @namespace.route('/start')

@@ -176,18 +176,22 @@ def __get_at_info(dbm, annotask, user_id, amount_per_label=False):
 
 def choose_annotask(dbm, anno_task_id, user_id):
     # first delete all previous choosen annotasks
-    for chat in dbm.get_choosen_annotask(user_id):
-        dbm.delete(chat)
-        dbm.commit()
-    # choose new one
     anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
+    for chat in dbm.get_choosen_annotask(user_id):
+        if not chat.anno_task_id == anno_task.idx:
+            dbm.delete(chat)
+            dbm.commit()
+    # choose new one
     if anno_task.state == state.AnnoTask.IN_PROGRESS or \
     anno_task.state == state.AnnoTask.PAUSED:
         if not anno_task.timestamp:
             anno_task.timestamp = datetime.now()
             dbm.save_obj(anno_task)
-        newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
-        dbm.save_obj(newcat)
+        try:
+            newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
+            dbm.save_obj(newcat)
+        except:
+            pass
 
 def has_annotation(dbm, anno_task_id):
     if dbm.count_annos(anno_task_id) > 0:

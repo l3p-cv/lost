@@ -127,7 +127,7 @@ const URLS = {
     GET_PIPELINES: `${BASE_URL}`,
     GET_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_START_PIPELINE: `${BASE_URL}/start`,
-    POST_DELETE_PIPELINE: id => `${BASE_URL}/delete/${id}`,
+    DELETE_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_PAUSE_PIPELINE: id => `${BASE_URL}/pause/${id}`,
 	POST_PLAY_PIPELINE: id => `${BASE_URL}/play/${id}`,
 	GET_DATA_EXPORT: path => `${API_URL}/${path}`
@@ -175,8 +175,9 @@ export function requestPipeline(id: Number, token: String){
 	})
 }
 export function deletePipe(id: Number, token: String){
+	console.log(id, token)
 	return http.del({
-		url: URLS.POST_DELETE_PIPELINE(id),
+		url: URLS.DELETE_PIPELINE(id),
 		token,
 	})
 }

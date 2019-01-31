@@ -1,4 +1,9 @@
 @import "../../shared/colors.scss";
+// @import "~bootstrap/scss/bootstrap.scss";
+// @import "~bootstrap/scss/_variables.scss";
+// @import "~bootstrap/scss/_buttons.scss";
+// @import "~bootstrap/scss/mixins/_forms.scss";
+
 
 $btn-border-selected-color: #ADADAD;
 $btn-border-unselected-color: #E5E5E5;
@@ -7,6 +12,7 @@ $btn-background-selected-color:#E6E6E6;
 $btn-background-hover-color: #E6E6E6;
 
 .sia-tool-selected {
+//	@extend .btn:focus;
     border-color: $btn-border-selected-color;
     background-color: $btn-background-selected-color;
 }

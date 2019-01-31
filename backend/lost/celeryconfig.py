@@ -4,7 +4,7 @@ from lost.logic.pipeline.worker import send_life_sign
 from kombu.common import Broadcast
 
 
-CELERY_IMPORTS = ('lost.logic.tasks')
+CELERY_IMPORTS = ('lost.logic.tasks', 'lost.api.pipeline.tasks')
 CELERY_TASK_RESULT_EXPIRES = 30
 CELERY_TIMEZONE = 'UTC'
 

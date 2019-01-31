@@ -47,7 +47,7 @@ echo "All Services ready. Starting celery worker now."
 if [ ${DEV} = "True" ]; then
   echo "In DEV mode"
   #start a celery worker.
-  worker="celery -A app.celery worker -Q worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+  worker="celery -A flaskapp.celery worker -Q worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
   eval $worker
 
 else
