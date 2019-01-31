@@ -172,6 +172,13 @@ class LabelSelect extends Component {
 						}
 					},
 					onFocus: e => {
+						this.setState(state => {
+							return {
+								previousLabel: state.selectedLabel,
+								selectedLabel: undefined,
+								displayedValue: "" ,
+							}
+						})
 						disableChange()
 						disableDelete()
 					},
