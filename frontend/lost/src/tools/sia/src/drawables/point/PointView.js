@@ -1,4 +1,3 @@
-
 import { NodeTemplate, mouse, svg as SVG } from "l3p-frontend"
 
 import DrawableView from "../DrawableView"

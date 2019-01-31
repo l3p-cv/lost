@@ -12,6 +12,7 @@
     "url": "no-git-yet"
   },
   "dependencies": {
+    "@cartok/object-assign-deep": "^0.4.3",
     "@coreui/coreui": "^2.0.15",
     "@coreui/coreui-plugin-chartjs-custom-tooltips": "^1.2.0",
     "@coreui/icons": "0.3.0",
