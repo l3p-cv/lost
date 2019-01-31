@@ -298,6 +298,10 @@ function disableCamera(){
 // mutates appModel
 export function createDrawables(drawablesRawData: any){
     console.log("%c creating drawables from raw data: ", "background: #282828; color: #FE8019", drawablesRawData)
+	// reset zoom
+	// this method is called for every new frame (prev,next,first,last)
+	appModel.ui.zoom.reset()
+
     // reset current drawable if any
     appModel.state.selectedDrawable.reset()
 
