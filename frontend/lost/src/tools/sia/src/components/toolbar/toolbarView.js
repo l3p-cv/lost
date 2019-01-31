@@ -41,7 +41,6 @@ export function deactivateTool(prevId: String){
     }
 }
 export function activateTool(id: String){
-	$(html.ids[id]).off("blur")
     $(html.ids[id]).toggleClass("sia-tool-selected", true)
 }
 
