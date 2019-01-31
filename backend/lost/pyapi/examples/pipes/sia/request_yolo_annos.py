@@ -91,16 +91,20 @@ class RequestYoloAnnos(script.Script):
                     minimum_percentage_probability=float(self.get_arg('conf_thresh')),
                     output_type='array')
                 annos = [box['box_points'] for box in detections]
-                annos = convert_annos(annos, skimage.io.imread(img_path))
-                lbls = [box['name'] for box in detections]                    
-                sim_classes = get_sim_classes(lbls, lbl_map)
-                if self.get_arg('map_lbls').lower() == 'true':
-                    lbl_ids = map_lbls_to_lbltree(lbls, possible_labels)
+                if annos:
+                    annos = convert_annos(annos, skimage.io.imread(img_path))
+                    lbls = [box['name'] for box in detections]                    
+                    sim_classes = get_sim_classes(lbls, lbl_map)
+                    if self.get_arg('map_lbls').lower() == 'true':
+                        lbl_ids = map_lbls_to_lbltree(lbls, possible_labels)
+                    else:
+                        lbl_ids = None
+                    self.outp.request_bbox_annos(img_path=img_path, boxes=annos, 
+                        sim_classes=sim_classes, labels=lbl_ids)
+                    self.logger.info('Requested bbox annos for: {}\n{}\n{}'.format(img_path, annos, lbls))
                 else:
-                    lbl_ids = None
-                self.outp.request_bbox_annos(img_path=img_path, boxes=annos, 
-                    sim_classes=sim_classes, labels=lbl_ids)
-                self.logger.info('Requested bbox annos for: {}\n{}\n{}'.format(img_path, annos, lbls))
+                    self.outp.request_bbox_annos(img_path=img_path)
+                    self.logger.info('Requested bbox annos for: {}'.format(img_path))
                 self.update_progress(index*100/total)
 
 if __name__ == "__main__":
