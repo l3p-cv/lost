@@ -3,7 +3,7 @@ import os
 import random
 import json
 
-EXECUTORS = ['web']
+ENVS = ['lost']
 ARGUMENTS = {'n' : { 'value': 20,
                     'help': 'Number of images that will be request during each iteration.'}
             }

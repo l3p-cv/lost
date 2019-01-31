@@ -489,17 +489,17 @@ class PipeSerialize(object):
         script_json['description'] = script.description
         script_json['path'] = script.path
         # * language was not defined in any pipeline definition file i looked at.
-        print("cartok: (warning) made script.language optional in service.py add_script.")
-        if hasattr(script, 'language'): 
-            if script.language == dtype.ScriptLanguage.PYTHON2:
-                script_json['language'] = "python2"
-            elif script.language == dtype.ScriptLanguage.PYTHON3:
-                script_json['language'] = "python3"
+        # print("cartok: (warning) made script.language optional in service.py add_script.")
+        # if hasattr(script, 'language'): 
+        #     if script.language == dtype.ScriptLanguage.PYTHON2:
+        #         script_json['language'] = "python2"
+        #     elif script.language == dtype.ScriptLanguage.PYTHON3:
+        #         script_json['language'] = "python3"
         script_json['arguments'] = None
         if pe.arguments:
             script_json['arguments'] = json.loads(pe.arguments)
-        # TODO: executors
-        script_json['executors'] = script.executors
+        # TODO: envs
+        script_json['envs'] = script.envs
         script_json['progress'] = pe.progress
         script_json['errorMsg'] = pe.error_msg
         script_json['warningMsg'] = pe.warning_msg

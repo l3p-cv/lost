@@ -2,7 +2,7 @@ from lost.pyapi import script
 import os
 import random
 
-EXECUTORS = ['web']
+ENVS = ['lost']
 ARGUMENTS = {'polygon' : { 'value':'false',
                             'help': 'Add a dummy polygon proposal as example.'},
             'line' : { 'value':'false',

@@ -37,17 +37,17 @@ def get_default_script_arguments(script_path):
     except Exception:
         logging.error(traceback.format_exc())
 
-def get_default_script_executors(script_path):
+def get_default_script_envs(script_path):
     try:
-        exec_list = parse_script_constants(script_path, 'EXECUTORS', 
+        exec_list = parse_script_constants(script_path, 'ENVS', 
                                           bracket_type='[')
         if exec_list is None:
-            logging.warning('Script has no EXECUTORS: {}!'.format(script_path))
+            logging.warning('Script has no ENVS: {}!'.format(script_path))
             return []
         else:
-            executors = [e.lower() for e in exec_list]
-            logging.info('Found EXECUTORS: {}'.format(executors))
-            return executors
+            envs = [e.lower() for e in exec_list]
+            logging.info('Found ENVS: {}'.format(envs))
+            return envs
     except Exception:
         logging.error(traceback.format_exc())
 

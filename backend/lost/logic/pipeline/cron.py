@@ -22,6 +22,7 @@ from celery.utils.log import get_task_logger
 from celery import task
 from lost.db.access import DBMan
 from lost.logic.config import LOSTConfig
+from lost.logic.pipeline.worker import WorkerMan
 
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig):
@@ -33,7 +34,7 @@ class PipeEngine(pipe_model.PipeEngine):
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
         self.file_man = FileMan(self.lostconfig)
         # self.logger = lost.logic.log.get_file_logger(
-        #     'Executor: {}'.format(self.lostconfig.executor), 
+        #     'Executor: {}'.format(self.lostconfig.env), 
         #     self.file_man.app_log_path)
         self.logger = get_task_logger(__name__)
 
@@ -133,40 +134,21 @@ class PipeEngine(pipe_model.PipeEngine):
         else:
             self.__release_loop_iteration(pipe_e)
         self.dbm.add(pipe_e)
-
-    def gpu_or_not(self, threshold=0.9):
-        '''Check if there is a Free GPU or no GPU.
-
-        If GPU has more free memory than threshold return true.
-        If there is no GPU return true.
-
-        Args:
-            threshold (float): If there is a GPU it needs to have more free memory
-                than threshold in oder to return true.
-        Note:
-            This is not the best solution. There need to be more resource 
-            management!
-        '''
-        '''try:
-            nvmlInit()
-            print("GPU: Driver Version: {}".format(nvmlSystemGetDriverVersion()))
-            deviceCount = nvmlDeviceGetCount()
-            for i in range(deviceCount):
-                handle = nvmlDeviceGetHandleByIndex(i)
-                print("GPU: Device {}: {}".format(i, nvmlDeviceGetName(handle)))
-                info = nvmlDeviceGetMemoryInfo(handle)
-                free = info.free/info.total
-                print('GPU: Free memory: {:.2f}%'.format(free))
-                if free > threshold:
-                    nvmlShutdown()
-                    return True
-            nvmlShutdown()
-            return False
-        except:
-            return True '''
-        #TODO: Uncomment this fancy stuff here and install dependencies (NVML) to docker!
-        return True
         
+    def select_env_for_script(self, pipe_e):
+        '''Select an environment where the script should be executed'''
+        w_man = WorkerMan(self.dbm, self.lostconfig)
+        if pipe_e.script.envs is not None:
+            script_envs = json.loads(pipe_e.script.envs)
+        else:
+            script_envs = list()
+            return 'celery' # Return default queue
+        worker_envs = w_man.get_worker_envs()        
+        for script_env in script_envs:
+            if script_env in worker_envs:
+                return script_env
+        self.logger.warning('No suitable env to execute script: {}'.format(pipe_e.script.path))
+        return None 
 
     def process_pipe_element(self):
         pipe_e = self.get_next_element()
@@ -175,22 +157,16 @@ class PipeEngine(pipe_model.PipeEngine):
             #     return
             if pipe_e.dtype == dtype.PipeElement.SCRIPT:
                 if pipe_e.state != state.PipeElement.SCRIPT_ERROR:
-                    if pipe_e.script.executors is not None:
-                        executors = json.loads(pipe_e.script.executors)
-                    else:
-                        executors = list()
-                    current_execu = self.lostconfig.executor.lower()
-                    if not executors or current_execu in executors:
-                        if pipe_e.is_debug_mode:
-                            pipe_e.state = state.PipeElement.IN_PROGRESS
-                            self.dbm.save_obj(pipe_e)
-                            self.make_debug_session(pipe_e)
-                        else:
-                            if pipe_e.state == state.PipeElement.PENDING:
-                                if self.gpu_or_not():
-                                    pipe_e.state = state.PipeElement.IN_PROGRESS
-                                    self.dbm.save_obj(pipe_e)
-                                    celery_exec_script.delay(pipe_e.idx)
+                    # if pipe_e.is_debug_mode:
+                    #     pipe_e.state = state.PipeElement.IN_PROGRESS
+                    #     self.dbm.save_obj(pipe_e)
+                    #     self.make_debug_session(pipe_e)
+                    # else:
+                    if pipe_e.state == state.PipeElement.PENDING:
+                        env = self.select_env_for_script(pipe_e)
+                        if env is None:
+                            return
+                        celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
                     update_anno_task(self.dbm, pipe_e.anno_task.idx)
@@ -319,7 +295,10 @@ def celery_exec_script(pipe_element_id):
         dbm = DBMan(lostconfig)
         file_man = FileMan(lostconfig)
         pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
+        pipe_e.state = state.PipeElement.IN_PROGRESS
+        dbm.save_obj(pipe_e)
         pipe = pipe_e.pipe
+        wman = WorkerMan(dbm, lostconfig)
 
         cmd = gen_run_cmd("pudb3", pipe_e, lostconfig)
         debug_script_path = file_man.get_instance_path(pipe_e)
@@ -334,8 +313,10 @@ def celery_exec_script(pipe_element_id):
             sfile.write(cmd)
         p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, shell=True)
-        logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))        
+        logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))
+        wman.add_script(pipe_e.idx, pipe_e.script.path)       
         out, err = p.communicate()
+        wman.remove_script(pipe_e.idx)       
         if p.returncode != 0:
             raise Exception(err.decode('utf-8'))
         logger.info('{} ({}): Executed script successful: {}'.format(pipe.name, 

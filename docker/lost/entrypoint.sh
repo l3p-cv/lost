@@ -53,11 +53,11 @@ if [ ${DEV} = "True" ]; then
   eval $nginx &
 
   # celery cronjob.
-  celery="celery -A app.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_beat_web.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
+  celery="celery -A app.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
   eval $celery &
 
   #start a celery worker.
-  worker="celery -A app.celery worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/celery_default_worker.log"
+  worker="celery -A app.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
   eval $worker &
 
 

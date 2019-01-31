@@ -7,25 +7,27 @@ import string
 
 logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
 
+def gen_rand_string(n):
+    return ''.join(
+        random.SystemRandom().choice(
+            string.ascii_uppercase + string.digits
+        ) for _ in range(n))
+
 def get_env_config(data_path, release):
-    config = {
-        'DEV':'True',
-        'ADD_EXAMPLES':'True',
-        'LOST_VERSION': release,
-        'LOST_FRONTEND_PORT': 80,
-        'LOST_HOME': data_path,
-        'LOST_DB_NAME': 'lost',
-        'LOST_DB_USER': 'lost',
-        'LOST_DB_PASSWORD': 'LostDevLost',
-        'LOST_DB_ROOT_PASSWORD': 'root',
-        'PROJECT_NAME': 'myProject',
-        'SECRET_KEY': ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(16)),
-        'LOST_SU_USERNAME': 'admin',
-        'LOST_SU_PWD': '123123',
-        'LOST_SU_EMAIL': 'lost@example.com',
-        'PY3_INIT': 'echo \'hi\'',
-        'PIPE_SCHEDULE': '5'
-    }
+    config = [
+        ['DEV','True'],
+        ['ADD_EXAMPLES','True'],
+        ['LOST_VERSION', release],
+        ['LOST_FRONTEND_PORT', 80],
+        ['LOST_HOME', data_path],
+        ['LOST_DB_NAME', 'lost'],
+        ['LOST_DB_USER', 'lost'],
+        ['LOST_DB_PASSWORD', 'LostDevLost'],
+        ['LOST_DB_ROOT_PASSWORD', 'root'],
+        ['PROJECT_NAME', 'myProject'],
+        ['SECRET_KEY', gen_rand_string(16)],
+        ['PIPE_SCHEDULE', '5']
+    ]
     return config
 
 def main(args):
@@ -47,7 +49,7 @@ def main(args):
     logging.info('Copied docker-compose config to: {}'.format(dst_config))
     env_path = os.path.join(dst_docker_dir,'.env')
     with open(env_path, 'a') as f:
-        for key, val in get_env_config(dst_data_dir, args.release).items():
+        for key, val in get_env_config(dst_data_dir, args.release):
             f.write('{}={}\n'.format(key, val))
     logging.info('Created {}'.format(env_path))
     logging.info('')

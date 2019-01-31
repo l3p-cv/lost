@@ -2,7 +2,7 @@ from lost.pyapi import script
 import os
 import pandas as pd
 
-EXECUTORS = ['web']
+ENVS = ['lost']
 ARGUMENTS = {'file_name' : { 'value':'annos.csv',
                             'help': 'Name of the file with exported bbox annotations.'}
             }
