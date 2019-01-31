@@ -11,6 +11,12 @@ import actions from '../../../actions'
 const {getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask} = actions
 
 class AnnotatorDashboard extends Component {
+    constructor(props){
+        super(props)
+
+        this.redirectMia = this.redirectMia.bind(this)
+        this.redirectSia = this.redirectSia.bind(this)
+    }
     componentDidMount() {
         this
             .props
@@ -29,14 +35,20 @@ class AnnotatorDashboard extends Component {
         if (type === "MIA") {
             this
                 .props
-                .chooseAnnoTask(id, this.props.history.push('/mia'))
+                .chooseAnnoTask(id, this.redirectMia)
 
         } else if (type === "SIA") {
 
             this
                 .props
-                .chooseAnnoTask(id, this.props.history.push('/sia'))
+                .chooseAnnoTask(id, this.redirectSia)
         }
+    }
+    redirectMia(){
+        this.props.history.push('/mia')
+    }
+    redirectSia(){
+        this.props.history.push('/sia')
     }
     renderWorkingOn() {
         if (this.props.workingOnAnnoTask !== null) {

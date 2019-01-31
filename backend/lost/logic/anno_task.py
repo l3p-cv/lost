@@ -187,8 +187,11 @@ def choose_annotask(dbm, anno_task_id, user_id):
         if not anno_task.timestamp:
             anno_task.timestamp = datetime.now()
             dbm.save_obj(anno_task)
-        newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
-        dbm.save_obj(newcat)
+        try:
+            newcat = model.ChoosenAnnoTask(user_id=user_id, anno_task_id=anno_task_id)
+            dbm.save_obj(newcat)
+        except:
+            pass
 
 def has_annotation(dbm, anno_task_id):
     if dbm.count_annos(anno_task_id) > 0:

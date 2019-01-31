@@ -24,6 +24,7 @@ export const getWorkingOnAnnoTask = () => async dispatch => {
 export const chooseAnnoTask = (id, callBack) => async dispatch => {
     try {
         await axios.post(API_URL + '/annotask', {id})
+        
         callBack()
     } catch(e){
 
