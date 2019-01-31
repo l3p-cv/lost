@@ -13,7 +13,8 @@ services:
         - "${LOST_FRONTEND_PORT}:8080"
       environment:
         PYTHONPATH: "/code/backend"
-        LOST_EXECUTOR: "web"
+        ENV_NAME: "lost"
+        WORKER_NAME: "lost-0"
         PY3_INIT: "source /opt/conda/bin/activate lost"
       links:
         - db-lost
@@ -41,7 +42,8 @@ services:
       restart: always
       environment:
           PYTHONPATH: "/code/backend"
-          L3P_EXECUTOR: "lost-cv"
+          ENV_NAME: "lost-cv"
+          WORKER_NAME: "lost-cv-0"
           PY3_INIT: "source /opt/conda/bin/activate lost-cv"
       links:
         - db-lost

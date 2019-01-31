@@ -73,16 +73,3 @@ class PipeElement():
     IN_PROGRESS = 1
     FINISHED = 2
     SCRIPT_ERROR = 3
-
-class Container():
-    '''State of a Container.
-
-    Attributes:
-        RUNNING (1): Container's Cronjob is running.
-        ERROR (2): Container's Cronjob throwed an error.
-        PAUSED (3): Container is paused.
-
-    '''
-    RUNNING = 1
-    ERROR = 2
-    PAUSED = 3

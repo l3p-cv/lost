@@ -2,7 +2,7 @@ from lost.pyapi import script
 import os
 import random
 
-EXECUTORS = ['web']
+ENVS = ['lost']
 ARGUMENTS = {'gen_boxes' : { 'value': 'false',
                             'help': 'Generate dummy box proposals'}
             }

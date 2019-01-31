@@ -57,7 +57,7 @@ if [ ${DEV} = "True" ]; then
   eval $celery &
 
   #start a celery worker.
-  worker="celery -A app.celery worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/lost.log"
+  worker="celery -A app.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
   eval $worker &
 
 

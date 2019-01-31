@@ -9,7 +9,7 @@ from distutils import dir_util
 from lost.db import model
 import importlib
 from lost.logic.script import get_default_script_arguments
-from lost.logic.script import get_default_script_executors
+from lost.logic.script import get_default_script_envs
 from lost.logic.pipeline import cron
 from distutils import dir_util
 from os.path import join
@@ -97,7 +97,7 @@ class PipeImporter(object):
                         script = parse_script(element_j)
                         db_script = self.dbm.get_script(file_name=os.path.basename(script.path))
                         script_arguments = get_default_script_arguments(script.path)
-                        script_executors = get_default_script_executors(script.path)
+                        script_envs = get_default_script_envs(script.path)
                         if 'arguments' in element_j:
                             for arg in element_j['arguments']:
                                 if arg not in script_arguments:
@@ -113,14 +113,14 @@ class PipeImporter(object):
                             script_out_path = os.path.join(self.dst_pipe_template_path, script.path)
                             script.path = self.file_man.make_path_relative(script_out_path)
                             script.arguments = json.dumps(script_arguments)
-                            script.executors = json.dumps(script_executors)
+                            script.envs = json.dumps(script_envs)
                             self.dbm.save_obj(script)
                             logging.info("Added script to database")
                         else: 
                             script_out_path = os.path.join(self.dst_pipe_template_path, script.path)
                             db_script.path = self.file_man.make_path_relative(script_out_path)
                             db_script.arguments = json.dumps(script_arguments)
-                            db_script.executors = json.dumps(script_executors)
+                            db_script.envs = json.dumps(script_envs)
                             db_script.description = script.description
                             self.dbm.save_obj(db_script)
                             logging.info('Updated script: {}'.format(db_script.name))
@@ -168,7 +168,7 @@ class PipeImporter(object):
                         self.namespace,
                         os.path.basename(script.path)))
                     script_arguments = get_default_script_arguments(script.path)
-                    script_executors = get_default_script_executors(script.path)
+                    script_envs = get_default_script_envs(script.path)
                     if 'arguments' in element_j:
                         for arg in element_j['arguments']:
                             if arg not in script_arguments:
@@ -184,7 +184,7 @@ class PipeImporter(object):
                         script_out_path = os.path.join(self.dst_pipe_template_path, script.path)
                         script.path = self.file_man.make_path_relative(script_out_path)
                         script.arguments = json.dumps(script_arguments)
-                        script.executors = json.dumps(script_executors)
+                        script.envs = json.dumps(script_envs)
                         self.dbm.save_obj(script)
                         logging.info("Added script to database")
                     else:

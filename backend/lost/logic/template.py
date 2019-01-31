@@ -129,7 +129,7 @@ class TemplateSerialize(object):
             elif 'script' in pe:
                 pe['script']['arguments'] = self.__script_arguments(pe)
                 pe['script']['id'] = self.__script_id(pe)
-                pe['script']['executors'] = self.__script_executors(pe)
+                pe['script']['envs'] = self.__script_envs(pe)
    
 
     def __label_trees(self):
@@ -153,10 +153,10 @@ class TemplateSerialize(object):
             if script.name.lower() == pe['script']['name'].lower():
                 return combine_arguments(pe, script)
         return ""
-    def __script_executors(self, pe):
+    def __script_envs(self, pe):
         for script in self.available_scripts:
             if script.name.lower() == pe['script']['name'].lower():
-                return script.executors
+                return script.envs
         return ""
     def __script_id(self, pe):
         for script in self.available_scripts:

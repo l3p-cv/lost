@@ -21,12 +21,10 @@ SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
 TWO_D_ANNO_PATH = MEDIA_ROOT_PATH + "two_d_annos/"
 JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
-APP_LOG_PATH = "logs/cron-{}-lost.log"
 
 class FileMan(object):
     def __init__(self, lostconfig):
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
-        self.app_log_path = os.path.join(self.lostconfig.project_path, APP_LOG_PATH.format(self.lostconfig.executor))
         
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.lostconfig.project_path, PIPE_LOG_PATH)

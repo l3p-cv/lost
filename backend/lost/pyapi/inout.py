@@ -487,7 +487,8 @@ class ScriptOutput(Output):
                 if len(anno_labels) != len(annos):
                     raise ValueError('*anno_labels* and *annos* need to be of same size!')
                 label_leaf_id = anno_labels[i]
-                anno.label = model.Label(label_leaf_id=label_leaf_id)
+                if label_leaf_id is not None:
+                    anno.label = model.Label(label_leaf_id=label_leaf_id)
             if anno_sim_classes:
                 if len(anno_sim_classes) != len(annos):
                     raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
