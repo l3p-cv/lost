@@ -700,6 +700,7 @@ class PipeGodfather(object):
             self.db_man.delete(pipe_element)
             self.db_man.commit()
         self.file_man.rm_pipe_context_path(self.pipe)
+        self.file_man.rm_pipe_log_path(self.pipe)
         self.db_man.delete(self.pipe)
         self.db_man.commit()
 
