@@ -28,8 +28,10 @@ export function hide(){
 }
 
 export function initTools(tools: any){
-    Object.keys(tools).forEach(key => {
-        html.refs[key].style.display = (tools[key] === true) ? "block" : "none"
+	// enable or disable tool buttons
+    Object.keys(tools).forEach(name => {
+        html.refs[name].style.display = (tools[name] === true) ? "block" : "none"
+		// html.refs[name].
     })
 }
 
