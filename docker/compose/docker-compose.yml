@@ -13,7 +13,8 @@ services:
         - "${LOST_FRONTEND_PORT}:8080"
       environment:
         PYTHONPATH: "/code/backend"
-        LOST_EXECUTOR: "lost"
+        LOST_EXECUTOR: "web"
+        PY3_INIT: "source /opt/conda/bin/activate lost"
       links:
         - db-lost
         - rabbitmqlost
@@ -28,6 +29,23 @@ services:
         MYSQL_USER: ${LOST_DB_USER}
         MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
         MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
+
+    lost-cv:
+      image: l3pcv/lost-cv:latest
+      container_name: lost-cv
+      command: bash /entrypoint.sh
+      env_file:
+        - .env
+      volumes:
+        - ${LOST_HOME}:/${LOST_HOME}
+      restart: always
+      environment:
+          PYTHONPATH: "/code/backend"
+          L3P_EXECUTOR: "lost-cv"
+          PY3_INIT: "source /opt/conda/bin/activate lost-cv"
+      links:
+        - db-lost
+        - rabbitmqlost
 
     rabbitmqlost:
       image: rabbitmq:3-management

@@ -2,9 +2,6 @@
  /bin/bash -c "source /opt/conda/bin/activate lost"
 source /opt/conda/bin/activate lost
 
-# clean celery lock
-rm -rf /tmp/celerybeat.pid
-
  # init env vars 
 if [ -z "${LOST_DB_IP}" ]; then
   export LOST_DB_IP="db-lost"
@@ -44,26 +41,11 @@ done
 
 mkdir -p ${LOST_HOME}/logs
 
-python3 /code/backend/lost/logic/init/initlost.py
-cd /code/backend/lost/cli && bash import_examples.sh && cd -
-cd /code/docs/sphinx &&  make html && cd -
-
 if [ ${DEV} = "True" ]; then
-  nginx="service nginx start"
-  eval $nginx &
-
-  # celery cronjob.
-  celery="celery -A app.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
-  eval $celery &
-
+  
   #start a celery worker.
-  worker="celery -A app.celery worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/lost.log"
+  worker="celery -A app.celery worker -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/lost-cv.log"
   eval $worker &
-
-
-  endpoint="python3 /code/backend/lost/app.py"
-  eval $endpoint 
-
 
 else
   echo "Production version not yet supported."
