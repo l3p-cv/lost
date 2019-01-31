@@ -15,6 +15,9 @@ ARGUMENTS = {'model_url' : { 'value':'https://github.com/OlafenwaMoses/ImageAI/r
             'map_lbls' : { 'value' : 'true',
                             'help': 'Try to map lbls of yolo model to possible label of next annotation task'}
             }
+#Lock all resources of a worker when this script is executed. 
+#This will prevent worker from executing other scripts while this script is executed.
+RESOURCES = ['lock_all'] 
 
 def download_model(s):
     model_url = s.get_arg('model_url')

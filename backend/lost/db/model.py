@@ -1002,6 +1002,7 @@ class Script(Base):
         arguments (str): json object with key value pairs (arguments for script)
         envs (str): json object containing the names of environments that
             may execute this script
+        resources (str): Json that defines the resources required by this script
     """
     __tablename__ = "script"
     idx = Column(Integer, primary_key=True)
@@ -1010,15 +1011,17 @@ class Script(Base):
     description = Column(Text)
     arguments = Column(Text)
     envs = Column(Text)
+    resources = Column(Text)
 
     def __init__(self, idx=None, name=None, path=None, description=None,
-        arguments=None, envs=None):
+        arguments=None, envs=None, resources=None):
         self.idx = idx
         self.name = name
         self.path = path
         self.description = description
         self.arguments = arguments
         self.envs = envs
+        self.resources = resources
 
 class ChoosenAnnoTask(Base):
     """Linking Table which connects Anno Tasks to Groups

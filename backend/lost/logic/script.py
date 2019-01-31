@@ -51,6 +51,20 @@ def get_default_script_envs(script_path):
     except Exception:
         logging.error(traceback.format_exc())
 
+def get_default_script_resources(script_path):
+    try:
+        res_list = parse_script_constants(script_path, 'RESOURCES', 
+                                          bracket_type='[')
+        if res_list is None:
+            logging.warning('Script has special RESOURCES requirements: {}!'.format(script_path))
+            return []
+        else:
+            res = [e.lower() for e in res_list]
+            logging.info('Found RESOURCES requirements: {}'.format(res))
+            return res
+    except Exception:
+        logging.error(traceback.format_exc())
+
 def parse_script_constants(script_path, constant_name, bracket_type='{'):
     if bracket_type == '{':
         b_open = '{'

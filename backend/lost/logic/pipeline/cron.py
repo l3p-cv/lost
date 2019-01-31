@@ -22,7 +22,7 @@ from celery.utils.log import get_task_logger
 from celery import task
 from lost.db.access import DBMan
 from lost.logic.config import LOSTConfig
-from lost.logic.pipeline.worker import WorkerMan
+from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig):
@@ -293,12 +293,15 @@ def celery_exec_script(pipe_element_id):
         logger = get_task_logger(__name__)
         lostconfig = LOSTConfig()
         dbm = DBMan(lostconfig)
-        file_man = FileMan(lostconfig)
         pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
+        worker = CurrentWorker(dbm, lostconfig)
+        if not worker.enough_resources(pipe_e.script):
+            logger.warning('Not enough resources! Rejected {} (PipeElement ID {})'.format(pipe_e.script.path, pipe_e.idx))
+            return
         pipe_e.state = state.PipeElement.IN_PROGRESS
         dbm.save_obj(pipe_e)
+        file_man = FileMan(lostconfig)
         pipe = pipe_e.pipe
-        wman = WorkerMan(dbm, lostconfig)
 
         cmd = gen_run_cmd("pudb3", pipe_e, lostconfig)
         debug_script_path = file_man.get_instance_path(pipe_e)
@@ -314,15 +317,16 @@ def celery_exec_script(pipe_element_id):
         p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, shell=True)
         logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))
-        wman.add_script(pipe_e.idx, pipe_e.script.path)       
+        worker.add_script(pipe_e, pipe_e.script)       
         out, err = p.communicate()
-        wman.remove_script(pipe_e.idx)       
+        worker.remove_script(pipe_e, pipe_e.script)       
         if p.returncode != 0:
             raise Exception(err.decode('utf-8'))
         logger.info('{} ({}): Executed script successful: {}'.format(pipe.name, 
             pipe.idx, pipe_e.script.path))
 
     except:
+        pipe = pipe_e.pipe
         logger.info('{} ({}): Exception occurred in script: {}'.format(pipe.name, 
             pipe.idx, pipe_e.script.path))
         msg = traceback.format_exc()

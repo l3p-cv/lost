@@ -12,6 +12,7 @@ def register_worker(dbm, lostconfig):
         worker_name=lostconfig.worker_name,
         timestamp=datetime.utcnow(),
         register_timestamp=datetime.utcnow(),
+        resources='[]'
     )
     dbm.add(worker)
     dbm.commit()
@@ -34,6 +35,8 @@ def send_life_sign():
 
 
 class WorkerMan(object):
+    '''Class to manage workers in LOST'''
+
     def __init__(self, dbm, lostconfig):
         self.dbm = dbm
         self.lostconfig = lostconfig
@@ -60,6 +63,15 @@ class WorkerMan(object):
             env_set.add(w.env_name)
         return env_set
 
+class CurrentWorker(object):
+    '''Class that represant the current worker in which this code is executed
+    '''
+
+    def __init__(self, dbm, lostconfig):
+        self.dbm = dbm
+        self.lostconfig = lostconfig
+        self.worker = self.get_worker()
+
     def get_worker(self):
         '''Get worker of this container
         
@@ -68,36 +80,66 @@ class WorkerMan(object):
         '''
         return self.dbm.get_worker(self.lostconfig.worker_name)
 
-    def add_script(self, pe_id, path):
+    def _lock_worker(self):
+        '''Lock this worker that only current script can be executed and no others'''
+        self.worker.resources = json.dumps(['lock_all'])
+
+    def _unlock_worker(self):
+        self.worker.resources = json.dumps([])
+
+    def add_script(self, pipe_e, script):
         '''Add a script that is currently executed by this worker
         
         Args:
-            pe_id (int): PipeElement ID related to the script.
-            path (str): Path to the script
+            script (:class:`model.PipeElement`): Pipeline element that is related to script.
+            script (:class:`model.Script`): Script that is executed.
         '''
-        worker = self.get_worker()
-        if worker.in_progress is not None:
-            scripts = json.loads(worker.in_progress)
+        if self.worker.in_progress is not None:
+            scripts = json.loads(self.worker.in_progress)
         else:
             scripts =  {}
-        scripts[pe_id] = path
-        worker.in_progress = json.dumps(scripts)
-        self.dbm.add(worker)
+        scripts[pipe_e.idx] = script.path
+        self.worker.in_progress = json.dumps(scripts)
+        if script.resources:
+            if 'lock_all' in json.loads(script.resources):
+                self._lock_worker()
+        self.dbm.add(self.worker)
         self.dbm.commit()
 
-    def remove_script(self, pe_id):
+    def remove_script(self, pipe_e, script):
         '''Remove a script that has finished
         
         Args:
-            pe_id (int): PipeElement ID related to the script.
+            script (:class:`model.PipeElement`): Pipeline element that is related to script.
+            script (:class:`model.Script`): Script that is executed.
         '''
-        worker = self.get_worker()
-        if worker.in_progress is not None:
-            scripts = json.loads(worker.in_progress)
+        if self.worker.in_progress is not None:
+            scripts = json.loads(self.worker.in_progress)
         else:
             return
-        scripts.pop(str(pe_id))
-        worker.in_progress = json.dumps(scripts)
-        self.dbm.add(worker)
+        scripts.pop(str(pipe_e.idx))
+        self.worker.in_progress = json.dumps(scripts)
+        if self.worker.resources:
+            if 'lock_all' in json.loads(script.resources):
+                self._unlock_worker()
+        self.dbm.add(self.worker)
         self.dbm.commit()
 
+    def enough_resources(self, script):
+        '''Check if this worker has enough resources to execute a script.
+
+         Args:
+            script (:class:`model.Script`): Script that is executed.
+
+        Returns:
+            bool: True if worker has enough resources to execute script.
+        '''
+        worker = self.worker
+        if worker.resources:
+            res = json.loads(worker.resources)
+            if 'lock_all' in res:
+                return False
+            else:
+                return True
+        else:
+            return True
