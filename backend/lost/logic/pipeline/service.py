@@ -611,7 +611,6 @@ class PipeGodfather(object):
         self.loops = list()
         self.two_d_annotations = list()
         self.image_annotations = list()
-        self.nm_result_model_leaves = list()
         self.results = list()
         self.required_label_leaves = list()
         self.choosen_anno_tasks = list()
@@ -621,7 +620,7 @@ class PipeGodfather(object):
         self.file_man = file_man.FileMan(db_man.lostconfig)
 
         # Stop pipeline - so cron won't touch it.
-        self.pipe.state = state.Pipe.DELETED
+        self.pipe.state = state.Pipe.DELETED 
         db_man.save_obj(self.pipe)
 
         for pe in self.pipe_elements:
@@ -653,8 +652,6 @@ class PipeGodfather(object):
                 for two_d_anno in self.db_man.get_two_d_annotations(img_anno_id=image_annotation.idx):
                     self.two_d_annotations.append(two_d_anno)
         for result in self.results:
-            for leaf in self.db_man.get_nm_result_model_leaves(result_id=result.idx):
-                self.nm_result_model_leaves.append(leaf)
             for data_export in self.db_man.get_data_exports(result_id=result.idx):
                 self.data_exports.append(data_export)
             for visual_output in self.db_man.get_visual_outputs(result_id=result.idx):
@@ -684,9 +681,6 @@ class PipeGodfather(object):
             self.db_man.commit()
         for image_annotation in self.image_annotations:
             self.db_man.delete(image_annotation)
-            self.db_man.commit()
-        for nm_result_model_leaf in self.nm_result_model_leaves:
-            self.db_man.delete(nm_result_model_leaf)
             self.db_man.commit()
         for result in self.results:
             self.db_man.delete(result)

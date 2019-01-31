@@ -13,6 +13,7 @@ import DataExportRunningPresenter from 'pipRoot/nodes/dataExport/running/DataExp
 import VisualOutputRunningPresenter from 'pipRoot/nodes/visualOutput/running/VisualOutputRunningPresenter'
 import ScriptRunningPresenter from 'pipRoot/nodes/script/running/ScriptRunningPresenter'
 import LoopRunningPresenter from 'pipRoot/nodes/loop/running/LoopRunningPresenter'
+import { deletePipe } from '../../../../http';
 
 
 class PipelineGraphPresenter extends WizardTabPresenter {
@@ -27,7 +28,8 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // VIEW BINDINGS
         // Delete Pipe.
         $(this.view.html.refs['btn-delete-pipeline']).on('click', () => {
-			alert('not implemented')
+			deletePipe(appModel.state.selectedPipeline.value.id, appModel.reactComponent.token)
+			window.location.replace('/dashboard')
         })
         // Pause Pipeline Updates.
         $(this.view.html.refs['btn-pause-pipe']).on('click', () => {

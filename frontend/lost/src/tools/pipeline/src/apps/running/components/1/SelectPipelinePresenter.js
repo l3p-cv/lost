@@ -102,7 +102,8 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 		})
     }
 	deletePipeline(id: Number){
-		alert('not implemented.')
+		http.deletePipe(id, appModel.reactComponent.token)
+		window.location.replace('/dashboard')
 	}
 	pausePipeline(id: Number){
 		alert('not implemented.')

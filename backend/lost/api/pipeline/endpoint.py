@@ -91,9 +91,6 @@ class Pipeline(Resource):
             return re
     @jwt_required
     def delete(self, pipeline_id):
-        tasks.delete_pipe.delay(pipeline_id)
-        #tasks.delete_pipe.apply_async(args=[pipeline_id], queue='celery')
-        return "banane"
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -101,7 +98,7 @@ class Pipeline(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-         #   tasks.delete_pipe.delay(pipeline_id)
+            tasks.delete_pipe.delay(pipeline_id)
             dbm.close_session()
             return 'success'
 
