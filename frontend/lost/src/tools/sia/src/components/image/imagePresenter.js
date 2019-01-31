@@ -1,6 +1,6 @@
 import $ from "cash-dom"
 
-import { keyboard, mouse, state, Observable, svg as SVG } from "l3p-frontend"
+import { mouse, svg as SVG } from "l3p-frontend"
 
 import * as color from "shared/color"
 
@@ -10,34 +10,16 @@ import PointPresenter from "drawables/point/PointPresenter"
 import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import DrawablePresenter from "drawables/DrawablePresenter"
 
-import appModel from "../../appModel"
-import * as http from "../../http"
+import appModel from "siaRoot/appModel"
+import * as http from "siaRoot/http"
+
 import * as imageView from "./imageView"
-import { enablePointChange, disablePointChange } from "./change-point"
-import { enableMultipointChange, disableMultipointChange } from "./change-multipoint"
-import { enableBoxChange, disableBoxChange } from "./change-box"
-import { selectDrawable, resetSelection } from "./change-select"
+import { enableChange, disableChange } from "./change-global"
+import { enableSelect } from "./change-select"
+import { enableDelete, disableDelete } from "./change-delete"
+import { undo, redo } from "./change-undo-redo"
 
 
-appModel.config.on("update", config => {
-    enableSelect()
-	if(config.actions.edit.bounds){
-		// enable change on current selected drawable
-		if(appModel.isADrawableSelected()){
-			enableChange(appModel.getSelectedDrawable())
-		}
-		appModel.state.selectedDrawable.on("update", enableChange)
-		appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
-	}
-	if(config.actions.edit.delete){
-	    enableDelete()
-	}
-	if(config.actions.drawing || config.actions.edit.bounds || config.actions.edit.delete){
-		// enable redo and undo
-		$(window).off("keydown.undo").on("keydown.undo", undo)
-		$(window).off("keydown.redo").on("keydown.redo", redo)	
-	}
-})
 
 // during drawable change
 // - hide other drawables
@@ -61,34 +43,40 @@ appModel.config.on("update", config => {
 // 	}
 // })
 
-// during drawable creation
-// - hide other drawables
-// - disable ordinary delete
-// - (disable redo and undo)
-appModel.controls.creationEvent.on("change", isActive => {
-	if(isActive){
-		// the toolbars multipoint drawable creation has its own delete handlers 
-		disableDelete()
-		// hide other drawables
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.hide()
-			})
-		})
-		// $(window).off("keydown.undo")
-		// $(window).off("keydown.redo")
+
+appModel.config.on("update", config => {
+    enableSelect()
+	if(config.actions.edit.bounds){
+		// enable change on current selected drawable
+		if(appModel.isADrawableSelected()){
+			enableChange(appModel.getSelectedDrawable())
+		}
+		appModel.state.selectedDrawable.on("update", enableChange)
+		appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
 	} else {
-		enableDelete()
-		// show other drawables
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.show()
-			})
-		})
-		// $(window).on("keydown.undo", undo)
-		// $(window).on("keydown.redo", redo)
+		// disable change on current selected drawable
+		if(appModel.isADrawableSelected()){
+			disableChange(appModel.getSelectedDrawable())
+		}
+		appModel.state.selectedDrawable.off("update", enableChange)
+		appModel.state.selectedDrawable.off(["before-update", "reset"], disableChange)
+	}
+	if(config.actions.edit.delete){
+	    enableDelete()
+	} else {
+	    disableDelete()
+	}
+	if(config.actions.drawing || config.actions.edit.bounds || config.actions.edit.delete){
+		// enable redo and undo
+		$(window).off("keydown.undo").on("keydown.undo", undo)
+		$(window).off("keydown.redo").on("keydown.redo", redo)	
+	} else {
+		$(window).off("keydown.undo")
+		$(window).off("keydown.redo")
 	}
 })
+
+
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)
@@ -306,305 +294,6 @@ function disableCamera(){
 }
 // =============================================================================================
 
-function undo($event){
-    if(keyboard.isShortcutHit($event, {
-        mod: "Control",
-        key: "Z",
-    })){
-        $event.preventDefault()
-        state.undo()
-    }
-}
-function redo($event){
-    if(keyboard.isShortcutHit($event, {
-        mod: ["Control", "Shift"],
-        key: "Z",
-    })){
-        $event.preventDefault()
-        state.redo()
-    }
-}
-function enableSelect(){
-    // console.warn("enable select")
-    // mouse
-    let unselect = false
-    $(imageView.html.ids["sia-imgview-svg-container"]).on("click.selectDrawable", ($event) => {
-        // return on right or middle mouse button, prevent context menu.
-        if (!mouse.button.isLeft($event.button)) {
-            $event.preventDefault()
-            return
-        }
-        let drawable = $event.target.closest(".drawable")
-        if(drawable){
-            drawable = drawable.drawablePresenter
-            if(drawable instanceof DrawablePresenter){
-                selectDrawable(drawable)
-            }
-        }
-    })
-    $(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.resetSelectionStart", ($event) => {
-        // return on right or middle mouse button, prevent context menu.
-        if (!mouse.button.isLeft($event.button)) {
-            $event.preventDefault()
-            return
-        }
-        if(appModel.isADrawableSelected()){            
-            let next = $event.target.closest(".drawable")
-            next = (next !== null) ? next.drawablePresenter : undefined
-            if (!next){
-                unselect = true
-            } else {
-                unselect = false
-            }
-        }
-    })
-    $(window).on("mouseup.resetSelectionEnd", ($event) => {
-        // return on right or middle mouse button, prevent context menu.
-        if(!mouse.button.isLeft($event.button)) {
-            $event.preventDefault()
-            return
-        }
-        if(appModel.isADrawableSelected()){
-            // @WORKAROUND: firefox bug? HTMLDocument does not inherit from HTMLElement (spec) => no closest() method. 
-            let next = undefined
-            try {
-                next = $event.target.closest(".drawable")
-            } catch(e){
-                next = null
-            }
-            next = (next !== null) ? next.drawablePresenter : undefined
-            if(unselect && !next){
-                resetSelection()
-            }
-            unselect = false
-        }
-    })
-    // key
-    $(window).on("keydown.selectDrawable", ($event) => {
-        // important:
-        // we use the drawable index array instead of the raw data.
-        // deleted drawables should not be selected.
-        if(keyboard.isKeyHit($event, "Tab")) {
-            $event.stopPropagation()
-            $event.preventDefault()
-
-            if(appModel.hasDrawables()){
-                // a variable containing the index of the next drawable of 'drawableIds'.
-                let nextIndex = -1
-
-                // if a drawables is selected, select the next drawable.
-                // if user pressed shift select the previous drawable if any.
-                // unselect the selected drawable.
-                if(appModel.isADrawableSelected()){
-                    let selectedDrawable = appModel.getSelectedDrawable()
-                    // just return if only one drawable exist and is allready selected.
-                    if(appModel.state.drawableIdList.length === 1){
-                        return
-                    }
-                    if(selectedDrawable.parent){
-                        selectedDrawable = selectedDrawable.parent
-                    }
-                    let currentDrawableIndex = appModel.getDrawableIndex(selectedDrawable)
-                    selectedDrawable.unselect()
-                    if(keyboard.isModifierHit($event, "Shift")){
-                        nextIndex = currentDrawableIndex >= 1
-                            // the previous index
-                            ? currentDrawableIndex - 1
-                            // the last index
-                            : appModel.state.drawableIdList.length - 1
-                        nextIndex = nextIndex === -1 
-                            ? 0
-                            : nextIndex
-                    } else {
-                        // the next or first
-                        nextIndex = (currentDrawableIndex + 1) % appModel.state.drawableIdList.length
-                    }
-                }
-                // else if no drawable is selected
-                else {
-                    // if a drawable was selected before use its index.
-                    if(appModel.state.selectedDrawableId){
-                        nextIndex = appModel.state.drawableIdList.indexOf(appModel.state.selectedDrawableId)
-                        nextIndex = nextIndex === -1 
-                            ? 0
-                            : nextIndex
-                    }
-                    // else no drawable was selected before, use index 0 to select the drawable that was added first.
-                    else {
-                        nextIndex = 0
-                    }
-                }
-                // find the actual drawable in the model data by id, using the index, and execute selection.
-                const nextId = appModel.state.drawableIdList[nextIndex]
-                const next = appModel.getDrawableById(nextId)
-                selectDrawable(next)
-
-                // align browser view. 
-                document.querySelector("main div.card-header").scrollIntoView(true)
-            }
-        }
-    })
-    $(window).on("keydown.resetSelection", ($event) => {
-        if (keyboard.isKeyHit($event, "Escape")){
-            if(appModel.isADrawableSelected()){
-                $event.preventDefault()
-                resetSelection()
-            }
-        }
-    })    
-}
-function disableSelect(){
-    // console.warn("disable select")
-    // mouse
-    $(imageView.html.ids["sia-imgview-svg-container"]).off("click.selectDrawable")
-    $(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.resetSelectionStart")
-    $(window).off("mouseup.resetSelectionEnd")
-    // Key
-    $(window).off("keydown.selectDrawable")
-    $(window).off("keydown.resetSelection")
-}
-export function enableDelete(){
-    $(window).on("keydown.drawableDelete", ($event) => {
-        if(keyboard.isKeyHit($event, "Delete")){
-            if(appModel.isADrawableSelected()){
-				console.log("image delete drawable")
-                $event.preventDefault()
-                const selectedDrawable = appModel.getSelectedDrawable()
-                if(selectedDrawable.isDeletable()){
-                    // console.warn("enabled mouse delete handler")
-                    // for multipoint drawables:
-                    if(selectedDrawable.parent){
-                        if(selectedDrawable.parent.model.type === "line"){
-                            if(selectedDrawable.parent.model.points.length <= 2) return
-                        } else if(selectedDrawable.parent.model.type === "polygon"){
-                            if(selectedDrawable.parent.model.points.length <= 3) return
-                        }
-                        /*
-                            DEACTIVATED CAUSE NEEDED TO DEACTIVATE LINE POINT ADD/INSERT REDO UNDO:
-                            state.add({
-                                do: {
-                                    data: {
-                                        pointIndex: selectedDrawable.parent.model.points.indexOf(selectedDrawable),
-                                        parent: selectedDrawable.parent,
-                                    },
-                                    fn: (data) => {
-                                        const { pointIndex, parent } = data
-                                        parent.removePoint(parent.model.points[pointIndex])
-                                        const pointToSelect = parent.pointSelectionList.getTailNode().getData()
-                                        selectDrawable(pointToSelect)
-                                    }
-                                }, 
-                                undo: {
-                                    data: {
-                                        relPosition: {
-                                            x: selectedDrawable.getX() / imageView.getWidth(),
-                                            y: selectedDrawable.getY() / imageView.getHeight(),
-                                        },
-                                        parent: selectedDrawable.parent,
-                                        action: selectedDrawable.parent.model.points.indexOf(selectedDrawable) === 0 
-                                                || selectedDrawable.parent.model.points.indexOf(selectedDrawable) === selectedDrawable.parent.model.points.length - 1
-                                                    ? "add"
-                                                    : "insert"
-                                    },
-                                    fn: (data) => {
-                                        const { relPosition, parent, action } = data
-                                        const absPosition = {
-                                            x: relPosition.x * imageView.getWidth(),
-                                            y: relPosition.y * imageView.getHeight(),
-                                        }
-                                        const insertedPoint = parent.insertPoint(absPosition, action)
-                                        selectDrawable(insertedPoint)
-                                    }
-                                }
-                            })
-                        */
-                        selectedDrawable.parent.removePoint(selectedDrawable)
-                        const pointToSelect = selectedDrawable.parent.pointSelectionList.getTailNode().getData()
-                        selectDrawable(pointToSelect)
-                    } 
-                    // for drawables:
-                    else {
-                        // add redo and undo
-                        state.add(new state.StateElement({
-                            do: {
-                                data: { drawable: selectedDrawable },
-                                fn: (data) => {
-                                    data.drawable.delete()
-                                    appModel.deleteDrawable(data.drawable)
-                                }
-                            },
-                            undo: {
-                                data: { drawable: selectedDrawable },
-                                fn: (data) => {
-                                    appModel.addDrawable(data.drawable)
-                                    selectDrawable(data.drawable)
-                                }
-                            }
-                        }))
-                        selectedDrawable.delete()
-                        appModel.deleteDrawable(selectedDrawable)
-                    }
-                }
-            }
-        }
-    })
-}
-export function disableDelete(){
-    $(window).off("keydown.drawableDelete")
-}
-
-export function enableChange(drawable: DrawablePresenter){
-    drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
-    if(drawable instanceof DrawablePresenter){
-        if(drawable.isChangable()){
-            // console.warn("enabled change handlers")
-            switch(drawable.getClassName()){
-                case "PointPresenter":
-					enablePointChange(drawable)
-                    break
-                case "MultipointPresenter":
-                    enableMultipointChange(drawable)
-                    break
-                case "BoxPresenter":
-                    enableBoxChange(drawable)
-                    break
-                case "Object":
-                    if(Object.keys(drawable).length === 0){
-                        break                
-                    }
-                    break
-                default: throw new Error(`unknown drawable ${drawable} of type ${drawable.getClassName()}.`)
-            }
-        } else {
-            // preserve shortcuts (should still prevent default even if the funciton is not activated)
-            $(window).on("keydown", $event => {
-                // prevent browser from scrolling if using arrow keys.
-                if(keyboard.isKeyHit($event, ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"])){
-                    $event.preventDefault()
-                }
-            })
-
-        }
-    }
-}
-export function disableChange(drawable: DrawablePresenter){
-    // console.warn("disabled change handlers")
-    drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
-    if(drawable instanceof DrawablePresenter){
-        switch(drawable.getClassName()){
-            case "PointPresenter":
-				disablePointChange(drawable)
-                break
-            case "MultipointPresenter":
-				disableMultipointChange(drawable)
-                break
-            case "BoxPresenter":
-				disableBoxChange(drawable)
-                break
-            default: throw new Error(`unknown drawable ${drawable} of type ${drawable.getClassName()}.`)
-        }
-    }
-}
 
 // mutates appModel
 export function createDrawables(drawablesRawData: any){

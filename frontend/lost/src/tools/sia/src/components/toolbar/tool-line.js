@@ -13,7 +13,6 @@ let firstPoint = undefined
 let currentPoint = undefined
 let line = undefined
 function addLinePoint($event){
-	console.warn("create line handler (executed add)")
 	const { imgW, imgH } = imageInterface.getDimensions()
 	let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 	// calculate the real mouseposition (@zoom)
@@ -33,7 +32,6 @@ function addLinePoint($event){
 			do: {
 				data: { $event },
 				fn: (data) => {
-					console.log("redo point")
 					const { $event } = data
 					addLinePoint($event)
 					window.one = $event
@@ -46,7 +44,6 @@ function addLinePoint($event){
 				},
 			}
 		}))
-		// imagePresenter.addDrawable(firstPoint)
 		appModel.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 		console.log("added line point")
@@ -57,7 +54,6 @@ function addLinePoint($event){
 			data: [ firstPoint.model.relBounds, { x: mousepos.x / imgW, y: mousepos.y / imgH } ],
 			type: "line",
 		})
-		console.log("creat eline")
 		state.add(new state.StateElement({
 			do: {
 				data: { $event },
@@ -79,8 +75,6 @@ function addLinePoint($event){
 		if(line.menuBar){
 			line.menuBar.hide()
 		}
-		// imagePresenter.removeDrawable(firstPoint)
-		// imagePresenter.addDrawable(line)
 		appModel.deleteDrawable(firstPoint)
 		appModel.addDrawable(line)
 		// select the second point of the line as indicator.
@@ -112,7 +106,6 @@ function addLinePoint($event){
 function deleteLinePoint(){
 	// first point
 	if(firstPoint && !line){
-		// imagePresenter.removeDrawable(firstPoint)
 		appModel.deleteDrawable(firstPoint)
 		firstPoint = undefined
 		appModel.controls.creationEvent.update(false)
@@ -120,7 +113,6 @@ function deleteLinePoint(){
 	// second point
 	if(line && line.model.points.length === 2){
 		// remove the line from view
-		// imagePresenter.removeDrawable(line)
 		appModel.deleteDrawable(line)
 		line = undefined
 		// re-create the first point, add and select it.
@@ -128,7 +120,6 @@ function deleteLinePoint(){
 			data: firstPoint.model.relBounds, 
 			isNoAnnotation: true,
 		})
-		// imagePresenter.addDrawable(firstPoint)
 		appModel.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 	}
@@ -158,7 +149,6 @@ function finishLine(){
 				},
 			}
 		}))
-		appModel.addDrawable(line)
 		appModel.selectDrawable(line)
 		line.model.points[line.model.points.length-1].unselect()
 		line.select()
@@ -186,7 +176,6 @@ export function enableLineCreation(){
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createLinePoint", ($event) => {
-		// console.log("create line handler (triggered)")
 		$event.preventDefault()
 		// @QUICK-FIX-1: when selected, and adding points by ctrl or alt feature, no new drawable should be created.
 		// @QUICK-FIX-1: currently not switching of this handler.
@@ -219,15 +208,15 @@ export function enableLineCreation(){
 			}
 		}
 	})
-	// $(window).on("keydown.deleteLinePoint", ($event) => {
-	// 	if(appModel.controls.creationEvent.value === true){
-	// 		if(appModel.controls.changeEvent.value === false){
-	// 			if(keyboard.isKeyHit($event, "Delete")){
-	// 				deleteLinePoint()
-	// 			}
-	// 		}
-	// 	}
-	// })
+	$(window).on("keydown.deleteLinePoint", ($event) => {
+		if(appModel.controls.creationEvent.value === true){
+			if(appModel.controls.changeEvent.value === false){
+				if(keyboard.isKeyHit($event, "Delete")){
+					deleteLinePoint()
+				}
+			}
+		}
+	})
 }
 export function disableLineCreation(){
 	$(imageInterface.getSVG()).off("mousedown.createLinePoint")

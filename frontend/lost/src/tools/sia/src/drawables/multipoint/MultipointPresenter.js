@@ -39,23 +39,23 @@ export default class MultipointPresenter extends DrawablePresenter {
             mountPoint: this.view.html.refs["container-node"],
             label: {
                 text: this.model.label.name,
-                padding: MULTIPOINT_DEFAULTS.strokeWidth,
+                padding: MULTIPOINT_DEFAULTS.getStrokeWidth(),
             },
             bar: {
                 label: {
                     text: this.model.label.name,
-                    padding: POINT_DEFAULTS.strokeWidth,
+                    padding: POINT_DEFAULTS.getStrokeWidth(),
                 },
-                width: this.model.actBounds.value.w + 2 * POINT_DEFAULTS.getRadius(false) + 2 * POINT_DEFAULTS.strokeWidth,
-                borderWidth: MULTIPOINT_DEFAULTS.strokeWidth,           
+                width: this.model.actBounds.value.w + 2 * POINT_DEFAULTS.getRadius(false) + 2 * POINT_DEFAULTS.getStrokeWidth(),
+                borderWidth: MULTIPOINT_DEFAULTS.getStrokeWidth(),           
             },
         })
         // quickfix: update menu bar. maybe there is a better solution.
         this.model.actBounds.on("update", (bounds) => {
-            this.menuBar.setWidth(bounds.w + 2 * POINT_DEFAULTS.getRadius(false) + 2 * POINT_DEFAULTS.strokeWidth)
+            this.menuBar.setWidth(bounds.w + 2 * POINT_DEFAULTS.getRadius(false) + 2 * POINT_DEFAULTS.getStrokeWidth())
             svg.setTranslation(this.view.html.refs["container-node"], { 
-                x: bounds.left - POINT_DEFAULTS.getOutlineRadius(true) / 2 - POINT_DEFAULTS.strokeWidth,
-                y: bounds.top - POINT_DEFAULTS.getOutlineRadius(true) - POINT_DEFAULTS.strokeWidth,
+                x: bounds.left - POINT_DEFAULTS.getOutlineRadius(true) / 2 - POINT_DEFAULTS.getStrokeWidth(),
+                y: bounds.top - POINT_DEFAULTS.getOutlineRadius(true) - POINT_DEFAULTS.getStrokeWidth(),
             })
         })
 

@@ -58,8 +58,9 @@ export const html = new NodeTemplate(/*html*/`
 // this will get rendered each time updateLabels() gets called. 
 import React, { Component } from "react"
 import ReactDOM from "react-dom"
-import Autocomplete from 'react-autocomplete'
-import * as imagePresenter from "../image/imagePresenter"
+import Autocomplete from "react-autocomplete"
+import { enableChange, disableChange } from "../image/change-global"
+import { enableDelete, disableDelete } from "../image/change-delete"
 class LabelSelect extends Component {
 	constructor(props){
 		super(props)
@@ -140,6 +141,8 @@ class LabelSelect extends Component {
 				}
 				inputProps={{
 					onKeyDown: e => {
+						// stop propagation, so drawable selection event handlers do not get triggered.
+						e.stopPropagation()
 						if(keyboard.isKeyHit(e, ["Escape", "Tab"])){
 							this.root.current.blur()
 						}
@@ -156,6 +159,8 @@ class LabelSelect extends Component {
 						}
 					},
 					onKeyUp: e => {
+						// stop propagation, so drawable selection event handlers do not get triggered.
+						e.stopPropagation()
 						// its important that removing element focus happens on key up,
 						// else the component wont select a label that you 
 						// navigated to and want to select with enter key.
@@ -167,12 +172,12 @@ class LabelSelect extends Component {
 						}
 					},
 					onFocus: e => {
-						imagePresenter.disableChange()
-						imagePresenter.disableDelete()
+						disableChange()
+						disableDelete()
 					},
 					onBlur: e => {
-						imagePresenter.enableChange()
-						imagePresenter.enableDelete()
+						enableChange()
+						enableDelete()
 					},
 				}}
 			/>

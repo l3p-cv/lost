@@ -1,27 +1,21 @@
 import $ from "cash-dom"
 
-import { mouse } from "l3p-frontend"
-import appModel from "../../appModel"
+import { mouse, state } from "l3p-frontend"
+
+import appModel from "siaRoot/appModel"
 
 import MenuModel from "./MenuModel"
 import MenuView from "./MenuView"
 
-import { STATE } from "drawables/drawable.statics"
-import DRAWABLE_DEFAULTS from "drawables/drawable.defaults"
-import * as MENU_DEFAULTS from "./menu.defaults"
+import { selectDrawable } from "components/image/change-select"
 
-// maybe no good idea?
-const that = {
-    view: new WeakMap(),
-    model: new WeakMap(), // see how BoxPresenter adds the view to the box...
-}
+
 export default class MenuPresenter {
     /**
      * 
      * @param {*} config keys: label, position, width, height, minWidth, padding, drawable 
      */
     constructor(config: any){
-        // console.log("menu presenter config:", config)
         this.model = new MenuModel(config)
         this.view = new MenuView(this.model, config.mountPoint, {
             deletable: this.model.drawable.isDeletable(),
@@ -35,7 +29,26 @@ export default class MenuPresenter {
                     $event.preventDefault()
                     return
                 }
+				// stop propagation to prevent selecting a drawable below the button.-
                 $event.stopPropagation()
+				// save state
+				state.add(new state.StateElement({
+					do: {
+						data: { drawable: this.model.drawable },
+						fn: (data) => {
+							data.drawable.delete()
+							appModel.deleteDrawable(data.drawable)
+						}
+					},
+					undo: {
+						data: { drawable: this.model.drawable },
+						fn: (data) => {
+							appModel.addDrawable(data.drawable)
+							selectDrawable(data.drawable)
+						}
+					}
+				}))
+				// execute
                 this.model.drawable.delete()
                 appModel.deleteDrawable(this.model.drawable)
             })

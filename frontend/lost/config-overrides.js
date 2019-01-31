@@ -1,3 +1,5 @@
+const mergeObjects = require("@cartok/object-assign-deep")
+
 const webpack = require("webpack")
 const rewireEslint = require("react-app-rewire-eslint")
 // const { injectBabelPlugin } = require("react-app-rewired")
@@ -53,42 +55,19 @@ module.exports = (config, env) => {
         }])
     )
 
-	// config.module.rules.push({
-	// 	parser: { amd: false }
-	// })
-
 	// config = injectBabelPlugin("@babel/plugin-transform-flow-strip-types", config)
 	config = rewireEslint(config, env)
 	
-	// console.log(config)
+	if(env === "production"){
+		// keep class names
+		// const terserOverride = {
+		// 	keep_classnames: true,
+		// 	keep_fnames: true,
+		// }
+		config.optimization.minimizer[0].options.terserOptions.keep_classnames = true
+		config.optimization.minimizer[0].options.terserOptions.keep_fnames = true
+	}
+	
 	// return
 	return config
 }
-
-// sia config:
-/*
-	let config = {
-			entry: {
-				sia: absolutePath("src/appPresenter")
-			},
-			output: {
-				filename: "[name]-bundle.js",
-				sourceMapFilename : "[file].map",
-				path: absolutePath("static"),
-			},
-			resolve: {
-				alias: {
-					"components": absolutePath("src/components"),
-					"core": absolutePath("src/core"),
-					"drawables": absolutePath("src/drawables"),
-					"shared": absolutePath("src/shared"),
-					"l3pfrontend": absolutePath("../../../l3p-frontend-core"),
-				},
-			},
-			plugins: [
-				new CopyWebpackPlugin([
-					{ from: "assets", to: "assets" },
-				]),
-			]
-		}
-	*/
