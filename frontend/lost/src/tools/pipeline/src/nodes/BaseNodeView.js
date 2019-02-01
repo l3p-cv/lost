@@ -99,7 +99,6 @@ export default class BaseNodeView {
 	updateRefs(parent: HTMLElement){
 		this.html.root = parent
 		for(const ref in this.html.refs){
-			console.log("update reference: ", ref)
 			this.html.refs[ref] = parent.querySelector(`[data-ref='${ref}']`)
 		}
 	}
@@ -125,12 +124,10 @@ export default class BaseNodeView {
 		}
 	}
 	updateStatus(status: String){
-		console.log('base node view update status', status)
 		// console.log(this.html.refs['status'])
 		if(this.html.refs['status']){
 			const newColor = COLOR_MAP[status]
 			// UNDEFINED?
-			console.log({newColor})
 			const invalidColors = Object.values(COLOR_MAP).filter(color => color !== newColor)
 			// remove current backround (one of 'invalidColors').
 			invalidColors.forEach(color => this.html.refs['status'].classList.toggle(color, false))

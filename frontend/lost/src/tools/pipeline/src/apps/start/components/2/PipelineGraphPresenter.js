@@ -58,7 +58,9 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 				id: nodeId,
 				node: node,
 			}
-		})
+        })
+        
+        
 
 		// add edges
         appModel.state.pipelineElements.forEach(({ node }) => {
@@ -70,16 +72,18 @@ class PipelineGraphPresenter extends WizardTabPresenter {
                     this.graph.addEdge(node.model.peN, e)
                 })
             }
-			this.graph.render()
+            this.graph.render()
+            
         })
-		
+
 		// initialize every node. the nodes root reference will be updated.
 		appModel.state.pipelineElements.forEach(({ node, id }) => {
 			node.init(document.getElementById(id))
 		})
 		
 		// center the graph.
-	    this.graph.centerGraph()
+        this.graph.centerGraph()
+        debugger
     }
 	isValidated(){
 		return appModel.state.pipelineElements.every(element => {

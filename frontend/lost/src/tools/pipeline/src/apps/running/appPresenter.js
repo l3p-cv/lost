@@ -34,7 +34,6 @@ export default function init({ token, polling }){
 	appModel.options.polling.update(polling)
 	http.requestPipelines(appModel.reactComponent.token).then((response) => {
 		if(!response.pipes){
-			console.log(response)
 			throw new Error(`Backend returned no running pipelines.`)
 		}
 		appModel.state.pipelines.update(response.pipes)

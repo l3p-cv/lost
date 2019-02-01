@@ -1,4 +1,3 @@
-
 export default class BaseNodePresenter {
     /**
      * This constructor creates a Graph-Node.
@@ -41,7 +40,6 @@ export default class BaseNodePresenter {
      * @param {*} parentNode The root node of this node inside the graph. 
      */
     init(parentNode: HTMLElement){
-		console.log('init node')
 		// update the views root element reference, cause it gets lost when appending to dagreD3 graph.
 		// this.view.html.root = parentNode
 		// Object.keys(this.view.html.refs).forEach(key => {

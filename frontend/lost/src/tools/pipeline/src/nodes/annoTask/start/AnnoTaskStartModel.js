@@ -11,7 +11,6 @@ export default class AnnoTaskStartModel extends BaseNodeModel {
 		const { type, configuration } = annoTask
 		super({ peN, peOut, annoTask: { type, configuration } })
 
-		console.log({annoTask})
 		this.state = {
 			// wizzard tab 1.
 			name: annoTask.name,

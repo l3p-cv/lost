@@ -12,7 +12,6 @@ import 'bootstrap-tree'
 import 'bootstrap-tree/dist/bootstrap-treeview.min.css'
 // https://github.com/jonmiles/bootstrap-treeview
 
-
 export default class DatasourceStartModal extends BaseModal {
     constructor(nodeModel: DatasourceStartModel){
 		// init modal html
@@ -34,7 +33,6 @@ export default class DatasourceStartModal extends BaseModal {
 			map: [['name', 'text'], ['children', 'nodes']],
 			filter: (item => item.type === 'directory'),
 		})
-		// console.log({data})
 
 		// init bootstrap-tree.
 		// ---------------------------------------------------------------------------------------------------------------

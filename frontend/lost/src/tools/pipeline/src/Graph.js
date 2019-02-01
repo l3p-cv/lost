@@ -13,7 +13,6 @@ const DEFAULT_PARAMS = {
 }
 
 let initCounter = 0
-
 export default class Graph {
     constructor(mountPoint: Node | String, options: any){
         initCounter++
@@ -52,6 +51,7 @@ export default class Graph {
                 <g data-ref="dagre-graph" class="dagre-graph"></g>
             </svg>
         `)
+
         this.mountPoint.appendChild(this.svg.fragment)
 
         // add d3 selection references
@@ -82,6 +82,9 @@ export default class Graph {
         this.svg.refs['dagre-graph'].setAttribute('width', this.width)
         this.svg.refs['dagre-graph'].setAttribute('height', this.height)
         this.centerGraph()
+        console.log('--------this----------------------------');
+        console.log(this.svg.refs["dagre-graph"].clientHeight);
+        console.log('------------------------------------');
     }
     remove(){
         this.svg.destroy()
@@ -99,6 +102,8 @@ export default class Graph {
     render(){
 		// calling render will cause all node views to loose their element references.
         dagreD3.render()(this.d3SelectionGroup, this.dagreD3Graph)
+        
+
     }
 	fillGraph(nodes: Array<ElementPresenters>, mode: String){
 		// THIS METHOD COULD REPLACE:

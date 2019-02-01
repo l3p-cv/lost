@@ -1,5 +1,4 @@
 import { Observable } from 'l3p-frontend'
-
 export default {
 	reactComponent: {
 		token: undefined,

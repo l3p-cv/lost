@@ -14,6 +14,9 @@ import VisualOutputRunningPresenter from 'pipRoot/nodes/visualOutput/running/Vis
 import ScriptRunningPresenter from 'pipRoot/nodes/script/running/ScriptRunningPresenter'
 import LoopRunningPresenter from 'pipRoot/nodes/loop/running/LoopRunningPresenter'
 
+console.log('------------------------------------');
+console.log("oooooooooooooooooooo");
+console.log('------------------------------------');
 
 class PipelineGraphPresenter extends WizardTabPresenter {
     constructor(){
@@ -148,7 +151,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 		}
 	}
 	enableUpdate(rate: Number){
-		console.log('enable update')
 		// start new update interval.
 		this.updateIntervalId = setInterval(() => {
 			// change update information label.
@@ -162,22 +164,12 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 					$(this.view.html.refs['update-label']).delay(500).fadeOut(200)
 					return
 				}
-				console.log('new data update:', response)
 				// update the model of each graph node.
 				appModel.state.pipelineElements.forEach((element, i) => {
 					element = element.node
 					const newData = response.elements[i]
 					if(i === 0){
-						console.log('--- model update check ---')
-						console.log('model status before:', element.model.status.value)						
-						element.model.status.update(newData.state)
-						console.log('model status after:', element.model.status.value)						
-						console.log('--- view reference check ---')
-						window.hodor = element.view.html
-						console.log(element.view.html.refs)
-						console.log(element.view.html.root)
-						console.log(element.view.html.refs['status'])
-						console.log(element.view.html.root.querySelector(`[data-ref='status']`))
+
 					} else {
 						element.model.status.update(newData.state)
 						if(element instanceof AnnoTaskRunningPresenter){

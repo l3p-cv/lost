@@ -2,7 +2,6 @@ import { WizardTabPresenter, tree as Tree } from 'l3p-frontend'
 import mapTreeToGraph from 'libs/graph-vis/mapTreeToGraph'
 
 import TabTreeView from './TabTreeView'
-
 export default class TabTreePresenter extends WizardTabPresenter {
     constructor(nodeModel: AnnoTaskNodeModel) {
         super()
@@ -28,7 +27,6 @@ export default class TabTreePresenter extends WizardTabPresenter {
 					})
 				}
 			})
-			console.log('vis data:', this.visData)
 
 			// create graph.
 			this.view.update(this.visData)
