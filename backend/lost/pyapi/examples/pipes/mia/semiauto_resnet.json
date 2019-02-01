@@ -1,5 +1,5 @@
 {
-  "description" : "This pipeline selects all images of an rawFile, clusters them using KMeans and CNN features and requests a mia annotation task",
+  "description" : "This pipeline selects all images of an rawFile, clusters them using ResNet50 prediction and requests a mia annotation task",
   "author" : "Jonas Jaeger",
   "pipe-schema-version" : 0.0,
   "elements" : [
@@ -14,7 +14,7 @@
       "peN" : 1,
       "peOut" : [2],
       "script" : {
-        "path": "cluster_kmeans.py",
+        "path": "cluster_resnet.py",
         "description" : "Cluster images an request annotations"
       }
     },
