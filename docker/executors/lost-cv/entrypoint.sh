@@ -43,6 +43,7 @@ done
 echo "All Services ready. Starting celery worker now."
 
 #mkdir -p ${LOST_HOME}/logs
+python3 /code/backend/lost/logic/init/initworker.py
 
 if [ ${DEV} = "True" ]; then
   echo "In DEV mode"

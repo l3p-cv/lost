@@ -47,6 +47,7 @@ mkdir -p ${LOST_HOME}/logs
 python3 /code/backend/lost/logic/init/initlost.py
 cd /code/backend/lost/cli && bash import_examples.sh && cd -
 cd /code/docs/sphinx &&  make html && cd -
+python3 /code/backend/lost/logic/init/initworker.py
 
 if [ ${DEV} = "True" ]; then
   nginx="service nginx start"

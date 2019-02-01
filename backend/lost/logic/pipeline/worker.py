@@ -17,6 +17,20 @@ def register_worker(dbm, lostconfig):
     dbm.add(worker)
     dbm.commit()
 
+def init_worker_on_startup():
+    lostconfig = LOSTConfig()
+    dbm = DBMan(lostconfig)
+    worker = dbm.get_worker(lostconfig.worker_name)
+    if worker is None:
+        register_worker(dbm, lostconfig)
+        print('Registered worker: {}'.format(lostconfig.worker_name))
+    else:
+        worker.timestamp = datetime.utcnow()
+        worker.resources = '[]'
+        worker.in_progress = '{}'
+        dbm.add(worker)
+        dbm.commit()
+        print('Reset worker on startup: {}'.format(worker.worker_name))
 
 @task
 def send_life_sign():
