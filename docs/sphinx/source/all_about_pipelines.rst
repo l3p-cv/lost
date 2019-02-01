@@ -48,7 +48,7 @@ If **"type"** is **"mia"** the configuration will be the following:
     {
       "type": "annoBased|imageBased",
       "showProposedLabel": "[boolean]",
-      "drawBox": "[boolean]",
+      "drawAnno": "[boolean]",
       "addContext": "[float]"
     }
 

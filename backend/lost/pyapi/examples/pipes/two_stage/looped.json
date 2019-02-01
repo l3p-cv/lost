@@ -13,7 +13,7 @@
       "peN": 1,
       "peOut": [2],
       "script": {
-        "path": "request_bba.py",
+        "path": "request_loop_annos.py",
         "description": "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes if desired."
       }
     },
@@ -66,7 +66,7 @@
         "instructions" : "Please assign a class labels to all presented images.",
         "configuration":{
           "type": "annoBased",
-          "drawBox": false,
+          "drawAnno": false,
           "addContext": 0.0
         }
       }
@@ -76,13 +76,22 @@
       "peOut": [6],
       "script": {
         "path": "export_csv.py",
-        "description": "Export all annotations to a csv file."
+        "description": "Export all annotations to a csv file.",
+        "language": "python3"
       }
     },
     {
       "peN": 6,
-      "peOut": null,
+      "peOut": [7],
       "dataExport": {}
+    },
+    {
+      "peN": 7,
+      "peOut": null,
+      "loop": {
+        "maxIteration": null,
+        "peJumpId": 1
+      }
     }
   ]
 }

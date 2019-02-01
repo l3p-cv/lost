@@ -77,7 +77,7 @@ Configuration
     * If "type" is **"annoBased"** all TwoDAnnotations related to an image will be cropped and presented in the clustered view.
 **"showProposedLabel"**
     * If **true**, the assigned sim_class will be interpreted as label and be used as pre-selection of the label in the MIA tool. 
-**"drawBox"**
+**"drawAnno"**
     * If **"true"** and **"type" : "annoBased"** a box will be drawn around the TwoDAnnotations.
 **"addContext"**
     * If **"type" : "annoBased"** and **"addContext" > 0.0**, "addContext" defines the amount of pixels that will be added to the area of the annotation relative to the width and height of the annotation.  

@@ -75,10 +75,10 @@ class TwoDSerialize(object):
                 else:    
                     # crop two_d_anno out of image_anno
                     config = get_config(self.db_man, self.user_id)
-                    draw_box = False
+                    draw_anno = False
                     context = None
                     try:
-                        draw_box = config['drawBox']
+                        draw_anno = config['drawAnno']
                     except:
                         pass
                     try:
@@ -112,7 +112,8 @@ class TwoDSerialize(object):
                         y_max = y + h + int(h*context)
                         if y_max > image.shape[0]:
                             y_max = image.shape[0]
-                    if draw_box:
+                    if draw_anno:
+                        #TODO Adjust to deal with all annoations
                         # Draw box into crop
                         rr, cc = polygon_perimeter([y, y, y+h, y+h],[x, x+w, x+w,x ],shape=image.shape)
                         image[rr,cc] = (255,0,0)

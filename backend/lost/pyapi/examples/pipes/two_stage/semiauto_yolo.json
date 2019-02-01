@@ -1,5 +1,6 @@
+
 {
-  "description": "This pipe represents a two stage annotation process. In a first stage bbox annotations are created and in the second stage this bboxes will be labeled by MIA",
+  "description": "This pipe represents a two stage annotation process. In a first stage bbox annotations are created and in the second stage this bboxes will be labeled by MIA. Semi Automatic support is achieved using yolo box proposals in first stage and class label for clustering in second stage.",
   "author": "Jonas Jaeger",
   "pipe-schema-version" : 0.0,
   "elements": [{
@@ -13,8 +14,8 @@
       "peN": 1,
       "peOut": [2],
       "script": {
-        "path": "request_loop_annos.py",
-        "description": "Request BBoxAnnotations for all images in an rawFile. Create also some dummy boxes if desired."
+        "path": "request_yolo_annos.py",
+        "description": "Request BBoxAnnotations for all images in an rawFile. Create box proposals with Yolo V3."
       }
     },
     {
@@ -53,8 +54,8 @@
       "peN": 3,
       "peOut": [4],
       "script": {
-        "path": "cluster_boxes.py",
-        "description": "Cluster bboxes by setting sim class"
+        "path": "cluster_using_yolo.py",
+        "description": "Cluster bboxes by using yolo pedictions as sim class"
       }
     },
     {
@@ -66,7 +67,7 @@
         "instructions" : "Please assign a class labels to all presented images.",
         "configuration":{
           "type": "annoBased",
-          "drawBox": false,
+          "drawAnno": false,
           "addContext": 0.0
         }
       }
@@ -76,22 +77,13 @@
       "peOut": [6],
       "script": {
         "path": "export_csv.py",
-        "description": "Export all annotations to a csv file.",
-        "language": "python3"
+        "description": "Export all annotations to a csv file."
       }
     },
     {
       "peN": 6,
-      "peOut": [7],
-      "dataExport": {}
-    },
-    {
-      "peN": 7,
       "peOut": null,
-      "loop": {
-        "maxIteration": null,
-        "peJumpId": 1
-      }
+      "dataExport": {}
     }
   ]
 }
