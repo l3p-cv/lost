@@ -17,7 +17,7 @@ import * as imageView from "./imageView"
 import { enableChange, disableChange } from "./change-global"
 import { enableSelect } from "./change-select"
 import { enableDelete, disableDelete } from "./change-delete"
-import { undo, redo } from "./change-undo-redo"
+import { enableUndoRedo, disableUndoRedo } from "./change-undo-redo"
 
 
 
@@ -49,9 +49,9 @@ appModel.config.on("update", config => {
 	if(config.actions.edit.bounds){
 		// enable change on current selected drawable
 		if(appModel.isADrawableSelected()){
-			enableChange(appModel.getSelectedDrawable())
+			enableChange(appModel.getSelectedDrawable(), appModel.config.value)
 		}
-		appModel.state.selectedDrawable.on("update", enableChange)
+		appModel.state.selectedDrawable.on("update", drawable => enableChange(drawable, appModel.config.value))
 		appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
 	} else {
 		// disable change on current selected drawable
@@ -61,19 +61,8 @@ appModel.config.on("update", config => {
 		appModel.state.selectedDrawable.off("update", enableChange)
 		appModel.state.selectedDrawable.off(["before-update", "reset"], disableChange)
 	}
-	if(config.actions.edit.delete){
-	    enableDelete()
-	} else {
-	    disableDelete()
-	}
-	if(config.actions.drawing || config.actions.edit.bounds || config.actions.edit.delete){
-		// enable redo and undo
-		$(window).off("keydown.undo").on("keydown.undo", undo)
-		$(window).off("keydown.redo").on("keydown.redo", redo)	
-	} else {
-		$(window).off("keydown.undo")
-		$(window).off("keydown.redo")
-	}
+	enableDelete(appModel.config.value)
+	enableUndoRedo(appModel.config.value)
 })
 
 

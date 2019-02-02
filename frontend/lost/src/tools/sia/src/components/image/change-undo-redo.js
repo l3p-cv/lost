@@ -1,7 +1,7 @@
 import { keyboard, state } from "l3p-frontend"
 
 
-export function undo($event){
+function undo($event){
     if(keyboard.isShortcutHit($event, {
         mod: "Control",
         key: "Z",
@@ -10,7 +10,7 @@ export function undo($event){
         state.undo()
     }
 }
-export function redo($event){
+function redo($event){
     if(keyboard.isShortcutHit($event, {
         mod: ["Control", "Shift"],
         key: "Z",
@@ -18,4 +18,16 @@ export function redo($event){
         $event.preventDefault()
         state.redo()
     }
+}
+
+export function enableUndoRedo(config){
+	disableUndoRedo()
+	if(config.actions.drawing || config.actions.edit.bounds || config.actions.edit.delete){
+		$(window).on("keydown.undo", undo)
+		$(window).on("keydown.redo", redo)
+	}
+}
+export function disableUndoRedo(){
+	$(window).off("keydown.undo", undo)
+	$(window).off("keydown.redo", redo)
 }

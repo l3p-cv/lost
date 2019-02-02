@@ -16,6 +16,7 @@ import PointPresenter from "../../drawables/point/PointPresenter"
 import imageInterface from "components/image/imageInterface"
 
 
+appModel.controls.creationEvent.on("change", isActive => onDrawableCreation(isActive))
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)

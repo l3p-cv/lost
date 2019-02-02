@@ -104,6 +104,7 @@ function addLinePoint($event){
 	}
 }
 function deleteLinePoint(){
+	console.log("delete line point (toolbar handler)")
 	// first point
 	if(firstPoint && !line){
 		appModel.deleteDrawable(firstPoint)

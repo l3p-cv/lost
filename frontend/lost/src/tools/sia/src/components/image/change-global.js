@@ -9,46 +9,46 @@ import { enableMultipointChange, disableMultipointChange } from "./change-multip
 import { enableBoxChange, disableBoxChange } from "./change-box"
 
 
-export function enableChange(drawable: DrawablePresenter){
+export function enableChange(drawable: DrawablePresenter, config: any){
 	disableChange()
-	if(!appModel.config.value.actions.edit.bounds){
-		return
-	}
-    drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
-    if(drawable instanceof DrawablePresenter){
-        if(drawable.isChangable()){
-            // console.warn("enabled change handlers")
-            switch(drawable.getClassName()){
-                case "PointPresenter":
-					enablePointChange(drawable)
-                    break
-                case "MultipointPresenter":
-                    enableMultipointChange(drawable)
-                    break
-                case "BoxPresenter":
-                    enableBoxChange(drawable)
-                    break
-                case "Object":
-                    if(Object.keys(drawable).length === 0){
-                        break                
-                    }
-                    break
-                default: throw new Error(`unknown drawable ${drawable} of type ${drawable.getClassName()}.`)
-            }
-        } else {
-            // preserve shortcuts (should still prevent default even if the funciton is not activated)
-            $(window).on("keydown", $event => {
-                // prevent browser from scrolling if using arrow keys.
-                if(keyboard.isKeyHit($event, ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"])){
-                    $event.preventDefault()
-                }
-            })
+	drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
+	if(drawable && config.actions.edit.bounds){
+		if(drawable instanceof DrawablePresenter){
+			if(drawable.isChangable()){
+				// console.warn("enabled change handlers")
+				switch(drawable.getClassName()){
+					case "PointPresenter":
+						enablePointChange(drawable)
+						break
+					case "MultipointPresenter":
+						enableMultipointChange(drawable)
+						break
+					case "BoxPresenter":
+						enableBoxChange(drawable)
+						break
+					case "Object":
+						if(Object.keys(drawable).length === 0){
+							break                
+						}
+						break
+					default: throw new Error(`unknown drawable ${drawable} of type ${drawable.getClassName()}.`)
+				}
+			} else {
+				// preserve shortcuts (should still prevent default even if the funciton is not activated)
+				$(window).on("keydown", $event => {
+					// prevent browser from scrolling if using arrow keys.
+					if(keyboard.isKeyHit($event, ["ArrowUp", "ArrowDown", "ArrowRight", "ArrowLeft"])){
+						$event.preventDefault()
+					}
+				})
 
-        }
-    }
+			}
+		}
+	}
 }
 export function disableChange(drawable: DrawablePresenter){
     // console.warn("disabled change handlers")
+	console.log("disable change on:", drawable)
     drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
     if(drawable instanceof DrawablePresenter){
         switch(drawable.getClassName()){

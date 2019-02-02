@@ -26,29 +26,6 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 			}
 			const point = drawable.insertPoint(mousepos)
 			if(point){
-				/*
-					DEACTIVATED CAUSE COMPLICATED:
-					Need to work on MultipointPresenter for this to function.
-					A "move" command can not be redone after readding the point with this.<>>
-					state.add({
-						do: {
-							data: { point, drawable },
-							fn: (data) => {
-								const { point, drawable } = data
-								drawable.insertPoint(point, "insert", point.insertionIndex)
-								drawable.setChanged()
-								selectDrawable(point)
-							}
-						},
-						undo: {
-							data: { drawable },
-							fn: (data) => {
-								const { drawable } = data
-								drawable.removePoint(drawable.pointSelectionList.getTailNode().getData())
-							}
-						}
-					})
-				*/
 				drawable.setChanged()
 				selectDrawable(point)
 			}

@@ -183,8 +183,12 @@ class LabelSelect extends Component {
 						disableDelete()
 					},
 					onBlur: e => {
-						enableChange()
-						enableDelete()
+						// component might get loaded before config is updated.
+						// could also wrap this component initialization to execute config update.
+						if(!appModel.config.isInInitialState){
+							enableChange(appModel.getSelectedDrawable(), appModel.config.value)
+							enableDelete(appModel.config.value)
+						}
 					},
 				}}
 			/>
