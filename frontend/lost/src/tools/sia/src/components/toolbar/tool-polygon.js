@@ -7,6 +7,8 @@ import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
 import { selectDrawable } from "components/image/change-select"
+import { addDrawable, removeDrawable } from "components/image/imagePresenter"
+const imagePresenter = { addDrawable, removeDrawable }
 
 
 let currentPoint = undefined
@@ -29,7 +31,7 @@ function addPolygonPoint($event){
 			data: { x: mousepos.x / imgW, y: mousepos.y / imgH }, 
 			isNoAnnotation: true,
 		})
-		appModel.addDrawable(firstPoint)
+		imagePresenter.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
@@ -42,9 +44,9 @@ function addPolygonPoint($event){
 		if(line.menuBar){
 			line.menuBar.hide()
 		}
-		appModel.deleteDrawable(firstPoint)
+		imagePresenter.removeDrawable(firstPoint)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
-		appModel.addDrawable(line)
+		imagePresenter.addDrawable(line)
 		selectDrawable(line.model.points[1])
 	}
 	else if(!polygon){
@@ -56,9 +58,9 @@ function addPolygonPoint($event){
 		if(polygon.menuBar){
 			polygon.menuBar.hide()
 		}
-		appModel.deleteDrawable(line)
+		imagePresenter.removeDrawable(line)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
-		appModel.addDrawable(polygon)
+		imagePresenter.addDrawable(polygon)
 		selectDrawable(polygon.model.points[2])
 	}
 	// else add a point to the polygon.
@@ -72,33 +74,33 @@ function addPolygonPoint($event){
 function deletePolygonPoint(){
 	// first point
 	if(firstPoint && !line){
-		appModel.deleteDrawable(firstPoint)
+		imagePresenter.removeDrawable(firstPoint)
 		firstPoint = undefined
 	}
 	// second point
 	else if(line && !polygon){
 		// remove the line from model and image view (event bound).
-		appModel.deleteDrawable(line)
+		imagePresenter.removeDrawable(line)
 		line = undefined
 		// re-create the first point, add and select it.
 		firstPoint = new PointPresenter({
 			data: firstPoint.model.relBounds, 
 			isNoAnnotation: true,
 		})
-		appModel.addDrawable(firstPoint)
+		imagePresenter.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 	}
 	// third point
 	else if(polygon && polygon.model.points.length === 3){
 		// remove the polygon
-		appModel.deleteDrawable(polygon)
+		imagePresenter.removeDrawable(polygon)
 		polygon = undefined
 		// recreate the line and add the line
 		line = new MultipointPresenter({
 			data: line.model.relPointData,
 			type: "line",
 		})
-		appModel.addDrawable(line)
+		imagePresenter.addDrawable(line)
 		selectDrawable(line.model.points[1])
 	}
 	// 4+n point
@@ -127,6 +129,7 @@ function finishPolygon(){
 				},
 			}
 		}))
+		appModel.addDrawable(polygon)
 		appModel.selectDrawable(polygon)
 		polygon.model.points[polygon.model.points.length-1].unselect()
 		polygon.select()
@@ -134,11 +137,15 @@ function finishPolygon(){
 		if(polygon.menuBar){
 			polygon.menuBar.show()
 		}
-	} else if(line){
-		appModel.deleteDrawable(line)
-	} else if(firstPoint){
-		appModel.deleteDrawable(firstPoint)
-	}
+	} 
+	// else {
+	// 	if(firstPoint){
+	// 		imagePresenter.removeDrawable(firstPoint)
+	// 	}
+	// 	if(line){
+	// 		imagePresenter.removeDrawable(line)
+	// 	}
+	// }
 
 	// reset creation context
 	firstPoint = undefined

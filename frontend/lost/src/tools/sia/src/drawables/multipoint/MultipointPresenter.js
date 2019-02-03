@@ -379,7 +379,10 @@ export default class MultipointPresenter extends DrawablePresenter {
             if(!this.pointSelectionList.isEmpty()){
                 this.pointSelectionList.remove()
             }
+			// console.log("mp point:", point)
             const index = this.model.points.indexOf(point)
+			// console.log("mp index:", index)
+			// console.log("mp model.points:", this.model.points)
             this.view.removePoint(point.view, index)
             this.model.removePoint(index)
         } else {

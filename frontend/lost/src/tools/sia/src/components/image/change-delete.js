@@ -23,6 +23,7 @@ export function enableDelete(config){
 								if(selectedDrawable.parent.model.points.length <= 3) return
 							}
 							selectedDrawable.parent.removePoint(selectedDrawable)
+							selectDrawable(selectedDrawable.parent)
 						} 
 						// for drawables:
 						else {

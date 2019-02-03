@@ -13,7 +13,7 @@ import { enableLineCreation, disableLineCreation  } from "./tool-line"
 import { enablePolygonCreation, disablePolygonCreation } from "./tool-polygon"
 import { enableDelete, disableDelete  } from "components/image/change-delete"
 import { enableSelect, disableSelect } from "components/image/change-select"
-import { undo, redo } from "components/image/change-undo-redo"
+import { undo, redo, enableUndoRedo, disableUndoRedo } from "components/image/change-undo-redo"
 
 import { resetSelection } from "components/image/change-select"
 
@@ -106,20 +106,42 @@ appModel.config.on("update", config => {
     }
 })
 
+export function onCreationStart(){
+	console.log("on creation start")
+	disableSelect()
+	disableDelete(appModel.config.value)
+	disableUndoRedo(appModel.config.value)
+	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+		Object.values(observableDrawableList.value).forEach(drawable => {
+			drawable.hide()
+		})
+	})
+}
+export function onCreationEnd(){
+	console.log("on creation end")
+	enableSelect()
+	enableDelete(appModel.config.value)
+	enableUndoRedo(appModel.config.value)
+	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+		Object.values(observableDrawableList.value).forEach(drawable => {
+			drawable.show()
+		})
+	})
+}
 // set handler depending on tool id string.
 function enableDrawableCreation(toolId: String){
 	switch(toolId){
 		case "sia-tool-point":
-			enablePointCreation()
+			enablePointCreation(onCreationStart, onCreationEnd)
 			break
 		case "sia-tool-line":
-			enableLineCreation()
+			enableLineCreation(onCreationStart, onCreationEnd)
 			break
 		case "sia-tool-polygon":
-			enablePolygonCreation()
+			enablePolygonCreation(onCreationStart, onCreationEnd)
 			break
 		case "sia-tool-bbox":
-			enableBBoxCreation()
+			enableBBoxCreation(onCreationStart, onCreationEnd)
 			break
 		default: throw new Error("unknown tool id:", toolId)
 	}

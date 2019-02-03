@@ -120,6 +120,8 @@ export default class MultipointView extends DrawableView {
 
     // @refactor: pass the PointPresenter and remove its view aswell.?
     removePoint(point: PointView, index: Number){
+		// console.log("mp view drawable:", point)
+		// console.log("mp view index:", index)
         let pointString = this.collisionNode.getAttribute("points")
         let pointsArray = pointString.split(" ")
         pointsArray.splice(index, 1)

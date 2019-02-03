@@ -28,38 +28,38 @@ appModel.data.image.url.on("update", url => {
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
-// todo: observable text on change....
+// todo: observable object on change.... to add redo undo for changing labels.
 appModel.state.selectedLabel.on("update", label => {
 	propertiesView.setDescription(label.description)
 	if(appModel.isADrawableSelected()){
 		const drawable = appModel.getSelectedDrawable()
 		// save state
-		state.add(new state.StateElement({
-			do: {
-				data: { drawable, label },
-				fn: (data) => {
-					const { drawable, label } = data
-					console.log("set label:", label)
-					if(drawable.parent){
-						drawable.parent.setLabel(label)
-					} else {
-						drawable.setLabel(label)
-					}
-				},
-			},
-			undo: {
-				data: { drawable, label: drawable.model.label },
-				fn: (data) => {
-					const { drawable, label } = data
-					console.log("set label:", label)
-					if(drawable.parent){
-						drawable.parent.setLabel(label)
-					} else {
-						drawable.setLabel(label)
-					}
-				},
-			},
-		}))
+		// state.add(new state.StateElement({
+		// 	do: {
+		// 		data: { drawable, label },
+		// 		fn: (data) => {
+		// 			const { drawable, label } = data
+		// 			console.log("set label:", label)
+		// 			if(drawable.parent){
+		// 				drawable.parent.setLabel(label)
+		// 			} else {
+		// 				drawable.setLabel(label)
+		// 			}
+		// 		},
+		// 	},
+		// 	undo: {
+		// 		data: { drawable, label: drawable.model.label },
+		// 		fn: (data) => {
+		// 			const { drawable, label } = data
+		// 			console.log("set label:", label)
+		// 			if(drawable.parent){
+		// 				drawable.parent.setLabel(label)
+		// 			} else {
+		// 				drawable.setLabel(label)
+		// 			}
+		// 		},
+		// 	},
+		// }))
 		// execute
 		if(drawable.parent){
 			drawable.parent.setLabel(label)

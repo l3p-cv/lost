@@ -47,8 +47,7 @@ export function enableChange(drawable: DrawablePresenter, config: any){
 	}
 }
 export function disableChange(drawable: DrawablePresenter){
-    // console.warn("disabled change handlers")
-	console.log("disable change on:", drawable)
+	// console.log("disable change on:", drawable)
     drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
     if(drawable instanceof DrawablePresenter){
         switch(drawable.getClassName()){

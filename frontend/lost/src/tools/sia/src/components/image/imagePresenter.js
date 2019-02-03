@@ -20,30 +20,6 @@ import { enableDelete, disableDelete } from "./change-delete"
 import { enableUndoRedo, disableUndoRedo } from "./change-undo-redo"
 
 
-
-// during drawable change
-// - hide other drawables
-// appModel.controls.changeEvent.on("change", isActive => {
-// 	if(isActive){
-// 		// hide other drawables
-// 		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-// 			Object.values(observableDrawableList.value)
-// 				.filter(drawable => drawable !== appModel.getSelectedDrawable())
-// 				.forEach(drawable => {
-// 					drawable.hide()
-// 				})
-// 		})
-// 	} else {
-// 		// show other drawables
-// 		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-// 			Object.values(observableDrawableList.value).forEach(drawable => {
-// 				drawable.show()
-// 			})
-// 		})
-// 	}
-// })
-
-
 appModel.config.on("update", config => {
     enableSelect()
 	if(config.actions.edit.bounds){
@@ -363,7 +339,7 @@ export function createDrawables(drawablesRawData: any){
 }
 
 // does not mutate appModel
-function addDrawable(drawable: DrawablePresenter){
+export function addDrawable(drawable: DrawablePresenter){
     if(!drawable.model.status.has(STATE.DELETED)){
         imageView.addDrawable(drawable)
     }
@@ -374,7 +350,7 @@ function addDrawables(drawables: Array<DrawablePresenter>){
     imageView.addDrawables(drawables)
 }
 // does not mutate appModel
-function removeDrawable(drawable: DrawablePresenter){
+export function removeDrawable(drawable: DrawablePresenter){
     imageView.removeDrawable(drawable.view)
 }
 // does not mutate appModel
