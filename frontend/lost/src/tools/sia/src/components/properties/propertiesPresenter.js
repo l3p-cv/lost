@@ -16,13 +16,12 @@ import PointPresenter from "../../drawables/point/PointPresenter"
 import imageInterface from "components/image/imageInterface"
 
 
-appModel.controls.creationEvent.on("change", isActive => onDrawableCreation(isActive))
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)
 		propertiesView.image.src = objectURL
 	})
-	updateNavigationButtons()
+	enableNavigationButtons()
 })
 // appModel.data.image.info.on("update", info => console.trace(info))
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
@@ -357,7 +356,7 @@ function detachDrawable(drawable: DrawablePresenter){
     }
 }
 
-function updateNavigationButtons(){
+export function enableNavigationButtons(){
 	const { isFirst, isLast } = appModel.data.image
 	if(isFirst){
 		handleFirstImage()
@@ -370,7 +369,7 @@ function updateNavigationButtons(){
 		handleNotLastImage()
 	}
 }
-function disableNavigationButtons(){
+export function disableNavigationButtons(){
 	propertiesView.disableNavigationButtons()
 }
 function handleLastImage(){
@@ -396,15 +395,16 @@ function handleNotFirstImage(){
     propertiesView.enableFirstButton()
 }
 
-export function onDrawableCreation(isActive){
+export function disableNavigation(isActive){
 	if(isActive){
 		disableNavigationButtons()
 		// // blur label selection focus
 		// document.activeElement.blur()
 	} else {
-		updateNavigationButtons()
+		enableNavigationButtons()
 	}
 }
+
 
 export function resize(){
     propertiesView.resize()

@@ -28,10 +28,9 @@ export function hide(){
 }
 
 export function initTools(tools: any){
-	// enable or disable tool buttons
+	// enable or disable tool buttons depending on config
     Object.keys(tools).forEach(name => {
         html.refs[name].style.display = (tools[name] === true) ? "block" : "none"
-		// html.refs[name].
     })
 }
 
@@ -61,4 +60,10 @@ export function getWidth(){
 }
 export function getHeight(){
     return html.root.clientHeight
+}
+export function disableToolbar(){
+	html.root.querySelectorAll("button").forEach(button => button.disabled = true)
+}
+export function enableToolbar(){
+	html.root.querySelectorAll("button").forEach(button => button.disabled = false)
 }

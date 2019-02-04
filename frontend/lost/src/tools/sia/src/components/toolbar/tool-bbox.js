@@ -8,6 +8,7 @@ import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
 import { selectDrawable } from "components/image/change-select"
+import { onCreationStart, onCreationEnd } from "components/toolbar/toolbarPresenter"
 
 
 let newBox = undefined
@@ -140,10 +141,8 @@ export function enableBBoxCreation(){
 			return
 		}
 
-		// mark event.
-		if(appModel.controls.changeEvent.value === false){
-			appModel.controls.creationEvent.update(true)
-		}
+		// start creation mode.
+		onCreationStart()
 
 		// set a global cursor.
 		mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
@@ -217,7 +216,7 @@ export function enableBBoxCreation(){
 
 		// reset.
 		resetContext()
-		appModel.controls.creationEvent.update(false)
+		onCreationEnd()
 	})
 }
 

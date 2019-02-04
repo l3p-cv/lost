@@ -5,17 +5,17 @@ import appModel from "../../appModel"
 import "./toolbar.styles.scss"
 import * as toolbarView from "./toolbarView"
 
-import * as propertiesPresenter from "components/properties/propertiesPresenter"
-
 import { enableBBoxCreation, disableBBoxCreation } from "./tool-bbox"
 import { enablePointCreation, disablePointCreation } from "./tool-point"
 import { enableLineCreation, disableLineCreation  } from "./tool-line"
 import { enablePolygonCreation, disablePolygonCreation } from "./tool-polygon"
+
 import { enableDelete, disableDelete  } from "components/image/change-delete"
 import { enableSelect, disableSelect } from "components/image/change-select"
-import { undo, redo, enableUndoRedo, disableUndoRedo } from "components/image/change-undo-redo"
-
+import { enableUndoRedo, disableUndoRedo } from "components/image/change-undo-redo"
 import { resetSelection } from "components/image/change-select"
+
+import { enableNavigationButtons, disableNavigationButtons } from "components/properties/propertiesPresenter"
 
 // // during change event
 // // - disable creation
@@ -107,7 +107,9 @@ appModel.config.on("update", config => {
 })
 
 export function onCreationStart(){
-	console.log("on creation start")
+	console.log(" - on creation start - ")
+	disableNavigationButtons()
+	toolbarView.disableToolbar()
 	disableSelect()
 	disableDelete(appModel.config.value)
 	disableUndoRedo(appModel.config.value)
@@ -118,7 +120,9 @@ export function onCreationStart(){
 	})
 }
 export function onCreationEnd(){
-	console.log("on creation end")
+	console.log(" - on creation end - ")
+	enableNavigationButtons()
+	toolbarView.enableToolbar()
 	enableSelect()
 	enableDelete(appModel.config.value)
 	enableUndoRedo(appModel.config.value)
@@ -132,16 +136,16 @@ export function onCreationEnd(){
 function enableDrawableCreation(toolId: String){
 	switch(toolId){
 		case "sia-tool-point":
-			enablePointCreation(onCreationStart, onCreationEnd)
+			enablePointCreation()
 			break
 		case "sia-tool-line":
-			enableLineCreation(onCreationStart, onCreationEnd)
+			enableLineCreation()
 			break
 		case "sia-tool-polygon":
-			enablePolygonCreation(onCreationStart, onCreationEnd)
+			enablePolygonCreation()
 			break
 		case "sia-tool-bbox":
-			enableBBoxCreation(onCreationStart, onCreationEnd)
+			enableBBoxCreation()
 			break
 		default: throw new Error("unknown tool id:", toolId)
 	}
@@ -164,7 +168,6 @@ function disableDrawableCreation(toolId: String){
 		default: console.warn("unknown tool id.")
 	}
 }
-
 export function setLayout(layout: String){
     toolbarView.setLayout(layout)
 }
