@@ -17,9 +17,9 @@ class PipelineGraphTab extends WizardTabView {
 				// toolbar (customized bootstrap flexbox).
 				<div class='toolbar'>
 					<div class='btn-group toolbar'>
-						<button class='btn btn-default' data-ref='btn-toggle-infobox'>
-							<i class='fa fa-toggle-on' data-ref='btn-toggle-infobox-icon'></i>
-							<span>Toggle Infobox<span>
+						<button class='btn btn-default' data-ref='btn-toggle-infobox' id='pipe-infobox'>
+							<i class='fa fa-info' data-ref='btn-toggle-infobox-icon'></i>
+							<span>Pipe Info<span>
 						</button>
 						<button class='btn btn-default' data-ref='btn-delete-pipeline'>
 							<i class='fa fa-trash'></i>

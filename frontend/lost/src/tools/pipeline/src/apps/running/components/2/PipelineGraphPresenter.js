@@ -55,12 +55,12 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 		})
 			
         })
-        // Toggle Infobox.
-        $(this.view.html.refs['btn-toggle-infobox']).on('click', () => {
-			// NOT FINISHED:
-			// need to store state in model.
-			this.view.toggleInfoBox({ enabled: false })
-        })
+        // // Toggle Infobox.
+        // $(this.view.html.refs['btn-toggle-infobox']).on('click', () => {
+		// 	// NOT FINISHED:
+		// 	// need to store state in model.
+		// 	this.view.toggleInfoBox({ enabled: false })
+        // })
     }
 	// this method is similar to PipelineGraphPresenter.showTemplate of start-pipe-application.
     showPipeline(data: any){
@@ -80,6 +80,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 		// REWORK THE INFO TABLE!
 		// add pipeline information table to the graph's title.
 		// console.log(this.graph.svg)
+		//this.graph.svg.root.appendChild("<a href=''>Blubb</a>")
         this.graph.svg.root.appendChild(new NodeTemplate(/*html*/`
             <table class='table table-borderless'>
                 <h3 style='text-align: center'><span class='label label-warning'>PAUSED</span></h3>
