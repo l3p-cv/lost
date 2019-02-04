@@ -43,7 +43,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
         // Download Logfile.
         $(this.view.html.refs['btn-download-logfile']).on('click', () => {
-			alert('not implemented')
 			http.requestPipeLogfile(appModel.state.selectedPipeline.value.logfilePath, appModel.reactComponent.token).then(blob => {
 				// create blob url
 				const objectURL = window.URL.createObjectURL(blob)
