@@ -29,6 +29,7 @@ class PipelineGraphTab extends WizardTabView {
 							<i class='fa fa-download'></i>
 							<span>Download Logfile<span>
 						</button>
+						<a data-ref="download-hidden-logfile-btn" hidden href=''></a>
 						<button class='btn btn-default' data-ref='btn-pause-pipe'>
 							<i class='fa fa-pause'></i>
 							<span>Pause Pipeline<span>

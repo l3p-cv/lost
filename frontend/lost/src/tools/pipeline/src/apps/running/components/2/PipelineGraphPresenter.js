@@ -44,6 +44,17 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // Download Logfile.
         $(this.view.html.refs['btn-download-logfile']).on('click', () => {
 			alert('not implemented')
+			http.requestPipeLogfile(appModel.state.selectedPipeline.value.logfilePath, appModel.reactComponent.token).then(blob => {
+				// create blob url
+				const objectURL = window.URL.createObjectURL(blob)
+				
+				// simulate click on download button
+				this.view.html.refs[`download-hidden-logfile-btn`].href=objectURL
+				this.view.html.refs[`download-hidden-logfile-btn`].download=`p-${appModel.state.selectedPipeline.value.id}.log`
+				this.view.html.refs[`download-hidden-logfile-btn`].click()
+				window.URL.revokeObjectURL(objectURL);
+		})
+			
         })
         // Toggle Infobox.
         $(this.view.html.refs['btn-toggle-infobox']).on('click', () => {

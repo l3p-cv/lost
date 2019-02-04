@@ -56,11 +56,11 @@ class SelectPipelinePresenter extends WizardTabPresenter {
 					icon: 'fa fa-play',
 					fn: () => this.showPipeline(id)
 				},
-				{
-					name:'Download Logfile',
-					icon:'fa fa-download',
-					fn: () => this.downloadLogfile(id),
-				}
+				// {
+				// 	name:'Download Logfile',
+				// 	icon:'fa fa-download',
+				// 	fn: () => this.downloadLogfile(id),
+				// }
 			)
         })
     }

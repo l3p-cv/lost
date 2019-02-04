@@ -130,7 +130,8 @@ const URLS = {
     DELETE_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_PAUSE_PIPELINE: id => `${BASE_URL}/pause/${id}`,
 	POST_PLAY_PIPELINE: id => `${BASE_URL}/play/${id}`,
-	GET_DATA_EXPORT: path => `${API_URL}/${path}`
+	GET_DATA_EXPORT: path => `${API_URL}/${path}`,
+	GET_PIPE_LOG: path => `${API_URL}/${path}`
 }
 
 // START
@@ -195,3 +196,12 @@ export function requestDataExport(path: String, token: String){
 		type: 'image'
 	})
 }
+
+export function requestPipeLogfile(path: String, token: String){
+	return http.get({
+		url: URLS.GET_PIPE_LOG(path),
+		token,
+		type: 'image'
+	})
+}
+
