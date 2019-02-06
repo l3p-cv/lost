@@ -17,8 +17,7 @@ export default class DataExportRunningPresenter extends BaseNodePresenter {
         modal.dataExport.forEach((el, i) => {
             $(modal.html.refs[`download-btn-${i}`]).on('click', $event => {
                 $event.preventDefault()
-           
-                http.requestDataExport(el.file_path, appModel.reactComponent.token).then(blob => {
+                http.requestDataExport(`${el.file_path}?nocache=${Math.random()}`, appModel.reactComponent.token).then(blob => {
                         // create blob url
                         const objectURL = window.URL.createObjectURL(blob)
                         
