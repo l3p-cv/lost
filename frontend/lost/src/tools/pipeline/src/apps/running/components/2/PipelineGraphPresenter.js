@@ -43,7 +43,8 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         })
         // Download Logfile.
         $(this.view.html.refs['btn-download-logfile']).on('click', () => {
-			http.requestPipeLogfile(appModel.state.selectedPipeline.value.logfilePath, appModel.reactComponent.token).then(blob => {
+			// Math.random() hack - prevent client side caching for log file.
+			http.requestPipeLogfile(`${appModel.state.selectedPipeline.value.logfilePath}?nocache=${Math.random()}`, appModel.reactComponent.token).then(blob => {
 				// create blob url
 				const objectURL = window.URL.createObjectURL(blob)
 				
