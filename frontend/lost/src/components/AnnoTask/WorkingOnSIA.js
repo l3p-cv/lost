@@ -60,6 +60,13 @@ class WorkingOnSIA extends Component {
                  </div>
                 </Col>
                 <Col xs='3' md='3' xl='3'>
+                  <div className='callout callout-info'>
+                                <small className='text-muted'>Pipeline</small>
+                                <br/>
+                                <strong>{this.props.annoTask.pipelineName}</strong>
+                 </div>
+                </Col>
+                <Col xs='3' md='3' xl='3'>
                   <div className='callout callout-warning'>
                                 <small className='text-muted'>Annotations</small>
                                 <br/>
@@ -72,9 +79,6 @@ class WorkingOnSIA extends Component {
                                 <br/>
                                 <strong className='h4'>&#8709; {this.props.annoTask.statistic.secondsPerAnno}</strong>
                  </div>
-                </Col>
-                <Col xs='3' md='3' xl='3'>
-                    <Button color='primary' style={{marginTop: '25px'}} onClick={this.openModal}><i className="fa fa-question-circle"></i> Show Instructions</Button>
                 </Col>
                 </Row>
                 <div className='clearfix'>

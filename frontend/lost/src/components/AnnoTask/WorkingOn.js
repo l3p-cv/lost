@@ -15,21 +15,28 @@ class WorkingOn extends Component {
         return (
             <div>
                 <Row>
-                <Col xs='4' md='4' xl='4'>
+                <Col xs='3' md='3' xl='3'>
                 <div className='callout callout-danger'>
                                 <small className='text-muted'>Working on</small>
                                 <br/>
                                 <strong>{this.props.annoTask.name}</strong>
                  </div>
                 </Col>
-                <Col xs='4' md='4' xl='4'>
+                <Col xs='3' md='3' xl='3'>
+                  <div className='callout callout-info'>
+                                <small className='text-muted'>Pipeline</small>
+                                <br/>
+                                <strong>{this.props.annoTask.pipelineName}</strong>
+                 </div>
+                </Col>
+                <Col xs='3' md='3' xl='3'>
                   <div className='callout callout-warning'>
                                 <small className='text-muted'>Annotations</small>
                                 <br/>
                                 <strong className='h4'>{this.props.annoTask.finished}/{this.props.annoTask.size}</strong>
                  </div>
                 </Col>
-                <Col xs='4' md='4' xl='4'>
+                <Col xs='3' md='3' xl='3'>
                   <div className='callout callout-success'>
                                 <small className='text-muted'>Seconds/Annotation</small>
                                 <br/>
