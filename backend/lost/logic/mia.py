@@ -62,7 +62,7 @@ class TwoDSerialize(object):
         for anno in self.annos:
             image_json = dict()
             image_json['id'] = anno.idx
-            if anno.dtype == dtype.TwoDAnno.BBOX.value:
+            if anno.dtype == dtype.TwoDAnno.BBOX:
                 # get image_anno of two_d anno
                 image_anno = self.db_man.get_image_annotation(img_anno_id=anno.img_anno_id)
                 cropped_image_path = os.path.join(directory, str(anno.idx)) + '.png'
@@ -86,7 +86,7 @@ class TwoDSerialize(object):
                     except:
                         pass
 
-                    image = skimage.io.imread(os.path.join(self.file_man.l3pconfig.project_path,image_anno.img_path))
+                    image = skimage.io.imread(os.path.join(self.file_man.lostconfig.project_path,image_anno.img_path))
                     crop_data = json.loads(anno.data)
                     x = int((crop_data['x'] - crop_data['w']/2) * image.shape[1])
                     y = int((crop_data['y'] - crop_data['h']/2) * image.shape[0])
@@ -329,10 +329,10 @@ def __update_image_annotation(db_man, user_id, data):
 
 def __update_two_d_annotation(db_man, user_id, data):
     anno_time = None
-    anno_count = len(list(filter(lambda x: x['isActive'] is True, data['images'])))
+    anno_count = len(list(filter(lambda x: x['is_active'] is True, data['images'])))
     for img in data['images']:
         two_d_anno = db_man.get_two_d_annotation(two_d_anno_id=img['id'])
-        if img['isActive']:
+        if img['is_active']:
             two_d_anno.state = state.Anno.LABELED
             two_d_anno.timestamp = datetime.now()
             if anno_time is None and anno_count > 0:
