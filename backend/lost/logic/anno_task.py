@@ -155,7 +155,7 @@ def __get_at_info(dbm, annotask, user_id, amount_per_label=False):
                 at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'imageBased')
                 at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'imageBased')
         elif config['type'] == 'annoBased':
-            remaining, available = __get_twod_anno_counts(dbm, annotask.idx, pipeelement.iteration)
+            remaining, available = __get_two_d_anno_counts(dbm, annotask.idx, pipeelement.iteration)
             finished = available-remaining
             at['finished'] = finished
             at['size'] = available

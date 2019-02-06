@@ -474,7 +474,7 @@ class ScriptOutput(Output):
             raise ValueError('*anno_types* and *annos* need to be of same size!')            
         for i, vec in enumerate(annos):
             anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
-                anno_task_id=anno_task_id)
+                anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
             if anno_types[i] == 'point':
                 anno.point = vec
             elif anno_types[i] == 'bbox':
