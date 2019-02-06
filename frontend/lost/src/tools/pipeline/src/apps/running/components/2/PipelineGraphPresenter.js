@@ -46,7 +46,18 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 		})
 		// Continue Pipeline Updates.
 		$(this.view.html.refs['btn-regenerate-pipe']).on('click', () => {
-			console.log(appModel.state.selectedPipeline.value)
+			// add a number in name in order to keep copies apart
+			let name = appModel.state.selectedPipeline.value.startDefinition.name
+			const nameId = name.split('#')
+			if(nameId.length > 1){
+				let id = parseInt(nameId[nameId.length-1])
+				id = id + 1
+				name = name.replace(`#${parseInt(nameId[nameId.length-1])}`, `#${id}`)
+			}else{
+				name = name + ' #1'
+			}
+			appModel.state.selectedPipeline.value.startDefinition.name = name
+			
 			http.startPipe(appModel.state.selectedPipeline.value.startDefinition, appModel.reactComponent.token).then(response => {
 				// show pipeline after starting it.
 				// at the moment we only redirect to running pipelines table.
