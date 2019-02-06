@@ -941,6 +941,7 @@ class Pipe(Base):
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", uselist=False)
     manager = relationship("User", uselist=False)
+    start_definition = Column(Text)
     pe_list = relationship("PipeElement")
     pipe_template = relationship("PipeTemplate", uselist=False)
     logfile_path = Column(String(4096))
@@ -949,7 +950,7 @@ class Pipe(Base):
     def __init__(self, idx=None, name=None, manager_id=None, state=None,
                  pipe_template_id=None, timestamp=None,
                  timestamp_finished=None, description=None, 
-                 is_locked=None, group_id=None, is_debug_mode=None, logfile_path=None):
+                 is_locked=None, group_id=None, is_debug_mode=None, start_definition=None, logfile_path=None):
         self.idx = idx
         self.name = name
         self.manager_id = manager_id
@@ -961,6 +962,7 @@ class Pipe(Base):
         self.is_locked = is_locked
         self.group_id = group_id
         self.is_debug_mode = is_debug_mode
+        self.start_definition = start_definition
         self.logfile_path = logfile_path
 
 class PipeTemplate(Base):

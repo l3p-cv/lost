@@ -28,8 +28,11 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // VIEW BINDINGS
         // Delete Pipe.
         $(this.view.html.refs['btn-delete-pipeline']).on('click', () => {
-			deletePipe(appModel.state.selectedPipeline.value.id, appModel.reactComponent.token)
-			window.location.replace('/dashboard')
+			let r = confirm("Do you really want to delete this pipe and all its related content ?")
+			if (r){	
+				deletePipe(appModel.state.selectedPipeline.value.id, appModel.reactComponent.token)
+				window.location.replace('/dashboard')
+			}
         })
         // Pause Pipeline Updates.
         $(this.view.html.refs['btn-pause-pipe']).on('click', () => {
@@ -40,7 +43,17 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         $(this.view.html.refs['btn-play-pipe']).on('click', () => {
 			alert('not implemented')
 			this.view.togglePlayPause({ running: true })
-        })
+		})
+		// Continue Pipeline Updates.
+		$(this.view.html.refs['btn-regenerate-pipe']).on('click', () => {
+			console.log(appModel.state.selectedPipeline.value)
+			http.startPipe(appModel.state.selectedPipeline.value.startDefinition, appModel.reactComponent.token).then(response => {
+				// show pipeline after starting it.
+				// at the moment we only redirect to running pipelines table.
+				// should add a notification aswell.
+				window.location.reload()
+            })
+		})
         // Download Logfile.
         $(this.view.html.refs['btn-download-logfile']).on('click', () => {
 			// Math.random() hack - prevent client side caching for log file.

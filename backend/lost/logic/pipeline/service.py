@@ -106,7 +106,8 @@ class PipeStarter(object):
                         manager_id=self.manager_id,
                         is_debug_mode=is_debug_mode,
                         group_id=self.manager_id,
-                        timestamp=self.timestamp_now
+                        timestamp=self.timestamp_now,
+                        start_definition = json.dumps(self.data)
                         )
         self.pipe = pipe
         return pipe
@@ -401,6 +402,7 @@ class PipeSerialize(object):
         self.pipe_json['isDebug'] = pipe.is_debug_mode
         self.pipe_json['logfilePath'] = pipe.logfile_path
         self.pipe_json['progress'] = progress
+        self.pipe_json['startDefinition'] = json.loads(pipe.start_definition)
 
     def append_pe_json(self, pe_json):
         self.pipe_json['elements'].append(pe_json)

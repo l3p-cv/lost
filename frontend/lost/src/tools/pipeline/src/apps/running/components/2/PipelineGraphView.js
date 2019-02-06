@@ -38,6 +38,10 @@ class PipelineGraphTab extends WizardTabView {
 							<i class='fa fa-play'></i>
 							<span>Continue Pipeline<span>
 						</button>
+						<button class='btn btn-default' data-ref='btn-regenerate-pipe'>
+							<i class='fa fa-copy'></i>
+							<span>Regenerate Pipeline<span>
+						</button>
 					</div>
 				</div>
 
