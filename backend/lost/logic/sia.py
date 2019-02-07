@@ -232,7 +232,7 @@ class SiaUpdate(object):
         else:
             self.polygons = None
     def update(self):
-        if self.at.pipe_element.pipe.state != state.Pipe.PAUSED:
+        if self.at.pipe_element.pipe.state == state.Pipe.PAUSED:
             return "pipe is paused"
         if self.b_boxes is not None:
             self.__update_drawables(self.b_boxes, dtype.TwoDAnno.BBOX)
