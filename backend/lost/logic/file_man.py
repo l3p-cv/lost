@@ -278,7 +278,10 @@ class FileMan(object):
     def get_sia_history_path(self, annotask):
         '''str: get absolute sia_history_path
         '''
-        return os.path.join(self.lostconfig.project_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
+        sia_hist_file = os.path.join(self.lostconfig.project_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
+        if not os.path.exists(os.path.split(sia_hist_file)[0]):
+            os.makedirs(os.path.split(sia_hist_file)[0])
+        return sia_hist_file
 
     def rm_sia_history_path(self, annotask):
         '''Remove sia_history file for annotask
