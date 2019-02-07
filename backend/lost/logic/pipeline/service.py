@@ -694,6 +694,10 @@ class PipeGodfather(object):
             self.db_man.delete(choosen_anno_task)
             self.db_man.commit()
         for anno_task in self.anno_tasks:
+            if anno_task.dtype == dtype.AnnoTask.MIA:
+                self.file_man.rm_mia_crop_path(anno_task.idx)
+            else:
+                self.file_man.rm_sia_history_path(anno_task)
             self.db_man.delete(anno_task)
             self.db_man.commit()
         for pipe_element in self.pipe_elements:

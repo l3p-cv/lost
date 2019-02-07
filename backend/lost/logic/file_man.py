@@ -2,6 +2,7 @@ __author__ = 'Jonas Jaeger'
 
 from os.path import join
 import os
+from datetime import datetime
 import json
 import shutil
 import zipfile
@@ -18,8 +19,9 @@ PIPE_ROOT_PATH = DATA_ROOT_PATH + "pipes/"
 INSTANCE_ROOT_PATH = DATA_ROOT_PATH + "instance/"
 DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
 SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
+SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
-TWO_D_ANNO_PATH = MEDIA_ROOT_PATH + "two_d_annos/"
+MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
 JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
 
 class FileMan(object):
@@ -242,8 +244,6 @@ class FileMan(object):
         '''
         return os.path.join(self.lostconfig.project_path, MEDIA_CHUNK_PATH)
     
-
-
     def get_media_rel_path_tree(self):
         '''get first sublevel of media directory
         Returns: 
@@ -251,26 +251,49 @@ class FileMan(object):
         '''
         return path_to_dict(self.media_root_path)
 
+    def get_mia_crop_path(self, annotask_id):
+        ''' get absolute path of mia_crop directory
+        '''
+        directory = os.path.join(self.lostconfig.project_path, MIA_CROP_PATH, str(annotask_id))
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        return directory
+
+    def rm_mia_crop_path(self, annotask_id):
+        '''Remove all mia crops of an annotask
+
+        Args:
+            annotask_id: Id of annotask where the mia crops should be deleted for.
+        '''
+        mia_crop_path = self.get_mia_crop_path(annotask_id)
+        if os.path.exists(mia_crop_path):
+            shutil.rmtree(mia_crop_path)
 
     @property
-    def two_d_path(self):
-        ''' get absolute path of two_d_anno directory
+    def mia_crop_rel_path(self):
+        ''' get relative path of mia_crop directory
         '''
-        return os.path.join(self.lostconfig.project_path, TWO_D_ANNO_PATH)
-
-    @property
-    def two_d_rel_path(self):
-        ''' get relative path of two_d_anno directory
-        '''
-        return TWO_D_ANNO_PATH
+        return MIA_CROP_PATH
     
-    @property
-    def sia_history_path(self):
+    def get_sia_history_path(self, annotask):
         '''str: get absolute sia_history_path
         '''
-        return os.path.join(self.lostconfig.project_path, SIA_HISTORY_PATH)
+        return os.path.join(self.lostconfig.project_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
 
-
+    def rm_sia_history_path(self, annotask):
+        '''Remove sia_history file for annotask
+        
+        Args:
+            annotask (:class:`lost.db.model.AnnoTask`): The annotask where
+                the sia_history file should be deleted for.
+        '''
+        path = self.get_sia_history_path(annotask)
+        backup_dir = os.path.join(self.lostconfig.project_path, SIA_HISTORY_BACKUP_PATH)
+        if not os.path.exists(backup_dir):
+            os.makedirs(backup_dir)
+        backup_path = os.path.join(self.lostconfig.project_path, SIA_HISTORY_BACKUP_PATH, '{}_{}_{}.json'.format(datetime.now(), annotask.idx, annotask.name))
+        if os.path.exists(path):
+            os.rename(path, backup_path)
 
 def unzipdir(src, dst):
     '''Unzip archive that contains a directory structure.

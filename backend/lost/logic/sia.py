@@ -194,9 +194,9 @@ class SiaUpdate(object):
         """
         self.timestamp = datetime.now()
         self.db_man = db_man
-        self.sia_history_path = FileMan(self.db_man.lostconfig).sia_history_path
         self.user_id = user_id
         self.at = get_sia_anno_task(db_man, user_id) #type: lost.db.model.AnnoTask
+        self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
         self.image_anno = self.db_man.get_image_annotation(data['imgId'])
         self.image_anno.timestamp = self.timestamp
@@ -381,9 +381,6 @@ class SiaUpdate(object):
         return two_d_json
     def __update_history_json_file(self):
         # create history directory if not exist
-        history_directory = os.path.join(self.sia_history_path)
-        if not os.path.exists(history_directory):
-            os.makedirs(history_directory)
         self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
         self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
         self.history_json['image_anno_time'] = self.image_anno.anno_time
@@ -391,19 +388,18 @@ class SiaUpdate(object):
         self.history_json['user_name'] = None
         if self.image_anno.annotator:
             self.history_json['user_name'] = self.image_anno.annotator.first_name + " " + self.image_anno.annotator.last_name
-        json_file_path = os.path.join(self.sia_history_path, str(self.at.idx) + '_' + self.at.name + '.json')
-        if not os.path.exists(json_file_path):
-            with open(json_file_path, 'w') as f:
+        if not os.path.exists(self.sia_history_file):
+            with open(self.sia_history_file, 'w') as f:
                 event_json = dict()
                 json.dump(event_json, f)
-        with open(json_file_path) as f:
+        with open(self.sia_history_file) as f:
             data = json.load(f)
             if str(self.image_anno.idx) in data:
                 data[str(self.image_anno.idx)].append(self.history_json)
             else:
                 data[str(self.image_anno.idx)] = list()
                 data[str(self.image_anno.idx)].append(self.history_json)
-        with open(json_file_path, 'w') as f:
+        with open(self.sia_history_file, 'w') as f:
             json.dump(data, f)
 
 class SiaSerialize(object):

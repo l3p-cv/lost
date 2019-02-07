@@ -52,9 +52,7 @@ class TwoDSerialize(object):
         self.file_man = FileMan(self.db_man.lostconfig)
         self.proposedLabel = proposedLabel
     def serialize(self):
-        directory = os.path.join(self.file_man.two_d_path, str(self.anno_task_id))
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        directory = self.file_man.get_mia_crop_path(self.anno_task_id)
         self.mia_json['images'] = list()
         self.mia_json['proposedLabel'] = None
         if self.proposedLabel:
@@ -66,7 +64,7 @@ class TwoDSerialize(object):
                 # get image_anno of two_d anno
                 image_anno = self.db_man.get_image_annotation(img_anno_id=anno.img_anno_id)
                 cropped_image_path = os.path.join(directory, str(anno.idx)) + '.png'
-                relative_cropped_image_path = self.file_man.two_d_rel_path + \
+                relative_cropped_image_path = self.file_man.mia_crop_rel_path + \
                 str(self.anno_task_id) + "/" + str(anno.idx) + ".png"
                 if os.path.exists(cropped_image_path):
                     image_json['path'] = relative_cropped_image_path 
