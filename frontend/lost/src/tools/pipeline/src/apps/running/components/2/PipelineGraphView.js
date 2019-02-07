@@ -13,11 +13,10 @@ class PipelineGraphTab extends WizardTabView {
 				<div class='update-indicator'>
 					<label data-ref='update-label'>update</label>
 				</div>
-
 				// toolbar (customized bootstrap flexbox).
 				<div class='toolbar'>
 					<div class='btn-group toolbar'>
-						<button class='btn btn-default' data-ref='btn-toggle-infobox' id='pipe-infobox'>
+						<button class='btn btn-default' data-ref='btn-toggle-infobox'>
 							<i class='fa fa-info' data-ref='btn-toggle-infobox-icon'></i>
 							<span>Pipe Info<span>
 						</button>
@@ -43,6 +42,7 @@ class PipelineGraphTab extends WizardTabView {
 							<span>Regenerate Pipeline<span>
 						</button>
 					</div>
+					<div id='pipe-infobox'></div>
 				</div>
 
 				// graph container.

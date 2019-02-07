@@ -12,6 +12,7 @@ export default {
 	},
     state: {
         pipelines: new Observable({}),
-        selectedPipeline: new Observable({}),
+		selectedPipeline: new Observable({}),
+		infoBox: new Observable({display: false})
     },
 }

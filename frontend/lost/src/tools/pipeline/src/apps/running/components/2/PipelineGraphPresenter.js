@@ -23,9 +23,13 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
         // MODEL BINDINGS
         appModel.state.selectedPipeline.on('update', (data) => this.show())
-        appModel.state.selectedPipeline.on('update', (data) => this.showPipeline(data))
+		appModel.state.selectedPipeline.on('update', (data) => this.showPipeline(data))
+		appModel.state.infoBox.on('update', (data) => this.renderInfoBox(data))
 
-        // VIEW BINDINGS
+		// VIEW BINDINGS
+		$(this.view.html.refs['btn-toggle-infobox']).on('click', ()=>{
+			appModel.state.infoBox.update({display: !appModel.state.infoBox.value.display})
+		})
         // Delete Pipe.
         $(this.view.html.refs['btn-delete-pipeline']).on('click', () => {
 			let r = confirm("Do you really want to delete this pipe and all its related content ?")
@@ -86,7 +90,28 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 		// 	// need to store state in model.
 		// 	this.view.toggleInfoBox({ enabled: false })
         // })
-    }
+	}
+	renderInfoBox(data: any){
+		if (data.display){
+			// REWORK THE INFO TABLE!
+			// add pipeline information table to the graph's title.
+			// console.log(this.graph.svg)
+			//this.graph.svg.root.appendChild("<a href=''>Blubb</a>")
+			document.getElementById('pipe-infobox').appendChild(new NodeTemplate(/*html*/`
+			<table class='table table-borderless' id='infobox-table'>
+				<tbody>
+					<tr><td>Name:</td><td>${appModel.state.selectedPipeline.value.name}</td></tr> 
+					<tr><td>Author:</td><td>${appModel.state.selectedPipeline.value.userName}</td></tr> 
+					<tr><td>Id:</td><td>${appModel.state.selectedPipeline.value.id}</td></tr> 
+					<tr><td>Date:</td><td>${new Date(appModel.state.selectedPipeline.value.timestamp)}</td></tr>             
+					<tr><td>Description:</td><td>${appModel.state.selectedPipeline.value.description}</td></tr> 
+				</tbody>  
+			</table>
+		`).fragment)
+		}else{
+			document.getElementById('pipe-infobox').removeChild(document.getElementById('infobox-table'))
+		}
+	}
 	// this method is similar to PipelineGraphPresenter.showTemplate of start-pipe-application.
     showPipeline(data: any){
 		// cancel previous update interval.
@@ -102,22 +127,6 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         this.graph = new Graph(this.view.html.refs['dagre'])
 		appModel.state.graph = this.graph
 
-		// REWORK THE INFO TABLE!
-		// add pipeline information table to the graph's title.
-		// console.log(this.graph.svg)
-		//this.graph.svg.root.appendChild("<a href=''>Blubb</a>")
-        this.graph.svg.root.appendChild(new NodeTemplate(/*html*/`
-            <table class='table table-borderless'>
-                <h3 style='text-align: center'><span class='label label-warning'>PAUSED</span></h3>
-                <tbody>
-                    <tr><td>Name:</td><td>${data.name}</td></tr> 
-                    <tr><td>Author:</td><td>${data.userName}</td></tr> 
-                    <tr><td>Id:</td><td>${data.id}</td></tr> 
-                    <tr><td>Date:</td><td>${new Date(data.timestamp)}</td></tr>             
-                    <tr><td>Description:</td><td>${data.description}</td></tr> 
-                </tbody>  
-            </table>
-        `).fragment)
 
         // handle pipeline progress information.
         if(data.progress === 'PAUSED'){
