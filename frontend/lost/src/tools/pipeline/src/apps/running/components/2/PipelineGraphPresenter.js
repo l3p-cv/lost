@@ -37,12 +37,12 @@ class PipelineGraphPresenter extends WizardTabPresenter {
         // Pause Pipeline Updates.
         $(this.view.html.refs['btn-pause-pipe']).on('click', () => {
 			this.view.togglePlayPause({ running: false })
-			alert('not implemented')
+			http.pausePipe(appModel.state.selectedPipeline.value.id, appModel.reactComponent.token)
         })
         // Continue Pipeline Updates.
         $(this.view.html.refs['btn-play-pipe']).on('click', () => {
-			alert('not implemented')
 			this.view.togglePlayPause({ running: true })
+			http.playPipe(appModel.state.selectedPipeline.value.id, appModel.reactComponent.token)
 		})
 		// Continue Pipeline Updates.
 		$(this.view.html.refs['btn-regenerate-pipe']).on('click', () => {

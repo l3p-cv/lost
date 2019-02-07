@@ -32,6 +32,10 @@ export default function init({ token, polling }){
 	])  
     appModel.reactComponent.token = token
 	appModel.options.polling.update(polling)
+	if(appModel.options.polling.value.enabled){
+		enableUpdateTable(appModel.options.polling.value.rate || 1000)
+	}
+
 	http.requestPipelines(appModel.reactComponent.token).then((response) => {
 		if(!response.pipes){
 			console.log(response)
@@ -39,4 +43,29 @@ export default function init({ token, polling }){
 		}
 		appModel.state.pipelines.update(response.pipes)
 	})
+
+	// function cancelUpdate(){
+	// 	// cancel previous update interval.
+	// 	if(this.updateIntervalId !== undefined){
+	// 		clearInterval(this.updateIntervalId)
+	// 	}
+	// }
+
+	function enableUpdateTable(rate: Number){
+		console.log('enable update table')
+		// start new update interval.
+		let updateIntervalId = setInterval(() => {
+			// request update.
+			http.requestPipelines(appModel.reactComponent.token).then((response) => {
+				if(!response.pipes){
+					console.log(response)
+					throw new Error(`Backend returned no running pipelines.`)
+				}
+				appModel.state.pipelines.update(response.pipes)
+			}).catch((error) => {
+				clearInterval(updateIntervalId)
+				throw error
+			})
+		}, rate)
+	}
 }

@@ -182,9 +182,17 @@ export function deletePipe(id: Number, token: String){
 		token,
 	})
 }
+
 export function pausePipe(id: Number, token: String){
     return http.post({
 		url: URLS.POST_PAUSE_PIPELINE(id),
+		token,
+	})
+}
+
+export function playPipe(id: Number, token: String){
+    return http.post({
+		url: URLS.POST_PLAY_PIPELINE(id),
 		token,
 	})
 }

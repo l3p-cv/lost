@@ -123,3 +123,37 @@ class PipelineStart(Resource):
             pipeline_service.start(dbm, data, identity)
             dbm.close_session()
             return "success"
+
+
+
+@namespace.route('/pause/<int:pipeline_id>')
+@namespace.param('pipeline_id', 'The id of the pipeline.')
+class PipelinePause(Resource):
+    @jwt_required
+    def post(self, pipeline_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            pipeline_service.pause(dbm, pipeline_id)
+            dbm.close_session()
+            return "success"
+
+@namespace.route('/play/<int:pipeline_id>')
+@namespace.param('pipeline_id', 'The id of the pipeline.')
+class PipelinePlay(Resource):
+    @jwt_required
+    def post(self, pipeline_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            pipeline_service.play(dbm, pipeline_id)
+            dbm.close_session()
+            return "success"
