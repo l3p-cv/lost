@@ -6,6 +6,7 @@ from lost.logic.anno_task import set_finished, update_anno_task
 from lost.logic.file_man import FileMan
 from datetime import datetime
 import skimage.io
+from lost.utils import anno_helper
 
 __author__ = "Gereon Reus"
 
@@ -83,42 +84,28 @@ class TwoDSerialize(object):
                         context = float(config['addContext'])
                     except:
                         pass
-
-                    image = skimage.io.imread(os.path.join(self.file_man.lostconfig.project_path,image_anno.img_path))
-                    crop_data = json.loads(anno.data)
-                    x = int((crop_data['x'] - crop_data['w']/2) * image.shape[1])
-                    y = int((crop_data['y'] - crop_data['h']/2) * image.shape[0])
-                    w = int(crop_data['w'] * image.shape[1])
-                    h = int(crop_data['h'] * image.shape[0])
-                    if context is None:
-                        # Crop without context
-                        x_min = int((crop_data['x'] - crop_data['w']/2) * image.shape[1])
-                        x_max = int(x_min + crop_data['w'] * image.shape[1])
-                        y_min = int((crop_data['y'] - crop_data['h']/2) * image.shape[0])
-                        y_max = int(y_min + crop_data['h'] * image.shape[0])
-                    else:
-                        # Crop with context
-                        x_min = x - int(w*context)
-                        if x_min < 0:
-                            x_min = 0
-                        x_max = x + w + int(w*context)
-                        if x_max > image.shape[1]:
-                            x_max = image.shape[1]
-                        y_min = y - int(h*context)
-                        if y_min < 0:
-                            y_min = 0
-                        y_max = y + h + int(h*context)
-                        if y_max > image.shape[0]:
-                            y_max = image.shape[0]
-                    if draw_anno:
-                        #TODO Adjust to deal with all annoations
-                        # Draw box into crop
-                        rr, cc = polygon_perimeter([y, y, y+h, y+h],[x, x+w, x+w,x ],shape=image.shape)
-                        image[rr,cc] = (255,0,0)
-                    cropped_image = image[y_min:y_max, x_min:x_max]
-                    skimage.io.imsave(cropped_image_path, cropped_image)
+                    self._crop_twod_anno(image_anno, anno, draw_anno, 
+                        context, cropped_image_path)
                     image_json['path'] = relative_cropped_image_path 
                     self.mia_json['images'].append(image_json) 
+
+    def _crop_twod_anno(self, img_anno, twod_anno, draw_anno, context, out_path):
+        '''Helper method to crop a bounding box for a TwoDAnnotation and store it on disc
+        
+        Args:
+            img_anno (:class:`model.ImageAnno`): The ImageAnno where the twod_anno belongs to.
+            twod_anno (:class:`model.TwoDAnno`): The 2D-anno to crop.
+            draw_anno (bool): Indicates wether the annotation should be painted inside the crop.
+            context (float): Value that indicates how much context should 
+                be cropped around the 2D annotation.  
+            out_path (str): Path to store the cropped image.
+        '''
+        image = skimage.io.imread(self.file_man.get_abs_path(img_anno.img_path))
+        crops = anno_helper.crop_boxes([twod_anno.to_vec('anno.data')],
+            [twod_anno.to_vec('anno.dtype')], image, context=context, 
+            draw_annotations=draw_anno)
+        cropped_image = crops[0]
+        skimage.io.imsave(out_path, cropped_image)
 
 def update(db_man, user_id, data):
     at = __get_mia_anno_task(db_man, user_id)
