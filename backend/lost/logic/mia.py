@@ -14,7 +14,7 @@ def get_next(db_man, default_user_id, max_amount):
     :type db_man: lost.db.access.DBMan
     """
     at = __get_mia_anno_task(db_man, default_user_id)
-    if at:
+    if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
         config = json.loads(at.configuration)
         if config['type'] == 'annoBased':
             return __get_next_two_d_anno(db_man, default_user_id, at, max_amount)
@@ -122,7 +122,7 @@ class TwoDSerialize(object):
 
 def update(db_man, user_id, data):
     at = __get_mia_anno_task(db_man, user_id)
-    if at:
+    if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
         config = json.loads(at.configuration)
         if config['type'] == 'annoBased':
             __update_two_d_annotation(db_man, user_id, data)

@@ -890,6 +890,7 @@ class AnnoTask(Base):
     last_annotator_id = Column(Integer, ForeignKey('user.idx'))
     last_annotator = relationship("User", foreign_keys='AnnoTask.last_annotator_id', uselist=False)
     req_label_leaves = relationship('RequiredLabelLeaf')
+    pipe_element = relationship("PipeElement", foreign_keys='AnnoTask.pipe_element_id', uselist=False)
 
     def __init__(self, idx=None, manager_id=None, group_id=None, state=None,
                  progress=None, dtype=None, pipe_element_id=None,

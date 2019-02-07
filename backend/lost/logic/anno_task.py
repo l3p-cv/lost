@@ -104,7 +104,10 @@ def get_available_annotasks(dbm, group_ids, user_id):
     '''
     available_annotasks = list()
     for annotask in dbm.get_available_annotask(group_ids):
-        available_annotasks.append(__get_at_info(dbm, annotask, user_id))
+        if annotask.pipe_element.pipe.state == state.Pipe.PAUSED:
+            pass
+        else:
+            available_annotasks.append(__get_at_info(dbm, annotask, user_id))
     return available_annotasks
 
 def __get_at_info(dbm, annotask, user_id, amount_per_label=False):

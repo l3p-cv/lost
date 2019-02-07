@@ -37,7 +37,7 @@ def get_next(db_man, user_id, img_id, media_url):
     :type db_man: lost.db.access.DBMan
     """
     at = get_sia_anno_task(db_man, user_id)
-    if at:
+    if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
         image_anno = None
         iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
         if int(img_id) == -1:
@@ -232,6 +232,8 @@ class SiaUpdate(object):
         else:
             self.polygons = None
     def update(self):
+        if self.at.pipe_element.pipe.state != state.Pipe.PAUSED:
+            return "pipe is paused"
         if self.b_boxes is not None:
             self.__update_drawables(self.b_boxes, dtype.TwoDAnno.BBOX)
         if self.points is not None:
