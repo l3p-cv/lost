@@ -47,7 +47,6 @@ export default class ScriptStartModal extends BaseModal {
                                 <table class='table table-hover'>
                                     <tbody>
                                         <tr><td><strong> Path: </strong></td><td class='word-break'>${nodeModel.script.path}</td></tr>
-                                        <tr><td><strong> Language: </strong></td><td class='word-break'> ${nodeModel.script.language}</td></tr>
                                     </tbody>
                                 </table>
                             </div>

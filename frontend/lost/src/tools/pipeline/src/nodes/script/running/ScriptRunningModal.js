@@ -56,10 +56,6 @@ export default class ScriptRunningModal extends BaseModal {
                                             <td data-ref='error-msg-text' class='word-break'>${errorMsg.value}</td>
                                         </tr>
                                         <tr>
-                                            <td class='colon'><strong>Language</strong></td>
-                                            <td class='word-break'>${script.language}</td>
-                                        </tr>
-                                        <tr>
                                             <td class='colon'><strong>Path</strong></td>
                                             <td class='word-break'>${script.path}</td>
                                         </tr>
