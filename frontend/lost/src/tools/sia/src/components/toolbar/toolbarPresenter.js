@@ -5,49 +5,66 @@ import appModel from "../../appModel"
 import "./toolbar.styles.scss"
 import * as toolbarView from "./toolbarView"
 
-import * as propertiesPresenter from "components/properties/propertiesPresenter"
-
 import { enableBBoxCreation, disableBBoxCreation } from "./tool-bbox"
 import { enablePointCreation, disablePointCreation } from "./tool-point"
-import { disableLineCreation, enableLineCreation } from "./tool-line"
+import { enableLineCreation, disableLineCreation  } from "./tool-line"
 import { enablePolygonCreation, disablePolygonCreation } from "./tool-polygon"
-import { disableDelete, enableDelete } from "components/image/change-delete"
-import { enableSelect, disableSelect } from "components/image/change-select"
-import { undo, redo } from "components/image/change-undo-redo"
 
+import { enableDelete, disableDelete  } from "components/image/change-delete"
+import { enableSelect, disableSelect } from "components/image/change-select"
+import { enableUndoRedo, disableUndoRedo } from "components/image/change-undo-redo"
 import { resetSelection } from "components/image/change-select"
 
-// during drawable creation
-// - hide other drawables
-// - disable ordinary delete
-// - (disable redo and undo)
-appModel.controls.creationEvent.on("change", isActive => {
-	if(isActive){
-		// the toolbars multipoint drawable creation has its own delete handlers 
-		disableSelect()
-		disableDelete()
-		// hide other drawables
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.hide()
-			})
-		})
-		$(window).off("keydown.undo")
-		$(window).off("keydown.redo")
-	} else {
-		enableSelect()
-		enableDelete()
-		// show other drawables
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.show()
-			})
-		})
-		$(window).off("keydown.undo").on("keydown.undo", undo)
-		$(window).off("keydown.redo").on("keydown.redo", redo)
-	}
-})
-appModel.controls.creationEvent.on("change", isActive => propertiesPresenter.onDrawableCreation(isActive))
+import { enableNavigationButtons, disableNavigationButtons } from "components/properties/propertiesPresenter"
+
+// // during change event
+// // - disable creation
+// appModel.controls.changeEvent.on("change", isActive => {
+// 	if(!appModel.controls.tool.isInInitialState){
+// 		const selectedTool = appModel.controls.tool.value
+// 		if(isActive){
+// 			disableDrawableCreation(selectedTool)
+// 		} else {
+// 			enableDrawableCreation(selectedTool)
+// 		}
+// 	}
+// })
+
+// // during drawable creation
+// // - hide other drawables
+// // - disable redo and undo
+// // - disable ordinary delete (keyboard)
+// // - (disable drawable selection)
+// appModel.controls.creationEvent.on("change", isActive => {
+// 	if(isActive){
+// 		// the toolbars multipoint drawable creation has its own delete handlers 
+// 		disableSelect()
+// 		disableDelete()
+// 		// hide other drawables
+// 		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+// 			Object.values(observableDrawableList.value).forEach(drawable => {
+// 				if(appModel.isADrawableSelected()){
+// 					if(appModel.getSelectedDrawable() !== drawable){
+// 						drawable.hide()
+// 					}
+// 				}
+// 			})
+// 		})
+// 		$(window).off("keydown.undo")
+// 		$(window).off("keydown.redo")
+// 	} else {
+// 		enableSelect()
+// 		enableDelete()
+// 		// show other drawables
+// 		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+// 			Object.values(observableDrawableList.value).forEach(drawable => {
+// 				drawable.show()
+// 			})
+// 		})
+// 		$(window).off("keydown.undo").on("keydown.undo", undo)
+// 		$(window).off("keydown.redo").on("keydown.redo", redo)
+// 	}
+// })
 appModel.controls.tool.on("update", resetSelection)
 appModel.config.on("update", config => {
     if(config.actions.drawing){
@@ -82,43 +99,6 @@ appModel.config.on("update", config => {
 			const firstTool = enabledToolNames[0]
 			toolbarView.html.refs[firstTool].click()
 		}
-
-        // set handler depending on tool id string.
-        function enableDrawableCreation(toolId: String){
-            switch(toolId){
-                case "sia-tool-point":
-					enablePointCreation()
-                    break
-                case "sia-tool-line":
-                    enableLineCreation()
-                    break
-                case "sia-tool-polygon":
-					enablePolygonCreation()
-                    break
-                case "sia-tool-bbox":
-					enableBBoxCreation()
-                    break
-                default: throw new Error("unknown tool id:", toolId)
-            }
-        }
-        // unset handler depending on tool id string.
-        function disableDrawableCreation(toolId: String){
-            switch(toolId){
-                case "sia-tool-point":
-                    disablePointCreation()
-                    break
-                case "sia-tool-line":
-                    disableLineCreation()
-                    break
-                case "sia-tool-polygon":
-					disablePolygonCreation()
-                    break
-                case "sia-tool-bbox":
-					disableBBoxCreation()
-                    break
-                default: console.warn("unknown tool id.")
-            }
-        }
     }
     else {
 		console.warn("runntime disabling of tools via config update is not implemented.")
@@ -126,7 +106,68 @@ appModel.config.on("update", config => {
     }
 })
 
-
+export function onCreationStart(){
+	console.log(" - on creation start - ")
+	disableNavigationButtons()
+	toolbarView.disableToolbar()
+	disableSelect()
+	disableDelete(appModel.config.value)
+	disableUndoRedo(appModel.config.value)
+	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+		Object.values(observableDrawableList.value).forEach(drawable => {
+			drawable.hide()
+		})
+	})
+}
+export function onCreationEnd(){
+	console.log(" - on creation end - ")
+	enableNavigationButtons()
+	toolbarView.enableToolbar()
+	enableSelect()
+	enableDelete(appModel.config.value)
+	enableUndoRedo(appModel.config.value)
+	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+		Object.values(observableDrawableList.value).forEach(drawable => {
+			drawable.show()
+		})
+	})
+}
+// set handler depending on tool id string.
+function enableDrawableCreation(toolId: String){
+	switch(toolId){
+		case "sia-tool-point":
+			enablePointCreation()
+			break
+		case "sia-tool-line":
+			enableLineCreation()
+			break
+		case "sia-tool-polygon":
+			enablePolygonCreation()
+			break
+		case "sia-tool-bbox":
+			enableBBoxCreation()
+			break
+		default: throw new Error("unknown tool id:", toolId)
+	}
+}
+// unset handler depending on tool id string.
+function disableDrawableCreation(toolId: String){
+	switch(toolId){
+		case "sia-tool-point":
+			disablePointCreation()
+			break
+		case "sia-tool-line":
+			disableLineCreation()
+			break
+		case "sia-tool-polygon":
+			disablePolygonCreation()
+			break
+		case "sia-tool-bbox":
+			disableBBoxCreation()
+			break
+		default: console.warn("unknown tool id.")
+	}
+}
 export function setLayout(layout: String){
     toolbarView.setLayout(layout)
 }

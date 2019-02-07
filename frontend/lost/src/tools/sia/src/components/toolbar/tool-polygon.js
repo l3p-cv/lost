@@ -7,6 +7,9 @@ import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
 import { selectDrawable } from "components/image/change-select"
+import { addDrawable, removeDrawable } from "components/image/imagePresenter"
+const imagePresenter = { addDrawable, removeDrawable }
+import { onCreationStart, onCreationEnd } from "components/toolbar/toolbarPresenter"
 
 
 let currentPoint = undefined
@@ -29,7 +32,7 @@ function addPolygonPoint($event){
 			data: { x: mousepos.x / imgW, y: mousepos.y / imgH }, 
 			isNoAnnotation: true,
 		})
-		appModel.addDrawable(firstPoint)
+		imagePresenter.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
@@ -42,9 +45,9 @@ function addPolygonPoint($event){
 		if(line.menuBar){
 			line.menuBar.hide()
 		}
-		appModel.deleteDrawable(firstPoint)
+		imagePresenter.removeDrawable(firstPoint)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
-		appModel.addDrawable(line)
+		imagePresenter.addDrawable(line)
 		selectDrawable(line.model.points[1])
 	}
 	else if(!polygon){
@@ -56,9 +59,9 @@ function addPolygonPoint($event){
 		if(polygon.menuBar){
 			polygon.menuBar.hide()
 		}
-		appModel.deleteDrawable(line)
+		imagePresenter.removeDrawable(line)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
-		appModel.addDrawable(polygon)
+		imagePresenter.addDrawable(polygon)
 		selectDrawable(polygon.model.points[2])
 	}
 	// else add a point to the polygon.
@@ -72,33 +75,33 @@ function addPolygonPoint($event){
 function deletePolygonPoint(){
 	// first point
 	if(firstPoint && !line){
-		appModel.deleteDrawable(firstPoint)
+		imagePresenter.removeDrawable(firstPoint)
 		firstPoint = undefined
 	}
 	// second point
 	else if(line && !polygon){
 		// remove the line from model and image view (event bound).
-		appModel.deleteDrawable(line)
+		imagePresenter.removeDrawable(line)
 		line = undefined
 		// re-create the first point, add and select it.
 		firstPoint = new PointPresenter({
 			data: firstPoint.model.relBounds, 
 			isNoAnnotation: true,
 		})
-		appModel.addDrawable(firstPoint)
+		imagePresenter.addDrawable(firstPoint)
 		selectDrawable(firstPoint)
 	}
 	// third point
 	else if(polygon && polygon.model.points.length === 3){
 		// remove the polygon
-		appModel.deleteDrawable(polygon)
+		imagePresenter.removeDrawable(polygon)
 		polygon = undefined
 		// recreate the line and add the line
 		line = new MultipointPresenter({
 			data: line.model.relPointData,
 			type: "line",
 		})
-		appModel.addDrawable(line)
+		imagePresenter.addDrawable(line)
 		selectDrawable(line.model.points[1])
 	}
 	// 4+n point
@@ -127,75 +130,61 @@ function finishPolygon(){
 				},
 			}
 		}))
-		appModel.selectDrawable(polygon)
+		appModel.addDrawable(polygon)
 		polygon.model.points[polygon.model.points.length-1].unselect()
-		polygon.select()
+		selectDrawable(polygon)
 		// show menu bar after creation
 		if(polygon.menuBar){
 			polygon.menuBar.show()
 		}
-	} else if(line){
-		appModel.deleteDrawable(line)
-	} else if(firstPoint){
-		appModel.deleteDrawable(firstPoint)
+	} else {
+		console.log({firstPoint, line, polygon})
+		appModel.resetDrawableSelection()
+		if(firstPoint && !line && !polygon){
+			imagePresenter.removeDrawable(firstPoint)
+		}
+		if(line && !polygon){
+			imagePresenter.removeDrawable(line)
+		}
 	}
 
 	// reset creation context
 	firstPoint = undefined
 	line = undefined
 	polygon = undefined
+
+	onCreationEnd()
 }
 
 export function enablePolygonCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createPolygonPoint", ($event) => {
-		if(mouse.button.isRight($event.button)){
-			if(appModel.controls.changeEvent.value === false){
-				appModel.controls.creationEvent.update(true)
-			}
+		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
+			onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createPolygonPoint", ($event) => {
-		// console.log("create polygon handler (triggered)")
+		// prevent context menu
 		$event.preventDefault()
-		// @QUICK-FIX-1: when selected, and adding points by ctrl or alt feature, no new drawable should be created.
-		// @QUICK-FIX-1: currently not switching of this handler.
-		if(keyboard.isAModifierHit($event)){
-			return
-		}
-		// create or extend line.
-		if(mouse.button.isRight($event.button)){
-			// console.warn("create polygon handler (executed add)")
+		// create or extend polygon.
+		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
 			addPolygonPoint($event)
 		}
 	})
 	$(window).on("dblclick.finishPolygon", ($event) => {
 		if(firstPoint !== undefined || line !== undefined || polygon !== undefined){
-			// if(!$event.target.closest("#sia-imgview-svg")){
-			// @uncomment: felt ugly to be forced to click on a free area to finish drawing.
-			if(mouse.button.isLeft($event.button)){
+			if(keyboard.isNoModifierHit($event) && mouse.button.isLeft($event.button)){
 				finishPolygon()
-				// if(appModel.controls.changeEvent.value === false){
-					appModel.controls.creationEvent.update(false)
-				// }
 			}
 		}
 	})
 	$(window).on("keydown.finishPolygon", ($event) => {
-		if(appModel.controls.creationEvent.value){
-			if(keyboard.isKeyHit($event, ["Escape", "Enter"])){
-				// console.warn("create polygon handler (executed finish)")
-				finishPolygon()
-				// if(appModel.controls.changeEvent.value === false){
-					appModel.controls.creationEvent.update(false)
-				// }
-			}
+		if(keyboard.isKeyHit($event, ["Escape", "Enter"])){
+			finishPolygon()
 		}
 	})
 	$(window).on("keydown.deletePolygonPoint", ($event) => {
-		if(appModel.controls.creationEvent.value){
-			if(keyboard.isKeyHit($event, "Delete")){
-				deletePolygonPoint()
-			}
+		if((firstPoint || line || polygon) && keyboard.isKeyHit($event, "Delete")){
+			deletePolygonPoint()
 		}
 	})
 }

@@ -111,7 +111,7 @@ export function enablePointChange(drawable){
 				}
 			})
 			// make undo redo possible
-			if(!appModel.controls.creationEvent.value){
+			if(!appModel.controls.creationEvent.value && !drawable.parent){
 				state.add(stateElement)
 			}
 
@@ -168,7 +168,7 @@ export function enablePointChange(drawable){
 							}
 						})
 						
-						if(!appModel.controls.creationEvent.value){
+						if(!appModel.controls.creationEvent.value && !drawable.parent){
 							state.add(stateElement)
 						}
 						stateElement = undefined

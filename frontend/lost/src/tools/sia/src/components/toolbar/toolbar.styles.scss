@@ -36,6 +36,7 @@ $btn-background-hover-color: #E6E6E6;
         height: 42px;
         // icon original size: 48px
         img {
+			pointer-events: none;
             width: 100%;
             height: 100%;
         }

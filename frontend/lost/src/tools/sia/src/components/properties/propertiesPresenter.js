@@ -21,44 +21,44 @@ appModel.data.image.url.on("update", url => {
 		const objectURL = window.URL.createObjectURL(blob)
 		propertiesView.image.src = objectURL
 	})
-	updateNavigationButtons()
+	enableNavigationButtons()
 })
 // appModel.data.image.info.on("update", info => console.trace(info))
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
-// todo: observable text on change....
+// todo: observable object on change.... to add redo undo for changing labels.
 appModel.state.selectedLabel.on("update", label => {
 	propertiesView.setDescription(label.description)
 	if(appModel.isADrawableSelected()){
 		const drawable = appModel.getSelectedDrawable()
 		// save state
-		state.add(new state.StateElement({
-			do: {
-				data: { drawable, label },
-				fn: (data) => {
-					const { drawable, label } = data
-					console.log("set label:", label)
-					if(drawable.parent){
-						drawable.parent.setLabel(label)
-					} else {
-						drawable.setLabel(label)
-					}
-				},
-			},
-			undo: {
-				data: { drawable, label: drawable.model.label },
-				fn: (data) => {
-					const { drawable, label } = data
-					console.log("set label:", label)
-					if(drawable.parent){
-						drawable.parent.setLabel(label)
-					} else {
-						drawable.setLabel(label)
-					}
-				},
-			},
-		}))
+		// state.add(new state.StateElement({
+		// 	do: {
+		// 		data: { drawable, label },
+		// 		fn: (data) => {
+		// 			const { drawable, label } = data
+		// 			console.log("set label:", label)
+		// 			if(drawable.parent){
+		// 				drawable.parent.setLabel(label)
+		// 			} else {
+		// 				drawable.setLabel(label)
+		// 			}
+		// 		},
+		// 	},
+		// 	undo: {
+		// 		data: { drawable, label: drawable.model.label },
+		// 		fn: (data) => {
+		// 			const { drawable, label } = data
+		// 			console.log("set label:", label)
+		// 			if(drawable.parent){
+		// 				drawable.parent.setLabel(label)
+		// 			} else {
+		// 				drawable.setLabel(label)
+		// 			}
+		// 		},
+		// 	},
+		// }))
 		// execute
 		if(drawable.parent){
 			drawable.parent.setLabel(label)
@@ -356,7 +356,7 @@ function detachDrawable(drawable: DrawablePresenter){
     }
 }
 
-function updateNavigationButtons(){
+export function enableNavigationButtons(){
 	const { isFirst, isLast } = appModel.data.image
 	if(isFirst){
 		handleFirstImage()
@@ -369,7 +369,7 @@ function updateNavigationButtons(){
 		handleNotLastImage()
 	}
 }
-function disableNavigationButtons(){
+export function disableNavigationButtons(){
 	propertiesView.disableNavigationButtons()
 }
 function handleLastImage(){
@@ -395,15 +395,16 @@ function handleNotFirstImage(){
     propertiesView.enableFirstButton()
 }
 
-export function onDrawableCreation(isActive){
+export function disableNavigation(isActive){
 	if(isActive){
 		disableNavigationButtons()
 		// // blur label selection focus
 		// document.activeElement.blur()
 	} else {
-		updateNavigationButtons()
+		enableNavigationButtons()
 	}
 }
+
 
 export function resize(){
     propertiesView.resize()

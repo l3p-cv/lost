@@ -6,25 +6,17 @@ import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
 import { selectDrawable } from "components/image/change-select"
+import { onCreationStart, onCreationEnd } from "components/toolbar/toolbarPresenter"
 
 
 export function enablePointCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createPoint", ($event) => {
-		if(keyboard.isAModifierHit($event)){
-			return
-		}
-		if(mouse.button.isRight($event.button)){
-			if(appModel.controls.changeEvent.value === false){
-				appModel.controls.creationEvent.update(true)
-			}
+		if(!keyboard.isAModifierHit($event) && mouse.button.isRight($event.button)){
+			onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createPoint", ($event) => {
-		// console.log("create point handler (triggered)")
-		if(keyboard.isAModifierHit($event)){
-			return
-		}
-		if(mouse.button.isRight($event.button)){
+		if(!keyboard.isAModifierHit($event) && mouse.button.isRight($event.button)){
 			// console.warn("create point handler(executed)")
 			$event.preventDefault()
 			const { imgW, imgH } = imageInterface.getDimensions()
@@ -63,7 +55,7 @@ export function enablePointCreation(){
 			}))
 			appModel.addDrawable(point)
 			selectDrawable(point)
-			appModel.controls.creationEvent.update(false)
+			onCreationEnd()
 		}
 	})
 }
