@@ -58,7 +58,7 @@ class PipeEngine(object):
         '''
         loop_list = list()
         for pipe_e in self.pipe_elements:
-            if pipe_e.pe_type == dtype.PipeElement.LOOP:
+            if pipe_e.dtype == dtype.PipeElement.LOOP:
                 loop_list.append(pipe_e)
         return loop_list
 
