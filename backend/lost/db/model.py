@@ -796,7 +796,10 @@ class ImageAnno(Base):
         if columns == 'all':
             return df.values.tolist()
         else:
-            return df[columns].values.tolist()
+            ret = df[columns].values.tolist()
+            if ret == [None]:
+                ret = []
+            return ret
 
     def iter_annos(self, anno_type='bbox'):
         '''Iterator for all related 2D annotations of this image.
