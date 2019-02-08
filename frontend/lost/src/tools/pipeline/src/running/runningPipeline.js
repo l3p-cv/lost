@@ -71,13 +71,33 @@ class RunningPipeline extends Component{
         this.setState({ currentStep: newStep })
       }
     
+      renderGrayLine() {
+        return (
+          <hr
+            style={{
+              color: 'gray',
+              backgroundColor: 'gray',
+              height: 1
+            }}
+          />
+        )
+      }
+
 
     render(){
         return(
+            <div>
             <Stepper
             stepperData={this.state}
             changeCurrentStep={this.changeCurrentStep}
           />
+          {this.renderGrayLine()}
+          <br />
+          <br />
+          
+  
+          {this.renderContent()}
+          </div>
         )
     }
 }
