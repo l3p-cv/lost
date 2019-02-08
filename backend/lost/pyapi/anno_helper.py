@@ -49,7 +49,7 @@ def to_abs(annos, types, img_size):
             lp[:,1] = lp[:,1]*h
             new.append(lp.tolist())
         elif t=='point':
-            new.append([twod[0]*w, twod[1]*w])
+            new.append([twod[0]*w, twod[1]*h])
         else:
             raise Exception('Unknown annotation type: {}'.format(t))
     return np.array(new, dtype=int).tolist()
@@ -127,33 +127,37 @@ def draw_annos(annos, types, img, color=(255,0,0), point_r=2):
     Returns:
         numpy.array: Image with drawn annotations
     '''
-    img_h, img_w, _ = img.shape
-    for anno, t in zip(annos, types):
-        if t == 'bbox':
-            anno = trans_boxes_to([anno])[0]
-            anno = to_abs([anno], [t], (img_w, img_h))[0]
-            xmin, ymin, xmax, ymax = anno
-            rr, cc = polygon_perimeter([ymin, ymin, ymax, ymax],
-                [xmin, xmax, xmax, xmin ], shape=img.shape)
-        elif t == 'polygon':
-            anno = to_abs([anno], [t], (img_w, img_h))[0]
-            anno = np.array(anno)
-            rr, cc = polygon_perimeter(anno[:,1].tolist(),
-                anno[:,0].tolist(), shape=img.shape)
-        elif t == 'point':
-            anno = to_abs([anno], [t], (img_w, img_h))[0]
-            rr, cc = circle(anno[1], anno[0], point_r, shape=img.shape)
-        elif t == 'line':
-            anno = to_abs([anno], [t], (img_w, img_h))[0]
-            for i, point in enumerate(anno):
-                if i >= (len(anno)-1):
-                    break
-                rr, cc = line(point[1], point[0], 
-                    anno[i+1][1], anno[i+1][0])
-        else:
-            raise ValueError('Unknown annotation type: {}'.format(t))
-        img[rr,cc] = color
-    return img
+    if annos:
+        img_h, img_w, _ = img.shape
+        for anno, t in zip(annos, types):
+            if t == 'bbox':
+                anno = trans_boxes_to([anno])[0]
+                anno = to_abs([anno], [t], (img_w, img_h))[0]
+                xmin, ymin, xmax, ymax = anno
+                rr, cc = polygon_perimeter([ymin, ymin, ymax, ymax],
+                    [xmin, xmax, xmax, xmin ], shape=img.shape)
+            elif t == 'polygon':
+                anno = to_abs([anno], [t], (img_w, img_h))[0]
+                anno = np.array(anno)
+                rr, cc = polygon_perimeter(anno[:,1].tolist(),
+                    anno[:,0].tolist(), shape=img.shape)
+            elif t == 'point':
+                anno = to_abs([anno], [t], (img_w, img_h))[0]
+                rr, cc = circle(anno[1], anno[0], point_r, shape=img.shape)
+            elif t == 'line':
+                anno = to_abs([anno], [t], (img_w, img_h))[0]
+                for i, point in enumerate(anno):
+                    if i >= (len(anno)-1):
+                        break
+                    rr, cc = line(point[1], point[0], 
+                        anno[i+1][1], anno[i+1][0])
+                    img[rr,cc] = color
+            else:
+                raise ValueError('Unknown annotation type: {}'.format(t))
+            img[rr,cc] = color
+        return img
+    else:
+        return []
 
 def crop_boxes(annos, types, img, context=0.0, draw_annotations=False):
     '''Crop a bounding boxes for TwoDAnnos from image.
@@ -167,21 +171,26 @@ def crop_boxes(annos, types, img, context=0.0, draw_annotations=False):
             the crop.
     
     Return:
-        list of numpy.array: A list of cropped boxes
+        (list of numpy.array, list of list of float): 
+            A tuple that contains a list of image crops and a 
+            list of bboxes [[xc,yc,w,h],...]
     '''
-    crops = []
-    new_img = img
-    boxes = calc_box_for_anno(annos, types)
-    boxes = trans_boxes_to(boxes)
-    img_h, img_w, _ = img.shape
-    boxes = to_abs(boxes, ['bbox']*len(boxes), (img_w,img_h))
-    if context != 0.0:
-        boxes = _add_context(boxes, context, (img_w, img_h))
-    boxes = np.array(boxes, dtype=int).tolist()
-    for idx, box in enumerate(boxes):
-        if draw_annotations:
-            new_img = img.copy()
-            draw_annos([annos[idx]], [types[idx]], new_img)
-        # image[y_min:y_max, x_min:x_max]
-        crops.append(new_img[box[1]:box[3], box[0]:box[2]])
-    return crops
+    if annos:
+        crops = []
+        new_img = img
+        anno_boxes = calc_box_for_anno(annos, types)
+        boxes = trans_boxes_to(anno_boxes)
+        img_h, img_w, _ = img.shape
+        boxes = to_abs(boxes, ['bbox']*len(boxes), (img_w,img_h))
+        if context != 0.0:
+            boxes = _add_context(boxes, context, (img_w, img_h))
+        boxes = np.array(boxes, dtype=int).tolist()
+        for idx, box in enumerate(boxes):
+            if draw_annotations:
+                new_img = img.copy()
+                draw_annos([annos[idx]], [types[idx]], new_img)
+            # image[y_min:y_max, x_min:x_max]
+            crops.append(new_img[box[1]:box[3], box[0]:box[2]])
+        return crops, anno_boxes
+    else:
+        return [], []

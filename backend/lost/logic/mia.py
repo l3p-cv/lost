@@ -6,7 +6,7 @@ from lost.logic.anno_task import set_finished, update_anno_task
 from lost.logic.file_man import FileMan
 from datetime import datetime
 import skimage.io
-from lost.utils import anno_helper
+from lost.pyapi import anno_helper
 
 __author__ = "Gereon Reus"
 
@@ -61,33 +61,32 @@ class TwoDSerialize(object):
         for anno in self.annos:
             image_json = dict()
             image_json['id'] = anno.idx
-            if anno.dtype == dtype.TwoDAnno.BBOX:
-                # get image_anno of two_d anno
-                image_anno = self.db_man.get_image_annotation(img_anno_id=anno.img_anno_id)
-                cropped_image_path = os.path.join(directory, str(anno.idx)) + '.png'
-                relative_cropped_image_path = self.file_man.mia_crop_rel_path + \
-                str(self.anno_task_id) + "/" + str(anno.idx) + ".png"
-                if os.path.exists(cropped_image_path):
-                    image_json['path'] = relative_cropped_image_path 
-                    self.mia_json['images'].append(image_json) 
-                    continue
-                else:    
-                    # crop two_d_anno out of image_anno
-                    config = get_config(self.db_man, self.user_id)
-                    draw_anno = False
-                    context = None
-                    try:
-                        draw_anno = config['drawAnno']
-                    except:
-                        pass
-                    try:
-                        context = float(config['addContext'])
-                    except:
-                        pass
-                    self._crop_twod_anno(image_anno, anno, draw_anno, 
-                        context, cropped_image_path)
-                    image_json['path'] = relative_cropped_image_path 
-                    self.mia_json['images'].append(image_json) 
+            # get image_anno of two_d anno
+            image_anno = self.db_man.get_image_annotation(img_anno_id=anno.img_anno_id)
+            cropped_image_path = os.path.join(directory, str(anno.idx)) + '.png'
+            relative_cropped_image_path = self.file_man.mia_crop_rel_path + \
+            str(self.anno_task_id) + "/" + str(anno.idx) + ".png"
+            if os.path.exists(cropped_image_path):
+                image_json['path'] = relative_cropped_image_path 
+                self.mia_json['images'].append(image_json) 
+                continue
+            else:    
+                # crop two_d_anno out of image_anno
+                config = get_config(self.db_man, self.user_id)
+                draw_anno = False
+                context = None
+                try:
+                    draw_anno = config['drawAnno']
+                except:
+                    pass
+                try:
+                    context = float(config['addContext'])
+                except:
+                    pass
+                self._crop_twod_anno(image_anno, anno, draw_anno, 
+                    context, cropped_image_path)
+                image_json['path'] = relative_cropped_image_path 
+                self.mia_json['images'].append(image_json) 
 
     def _crop_twod_anno(self, img_anno, twod_anno, draw_anno, context, out_path):
         '''Helper method to crop a bounding box for a TwoDAnnotation and store it on disc
@@ -101,7 +100,7 @@ class TwoDSerialize(object):
             out_path (str): Path to store the cropped image.
         '''
         image = skimage.io.imread(self.file_man.get_abs_path(img_anno.img_path))
-        crops = anno_helper.crop_boxes([twod_anno.to_vec('anno.data')],
+        crops, _ = anno_helper.crop_boxes([twod_anno.to_vec('anno.data')],
             [twod_anno.to_vec('anno.dtype')], image, context=context, 
             draw_annotations=draw_anno)
         cropped_image = crops[0]
