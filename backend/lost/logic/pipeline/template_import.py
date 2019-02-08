@@ -27,7 +27,7 @@ def parse_script(element):
     Returns:
         object: :class:`lost.db.model.Script`
     '''
-    script = model.Script(name=element['path'],
+    script = model.Script(name=element['name'],
                         path=element['path'],
                         description=element['description'])
     return script
@@ -63,7 +63,8 @@ class PipeImporter(object):
             # Set name to name of the script file
             for pe in pipe['elements']:
                 if 'script' in pe:
-                    pe['script']['name'] = pe['script']['path']
+                    pe['script']['name'] = self._namespaced_name(
+                        pe['script']['path'])
 
     def _namespaced_name(self, name):
         return '{}.{}'.format(self.namespace, name)
