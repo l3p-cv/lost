@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import Graph from 'react-graph-vis';
 import mapTreeToGraph from 'libs/graph-vis/mapTreeToGraph'
-import EditLabel from '../../containers/Labels/EditLabel'
+import EditLabel from '../../components/Labels/EditLabel'
 
 const options = {
     autoResize: true,

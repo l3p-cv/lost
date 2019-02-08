@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Card, CardBody, CardHeader, Col, Row} from 'reactstrap'
-import Facts from '../../../containers/Dashboard/Annotator/Facts'
-import ImagesPerDay from '../../../containers/Dashboard/Annotator/ImagesPerDay'
-import AmountPerLabel from '../../../components/AnnoTask/AmountPerLabel'
-import MyAnnoTasks from '../../../components/AnnoTask/MyAnnoTasks'
-import WorkingOn from '../../../components/AnnoTask/WorkingOn'
-import actions from '../../../actions'
+// import Facts from '../../../components/Dashboard/Annotator/Facts'
+// import ImagesPerDay from '../../../components/Dashboard/Annotator/ImagesPerDay'
+import AmountPerLabel from '../components/AnnoTask/AmountPerLabel'
+import MyAnnoTasks from '../components/AnnoTask/MyAnnoTasks'
+import WorkingOn from '../components/AnnoTask/WorkingOn'
+import actions from '../actions'
 
 const {getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask} = actions
 

@@ -2,15 +2,15 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Card, CardBody, Col, Row} from 'reactstrap'
 
-import CreateUser from '../../containers/Users/CreateUser'
-import CreateGroup from '../../containers/Users/CreateGroup'
-import UserTable from '../../containers/Users/UserTable'
-import GroupList from '../../containers/Users/GroupList'
-import actions from '../../actions'
+import CreateUser from '../components/Users/CreateUser'
+import CreateGroup from '../components/Users/CreateGroup'
+import UserTable from '../components/Users/UserTable'
+import GroupList from '../components/Users/GroupList'
+import actions from '../actions'
 
 const {getGroups, getUsers} = actions
 
-class User extends Component {
+class Users extends Component {
     componentDidMount() {
         this
             .props
@@ -49,4 +49,4 @@ function mapStateToProps(state) {
     return ({users: state.user.users, groups: state.group.groups})
 }
 
-export default connect(mapStateToProps, {getUsers, getGroups})(User)
+export default connect(mapStateToProps, {getUsers, getGroups})(Users)

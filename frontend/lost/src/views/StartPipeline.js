@@ -9,7 +9,7 @@ import {
 } from 'reactstrap'
 
 
-class SingleImageAnnotation extends Component {
+class StartPipeline extends Component {
 	constructor(props){
 		super(props)
 		this.mount = React.createRef()
@@ -18,7 +18,7 @@ class SingleImageAnnotation extends Component {
 		// the app will get mounted when requiring it.
 		// theirfore we use a page reload quickfix below.
 		// mounting via method did not work.
-		const init = require('../../tools/pipeline/src/apps/start/appPresenter.js').default
+		const init = require('../tools/pipeline/src/apps/start/appPresenter.js').default
 		init({
 			token: this.props.token,
 		})
@@ -49,4 +49,4 @@ function mapStateToProps(state) {
     return { token: state.auth.token, }
 }
 
-export default connect(mapStateToProps)(SingleImageAnnotation);
+export default connect(mapStateToProps)(StartPipeline);

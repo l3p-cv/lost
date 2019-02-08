@@ -8,9 +8,9 @@ import {
     Row
 } from 'reactstrap'
 
-import WorkingOnSIA from '../../components/AnnoTask/WorkingOnSIA'
+import WorkingOnSIA from '../components/AnnoTask/WorkingOnSIA'
 
-import actions from '../../actions'
+import actions from '../actions'
 const { getWorkingOnAnnoTask } = actions
 
 
@@ -22,7 +22,7 @@ class SingleImageAnnotation extends Component {
 	}
 	componentDidMount(){
 		this.props.getWorkingOnAnnoTask()
-		const init = require("../../tools/sia/src/appPresenter").default
+		const init = require("../tools/sia/src/appPresenter").default
 		init({
 			siaMount: this.siaMount.current,
 			actionsMount: this.actionsMount.current,

@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import actions from '../../actions'
+import actions from '../actions'
 import {
     Button,
     Card,
@@ -18,7 +18,7 @@ import {NotificationManager, NotificationContainer} from 'react-notifications'
 import 'react-notifications/lib/notifications.css';
 const {getOwnUser, updateOwnUser, cleanUpdateOwnUserMessage} = actions
 
-class MyProfile extends Component {
+class Profile extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -191,4 +191,4 @@ function mapStateToProps(state) {
     return {ownUser: state.user.ownUser, updateOwnMessage: state.user.updateOwnMessage}
 }
 
-export default connect(mapStateToProps, {getOwnUser, updateOwnUser, cleanUpdateOwnUserMessage})(MyProfile)
+export default connect(mapStateToProps, {getOwnUser, updateOwnUser, cleanUpdateOwnUserMessage})(Profile)

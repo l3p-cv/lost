@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import './App.scss'
 
-import DefaultLayout  from './containers/DefaultLayout/DefaultLayout'
+import DefaultLayout  from './components/DefaultLayout/DefaultLayout'
 import Login  from './views/Pages/Login/Login'
 import Logout  from './views/Pages/Logout/Logout'
 import Page404  from './views/Pages/Page404/Page404'

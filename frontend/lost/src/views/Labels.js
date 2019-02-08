@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import actions from '../../actions'
+import actions from '../actions'
 import {
     CardHeader,
     Card,
@@ -8,9 +8,9 @@ import {
     Col,
     Row
 } from 'reactstrap'
-import LabelTreeTable from '../../components/Labels/LabelTreeTable';
-import LabelTree from '../../components/Labels/LabelTree';
-import CreateLabelTree from '../../containers/Labels/CreateLabelTree';
+import LabelTreeTable from '../components/Labels/LabelTreeTable';
+import LabelTree from '../components/Labels/LabelTree';
+import CreateLabelTree from '../components/Labels/CreateLabelTree';
 
 
 

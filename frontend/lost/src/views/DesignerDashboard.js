@@ -9,7 +9,7 @@ import {
 } from 'reactstrap'
 
 
-class Pipelines extends Component {
+class DesignerDashboard extends Component {
 	constructor(props){
 		super(props)
 		this.mount = React.createRef()
@@ -19,7 +19,7 @@ class Pipelines extends Component {
 		// the app will get mounted when requiring it.
 		// theirfore we use a page reload quickfix below.
 		// mounting via method did not work.
-		const init = require('../../tools/pipeline/src/apps/running/appPresenter.js').default
+		const init = require('../tools/pipeline/src/apps/running/appPresenter.js').default
 		init({
 			token: this.props.token,
 			polling: {
@@ -52,4 +52,4 @@ function mapStateToProps(state) {
     return { token: state.auth.token, }
 }
 
-export default connect(mapStateToProps)(Pipelines);
+export default connect(mapStateToProps)(DesignerDashboard);

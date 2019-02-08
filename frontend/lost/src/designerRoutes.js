@@ -6,30 +6,27 @@ function Loading() {
 }
 
 const Dashboard = Loadable({
-  loader: () => import('./views/Dashboard/Designer/DesignerDashboard.js'),
+  loader: () => import('./views/DesignerDashboard.js'),
   loading: Loading,
 })
+
 const StartPipeline = Loadable({
-  loader: () => import('./views/Pipelines/StartPipeline.js'),
-  loading: Loading,
-})
-const Pipelines = Loadable({
-  loader: () => import('./views/Pipelines/Pipelines.js'),
+  loader: () => import('./views/StartPipeline.js'),
   loading: Loading,
 })
 
 const Label = Loadable({
-  loader: () => import('./views/Labels/Labels.js'),
+  loader: () => import('./views/Labels.js'),
   loading: Loading,
 })
 
 const User = Loadable({
-  loader: () => import('./views/Users/Users.js'),
+  loader: () => import('./views/Users.js'),
   loading: Loading,
 })
 
-const MyProfile = Loadable({
-  loader: () => import('./views/Profile/Profile.js'),
+const Profile = Loadable({
+  loader: () => import('./views/Profile.js'),
   loading: Loading,
 })
 
@@ -37,12 +34,12 @@ const MyProfile = Loadable({
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
-  { path: '/dashboard', name: 'Dashboard', component: Pipelines }, // first version just with pipelines in dashboard
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard }, // first version just with pipelines in dashboard
   { path: '/start-pipeline', name: 'Start a Pipeline', component: StartPipeline },
   // { path: '/pipelines', name: 'Pipelines', component: Pipelines },
   { path: '/labels', name: 'Manage Labels', component: Label },
   { path: '/users', name: 'Manage Users', component: User },
-  { path: '/profile', name: 'My Profile', component: MyProfile },
+  { path: '/profile', name: 'My Profile', component: Profile },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]
 

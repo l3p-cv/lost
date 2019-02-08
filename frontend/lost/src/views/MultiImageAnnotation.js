@@ -8,11 +8,11 @@ import {
     Col,
     Row
 } from 'reactstrap'
-import MIA from '../../containers/MIA/MIA'
-import WorkingOnMIA from '../../components/AnnoTask/WorkingOnMIA'
+import MIA from '../components/MIA/MIA'
+import WorkingOnMIA from '../components/AnnoTask/WorkingOnMIA'
 
 
-import actions from '../../actions'
+import actions from '../actions'
 const {getWorkingOnAnnoTask} = actions
 
 class MultiImageAnnotation extends Component {
