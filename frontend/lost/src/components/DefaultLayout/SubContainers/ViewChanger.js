@@ -41,7 +41,13 @@ class ViewChanger extends Component {
                     </React.Fragment>
                 )
             } else {
-                return ''
+                return (
+                    <React.Fragment>
+                        <NavItem active={this.isActive('Annotator')} className='px-3'>
+                            <NavLink onClick={() => this.handleClick('Annotator')} href='#'>Annotator</NavLink>
+                        </NavItem>
+                    </React.Fragment>
+                )
             }
         } else {
             return 'Loading...'
