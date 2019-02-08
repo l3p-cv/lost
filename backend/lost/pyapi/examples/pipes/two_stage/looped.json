@@ -21,14 +21,14 @@
       "peN": 2,
       "peOut": [3],
       "annoTask": {
-        "name": "BBoxAnnotation",
+        "name": "Single Image Annotation",
         "type": "sia",
-        "instructions": "Please draw bounding boxes for all objects in image.",
+        "instructions": "Please draw annotations for all objects in the image.",
         "configuration": {
           "tools": {
-            "point": false,
-            "line": false,
-            "polygon": false,
+            "point": true,
+            "line": true,
+            "polygon": true,
             "bbox": true
           },
           "actions": {
@@ -53,7 +53,7 @@
       "peN": 3,
       "peOut": [4],
       "script": {
-        "path": "cluster_boxes.py",
+        "path": "cluster_resnet.py",
         "description": "Cluster bboxes by setting sim class"
       }
     },
@@ -66,8 +66,8 @@
         "instructions" : "Please assign a class labels to all presented images.",
         "configuration":{
           "type": "annoBased",
-          "drawAnno": false,
-          "addContext": 0.0
+          "drawAnno": true,
+          "addContext": 0.1
         }
       }
     },

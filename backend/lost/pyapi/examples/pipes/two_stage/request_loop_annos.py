@@ -16,15 +16,15 @@ class RequestLoopAnnos(script.Script):
         used = []
         j = 0
         if os.path.exists(used_path):
-            with open('used_path', 'r') as f:
+            with open(used_path, 'r') as f:
                 used =json.load(f)
         for raw_file in self.inp.raw_files:
             media_path = raw_file.path
             for i, img_file in enumerate(os.listdir(media_path)):
                 img_path = os.path.join(media_path, img_file)
                 if img_file not in used:
-                    self.outp.request_bbox_annos(img_path=img_path)
-                    self.logger.info('Requested bbox annos for: {}'.format(img_path))
+                    self.outp.request_annos(img_path=img_path)
+                    self.logger.info('Requested annos for: {}'.format(img_path))
                     used.append(img_file)
                     j += 1
                 if j >= int(self.get_arg('n')):
