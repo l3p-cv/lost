@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-
+import RunningPipeline from 'pipRoot/running/runningPipeline'
 import {
 	Row,
 	Col,
@@ -24,6 +24,7 @@ class Pipelines extends Component {
 				<Col xs='12' sm='12' lg='12'>
                     <Card>
                         <CardBody>
+							<RunningPipeline/>
                         </CardBody>
                     </Card>
                 </Col>
