@@ -210,13 +210,13 @@ class PipeStarter(object):
         return required_label_leaves
     def create_loop(self, pe_n):
         template_element = self.template_map.get(pe_n)
+        data_element = self.data_map.get(pe_n)
         pe_jump_id = self.pe_map.get(template_element['loop']['peJumpId']).idx
         pe_id = self.pe_map.get(pe_n).idx
         loop = model.Loop()
         loop.iteration = 0
         loop.isBreakLoop = False
-          # frontend sent: { maxIteration: 3 }, backend had { max_iteration: 3 } 
-        loop.max_iteration = template_element['loop']['max_iteration']
+        loop.max_iteration = data_element['loop']['maxIteration']
         loop.pe_jump_id = pe_jump_id
         loop.pipe_element_id = pe_id
         return loop
