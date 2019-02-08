@@ -1401,7 +1401,7 @@ class Label(Base):
     label_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'), nullable=False)
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     two_d_anno_id = Column(Integer, ForeignKey('two_d_anno.idx'))
-    annotator_id = Column(Integer, ForeignKey('group.idx'))
+    annotator_id = Column(Integer, ForeignKey('user.idx'))
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     label_leaf = relationship('LabelLeaf', uselist=False)
