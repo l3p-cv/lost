@@ -9,7 +9,7 @@ class Workers extends Component {
             <Row>
                 <Col xs='12' sm='12' lg='12'>
                     <Card className='text-black'>
-                        <CardBody className='pb-0'>
+                        <CardBody>
                             <WorkersTable></WorkersTable>
                         </CardBody>
                     </Card>

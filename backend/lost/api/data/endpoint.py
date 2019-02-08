@@ -12,8 +12,7 @@ import os
 namespace = api.namespace('data', description='Data API.')
 
 @namespace.route('/<path:path>')
-class Available(Resource): 
-    #@api.marshal_with(anno_task_list)
+class Data(Resource): 
     @jwt_required 
     def get(self, path):
         print(path)
@@ -25,3 +24,17 @@ class Available(Resource):
             return "You are not authorized.", 401
         else:
             return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data'), path)
+
+@namespace.route('/logs/<path:path>')
+class Logs(Resource): 
+    @jwt_required 
+    def get(self, path):
+        print(path)
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'logs'), path)
