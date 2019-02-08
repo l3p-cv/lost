@@ -95,13 +95,13 @@ class Script(pipe_elements.Element):
     def inp(self):
         ''':class:`lost.pyapi.inout.Input`
         '''
-        return self._inp
+        return self._inp #type: inout.Input
 
     @property
     def outp(self):
         ''':class:`lost.pyapi.inout.ScriptOutput`
         '''
-        return self._outp
+        return self._outp #type: inout.ScriptOutput
 
     def get_rel_path(self, path):
         '''Get relativ path for current project

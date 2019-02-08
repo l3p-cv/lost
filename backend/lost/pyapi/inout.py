@@ -64,7 +64,7 @@ class Input(object):
         '''
         for result in self._results:
             for img_anno in result.img_annos:
-                yield img_anno
+                yield img_anno #type: lost.db.model.ImageAnno
     
     def to_vec(self, columns='all'):
         '''Get a vector of all Annotations related to this object.
