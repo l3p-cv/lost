@@ -164,7 +164,7 @@ class PipelineGraphPresenter extends WizardTabPresenter {
 
 		// add edges
         appModel.state.pipelineElements.forEach(({ node }) => {
-            if (node.constructor.name === 'LoopStartPresenter') {
+            if (node.constructor.name === 'LoopStartPresenter' || node.constructor.name === 'LoopRunningPresenter' ) {
                 this.graph.addEdge(node.model.peN, node.model.loop.peJumpId, true)
             }
             if (node.model.peOut !== null) {

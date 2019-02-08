@@ -30,6 +30,12 @@ const Profile = Loadable({
   loading: Loading,
 })
 
+const Workers = Loadable({
+  loader: () => import('./views/Workers.js'),
+  loading: Loading,
+})
+
+
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -39,6 +45,7 @@ const routes = [
   // { path: '/pipelines', name: 'Pipelines', component: Pipelines },
   { path: '/labels', name: 'Manage Labels', component: Label },
   { path: '/users', name: 'Manage Users', component: User },
+  { path: '/workers', name: 'Workers', component: Workers },
   { path: '/profile', name: 'My Profile', component: Profile },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]

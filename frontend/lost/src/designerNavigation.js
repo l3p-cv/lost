@@ -43,6 +43,11 @@ export default {
       icon: 'fa fa-tag',
     },
     {
+      name: 'Workers',
+      url: '/workers',
+      icon: 'fa fa-cubes',
+    },
+    {
       name: 'Users',
       url: '/users',
       icon: 'fa fa-group',

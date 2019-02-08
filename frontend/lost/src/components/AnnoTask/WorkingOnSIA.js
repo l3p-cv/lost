@@ -52,33 +52,36 @@ class WorkingOnSIA extends Component {
         return (
             <div>
                 <Row>
-                <Col xs='3' md='3' xl='3'>
+                <Col xs='2' md='2' xl='2'>
                 <div className='callout callout-danger'>
                                 <small className='text-muted'>Working on</small>
                                 <br/>
                                 <strong>{this.props.annoTask.name}</strong>
                  </div>
                 </Col>
-                <Col xs='3' md='3' xl='3'>
+                <Col xs='2' md='2' xl='2'>
                   <div className='callout callout-info'>
                                 <small className='text-muted'>Pipeline</small>
                                 <br/>
                                 <strong>{this.props.annoTask.pipelineName}</strong>
                  </div>
                 </Col>
-                <Col xs='3' md='3' xl='3'>
+                <Col xs='2' md='2' xl='2'>
                   <div className='callout callout-warning'>
                                 <small className='text-muted'>Annotations</small>
                                 <br/>
                                 <strong className='h4'>{this.props.annoTask.finished}/{this.props.annoTask.size}</strong>
                  </div>
                 </Col>
-                <Col xs='3' md='3' xl='3'>
+                <Col xs='2' md='2' xl='2'>
                   <div className='callout callout-success'>
                                 <small className='text-muted'>Seconds/Annotation</small>
                                 <br/>
                                 <strong className='h4'>&#8709; {this.props.annoTask.statistic.secondsPerAnno}</strong>
                  </div>
+                </Col>
+                <Col xs='2' md='2' xl='2'>
+                    <Button color='primary' style={{marginTop: '25px'}} onClick={this.openModal}><i className="fa fa-question-circle"></i> Show Instructions</Button>
                 </Col>
                 </Row>
                 <div className='clearfix'>

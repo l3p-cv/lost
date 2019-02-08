@@ -8,7 +8,6 @@ export default class LoopStartModel extends BaseNodeModel {
 	getOutput(){
 		const { peN, peOut, loop } = this
 		const { max_iteration: maxIteration, peJumpId } = loop
-		console.log(maxIteration)
 		return {
 			peN,
 			peOut,
