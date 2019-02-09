@@ -15,7 +15,19 @@ import PointPresenter from "../../drawables/point/PointPresenter"
 
 import imageInterface from "components/image/imageInterface"
 
-
+// on init
+appModel.config.on("update", config => {
+    let labelingEnabled = undefined
+    if(config.actions.labeling){
+        if(!labelingEnabled){
+            enableLabeling()
+            labelingEnabled = true
+        }
+    } else {
+        disableLabeling()
+    }
+})
+// on new image
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)
@@ -23,12 +35,12 @@ appModel.data.image.url.on("update", url => {
 	})
 	enableNavigationButtons()
 })
-// appModel.data.image.info.on("update", info => console.trace(info))
+// on drawable selection
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
-// todo: observable object on change.... to add redo undo for changing labels.
 appModel.state.selectedLabel.on("update", label => {
+	// todo: observable object on change.... to add redo undo for changing labels.
 	propertiesView.setDescription(label.description)
 	if(appModel.isADrawableSelected()){
 		const drawable = appModel.getSelectedDrawable()
@@ -67,22 +79,8 @@ appModel.state.selectedLabel.on("update", label => {
 		}		
 	}
 })
-// // quickfix: for?
-// // appModel.data.image.info.on("update", info => {
-// appModel.data.image.info.on("update", info => {
 
-// })
-appModel.config.on("update", config => {
-    let labelingEnabled = undefined
-    if(config.actions.labeling){
-        if(!labelingEnabled){
-            enableLabeling()
-            labelingEnabled = true
-        }
-    } else {
-        disableLabeling()
-    }
-})
+// view bindings
 $(propertiesView.html.refs["btn-prev"]).on("click", ($event) => {
     // return on right or middle mouse button, prevent context menu.
     if (!mouse.button.isLeft($event.button)) {
@@ -250,31 +248,6 @@ function updateCanvas(){
         padding: padding,
     })
 }
-
-function keyRequestPreviousData($event){
-    if(keyboard.isShortcutHit($event, {
-        mod: ["Control", "Alt"],
-        key: "ArrowLeft"
-    })){
-        $event.preventDefault()
-        // $event.stopPropagation()
-        propertiesView.disableNavigationButtons()
-        updateData("previous")
-    }
-}
-function keyRequestNextData($event){
-    if(keyboard.isShortcutHit($event, {
-        mod: ["Control", "Alt"],
-        key: "ArrowRight"
-    })){
-        $event.preventDefault()
-        $event.stopPropagation()
-        propertiesView.disableNavigationButtons()
-        updateData("next")
-    }
-}
-
-
 function updateData(action: String){
     // choose data request depending on the action string:
     let requestData = undefined
@@ -312,6 +285,30 @@ function updateData(action: String){
         })
     })
 }
+
+function keyRequestPreviousData($event){
+    if(keyboard.isShortcutHit($event, {
+        mod: ["Control", "Alt"],
+        key: "ArrowLeft"
+    })){
+        $event.preventDefault()
+        // $event.stopPropagation()
+        propertiesView.disableNavigationButtons()
+        updateData("previous")
+    }
+}
+function keyRequestNextData($event){
+    if(keyboard.isShortcutHit($event, {
+        mod: ["Control", "Alt"],
+        key: "ArrowRight"
+    })){
+        $event.preventDefault()
+        $event.stopPropagation()
+        propertiesView.disableNavigationButtons()
+        updateData("next")
+    }
+}
+
 
 function enableLabeling(){
     $(window).on("keydown.openLabelSelect", $event => {
@@ -356,22 +353,7 @@ function detachDrawable(drawable: DrawablePresenter){
     }
 }
 
-export function enableNavigationButtons(){
-	const { isFirst, isLast } = appModel.data.image
-	if(isFirst){
-		handleFirstImage()
-	} else {
-		handleNotFirstImage()
-	}
-	if(isLast){
-		handleLastImage()
-	} else {
-		handleNotLastImage()
-	}
-}
-export function disableNavigationButtons(){
-	propertiesView.disableNavigationButtons()
-}
+// Can I move this to propertiesInterface?
 function handleLastImage(){
     propertiesView.disableLastButton()
     propertiesView.setNextButtonState("finish")
@@ -394,17 +376,26 @@ function handleNotFirstImage(){
     propertiesView.enablePrevButton()
     propertiesView.enableFirstButton()
 }
+// Can I move this to propertiesInterface?
 
-export function disableNavigation(isActive){
-	if(isActive){
-		disableNavigationButtons()
-		// // blur label selection focus
-		// document.activeElement.blur()
+// Can I move this to propertiesInterface?
+export function enableNavigationButtons(){
+	const { isFirst, isLast } = appModel.data.image
+	if(isFirst){
+		handleFirstImage()
 	} else {
-		enableNavigationButtons()
+		handleNotFirstImage()
+	}
+	if(isLast){
+		handleLastImage()
+	} else {
+		handleNotLastImage()
 	}
 }
-
+export function disableNavigationButtons(){
+	propertiesView.disableNavigationButtons()
+}
+// Can I move this to propertiesInterface?
 
 export function resize(){
     propertiesView.resize()

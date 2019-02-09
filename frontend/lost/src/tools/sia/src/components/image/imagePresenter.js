@@ -14,61 +14,37 @@ import appModel from "siaRoot/appModel"
 import * as http from "siaRoot/http"
 
 import * as imageView from "./imageView"
-import { enableChange, disableChange } from "./change-global"
-import { enableSelect } from "./change-select"
-import { enableDelete, disableDelete } from "./change-delete"
-import { enableUndoRedo, disableUndoRedo } from "./change-undo-redo"
+import imageInterface from "./imageInterface";
 
 
+// on init
 appModel.config.on("update", config => {
-    enableSelect()
+    imageInterface.enableSelect()
 	if(config.actions.edit.bounds){
 		// enable change on current selected drawable
 		if(appModel.isADrawableSelected()){
-			enableChange(appModel.getSelectedDrawable(), appModel.config.value)
+			imageInterface.enableChange(appModel.getSelectedDrawable(), appModel.config.value)
 		}
-		appModel.state.selectedDrawable.on("update", drawable => enableChange(drawable, appModel.config.value))
-		appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
+		appModel.state.selectedDrawable.on("update", drawable => imageInterface.enableChange(drawable, appModel.config.value))
+		appModel.state.selectedDrawable.on(["before-update", "reset"], imageInterface.disableChange)
 	} else {
 		// disable change on current selected drawable
 		if(appModel.isADrawableSelected()){
-			disableChange(appModel.getSelectedDrawable())
+			imageInterface.disableChange(appModel.getSelectedDrawable())
 		}
-		appModel.state.selectedDrawable.off("update", enableChange)
-		appModel.state.selectedDrawable.off(["before-update", "reset"], disableChange)
+		appModel.state.selectedDrawable.off("update", imageInterface.enableChange)
+		appModel.state.selectedDrawable.off(["before-update", "reset"], imageInterface.disableChange)
 	}
-	enableDelete(appModel.config.value)
-	enableUndoRedo(appModel.config.value)
+	imageInterface.enableDelete(appModel.config.value)
+	imageInterface.enableUndoRedo(appModel.config.value)
 })
-
-
+// on image change
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)
 		imageView.updateImage(objectURL)
 	})
 })
-appModel.data.image.info.on("update", info => imageView.updateInfo(info))
-
-// add and remove drawables when data changes
-Object.values(appModel.state.drawables).forEach(observable => {
-    observable.on("update", (drawables) => addDrawables(drawables))
-    observable.on("reset", (drawables) => removeDrawables(drawables))
-    observable.on("add", (drawable) => addDrawable(drawable))
-    observable.on("remove", (drawable) => removeDrawable(drawable))
-})
-
-
-$(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
-    alert("Function not completely implemented.")
-})
-
-export const image = imageView.image
-appModel.ui.resized.on("update", () => {
-	// (re)create drawables
-    createDrawables(appModel.data.drawables.value)
-})
-
 imageView.image.addEventListener("load", () => {   
     const { colorMap } = color.getColorTable(
         imageView.image,
@@ -92,10 +68,36 @@ imageView.image.addEventListener("load", () => {
     }
 }, false)
 
+appModel.data.image.info.on("update", info => imageView.updateInfo(info))
+// on drawable data change
+Object.values(appModel.state.drawables).forEach(observable => {
+	// add and remove drawables when data changes
+    observable.on("update", (drawables) => addDrawables(drawables))
+    observable.on("reset", (drawables) => removeDrawables(drawables))
+    observable.on("add", (drawable) => addDrawable(drawable))
+    observable.on("remove", (drawable) => removeDrawable(drawable))
+})
+// on resize (synthetic)
+appModel.ui.resized.on("update", () => {
+	// (re)create drawables
+    createDrawables(appModel.data.drawables.value)
+})
+
+
+// view bindings
+$(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
+    alert("Function not completely implemented.")
+})
+
+
+export const image = imageView.image
+
+
 // =============================================================================================
 // ZOOM
 // =============================================================================================
-// reset zoom observable on resize
+// on resize reset zoom observable on resize (quickfix)
+// => put this in resetZoomContext()?
 $(window).on("resize", () => {
 	// quickfix: i wanted to use observables reset method, but 
 	// it currently returns the latest value instead of the initial value. 
@@ -116,6 +118,7 @@ function resetZoomContext(){
     zoomLevel = 0
     oldZoom = 1
     newZoom = undefined
+	// appModel.ui.zoom.reset()
 }
 // reset zoom when switching between images (data updates), or when resizing window.
 appModel.data.drawables.on("update", resetZoomContext)
@@ -358,6 +361,19 @@ function removeDrawables(){
     Object.values(appModel.state.drawables).forEach(drawables => {
         drawables.value.forEach(d => imageView.removeDrawable(d.view))
     })
+}
+
+
+export function onChangeStart(){
+	console.log(" - change start - ")
+	// disable drawable creation
+	// propertiesInterface.disableNavigationButtons()
+	// toolbarInterface.disableDrawableCreation()
+	// hide other drawables
+	imageInterface.hideDrawables()
+}
+export function onChangeEnd(){
+	console.log(" - change start - ")
 }
 
 

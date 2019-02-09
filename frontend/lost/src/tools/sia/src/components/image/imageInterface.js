@@ -1,3 +1,9 @@
+import appModel from "siaRoot/appModel"
+
+import { enableSelect, disableSelect, resetSelection } from "./change-select"
+import { enableChange, disableChange } from "./change-global"
+import { enableDelete, disableDelete } from "./change-delete"
+import { enableUndoRedo, disableUndoRedo } from "./change-undo-redo"
 
 // special layer, not using any other view imports.
 // should rewrite this to match nodetemplate id or ref api.
@@ -39,7 +45,6 @@ export default {
     getHeight(){ 
         return parseInt(this.getSVGEmbeddedImage().getAttribute("height"))
     },
-    // @thesis: snippet
     getDimensions(){
         // get current width and height (of image, or container)
         const dimensions = {
@@ -52,23 +57,24 @@ export default {
             throw new Error("image has bad dimensions.") 
         }
         return dimensions 
-    }
+    },
+	hideDrawables(){
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.hide()
+			})
+		})
+	},
+	showDrawables(){
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.hide()
+			})
+		})
+	},
+	enableChange, disableChange,
+	enableSelect, disableSelect, resetSelection,
+	enableDelete, disableDelete,
+	enableUndoRedo, disableUndoRedo,
 }
-
-/*
-@ thesis?
-let sia_imgview_svg = undefined
-export default {
-    "sia-imgview-svg": (()=>{
-        if(sia_imgview_svg === undefined){
-            sia_imgview_svg = document.getElementById("sia-imgview-svg")
-        }
-        if(sia_imgview_svg === undefined || sia_imgview_svg === null){
-            throw new Error("Could not find element.")
-        }
-        return sia_imgview_svg
-    })
-}
-
-*/
 
