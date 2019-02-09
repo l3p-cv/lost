@@ -14,29 +14,29 @@ import appModel from "siaRoot/appModel"
 import * as http from "siaRoot/http"
 
 import * as imageView from "./imageView"
-import imageInterface from "./imageInterface";
+import imageEventActions from "./imageEventActions"
 
 
 // on init
 appModel.config.on("update", config => {
-    imageInterface.enableSelect()
+    imageEventActions.enableSelect()
 	if(config.actions.edit.bounds){
 		// enable change on current selected drawable
 		if(appModel.isADrawableSelected()){
-			imageInterface.enableChange(appModel.getSelectedDrawable(), appModel.config.value)
+			imageEventActions.enableChange(appModel.getSelectedDrawable(), appModel.config.value)
 		}
-		appModel.state.selectedDrawable.on("update", drawable => imageInterface.enableChange(drawable, appModel.config.value))
-		appModel.state.selectedDrawable.on(["before-update", "reset"], imageInterface.disableChange)
+		appModel.state.selectedDrawable.on("update", drawable => imageEventActions.enableChange(drawable, appModel.config.value))
+		appModel.state.selectedDrawable.on(["before-update", "reset"], imageEventActions.disableChange)
 	} else {
 		// disable change on current selected drawable
 		if(appModel.isADrawableSelected()){
-			imageInterface.disableChange(appModel.getSelectedDrawable())
+			imageEventActions.disableChange(appModel.getSelectedDrawable())
 		}
-		appModel.state.selectedDrawable.off("update", imageInterface.enableChange)
-		appModel.state.selectedDrawable.off(["before-update", "reset"], imageInterface.disableChange)
+		appModel.state.selectedDrawable.off("update", imageEventActions.enableChange)
+		appModel.state.selectedDrawable.off(["before-update", "reset"], imageEventActions.disableChange)
 	}
-	imageInterface.enableDelete(appModel.config.value)
-	imageInterface.enableUndoRedo(appModel.config.value)
+	imageEventActions.enableDelete(appModel.config.value)
+	imageEventActions.enableUndoRedo(appModel.config.value)
 })
 // on image change
 appModel.data.image.url.on("update", url => {
@@ -370,7 +370,7 @@ export function onChangeStart(){
 	// propertiesInterface.disableNavigationButtons()
 	// toolbarInterface.disableDrawableCreation()
 	// hide other drawables
-	imageInterface.hideDrawables()
+	imageEventActions.hideDrawables()
 }
 export function onChangeEnd(){
 	console.log(" - change start - ")

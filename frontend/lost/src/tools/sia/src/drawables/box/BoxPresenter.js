@@ -1,18 +1,17 @@
-import { throttle } from "lodash-es"
 import { mouse } from "l3p-frontend"
+import { throttle } from "lodash-es"
 
 import { CURSOR_UPDATE_FREQ } from "../drawable.statics"
-
 import DrawablePresenter from "../DrawablePresenter"
+import MenuPresenter from "../menu/MenuPresenter"
 
 import DEFAULTS from "./box.defaults"
-
 import BoxModel from "./BoxModel"
+import BoxView from "./BoxView"
+
 import imageInterface from "components/image/imageInterface"
 
-import BoxView from "./BoxView"
-import MenuPresenter from "../menu/MenuPresenter"
-import appModel from "../../appModel"
+import appModel from "siaRoot/appModel"
 
 
 export default class BoxPresenter extends DrawablePresenter {

@@ -1,11 +1,11 @@
 import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 
-import * as imageView from "./imageView"
-import { handleMultipointPointInsertion, handleLinePointAdd } from "./change-multipoint"
-import { selectDrawable } from "./change-select"
-import { keyMoveDrawable } from "./change-move"
-
 import appModel from "siaRoot/appModel"
+
+import * as imageView from "./imageView"
+
+import imageEventActions from "./imageEventActions"
+
 
 
 // mouse
@@ -60,7 +60,7 @@ export function enablePointChange(drawable){
 						y: drawable.getY() / imageView.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setPosition({
 							x: data.x * imageView.getWidth(),
 							y: data.y * imageView.getHeight(),
@@ -92,8 +92,8 @@ export function enablePointChange(drawable){
 			if(drawable.parent){
 				drawable.parent.setChanged()
 				drawable.show()
-				selectDrawable(drawable)
-				appModel.selectDrawable(drawable)
+				imageEventActions.selectDrawable(drawable)
+				appModel.imageEventActions.selectDrawable(drawable)
 			}
 
 			// finish setting up the 'StateElement'
@@ -103,7 +103,7 @@ export function enablePointChange(drawable){
 					y: drawable.getY() / imageView.getHeight(),
 				},
 				fn: (data) => {
-					selectDrawable(drawable)
+					imageEventActions.selectDrawable(drawable)
 					drawable.setPosition({
 						x: data.x * imageView.getWidth(),
 						y: data.y * imageView.getHeight(),
@@ -144,7 +144,7 @@ export function enablePointChange(drawable){
 						y: drawable.getY() / imageView.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setPosition({
 							x: data.x * imageView.getWidth(),
 							y: data.y * imageView.getHeight(),
@@ -160,7 +160,7 @@ export function enablePointChange(drawable){
 								y: drawable.getY() / imageView.getHeight(),
 							},
 							fn: (data) => {
-								selectDrawable(drawable)
+								imageEventActions.selectDrawable(drawable)
 								drawable.setPosition({
 									x: data.x * imageView.getWidth(),
 									y: data.y * imageView.getHeight(),
@@ -176,7 +176,7 @@ export function enablePointChange(drawable){
 					}
 				})
 			}
-			keyMoveDrawable($event, drawable)
+			imageEventActions.keyMoveDrawable($event, drawable)
 			appModel.controls.changeEvent.update(false)
 		}
 	})
@@ -186,14 +186,14 @@ export function enablePointChange(drawable){
 		// on [CTRL]
 		$(window).on("keydown.multipointInsertPointStart", ($event) => {
 			if(keyboard.isModifierHit($event, "Control")){
-				handleMultipointPointInsertion($event, drawable.parent)
+				imageEventActions.handleMultipointPointInsertion($event, drawable.parent)
 			}
 		})
 		if(drawable.parent.model.type === "line"){
 			// on [ALT]
 			$(window).on("keydown.lineAddPointStart", ($event) => {
 				if(keyboard.isModifierHit($event, "Alt")){
-					handleLinePointAdd($event, drawable.parent)
+					imageEventActions.handleLinePointAdd($event, drawable.parent)
 				}
 			})
 		}

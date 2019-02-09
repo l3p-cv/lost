@@ -77,5 +77,4 @@ export function keyMoveDrawable($event, drawable){
 	} finally {
 		frameRequestDrawableMove = undefined
 	}
-	// mouse.unsetGlobalCursor()
 }

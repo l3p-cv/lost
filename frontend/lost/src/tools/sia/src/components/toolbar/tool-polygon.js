@@ -1,15 +1,21 @@
 import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 
+import appModel from "siaRoot/appModel"
+
 import PointPresenter from "drawables/point/PointPresenter"
 import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 
-import appModel from "siaRoot/appModel"
-
 import imageInterface from "components/image/imageInterface"
-import { selectDrawable } from "components/image/change-select"
+import imageEventActions from "components/image/imageEventActions"
+
+// legit, cyclic?
 import { addDrawable, removeDrawable } from "components/image/imagePresenter"
 const imagePresenter = { addDrawable, removeDrawable }
-import { onCreationStart, onCreationEnd } from "components/toolbar/toolbarPresenter"
+
+// legit, cyclic?
+import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
+const toolbarPresenter = { onCreationStart, onCreationEnd }
+
 
 
 let currentPoint = undefined
@@ -33,7 +39,7 @@ function addPolygonPoint($event){
 			isNoAnnotation: true,
 		})
 		imagePresenter.addDrawable(firstPoint)
-		selectDrawable(firstPoint)
+		imageEventActions.selectDrawable(firstPoint)
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
 	else if(!line) {
@@ -48,7 +54,7 @@ function addPolygonPoint($event){
 		imagePresenter.removeDrawable(firstPoint)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
 		imagePresenter.addDrawable(line)
-		selectDrawable(line.model.points[1])
+		imageEventActions.selectDrawable(line.model.points[1])
 	}
 	else if(!polygon){
 		polygon = new MultipointPresenter({
@@ -62,13 +68,13 @@ function addPolygonPoint($event){
 		imagePresenter.removeDrawable(line)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
 		imagePresenter.addDrawable(polygon)
-		selectDrawable(polygon.model.points[2])
+		imageEventActions.selectDrawable(polygon.model.points[2])
 	}
 	// else add a point to the polygon.
 	else {
 		currentPoint = polygon.addPoint(mousepos)
 		if(currentPoint){
-			selectDrawable(currentPoint)
+			imageEventActions.selectDrawable(currentPoint)
 		}
 	}
 }
@@ -89,7 +95,7 @@ function deletePolygonPoint(){
 			isNoAnnotation: true,
 		})
 		imagePresenter.addDrawable(firstPoint)
-		selectDrawable(firstPoint)
+		imageEventActions.selectDrawable(firstPoint)
 	}
 	// third point
 	else if(polygon && polygon.model.points.length === 3){
@@ -102,12 +108,12 @@ function deletePolygonPoint(){
 			type: "line",
 		})
 		imagePresenter.addDrawable(line)
-		selectDrawable(line.model.points[1])
+		imageEventActions.selectDrawable(line.model.points[1])
 	}
 	// 4+n point
 	else if(polygon) {
 		polygon.removePoint(polygon.model.points[polygon.model.points.length - 1])
-		selectDrawable(polygon.model.points[polygon.model.points.length - 1])
+		imageEventActions.selectDrawable(polygon.model.points[polygon.model.points.length - 1])
 	}
 }
 function finishPolygon(){
@@ -118,7 +124,7 @@ function finishPolygon(){
 				fn: (data) => {
 					const { polygon } = data
 					appModel.addDrawable(polygon)
-					selectDrawable(polygon)
+					imageEventActions.selectDrawable(polygon)
 				},
 			},
 			undo: {
@@ -132,7 +138,7 @@ function finishPolygon(){
 		}))
 		appModel.addDrawable(polygon)
 		polygon.model.points[polygon.model.points.length-1].unselect()
-		selectDrawable(polygon)
+		imageEventActions.selectDrawable(polygon)
 		// show menu bar after creation
 		if(polygon.menuBar){
 			polygon.menuBar.show()
@@ -153,13 +159,13 @@ function finishPolygon(){
 	line = undefined
 	polygon = undefined
 
-	onCreationEnd()
+	toolbarPresenter.onCreationEnd()
 }
 
 export function enablePolygonCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createPolygonPoint", ($event) => {
 		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
-			onCreationStart()
+			toolbarPresenter.onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createPolygonPoint", ($event) => {

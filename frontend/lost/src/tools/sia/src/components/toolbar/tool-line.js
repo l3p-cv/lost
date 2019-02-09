@@ -6,10 +6,16 @@ import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import { selectDrawable } from "components/image/change-select"
+import imageEventActions from "components/image/imageEventActions"
+
+// legit, cyclic?
+import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
+const toolbarPresenter = { onCreationStart, onCreationEnd }
+
+// legit, cyclic?
 import { addDrawable, removeDrawable } from "components/image/imagePresenter"
 const imagePresenter = { addDrawable, removeDrawable }
-import { onCreationStart, onCreationEnd } from "components/toolbar/toolbarPresenter"
+
 
 
 let firstPoint = undefined
@@ -32,7 +38,7 @@ function addLinePoint($event){
 			isNoAnnotation: true,
 		})
 		imagePresenter.addDrawable(firstPoint)
-		selectDrawable(firstPoint)
+		imageEventActions.selectDrawable(firstPoint)
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
 	else if(!line) {
@@ -47,13 +53,13 @@ function addLinePoint($event){
 		imagePresenter.removeDrawable(firstPoint)
 		imagePresenter.addDrawable(line)
 		// select the second point of the line as indicator.
-		selectDrawable(line.model.points[1])
+		imageEventActions.selectDrawable(line.model.points[1])
 	}
 	// else add a point to the line.
 	else {
 		currentPoint = line.addPoint(mousepos)
 		if(currentPoint){
-			selectDrawable(currentPoint)
+			imageEventActions.selectDrawable(currentPoint)
 		}
 	}
 }
@@ -74,12 +80,12 @@ function deleteLinePoint(){
 			isNoAnnotation: true,
 		})
 		imagePresenter.addDrawable(firstPoint)
-		selectDrawable(firstPoint)
+		imageEventActions.selectDrawable(firstPoint)
 	}
 	// 3+n point
 	else if(line){
 		line.removePoint(line.model.points[line.model.points.length - 1])
-		selectDrawable(line.model.points[line.model.points.length - 1])
+		imageEventActions.selectDrawable(line.model.points[line.model.points.length - 1])
 	}
 }
 function finishLine(){
@@ -90,7 +96,7 @@ function finishLine(){
 				fn: (data) => {
 					const { line } = data
 					appModel.addDrawable(line)
-					selectDrawable(line)
+					imageEventActions.selectDrawable(line)
 				}
 			},
 			undo: {
@@ -104,7 +110,7 @@ function finishLine(){
 		}))
 		appModel.addDrawable(line)
 		line.model.points[line.model.points.length-1].unselect()
-		selectDrawable(line)
+		imageEventActions.selectDrawable(line)
 		// show menu bar after creation
 		if(line.menuBar){
 			line.menuBar.show()
@@ -121,13 +127,13 @@ function finishLine(){
 	firstPoint = undefined
 	line = undefined
 
-	onCreationEnd()
+	toolbarPresenter.onCreationEnd()
 }
 
 export function enableLineCreation(onStart, onEnd){
 	$(imageInterface.getSVG()).on("mousedown.createLinePoint", ($event) => {
 		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
-			onCreationStart()
+			toolbarPresenter.onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createLinePoint", ($event) => {

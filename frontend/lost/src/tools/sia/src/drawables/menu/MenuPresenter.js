@@ -7,7 +7,7 @@ import appModel from "siaRoot/appModel"
 import MenuModel from "./MenuModel"
 import MenuView from "./MenuView"
 
-import { selectDrawable } from "components/image/change-select"
+import imageEventActions from "components/image/imageEventActions"
 
 
 export default class MenuPresenter {
@@ -44,7 +44,7 @@ export default class MenuPresenter {
 						data: { drawable: this.model.drawable },
 						fn: (data) => {
 							appModel.addDrawable(data.drawable)
-							selectDrawable(data.drawable)
+							imageEventActions.selectDrawable(data.drawable)
 						}
 					}
 				}))

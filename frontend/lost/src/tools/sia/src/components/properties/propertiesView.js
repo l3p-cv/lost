@@ -1,8 +1,11 @@
+import "./properties.styles.scss"
+
 import $ from "cash-dom"
 
-import "./properties.styles.scss"
 import { NodeTemplate, keyboard } from "l3p-frontend"
-import appModel from "../../appModel"
+
+import appModel from "siaRoot/appModel"
+
 
 export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">

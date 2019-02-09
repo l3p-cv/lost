@@ -7,8 +7,11 @@ import { STATE } from "drawables/drawable.statics"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import { selectDrawable } from "components/image/change-select"
-import { onCreationStart, onCreationEnd } from "components/toolbar/toolbarPresenter"
+import imageEventActions from "components/image/imageEventActions"
+
+// legit, cyclic?
+import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
+const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 let newBox = undefined
@@ -72,7 +75,7 @@ function validate($event) {
 	// add the box hidden.
 	appModel.addDrawable(newBox)
 	// select the box.
-	selectDrawable(newBox)
+	imageEventActions.selectDrawable(newBox)
 
 	// start the update on mousemove and show the box.
 	$(window).on("mousemove", update)
@@ -142,7 +145,7 @@ export function enableBBoxCreation(){
 		}
 
 		// start creation mode.
-		onCreationStart()
+		toolbarPresenter.onCreationStart()
 
 		// set a global cursor.
 		mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
@@ -193,7 +196,7 @@ export function enableBBoxCreation(){
 						// add the box hidden.
 						appModel.addDrawable(data.box)
 						// select the box.
-						selectDrawable(data.box)
+						imageEventActions.selectDrawable(data.box)
 					}
 				},
 				undo: {
@@ -203,7 +206,7 @@ export function enableBBoxCreation(){
 					fn: (data) => {
 						data.box.delete()
 						appModel.deleteDrawable(data.box)
-						// selectDrawable(appModel.state.previousDrawable)
+						// imageEventActions.selectDrawable(appModel.state.previousDrawable)
 					}
 				}
 			}))
@@ -216,7 +219,7 @@ export function enableBBoxCreation(){
 
 		// reset.
 		resetContext()
-		onCreationEnd()
+		toolbarPresenter.onCreationEnd()
 	})
 }
 

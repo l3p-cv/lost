@@ -1,19 +1,19 @@
 import $ from "cash-dom"
 
-import { mouse, keyboard, state } from "l3p-frontend"
+import { mouse, keyboard } from "l3p-frontend"
 
 import * as propertiesView from "./propertiesView"
 
-import appModel from "../../appModel"
-import * as http from "../../http"
-import * as modals from "../../modals"
-
+import appModel from "siaRoot/appModel"
+import * as http from "siaRoot/http"
+import * as modals from "siaRoot/modals"
 import * as data from "siaRoot/http"
 
 import DrawablePresenter from "drawables/DrawablePresenter"
-import PointPresenter from "../../drawables/point/PointPresenter"
+import PointPresenter from "drawables/point/PointPresenter"
 
 import imageInterface from "components/image/imageInterface"
+
 
 // on init
 appModel.config.on("update", config => {

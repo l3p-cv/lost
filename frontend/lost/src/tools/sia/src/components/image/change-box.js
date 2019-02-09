@@ -1,10 +1,9 @@
 import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 
-import * as imageView from "./imageView"
-import { selectDrawable } from "./change-select"
-import { keyMoveDrawable } from "./change-move"
-
 import appModel from "siaRoot/appModel"
+
+import imageInterface from "./imageInterface"
+import imageEventActions from "./imageEventActions"
 
 
 let mouseStart = undefined
@@ -24,20 +23,20 @@ function enableKeyMoveBox(drawable){
 				stateElement = new state.StateElement()
 				stateElement.addUndo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setPosition({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
 						})
 					} 
 				})
 				savedStartState = true
 			}
-			keyMoveDrawable($event, drawable)    
+			imageEventActions.keyMoveDrawable($event, drawable)    
 			appModel.controls.changeEvent.update(false)
 		}
 	})
@@ -47,14 +46,14 @@ function enableKeyMoveBox(drawable){
 			if(!appModel.controls.creationEvent.value && savedStartState){
 				stateElement.addRedo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setPosition({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
 						})
 					}
 				})
@@ -86,18 +85,18 @@ function enableScaleBoxEdge(drawable){
 					stateElement = new state.StateElement()
 					stateElement.addUndo({
 						data: {
-							x: drawable.getX() / imageView.getWidth(),
-							y: drawable.getY() / imageView.getHeight(),
-							w: drawable.getW() / imageView.getWidth(),
-							h: drawable.getH() / imageView.getHeight(),
+							x: drawable.getX() / imageInterface.getWidth(),
+							y: drawable.getY() / imageInterface.getHeight(),
+							w: drawable.getW() / imageInterface.getWidth(),
+							h: drawable.getH() / imageInterface.getHeight(),
 						},
 						fn: (data) => {
-							selectDrawable(drawable)
+							imageEventActions.selectDrawable(drawable)
 							drawable.setBounds({
-								x: data.x * imageView.getWidth(),
-								y: data.y * imageView.getHeight(),
-								w: data.w * imageView.getWidth(),
-								h: data.h * imageView.getHeight(),
+								x: data.x * imageInterface.getWidth(),
+								y: data.y * imageInterface.getHeight(),
+								w: data.w * imageInterface.getWidth(),
+								h: data.h * imageInterface.getHeight(),
 							})
 						} 
 					})
@@ -220,18 +219,18 @@ function enableScaleBoxEdge(drawable){
 			if(stateElement !== undefined){
 				stateElement.addRedo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
-						w: drawable.getW() / imageView.getWidth(),
-						h: drawable.getH() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
+						w: drawable.getW() / imageInterface.getWidth(),
+						h: drawable.getH() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setBounds({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
-							w: data.w * imageView.getWidth(),
-							h: data.h * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
+							w: data.w * imageInterface.getWidth(),
+							h: data.h * imageInterface.getHeight(),
 						})
 					}
 				})
@@ -275,9 +274,9 @@ export function enableBoxChange(drawable){
 		}
 
 		// init context
-		mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+		mouseStart = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 		// calculate the real mouseposition (@zoom)
-		const svg = imageView.html.ids["sia-imgview-svg"]
+		const svg = imageInterface.getSVG()
 		const zoom = appModel.ui.zoom.value
 		mouseStart = {
 			x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
@@ -304,18 +303,18 @@ export function enableBoxChange(drawable){
 				stateElement = new state.StateElement()
 				stateElement.addUndo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
-						w: drawable.getW() / imageView.getWidth(),
-						h: drawable.getH() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
+						w: drawable.getW() / imageInterface.getWidth(),
+						h: drawable.getH() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setBounds({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
-							w: data.w * imageView.getWidth(),
-							h: data.h * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
+							w: data.w * imageInterface.getWidth(),
+							h: data.h * imageInterface.getHeight(),
 						})
 					} 
 				})
@@ -325,9 +324,9 @@ export function enableBoxChange(drawable){
 			frameRequestBoxChange = requestAnimationFrame(() => {
 				// console.warn("box change handler (update)")
 				// prepare update
-				mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+				mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 				// calculate the real mouseposition (@zoom)
-				const svg = imageView.html.ids["sia-imgview-svg"]
+				const svg = imageInterface.getSVG()
 				const zoom = appModel.ui.zoom.value
 				mousepos = {
 					x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
@@ -398,18 +397,18 @@ export function enableBoxChange(drawable){
 			if(savedStartState){
 				stateElement.addRedo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
-						w: drawable.getW() / imageView.getWidth(),
-						h: drawable.getH() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
+						w: drawable.getW() / imageInterface.getWidth(),
+						h: drawable.getH() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setBounds({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
-							w: data.w * imageView.getWidth(),
-							h: data.h * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
+							w: data.w * imageInterface.getWidth(),
+							h: data.h * imageInterface.getHeight(),
 						})
 					}
 				})
@@ -451,7 +450,7 @@ export function enableBoxChange(drawable){
 					// force re-select (Escape will unselect the drawable)
 					// this will re-enable box movement via keyboard
 					if(keyboard.isKeyHit($event, "Escape")){
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 					}
 					appModel.controls.changeEvent.update(false)
 				}

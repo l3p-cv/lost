@@ -5,7 +5,7 @@ import appModel from "siaRoot/appModel"
 import DrawablePresenter from "drawables/DrawablePresenter"
 import BoxPresenter from "drawables/box/BoxPresenter"
 
-import * as imageView from "./imageView"
+import imageInterface from "./imageInterface"
 
 
 export function selectDrawable(next: Drawable){
@@ -57,7 +57,7 @@ export function enableSelect(){
     // console.warn("enable select")
     // mouse
     let unselect = false
-    $(imageView.html.ids["sia-imgview-svg-container"]).on("click.selectDrawable", ($event) => {
+    $(imageInterface.getSVG()).on("click.selectDrawable", ($event) => {
         // return on right or middle mouse button, prevent context menu.
         if (!mouse.button.isLeft($event.button)) {
             $event.preventDefault()
@@ -71,7 +71,7 @@ export function enableSelect(){
             }
         }
     })
-    $(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.resetSelectionStart", ($event) => {
+    $(imageInterface.getSVG()).on("mousedown.resetSelectionStart", ($event) => {
         // return on right or middle mouse button, prevent context menu.
         if (!mouse.button.isLeft($event.button)) {
             $event.preventDefault()
@@ -185,8 +185,8 @@ export function enableSelect(){
 export function disableSelect(){
     // console.warn("disable select")
     // mouse
-    $(imageView.html.ids["sia-imgview-svg-container"]).off("click.selectDrawable")
-    $(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.resetSelectionStart")
+    $(imageInterface.getSVG()).off("click.selectDrawable")
+    $(imageInterface.getSVG()).off("mousedown.resetSelectionStart")
     $(window).off("mouseup.resetSelectionEnd")
     // Key
     $(window).off("keydown.selectDrawable")

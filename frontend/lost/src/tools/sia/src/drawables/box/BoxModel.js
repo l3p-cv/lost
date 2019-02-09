@@ -1,12 +1,16 @@
 import { Observable } from "l3p-frontend"
-import * as math from "shared/math"
 
-import BOX_DEFAULTS from "./box.defaults"
+import appModel from "siaRoot/appModel"
+
+import * as math from "shared/math"
 
 import DrawableModel from "../DrawableModel"
 
+import BOX_DEFAULTS from "./box.defaults"
+
 import imageInterface from "components/image/imageInterface"
-import appModel from "../../appModel"
+
+
 
 export default class BoxModel extends DrawableModel {
     constructor(anno) {

@@ -2,7 +2,7 @@ import { keyboard, state } from "l3p-frontend"
 
 import appModel from "siaRoot/appModel"
 
-import { selectDrawable } from "./change-select"
+import imageEventActions from "./imageEventActions"
 
 
 export function enableDelete(config){
@@ -23,7 +23,7 @@ export function enableDelete(config){
 								if(selectedDrawable.parent.model.points.length <= 3) return
 							}
 							selectedDrawable.parent.removePoint(selectedDrawable)
-							selectDrawable(selectedDrawable.parent)
+							imageEventActions.selectDrawable(selectedDrawable.parent)
 						} 
 						// for drawables:
 						else {
@@ -40,7 +40,7 @@ export function enableDelete(config){
 									data: { drawable: selectedDrawable },
 									fn: (data) => {
 										appModel.addDrawable(data.drawable)
-										selectDrawable(data.drawable)
+										imageEventActions.selectDrawable(data.drawable)
 									}
 								}
 							}))

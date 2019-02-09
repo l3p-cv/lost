@@ -1,15 +1,14 @@
 import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 
-import * as imageView from "./imageView"
-import { selectDrawable } from "./change-select"
-import { keyMoveDrawable } from "./change-move"
-
 import appModel from "siaRoot/appModel"
+
+import imageInterface from "./imageInterface"
+import imageEventActions from "./imageEventActions"
 
 
 export function handleMultipointPointInsertion($event, drawable, mode){
 	mouse.setGlobalCursor(mouse.CURSORS.CREATE.class)
-	$(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.lineInsertPoint", ($event) => {
+	$(imageInterface.getDrawableContainer()).on("mousedown.lineInsertPoint", ($event) => {
 		if(!mouse.button.isRight($event.button)) {
 			$event.preventDefault()
 			return
@@ -17,17 +16,17 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 		appModel.controls.changeEvent.update(true)
 		// this key check looks like it is just duplication but it is not.
 		if(keyboard.isModifierHit($event, "Control")){
-			let mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+			let mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 			// calculate the real mouseposition (@zoom)
 			const zoom = appModel.ui.zoom.value
 			mousepos = {
-				x: (mousepos.x + (SVG.getViewBoxX(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
-				y: (mousepos.y + (SVG.getViewBoxY(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
+				x: (mousepos.x + (SVG.getViewBoxX(imageInterface.getSVG()) * 1 / zoom)) * zoom,
+				y: (mousepos.y + (SVG.getViewBoxY(imageInterface.getSVG()) * 1 / zoom)) * zoom,
 			}
 			const point = drawable.insertPoint(mousepos)
 			if(point){
 				drawable.setChanged()
-				selectDrawable(point)
+				imageEventActions.selectDrawable(point)
 			}
 		}
 	})
@@ -36,7 +35,7 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 		// this key check looks like it is just duplication but it is not.
 		if(keyboard.isKeyHit($event, "Control")){
 			mouse.unsetGlobalCursor()
-			$(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.lineInsertPoint")
+			$(imageInterface.getDrawableContainer()).off("mousedown.lineInsertPoint")
 			$(window).off("keyup.lineInsertPointEnd")
 			appModel.controls.changeEvent.update(false)
 		}
@@ -44,7 +43,7 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 }
 export function handleLinePointAdd($event, drawable){
 	mouse.setGlobalCursor(mouse.CURSORS.CREATE.class)
-	$(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.lineInsertPoint", ($event) => {
+	$(imageInterface.getDrawableContainer()).on("mousedown.lineInsertPoint", ($event) => {
 		if(!mouse.button.isRight($event.button)){
 			$event.preventDefault()
 			return
@@ -52,17 +51,17 @@ export function handleLinePointAdd($event, drawable){
 		appModel.controls.changeEvent.update(true)
 		// this key check looks like it is just duplication but it is not.            
 		if(keyboard.isModifierHit($event, "Alt", true)){
-			let mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+			let mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 			// calculate the real mouseposition (@zoom)
 			const zoom = appModel.ui.zoom.value
 			mousepos = {
-				x: (mousepos.x + (SVG.getViewBoxX(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
-				y: (mousepos.y + (SVG.getViewBoxY(imageView.html.ids["sia-imgview-svg"]) * 1 / zoom)) * zoom,
+				x: (mousepos.x + (SVG.getViewBoxX(imageInterface.getSVG()) * 1 / zoom)) * zoom,
+				y: (mousepos.y + (SVG.getViewBoxY(imageInterface.getSVG()) * 1 / zoom)) * zoom,
 			}
 			const point = drawable.insertPoint(mousepos, "add")
 			if(point){
 				drawable.setChanged()
-				selectDrawable(point)
+				imageEventActions.selectDrawable(point)
 			}
 		}
 	})
@@ -70,7 +69,7 @@ export function handleLinePointAdd($event, drawable){
 		// this key check looks like it is just duplication but it is not.            
 		if(keyboard.isKeyHit($event, "Alt")){
 			mouse.unsetGlobalCursor()
-			$(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.lineInsertPoint")
+			$(imageInterface.getDrawableContainer()).off("mousedown.lineInsertPoint")
 			$(window).off("keyup.lineInsertPointEnd")
 			appModel.controls.changeEvent.update(false)
 		}
@@ -93,9 +92,9 @@ export function enableMultipointChange(drawable){
 		}
 		appModel.controls.changeEvent.update(true)
 		// console.warn("drawable change handler (start)")
-		mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+		mouseStart = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 		// calculate the real mouseposition (@zoom)
-		const svg = imageView.html.ids["sia-imgview-svg"]
+		const svg = imageInterface.getSVG()
 		const zoom = appModel.ui.zoom.value
 		mouseStart = {
 			x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
@@ -110,9 +109,9 @@ export function enableMultipointChange(drawable){
 				noSelection: true,
 			})
 			mousePrev = (mousePrev === undefined) ? mouseStart : mousepos
-			mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+			mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 			// calculate the real mouseposition (@zoom)
-			const svg = imageView.html.ids["sia-imgview-svg"]
+			const svg = imageInterface.getSVG()
 			const zoom = appModel.ui.zoom.value
 			mousepos = {
 				x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
@@ -121,14 +120,14 @@ export function enableMultipointChange(drawable){
 			if(!savedStartState){
 				stateElement.addUndo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setPosition({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
 						})
 					} 
 				})
@@ -153,14 +152,14 @@ export function enableMultipointChange(drawable){
 			// finish setting up the 'StateElement'
 			stateElement.addRedo({
 				data: {
-					x: drawable.getX() / imageView.getWidth(),
-					y: drawable.getY() / imageView.getHeight(),
+					x: drawable.getX() / imageInterface.getWidth(),
+					y: drawable.getY() / imageInterface.getHeight(),
 				},
 				fn: (data) => {
-					selectDrawable(drawable)
+					imageEventActions.selectDrawable(drawable)
 					drawable.setPosition({
-						x: data.x * imageView.getWidth(),
-						y: data.y * imageView.getHeight(),
+						x: data.x * imageInterface.getWidth(),
+						y: data.y * imageInterface.getHeight(),
 					})
 				}
 			})
@@ -193,14 +192,14 @@ export function enableMultipointChange(drawable){
 				// add undo
 				stateElement.addUndo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						selectDrawable(drawable)
+						imageEventActions.selectDrawable(drawable)
 						drawable.setPosition({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
 						})
 					} 
 				})
@@ -210,14 +209,14 @@ export function enableMultipointChange(drawable){
 						
 						stateElement.addRedo({
 							data: {
-								x: drawable.getX() / imageView.getWidth(),
-								y: drawable.getY() / imageView.getHeight(),
+								x: drawable.getX() / imageInterface.getWidth(),
+								y: drawable.getY() / imageInterface.getHeight(),
 							},
 							fn: (data) => {
-								selectDrawable(drawable)
+								imageEventActions.selectDrawable(drawable)
 								drawable.setPosition({
-									x: data.x * imageView.getWidth(),
-									y: data.y * imageView.getHeight(),
+									x: data.x * imageInterface.getWidth(),
+									y: data.y * imageInterface.getHeight(),
 								})
 							}
 						})
@@ -229,7 +228,7 @@ export function enableMultipointChange(drawable){
 					}
 				})
 			}
-			keyMoveDrawable($event, drawable)
+			imageEventActions.keyMoveDrawable($event, drawable)
 			appModel.controls.changeEvent.update(false)
 		}
 	})

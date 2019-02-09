@@ -1,10 +1,3 @@
-import appModel from "siaRoot/appModel"
-
-import { enableSelect, disableSelect, resetSelection } from "./change-select"
-import { enableChange, disableChange } from "./change-global"
-import { enableDelete, disableDelete } from "./change-delete"
-import { enableUndoRedo, disableUndoRedo } from "./change-undo-redo"
-
 // special layer, not using any other view imports.
 // should rewrite this to match nodetemplate id or ref api.
 let image = undefined
@@ -58,23 +51,5 @@ export default {
         }
         return dimensions 
     },
-	hideDrawables(){
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.hide()
-			})
-		})
-	},
-	showDrawables(){
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.hide()
-			})
-		})
-	},
-	enableChange, disableChange,
-	enableSelect, disableSelect, resetSelection,
-	enableDelete, disableDelete,
-	enableUndoRedo, disableUndoRedo,
 }
 

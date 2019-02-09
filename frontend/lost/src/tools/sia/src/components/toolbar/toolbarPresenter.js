@@ -1,13 +1,14 @@
 import $ from "cash-dom"
 
-import appModel from "../../appModel"
+import appModel from "siaRoot/appModel"
 
 import "./toolbar.styles.scss"
 import * as toolbarView from "./toolbarView"
 
-import imageInterface from "components/image/imageInterface"
-import propertiesInterface from "components/properties/propertiesInterface"
-// This below should become propertiesInterface.
+import imageEventActions from "components/image/imageEventActions"
+import toolbarEventActions from "components/toolbar/toolbarEventActions"
+
+// legit, cyclic?
 import { enableNavigationButtons, disableNavigationButtons } from "components/properties/propertiesPresenter"
 
 
@@ -52,16 +53,16 @@ appModel.config.on("update", config => {
     }
 })
 // on tool change
-appModel.controls.tool.on("update", imageInterface.resetSelection)
-
+appModel.controls.tool.on("update", imageEventActions.resetSelection)
+console.log(imageEventActions)
 
 export function onCreationStart(){
 	console.log(" - on creation start - ")
 	disableNavigationButtons()
 	toolbarView.disableToolbar()
-	imageInterface.disableSelect()
-	imageInterface.disableDelete(appModel.config.value)
-	imageInterface.disableUndoRedo(appModel.config.value)
+	imageEventActions.disableSelect()
+	imageEventActions.disableDelete(appModel.config.value)
+	imageEventActions.disableUndoRedo(appModel.config.value)
 	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
 		Object.values(observableDrawableList.value).forEach(drawable => {
 			drawable.hide()
@@ -72,9 +73,9 @@ export function onCreationEnd(){
 	console.log(" - on creation end - ")
 	enableNavigationButtons()
 	toolbarView.enableToolbar()
-	imageInterface.enableSelect()
-	imageInterface.enableDelete(appModel.config.value)
-	imageInterface.enableUndoRedo(appModel.config.value)
+	imageEventActions.enableSelect()
+	imageEventActions.enableDelete(appModel.config.value)
+	imageEventActions.enableUndoRedo(appModel.config.value)
 	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
 		Object.values(observableDrawableList.value).forEach(drawable => {
 			drawable.show()
@@ -85,16 +86,16 @@ export function onCreationEnd(){
 export function enableDrawableCreation(toolId: String){
 	switch(toolId){
 		case "sia-tool-point":
-			propertiesInterface.enablePointCreation()
+			toolbarEventActions.enablePointCreation()
 			break
 		case "sia-tool-line":
-			propertiesInterface.enableLineCreation()
+			toolbarEventActions.enableLineCreation()
 			break
 		case "sia-tool-polygon":
-			propertiesInterface.enablePolygonCreation()
+			toolbarEventActions.enablePolygonCreation()
 			break
 		case "sia-tool-bbox":
-			propertiesInterface.enableBBoxCreation()
+			toolbarEventActions.enableBBoxCreation()
 			break
 		default: throw new Error("unknown tool id:", toolId)
 	}
@@ -103,16 +104,16 @@ export function enableDrawableCreation(toolId: String){
 export function disableDrawableCreation(toolId: String){
 	switch(toolId){
 		case "sia-tool-point":
-			propertiesInterface.disablePointCreation()
+			toolbarEventActions.disablePointCreation()
 			break
 		case "sia-tool-line":
-			propertiesInterface.disableLineCreation()
+			toolbarEventActions.disableLineCreation()
 			break
 		case "sia-tool-polygon":
-			propertiesInterface.disablePolygonCreation()
+			toolbarEventActions.disablePolygonCreation()
 			break
 		case "sia-tool-bbox":
-			propertiesInterface.disableBBoxCreation()
+			toolbarEventActions.disableBBoxCreation()
 			break
 		default: console.warn("unknown tool id.")
 	}

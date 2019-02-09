@@ -1,4 +1,3 @@
-
 import { NodeTemplate, svg as SVG } from "l3p-frontend"
 
 import "./box.styles.scss"

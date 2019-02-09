@@ -1,12 +1,14 @@
 import { Observable } from "l3p-frontend"
 
-import DEFAULTS from "./point.defaults"
-import { toHslaString } from "shared/color"
-import appModel from "../../appModel"
+import appModel from "siaRoot/appModel"
 
-import imageInterface from "components/image/imageInterface"
+import { toHslaString } from "shared/color"
+
+import DEFAULTS from "./point.defaults"
 
 import DrawableModel from "../DrawableModel"
+
+import imageInterface from "components/image/imageInterface"
 
 
 export default class PointModel extends DrawableModel {
