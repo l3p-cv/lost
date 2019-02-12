@@ -8,13 +8,35 @@ import { STATE } from "drawables/drawable.statics"
 import BoxPresenter from "drawables/box/BoxPresenter"
 import PointPresenter from "drawables/point/PointPresenter"
 import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
-import DrawablePresenter from "drawables/DrawablePresenter"
 
 import appModel from "siaRoot/appModel"
 import * as http from "siaRoot/http"
 
 import * as imageView from "./imageView"
 import imageEventActions from "./imageEventActions"
+
+// x
+appModel.event.creationEvent.on("change", isActive => {
+	if(isActive){
+		imageEventActions.disableSelect()
+		imageEventActions.disableDelete(appModel.config.value)
+		imageEventActions.disableUndoRedo(appModel.config.value)
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.hide()
+			})
+		})
+	} else {
+		imageEventActions.enableSelect()
+		imageEventActions.enableDelete(appModel.config.value)
+		imageEventActions.enableUndoRedo(appModel.config.value)
+		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+			Object.values(observableDrawableList.value).forEach(drawable => {
+				drawable.show()
+			})
+		})
+	}
+})
 
 
 // on init
@@ -74,8 +96,8 @@ Object.values(appModel.state.drawables).forEach(observable => {
 	// add and remove drawables when data changes
     observable.on("update", (drawables) => addDrawables(drawables))
     observable.on("reset", (drawables) => removeDrawables(drawables))
-    observable.on("add", (drawable) => addDrawable(drawable))
-    observable.on("remove", (drawable) => removeDrawable(drawable))
+    observable.on("add", (drawable) => imageEventActions.addDrawable(drawable))
+    observable.on("remove", (drawable) => imageEventActions.removeDrawable(drawable))
 })
 // on resize (synthetic)
 appModel.ui.resized.on("update", () => {
@@ -341,21 +363,23 @@ export function createDrawables(drawablesRawData: any){
     }
 }
 
-// does not mutate appModel
-export function addDrawable(drawable: DrawablePresenter){
-    if(!drawable.model.status.has(STATE.DELETED)){
-        imageView.addDrawable(drawable)
-    }
-}
+// moved to change-add
+// // does not mutate appModel
+// export function addDrawable(drawable: DrawablePresenter){
+//     if(!drawable.model.status.has(STATE.DELETED)){
+//         imageView.addDrawable(drawable)
+//     }
+// }
 // does not mutate appModel
 function addDrawables(drawables: Array<DrawablePresenter>){
     drawables = drawables.filter(d => !d.model.status.has(STATE.DELETED))
     imageView.addDrawables(drawables)
 }
-// does not mutate appModel
-export function removeDrawable(drawable: DrawablePresenter){
-    imageView.removeDrawable(drawable.view)
-}
+// moved to change-delete
+// // does not mutate appModel
+// export function removeDrawable(drawable: DrawablePresenter){
+//     imageView.removeDrawable(drawable.view)
+// }
 // does not mutate appModel
 function removeDrawables(){
     Object.values(appModel.state.drawables).forEach(drawables => {

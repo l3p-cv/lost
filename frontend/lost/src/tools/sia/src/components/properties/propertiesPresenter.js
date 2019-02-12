@@ -9,11 +9,16 @@ import * as http from "siaRoot/http"
 import * as modals from "siaRoot/modals"
 import * as data from "siaRoot/http"
 
-import DrawablePresenter from "drawables/DrawablePresenter"
-import PointPresenter from "drawables/point/PointPresenter"
-
 import imageInterface from "components/image/imageInterface"
 
+// x
+appModel.event.creationEvent.on("change", isActive => {
+	if(isActive){
+		disableNavigationButtons()
+	} else{
+		enableNavigationButtons()
+	}
+})
 
 // on init
 appModel.config.on("update", config => {
@@ -141,7 +146,7 @@ function updateCanvas(){
     const drawable = appModel.state.selectedDrawable.value
     const bounds = drawable.getBounds()
     const pointPadding = 5
-    if(drawable instanceof PointPresenter){
+    if(drawable !== undefined && drawable.getClassName() === "PointPresenter"){
         bounds.w = pointPadding * 2
         bounds.h = pointPadding * 2
     }
@@ -164,7 +169,7 @@ function updateCanvas(){
     // sb = source drawable
     const imgSourceH = propertiesView.image.height
     const imgSourceW = propertiesView.image.width
-    if(drawable instanceof PointPresenter){
+    if(drawable !== undefined && drawable.getClassName() === "PointPresenter"){
         sbx = (drawable.model.relBounds.x * imgSourceW) - (pointPadding / imgW * imgSourceW)
         sby = (drawable.model.relBounds.y * imgSourceH) - (pointPadding / imgH * imgSourceH)
         sbw = (bounds.w / imgW) * imgSourceW
@@ -330,7 +335,7 @@ function disableLabeling(){
 }
 
 function attachDrawable(drawable: DrawablePresenter){
-    if(drawable instanceof DrawablePresenter){
+    if(drawable !== undefined && Object.keys(drawable).length > 0){
         // initial update
         updateCanvas()
         updateTable()
@@ -344,7 +349,7 @@ function attachDrawable(drawable: DrawablePresenter){
     }
 }
 function detachDrawable(drawable: DrawablePresenter){
-    if(drawable instanceof DrawablePresenter){
+    if(drawable !== undefined && Object.keys(drawable).length > 0){
         drawable.model.actBounds.off("update", updateCanvas)
         drawable.model.actBounds.off("update", updateTable)
         propertiesView.resetDescription()

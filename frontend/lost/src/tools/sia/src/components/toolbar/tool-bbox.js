@@ -7,11 +7,15 @@ import { STATE } from "drawables/drawable.statics"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import imageEventActions from "components/image/imageEventActions"
 
-// legit, cyclic?
-import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
-const toolbarPresenter = { onCreationStart, onCreationEnd }
+// trying to get around cyclics.
+import { selectDrawable } from "components/image/change-select"
+const imageEventActions = { selectDrawable }
+// import imageEventActions from "components/image/imageEventActions"
+
+// // legit, cyclic?
+// import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
+// const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 let newBox = undefined
@@ -145,7 +149,8 @@ export function enableBBoxCreation(){
 		}
 
 		// start creation mode.
-		toolbarPresenter.onCreationStart()
+		appModel.event.creationEvent.update(true)
+		// toolbarPresenter.onCreationStart()
 
 		// set a global cursor.
 		mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
@@ -219,7 +224,8 @@ export function enableBBoxCreation(){
 
 		// reset.
 		resetContext()
-		toolbarPresenter.onCreationEnd()
+		appModel.event.creationEvent.update(false)
+		// toolbarPresenter.onCreationEnd()
 	})
 }
 

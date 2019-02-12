@@ -3,7 +3,9 @@ import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "./imageInterface"
-import imageEventActions from "./imageEventActions"
+
+import { selectDrawable } from "./change-select"
+import { keyMoveDrawable } from "./change-move"
 
 
 export function handleMultipointPointInsertion($event, drawable, mode){
@@ -26,7 +28,7 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 			const point = drawable.insertPoint(mousepos)
 			if(point){
 				drawable.setChanged()
-				imageEventActions.selectDrawable(point)
+				selectDrawable(point)
 			}
 		}
 	})
@@ -61,7 +63,7 @@ export function handleLinePointAdd($event, drawable){
 			const point = drawable.insertPoint(mousepos, "add")
 			if(point){
 				drawable.setChanged()
-				imageEventActions.selectDrawable(point)
+				selectDrawable(point)
 			}
 		}
 	})
@@ -124,7 +126,7 @@ export function enableMultipointChange(drawable){
 						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setPosition({
 							x: data.x * imageInterface.getWidth(),
 							y: data.y * imageInterface.getHeight(),
@@ -156,7 +158,7 @@ export function enableMultipointChange(drawable){
 					y: drawable.getY() / imageInterface.getHeight(),
 				},
 				fn: (data) => {
-					imageEventActions.selectDrawable(drawable)
+					selectDrawable(drawable)
 					drawable.setPosition({
 						x: data.x * imageInterface.getWidth(),
 						y: data.y * imageInterface.getHeight(),
@@ -196,7 +198,7 @@ export function enableMultipointChange(drawable){
 						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setPosition({
 							x: data.x * imageInterface.getWidth(),
 							y: data.y * imageInterface.getHeight(),
@@ -213,7 +215,7 @@ export function enableMultipointChange(drawable){
 								y: drawable.getY() / imageInterface.getHeight(),
 							},
 							fn: (data) => {
-								imageEventActions.selectDrawable(drawable)
+								selectDrawable(drawable)
 								drawable.setPosition({
 									x: data.x * imageInterface.getWidth(),
 									y: data.y * imageInterface.getHeight(),
@@ -228,7 +230,7 @@ export function enableMultipointChange(drawable){
 					}
 				})
 			}
-			imageEventActions.keyMoveDrawable($event, drawable)
+			keyMoveDrawable($event, drawable)
 			appModel.controls.changeEvent.update(false)
 		}
 	})

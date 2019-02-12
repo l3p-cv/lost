@@ -5,18 +5,23 @@ import PointPresenter from "drawables/point/PointPresenter"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import imageEventActions from "components/image/imageEventActions"
 
-// legit, cyclic?
-import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
-const toolbarPresenter = { onCreationStart, onCreationEnd }
+// trying to get around cyclics.
+import { selectDrawable } from "components/image/change-select"
+const imageEventActions = { selectDrawable }
+// import imageEventActions from "components/image/imageEventActions"
+
+// // legit, cyclic?
+// import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
+// const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 
 export function enablePointCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createPoint", ($event) => {
 		if(!keyboard.isAModifierHit($event) && mouse.button.isRight($event.button)){
-			toolbarPresenter.onCreationStart()
+			appModel.event.creationEvent.update(true)
+			// toolbarPresenter.onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createPoint", ($event) => {
@@ -59,7 +64,8 @@ export function enablePointCreation(){
 			}))
 			appModel.addDrawable(point)
 			imageEventActions.selectDrawable(point)
-			toolbarPresenter.onCreationEnd()
+			appModel.event.creationEvent.update(false)
+			// toolbarPresenter.onCreationEnd()
 		}
 	})
 }

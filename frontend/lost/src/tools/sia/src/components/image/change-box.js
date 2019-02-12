@@ -3,7 +3,9 @@ import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "./imageInterface"
-import imageEventActions from "./imageEventActions"
+
+import { selectDrawable } from "./change-select"
+import { keyMoveDrawable } from "./change-move"
 
 
 let mouseStart = undefined
@@ -27,7 +29,7 @@ function enableKeyMoveBox(drawable){
 						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setPosition({
 							x: data.x * imageInterface.getWidth(),
 							y: data.y * imageInterface.getHeight(),
@@ -36,7 +38,7 @@ function enableKeyMoveBox(drawable){
 				})
 				savedStartState = true
 			}
-			imageEventActions.keyMoveDrawable($event, drawable)    
+			keyMoveDrawable($event, drawable)    
 			appModel.controls.changeEvent.update(false)
 		}
 	})
@@ -50,7 +52,7 @@ function enableKeyMoveBox(drawable){
 						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setPosition({
 							x: data.x * imageInterface.getWidth(),
 							y: data.y * imageInterface.getHeight(),
@@ -91,7 +93,7 @@ function enableScaleBoxEdge(drawable){
 							h: drawable.getH() / imageInterface.getHeight(),
 						},
 						fn: (data) => {
-							imageEventActions.selectDrawable(drawable)
+							selectDrawable(drawable)
 							drawable.setBounds({
 								x: data.x * imageInterface.getWidth(),
 								y: data.y * imageInterface.getHeight(),
@@ -225,7 +227,7 @@ function enableScaleBoxEdge(drawable){
 						h: drawable.getH() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setBounds({
 							x: data.x * imageInterface.getWidth(),
 							y: data.y * imageInterface.getHeight(),
@@ -309,7 +311,7 @@ export function enableBoxChange(drawable){
 						h: drawable.getH() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setBounds({
 							x: data.x * imageInterface.getWidth(),
 							y: data.y * imageInterface.getHeight(),
@@ -403,7 +405,7 @@ export function enableBoxChange(drawable){
 						h: drawable.getH() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setBounds({
 							x: data.x * imageInterface.getWidth(),
 							y: data.y * imageInterface.getHeight(),
@@ -450,7 +452,7 @@ export function enableBoxChange(drawable){
 					// force re-select (Escape will unselect the drawable)
 					// this will re-enable box movement via keyboard
 					if(keyboard.isKeyHit($event, "Escape")){
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 					}
 					appModel.controls.changeEvent.update(false)
 				}

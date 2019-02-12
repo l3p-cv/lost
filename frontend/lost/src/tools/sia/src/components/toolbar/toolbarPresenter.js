@@ -54,34 +54,38 @@ appModel.config.on("update", config => {
 })
 // on tool change
 appModel.controls.tool.on("update", imageEventActions.resetSelection)
-console.log(imageEventActions)
 
-export function onCreationStart(){
-	console.log(" - on creation start - ")
-	disableNavigationButtons()
-	toolbarView.disableToolbar()
-	imageEventActions.disableSelect()
-	imageEventActions.disableDelete(appModel.config.value)
-	imageEventActions.disableUndoRedo(appModel.config.value)
-	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-		Object.values(observableDrawableList.value).forEach(drawable => {
-			drawable.hide()
-		})
-	})
-}
-export function onCreationEnd(){
-	console.log(" - on creation end - ")
-	enableNavigationButtons()
-	toolbarView.enableToolbar()
-	imageEventActions.enableSelect()
-	imageEventActions.enableDelete(appModel.config.value)
-	imageEventActions.enableUndoRedo(appModel.config.value)
-	Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-		Object.values(observableDrawableList.value).forEach(drawable => {
-			drawable.show()
-		})
-	})
-}
+// x
+appModel.event.creationEvent.on("change", isActive => isActive && console.log(" - on creation start - "))
+appModel.event.creationEvent.on("change", isActive => !isActive && console.log(" - on creation end - "))
+appModel.event.creationEvent.on("change", isActive => isActive && toolbarView.disableToolbar())
+appModel.event.creationEvent.on("change", isActive => !isActive && toolbarView.enableToolbar())
+// export function onCreationStart(){
+	// console.log(" - on creation start - ")
+	// disableNavigationButtons()
+	// toolbarView.disableToolbar()
+	// imageEventActions.disableSelect()
+	// imageEventActions.disableDelete(appModel.config.value)
+	// imageEventActions.disableUndoRedo(appModel.config.value)
+	// Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+	// 	Object.values(observableDrawableList.value).forEach(drawable => {
+	// 		drawable.hide()
+	// 	})
+	// })
+// }
+// export function onCreationEnd(){
+	// console.log(" - on creation end - ")
+	// enableNavigationButtons()
+	// toolbarView.enableToolbar()
+	// imageEventActions.enableSelect()
+	// imageEventActions.enableDelete(appModel.config.value)
+	// imageEventActions.enableUndoRedo(appModel.config.value)
+	// Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+	// 	Object.values(observableDrawableList.value).forEach(drawable => {
+	// 		drawable.show()
+	// 	})
+	// })
+// }
 // set handler depending on tool id string.
 export function enableDrawableCreation(toolId: String){
 	switch(toolId){

@@ -205,6 +205,7 @@ export const image = new Image()
 
 
 export function updateTable(drawable: DrawablePresenter){
+	if(!drawable || Object.keys(drawable).length === 0) return
     switch(drawable.getClassName()){
         case "PointPresenter":
             // show x and y

@@ -7,7 +7,9 @@ import appModel from "siaRoot/appModel"
 import MenuModel from "./MenuModel"
 import MenuView from "./MenuView"
 
-import imageEventActions from "components/image/imageEventActions"
+// trying to get around cyclic dependencys
+import { selectDrawable } from "components/image/change-select"
+const imageEventActions = { selectDrawable }
 
 
 export default class MenuPresenter {

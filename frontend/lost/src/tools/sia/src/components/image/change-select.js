@@ -2,9 +2,6 @@ import { keyboard, mouse } from "l3p-frontend"
 
 import appModel from "siaRoot/appModel"
 
-import DrawablePresenter from "drawables/DrawablePresenter"
-import BoxPresenter from "drawables/box/BoxPresenter"
-
 import imageInterface from "./imageInterface"
 
 
@@ -12,16 +9,19 @@ export function selectDrawable(next: Drawable){
     const curr = appModel.getSelectedDrawable()
     // Don't re-select a drawable if it is allready selected. 
     // If another drawable is currently selected unselect it.
-    if(curr instanceof DrawablePresenter && curr !== next){
-        // console.log("will unselect:", curr)
-        curr.unselect()
-        if(curr instanceof BoxPresenter){
-            curr.resetEdge()
-        }
-        if(curr.parent){
-            curr.parent.unselect()
-        }
-    }
+    // if(curr instanceof DrawablePresenter && curr !== next){
+	if(curr && Object.keys(curr).length > 0){
+		if(curr !== next){
+			// console.log("will unselect:", curr)
+			curr.unselect()
+			if(curr.getClassName() === "BoxPresenter"){
+				curr.resetEdge()
+			}
+			if(curr.parent){
+				curr.parent.unselect()
+			}
+		}
+	}
 
     // A drawable will only be selected if it is not allready selected.
     if(curr !== next){
@@ -40,12 +40,12 @@ export function selectDrawable(next: Drawable){
     }
 }
 export function resetSelection(){
-    const drawable = appModel.getSelectedDrawable()
-    if(drawable instanceof DrawablePresenter){
+    if(appModel.isADrawableSelected()){
         // console.log("reset selection:", drawable)
+	    const drawable = appModel.getSelectedDrawable()
         appModel.resetDrawableSelection()
         drawable.unselect()
-        if(drawable instanceof BoxPresenter){
+        if(drawable.getClassName() === "BoxPresenter"){
             drawable.resetEdge()
         }
         if(drawable.parent){
@@ -66,7 +66,8 @@ export function enableSelect(){
         let drawable = $event.target.closest(".drawable")
         if(drawable){
             drawable = drawable.drawablePresenter
-            if(drawable instanceof DrawablePresenter){
+            // if(drawable instanceof DrawablePresenter){
+            if(drawable !== undefined && Object.keys(drawable).length > 0){
                 selectDrawable(drawable)
             }
         }

@@ -2,8 +2,10 @@ import appModel from "siaRoot/appModel"
 
 import { enableSelect, disableSelect, resetSelection, selectDrawable } from "./change-select"
 import { enableChange, disableChange } from "./change-global"
-import { enableDelete, disableDelete } from "./change-delete"
+import { enableDelete, disableDelete, removeDrawable } from "./change-delete"
 import { enableUndoRedo, disableUndoRedo } from "./change-undo-redo"
+
+import { addDrawable } from "./change-add"
 
 
 export default {
@@ -26,4 +28,5 @@ export default {
 	enableChange, disableChange,
 	enableDelete, disableDelete,
 	enableUndoRedo, disableUndoRedo,
+	addDrawable, removeDrawable,
 }

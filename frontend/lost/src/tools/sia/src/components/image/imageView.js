@@ -3,8 +3,6 @@ import $ from "cash-dom"
 import "./image.styles.scss"
 import { NodeTemplate } from "l3p-frontend"
 
-import PointPresenter from "drawables/point/PointPresenter"
-
 
 export const image = new Image()
 
@@ -48,7 +46,7 @@ export function addDrawable(drawable: DrawablePresenter){
     // console.log("adding drawable:", drawable)
     html.refs.drawables.appendChild(drawable.view.html.fragment)
     // QUICKFIX: PointPresenter not showing label background.
-    if(drawable instanceof PointPresenter){
+    if(drawable.getClassName() === "PointPresenter"){
         drawable.setLabel(drawable.model.label)
     }
     drawable.resize()

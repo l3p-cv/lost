@@ -6,16 +6,17 @@ import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
-import imageEventActions from "components/image/imageEventActions"
 
-// legit, cyclic?
-import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
-const toolbarPresenter = { onCreationStart, onCreationEnd }
+// trying to get around cyclics.
+import { selectDrawable } from "components/image/change-select"
+import { addDrawable } from "components/image/change-add"
+import { removeDrawable } from "components/image/change-delete"
+const imageEventActions = { selectDrawable, addDrawable, removeDrawable }
+// import imageEventActions from "components/image/imageEventActions"
 
-// legit, cyclic?
-import { addDrawable, removeDrawable } from "components/image/imagePresenter"
-const imagePresenter = { addDrawable, removeDrawable }
-
+// // legit, cyclic?
+// import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
+// const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 let firstPoint = undefined
@@ -37,7 +38,7 @@ function addLinePoint($event){
 			data: { x: mousepos.x / imgW, y: mousepos.y / imgH }, 
 			isNoAnnotation: true,
 		})
-		imagePresenter.addDrawable(firstPoint)
+		imageEventActions.addDrawable(firstPoint)
 		imageEventActions.selectDrawable(firstPoint)
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
@@ -50,8 +51,8 @@ function addLinePoint($event){
 		if(line.menuBar){
 			line.menuBar.hide()
 		}
-		imagePresenter.removeDrawable(firstPoint)
-		imagePresenter.addDrawable(line)
+		imageEventActions.removeDrawable(firstPoint)
+		imageEventActions.addDrawable(line)
 		// select the second point of the line as indicator.
 		imageEventActions.selectDrawable(line.model.points[1])
 	}
@@ -66,20 +67,20 @@ function addLinePoint($event){
 function deleteLinePoint(){
 	// first point
 	if(firstPoint && !line){
-		imagePresenter.removeDrawable(firstPoint)
+		imageEventActions.removeDrawable(firstPoint)
 		firstPoint = undefined
 	}
 	// second point
 	if(line && line.model.points.length === 2){
 		// remove the line from view
-		imagePresenter.removeDrawable(line)
+		imageEventActions.removeDrawable(line)
 		line = undefined
 		// re-create the first point, add and select it.
 		firstPoint = new PointPresenter({
 			data: firstPoint.model.relBounds, 
 			isNoAnnotation: true,
 		})
-		imagePresenter.addDrawable(firstPoint)
+		imageEventActions.addDrawable(firstPoint)
 		imageEventActions.selectDrawable(firstPoint)
 	}
 	// 3+n point
@@ -119,7 +120,7 @@ function finishLine(){
 	else {
 		appModel.resetDrawableSelection()
 		if(firstPoint && !line){
-			imagePresenter.removeDrawable(firstPoint)
+			imageEventActions.removeDrawable(firstPoint)
 		}
 	}
 
@@ -127,13 +128,15 @@ function finishLine(){
 	firstPoint = undefined
 	line = undefined
 
-	toolbarPresenter.onCreationEnd()
+	appModel.event.creationEvent.update(false)
+	// toolbarPresenter.onCreationEnd()
 }
 
 export function enableLineCreation(onStart, onEnd){
 	$(imageInterface.getSVG()).on("mousedown.createLinePoint", ($event) => {
 		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
-			toolbarPresenter.onCreationStart()
+			appModel.event.creationEvent.update(true)
+			// toolbarPresenter.onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createLinePoint", ($event) => {

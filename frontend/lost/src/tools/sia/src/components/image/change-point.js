@@ -2,10 +2,11 @@ import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 
 import appModel from "siaRoot/appModel"
 
-import * as imageView from "./imageView"
+import imageInterface from "./imageInterface"
 
-import imageEventActions from "./imageEventActions"
-
+import { selectDrawable } from "./change-select"
+import { keyMoveDrawable } from "./change-move"
+import { handleMultipointPointInsertion, handleLinePointAdd } from "./change-multipoint"
 
 
 // mouse
@@ -25,9 +26,9 @@ export function enablePointChange(drawable){
 		}
 		appModel.controls.changeEvent.update(true)
 		// console.warn("point change handler (start)")
-		mouseStart = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+		mouseStart = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 		// calculate the real mouseposition (@zoom)
-		const svg = imageView.html.ids["sia-imgview-svg"]
+		const svg = imageInterface.getSVG()
 		const zoom = appModel.ui.zoom.value
 		mouseStart = {
 			x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
@@ -45,9 +46,9 @@ export function enablePointChange(drawable){
 				noSelection: true,
 			})
 			mousePrev = (mousePrev === undefined) ? mouseStart : mousepos
-			mousepos = mouse.getMousePosition($event, imageView.html.ids["sia-imgview-svg-container"])
+			mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
 			// calculate the real mouseposition (@zoom)
-			const svg = imageView.html.ids["sia-imgview-svg"]
+			const svg = imageInterface.getSVG()
 			const zoom = appModel.ui.zoom.value
 			mousepos = {
 				x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
@@ -56,14 +57,14 @@ export function enablePointChange(drawable){
 			if(!savedStartState){
 				stateElement.addUndo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setPosition({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
 						})
 					} 
 				})
@@ -92,21 +93,21 @@ export function enablePointChange(drawable){
 			if(drawable.parent){
 				drawable.parent.setChanged()
 				drawable.show()
-				imageEventActions.selectDrawable(drawable)
-				appModel.imageEventActions.selectDrawable(drawable)
+				selectDrawable(drawable)
+				appModel.selectDrawable(drawable)
 			}
 
 			// finish setting up the 'StateElement'
 			stateElement.addRedo({
 				data: {
-					x: drawable.getX() / imageView.getWidth(),
-					y: drawable.getY() / imageView.getHeight(),
+					x: drawable.getX() / imageInterface.getWidth(),
+					y: drawable.getY() / imageInterface.getHeight(),
 				},
 				fn: (data) => {
-					imageEventActions.selectDrawable(drawable)
+					selectDrawable(drawable)
 					drawable.setPosition({
-						x: data.x * imageView.getWidth(),
-						y: data.y * imageView.getHeight(),
+						x: data.x * imageInterface.getWidth(),
+						y: data.y * imageInterface.getHeight(),
 					})
 				}
 			})
@@ -140,14 +141,14 @@ export function enablePointChange(drawable){
 				// add undo
 				stateElement.addUndo({
 					data: {
-						x: drawable.getX() / imageView.getWidth(),
-						y: drawable.getY() / imageView.getHeight(),
+						x: drawable.getX() / imageInterface.getWidth(),
+						y: drawable.getY() / imageInterface.getHeight(),
 					},
 					fn: (data) => {
-						imageEventActions.selectDrawable(drawable)
+						selectDrawable(drawable)
 						drawable.setPosition({
-							x: data.x * imageView.getWidth(),
-							y: data.y * imageView.getHeight(),
+							x: data.x * imageInterface.getWidth(),
+							y: data.y * imageInterface.getHeight(),
 						})
 					} 
 				})
@@ -156,14 +157,14 @@ export function enablePointChange(drawable){
 					if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){   
 						stateElement.addRedo({
 							data: {
-								x: drawable.getX() / imageView.getWidth(),
-								y: drawable.getY() / imageView.getHeight(),
+								x: drawable.getX() / imageInterface.getWidth(),
+								y: drawable.getY() / imageInterface.getHeight(),
 							},
 							fn: (data) => {
-								imageEventActions.selectDrawable(drawable)
+								selectDrawable(drawable)
 								drawable.setPosition({
-									x: data.x * imageView.getWidth(),
-									y: data.y * imageView.getHeight(),
+									x: data.x * imageInterface.getWidth(),
+									y: data.y * imageInterface.getHeight(),
 								})
 							}
 						})
@@ -176,7 +177,7 @@ export function enablePointChange(drawable){
 					}
 				})
 			}
-			imageEventActions.keyMoveDrawable($event, drawable)
+			keyMoveDrawable($event, drawable)
 			appModel.controls.changeEvent.update(false)
 		}
 	})
@@ -186,14 +187,14 @@ export function enablePointChange(drawable){
 		// on [CTRL]
 		$(window).on("keydown.multipointInsertPointStart", ($event) => {
 			if(keyboard.isModifierHit($event, "Control")){
-				imageEventActions.handleMultipointPointInsertion($event, drawable.parent)
+				handleMultipointPointInsertion($event, drawable.parent)
 			}
 		})
 		if(drawable.parent.model.type === "line"){
 			// on [ALT]
 			$(window).on("keydown.lineAddPointStart", ($event) => {
 				if(keyboard.isModifierHit($event, "Alt")){
-					imageEventActions.handleLinePointAdd($event, drawable.parent)
+					handleLinePointAdd($event, drawable.parent)
 				}
 			})
 		}
