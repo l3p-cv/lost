@@ -6,7 +6,7 @@ import imageInterface from "./imageInterface"
 
 import { selectDrawable } from "./change-select"
 import { keyMoveDrawable } from "./change-move"
-
+window.imageInterface = imageInterface
 
 let mouseStart = undefined
 let mousePrev = undefined
@@ -276,7 +276,7 @@ export function enableBoxChange(drawable){
 		}
 
 		// init context
-		mouseStart = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+		mouseStart = mouse.getMousePosition($event, imageInterface.getSVG())
 		// calculate the real mouseposition (@zoom)
 		const svg = imageInterface.getSVG()
 		const zoom = appModel.ui.zoom.value
@@ -284,6 +284,7 @@ export function enableBoxChange(drawable){
 			x: (mouseStart.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
 			y: (mouseStart.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
 		}
+		mousePrev = mouseStart
 
 		// set global cursor via class
 		try {
@@ -324,9 +325,8 @@ export function enableBoxChange(drawable){
 			}
 			if(frameRequestBoxChange !== undefined) cancelAnimationFrame(frameRequestBoxChange)
 			frameRequestBoxChange = requestAnimationFrame(() => {
-				// console.warn("box change handler (update)")
 				// prepare update
-				mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+				mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 				// calculate the real mouseposition (@zoom)
 				const svg = imageInterface.getSVG()
 				const zoom = appModel.ui.zoom.value
@@ -334,9 +334,10 @@ export function enableBoxChange(drawable){
 					x: (mousepos.x + (SVG.getViewBoxX(svg) * 1 / zoom)) * zoom,
 					y: (mousepos.y + (SVG.getViewBoxY(svg) * 1 / zoom)) * zoom,
 				}
-				mousePrev = (mousePrev) ? mouseStart : mousepos
+				mousePrev = mousePrev === undefined ? mousepos : mousePrev
 				distance.x = mousePrev.x - mousepos.x
 				distance.y = mousePrev.y - mousepos.y
+				mousePrev = mousepos
 				// execute update
 				switch (drawable.model.currentCursor.id) {
 					case mouse.CURSORS.MOVE.id:

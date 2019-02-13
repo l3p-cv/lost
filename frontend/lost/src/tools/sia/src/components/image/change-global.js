@@ -14,6 +14,7 @@ const imageEventActions = {
 
 
 export function enableChange(drawable: DrawablePresenter, config: any){
+	// console.log("enable change on:", drawable)
 	disableChange()
 	drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
 	if(drawable && config.actions.edit.bounds){

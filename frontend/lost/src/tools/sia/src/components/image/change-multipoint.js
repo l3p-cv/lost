@@ -10,7 +10,7 @@ import { keyMoveDrawable } from "./change-move"
 
 export function handleMultipointPointInsertion($event, drawable, mode){
 	mouse.setGlobalCursor(mouse.CURSORS.CREATE.class)
-	$(imageInterface.getDrawableContainer()).on("mousedown.lineInsertPoint", ($event) => {
+	$(imageInterface.getSVG()).on("mousedown.lineInsertPoint", ($event) => {
 		if(!mouse.button.isRight($event.button)) {
 			$event.preventDefault()
 			return
@@ -18,7 +18,7 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 		appModel.controls.changeEvent.update(true)
 		// this key check looks like it is just duplication but it is not.
 		if(keyboard.isModifierHit($event, "Control")){
-			let mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+			let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 			// calculate the real mouseposition (@zoom)
 			const zoom = appModel.ui.zoom.value
 			mousepos = {
@@ -37,7 +37,7 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 		// this key check looks like it is just duplication but it is not.
 		if(keyboard.isKeyHit($event, "Control")){
 			mouse.unsetGlobalCursor()
-			$(imageInterface.getDrawableContainer()).off("mousedown.lineInsertPoint")
+			$(imageInterface.getSVG()).off("mousedown.lineInsertPoint")
 			$(window).off("keyup.lineInsertPointEnd")
 			appModel.controls.changeEvent.update(false)
 		}
@@ -45,7 +45,7 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 }
 export function handleLinePointAdd($event, drawable){
 	mouse.setGlobalCursor(mouse.CURSORS.CREATE.class)
-	$(imageInterface.getDrawableContainer()).on("mousedown.lineInsertPoint", ($event) => {
+	$(imageInterface.getSVG()).on("mousedown.lineInsertPoint", ($event) => {
 		if(!mouse.button.isRight($event.button)){
 			$event.preventDefault()
 			return
@@ -53,7 +53,7 @@ export function handleLinePointAdd($event, drawable){
 		appModel.controls.changeEvent.update(true)
 		// this key check looks like it is just duplication but it is not.            
 		if(keyboard.isModifierHit($event, "Alt", true)){
-			let mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+			let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 			// calculate the real mouseposition (@zoom)
 			const zoom = appModel.ui.zoom.value
 			mousepos = {
@@ -71,7 +71,7 @@ export function handleLinePointAdd($event, drawable){
 		// this key check looks like it is just duplication but it is not.            
 		if(keyboard.isKeyHit($event, "Alt")){
 			mouse.unsetGlobalCursor()
-			$(imageInterface.getDrawableContainer()).off("mousedown.lineInsertPoint")
+			$(imageInterface.getSVG()).off("mousedown.lineInsertPoint")
 			$(window).off("keyup.lineInsertPointEnd")
 			appModel.controls.changeEvent.update(false)
 		}
@@ -94,7 +94,7 @@ export function enableMultipointChange(drawable){
 		}
 		appModel.controls.changeEvent.update(true)
 		// console.warn("drawable change handler (start)")
-		mouseStart = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+		mouseStart = mouse.getMousePosition($event, imageInterface.getSVG())
 		// calculate the real mouseposition (@zoom)
 		const svg = imageInterface.getSVG()
 		const zoom = appModel.ui.zoom.value
@@ -111,7 +111,7 @@ export function enableMultipointChange(drawable){
 				noSelection: true,
 			})
 			mousePrev = (mousePrev === undefined) ? mouseStart : mousepos
-			mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+			mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 			// calculate the real mouseposition (@zoom)
 			const svg = imageInterface.getSVG()
 			const zoom = appModel.ui.zoom.value

@@ -19,6 +19,7 @@ export function keyMoveDrawable($event, drawable){
 
 	let moveStep = undefined
 	if(keyboard.isModifierHit($event, "Shift", { strict: false })){
+		console.log("shift")
 		moveStep = appModel.controls.moveStepFast
 		appModel.controls.currentMoveStep = moveStep
 	} else {

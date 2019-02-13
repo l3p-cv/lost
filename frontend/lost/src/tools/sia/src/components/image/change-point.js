@@ -26,7 +26,7 @@ export function enablePointChange(drawable){
 		}
 		appModel.controls.changeEvent.update(true)
 		// console.warn("point change handler (start)")
-		mouseStart = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+		mouseStart = mouse.getMousePosition($event, imageInterface.getSVG())
 		// calculate the real mouseposition (@zoom)
 		const svg = imageInterface.getSVG()
 		const zoom = appModel.ui.zoom.value
@@ -46,7 +46,7 @@ export function enablePointChange(drawable){
 				noSelection: true,
 			})
 			mousePrev = (mousePrev === undefined) ? mouseStart : mousepos
-			mousepos = mouse.getMousePosition($event, imageInterface.getDrawableContainer())
+			mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 			// calculate the real mouseposition (@zoom)
 			const svg = imageInterface.getSVG()
 			const zoom = appModel.ui.zoom.value
