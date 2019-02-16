@@ -4,17 +4,32 @@ import * as http from '../../../http'
 class SelectPipeline extends Component{
     constructor(){
         super()
+        this.selectRow = this.selectRow.bind(this)
     }
     async componentDidMount(){
         const pipelines = await http.requestPipelines()
-        console.log('----------pipelines--------------------------');
-        console.log(pipelines);
-        console.log('------------------------------------');
+        this.setState(pipelines)
+    }
+    selectRow(){
+        this.props.verify(0, true)
+        this.props.changeCurrentStep(1)
+    }
+
+
+    renderDatatable(){
+        if(this.state){
+            return this.state.pipes.map((el)=>{
+                return (<div onClick={this.selectRow}>{el.name}</div>)
+            })
+        }
     }
 
     render(){
         return (
-            <div>DATATABLE</div>
+            <div>
+                {this.renderDatatable()}
+
+            </div>
         )
     }
 }
