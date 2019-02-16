@@ -2,8 +2,6 @@ import { http } from 'l3p-frontend'
 // import { http } from 'root/l3p-frontend'
 
 import { API_URL } from 'root/settings'
-console.log("SSSSSs");
-
 // test data for running pipelines.
 const DEV = false
 const DUMMY_DATA = {
@@ -156,7 +154,8 @@ export function startPipe(data: any, token: String){
 }
 
 // RUNNING
-export function requestPipelines(token: String){
+export function requestPipelines(){
+	const token = localStorage.getItem('token')
 	if(DEV){
 		return Promise.resolve(DUMMY_DATA.requestPipelines[0])
 	}
