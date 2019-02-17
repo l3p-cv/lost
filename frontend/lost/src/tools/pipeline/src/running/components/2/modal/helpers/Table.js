@@ -1,9 +1,6 @@
 import React from 'react'
 
 export default (props) => {
-    console.log('------props------------------------------');
-    console.log(props);
-    console.log('------------------------------------');
     return(
         <table className="table table-hover">
             <tbody>

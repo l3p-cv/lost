@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import DatasourceModal from './DatasourceModal'
-import ScriptModal from './ScriptModal'
-import AnnoTaskModal from './AnnoTaskModal'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import DatasourceModal from './types/DatasourceModal'
+import ScriptModal from './types/ScriptModal'
+import AnnoTaskModal from './types/AnnoTaskModal'
+import DataExportModal from './types/DataExportModal'
+import { Button, Modal, ModalFooter } from 'reactstrap';
 
 class BaseModal extends Component {
     constructor() {
@@ -40,6 +41,12 @@ class BaseModal extends Component {
             } else if('annoTask' in this.state.modalData){
                 return (
                     <AnnoTaskModal
+                    {...this.state.modalData}
+                    />
+                )
+            }else if('dataExport' in this.state.modalData){
+                return (
+                    <DataExportModal
                     {...this.state.modalData}
                     />
                 )
