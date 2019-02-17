@@ -19,7 +19,7 @@ class SelectPipeline extends Component{
     renderDatatable(){
         if(this.state){
             return this.state.pipes.map((el)=>{
-                return (<div onClick={this.selectRow}>{el.name}</div>)
+                return (<div key={el.name} onClick={this.selectRow}>{el.name}</div>)
             })
         }
     }

@@ -43,7 +43,7 @@ class SelectPipeline extends Component{
         if(this.state.data){
             return this.state.data.elements.map((el)=>{
                 return(
-                    <button onClick={this.openModal} >{el.id}</button>
+                    <button key={el.id} onClick={this.openModal} >{el.id}</button>
                 )
             })
         }
