@@ -1,22 +1,20 @@
 import React, {Component} from 'react'
 import DatasourceModal from './DatasourceModal'
+import ScriptModal from './ScriptModal'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { log } from 'core-js';
 
 class BaseModal extends Component{
     constructor(){
         super()
-        this.state = {
-            modalData: undefined
-        }
     }
     // ComponentWillReviceProps is deprecated --> return value update the State
     static getDerivedStateFromProps(props) {
+ 
         if(props.data){
             const modalData = props.data.elements.filter(el=>el.id === props.selectedModal)[0]
-            console.log('-----------modalData-------------------------');
-            console.log(modalData);
-            console.log('------------------------------------');
+            if(!modalData){
+                return null
+            }
             return{
                 modalData
             }
@@ -24,9 +22,23 @@ class BaseModal extends Component{
         return null
     }
     renderModals(){
-        return(
-            <DatasourceModal {...this.state.modalData}/> 
-        )
+
+        if(this.state){
+
+            if('datasource' in this.state.modalData){
+                return(
+                    <DatasourceModal 
+                    {...this.state.modalData}/>
+                )
+            }else if('script' in this.state.modalData){
+                return(
+                    <ScriptModal 
+                {...this.state.modalData}/>
+                )
+            }
+        }
+
+        
     }
 
     selectModal(){

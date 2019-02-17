@@ -16,9 +16,9 @@ class SelectPipeline extends Component{
         this.setState({data: testData})
 
     }
-    openModal(){
+    openModal(e){
         this.setState({
-            selectedModal: 1
+            selectedModal: parseInt(e.currentTarget.textContent)
         })
         this.toggleModal()
     }
@@ -40,9 +40,6 @@ class SelectPipeline extends Component{
         this.setState({modalOpen: !this.state.modalOpen})
     }
     renderModalButtonTests(){
-        console.log('----------this.state--------------------------');
-        console.log(this.state);
-        console.log('------------------------------------');
         if(this.state.data){
             return this.state.data.elements.map((el)=>{
                 return(
