@@ -10,10 +10,13 @@ class BaseModal extends Component{
             modalData: undefined
         }
     }
-    // ComponentWillReviceProps is deprecated
-    static getDerivedStateFromProps(props, state) {
+    // ComponentWillReviceProps is deprecated --> return value update the State
+    static getDerivedStateFromProps(props) {
         if(props.data){
-            const modalData = props.data.elements.filter(el=>el.id === props.selectedModal)
+            const modalData = props.data.elements.filter(el=>el.id === props.selectedModal)[0]
+            console.log('-----------modalData-------------------------');
+            console.log(modalData);
+            console.log('------------------------------------');
             return{
                 modalData
             }
@@ -22,18 +25,17 @@ class BaseModal extends Component{
     }
     renderModals(){
         return(
-            <DatasourceModal modalData = {this.state.modalData}/> 
+            <DatasourceModal {...this.state.modalData}/> 
         )
     }
 
     selectModal(){
         return(
-            <Modal isOpen={this.props.modalOpen} toggle={this.props.toggleModal}>
+            <Modal size='lg' isOpen={this.props.modalOpen} toggle={this.props.toggleModal}>
                 {this.renderModals()}
                 <ModalFooter>
-                <Button color="primary" onClick={this.props.toggleModal}>Do Something</Button>{' '}
-            <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
-              </ModalFooter>
+                    <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
+                </ModalFooter>
             </Modal>
         )
     }

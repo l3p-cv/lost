@@ -39,10 +39,22 @@ class SelectPipeline extends Component{
     toggleModal(){
         this.setState({modalOpen: !this.state.modalOpen})
     }
+    renderModalButtonTests(){
+        console.log('----------this.state--------------------------');
+        console.log(this.state);
+        console.log('------------------------------------');
+        if(this.state.data){
+            return this.state.data.elements.map((el)=>{
+                return(
+                    <button onClick={this.openModal} >{el.id}</button>
+                )
+            })
+        }
+    }
     render(){
         return (
             <div>
-                <button onClick={this.openModal}>Open Datasource Modal</button>
+                {this.renderModalButtonTests()}
 
 
                 {this.renderModals()}
