@@ -1,3 +1,4 @@
+// re-order this file!
 import $ from "cash-dom"
 
 import { mouse, svg as SVG } from "l3p-frontend"
@@ -15,28 +16,53 @@ import * as http from "siaRoot/http"
 import * as imageView from "./imageView"
 import imageEventActions from "./imageEventActions"
 
-// x
-appModel.event.creationEvent.on("change", isActive => {
-	if(isActive){
-		imageEventActions.disableSelect()
-		imageEventActions.disableDelete(appModel.config.value)
-		imageEventActions.disableUndoRedo(appModel.config.value)
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.hide()
-			})
-		})
-	} else {
-		imageEventActions.enableSelect()
-		imageEventActions.enableDelete(appModel.config.value)
-		imageEventActions.enableUndoRedo(appModel.config.value)
-		Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-			Object.values(observableDrawableList.value).forEach(drawable => {
-				drawable.show()
-			})
-		})
-	}
-})
+
+function showDrawables(){
+    Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+        Object.values(observableDrawableList.value).forEach(drawable => {
+            drawable.show()
+        })
+    })
+}
+function hideDrawables(options = {}){
+    const { showSelected } = options
+    Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+        Object.values(observableDrawableList.value).forEach(drawable => {
+            if(appModel.isADrawableSelected()){
+                const selectedDrawable = appModel.getSelectedDrawable()
+                if(
+                    drawable === selectedDrawable
+                    || (selectedDrawable.parent && drawable === selectedDrawable.parent) 
+                ){
+                    if(showSelected){
+                        return
+                    }
+                }
+            }
+            drawable.hide()
+        })
+    })
+}
+function onCreationEventStart(){
+    imageEventActions.disableSelect()
+    imageEventActions.disableDelete(appModel.config.value)
+    imageEventActions.disableUndoRedo(appModel.config.value)
+    hideDrawables()
+}
+function onCreationEventEnd(){
+    imageEventActions.enableSelect()
+    imageEventActions.enableDelete(appModel.config.value)
+    imageEventActions.enableUndoRedo(appModel.config.value)
+    showDrawables()
+}
+function onChangeEventStart(){
+    hideDrawables({ showSelected: true })
+}
+function onChangeEventEnd(){
+    showDrawables()
+}
+appModel.event.creationEvent.on("change", isActive => isActive ? onCreationEventStart() : onCreationEventEnd())
+appModel.event.changeEvent.on("change", isActive => isActive ? onChangeEventStart() : onChangeEventEnd())
 
 
 // on init
@@ -48,7 +74,7 @@ appModel.config.on("update", config => {
 			imageEventActions.enableChange(appModel.getSelectedDrawable(), appModel.config.value)
 		}
 		appModel.state.selectedDrawable.on("update", drawable => imageEventActions.enableChange(drawable, appModel.config.value))
-		appModel.state.selectedDrawable.on(["before-update", "reset"], imageEventActions.disableChange)
+		appModel.state.selectedDrawable.on(["before-update", "reset"], (prev, next) => imageEventActions.disableChange(prev))
 	} else {
 		// disable change on current selected drawable
 		if(appModel.isADrawableSelected()){
@@ -76,7 +102,8 @@ imageView.image.addEventListener("load", () => {
 
     appModel.state.colorTable = colorMap
     
-    // the default move step  is 1px, the fast move step depends on current image display size.
+    // the default move step is 1px, the fast move step depends on current image display size.
+    // warning: imageView width and height were 0 here for some reason.
     appModel.controls.moveStepFast = Math.ceil(appModel.controls.moveStep * (imageView.getWidth() * imageView.getHeight() * 0.00001))
     if(JSON.parse(sessionStorage.getItem("sia-first-image-loaded"))){
         // @quickfix: lost integration
@@ -103,6 +130,7 @@ Object.values(appModel.state.drawables).forEach(observable => {
 appModel.ui.resized.on("update", () => {
 	// (re)create drawables
     createDrawables(appModel.data.drawables.value)
+    appModel.controls.moveStepFast = Math.ceil(appModel.controls.moveStep * (imageView.getWidth() * imageView.getHeight() * 0.00001))
 })
 
 
@@ -363,23 +391,11 @@ export function createDrawables(drawablesRawData: any){
     }
 }
 
-// moved to change-add
-// // does not mutate appModel
-// export function addDrawable(drawable: DrawablePresenter){
-//     if(!drawable.model.status.has(STATE.DELETED)){
-//         imageView.addDrawable(drawable)
-//     }
-// }
 // does not mutate appModel
 function addDrawables(drawables: Array<DrawablePresenter>){
     drawables = drawables.filter(d => !d.model.status.has(STATE.DELETED))
     imageView.addDrawables(drawables)
 }
-// moved to change-delete
-// // does not mutate appModel
-// export function removeDrawable(drawable: DrawablePresenter){
-//     imageView.removeDrawable(drawable.view)
-// }
 // does not mutate appModel
 function removeDrawables(){
     Object.values(appModel.state.drawables).forEach(drawables => {
@@ -387,18 +403,6 @@ function removeDrawables(){
     })
 }
 
-
-export function onChangeStart(){
-	console.log(" - change start - ")
-	// disable drawable creation
-	// propertiesInterface.disableNavigationButtons()
-	// toolbarInterface.disableDrawableCreation()
-	// hide other drawables
-	imageEventActions.hideDrawables()
-}
-export function onChangeEnd(){
-	console.log(" - change start - ")
-}
 
 
 export function resize(width: Number, height: Number){

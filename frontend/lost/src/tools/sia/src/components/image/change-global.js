@@ -10,11 +10,22 @@ const imageEventActions = {
 	enablePointChange, disablePointChange,
 	enableMultipointChange, disableMultipointChange,
 }
-// import imageEventActions from "components/toolbar/imageEventActions"
+
+// prevent browser default action on space bar during change event
+appModel.event.changeEvent.on("change", isActive => {
+	if(isActive){
+		$(window).on("keydown.preventSpacebarDefault", $event => {
+			if(keyboard.isKeyHit($event, "Space")){
+				$event.preventDefault()
+			}
+		})
+	} else {
+		$(window).off("keydown.preventSpacebarDefault")
+	}
+})
 
 
 export function enableChange(drawable: DrawablePresenter, config: any){
-	// console.log("enable change on:", drawable)
 	disableChange()
 	drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
 	if(drawable && config.actions.edit.bounds){
@@ -50,7 +61,6 @@ export function enableChange(drawable: DrawablePresenter, config: any){
 	}
 }
 export function disableChange(drawable: DrawablePresenter){
-	// console.log("disable change on:", drawable)
     drawable = drawable === undefined ? appModel.getSelectedDrawable() : drawable
 	if(!drawable || Object.keys(drawable).length === 0) return
 	switch(drawable.getClassName()){

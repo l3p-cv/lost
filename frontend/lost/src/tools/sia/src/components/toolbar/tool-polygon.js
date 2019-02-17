@@ -12,11 +12,6 @@ import { selectDrawable } from "components/image/change-select"
 import { addDrawable } from "components/image/change-add"
 import { removeDrawable } from "components/image/change-delete"
 const imageEventActions = { selectDrawable, addDrawable, removeDrawable }
-// import imageEventActions from "components/image/imageEventActions"
-
-// // legit, cyclic?
-// import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
-// const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 
@@ -41,7 +36,7 @@ function addPolygonPoint($event){
 			isNoAnnotation: true,
 		})
 		imageEventActions.addDrawable(firstPoint)
-		imageEventActions.selectDrawable(firstPoint)
+		firstPoint.select()
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
 	else if(!line) {
@@ -56,7 +51,8 @@ function addPolygonPoint($event){
 		imageEventActions.removeDrawable(firstPoint)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
 		imageEventActions.addDrawable(line)
-		imageEventActions.selectDrawable(line.model.points[1])
+		firstPoint.unselect()
+		line.model.points[1].select()
 	}
 	else if(!polygon){
 		polygon = new MultipointPresenter({
@@ -70,13 +66,15 @@ function addPolygonPoint($event){
 		imageEventActions.removeDrawable(line)
 		// when a drawable is added to the appModel, the imagePresenter is notificated and adds the drawable.
 		imageEventActions.addDrawable(polygon)
-		imageEventActions.selectDrawable(polygon.model.points[2])
+		polygon.model.points[1].unselect()
+		polygon.model.points[2].select()
 	}
 	// else add a point to the polygon.
 	else {
 		currentPoint = polygon.addPoint(mousepos)
 		if(currentPoint){
-			imageEventActions.selectDrawable(currentPoint)
+			polygon.model.points[polygon.model.points.length - 2].unselect()
+			currentPoint.select()
 		}
 	}
 }
@@ -85,6 +83,7 @@ function deletePolygonPoint(){
 	if(firstPoint && !line){
 		imageEventActions.removeDrawable(firstPoint)
 		firstPoint = undefined
+		appModel.event.creationEvent.update(false)
 	}
 	// second point
 	else if(line && !polygon){
@@ -97,7 +96,7 @@ function deletePolygonPoint(){
 			isNoAnnotation: true,
 		})
 		imageEventActions.addDrawable(firstPoint)
-		imageEventActions.selectDrawable(firstPoint)
+		firstPoint.select()
 	}
 	// third point
 	else if(polygon && polygon.model.points.length === 3){
@@ -110,50 +109,42 @@ function deletePolygonPoint(){
 			type: "line",
 		})
 		imageEventActions.addDrawable(line)
-		imageEventActions.selectDrawable(line.model.points[1])
+		line.model.points[1].select()
 	}
 	// 4+n point
 	else if(polygon) {
 		polygon.removePoint(polygon.model.points[polygon.model.points.length - 1])
-		imageEventActions.selectDrawable(polygon.model.points[polygon.model.points.length - 1])
+		polygon.model.points[polygon.model.points.length - 1].select()
 	}
 }
 function finishPolygon(){
-	if(polygon){
-		state.add(new state.StateElement({
-			do: {
-				data: { polygon },
-				fn: (data) => {
-					const { polygon } = data
-					appModel.addDrawable(polygon)
-					imageEventActions.selectDrawable(polygon)
-				},
+	if(!polygon){
+		throw new Error("Can not finish. 'polygon' is undefined.")
+	}
+	state.add(new state.StateElement({
+		do: {
+			data: { polygon },
+			fn: (data) => {
+				const { polygon } = data
+				appModel.addDrawable(polygon)
+				imageEventActions.selectDrawable(polygon)
 			},
-			undo: {
-				data: { polygon },
-				fn: (data) => {
-					const { polygon } = data
-					polygon.delete()
-					appModel.deleteDrawable(polygon)
-				},
-			}
-		}))
-		appModel.addDrawable(polygon)
-		polygon.model.points[polygon.model.points.length-1].unselect()
-		imageEventActions.selectDrawable(polygon)
-		// show menu bar after creation
-		if(polygon.menuBar){
-			polygon.menuBar.show()
+		},
+		undo: {
+			data: { polygon },
+			fn: (data) => {
+				const { polygon } = data
+				polygon.delete()
+				appModel.deleteDrawable(polygon)
+			},
 		}
-	} else {
-		console.log({firstPoint, line, polygon})
-		appModel.resetDrawableSelection()
-		if(firstPoint && !line && !polygon){
-			imageEventActions.removeDrawable(firstPoint)
-		}
-		if(line && !polygon){
-			imageEventActions.removeDrawable(line)
-		}
+	}))
+	appModel.addDrawable(polygon)
+	polygon.model.points[polygon.model.points.length-1].unselect()
+	imageEventActions.selectDrawable(polygon)
+	// show menu bar after creation
+	if(polygon.menuBar){
+		polygon.menuBar.show()
 	}
 
 	// reset creation context
@@ -162,34 +153,61 @@ function finishPolygon(){
 	polygon = undefined
 
 	appModel.event.creationEvent.update(false)
-	// toolbarPresenter.onCreationEnd()
 }
+function cancelPolygonCreation(){
+	// remove point from view
+	if(firstPoint){
+		imageEventActions.removeDrawable(firstPoint)
+	}
+	// remove line from view
+	if(line){
+		imageEventActions.removeDrawable(line)
+	}
+	// remove polygon from view
+	if(polygon){
+		imageEventActions.removeDrawable(polygon)
+	}
 
+	// reset creation context
+	firstPoint = undefined
+	line = undefined
+	polygon = undefined
+
+	appModel.event.creationEvent.update(false)
+}
 export function enablePolygonCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createPolygonPoint", ($event) => {
-		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
+		if(mouse.button.isRight($event.button)){
 			appModel.event.creationEvent.update(true)
-			// toolbarPresenter.onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createPolygonPoint", ($event) => {
 		// prevent context menu
 		$event.preventDefault()
 		// create or extend polygon.
-		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
+		if(mouse.button.isRight($event.button)){
 			addPolygonPoint($event)
 		}
 	})
 	$(window).on("dblclick.finishPolygon", ($event) => {
-		if(firstPoint !== undefined || line !== undefined || polygon !== undefined){
-			if(keyboard.isNoModifierHit($event) && mouse.button.isLeft($event.button)){
-				finishPolygon()
-			}
+		if(polygon 
+			&& keyboard.isNoModifierHit($event)
+			&& mouse.button.isLeft($event.button)
+		){
+			finishPolygon()
 		}
 	})
 	$(window).on("keydown.finishPolygon", ($event) => {
-		if(keyboard.isKeyHit($event, ["Escape", "Enter"])){
+		if(polygon 
+			&& keyboard.isNoModifierHit($event)
+			&& keyboard.isKeyHit($event, ["Enter"])
+		){
 			finishPolygon()
+		}
+	})
+	$(window).on("keydown.cancelPolygonCreation", ($event) => {
+		if(keyboard.isKeyHit($event, ["Escape"])){
+			cancelPolygonCreation()
 		}
 	})
 	$(window).on("keydown.deletePolygonPoint", ($event) => {
@@ -205,4 +223,5 @@ export function disablePolygonCreation(){
 	$(window).off("keydown.deletePolygonPoint")
 	$(window).off("keydown.finishPolygon")
 	$(window).off("dblclick.finishPolygon")
+	$(window).off("keydown.cancelPolygonCreation")
 }

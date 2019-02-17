@@ -12,7 +12,6 @@ export function enableDelete(config){
 		$(window).on("keydown.drawableDelete", ($event) => {
 			if(keyboard.isKeyHit($event, "Delete")){
 				if(appModel.isADrawableSelected()){
-					console.log("delete (image handler)")
 					$event.preventDefault()
 					const selectedDrawable = appModel.getSelectedDrawable()
 					if(selectedDrawable.isDeletable()){

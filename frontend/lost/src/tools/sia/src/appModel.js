@@ -73,13 +73,10 @@ export default {
         moveStepFast: undefined,
         currentMoveStep: 1, // same as moveStep per default
         tool: new Observable(""),
-        // @move: to appModel.event
-		// @rename: \w+EventRunning
-        creationEvent: new Observable(false),
-        changeEvent: new Observable(false),
     },
 	event: {
 		creationEvent: new Observable(false),
+        changeEvent: new Observable(false),
 	},
     data: {
         image: {

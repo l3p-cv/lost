@@ -8,8 +8,6 @@ import * as toolbarView from "./toolbarView"
 import imageEventActions from "components/image/imageEventActions"
 import toolbarEventActions from "components/toolbar/toolbarEventActions"
 
-// legit, cyclic?
-import { enableNavigationButtons, disableNavigationButtons } from "components/properties/propertiesPresenter"
 
 
 // on init
@@ -54,38 +52,38 @@ appModel.config.on("update", config => {
 })
 // on tool change
 appModel.controls.tool.on("update", imageEventActions.resetSelection)
+// on creation event
+// appModel.event.creationEvent.on("change", isActive => isActive ? console.log(" - on creation start - ") : console.log(" - on creation end - "))
+appModel.event.creationEvent.on("change", isActive => isActive ? onCreationEventStart() : onCreationEventEnd())
+// on change event
+// appModel.event.changeEvent.on("change", isActive => isActive ? console.log(" - on change start - ") : console.log(" - on change end - "))
+appModel.event.changeEvent.on("change", isActive => isActive ? onChangeEventStart() : onChangeEventEnd())
 
-// x
-appModel.event.creationEvent.on("change", isActive => isActive && console.log(" - on creation start - "))
-appModel.event.creationEvent.on("change", isActive => !isActive && console.log(" - on creation end - "))
-appModel.event.creationEvent.on("change", isActive => isActive && toolbarView.disableToolbar())
-appModel.event.creationEvent.on("change", isActive => !isActive && toolbarView.enableToolbar())
-// export function onCreationStart(){
-	// console.log(" - on creation start - ")
-	// disableNavigationButtons()
-	// toolbarView.disableToolbar()
-	// imageEventActions.disableSelect()
-	// imageEventActions.disableDelete(appModel.config.value)
-	// imageEventActions.disableUndoRedo(appModel.config.value)
-	// Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-	// 	Object.values(observableDrawableList.value).forEach(drawable => {
-	// 		drawable.hide()
-	// 	})
-	// })
-// }
-// export function onCreationEnd(){
-	// console.log(" - on creation end - ")
-	// enableNavigationButtons()
-	// toolbarView.enableToolbar()
-	// imageEventActions.enableSelect()
-	// imageEventActions.enableDelete(appModel.config.value)
-	// imageEventActions.enableUndoRedo(appModel.config.value)
-	// Object.values(appModel.state.drawables).forEach(observableDrawableList => {
-	// 	Object.values(observableDrawableList.value).forEach(drawable => {
-	// 		drawable.show()
-	// 	})
-	// })
-// }
+
+function onCreationEventStart(){
+	toolbarView.disableToolbar()
+	if(appModel.isADrawableSelected()){
+		const selectedDrawable = appModel.getSelectedDrawable()
+		imageEventActions.disableChange(selectedDrawable)
+	}
+}
+function onCreationEventEnd(){
+	toolbarView.enableToolbar()
+}
+function onChangeEventStart(){
+	toolbarView.disableToolbar()
+	if(!appModel.controls.tool.isInInitialState){
+		disableDrawableCreation(appModel.controls.tool.value)
+	}
+}
+function onChangeEventEnd(){
+	toolbarView.enableToolbar()
+	if(!appModel.controls.tool.isInInitialState){
+		enableDrawableCreation(appModel.controls.tool.value)
+	}
+}
+
+
 // set handler depending on tool id string.
 export function enableDrawableCreation(toolId: String){
 	switch(toolId){

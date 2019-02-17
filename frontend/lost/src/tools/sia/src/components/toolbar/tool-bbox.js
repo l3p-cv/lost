@@ -1,4 +1,4 @@
-import { mouse, svg as SVG, state } from "l3p-frontend"
+import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 
 import BoxPresenter from "drawables/box/BoxPresenter"
 import BoxModel from "drawables/box/BoxModel"
@@ -11,11 +11,6 @@ import imageInterface from "components/image/imageInterface"
 // trying to get around cyclics.
 import { selectDrawable } from "components/image/change-select"
 const imageEventActions = { selectDrawable }
-// import imageEventActions from "components/image/imageEventActions"
-
-// // legit, cyclic?
-// import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
-// const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 let newBox = undefined
@@ -66,6 +61,7 @@ function validate($event) {
 	h = h / hImg
 	x = (x / wImg) + (w / 2)
 	y = (y / hImg) + (h / 2)
+	
 	newBox = new BoxPresenter({
 		status: STATE.NEW,
 		data: { x, y, w, h }
@@ -79,7 +75,7 @@ function validate($event) {
 	// add the box hidden.
 	appModel.addDrawable(newBox)
 	// select the box.
-	imageEventActions.selectDrawable(newBox)
+	newBox.select()
 
 	// start the update on mousemove and show the box.
 	$(window).on("mousemove", update)
@@ -144,13 +140,12 @@ function update(e) {
 export function enableBBoxCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createBoxStart", ($event) => {
 		// only execute on right mouse button.
-		if(!mouse.button.isRight($event.button)){
+		if(keyboard.isAModifierHit($event) || !mouse.button.isRight($event.button)){
 			return
 		}
 
 		// start creation mode.
 		appModel.event.creationEvent.update(true)
-		// toolbarPresenter.onCreationStart()
 
 		// set a global cursor.
 		mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
@@ -211,7 +206,6 @@ export function enableBBoxCreation(){
 					fn: (data) => {
 						data.box.delete()
 						appModel.deleteDrawable(data.box)
-						// imageEventActions.selectDrawable(appModel.state.previousDrawable)
 					}
 				}
 			}))
@@ -222,10 +216,10 @@ export function enableBBoxCreation(){
 			}
 		}
 
-		// reset.
-		resetContext()
+		// finish
 		appModel.event.creationEvent.update(false)
-		// toolbarPresenter.onCreationEnd()
+		imageEventActions.selectDrawable(newBox)
+		resetContext()
 	})
 }
 

@@ -11,14 +11,9 @@ import * as data from "siaRoot/http"
 
 import imageInterface from "components/image/imageInterface"
 
-// x
-appModel.event.creationEvent.on("change", isActive => {
-	if(isActive){
-		disableNavigationButtons()
-	} else{
-		enableNavigationButtons()
-	}
-})
+
+appModel.event.creationEvent.on("change", isActive => isActive ? onCreationEventStart() : onCreationEventEnd())
+appModel.event.changeEvent.on("change", isActive => isActive ? onChangeEventStart() : onChangeEventEnd())
 
 // on init
 appModel.config.on("update", config => {
@@ -135,6 +130,19 @@ $(propertiesView.html.refs["btn-latest"]).on("click", ($event) => {
     updateData("latest")
 })
 
+
+function onCreationEventStart(){
+    disableNavigationButtons()
+}
+function onCreationEventEnd(){
+    enableNavigationButtons()
+}
+function onChangeEventStart(){
+    disableNavigationButtons()
+}
+function onChangeEventEnd(){
+    enableNavigationButtons()
+}
 
 
 function updateTable(bounds: any){

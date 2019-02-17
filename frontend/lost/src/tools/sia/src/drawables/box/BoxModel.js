@@ -16,6 +16,7 @@ export default class BoxModel extends DrawableModel {
     constructor(anno) {
         super(anno)
         const { imgW, imgH } = imageInterface.getDimensions()
+
         // validate and fix the annotation data. (defaults)
         const minSideLength = BoxModel.getSquareMinSideLength()
         const bounds = (anno.data !== undefined) 
@@ -26,7 +27,7 @@ export default class BoxModel extends DrawableModel {
                 w: minSideLength,
                 h: minSideLength,
             }
-
+        
         // validate and init relative bounds.
         const { x, y, w, h, left, right, top, bottom } = this.validate(bounds, {
             minW: minSideLength / imgW,
@@ -34,8 +35,9 @@ export default class BoxModel extends DrawableModel {
             maxW: 1,
             maxH: 1,
         }, "rel")
+        
         this.relBounds = { x, y, w, h, left, right, top, bottom }
-
+        
         // init observable actual bounds.
         this.actBounds = new Observable({
             x: x * imgW,
@@ -48,6 +50,7 @@ export default class BoxModel extends DrawableModel {
             bottom: bottom * imgH,
         })
     }
+
     static areaValid(w: Number, h: Number, valueType: String){
         const config = appModel.config.value.drawables.bbox
         if(config.minAreaType === "rel"){
@@ -83,9 +86,10 @@ export default class BoxModel extends DrawableModel {
             }
         }
     }
+
     validate(bounds: any, limits: any, valueType: String){
         const { minW, minH, maxW, maxH } = limits
-        if(minW && maxW < minW || minH && maxH < minH){
+        if((minW && maxW < minW) || (minH && maxH < minH)){
             throw new Error("drawable minimum width or height exceeds the maximum.")
         }
 
@@ -182,15 +186,14 @@ export default class BoxModel extends DrawableModel {
             h = (h === undefined) ? this.actBounds.value.h : h
         }
 
-        // @minsize 12.09.18
 
+        // @minsize 12.09.18
         // @quickfix-opt-1: skip area validation on box init (relative values indicate it).
         // if(valueType !== "rel" && !BoxModel.areaValid(w, h, valueType)){
 		// 		// ...
-		// }
-		
+		// }		
         // @quickfix-opt-2: skip area validation on creation event.
-        if(appModel.controls.creationEvent.value === false && !BoxModel.areaValid(w, h, valueType)){
+        if(appModel.event.creationEvent.value === false && !BoxModel.areaValid(w, h, valueType)){
             // console.warn("area not valid")
             return false
         }

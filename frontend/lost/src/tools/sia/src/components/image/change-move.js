@@ -19,13 +19,13 @@ export function keyMoveDrawable($event, drawable){
 
 	let moveStep = undefined
 	if(keyboard.isModifierHit($event, "Shift", { strict: false })){
-		console.log("shift")
 		moveStep = appModel.controls.moveStepFast
 		appModel.controls.currentMoveStep = moveStep
 	} else {
 		moveStep = appModel.controls.moveStep
 		appModel.controls.currentMoveStep = moveStep
 	}
+	
 	// execute move, direction depends on key.
 	try {
 		frameRequestDrawableMove = requestAnimationFrame(()=>{

@@ -9,24 +9,17 @@ import imageInterface from "components/image/imageInterface"
 // trying to get around cyclics.
 import { selectDrawable } from "components/image/change-select"
 const imageEventActions = { selectDrawable }
-// import imageEventActions from "components/image/imageEventActions"
-
-// // legit, cyclic?
-// import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
-// const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 
 export function enablePointCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createPoint", ($event) => {
-		if(!keyboard.isAModifierHit($event) && mouse.button.isRight($event.button)){
+		if(mouse.button.isRight($event.button)){
 			appModel.event.creationEvent.update(true)
-			// toolbarPresenter.onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createPoint", ($event) => {
-		if(!keyboard.isAModifierHit($event) && mouse.button.isRight($event.button)){
-			// console.warn("create point handler(executed)")
+		if(mouse.button.isRight($event.button)){
 			$event.preventDefault()
 			const { imgW, imgH } = imageInterface.getDimensions()
 			let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
@@ -63,9 +56,8 @@ export function enablePointCreation(){
 				}
 			}))
 			appModel.addDrawable(point)
-			imageEventActions.selectDrawable(point)
 			appModel.event.creationEvent.update(false)
-			// toolbarPresenter.onCreationEnd()
+			imageEventActions.selectDrawable(point)
 		}
 	})
 }

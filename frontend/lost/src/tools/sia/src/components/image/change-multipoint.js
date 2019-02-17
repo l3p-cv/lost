@@ -15,8 +15,6 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 			$event.preventDefault()
 			return
 		}
-		appModel.controls.changeEvent.update(true)
-		// this key check looks like it is just duplication but it is not.
 		if(keyboard.isModifierHit($event, "Control")){
 			let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 			// calculate the real mouseposition (@zoom)
@@ -28,18 +26,14 @@ export function handleMultipointPointInsertion($event, drawable, mode){
 			const point = drawable.insertPoint(mousepos)
 			if(point){
 				drawable.setChanged()
-				selectDrawable(point)
 			}
 		}
 	})
 	$(window).on("keyup.lineInsertPointEnd", ($event) => {
-		// @KEYBOARD: isModifierHit (checking modifiers) wont work here! modifier needs to be detected via key!
-		// this key check looks like it is just duplication but it is not.
 		if(keyboard.isKeyHit($event, "Control")){
 			mouse.unsetGlobalCursor()
 			$(imageInterface.getSVG()).off("mousedown.lineInsertPoint")
 			$(window).off("keyup.lineInsertPointEnd")
-			appModel.controls.changeEvent.update(false)
 		}
 	})
 }
@@ -50,8 +44,6 @@ export function handleLinePointAdd($event, drawable){
 			$event.preventDefault()
 			return
 		}
-		appModel.controls.changeEvent.update(true)
-		// this key check looks like it is just duplication but it is not.            
 		if(keyboard.isModifierHit($event, "Alt", true)){
 			let mousepos = mouse.getMousePosition($event, imageInterface.getSVG())
 			// calculate the real mouseposition (@zoom)
@@ -63,17 +55,14 @@ export function handleLinePointAdd($event, drawable){
 			const point = drawable.insertPoint(mousepos, "add")
 			if(point){
 				drawable.setChanged()
-				selectDrawable(point)
 			}
 		}
 	})
 	$(window).on("keyup.lineInsertPointEnd", ($event) => {
-		// this key check looks like it is just duplication but it is not.            
 		if(keyboard.isKeyHit($event, "Alt")){
 			mouse.unsetGlobalCursor()
 			$(imageInterface.getSVG()).off("mousedown.lineInsertPoint")
 			$(window).off("keyup.lineInsertPointEnd")
-			appModel.controls.changeEvent.update(false)
 		}
 	})
 }
@@ -81,19 +70,19 @@ export function handleLinePointAdd($event, drawable){
 
 export function enableMultipointChange(drawable){
 	// mouse
-	var mouseStart = undefined
-	var mousePrev = undefined
-	var mousepos = undefined
-	var stateElement = undefined
-	var savedStartState = false
+	let mouseStart = undefined
+	let mousePrev = undefined
+	let mousepos = undefined
+	let stateElement = undefined
+	let savedStartState = false
+	let insertOrAddEventActive = false
 	$(drawable.view.html.root).on("mousedown.moveDrawableStart", ($event) => {
 		// return on right or middle mouse button, prevent context menu.
 		if (!mouse.button.isLeft($event.button)) {
 			$event.preventDefault()
 			return
 		}
-		appModel.controls.changeEvent.update(true)
-		// console.warn("drawable change handler (start)")
+		appModel.event.changeEvent.update(true)
 		mouseStart = mouse.getMousePosition($event, imageInterface.getSVG())
 		// calculate the real mouseposition (@zoom)
 		const svg = imageInterface.getSVG()
@@ -105,7 +94,6 @@ export function enableMultipointChange(drawable){
 		stateElement = new state.StateElement()
 
 		$(window).on("mousemove.moveDrawableUpdate", ($event) => {
-			// console.warn("drawable move handler (update)")
 			mouse.setGlobalCursor(mouse.CURSORS.NONE.class, {
 				noPointerEvents: true,
 				noSelection: true,
@@ -147,7 +135,6 @@ export function enableMultipointChange(drawable){
 				$event.preventDefault()
 				return
 			}
-			// console.warn("drawable move handler (end)")
 			$(window).off("mousemove.moveDrawableUpdate")
 			$(window).off("mouseup.moveDrawableEnd")
 			
@@ -166,9 +153,7 @@ export function enableMultipointChange(drawable){
 				}
 			})
 			// make undo redo possible
-			if(!appModel.controls.creationEvent.value){
-				state.add(stateElement)
-			}
+			state.add(stateElement)
 
 			// reselect if its a multi-point-annotation point.
 			drawable.setChanged()
@@ -179,16 +164,14 @@ export function enableMultipointChange(drawable){
 			savedStartState = false
 			stateElement = undefined
 
-			setTimeout(() => {
-				appModel.controls.changeEvent.update(false)
-			}, 300)
+			appModel.event.changeEvent.update(false)
 		})
 	})
 
 	// Key
 	$(window).on("keydown.moveDrawable", $event => {
 		if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-			appModel.controls.changeEvent.update(true)
+			appModel.event.changeEvent.update(true)
 			if(!savedStartState){
 				stateElement = new state.StateElement()
 				// add undo
@@ -206,46 +189,75 @@ export function enableMultipointChange(drawable){
 					} 
 				})
 				savedStartState = true
-				$(window).one("keyup.moveDrawable", $event => {
-					if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-						
-						stateElement.addRedo({
-							data: {
-								x: drawable.getX() / imageInterface.getWidth(),
-								y: drawable.getY() / imageInterface.getHeight(),
-							},
-							fn: (data) => {
-								selectDrawable(drawable)
-								drawable.setPosition({
-									x: data.x * imageInterface.getWidth(),
-									y: data.y * imageInterface.getHeight(),
-								})
-							}
-						})
-						if(!appModel.controls.creationEvent.value){
-							state.add(stateElement)
-						}
-						stateElement = undefined
-						savedStartState = false
-					}
-				})
 			}
 			keyMoveDrawable($event, drawable)
-			appModel.controls.changeEvent.update(false)
+		}
+	})
+	$(window).on("keyup.moveDrawable", $event => {
+		if(stateElement && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
+			stateElement.addRedo({
+				data: {
+					x: drawable.getX() / imageInterface.getWidth(),
+					y: drawable.getY() / imageInterface.getHeight(),
+				},
+				fn: (data) => {
+					selectDrawable(drawable)
+					drawable.setPosition({
+						x: data.x * imageInterface.getWidth(),
+						y: data.y * imageInterface.getHeight(),
+					})
+				}
+			})
+			state.add(stateElement)
+
+			stateElement = undefined
+			savedStartState = false
+
+			appModel.event.changeEvent.update(false)
 		}
 	})
 
 	// on [CTRL]
 	$(window).on("keydown.multipointInsertPointStart", ($event) => {
-		if(keyboard.isModifierHit($event, "Control")){
-			handleMultipointPointInsertion($event, drawable)
+		if(appModel.isADrawableSelected()){
+			const selectedDrawable = appModel.getSelectedDrawable()
+			if(selectedDrawable.getClassName() === "MultipointPresenter"){
+				if(keyboard.isModifierHit($event, "Control")){
+					insertOrAddEventActive = true
+					appModel.event.changeEvent.update(true)
+					handleMultipointPointInsertion($event, drawable)
+				}	
+			}
+		}
+	})
+	$(window).on("keyup.multipointInsertPointEnd", ($event) => {
+		if(insertOrAddEventActive){
+			if(keyboard.isKeyHit($event, "Control")){
+				insertOrAddEventActive = false
+				appModel.event.changeEvent.update(false)
+			}
 		}
 	})
 	if(drawable.model.type === "line"){
 		// on [ALT]
 		$(window).on("keydown.lineAddPointStart", ($event) => {
-			if(keyboard.isModifierHit($event, "Alt")){
-				handleLinePointAdd($event, drawable)
+			if(appModel.isADrawableSelected()){
+				const selectedDrawable = appModel.getSelectedDrawable()
+				if(selectedDrawable.getClassName() === "MultipointPresenter"){
+					if(keyboard.isModifierHit($event, "Alt")){
+						insertOrAddEventActive = true
+						appModel.event.changeEvent.update(true)
+						handleLinePointAdd($event, drawable)
+					}
+				}
+			}
+		})
+		$(window).on("keyup.lineAddPointEnd", ($event) => {
+			if(insertOrAddEventActive){
+				if(keyboard.isKeyHit($event, "Alt")){
+					insertOrAddEventActive = false
+					appModel.event.changeEvent.update(false)
+				}
 			}
 		})
 	}
@@ -256,4 +268,6 @@ export function disableMultipointChange(drawable){
 	$(window).off("keyup.moveDrawable")
 	$(window).off("keydown.multipointInsertPointStart")
 	$(window).off("keydown.lineAddPointStart")
+	$(window).off("keyup.multipointInsertPointEnd")
+	$(window).off("keyup.lineAddPointEnd")
 }

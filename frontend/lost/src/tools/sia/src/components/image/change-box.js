@@ -20,7 +20,8 @@ let frameRequestBoxEdgeScaling = undefined
 function enableKeyMoveBox(drawable){
 	$(window).on("keydown.keyMoveBox", $event => {
 		if(!drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-			appModel.controls.changeEvent.update(true)
+			appModel.event.changeEvent.update(true)
+
 			if(!savedStartState){
 				stateElement = new state.StateElement()
 				stateElement.addUndo({
@@ -39,187 +40,56 @@ function enableKeyMoveBox(drawable){
 				savedStartState = true
 			}
 			keyMoveDrawable($event, drawable)    
-			appModel.controls.changeEvent.update(false)
 		}
 	})
 	$(window).on("keyup.keyMoveBox", $event => {
-		if(!drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-			appModel.controls.changeEvent.update(true)
-			if(!appModel.controls.creationEvent.value && savedStartState){
-				stateElement.addRedo({
-					data: {
-						x: drawable.getX() / imageInterface.getWidth(),
-						y: drawable.getY() / imageInterface.getHeight(),
-					},
-					fn: (data) => {
-						selectDrawable(drawable)
-						drawable.setPosition({
-							x: data.x * imageInterface.getWidth(),
-							y: data.y * imageInterface.getHeight(),
-						})
-					}
-				})
-				state.add(stateElement)
-				stateElement = undefined
-				savedStartState = false
-			}
-			appModel.controls.changeEvent.update(false)
+		if(stateElement && !drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
+
+			stateElement.addRedo({
+				data: {
+					x: drawable.getX() / imageInterface.getWidth(),
+					y: drawable.getY() / imageInterface.getHeight(),
+				},
+				fn: (data) => {
+					selectDrawable(drawable)
+					drawable.setPosition({
+						x: data.x * imageInterface.getWidth(),
+						y: data.y * imageInterface.getHeight(),
+					})
+				}
+			})
+			state.add(stateElement)
+			stateElement = undefined
+			savedStartState = false
+
+			appModel.event.changeEvent.update(false)
 		}
 	})
 }
 function enableScaleBoxEdge(drawable){
 	$(window).on("keydown.scaleBoxEdge", $event => {
-		let moveStep = undefined
-		if(keyboard.isModifierHit($event, "Shift")){
-			moveStep = appModel.controls.moveStepFast
-			appModel.controls.currentMoveStep = moveStep
-		} else {
-			moveStep = appModel.controls.moveStep
-			appModel.controls.currentMoveStep = moveStep
-		}
-		if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-			appModel.controls.changeEvent.update(true)
+		if(drawable.isEdgeSelected() && keyboard.isModifierNotHit($event, "Alt") && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
+			console.log("keydown.scaleBoxEdge")
 			$event.preventDefault()
-			if (frameRequestBoxEdgeScaling !== undefined) cancelAnimationFrame(frameRequestBoxEdgeScaling)
-			if(drawable.isEdgeSelected() && keyboard.isModifierNotHit($event, "Alt")){
-				// add undo
-				if(!savedStartState){
-					stateElement = new state.StateElement()
-					stateElement.addUndo({
-						data: {
-							x: drawable.getX() / imageInterface.getWidth(),
-							y: drawable.getY() / imageInterface.getHeight(),
-							w: drawable.getW() / imageInterface.getWidth(),
-							h: drawable.getH() / imageInterface.getHeight(),
-						},
-						fn: (data) => {
-							selectDrawable(drawable)
-							drawable.setBounds({
-								x: data.x * imageInterface.getWidth(),
-								y: data.y * imageInterface.getHeight(),
-								w: data.w * imageInterface.getWidth(),
-								h: data.h * imageInterface.getHeight(),
-							})
-						} 
-					})
-					savedStartState = true
-				} 
-				try {
-					// scale edge
-					frameRequestBoxEdgeScaling = requestAnimationFrame(() => {
-						switch (drawable.getEdge()) {
-							case "right":
-								switch ($event.key) {
-									case "d":
-									case "D":
-									case "ArrowRight":
-										drawable.setBounds({
-											w: drawable.getW() + moveStep,
-											x: drawable.getX() + moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-									case "a":
-									case "A":
-									case "ArrowLeft":
-										drawable.setBounds({
-											w: drawable.getW() - moveStep,
-											x: drawable.getX() - moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-								}
-								break
-							case "bottom":
-								switch ($event.key) {
-									case "w":
-									case "W":
-									case "ArrowUp":
-										drawable.setBounds({
-											h: drawable.getH() - moveStep,
-											y: drawable.getY() - moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-									case "s":
-									case "S":
-									case "ArrowDown":
-										drawable.setBounds({
-											h: drawable.getH() + moveStep,
-											y: drawable.getY() + moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-								}
-								break
-							case "top":
-								switch ($event.key) {
-									case "w":
-									case "W":
-									case "ArrowUp":
-										drawable.setBounds({
-											h: drawable.getH() + moveStep,
-											y: drawable.getY() - moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-									case "s":
-									case "S":
-									case "ArrowDown":
-										drawable.setBounds({
-											h: drawable.getH() - moveStep,
-											y: drawable.getY() + moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-								}
-								break
-							case "left":
-								switch ($event.key) {
-									case "a":
-									case "A":
-									case "ArrowLeft":
-										drawable.setBounds({
-											w: drawable.getW() + moveStep,
-											x: drawable.getX() - moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-									case "d":
-									case "D":
-									case "ArrowRight":
-										drawable.setBounds({
-											w: drawable.getW() - moveStep,
-											x: drawable.getX() + moveStep / 2,
-										})
-										drawable.setChanged()
-										break
-								}
-								break
-							default: 
-								frameRequestBoxEdgeScaling = undefined
-								return
-						}
-					})
-				} catch(error){
-					console.error(error.message)
-					throw error
-				} finally{
-					frameRequestBoxEdgeScaling = undefined
-				}
+			appModel.event.changeEvent.update(true)
+
+			let moveStep = undefined
+			if(keyboard.isModifierHit($event, "Shift")){
+				moveStep = appModel.controls.moveStepFast
+				console.log({ moveStep })
+				appModel.controls.currentMoveStep = moveStep
+			} else {
+				moveStep = appModel.controls.moveStep
+				appModel.controls.currentMoveStep = moveStep
 			}
-			appModel.controls.changeEvent.update(false)
-		}
-	})
-	$(window).on("keyup.scaleBoxEdge", $event => {
-		if(keyboard.isModifierNotHit($event, "Alt") && drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-			appModel.controls.changeEvent.update(true)
-			// add redo
-			// quickfix: sometimes stateElement was not yet initialized on keydown,
-			// or been sat undefined again, and not initialized again before this handler triggers.
-			// checking if it exists.
-			if(stateElement !== undefined){
-				stateElement.addRedo({
+			console.log({ moveStep })
+
+			if(frameRequestBoxEdgeScaling !== undefined) cancelAnimationFrame(frameRequestBoxEdgeScaling)
+
+			// add undo
+			if(!savedStartState){
+				stateElement = new state.StateElement()
+				stateElement.addUndo({
 					data: {
 						x: drawable.getX() / imageInterface.getWidth(),
 						y: drawable.getY() / imageInterface.getHeight(),
@@ -234,15 +104,144 @@ function enableScaleBoxEdge(drawable){
 							w: data.w * imageInterface.getWidth(),
 							h: data.h * imageInterface.getHeight(),
 						})
+					} 
+				})
+				savedStartState = true
+			} 
+			
+			// scale edge
+			try {
+				frameRequestBoxEdgeScaling = requestAnimationFrame(() => {
+					switch (drawable.getEdge()) {
+						case "right":
+							switch ($event.key) {
+								case "d":
+								case "D":
+								case "ArrowRight":
+									drawable.setBounds({
+										w: drawable.getW() + moveStep,
+										x: drawable.getX() + moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+								case "a":
+								case "A":
+								case "ArrowLeft":
+									drawable.setBounds({
+										w: drawable.getW() - moveStep,
+										x: drawable.getX() - moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+							}
+							break
+						case "bottom":
+							switch ($event.key) {
+								case "w":
+								case "W":
+								case "ArrowUp":
+									drawable.setBounds({
+										h: drawable.getH() - moveStep,
+										y: drawable.getY() - moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+								case "s":
+								case "S":
+								case "ArrowDown":
+									drawable.setBounds({
+										h: drawable.getH() + moveStep,
+										y: drawable.getY() + moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+							}
+							break
+						case "top":
+							switch ($event.key) {
+								case "w":
+								case "W":
+								case "ArrowUp":
+									drawable.setBounds({
+										h: drawable.getH() + moveStep,
+										y: drawable.getY() - moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+								case "s":
+								case "S":
+								case "ArrowDown":
+									drawable.setBounds({
+										h: drawable.getH() - moveStep,
+										y: drawable.getY() + moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+							}
+							break
+						case "left":
+							switch ($event.key) {
+								case "a":
+								case "A":
+								case "ArrowLeft":
+									drawable.setBounds({
+										w: drawable.getW() + moveStep,
+										x: drawable.getX() - moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+								case "d":
+								case "D":
+								case "ArrowRight":
+									drawable.setBounds({
+										w: drawable.getW() - moveStep,
+										x: drawable.getX() + moveStep / 2,
+									})
+									drawable.setChanged()
+									break
+							}
+							break
+						default: 
+							frameRequestBoxEdgeScaling = undefined
+							return
 					}
 				})
-				if(!appModel.controls.creationEvent.value){
-					state.add(stateElement)
-				}
+			} catch(error){
+				console.error(error.message)
+				throw error
+			} finally {
+				frameRequestBoxEdgeScaling = undefined
 			}
+		}
+	})
+	$(window).on("keyup.scaleBoxEdge", $event => {
+		if(stateElement && drawable.isEdgeSelected() && keyboard.isModifierNotHit($event, "Alt") && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
+			console.log("keyup.scaleBoxEdge")
+			appModel.event.changeEvent.update(true)
+
+			stateElement.addRedo({
+				data: {
+					x: drawable.getX() / imageInterface.getWidth(),
+					y: drawable.getY() / imageInterface.getHeight(),
+					w: drawable.getW() / imageInterface.getWidth(),
+					h: drawable.getH() / imageInterface.getHeight(),
+				},
+				fn: (data) => {
+					selectDrawable(drawable)
+					drawable.setBounds({
+						x: data.x * imageInterface.getWidth(),
+						y: data.y * imageInterface.getHeight(),
+						w: data.w * imageInterface.getWidth(),
+						h: data.h * imageInterface.getHeight(),
+					})
+				}
+			})
+			state.add(stateElement)
+			
 			stateElement = undefined
 			savedStartState = false
-			appModel.controls.changeEvent.update(false)
+
+			appModel.event.changeEvent.update(false)
 		}
 	})
 }
@@ -268,7 +267,7 @@ export function enableBoxChange(drawable){
 			return
 		}
 		// console.warn("box change handler (start)")
-		appModel.controls.changeEvent.update(true)
+		appModel.event.changeEvent.update(true)
 		
 		// set move cursor if mouse on menubar to move the box.
 		if($event.target.closest(`[data-ref="menu"]`)){
@@ -415,9 +414,8 @@ export function enableBoxChange(drawable){
 						})
 					}
 				})
-				if(!appModel.controls.creationEvent.value){
-					state.add(stateElement)
-				}
+				state.add(stateElement)
+
 				savedStartState = false
 				stateElement = undefined
 			}
@@ -429,35 +427,21 @@ export function enableBoxChange(drawable){
 			mousepos = undefined
 			distance = { x: undefined, y: undefined }
 
-			appModel.controls.changeEvent.update(false) 
+			appModel.event.changeEvent.update(false) 
 		})
 	})
 
 	// keyboard edge selection
 	$(window).on("keydown.selectBoxEdge", $event => {
-		appModel.controls.changeEvent.update(true)
 		if(keyboard.isModifierHit($event, "Alt")){
+			console.log("keydown.selectBoxEdge")
+			appModel.event.changeEvent.update(true)
+			
 			// prevent scrolling when using arrow keys
 			$event.preventDefault()
 
 			// temporary disable box movement via keyboard
 			disableKeyMoveBox()
-
-			// reset edge if space, enter, tab or escape was used
-			$(window).on("keydown.resetEdge", $event => {
-				if(keyboard.isKeyHit($event, ["Space", "Enter", "Tab", "Escape"])){
-					$(window).off("keydown.resetEdge")
-					$event.preventDefault()
-					drawable.resetEdge()
-					enableKeyMoveBox(drawable)
-					// force re-select (Escape will unselect the drawable)
-					// this will re-enable box movement via keyboard
-					if(keyboard.isKeyHit($event, "Escape")){
-						selectDrawable(drawable)
-					}
-					appModel.controls.changeEvent.update(false)
-				}
-			})
 			
 			// edge selection
 			if(keyboard.isModifierHit($event, "Alt")) {
@@ -487,6 +471,24 @@ export function enableBoxChange(drawable){
 			}
 		}
 	})
+	// reset edge if space, enter, tab or escape was used
+	$(window).on("keydown.resetEdge", $event => {
+		if(drawable.isEdgeSelected() && keyboard.isKeyHit($event, ["Space", "Enter", "Tab", "Escape"])){
+			$event.preventDefault()
+			drawable.resetEdge()
+			enableKeyMoveBox(drawable)
+			// force re-select (Escape will unselect the drawable)
+			// this will re-enable box movement via keyboard
+			if(keyboard.isKeyHit($event, "Escape")){
+				selectDrawable(drawable)
+			}
+		}
+	})
+	$(window).on("keyup.selectBoxEdge", $event => {
+		if(keyboard.isKeyHit($event, "Alt")){
+			appModel.event.changeEvent.update(false)
+		}
+	})
 
 	enableScaleBoxEdge(drawable)
 	enableKeyMoveBox(drawable)
@@ -496,6 +498,8 @@ export function disableBoxChange(drawable){
 	$(window).off("mousemove.changeBoxUpdate")
 	$(window).off("mouseup.changeBoxEnd")
 	$(window).off("keydown.selectBoxEdge")
+	$(window).off("keyup.selectBoxEdge")
+	$(window).off("keydown.resetEdge")
 	disableScaleBoxEdge()
 	disableKeyMoveBox()
 }

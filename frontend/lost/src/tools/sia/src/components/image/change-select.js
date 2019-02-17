@@ -6,6 +6,9 @@ import imageInterface from "./imageInterface"
 
 
 export function selectDrawable(next: Drawable){
+    if(!next){
+        return
+    }
     const curr = appModel.getSelectedDrawable()
     // Don't re-select a drawable if it is allready selected. 
     // If another drawable is currently selected unselect it.
@@ -30,12 +33,10 @@ export function selectDrawable(next: Drawable){
         appModel.selectDrawable(next)
         if(next.parent){
             next.parent.select()
-            if(!appModel.controls.creationEvent.value){
-                if(curr){
-                    next.parent.previousPoint = curr
-                }
-                next.parent.currentPoint = next
+            if(curr){
+                next.parent.previousPoint = curr
             }
+            next.parent.currentPoint = next
         }
     }
 }

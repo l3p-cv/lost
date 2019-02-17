@@ -15,7 +15,17 @@ let mousePrev = undefined
 let mousepos = undefined
 let stateElement = undefined
 let savedStartState = false
-
+// @TODO: use keyStates to create a better user experience and a cleaner event handling.
+const keyStates = {
+	"w": false,
+	"s": false,
+	"d": false,
+	"a": false,
+	"arrowup": false,
+	"arrowdown": false,
+	"arrowright": false,
+	"arrowleft": false,
+}
 export function enablePointChange(drawable){
 	// mouse handler
 	$(drawable.view.html.root).on("mousedown.movePointStart", ($event) => {
@@ -24,8 +34,7 @@ export function enablePointChange(drawable){
 			$event.preventDefault()
 			return
 		}
-		appModel.controls.changeEvent.update(true)
-		// console.warn("point change handler (start)")
+		appModel.event.changeEvent.update(true)
 		mouseStart = mouse.getMousePosition($event, imageInterface.getSVG())
 		// calculate the real mouseposition (@zoom)
 		const svg = imageInterface.getSVG()
@@ -40,7 +49,6 @@ export function enablePointChange(drawable){
 			if(drawable.parent){
 				drawable.hide()
 			}
-			// console.warn("point change handler (update)")
 			mouse.setGlobalCursor(mouse.CURSORS.NONE.class, {
 				noPointerEvents: true,
 				noSelection: true,
@@ -84,7 +92,6 @@ export function enablePointChange(drawable){
 				$event.preventDefault()
 				return
 			}
-			// console.warn("point change handler (end)")
 			$(window).off("mousemove.movePointUpdate")
 			$(window).off("mouseup.movePointEnd")
 			// update drawable status and reselect if its a multi-point-annotation point.
@@ -112,9 +119,7 @@ export function enablePointChange(drawable){
 				}
 			})
 			// make undo redo possible
-			if(!appModel.controls.creationEvent.value && !drawable.parent){
-				state.add(stateElement)
-			}
+			state.add(stateElement)
 
 			// reset
 			mouse.unsetGlobalCursor()
@@ -124,18 +129,14 @@ export function enablePointChange(drawable){
 			savedStartState = false
 			stateElement = undefined
 
-			// quick-fix: left mouse button is also used during multipoint drawable creation
-			// setting a timeout here for multipoint drawable creation not to finish (dblclick lmb)
-			// when moving improperly set points.
-			setTimeout(() => {
-				appModel.controls.changeEvent.update(false)
-			}, 500)
+			appModel.event.changeEvent.update(false)
 		})
 	})
 	// keyboard handler
 	$(window).on("keydown.movePoint", $event => {
 		if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){
-			appModel.controls.changeEvent.update(true)
+			keyStates[$event.key] = true
+			appModel.event.changeEvent.update(true)
 			if(!savedStartState){
 				stateElement = new state.StateElement()
 				// add undo
@@ -153,52 +154,37 @@ export function enablePointChange(drawable){
 					} 
 				})
 				savedStartState = true
-				$(window).one("keyup.movePoint", $event => {
-					if(keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){   
-						stateElement.addRedo({
-							data: {
-								x: drawable.getX() / imageInterface.getWidth(),
-								y: drawable.getY() / imageInterface.getHeight(),
-							},
-							fn: (data) => {
-								selectDrawable(drawable)
-								drawable.setPosition({
-									x: data.x * imageInterface.getWidth(),
-									y: data.y * imageInterface.getHeight(),
-								})
-							}
-						})
-						
-						if(!appModel.controls.creationEvent.value && !drawable.parent){
-							state.add(stateElement)
-						}
-						stateElement = undefined
-						savedStartState = false
-					}
-				})
+
 			}
 			keyMoveDrawable($event, drawable)
-			appModel.controls.changeEvent.update(false)
 		}
 	})
-
-	// special handlers for multipoint drawables
-	if(drawable.parent){
-		// on [CTRL]
-		$(window).on("keydown.multipointInsertPointStart", ($event) => {
-			if(keyboard.isModifierHit($event, "Control")){
-				handleMultipointPointInsertion($event, drawable.parent)
-			}
-		})
-		if(drawable.parent.model.type === "line"){
-			// on [ALT]
-			$(window).on("keydown.lineAddPointStart", ($event) => {
-				if(keyboard.isModifierHit($event, "Alt")){
-					handleLinePointAdd($event, drawable.parent)
+	$(window).on("keyup.movePoint", $event => {
+		if(stateElement && keyboard.isKeyHit($event, ["W", "ArrowUp", "S", "ArrowDown", "D", "ArrowRight", "A", "ArrowLeft"], { caseSensitive: false })){   
+			keyStates[$event.key] = false
+			
+			stateElement.addRedo({
+				data: {
+					x: drawable.getX() / imageInterface.getWidth(),
+					y: drawable.getY() / imageInterface.getHeight(),
+				},
+				fn: (data) => {
+					selectDrawable(drawable)
+					drawable.setPosition({
+						x: data.x * imageInterface.getWidth(),
+						y: data.y * imageInterface.getHeight(),
+					})
 				}
 			})
+			
+			state.add(stateElement)
+			
+			stateElement = undefined
+			savedStartState = false
+
+			appModel.event.changeEvent.update(false)
 		}
-	}
+	})
 }
 export function disablePointChange(drawable){
 	$(drawable.view.html.root).off("mousedown.movePointStart")

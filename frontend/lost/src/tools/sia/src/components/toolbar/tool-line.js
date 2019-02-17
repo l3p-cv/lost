@@ -12,11 +12,6 @@ import { selectDrawable } from "components/image/change-select"
 import { addDrawable } from "components/image/change-add"
 import { removeDrawable } from "components/image/change-delete"
 const imageEventActions = { selectDrawable, addDrawable, removeDrawable }
-// import imageEventActions from "components/image/imageEventActions"
-
-// // legit, cyclic?
-// import { onCreationStart, onCreationEnd } from "./toolbarPresenter"
-// const toolbarPresenter = { onCreationStart, onCreationEnd }
 
 
 let firstPoint = undefined
@@ -39,7 +34,7 @@ function addLinePoint($event){
 			isNoAnnotation: true,
 		})
 		imageEventActions.addDrawable(firstPoint)
-		imageEventActions.selectDrawable(firstPoint)
+		firstPoint.select()
 	}
 	// else if no line was created before, create a initial line, and show it, remove the initial point.
 	else if(!line) {
@@ -54,13 +49,15 @@ function addLinePoint($event){
 		imageEventActions.removeDrawable(firstPoint)
 		imageEventActions.addDrawable(line)
 		// select the second point of the line as indicator.
-		imageEventActions.selectDrawable(line.model.points[1])
+		firstPoint.unselect()
+		line.model.points[1].select()
 	}
 	// else add a point to the line.
 	else {
 		currentPoint = line.addPoint(mousepos)
 		if(currentPoint){
-			imageEventActions.selectDrawable(currentPoint)
+			line.model.points[line.model.points.length - 2].unselect()
+			currentPoint.select()
 		}
 	}
 }
@@ -69,6 +66,9 @@ function deleteLinePoint(){
 	if(firstPoint && !line){
 		imageEventActions.removeDrawable(firstPoint)
 		firstPoint = undefined
+		if(appModel.event.changeEvent.value === false){
+			appModel.event.creationEvent.update(false)
+		}
 	}
 	// second point
 	if(line && line.model.points.length === 2){
@@ -81,47 +81,60 @@ function deleteLinePoint(){
 			isNoAnnotation: true,
 		})
 		imageEventActions.addDrawable(firstPoint)
-		imageEventActions.selectDrawable(firstPoint)
+		firstPoint.select()
 	}
 	// 3+n point
 	else if(line){
 		line.removePoint(line.model.points[line.model.points.length - 1])
-		imageEventActions.selectDrawable(line.model.points[line.model.points.length - 1])
+		line.model.points[line.model.points.length - 1].select()
 	}
 }
 function finishLine(){
-	if(line){
-		state.add(new state.StateElement({
-			do: {
-				data: { line },
-				fn: (data) => {
-					const { line } = data
-					appModel.addDrawable(line)
-					imageEventActions.selectDrawable(line)
-				}
-			},
-			undo: {
-				data: { line },
-				fn: (data) => {
-					const { line } = data
-					line.delete()
-					appModel.deleteDrawable(line)
-				}
+	if(!line){
+		throw new Error("Can not finish. 'line' is undefined.")
+	}
+	state.add(new state.StateElement({
+		do: {
+			data: { line },
+			fn: (data) => {
+				const { line } = data
+				appModel.addDrawable(line)
+				imageEventActions.selectDrawable(line)
 			}
-		}))
-		appModel.addDrawable(line)
-		line.model.points[line.model.points.length-1].unselect()
-		imageEventActions.selectDrawable(line)
-		// show menu bar after creation
-		if(line.menuBar){
-			line.menuBar.show()
+		},
+		undo: {
+			data: { line },
+			fn: (data) => {
+				const { line } = data
+				line.delete()
+				appModel.deleteDrawable(line)
+			}
 		}
-	} 
-	else {
-		appModel.resetDrawableSelection()
-		if(firstPoint && !line){
-			imageEventActions.removeDrawable(firstPoint)
-		}
+	}))
+	appModel.addDrawable(line)
+	line.model.points[line.model.points.length-1].unselect()
+	imageEventActions.selectDrawable(line)
+	// show menu bar after creation
+	if(line.menuBar){
+		line.menuBar.show()
+	}
+
+	// reset creation context
+	firstPoint = undefined
+	line = undefined
+
+	if(appModel.event.changeEvent.value === false){
+		appModel.event.creationEvent.update(false)
+	}
+}
+function cancelLineCreation(){
+	// remove point from view
+	if(firstPoint){
+		imageEventActions.removeDrawable(firstPoint)
+	}
+	// remove line from view
+	if(line){
+		imageEventActions.removeDrawable(line)
 	}
 
 	// reset creation context
@@ -129,33 +142,42 @@ function finishLine(){
 	line = undefined
 
 	appModel.event.creationEvent.update(false)
-	// toolbarPresenter.onCreationEnd()
 }
 
 export function enableLineCreation(onStart, onEnd){
 	$(imageInterface.getSVG()).on("mousedown.createLinePoint", ($event) => {
-		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
+		if(mouse.button.isRight($event.button)){
 			appModel.event.creationEvent.update(true)
-			// toolbarPresenter.onCreationStart()
 		}
 	})
 	$(imageInterface.getSVG()).on("mouseup.createLinePoint", ($event) => {
 		// prevent context menu
 		$event.preventDefault()
 		// create or extend line.
-		if(keyboard.isNoModifierHit($event) && mouse.button.isRight($event.button)){
+		if(mouse.button.isRight($event.button)){
 			addLinePoint($event)
 		}
 	})
 	// if in trouble, notice: left mouse button is also used in point change event handlers (imagePresenter)
 	$(window).on("dblclick.finishLine", ($event) => {
-		if(line && keyboard.isNoModifierHit($event) && mouse.button.isLeft($event.button)){
+		if(line 
+			&& keyboard.isNoModifierHit($event)
+			&& mouse.button.isLeft($event.button)
+		){
 			finishLine()
 		}
 	})
 	$(window).on("keydown.finishLine", ($event) => {
-		if(keyboard.isKeyHit($event, ["Escape", "Enter"])){
+		if(line 
+			&& keyboard.isNoModifierHit($event)
+			&& keyboard.isKeyHit($event, ["Enter"])
+		){
 			finishLine()
+		}
+	})
+	$(window).on("keydown.cancelLineCreation", ($event) => {
+		if(keyboard.isKeyHit($event, ["Escape"])){
+			cancelLineCreation()
 		}
 	})
 	$(window).on("keydown.deleteLinePoint", ($event) => {
@@ -170,4 +192,5 @@ export function disableLineCreation(){
 	$(window).off("keydown.deleteLinePoint")
 	$(window).off("keydown.finishLine")
 	$(window).off("dblclick.finishLine")
+	$(window).off("keydown.cancelLineCreation")
 }
