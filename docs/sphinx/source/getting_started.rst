@@ -53,3 +53,57 @@ tested for Ubuntu):
         docker-compose up
 6. Open a browser and navigate to: http://localhost
 7. Login in with user **admin** and password **admin**
+
+
+Getting Data into LOST
+======================
+
+Image Data
+----------------------
+In the current version there is no GUI available in order to load images 
+into LOST. 
+So we will use the good old command line to do that.
+An image dataset in LOST is just a folder with images. 
+LOST will recognize all folders that are located at 
+*path_to_lost/data/data/media* in your filesystem as a dataset.
+In order to add your dataset just copy it to the path above e.g.:
+
+    .. code-block:: bash
+
+        # Copy your dataset into the LOST media folder
+        cp -r path/to/my/dataset path_to_lost/data/data/media 
+        
+        # It may be required that you copy it as a super user since the 
+        # docker container that executes LOST is running as root service 
+        # and owns the media folder.
+        sudo cp -r path/to/my/dataset path_to_lost/data/data/media
+
+LabelTrees
+----------------------
+
+Users and Groups
+=======================
+There are two main user roles in LOST: 
+A **Designer** and an **Annotator** role.
+Both roles have different views and access to information.
+An **Annotators** job is just to work on annotation tasks that are assigned to him,
+while a **Designer** may do more advanced stuff and everything 
+an **Annotator** may do.
+For example a **Designer** will start annotation piplines and choose or edit
+LabelTrees for the annotation tasks.
+
+Independent of ist role a user can be part of one or multiple user **Groups**.
+In this way annotation tasks can be a assigned to **Groups** of users that 
+can work collaborative on the same task.
+
+
+In order to manage users and groups, 
+click on the **Users** icon on the left menu bar.
+Please note that only users with the role **Designer** are allowed to 
+manage users.
+
+Starting a Pipeline
+===================
+
+Annotate Your Images
+====================
