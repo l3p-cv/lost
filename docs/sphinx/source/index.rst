@@ -11,6 +11,7 @@ Welcome to lost's documentation!
    :caption: Contents:
 
         Getting Started <getting_started.rst>
+        For Pipeline Designers <designers.rst>
         Annotation Tools <anno_tools.rst>
         Conventions <conventions.rst>
         All About Scripts <all_about_scripts.rst>
