@@ -17,8 +17,6 @@ import * as toolbarPresenter from "components/toolbar/toolbarPresenter"
 import * as imageView from "components/image/imageView"
 import * as controlsView from "components/controls/controlsView"
 
-// appModel.controls.changeEvent.on("update", value => console.log("change event:", value))
-// appModel.controls.creationEvent.on("update", value => console.log("create event:", value))
 
 // app init configuration
 const CONFIG = true
@@ -159,6 +157,14 @@ if(DEBUG){
 
 // MODEL BINDINGS
 appModel.data.drawables.on("update", () => handleDataUpdate(appModel.data))
+
+// Should implement update event canceling method for Observable.js
+// appModel.event.creationEvent.on("before-update", (isActive) => {
+//     console.log({ isActive })
+//     if(appModel.event.changeEvent.value){
+//          appModel.event.creationEvent.cancelCallbackExecution()
+//     }
+// })
 
 // VIEW BINDINGS
 $(window).on("resize", resize)

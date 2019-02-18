@@ -1,7 +1,8 @@
+import "./drawable.styles.scss"
+
 import $ from "cash-dom"
 
 import { mouse, svg } from "l3p-frontend"
-import "./drawable.styles.scss"
 
 import imageInterface from "components/image/imageInterface"
 

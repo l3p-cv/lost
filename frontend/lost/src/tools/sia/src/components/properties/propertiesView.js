@@ -1,8 +1,11 @@
+import "./properties.styles.scss"
+
 import $ from "cash-dom"
 
-import "./properties.styles.scss"
 import { NodeTemplate, keyboard } from "l3p-frontend"
-import appModel from "../../appModel"
+
+import appModel from "siaRoot/appModel"
+
 
 export const html = new NodeTemplate(/*html*/`
     <div id="sia-propview-container">
@@ -202,6 +205,7 @@ export const image = new Image()
 
 
 export function updateTable(drawable: DrawablePresenter){
+	if(!drawable || Object.keys(drawable).length === 0) return
     switch(drawable.getClassName()){
         case "PointPresenter":
             // show x and y

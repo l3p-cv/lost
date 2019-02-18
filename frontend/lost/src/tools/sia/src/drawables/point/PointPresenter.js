@@ -1,8 +1,8 @@
-import DrawablePresenter from "../DrawablePresenter"
-import MenuPresenter from "../menu/MenuPresenter"
-
 import PointModel from "./PointModel"
 import PointView from "./PointView"
+
+import DrawablePresenter from "../DrawablePresenter"
+import MenuPresenter from "../menu/MenuPresenter"
 
 import imageInterface from "components/image/imageInterface"
 

@@ -1,3 +1,4 @@
+// re-order this file!
 import $ from "cash-dom"
 
 import { mouse, svg as SVG } from "l3p-frontend"
@@ -8,67 +9,90 @@ import { STATE } from "drawables/drawable.statics"
 import BoxPresenter from "drawables/box/BoxPresenter"
 import PointPresenter from "drawables/point/PointPresenter"
 import MultipointPresenter from "drawables/multipoint/MultipointPresenter"
-import DrawablePresenter from "drawables/DrawablePresenter"
 
 import appModel from "siaRoot/appModel"
 import * as http from "siaRoot/http"
 
 import * as imageView from "./imageView"
-import { enableChange, disableChange } from "./change-global"
-import { enableSelect } from "./change-select"
-import { enableDelete, disableDelete } from "./change-delete"
-import { enableUndoRedo, disableUndoRedo } from "./change-undo-redo"
+import imageEventActions from "./imageEventActions"
 
 
+function showDrawables(){
+    Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+        Object.values(observableDrawableList.value).forEach(drawable => {
+            drawable.show()
+        })
+    })
+}
+function hideDrawables(options = {}){
+    const { showSelected } = options
+    Object.values(appModel.state.drawables).forEach(observableDrawableList => {
+        Object.values(observableDrawableList.value).forEach(drawable => {
+            if(appModel.isADrawableSelected()){
+                const selectedDrawable = appModel.getSelectedDrawable()
+                if(
+                    drawable === selectedDrawable
+                    || (selectedDrawable.parent && drawable === selectedDrawable.parent) 
+                ){
+                    if(showSelected){
+                        return
+                    }
+                }
+            }
+            drawable.hide()
+        })
+    })
+}
+function onCreationEventStart(){
+    imageEventActions.disableSelect()
+    imageEventActions.disableDelete(appModel.config.value)
+    imageEventActions.disableUndoRedo(appModel.config.value)
+    hideDrawables()
+}
+function onCreationEventEnd(){
+    imageEventActions.enableSelect()
+    imageEventActions.enableDelete(appModel.config.value)
+    imageEventActions.enableUndoRedo(appModel.config.value)
+    showDrawables()
+}
+function onChangeEventStart(){
+    hideDrawables({ showSelected: true })
+}
+function onChangeEventEnd(){
+    showDrawables()
+}
+appModel.event.creationEvent.on("change", isActive => isActive ? onCreationEventStart() : onCreationEventEnd())
+appModel.event.changeEvent.on("change", isActive => isActive ? onChangeEventStart() : onChangeEventEnd())
+
+
+// on init
 appModel.config.on("update", config => {
-    enableSelect()
+    imageEventActions.enableSelect()
 	if(config.actions.edit.bounds){
 		// enable change on current selected drawable
 		if(appModel.isADrawableSelected()){
-			enableChange(appModel.getSelectedDrawable(), appModel.config.value)
+			imageEventActions.enableChange(appModel.getSelectedDrawable(), appModel.config.value)
 		}
-		appModel.state.selectedDrawable.on("update", drawable => enableChange(drawable, appModel.config.value))
-		appModel.state.selectedDrawable.on(["before-update", "reset"], disableChange)
+		appModel.state.selectedDrawable.on("update", drawable => imageEventActions.enableChange(drawable, appModel.config.value))
+		appModel.state.selectedDrawable.on(["before-update", "reset"], (prev, next) => imageEventActions.disableChange(prev))
 	} else {
 		// disable change on current selected drawable
 		if(appModel.isADrawableSelected()){
-			disableChange(appModel.getSelectedDrawable())
+			imageEventActions.disableChange(appModel.getSelectedDrawable())
 		}
-		appModel.state.selectedDrawable.off("update", enableChange)
-		appModel.state.selectedDrawable.off(["before-update", "reset"], disableChange)
+		appModel.state.selectedDrawable.off("update", imageEventActions.enableChange)
+		appModel.state.selectedDrawable.off(["before-update", "reset"], imageEventActions.disableChange)
 	}
-	enableDelete(appModel.config.value)
-	enableUndoRedo(appModel.config.value)
+	imageEventActions.enableDelete(appModel.config.value)
+	imageEventActions.enableUndoRedo(appModel.config.value)
 })
-
-
+// on image change
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)
 		imageView.updateImage(objectURL)
 	})
 })
-appModel.data.image.info.on("update", info => imageView.updateInfo(info))
-
-// add and remove drawables when data changes
-Object.values(appModel.state.drawables).forEach(observable => {
-    observable.on("update", (drawables) => addDrawables(drawables))
-    observable.on("reset", (drawables) => removeDrawables(drawables))
-    observable.on("add", (drawable) => addDrawable(drawable))
-    observable.on("remove", (drawable) => removeDrawable(drawable))
-})
-
-
-$(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
-    alert("Function not completely implemented.")
-})
-
-export const image = imageView.image
-appModel.ui.resized.on("update", () => {
-	// (re)create drawables
-    createDrawables(appModel.data.drawables.value)
-})
-
 imageView.image.addEventListener("load", () => {   
     const { colorMap } = color.getColorTable(
         imageView.image,
@@ -78,7 +102,8 @@ imageView.image.addEventListener("load", () => {
 
     appModel.state.colorTable = colorMap
     
-    // the default move step  is 1px, the fast move step depends on current image display size.
+    // the default move step is 1px, the fast move step depends on current image display size.
+    // warning: imageView width and height were 0 here for some reason.
     appModel.controls.moveStepFast = Math.ceil(appModel.controls.moveStep * (imageView.getWidth() * imageView.getHeight() * 0.00001))
     if(JSON.parse(sessionStorage.getItem("sia-first-image-loaded"))){
         // @quickfix: lost integration
@@ -92,10 +117,37 @@ imageView.image.addEventListener("load", () => {
     }
 }, false)
 
+appModel.data.image.info.on("update", info => imageView.updateInfo(info))
+// on drawable data change
+Object.values(appModel.state.drawables).forEach(observable => {
+	// add and remove drawables when data changes
+    observable.on("update", (drawables) => addDrawables(drawables))
+    observable.on("reset", (drawables) => removeDrawables(drawables))
+    observable.on("add", (drawable) => imageEventActions.addDrawable(drawable))
+    observable.on("remove", (drawable) => imageEventActions.removeDrawable(drawable))
+})
+// on resize (synthetic)
+appModel.ui.resized.on("update", () => {
+	// (re)create drawables
+    createDrawables(appModel.data.drawables.value)
+    appModel.controls.moveStepFast = Math.ceil(appModel.controls.moveStep * (imageView.getWidth() * imageView.getHeight() * 0.00001))
+})
+
+
+// view bindings
+$(imageView.html.refs["sia-delete-junk-btn"]).on("click", $event => {
+    alert("Function not completely implemented.")
+})
+
+
+export const image = imageView.image
+
+
 // =============================================================================================
 // ZOOM
 // =============================================================================================
-// reset zoom observable on resize
+// on resize reset zoom observable on resize (quickfix)
+// => put this in resetZoomContext()?
 $(window).on("resize", () => {
 	// quickfix: i wanted to use observables reset method, but 
 	// it currently returns the latest value instead of the initial value. 
@@ -116,6 +168,7 @@ function resetZoomContext(){
     zoomLevel = 0
     oldZoom = 1
     newZoom = undefined
+	// appModel.ui.zoom.reset()
 }
 // reset zoom when switching between images (data updates), or when resizing window.
 appModel.data.drawables.on("update", resetZoomContext)
@@ -339,19 +392,9 @@ export function createDrawables(drawablesRawData: any){
 }
 
 // does not mutate appModel
-export function addDrawable(drawable: DrawablePresenter){
-    if(!drawable.model.status.has(STATE.DELETED)){
-        imageView.addDrawable(drawable)
-    }
-}
-// does not mutate appModel
 function addDrawables(drawables: Array<DrawablePresenter>){
     drawables = drawables.filter(d => !d.model.status.has(STATE.DELETED))
     imageView.addDrawables(drawables)
-}
-// does not mutate appModel
-export function removeDrawable(drawable: DrawablePresenter){
-    imageView.removeDrawable(drawable.view)
 }
 // does not mutate appModel
 function removeDrawables(){
@@ -359,6 +402,7 @@ function removeDrawables(){
         drawables.value.forEach(d => imageView.removeDrawable(d.view))
     })
 }
+
 
 
 export function resize(width: Number, height: Number){

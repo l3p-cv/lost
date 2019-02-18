@@ -1,17 +1,19 @@
 import { svg } from "l3p-frontend"
-import DrawablePresenter from "../DrawablePresenter"
+import DoublyLinkedList from "dbly-linked-list"
 
 import MultipointModel from "./MultipointModel"
 import MultipointView from "./MultipointView"
 import MULTIPOINT_DEFAULTS from "./multipoint.defaults"
-import POINT_DEFAULTS from "../point/point.defaults"
 
+import DrawablePresenter from "../DrawablePresenter"
+
+import POINT_DEFAULTS from "../point/point.defaults"
 import PointPresenter from "../point/PointPresenter"
+
 import MenuPresenter from "../menu/MenuPresenter"
 
 import imageInterface from "components/image/imageInterface"
 
-import DoublyLinkedList from "dbly-linked-list"
 
 
 function extendPoint(point, index, parent){

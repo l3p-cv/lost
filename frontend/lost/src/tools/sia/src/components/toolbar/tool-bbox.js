@@ -1,4 +1,4 @@
-import { mouse, svg as SVG, state } from "l3p-frontend"
+import { mouse, keyboard, svg as SVG, state } from "l3p-frontend"
 
 import BoxPresenter from "drawables/box/BoxPresenter"
 import BoxModel from "drawables/box/BoxModel"
@@ -7,8 +7,10 @@ import { STATE } from "drawables/drawable.statics"
 import appModel from "siaRoot/appModel"
 
 import imageInterface from "components/image/imageInterface"
+
+// trying to get around cyclics.
 import { selectDrawable } from "components/image/change-select"
-import { onCreationStart, onCreationEnd } from "components/toolbar/toolbarPresenter"
+const imageEventActions = { selectDrawable }
 
 
 let newBox = undefined
@@ -59,6 +61,7 @@ function validate($event) {
 	h = h / hImg
 	x = (x / wImg) + (w / 2)
 	y = (y / hImg) + (h / 2)
+	
 	newBox = new BoxPresenter({
 		status: STATE.NEW,
 		data: { x, y, w, h }
@@ -72,7 +75,7 @@ function validate($event) {
 	// add the box hidden.
 	appModel.addDrawable(newBox)
 	// select the box.
-	selectDrawable(newBox)
+	newBox.select()
 
 	// start the update on mousemove and show the box.
 	$(window).on("mousemove", update)
@@ -137,12 +140,12 @@ function update(e) {
 export function enableBBoxCreation(){
 	$(imageInterface.getSVG()).on("mousedown.createBoxStart", ($event) => {
 		// only execute on right mouse button.
-		if(!mouse.button.isRight($event.button)){
+		if(keyboard.isAModifierHit($event) || !mouse.button.isRight($event.button)){
 			return
 		}
 
 		// start creation mode.
-		onCreationStart()
+		appModel.event.creationEvent.update(true)
 
 		// set a global cursor.
 		mouse.setGlobalCursor(mouse.CURSORS.CREATE.class, {
@@ -193,7 +196,7 @@ export function enableBBoxCreation(){
 						// add the box hidden.
 						appModel.addDrawable(data.box)
 						// select the box.
-						selectDrawable(data.box)
+						imageEventActions.selectDrawable(data.box)
 					}
 				},
 				undo: {
@@ -203,7 +206,6 @@ export function enableBBoxCreation(){
 					fn: (data) => {
 						data.box.delete()
 						appModel.deleteDrawable(data.box)
-						// selectDrawable(appModel.state.previousDrawable)
 					}
 				}
 			}))
@@ -214,9 +216,10 @@ export function enableBBoxCreation(){
 			}
 		}
 
-		// reset.
+		// finish
+		appModel.event.creationEvent.update(false)
+		imageEventActions.selectDrawable(newBox)
 		resetContext()
-		onCreationEnd()
 	})
 }
 

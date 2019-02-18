@@ -7,7 +7,9 @@ import appModel from "siaRoot/appModel"
 import MenuModel from "./MenuModel"
 import MenuView from "./MenuView"
 
+// trying to get around cyclic dependencys
 import { selectDrawable } from "components/image/change-select"
+const imageEventActions = { selectDrawable }
 
 
 export default class MenuPresenter {
@@ -44,7 +46,7 @@ export default class MenuPresenter {
 						data: { drawable: this.model.drawable },
 						fn: (data) => {
 							appModel.addDrawable(data.drawable)
-							selectDrawable(data.drawable)
+							imageEventActions.selectDrawable(data.drawable)
 						}
 					}
 				}))

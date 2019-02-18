@@ -1,9 +1,9 @@
+import "./point.styles.scss"
 import { NodeTemplate, mouse, svg as SVG } from "l3p-frontend"
 
 import DrawableView from "../DrawableView"
 
 import DEFAULTS from "./point.defaults"
-import "./point.styles.scss"
 
 import imageInterface from "components/image/imageInterface"
 

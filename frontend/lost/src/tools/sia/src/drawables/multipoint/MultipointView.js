@@ -1,8 +1,10 @@
-import { NodeTemplate, mouse, svg as SVG } from "l3p-frontend"
+import { NodeTemplate, mouse } from "l3p-frontend"
 
 import DEFAULTS from "./multipoint.defaults"
-import POINT_DEFAULTS from "../point/point.defaults"
+
 import DrawableView from "../DrawableView"
+
+import POINT_DEFAULTS from "../point/point.defaults"
 
 
 export default class MultipointView extends DrawableView {

@@ -1,4 +1,3 @@
-
 // special layer, not using any other view imports.
 // should rewrite this to match nodetemplate id or ref api.
 let image = undefined
@@ -39,7 +38,6 @@ export default {
     getHeight(){ 
         return parseInt(this.getSVGEmbeddedImage().getAttribute("height"))
     },
-    // @thesis: snippet
     getDimensions(){
         // get current width and height (of image, or container)
         const dimensions = {
@@ -52,23 +50,6 @@ export default {
             throw new Error("image has bad dimensions.") 
         }
         return dimensions 
-    }
+    },
 }
-
-/*
-@ thesis?
-let sia_imgview_svg = undefined
-export default {
-    "sia-imgview-svg": (()=>{
-        if(sia_imgview_svg === undefined){
-            sia_imgview_svg = document.getElementById("sia-imgview-svg")
-        }
-        if(sia_imgview_svg === undefined || sia_imgview_svg === null){
-            throw new Error("Could not find element.")
-        }
-        return sia_imgview_svg
-    })
-}
-
-*/
 

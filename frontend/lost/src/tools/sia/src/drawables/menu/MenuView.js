@@ -1,8 +1,8 @@
-// @todo: add white background rect to the small label
+import "./menu.styles.scss"
+
 import { NodeTemplate, svg } from "l3p-frontend"
 
-import "./menu.styles.scss"
-window.NodeTemplate = NodeTemplate
+
 export default class MenuView {
     /**
      * @param label: test

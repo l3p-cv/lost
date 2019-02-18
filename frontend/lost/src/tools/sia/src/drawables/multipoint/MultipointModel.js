@@ -3,7 +3,6 @@ import { Observable } from "l3p-frontend"
 import DrawableModel from "../DrawableModel"
 
 import PointPresenter from "../point/PointPresenter"
-import BoxPresenter from "../box/BoxPresenter"
 
 import imageInterface from "components/image/imageInterface"
 

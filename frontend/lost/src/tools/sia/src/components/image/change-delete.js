@@ -3,6 +3,7 @@ import { keyboard, state } from "l3p-frontend"
 import appModel from "siaRoot/appModel"
 
 import { selectDrawable } from "./change-select"
+import * as imageView from "./imageView"
 
 
 export function enableDelete(config){
@@ -11,7 +12,6 @@ export function enableDelete(config){
 		$(window).on("keydown.drawableDelete", ($event) => {
 			if(keyboard.isKeyHit($event, "Delete")){
 				if(appModel.isADrawableSelected()){
-					console.log("delete (image handler)")
 					$event.preventDefault()
 					const selectedDrawable = appModel.getSelectedDrawable()
 					if(selectedDrawable.isDeletable()){
@@ -56,4 +56,7 @@ export function enableDelete(config){
 }
 export function disableDelete(){
     $(window).off("keydown.drawableDelete")
+}
+export function removeDrawable(drawable: DrawablePresenter){
+    imageView.removeDrawable(drawable.view)
 }

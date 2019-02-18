@@ -25,6 +25,7 @@ export function keyMoveDrawable($event, drawable){
 		moveStep = appModel.controls.moveStep
 		appModel.controls.currentMoveStep = moveStep
 	}
+	
 	// execute move, direction depends on key.
 	try {
 		frameRequestDrawableMove = requestAnimationFrame(()=>{
@@ -77,5 +78,4 @@ export function keyMoveDrawable($event, drawable){
 	} finally {
 		frameRequestDrawableMove = undefined
 	}
-	// mouse.unsetGlobalCursor()
 }

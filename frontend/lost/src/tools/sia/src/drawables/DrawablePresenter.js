@@ -1,13 +1,13 @@
 import $ from "cash-dom"
 
-import { STATE } from "./drawable.statics"
+import appModel from "siaRoot/appModel"
 
-import appModel from "../appModel"
+import { STATE } from "./drawable.statics"
+import DrawableModel from "./DrawableModel"
+import DrawableView from "./DrawableView"
 
 import imageInterface from "components/image/imageInterface"
 
-import DrawableModel from "./DrawableModel"
-import DrawableView from "./DrawableView"
 
 /**
 *
@@ -33,7 +33,7 @@ export default class DrawablePresenter {
         // INIT VIEW
         // hover effect
 		this.enableHover()
-		appModel.controls.creationEvent.on("change", isActive => {
+		appModel.event.creationEvent.on("change", isActive => {
 			if(isActive){
 				this.disableHover()
 			} else {

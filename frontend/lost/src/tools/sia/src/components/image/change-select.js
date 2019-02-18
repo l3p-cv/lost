@@ -2,26 +2,29 @@ import { keyboard, mouse } from "l3p-frontend"
 
 import appModel from "siaRoot/appModel"
 
-import DrawablePresenter from "drawables/DrawablePresenter"
-import BoxPresenter from "drawables/box/BoxPresenter"
-
-import * as imageView from "./imageView"
+import imageInterface from "./imageInterface"
 
 
 export function selectDrawable(next: Drawable){
+    if(!next){
+        return
+    }
     const curr = appModel.getSelectedDrawable()
     // Don't re-select a drawable if it is allready selected. 
     // If another drawable is currently selected unselect it.
-    if(curr instanceof DrawablePresenter && curr !== next){
-        // console.log("will unselect:", curr)
-        curr.unselect()
-        if(curr instanceof BoxPresenter){
-            curr.resetEdge()
-        }
-        if(curr.parent){
-            curr.parent.unselect()
-        }
-    }
+    // if(curr instanceof DrawablePresenter && curr !== next){
+	if(curr && Object.keys(curr).length > 0){
+		if(curr !== next){
+			// console.log("will unselect:", curr)
+			curr.unselect()
+			if(curr.getClassName() === "BoxPresenter"){
+				curr.resetEdge()
+			}
+			if(curr.parent){
+				curr.parent.unselect()
+			}
+		}
+	}
 
     // A drawable will only be selected if it is not allready selected.
     if(curr !== next){
@@ -30,22 +33,20 @@ export function selectDrawable(next: Drawable){
         appModel.selectDrawable(next)
         if(next.parent){
             next.parent.select()
-            if(!appModel.controls.creationEvent.value){
-                if(curr){
-                    next.parent.previousPoint = curr
-                }
-                next.parent.currentPoint = next
+            if(curr){
+                next.parent.previousPoint = curr
             }
+            next.parent.currentPoint = next
         }
     }
 }
 export function resetSelection(){
-    const drawable = appModel.getSelectedDrawable()
-    if(drawable instanceof DrawablePresenter){
+    if(appModel.isADrawableSelected()){
         // console.log("reset selection:", drawable)
+	    const drawable = appModel.getSelectedDrawable()
         appModel.resetDrawableSelection()
         drawable.unselect()
-        if(drawable instanceof BoxPresenter){
+        if(drawable.getClassName() === "BoxPresenter"){
             drawable.resetEdge()
         }
         if(drawable.parent){
@@ -57,7 +58,7 @@ export function enableSelect(){
     // console.warn("enable select")
     // mouse
     let unselect = false
-    $(imageView.html.ids["sia-imgview-svg-container"]).on("click.selectDrawable", ($event) => {
+    $(imageInterface.getSVG()).on("click.selectDrawable", ($event) => {
         // return on right or middle mouse button, prevent context menu.
         if (!mouse.button.isLeft($event.button)) {
             $event.preventDefault()
@@ -66,12 +67,13 @@ export function enableSelect(){
         let drawable = $event.target.closest(".drawable")
         if(drawable){
             drawable = drawable.drawablePresenter
-            if(drawable instanceof DrawablePresenter){
+            // if(drawable instanceof DrawablePresenter){
+            if(drawable !== undefined && Object.keys(drawable).length > 0){
                 selectDrawable(drawable)
             }
         }
     })
-    $(imageView.html.ids["sia-imgview-svg-container"]).on("mousedown.resetSelectionStart", ($event) => {
+    $(imageInterface.getSVG()).on("mousedown.resetSelectionStart", ($event) => {
         // return on right or middle mouse button, prevent context menu.
         if (!mouse.button.isLeft($event.button)) {
             $event.preventDefault()
@@ -185,8 +187,8 @@ export function enableSelect(){
 export function disableSelect(){
     // console.warn("disable select")
     // mouse
-    $(imageView.html.ids["sia-imgview-svg-container"]).off("click.selectDrawable")
-    $(imageView.html.ids["sia-imgview-svg-container"]).off("mousedown.resetSelectionStart")
+    $(imageInterface.getSVG()).off("click.selectDrawable")
+    $(imageInterface.getSVG()).off("mousedown.resetSelectionStart")
     $(window).off("mouseup.resetSelectionEnd")
     // Key
     $(window).off("keydown.selectDrawable")

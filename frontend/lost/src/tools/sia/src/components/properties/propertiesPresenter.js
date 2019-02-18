@@ -1,21 +1,33 @@
 import $ from "cash-dom"
 
-import { mouse, keyboard, state } from "l3p-frontend"
+import { mouse, keyboard } from "l3p-frontend"
 
 import * as propertiesView from "./propertiesView"
 
-import appModel from "../../appModel"
-import * as http from "../../http"
-import * as modals from "../../modals"
-
+import appModel from "siaRoot/appModel"
+import * as http from "siaRoot/http"
+import * as modals from "siaRoot/modals"
 import * as data from "siaRoot/http"
-
-import DrawablePresenter from "drawables/DrawablePresenter"
-import PointPresenter from "../../drawables/point/PointPresenter"
 
 import imageInterface from "components/image/imageInterface"
 
 
+appModel.event.creationEvent.on("change", isActive => isActive ? onCreationEventStart() : onCreationEventEnd())
+appModel.event.changeEvent.on("change", isActive => isActive ? onChangeEventStart() : onChangeEventEnd())
+
+// on init
+appModel.config.on("update", config => {
+    let labelingEnabled = undefined
+    if(config.actions.labeling){
+        if(!labelingEnabled){
+            enableLabeling()
+            labelingEnabled = true
+        }
+    } else {
+        disableLabeling()
+    }
+})
+// on new image
 appModel.data.image.url.on("update", url => {
 	http.requestImage(url).then(blob => {
 		const objectURL = window.URL.createObjectURL(blob)
@@ -23,12 +35,12 @@ appModel.data.image.url.on("update", url => {
 	})
 	enableNavigationButtons()
 })
-// appModel.data.image.info.on("update", info => console.trace(info))
+// on drawable selection
 appModel.state.selectedDrawable.on("before-update", detachDrawable)
 appModel.state.selectedDrawable.on("update", attachDrawable)
 appModel.state.selectedDrawable.on("reset", detachDrawable)
-// todo: observable object on change.... to add redo undo for changing labels.
 appModel.state.selectedLabel.on("update", label => {
+	// todo: observable object on change.... to add redo undo for changing labels.
 	propertiesView.setDescription(label.description)
 	if(appModel.isADrawableSelected()){
 		const drawable = appModel.getSelectedDrawable()
@@ -67,22 +79,8 @@ appModel.state.selectedLabel.on("update", label => {
 		}		
 	}
 })
-// // quickfix: for?
-// // appModel.data.image.info.on("update", info => {
-// appModel.data.image.info.on("update", info => {
 
-// })
-appModel.config.on("update", config => {
-    let labelingEnabled = undefined
-    if(config.actions.labeling){
-        if(!labelingEnabled){
-            enableLabeling()
-            labelingEnabled = true
-        }
-    } else {
-        disableLabeling()
-    }
-})
+// view bindings
 $(propertiesView.html.refs["btn-prev"]).on("click", ($event) => {
     // return on right or middle mouse button, prevent context menu.
     if (!mouse.button.isLeft($event.button)) {
@@ -133,6 +131,19 @@ $(propertiesView.html.refs["btn-latest"]).on("click", ($event) => {
 })
 
 
+function onCreationEventStart(){
+    disableNavigationButtons()
+}
+function onCreationEventEnd(){
+    enableNavigationButtons()
+}
+function onChangeEventStart(){
+    disableNavigationButtons()
+}
+function onChangeEventEnd(){
+    enableNavigationButtons()
+}
+
 
 function updateTable(bounds: any){
     const drawable = appModel.state.selectedDrawable.value
@@ -143,7 +154,7 @@ function updateCanvas(){
     const drawable = appModel.state.selectedDrawable.value
     const bounds = drawable.getBounds()
     const pointPadding = 5
-    if(drawable instanceof PointPresenter){
+    if(drawable !== undefined && drawable.getClassName() === "PointPresenter"){
         bounds.w = pointPadding * 2
         bounds.h = pointPadding * 2
     }
@@ -166,7 +177,7 @@ function updateCanvas(){
     // sb = source drawable
     const imgSourceH = propertiesView.image.height
     const imgSourceW = propertiesView.image.width
-    if(drawable instanceof PointPresenter){
+    if(drawable !== undefined && drawable.getClassName() === "PointPresenter"){
         sbx = (drawable.model.relBounds.x * imgSourceW) - (pointPadding / imgW * imgSourceW)
         sby = (drawable.model.relBounds.y * imgSourceH) - (pointPadding / imgH * imgSourceH)
         sbw = (bounds.w / imgW) * imgSourceW
@@ -250,31 +261,6 @@ function updateCanvas(){
         padding: padding,
     })
 }
-
-function keyRequestPreviousData($event){
-    if(keyboard.isShortcutHit($event, {
-        mod: ["Control", "Alt"],
-        key: "ArrowLeft"
-    })){
-        $event.preventDefault()
-        // $event.stopPropagation()
-        propertiesView.disableNavigationButtons()
-        updateData("previous")
-    }
-}
-function keyRequestNextData($event){
-    if(keyboard.isShortcutHit($event, {
-        mod: ["Control", "Alt"],
-        key: "ArrowRight"
-    })){
-        $event.preventDefault()
-        $event.stopPropagation()
-        propertiesView.disableNavigationButtons()
-        updateData("next")
-    }
-}
-
-
 function updateData(action: String){
     // choose data request depending on the action string:
     let requestData = undefined
@@ -313,6 +299,30 @@ function updateData(action: String){
     })
 }
 
+function keyRequestPreviousData($event){
+    if(keyboard.isShortcutHit($event, {
+        mod: ["Control", "Alt"],
+        key: "ArrowLeft"
+    })){
+        $event.preventDefault()
+        // $event.stopPropagation()
+        propertiesView.disableNavigationButtons()
+        updateData("previous")
+    }
+}
+function keyRequestNextData($event){
+    if(keyboard.isShortcutHit($event, {
+        mod: ["Control", "Alt"],
+        key: "ArrowRight"
+    })){
+        $event.preventDefault()
+        $event.stopPropagation()
+        propertiesView.disableNavigationButtons()
+        updateData("next")
+    }
+}
+
+
 function enableLabeling(){
     $(window).on("keydown.openLabelSelect", $event => {
         if(keyboard.isShortcutHit($event, { 
@@ -333,7 +343,7 @@ function disableLabeling(){
 }
 
 function attachDrawable(drawable: DrawablePresenter){
-    if(drawable instanceof DrawablePresenter){
+    if(drawable !== undefined && Object.keys(drawable).length > 0){
         // initial update
         updateCanvas()
         updateTable()
@@ -347,7 +357,7 @@ function attachDrawable(drawable: DrawablePresenter){
     }
 }
 function detachDrawable(drawable: DrawablePresenter){
-    if(drawable instanceof DrawablePresenter){
+    if(drawable !== undefined && Object.keys(drawable).length > 0){
         drawable.model.actBounds.off("update", updateCanvas)
         drawable.model.actBounds.off("update", updateTable)
         propertiesView.resetDescription()
@@ -356,22 +366,7 @@ function detachDrawable(drawable: DrawablePresenter){
     }
 }
 
-export function enableNavigationButtons(){
-	const { isFirst, isLast } = appModel.data.image
-	if(isFirst){
-		handleFirstImage()
-	} else {
-		handleNotFirstImage()
-	}
-	if(isLast){
-		handleLastImage()
-	} else {
-		handleNotLastImage()
-	}
-}
-export function disableNavigationButtons(){
-	propertiesView.disableNavigationButtons()
-}
+// Can I move this to propertiesInterface?
 function handleLastImage(){
     propertiesView.disableLastButton()
     propertiesView.setNextButtonState("finish")
@@ -394,17 +389,26 @@ function handleNotFirstImage(){
     propertiesView.enablePrevButton()
     propertiesView.enableFirstButton()
 }
+// Can I move this to propertiesInterface?
 
-export function disableNavigation(isActive){
-	if(isActive){
-		disableNavigationButtons()
-		// // blur label selection focus
-		// document.activeElement.blur()
+// Can I move this to propertiesInterface?
+export function enableNavigationButtons(){
+	const { isFirst, isLast } = appModel.data.image
+	if(isFirst){
+		handleFirstImage()
 	} else {
-		enableNavigationButtons()
+		handleNotFirstImage()
+	}
+	if(isLast){
+		handleLastImage()
+	} else {
+		handleNotLastImage()
 	}
 }
-
+export function disableNavigationButtons(){
+	propertiesView.disableNavigationButtons()
+}
+// Can I move this to propertiesInterface?
 
 export function resize(){
     propertiesView.resize()

@@ -1,9 +1,12 @@
 import { mouse } from "l3p-frontend"
-import { STATE } from "./drawable.statics"
-import DEFAULTS from "./drawable.defaults"
-import appModel from "../appModel"
+
+import appModel from "siaRoot/appModel"
 
 import { toHslaString } from "shared/color"
+
+import { STATE } from "./drawable.statics"
+import DEFAULTS from "./drawable.defaults"
+
 import imageInterface from "components/image/imageInterface"
 
 
