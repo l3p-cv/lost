@@ -4,6 +4,10 @@ import logging
 import shutil
 import random
 import string 
+import sys
+sys.path.append('../../backend')
+import lost
+current_version = lost.__version__
 
 logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
 
@@ -49,7 +53,12 @@ def main(args):
     logging.info('Copied docker-compose config to: {}'.format(dst_config))
     env_path = os.path.join(dst_docker_dir,'.env')
     with open(env_path, 'a') as f:
-        for key, val in get_env_config(dst_data_dir, args.release):
+        if args.release is not None:
+            env_config = get_env_config(dst_data_dir, args.release)
+        else:
+            env_config = get_env_config(dst_data_dir, current_version)
+
+        for key, val in env_config:
             f.write('{}={}\n'.format(key, val))
     logging.info('Created {}'.format(env_path))
     logging.info('')
@@ -61,6 +70,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Quick setup for lost on linux')
     parser.add_argument('install_path', help='Specify path to install lost.')
-    parser.add_argument('release', help='LOST release you want to install.')
+    parser.add_argument('--release', help='LOST release you want to install.', default=None)
     args = parser.parse_args()
     main(args)
