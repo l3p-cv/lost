@@ -1,18 +1,25 @@
-import React, {Component} from 'react'
-import * as http from '../../../http'
-import Modals from './modal'
-import testData from './testData'
+import React, { Component } from 'react'
 import DagreD3 from 'react-directed-graph'
-import DatasourceNode from './nodes/DatasourceNode'
-class SelectPipeline extends Component{
-    constructor(){
+import Node1 from './nodes/DatasourceNode'
+// import './components/node.scss'
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
+
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+
+
+
+class App extends Component {
+    constructor() {
         super()
         this.svgStyle = {
             width: "800px",
             border: "2px solid"
         }
+
+        this.toggle = this.toggle.bind(this);
+        this.nodesOnClick = this.nodesOnClick.bind(this)
         this.state = {
-            modalOpen: false,
             modal: false,
             nodes: [
                 {
@@ -107,70 +114,46 @@ class SelectPipeline extends Component{
                 // },
             ],
         }
-        this.openModal = this.openModal.bind(this)
-        this.toggleModal = this.toggleModal.bind(this)
-
-    }
-    componentDidMount(){
-        this.setState({data: testData})
-
-    }
-    openModal(e){
-        this.setState({
-            selectedModal: parseInt(e.currentTarget.textContent)
-        })
-        this.toggleModal()
+        this.testButtonHandler = this.testButtonHandler.bind(this)
     }
 
-    renderModals(){
-        if(this.state){
-            return (
-                <Modals
-                    data = {this.state.data}
-                    selectedModal = {this.state.selectedModal}
-                    toggleModal = {this.toggleModal}
-                    modalOpen= {this.state.modalOpen}
-                />
-            )
-        }
-    }
+    componentDidMount() {
 
-    toggleModal(){
-        this.setState({modalOpen: !this.state.modalOpen})
     }
-    renderModalButtonTests(){
-        if(this.state.data){
-            return this.state.data.elements.map((el)=>{
-                return(
-                    <button key={el.id} onClick={this.openModal} >{el.id}</button>
-                )
-            })
-        }
-    }
-
 
     nodesOnClick(id) {
+        console.log('----------id--------------------------');
+        console.log(id);
         console.log('------------------------------------');
-        console.log("clicked");
-        console.log('------------------------------------');
+        this.toggle()
+    }
+
+    testButtonHandler() {
+        let state = this.state
+        state.nodes[1].title += "U"
+        this.setState(state)
     }
 
     renderNodes() {
         return this.state.nodes.map((el) => {
             if (el.type = "node1") {
-                return <DatasourceNode
+                return <Node1
                     {...el}
                 />
             }
         })
     }
 
-    render(){
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
+
+    render() {
         return (
             <div>
-                {this.renderModalButtonTests()}
-
-                 <DagreD3
+                <DagreD3
                     enableZooming={true}
                     centerGraph={true}
                     svgStyle={this.svgStyle}
@@ -178,19 +161,24 @@ class SelectPipeline extends Component{
                     nodesOnClick={this.nodesOnClick}
                 >
                     {this.renderNodes()}
-                </DagreD3> 
-
-                {this.renderModals()}
-
+                </DagreD3>
+                <button onClick={this.testButtonHandler}>My Testing Button</button>
+                <div>
+        {/* <Button color="danger" onClick={this.toggle}>{this.props.buttonLabel}</Button> */}
+        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+          <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
+          <ModalBody>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.toggle}>Do Something</Button>{' '}
+            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
+      </div>
             </div>
         )
     }
 }
 
-export default SelectPipeline
-
-
-
-
-
-
+export default App
