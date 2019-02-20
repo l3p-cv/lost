@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import * as http from '../../../http'
-
 class SelectPipeline extends Component{
     constructor(){
         super()

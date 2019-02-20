@@ -14,18 +14,18 @@ class StartPipeline extends Component {
 		super(props)
 	}
 	componentDidMount(){
-		// the app will get mounted when requiring it.
-		// theirfore we use a page reload quickfix below.
-		// mounting via method did not work.
-		const init = require('../tools/pipeline/src/apps/start/appPresenter.js').default
-		init({
-			token: this.props.token,
-		})
+		// // the app will get mounted when requiring it.
+		// // theirfore we use a page reload quickfix below.
+		// // mounting via method did not work.
+		// const init = require('../tools/pipeline/src/apps/start/appPresenter.js').default
+		// init({
+		// 	token: this.props.token,
+		// })
 
-		// re-render quick fix.
-		if(this.mount.current.childNodes.length === 0){
-			window.location.reload()
-		}
+		// // re-render quick fix.
+		// if(this.mount.current.childNodes.length === 0){
+		// 	window.location.reload()
+		// }
 	}
 	componentWillUnmount(){
 	}
