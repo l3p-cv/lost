@@ -8,31 +8,18 @@ import ShowRunningPipeline from './components/2/ShowRunningPipeline'
 class RunningPipeline extends Component{
     constructor(){
         super()
-       
-        
-        this.verify = this.verify.bind(this)
         this.changeCurrentStep = this.changeCurrentStep.bind(this)
-
-
     }
 
 
     renderContent() {
-        return(<div>Test</div>)
         switch (this.props.pipelineRunning.currentStep) {
-          case 0: return (<SelectPipeline verify={this.verify} changeCurrentStep={this.changeCurrentStep} />)
-          case 1: return (<ShowRunningPipeline verify={this.verify} changeCurrentStep={this.changeCurrentStep}/>)
+          case 0: return (<SelectPipeline />)
+          case 1: return (<ShowRunningPipeline />)
         }
       }
     
 
-    verify(stepIndex, verified) {      
-        const steps = this.state.steps
-        if (steps[stepIndex].verified != verified) {
-          steps[stepIndex].verified = verified
-          this.setState({ steps })
-        }
-      }
 
       changeCurrentStep(newStep) {    
         this.setState({ currentStep: newStep })
@@ -52,9 +39,6 @@ class RunningPipeline extends Component{
 
 
     render(){
-        console.log('---------this.props---------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
         return(
             <div>
             <Stepper
@@ -75,9 +59,6 @@ class RunningPipeline extends Component{
 
 
 const mapStateToProps = (state) => {
-  console.log('----------state--------------------------');
-  console.log(state);
-  console.log('------------------------------------');
   return {pipelineRunning: state.pipelineRunning}
 }
 

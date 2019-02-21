@@ -41,10 +41,41 @@ const INITITAL_STATE = {
 export default (state = INITITAL_STATE, action) => {
     switch(action.type){
         case 'GET_PIPELINES':  
-            return action.payload.pipes
+            return {
+                ...state,
+                steps: state.steps.map((el,i)=>{
+                    // If first TAB
+                    if(!i){
+                        return {
+                            ...el,
+                            data :action.payload}
+                    }
+                    return el
+                })
+            }
         case 'SELECT_TAB':
             return state
         case 'VERIFY_TAB':
+            return {
+                ...state,
+                steps: state.steps.map((el,i)=>{
+                    // if 
+                    if(i === action.payload.tabId){
+                        return {
+                            ...el,
+                            verified: action.payload.verified
+                        }
+                    }
+                    return el
+                })
+            }
+            console.log('----------state--------------------------');
+            console.log(state);
+            console.log('------------------------------------');
+            console.log('----------action--------------------------');
+            console.log(action);
+            console.log('------------------------------------');
+            
             return state
         default:
             return state

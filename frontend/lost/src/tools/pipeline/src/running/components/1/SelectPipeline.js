@@ -3,7 +3,7 @@ import actions from '../../../../../../actions'
 import {connect} from 'react-redux'
 import * as http from '../../../http'
 
-const {getPipelines} = actions
+const {getPipelines, verifyTab, selectTab} = actions
 
 
 
@@ -13,29 +13,25 @@ class SelectPipeline extends Component{
         this.selectRow = this.selectRow.bind(this)
     }
     async componentDidMount(){
-
         this.props.getPipelines()
-        const pipelines = await http.requestPipelines()
-        this.setState(pipelines)
     }
+
     selectRow(){
-        this.props.verify(0, true)
-        this.props.changeCurrentStep(1)
+        this.props.verifyTab(0, true)
+        this.props.selectTab(1)
     }
 
 
     renderDatatable(){
-        if(this.state){
-            return this.state.pipes.map((el)=>{
+        if(this.props.data){
+            return this.props.data.pipes.map((el)=>{
                 return (<div key={el.name} onClick={this.selectRow}>{el.name}</div>)
             })
         }
     }
 
     render(){
-        console.log('---------this.props---------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
+
         return (
             <div>
                 {this.renderDatatable()}
@@ -46,13 +42,10 @@ class SelectPipeline extends Component{
 }
 
 const mapStateToProps = (state) => {
-    console.log('------------------------------------');
-    console.log(state);
-    console.log('------------------------------------');
-    return {test: state}
+    return {data: state.pipelineRunning.steps[0].data}
 }
 
 export default connect(
     mapStateToProps,
-    {getPipelines}
+    {getPipelines,verifyTab, selectTab}
 ) (SelectPipeline)

@@ -2,10 +2,12 @@ import {API_URL} from '../../settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
 
-export const verifyTab = (tabId) => {
+export const verifyTab = (tabId, verified) => {
     return {
         type: 'VERIFY_TAB',
-        payload: tabId
+        payload: {
+            tabId, verified
+        }
     }
 }
 
