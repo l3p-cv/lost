@@ -5,6 +5,7 @@ $borderWidth: 2px;
 $borderRadius: 15px;
 
 
+
 .graph-node{
     border: $borderWidth solid gray;
     border-radius: $borderRadius ;
@@ -14,7 +15,7 @@ $borderRadius: 15px;
         color: white;
         font-size: large;
         text-align: center;
-        background-color: cornflowerblue;
+        background-color: #147289;
         border-top-left-radius: $borderRadius - $borderWidth;
         border-top-right-radius: $borderRadius - $borderWidth;
         padding: 5px;
@@ -31,23 +32,40 @@ $borderRadius: 15px;
         font-family: 'Lato';
         font-weight: 300;
         background-color: snow;
-        padding: 13px
+        padding: 13px;
+        .graph-node-body-row{
+            text-align: center;
+            padding-bottom: 10px;
+            .graph-node-body-left-text{
+                font-weight: 400;
+            }
+        }
+
     }
     
     .graph-node-footer{
         font-family: 'Lato';
-        font-weight: 300;
+        font-weight: 400;
         color: white;
         font-size: small;
         text-align: center;
-        background-color: green;
         border-bottom-left-radius: $borderRadius - $borderWidth;
         border-bottom-right-radius: $borderRadius - $borderWidth;
-        padding: 5px
+        padding: 5px;
+
     
     }
 }
 
 .progress{
     margin-bottom: 10px;
+}
+.pending{
+    background-color: #0073FF !important
+}
+.finished{
+    background-color: green !important
+}
+.in-progress{
+    background-color: orange !important
 }
