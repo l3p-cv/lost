@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import actions from '../../../../../../actions'
+import actions from 'actions'
 import {connect} from 'react-redux'
 import * as http from '../../../http'
 
@@ -20,7 +20,6 @@ class SelectPipeline extends Component{
         this.props.verifyTab(0, true)
         this.props.selectTab(1)
     }
-
 
     renderDatatable(){
         if(this.props.data){

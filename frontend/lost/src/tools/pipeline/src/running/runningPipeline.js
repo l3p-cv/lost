@@ -4,6 +4,9 @@ import {connect} from 'react-redux'
 import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './components/1/SelectPipeline'
 import ShowRunningPipeline from './components/2/ShowRunningPipeline'
+import actions from 'actions'
+const {selectTab} = actions
+
 
 class RunningPipeline extends Component{
     constructor(){
@@ -22,7 +25,7 @@ class RunningPipeline extends Component{
 
 
       changeCurrentStep(newStep) {    
-        this.setState({ currentStep: newStep })
+        this.props.selectTab(newStep)
       }
     
       renderGrayLine() {
@@ -65,5 +68,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps,
-  {}
+  {selectTab}
 ) (RunningPipeline)

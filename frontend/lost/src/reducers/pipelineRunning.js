@@ -35,9 +35,6 @@ const INITITAL_STATE = {
     ],
     currentStep: 0
 }
-
-
-
 export default (state = INITITAL_STATE, action) => {
     switch(action.type){
         case 'GET_PIPELINES':  
@@ -54,12 +51,14 @@ export default (state = INITITAL_STATE, action) => {
                 })
             }
         case 'SELECT_TAB':
-            return state
+            return {
+                ...state,
+                currentStep: action.payload.tabId
+            }
         case 'VERIFY_TAB':
             return {
                 ...state,
                 steps: state.steps.map((el,i)=>{
-                    // if 
                     if(i === action.payload.tabId){
                         return {
                             ...el,
@@ -68,15 +67,7 @@ export default (state = INITITAL_STATE, action) => {
                     }
                     return el
                 })
-            }
-            console.log('----------state--------------------------');
-            console.log(state);
-            console.log('------------------------------------');
-            console.log('----------action--------------------------');
-            console.log(action);
-            console.log('------------------------------------');
-            
-            return state
+            }            
         default:
             return state
         
