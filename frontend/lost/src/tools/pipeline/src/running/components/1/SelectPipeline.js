@@ -47,7 +47,7 @@ class SelectPipeline extends Component{
 
 const mapStateToProps = (state) => {
     console.log('------------------------------------');
-    console.log("MAPSTAATETOPROPS");
+    console.log(state);
     console.log('------------------------------------');
     return {test: state}
 }

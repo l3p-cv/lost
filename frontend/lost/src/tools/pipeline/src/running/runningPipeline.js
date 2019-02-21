@@ -1,4 +1,6 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
+
 import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './components/1/SelectPipeline'
 import ShowRunningPipeline from './components/2/ShowRunningPipeline'
@@ -6,43 +8,7 @@ import ShowRunningPipeline from './components/2/ShowRunningPipeline'
 class RunningPipeline extends Component{
     constructor(){
         super()
-        this.state = {
-            style: {
-                container: {
-                  paddingTop: 24,          //pixel
-                  paddingBottom: 24,       //pixel
-                },
-                shape: {
-                  size: 80,
-                  borderWidth: 4,
-                  borderRadius: '50%',
-                },
-                line: {
-                  borderWidth: 3,
-                  borderColor: 'gray',
-                  padding: 30
-                }
-              },
-            steps: [
-                {
-                  text: '1',
-                  icon: 'fa-server',
-                  shapeBorderColor: 'green',
-                  shapeBackgroundColor: 'white',
-                  shapeContentColor: 'green',
-                  verified: false,
-                },
-                {
-                  text: '2',
-                  icon: 'fa-server',
-                  shapeBorderColor: '#f4b042',
-                  shapeBackgroundColor: 'white',
-                  shapeContentColor: '#f4b042',
-                  verified: false,
-                },
-            ],
-            currentStep: 0
-        }
+       
         
         this.verify = this.verify.bind(this)
         this.changeCurrentStep = this.changeCurrentStep.bind(this)
@@ -52,7 +18,8 @@ class RunningPipeline extends Component{
 
 
     renderContent() {
-        switch (this.state.currentStep) {
+        return(<div>Test</div>)
+        switch (this.props.pipelineRunning.currentStep) {
           case 0: return (<SelectPipeline verify={this.verify} changeCurrentStep={this.changeCurrentStep} />)
           case 1: return (<ShowRunningPipeline verify={this.verify} changeCurrentStep={this.changeCurrentStep}/>)
         }
@@ -85,10 +52,13 @@ class RunningPipeline extends Component{
 
 
     render(){
+        console.log('---------this.props---------------------------');
+        console.log(this.props);
+        console.log('------------------------------------');
         return(
             <div>
             <Stepper
-            stepperData={this.state}
+            stepperData={this.props.pipelineRunning}
             changeCurrentStep={this.changeCurrentStep}
           />
           {this.renderGrayLine()}
@@ -102,4 +72,17 @@ class RunningPipeline extends Component{
     }
 }
 
-export default RunningPipeline
+
+
+const mapStateToProps = (state) => {
+  console.log('----------state--------------------------');
+  console.log(state);
+  console.log('------------------------------------');
+  return {pipelineRunning: state.pipelineRunning}
+}
+
+
+export default connect(
+  mapStateToProps,
+  {}
+) (RunningPipeline)
