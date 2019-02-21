@@ -14,7 +14,7 @@
     "l3p-frontend": "^3.3.0",
     "list.js": "^1.5.0",
     "lodash-es": "^4.17.10",
-    "react-directed-graph": "^1.0.3",
+    "react-directed-graph": "^1.0.5",
     "react-stepper-wizard": "^1.1.4",
     "moment": "^2.21.0",
     "react": "^16.6.3",

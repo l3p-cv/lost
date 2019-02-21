@@ -10,6 +10,7 @@ import DataExportNode from './nodes/DataExportNode'
 import { connect } from 'react-redux'
 import './nodes/node.scss'
 import actions from 'actions'
+import TitleBox from './titleBox'
 
 const { toggleModal } = actions
 
@@ -104,6 +105,7 @@ class ShowRunningPipeline extends Component {
                     svgStyle={this.state.svgStyle}
                     ref={this.graph}
                     nodesOnClick={this.nodesOnClick}
+                    titleBox= {<TitleBox {...this.props.data}/>}
                 >
                     {this.renderNodes()}
                 </Graph>
