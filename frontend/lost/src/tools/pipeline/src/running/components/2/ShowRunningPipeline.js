@@ -9,156 +9,35 @@ import AnnoTaskNode from './nodes/AnnoTaskNode'
 import DataExportNode from './nodes/DataExportNode'
 import {connect} from 'react-redux'
 import './nodes/node.scss'
+import actions from 'actions'
+
+const {toggleModal} = actions
 
 class ShowRunningPipeline extends Component{
     constructor(){
         super()
-        this.svgStyle = {
-            width: "800px",
-            border: "2px solid"
+        this.graphMountPoint = React.createRef()
+        this.state={
+            svgStyle:{
+                width: "800px"            
+            }
         }
-        this.state = {
-            modalOpen: false,
-            modal: false,
-            nodes: [
-                {
-                    id: 0,
-                    type: "node1",
-                    title: 'DATASOURCE',
-                    footer: "CUCUMBER",
-                    connection: [
-                        {
-                            id: 1,
-                        },
-                        {
-                            id: 2,
-                        }
-                    ],
-                },
-                {
-                    id: 1,
-                    type: "node1",
-                    title: "SCRIPT",
-                    footer: "CUCUMBER",
-                    connection: [
-                        {
-                            id: 2,
-                            label: 'test label ',
-
-                        }
-                    ],
-                },
-                {
-                    id: 2,
-                    type: "node1",
-                    title: "ANNOTATIONTASK",
-                    footer: "CUCUMBER",
-                    connection: [
-                        {
-                            id: 0,
-                            lineStyle: {
-                                stroke: 'red',
-                                strokeWidth: '1.8px',
-                                fill: 'white',
-                                strokeDasharray: '5, 5'
-                            },
-                            arrowheadStyle: {
-                                fill: 'red',
-                                stroke: 'none'
-                            }
-                        }
-                    ],
-                }
-                // {
-                //     id: 3,
-                //     type: "node1",
-                //     title: "BigBen",
-                //     connection: [
-                //         {
-                //             id: 4,
-                //             label: 'test label'
-                //         }
-                //     ],
-                // },
-                // {
-                //     id: 4,
-                //     type: "node1",
-                //     title: "BigBen",
-                //     connection: [
-                //         {
-                //             id: 5,
-                //         }
-                //     ],
-                // },
-                // {
-                //     id: 5,
-                //     type: "node1",
-                //     title: "BigBen",
-                //     connection: [
-                //         {
-                //             id: 1,
-                //             label: "",
-                //             lineStyle: {
-                //                 stroke: 'red',
-                //                 strokeWidth: '1.8px',
-                //                 fill: 'white',
-                //                 strokeDasharray: '5, 5'
-                //             },
-                //             arrowheadStyle: {
-                //                 fill: 'red',
-                //                 stroke: 'none'
-                //             }
-                //         }
-                //     ],
-                // },
-            ],
-        }
-        this.openModal = this.openModal.bind(this)
-        this.toggleModal = this.toggleModal.bind(this)
-
+        this.nodesOnClick = this.nodesOnClick.bind(this)
     }
     componentDidMount(){
-        this.setState({data: testData})
-
-    }
-    openModal(e){
+        console.log()
+        const mountPointWidth = this.graphMountPoint.current.offsetWidth
         this.setState({
-            selectedModal: parseInt(e.currentTarget.textContent)
-        })
-        this.toggleModal()
-    }
-
-    renderModals(){
-        if(this.state){
-            return (
-                <Modals
-                    data = {this.state.data}
-                    selectedModal = {this.state.selectedModal}
-                    toggleModal = {this.toggleModal}
-                    modalOpen= {this.state.modalOpen}
-                />
-            )
+            svgStyle:{
+                width: mountPointWidth
+            }
         }
-    }
+        )
 
-    toggleModal(){
-        this.setState({modalOpen: !this.state.modalOpen})
     }
-    renderModalButtonTests(){
-        if(this.state.data){
-            return this.state.data.elements.map((el)=>{
-                return(
-                    <button key={el.id} onClick={this.openModal} >{el.id}</button>
-                )
-            })
-        }
-    }
-
 
     nodesOnClick(id) {
-        console.log('------------------------------------');
-        console.log("clicked");
-        console.log('------------------------------------');
+        this.props.toggleModal(id)
     }
 
     renderNodes() {
@@ -217,7 +96,7 @@ class ShowRunningPipeline extends Component{
                 <DagreD3
                 enableZooming={true}
                 centerGraph={true}
-                svgStyle={this.svgStyle}
+                svgStyle={this.state.svgStyle}
                 ref={this.graph}
                 nodesOnClick={this.nodesOnClick}
             >
@@ -225,19 +104,18 @@ class ShowRunningPipeline extends Component{
             </DagreD3> 
             )
         }
-       
+    }
+    renderModals(){
+        return (
+            <Modals/>
+        )
     }
 
     render(){
-        console.log('---------this.props---------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
         return (
-            <div>
-                {this.renderModalButtonTests()}
+            <div ref={this.graphMountPoint}>
                 {this.renderGraph()}
                 {this.renderModals()}
-
             </div>
         )
     }
@@ -250,7 +128,7 @@ const mapStateToProps = (state) =>{
 
 export default connect(
     mapStateToProps,
-    {}
+    {toggleModal}
 ) (ShowRunningPipeline)
 
 

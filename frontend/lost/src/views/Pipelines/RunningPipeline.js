@@ -23,7 +23,7 @@ class Pipelines extends Component {
 			<Row>
 				<Col xs='12' sm='12' lg='12'>
                     <Card>
-                        <CardBody>
+                        <CardBody >
 							<RunningPipeline/>
                         </CardBody>
                     </Card>
@@ -33,8 +33,5 @@ class Pipelines extends Component {
 	}
 }
 
-function mapStateToProps(state) {
-    return { token: state.auth.token, }
-}
 
-export default connect(mapStateToProps)(Pipelines);
+export default connect(null)(Pipelines);

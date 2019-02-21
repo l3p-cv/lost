@@ -29,3 +29,12 @@ export const getPipeline = (id) => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/${id}`)
     dispatch({type: 'GET_PIPELINE', payload: response.data})
 }
+
+export const toggleModal = (id) => {
+    return {
+        type: 'TOGGLE_MODAL',
+        payload:{
+            id:id?id:undefined
+        }
+    }
+}

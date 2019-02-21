@@ -31,9 +31,12 @@ const INITITAL_STATE = {
           shapeBackgroundColor: 'white',
           shapeContentColor: '#f4b042',
           verified: false,
+          modalOpened: false,
+          modalClickedId: 0
         },
     ],
     currentStep: 0
+
 }
 export default (state = INITITAL_STATE, action) => {
     switch(action.type){
@@ -81,6 +84,21 @@ export default (state = INITITAL_STATE, action) => {
                     return el
                 })
             }            
+        case 'TOGGLE_MODAL':
+        return {
+            ...state,
+            steps: state.steps.map((el,i)=>{
+                // Graph Data
+                if(i == 1){
+                    return {
+                        ...el,
+                        modalOpened : !state.steps[1].modalOpened,
+                        modalClickedId: action.payload.id
+                    }
+                }
+                return el
+            })
+        }
         default:
             return state
         

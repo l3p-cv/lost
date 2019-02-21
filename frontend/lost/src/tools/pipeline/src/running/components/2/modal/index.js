@@ -4,60 +4,50 @@ import ScriptModal from './types/ScriptModal'
 import AnnoTaskModal from './types/AnnoTaskModal'
 import DataExportModal from './types/DataExportModal'
 import { Button, Modal, ModalFooter } from 'reactstrap';
+import {connect} from 'react-redux'
+import actions from 'actions'
+
+const {toggleModal} = actions
+
 
 class BaseModal extends Component {
     constructor() {
         super()
-        this.state= {
-            modalData: undefined
-        }
     }
-    // ComponentWillReviceProps is deprecated --> return value update the State
-    static getDerivedStateFromProps(props) {
-
-        if (props.data) {
-            const modalData = props.data.elements.filter(el => el.id === props.selectedModal)[0]
-            if (!modalData) {
-                return null
-            }
-            return {
-                modalData
-            }
-        }
-        return null
-    }
-    renderModals() {
-        if (this.state.modalData) {
-            if ('datasource' in this.state.modalData) {
+    
+    selectModal() {
+        if (this.props.data.data && this.props.data.modalOpened) {
+            const modalData = this.props.data.data.elements.filter(el => el.peN === this.props.data.modalClickedId)[0]
+            if ('datasource' in modalData) {
                 return (
                     <DatasourceModal
-                        {...this.state.modalData} />
+                        {...modalData} />
                 )
-            } else if ('script' in this.state.modalData) {
+            } else if ('script' in modalData) {
                 return (
                     <ScriptModal
-                        {...this.state.modalData} />
+                        {...modalData} />
                 )
-            } else if('annoTask' in this.state.modalData){
+            } else if('annoTask' in modalData){
                 return (
                     <AnnoTaskModal
-                    {...this.state.modalData}
+                    {...modalData}
                     />
                 )
-            }else if('dataExport' in this.state.modalData){
+            }else if('dataExport' in modalData){
                 return (
                     <DataExportModal
-                    {...this.state.modalData}
+                    {...modalData}
                     />
                 )
             }
         }
     }
 
-    selectModal() {
+    renderModals() {
         return (
-            <Modal size='lg' isOpen={this.props.modalOpen} toggle={this.props.toggleModal}>
-                {this.renderModals()}
+            <Modal size='lg' isOpen={this.props.data.modalOpened} toggle={this.props.toggleModal}>
+                {this.selectModal()}
                 <ModalFooter>
                     <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
                 </ModalFooter>
@@ -68,10 +58,17 @@ class BaseModal extends Component {
     render() {
         return (
             <div>
-                {this.selectModal()}
+                {this.renderModals()}
             </div>
         )
     }
 }
 
-export default BaseModal
+const mapStateToProps = (state) => {
+    return {data: state.pipelineRunning.steps[1]}
+}
+
+export default connect(
+    mapStateToProps,
+    {toggleModal}
+)(BaseModal)
