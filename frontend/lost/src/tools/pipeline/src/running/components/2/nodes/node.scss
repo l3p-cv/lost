@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+
+
+$borderWidth: 2px;
+$borderRadius: 15px;
+
+
+.graph-node{
+    border: $borderWidth solid gray;
+    border-radius: $borderRadius ;
+    .graph-node-title{
+        font-family: 'Lato';
+        font-weight: 400;
+        color: white;
+        font-size: large;
+        text-align: center;
+        background-color: cornflowerblue;
+        border-top-left-radius: $borderRadius - $borderWidth;
+        border-top-right-radius: $borderRadius - $borderWidth;
+        padding: 5px;
+        .graph-node-title-icon{
+            padding-left: 5px;
+            padding-right: 10px;
+        }
+        .graph-node-title-text{
+            padding-right: 10px;
+        }
+    }
+    
+    .graph-node-body{
+        font-family: 'Lato';
+        font-weight: 300;
+        background-color: snow;
+        padding: 13px
+    }
+    
+    .graph-node-footer{
+        font-family: 'Lato';
+        font-weight: 300;
+        color: white;
+        font-size: small;
+        text-align: center;
+        background-color: green;
+        border-bottom-left-radius: $borderRadius - $borderWidth;
+        border-bottom-right-radius: $borderRadius - $borderWidth;
+        padding: 5px
+    
+    }
+}
+
+.progress{
+    margin-bottom: 10px;
+}

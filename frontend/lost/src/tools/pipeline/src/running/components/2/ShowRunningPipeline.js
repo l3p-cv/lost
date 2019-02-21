@@ -4,8 +4,11 @@ import Modals from './modal'
 import testData from './testData'
 import DagreD3 from 'react-directed-graph'
 import DatasourceNode from './nodes/DatasourceNode'
+import ScriptNode from './nodes/ScriptNode'
+import AnnoTaskNode from './nodes/AnnoTaskNode'
+import DataExportNode from './nodes/DataExportNode'
 import {connect} from 'react-redux'
-
+import './nodes/node.scss'
 
 class ShowRunningPipeline extends Component{
     constructor(){
@@ -162,9 +165,6 @@ class ShowRunningPipeline extends Component{
 
         if(this.props.data){
             return this.props.data.elements.map((el) => {
-                console.log('------------------------------------');
-                console.log("HERE I AM ");
-                console.log('------------------------------------');
                 const connections = el.peOut.map(el => {
                     return{
                         id: el
@@ -178,26 +178,33 @@ class ShowRunningPipeline extends Component{
                 if('datasource' in el){
                     obj.type = 'datasource'
                     obj.title = 'DATASOURCE'
-    
+                    return <DatasourceNode
+                        key={obj.id}
+                        {...obj}
+                    />
                 }else if('script' in el){
                     obj.type = 'script'
                     obj.title = 'Script'
+                    return <ScriptNode
+                    key={obj.id}
+                    {...obj}
+                />
                 }else if('annoTask' in el){
                     obj.type = 'annoTask'
                     obj.title = 'Annotation Task'
+                    return <AnnoTaskNode
+                    key={obj.id}
+                    {...obj}
+                />
                 }else if ('dataExport' in el){
                     obj.type = 'dataExport'
                     obj.title = 'Data Export'
+                    return <DataExportNode
+                    key={obj.id}
+                    {...obj}
+                />
                 }
-                
-    
-                console.log('------------obj------------------------');
-                console.log(obj);
-                console.log('------------------------------------');
-    
-                    return <DatasourceNode
-                        {...obj}
-                    />
+
                 }
             )
         }

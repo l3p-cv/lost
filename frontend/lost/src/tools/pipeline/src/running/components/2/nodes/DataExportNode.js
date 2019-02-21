@@ -3,7 +3,7 @@ import { Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 
-class DatasourceNode extends Component {
+class DataExportNode extends Component {
     constructor() {
         super()
     }
@@ -24,4 +24,4 @@ class DatasourceNode extends Component {
         )
     }
 }
-export default DatasourceNode
+export default DataExportNode
