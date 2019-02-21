@@ -5,5 +5,6 @@ import user from './user/index'
 import annoTask from './annoTask'
 import mia from './mia'
 import workers from './worker/index';
+import pipeline from './pipeline/index'
 
-export default { ...auth, ...label, ...group, ...user, ...annoTask, ...mia, ...workers}
+export default { ...auth, ...label, ...group, ...user, ...annoTask, ...mia, ...workers, ...pipeline}

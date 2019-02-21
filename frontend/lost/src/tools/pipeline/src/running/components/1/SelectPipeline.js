@@ -1,11 +1,20 @@
 import React, {Component} from 'react'
+import actions from '../../../../../../actions'
+import {connect} from 'react-redux'
 import * as http from '../../../http'
+
+const {getPipelines} = actions
+
+
+
 class SelectPipeline extends Component{
     constructor(){
         super()
         this.selectRow = this.selectRow.bind(this)
     }
     async componentDidMount(){
+
+        this.props.getPipelines()
         const pipelines = await http.requestPipelines()
         this.setState(pipelines)
     }
@@ -24,6 +33,9 @@ class SelectPipeline extends Component{
     }
 
     render(){
+        console.log('---------this.props---------------------------');
+        console.log(this.props);
+        console.log('------------------------------------');
         return (
             <div>
                 {this.renderDatatable()}
@@ -33,4 +45,14 @@ class SelectPipeline extends Component{
     }
 }
 
-export default SelectPipeline
+const mapStateToProps = (state) => {
+    console.log('------------------------------------');
+    console.log("MAPSTAATETOPROPS");
+    console.log('------------------------------------');
+    return {test: state}
+}
+
+export default connect(
+    mapStateToProps,
+    {getPipelines}
+) (SelectPipeline)

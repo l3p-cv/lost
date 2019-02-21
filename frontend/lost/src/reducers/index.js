@@ -7,6 +7,7 @@ import user from './user'
 import annoTask from './annoTask'
 import mia from './mia'
 import worker from './worker'
+import pipelineRunning from './pipelineRunning'
 
 export default combineReducers({
     auth,
@@ -16,5 +17,6 @@ export default combineReducers({
     annoTask,
     mia,
     worker,
-    form: formReducer
+    form: formReducer,
+    pipelineRunning
 })
