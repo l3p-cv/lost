@@ -41,7 +41,7 @@ export default (state = INITITAL_STATE, action) => {
             return {
                 ...state,
                 steps: state.steps.map((el,i)=>{
-                    // If first TAB
+                    // DataTable Data
                     if(!i){
                         return {
                             ...el,
@@ -50,6 +50,19 @@ export default (state = INITITAL_STATE, action) => {
                     return el
                 })
             }
+        case 'GET_PIPELINE':
+        return {
+            ...state,
+            steps: state.steps.map((el,i)=>{
+                // Graph Data
+                if(i == 1){
+                    return {
+                        ...el,
+                        data :action.payload}
+                }
+                return el
+            })
+        }
         case 'SELECT_TAB':
             return {
                 ...state,

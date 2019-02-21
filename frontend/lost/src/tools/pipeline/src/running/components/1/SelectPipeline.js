@@ -3,8 +3,7 @@ import actions from 'actions'
 import {connect} from 'react-redux'
 import * as http from '../../../http'
 
-const {getPipelines, verifyTab, selectTab} = actions
-
+const {getPipelines, getPipeline, verifyTab, selectTab} = actions
 
 
 class SelectPipeline extends Component{
@@ -16,25 +15,25 @@ class SelectPipeline extends Component{
         this.props.getPipelines()
     }
 
-    selectRow(){
+    selectRow(e){
+        const id = e.currentTarget.getAttribute('id')
         this.props.verifyTab(0, true)
         this.props.selectTab(1)
+        this.props.getPipeline(id)
     }
 
     renderDatatable(){
         if(this.props.data){
             return this.props.data.pipes.map((el)=>{
-                return (<div key={el.name} onClick={this.selectRow}>{el.name}</div>)
+                return (<div id={el.id} key={el.id} onClick={this.selectRow}>{el.name}</div>)
             })
         }
     }
 
     render(){
-
         return (
             <div>
                 {this.renderDatatable()}
-
             </div>
         )
     }
@@ -46,5 +45,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    {getPipelines,verifyTab, selectTab}
+    {getPipelines,getPipeline,verifyTab, selectTab}
 ) (SelectPipeline)

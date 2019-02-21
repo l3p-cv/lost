@@ -24,3 +24,8 @@ export const getPipelines = () => async dispatch =>{
     const response = await axios.get(`${API_URL}/pipeline`)
     dispatch({type: 'GET_PIPELINES', payload: response.data})
 }
+
+export const getPipeline = (id) => async dispatch => {
+    const response = await axios.get(`${API_URL}/pipeline/${id}`)
+    dispatch({type: 'GET_PIPELINE', payload: response.data})
+}

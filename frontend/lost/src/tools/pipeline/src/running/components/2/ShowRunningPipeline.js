@@ -4,7 +4,10 @@ import Modals from './modal'
 import testData from './testData'
 import DagreD3 from 'react-directed-graph'
 import DatasourceNode from './nodes/DatasourceNode'
-class SelectPipeline extends Component{
+import {connect} from 'react-redux'
+
+
+class ShowRunningPipeline extends Component{
     constructor(){
         super()
         this.svgStyle = {
@@ -156,30 +159,76 @@ class SelectPipeline extends Component{
     }
 
     renderNodes() {
-        return this.state.nodes.map((el) => {
-            if (el.type = "node1") {
-                return <DatasourceNode
-                    {...el}
-                />
-            }
-        })
+
+        if(this.props.data){
+            return this.props.data.elements.map((el) => {
+                console.log('------------------------------------');
+                console.log("HERE I AM ");
+                console.log('------------------------------------');
+                const connections = el.peOut.map(el => {
+                    return{
+                        id: el
+                    }
+                })
+                const obj= {
+                    id : el.peN,
+                    footer: el.state,
+                    connection: connections
+                }
+                if('datasource' in el){
+                    obj.type = 'datasource'
+                    obj.title = 'DATASOURCE'
+    
+                }else if('script' in el){
+                    obj.type = 'script'
+                    obj.title = 'Script'
+                }else if('annoTask' in el){
+                    obj.type = 'annoTask'
+                    obj.title = 'Annotation Task'
+                }else if ('dataExport' in el){
+                    obj.type = 'dataExport'
+                    obj.title = 'Data Export'
+                }
+                
+    
+                console.log('------------obj------------------------');
+                console.log(obj);
+                console.log('------------------------------------');
+    
+                    return <DatasourceNode
+                        {...obj}
+                    />
+                }
+            )
+        }
+
+    }
+
+    renderGraph(){
+        if(this.props.data){
+            return (
+                <DagreD3
+                enableZooming={true}
+                centerGraph={true}
+                svgStyle={this.svgStyle}
+                ref={this.graph}
+                nodesOnClick={this.nodesOnClick}
+            >
+                {this.renderNodes()}
+            </DagreD3> 
+            )
+        }
+       
     }
 
     render(){
+        console.log('---------this.props---------------------------');
+        console.log(this.props);
+        console.log('------------------------------------');
         return (
             <div>
                 {this.renderModalButtonTests()}
-
-                 <DagreD3
-                    enableZooming={true}
-                    centerGraph={true}
-                    svgStyle={this.svgStyle}
-                    ref={this.graph}
-                    nodesOnClick={this.nodesOnClick}
-                >
-                    {this.renderNodes()}
-                </DagreD3> 
-
+                {this.renderGraph()}
                 {this.renderModals()}
 
             </div>
@@ -187,7 +236,15 @@ class SelectPipeline extends Component{
     }
 }
 
-export default SelectPipeline
+const mapStateToProps = (state) =>{
+    return {data: state.pipelineRunning.steps[1].data}
+}
+
+
+export default connect(
+    mapStateToProps,
+    {}
+) (ShowRunningPipeline)
 
 
 
