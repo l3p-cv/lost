@@ -5,6 +5,7 @@ import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './components/1/SelectPipeline'
 import ShowRunningPipeline from './components/2/ShowRunningPipeline'
 import actions from 'actions'
+import GrayLine from '../forAllComponents/grayLine'
 const {selectTab} = actions
 
 
@@ -28,17 +29,6 @@ class RunningPipeline extends Component{
         this.props.selectTab(newStep)
       }
     
-      renderGrayLine() {
-        return (
-          <hr
-            style={{
-              color: 'gray',
-              backgroundColor: 'gray',
-              height: 1
-            }}
-          />
-        )
-      }
 
 
     render(){
@@ -48,9 +38,8 @@ class RunningPipeline extends Component{
             stepperData={this.props.pipelineRunning}
             changeCurrentStep={this.changeCurrentStep}
           />
-          {this.renderGrayLine()}
-          <br />
-          <br />
+
+          <GrayLine/>
           
   
           {this.renderContent()}

@@ -8,6 +8,8 @@ import ShowStartPipeline from './components/2/ShowStartPipeline'
 import StartPipelineForm from './components/3/StartPipelineForm'
 import StartRunPipeline from './components/4/StartPipeline'
 
+import GrayLine from '../forAllComponents/grayLine'
+
 const {startPipeSelectTab} = actions
 
 class StartPipeline extends Component{
@@ -31,10 +33,14 @@ class StartPipeline extends Component{
         console.log(this.props.pipelineStart);
         console.log('------------------------------------');
         return(
+            <div>
             <Stepper
             stepperData={this.props.pipelineStart}
             changeCurrentStep={this.changeCurrentStep}
           />
+          <GrayLine/>
+          {this.renderContent()}
+          </div>
         )
     }
 }

@@ -58,6 +58,22 @@ export default (state = INITITAL_STATE, action)=>{
     switch(action.type){
         case 'START_PIPE_SELECT_TAB':
             return state
+        case 'START_PIPE_GET_TEMPLATES':
+            console.log('----------action--------------------------');
+            console.log(action);
+            console.log('------------------------------------');  
+            return {
+                ...state,
+                steps: state.steps.map((el,i)=>{
+                    // DataTable Data
+                    if(!i){
+                        return {
+                            ...el,
+                            data :action.payload}
+                    }
+                    return el
+                })
+            }
         default:
             return state
     }
