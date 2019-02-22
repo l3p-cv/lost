@@ -23,8 +23,8 @@ class SelectPipeline extends Component{
     }
 
     renderDatatable(){
-        if(this.props.data){
-            return this.props.data.pipes.map((el)=>{
+        if(this.props.stepData.data){
+            return this.props.stepData.data.pipes.map((el)=>{
                 return (<div id={el.id} key={el.id} onClick={this.selectRow}>{el.name}</div>)
             })
         }
@@ -40,7 +40,7 @@ class SelectPipeline extends Component{
 }
 
 const mapStateToProps = (state) => {
-    return {data: state.pipelineRunning.steps[0].data}
+    return {stepData: state.pipelineRunning.steps[0]}
 }
 
 export default connect(

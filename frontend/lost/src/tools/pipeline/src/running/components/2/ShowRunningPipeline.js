@@ -18,22 +18,16 @@ class ShowRunningPipeline extends Component {
     constructor() {
         super()
         this.graphMountPoint = React.createRef()
-        this.state = {
-            svgStyle: {
-                width: "800px"
-            }
-        }
         this.nodesOnClick = this.nodesOnClick.bind(this)
     }
     componentDidMount() {
-        console.log()
-        const mountPointWidth = this.graphMountPoint.current.offsetWidth
-        this.setState({
-            svgStyle: {
-                width: mountPointWidth
-            }
-        }
-        )
+        // const mountPointWidth = this.graphMountPoint.current.offsetWidth
+        // this.setState({
+        //     svgStyle: {
+        //         width: mountPointWidth
+        //     }
+        // }
+        // )
 
     }
 
@@ -42,11 +36,7 @@ class ShowRunningPipeline extends Component {
     }
 
     renderNodes() {
-        console.log('---------this.props---------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
-        if (this.props.data) {
-            return this.props.data.elements.map((el) => {
+        return this.props.stepData.data.elements.map((el) => {
                 const connections = el.peOut.map(el => {
                     return {
                         id: el
@@ -93,19 +83,22 @@ class ShowRunningPipeline extends Component {
 
             }
             )
-        }
+        
     }
 
     renderGraph() {
-        if (this.props.data) {
+        if (this.props.stepData.data) {
+            console.log('-----------this.props-------------------------');
+            console.log(this.props);
+            console.log('------------------------------------');
             return (
                 <Graph
                     enableZooming={true}
                     centerGraph={true}
-                    svgStyle={this.state.svgStyle}
+                    svgStyle={this.props.stepData.svgStyle}
                     ref={this.graph}
                     nodesOnClick={this.nodesOnClick}
-                    titleBox= {<TitleBox {...this.props.data}/>}
+                    titleBox= {<TitleBox {...this.props.stepData.data}/>}
                 >
                     {this.renderNodes()}
                 </Graph>
@@ -129,7 +122,7 @@ class ShowRunningPipeline extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return { data: state.pipelineRunning.steps[1].data }
+    return { stepData: state.pipelineRunning.steps[1] }
 }
 
 

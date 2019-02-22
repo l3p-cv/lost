@@ -32,7 +32,10 @@ const INITITAL_STATE = {
           shapeContentColor: '#f4b042',
           verified: false,
           modalOpened: false,
-          modalClickedId: 0
+          modalClickedId: 0,
+          svgStyle: {
+            width: "800px"
+        }
         },
     ],
     currentStep: 0

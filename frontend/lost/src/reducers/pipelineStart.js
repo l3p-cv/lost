@@ -32,7 +32,10 @@ const INITITAL_STATE = {
           shapeContentColor: '#f4b042',
           verified: false,
           modalOpened: false,
-          modalClickedId: 0
+          modalClickedId: 0,
+          svgStyle: {
+            width: "800px"
+        }
         },
         {
             text: '3',
@@ -88,9 +91,6 @@ export default (state = INITITAL_STATE, action)=>{
                 })
             }
         case 'PIPELINE_START_GET_TEMPLATE':
-        console.log('------------------------------------');
-        console.log("PIPELINE_START_GET_TEMPLATES");
-        console.log('------------------------------------');
             return {
                 ...state,
                 steps: state.steps.map((el,i)=>{
