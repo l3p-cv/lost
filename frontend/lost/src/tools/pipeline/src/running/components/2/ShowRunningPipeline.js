@@ -8,7 +8,6 @@ import ScriptNode from './nodes/ScriptNode'
 import AnnoTaskNode from './nodes/AnnoTaskNode'
 import DataExportNode from './nodes/DataExportNode'
 import { connect } from 'react-redux'
-import './nodes/node.scss'
 import actions from 'actions'
 import TitleBox from './titleBox'
 
@@ -37,11 +36,14 @@ class ShowRunningPipeline extends Component {
 
     renderNodes() {
         return this.props.stepData.data.elements.map((el) => {
-                const connections = el.peOut.map(el => {
-                    return {
-                        id: el
-                    }
-                })
+                let connections = []
+                if(el.peOut){
+                    connections = el.peOut.map(el => {
+                        return {
+                            id: el
+                        }
+                    })
+                }
                 const obj = {
                     id: el.peN,
                     footer: el.state,

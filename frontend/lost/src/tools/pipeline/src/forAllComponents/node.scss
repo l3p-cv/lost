@@ -57,15 +57,16 @@ $borderRadius: 15px;
     }
 }
 
-.progress{
-    margin-bottom: 10px;
-}
-.pending{
+// Running
+// .progress{
+//     margin-bottom: 10px;
+// }
+.bg-blue{
     background-color: #0073FF !important
 }
-.finished{
+.bg-green{
     background-color: green !important
 }
-.in-progress{
+.bg-orange{
     background-color: orange !important
 }

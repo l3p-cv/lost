@@ -2,7 +2,7 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 
-const DatasourceNode = (props) =>{
+const ScriptNode = (props) => {
     return(
         <div className='graph-node'>
         <div className='bg-orange graph-node-title'>
@@ -10,10 +10,10 @@ const DatasourceNode = (props) =>{
             <span className='graph-node-title-text'>{props.title}</span>
         </div>
         <div className='graph-node-body'>
-        <div className='graph-node-body-row'>
-        <span className='graph-node-body-left-text'>Type: </span>
-        <span>{props.data.type}</span>
-        </div>
+            <div className='graph-node-body-row'>
+                <span className='graph-node-body-left-text'>Name: </span>
+                <span>{props.data.name}</span>
+            </div>
         </div>
         <div className='graph-node-footer'></div>
     </div>
@@ -21,4 +21,4 @@ const DatasourceNode = (props) =>{
     )
 }
 
-export default DatasourceNode
+export default ScriptNode

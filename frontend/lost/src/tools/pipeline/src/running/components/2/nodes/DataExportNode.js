@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import { Progress } from 'reactstrap';
+import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 import NodeFooter from './NodeFooter'

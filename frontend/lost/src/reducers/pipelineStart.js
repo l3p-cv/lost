@@ -12,7 +12,7 @@ const INITITAL_STATE = {
         line: {
           borderWidth: 3,
           borderColor: 'gray',
-          padding: 30
+          padding: 0
         }
       },
     steps: [

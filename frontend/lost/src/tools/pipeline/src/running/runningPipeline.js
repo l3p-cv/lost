@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
+import '../forAllComponents/node.scss'
+
 import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './components/1/SelectPipeline'
 import ShowRunningPipeline from './components/2/ShowRunningPipeline'

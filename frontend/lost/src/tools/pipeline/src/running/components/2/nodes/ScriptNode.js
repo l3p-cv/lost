@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'

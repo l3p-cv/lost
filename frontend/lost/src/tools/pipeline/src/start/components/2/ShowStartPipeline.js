@@ -1,20 +1,17 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import DataSourceNode from './nodes/DatasourceNode'
+import AnnoTaskNode from './nodes/AnnoTaskNode'
+import DataExportNode from './nodes/DataExportNode'
+import DatasourceNode from './nodes/DatasourceNode'
+import ScriptNode from './nodes/ScriptNode' 
 import Graph from 'react-directed-graph'
 
 class ShowStartPipeline extends Component {
 
-    componentDidMount() {
-
-    }
-
+ 
 
     renderNodes() {
         return this.props.stepData.data.elements.map((el) => {
-            console.log('----------el--------------------------');
-            console.log(el);
-            console.log('------------------------------------');
             let connections = []
             if(el.peOut){
                  connections = el.peOut.map(el => {
@@ -23,20 +20,43 @@ class ShowStartPipeline extends Component {
                     }
                 })
             }
-
             const obj = {
                 id: el.peN,
                 connection: connections
             }
-            console.log('-----------obj-------------------------');
-            console.log(obj);
-            console.log('------------------------------------');
-            return (
-                <DataSourceNode
-                key={obj.id}
-                {...obj}
+            if ('datasource' in el) {
+                obj.type = 'datasource'
+                obj.title = 'Datasource'
+                obj.data = el.datasource
+                return <DatasourceNode
+                    key={obj.id}
+                    {...obj}
                 />
-            )
+            } else if ('script' in el) {
+                obj.type = 'script'
+                obj.title = 'Script'
+                obj.data = el.script
+                return <ScriptNode
+                    key={obj.id}
+                    {...obj}
+                />
+            } else if ('annoTask' in el) {
+                obj.type = 'annoTask'
+                obj.title = 'Annotation Task'
+                obj.data = el.annoTask
+                return <AnnoTaskNode
+                    key={obj.id}
+                    {...obj}
+                />
+            } else if ('dataExport' in el) {
+                obj.type = 'dataExport'
+                obj.title = 'Data Export'
+                obj.data = el.dataExport
+                return <DataExportNode
+                    key={obj.id}
+                    {...obj}
+                />
+            }
         })
 
     }
