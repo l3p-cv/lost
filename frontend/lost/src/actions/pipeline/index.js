@@ -1,3 +1,4 @@
 
 import * as pipelineRunning from './pipelineRunning'
-export default {... pipelineRunning}
+import * as pipelineStaring from './pipelineStart'
+export default {... pipelineRunning, ... pipelineStaring}

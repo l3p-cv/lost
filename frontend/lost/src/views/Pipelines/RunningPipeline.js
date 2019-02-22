@@ -9,7 +9,7 @@ import {
 } from 'reactstrap'
 
 
-class Pipelines extends Component {
+class RunningPipe extends Component {
 	constructor(props){
 		super(props)
 		this.mount = React.createRef()
@@ -34,4 +34,4 @@ class Pipelines extends Component {
 }
 
 
-export default connect(null)(Pipelines);
+export default connect(null)(RunningPipe);
