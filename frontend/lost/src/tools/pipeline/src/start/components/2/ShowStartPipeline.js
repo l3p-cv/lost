@@ -1,6 +1,12 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
 
 class ShowStartPipeline extends Component{
+
+    componentDidMount(){
+
+    }
+
     render(){
         return(
             <div>
@@ -10,4 +16,9 @@ class ShowStartPipeline extends Component{
     }
 }
 
-export default ShowStartPipeline
+const mapStateToProps = (state) =>{
+    return { data: state.pipelineStart.steps[1].data }
+}
+export default connect(
+    mapStateToProps, {}
+)(ShowStartPipeline)

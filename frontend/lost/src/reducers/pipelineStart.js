@@ -56,17 +56,46 @@ const INITITAL_STATE = {
 
 export default (state = INITITAL_STATE, action)=>{
     switch(action.type){
-        case 'START_PIPE_SELECT_TAB':
-            return state
-        case 'START_PIPE_GET_TEMPLATES':
-            console.log('----------action--------------------------');
-            console.log(action);
-            console.log('------------------------------------');  
+        case 'PIPELINE_START_SELECT_TAB':
+        return {
+            ...state,
+            currentStep: action.payload.tabId
+        }
+        case 'PIPELINE_START_VERIFY_TAB':
+        return {
+            ...state,
+            steps: state.steps.map((el,i)=>{
+                if(i === action.payload.tabId){
+                    return {
+                        ...el,
+                        verified: action.payload.verified
+                    }
+                }
+                return el
+            })
+        }            
+        case 'PIPELINE_START_GET_TEMPLATES':
             return {
                 ...state,
                 steps: state.steps.map((el,i)=>{
                     // DataTable Data
                     if(!i){
+                        return {
+                            ...el,
+                            data :action.payload}
+                    }
+                    return el
+                })
+            }
+        case 'PIPELINE_START_GET_TEMPLATE':
+        console.log('------------------------------------');
+        console.log("PIPELINE_START_GET_TEMPLATES");
+        console.log('------------------------------------');
+            return {
+                ...state,
+                steps: state.steps.map((el,i)=>{
+                    // Graph Data
+                    if(i == 1){
                         return {
                             ...el,
                             data :action.payload}
