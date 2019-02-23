@@ -223,6 +223,7 @@ export function enableMultipointChange(drawable){
 			const selectedDrawable = appModel.getSelectedDrawable()
 			if(selectedDrawable.getClassName() === "MultipointPresenter"){
 				if(keyboard.isModifierHit($event, "Control")){
+					console.log($event)
 					insertOrAddEventActive = true
 					appModel.event.changeEvent.update(true)
 					handleMultipointPointInsertion($event, drawable)
