@@ -8,7 +8,7 @@ import Graph from 'react-directed-graph'
 import actions from 'actions'
 import Modals from './modals'
 
-const {pipelineStartToggleModal, pipelineStartSelectTab, pipelineStartVerifyTab} = actions
+const {pipelineStart_ToggleModal, pipelineStart_SelectTab, pipelineStart_VerifyTab} = actions
 class ShowStartPipeline extends Component {
     constructor(){
         super()
@@ -66,8 +66,8 @@ class ShowStartPipeline extends Component {
     }
 
     nodesOnClick(id) {
-        this.props.pipelineStartToggleModal(id)
-        this.props.pipelineStartVerifyTab(1, true)
+        this.props.pipelineStart_ToggleModal(id)
+        this.props.pipelineStart_VerifyTab(1, true)
 
     }
     renderGraph() {
@@ -99,7 +99,7 @@ const mapStateToProps = (state) => {
     return { stepData: state.pipelineStart.steps[1] }
 }
 export default connect(
-    mapStateToProps, {pipelineStartToggleModal, pipelineStartSelectTab, pipelineStartVerifyTab}
+    mapStateToProps, {pipelineStart_ToggleModal, pipelineStart_SelectTab, pipelineStart_VerifyTab}
 )(ShowStartPipeline)
 
 

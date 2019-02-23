@@ -4,8 +4,8 @@ import {connect} from 'react-redux'
 import '../forAllComponents/node.scss'
 
 import Stepper from 'react-stepper-wizard'
-import SelectPipeline from './components/1/SelectPipeline'
-import ShowRunningPipeline from './components/2/ShowRunningPipeline'
+import SelectPipeline from './1/SelectPipeline'
+import ShowRunningPipeline from './2/ShowRunningPipeline'
 import actions from 'actions'
 import GrayLine from '../forAllComponents/grayLine'
 const {selectTab} = actions

@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import actions from 'actions'
 import {connect} from 'react-redux'
-import * as http from '../../../http'
 
-const {getPipelines, getPipeline, verifyTab, selectTab} = actions
+
+const {pipelineStart_GetTemplates, pipelineStart_SelectTab, pipelineStart_VerifyTab, pipelineStart_GetTemplate} = actions
 
 
 class SelectPipeline extends Component{
@@ -12,19 +12,20 @@ class SelectPipeline extends Component{
         this.selectRow = this.selectRow.bind(this)
     }
     async componentDidMount(){
-        this.props.getPipelines()
+        this.props.pipelineStart_GetTemplates()
     }
 
     selectRow(e){
+
         const id = e.currentTarget.getAttribute('id')
-        this.props.verifyTab(0, true)
-        this.props.selectTab(1)
-        this.props.getPipeline(id)
+        this.props.pipelineStart_VerifyTab(0, true)
+        this.props.pipelineStart_SelectTab(1)
+        this.props.pipelineStart_GetTemplate(id)
     }
 
     renderDatatable(){
         if(this.props.stepData.data){
-            return this.props.stepData.data.pipes.map((el)=>{
+            return this.props.stepData.data.templates.map((el)=>{
                 return (<div id={el.id} key={el.id} onClick={this.selectRow}>{el.name}</div>)
             })
         }
@@ -40,10 +41,10 @@ class SelectPipeline extends Component{
 }
 
 const mapStateToProps = (state) => {
-    return {stepData: state.pipelineRunning.steps[0]}
+    return {stepData: state.pipelineStart.steps[0]}
 }
 
 export default connect(
     mapStateToProps,
-    {getPipelines,getPipeline,verifyTab, selectTab}
+    {pipelineStart_GetTemplates,pipelineStart_SelectTab,pipelineStart_VerifyTab, pipelineStart_GetTemplate}
 ) (SelectPipeline)

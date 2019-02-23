@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import * as http from '../../../http'
-import Modals from './modal'
+
+import Modals from './modals'
 import Graph from 'react-directed-graph'
 import DatasourceNode from './nodes/DatasourceNode'
 import ScriptNode from './nodes/ScriptNode'

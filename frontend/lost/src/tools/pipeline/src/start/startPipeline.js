@@ -3,14 +3,14 @@ import Stepper from 'react-stepper-wizard'
 import { connect } from 'react-redux'
 import actions from 'actions'
 import '../forAllComponents/node.scss'
-import SelectPipeline from './components/1/SelectPipeline'
-import ShowStartPipeline from './components/2/ShowStartPipeline'
-import StartPipelineForm from './components/3/StartPipelineForm'
-import StartRunPipeline from './components/4/StartPipeline'
+import SelectPipeline from './1/SelectPipeline'
+import ShowStartPipeline from './2/ShowStartPipeline'
+import StartPipelineForm from './3/StartPipelineForm'
+import StartRunPipeline from './4/StartPipeline'
 
 import GrayLine from '../forAllComponents/grayLine'
 
-const { pipelineStartSelectTab } = actions
+const { pipelineStart_SelectTab } = actions
 
 class StartPipeline extends Component {
     constructor(){
@@ -18,10 +18,8 @@ class StartPipeline extends Component {
         this.changeCurrentStep = this.changeCurrentStep.bind(this)
     }
     changeCurrentStep(newStep) {
-        console.log('---------this.props this.props---------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
-        this.props.pipelineStartSelectTab(newStep)
+
+        this.props.pipelineStart_SelectTab(newStep)
     }
 
     renderContent() {
@@ -53,5 +51,5 @@ const mapStateToProps = (state) => {
 }
 export default connect(
     mapStateToProps,
-    { pipelineStartSelectTab }
+    { pipelineStart_SelectTab }
 )(StartPipeline)

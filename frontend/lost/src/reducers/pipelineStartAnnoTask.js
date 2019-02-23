@@ -54,6 +54,24 @@ const INITITAL_STATE = {
 
 export default (state = INITITAL_STATE, action) => {
     switch (action.type) {
+        case 'PIPELINE_START_ANNO_TASK_SELECT_TAB':
+        return {
+            ...state,
+            currentStep: action.payload.tabId
+        }
+        case 'PIPELINE_START_ANNO_TASK_VERIFY_TAB':
+        return {
+            ...state,
+            steps: state.steps.map((el,i)=>{
+                if(i === action.payload.tabId){
+                    return {
+                        ...el,
+                        verified: action.payload.verified
+                    }
+                }
+                return el
+            })
+        }     
         default:
             return state
     }

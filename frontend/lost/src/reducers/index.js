@@ -9,6 +9,7 @@ import mia from './mia'
 import worker from './worker'
 import pipelineRunning from './pipelineRunning'
 import pipelineStart from './pipelineStart'
+import pipelineStartAnnoTask from './pipelineStartAnnoTask'
 
 export default combineReducers({
     auth,
@@ -20,5 +21,6 @@ export default combineReducers({
     worker,
     form: formReducer,
     pipelineRunning,
-    pipelineStart
+    pipelineStart,
+    pipelineStartAnnoTask
 })
