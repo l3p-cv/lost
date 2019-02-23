@@ -6,8 +6,8 @@ import UserInfo from './1/UserInfo'
 import SelectUser from './2/SelectUser'
 import SelectTree from './3/SelectTree'
 import SelectLabel from './4/SelectLabel'
-
-// import GrayLine from '../../..&forAllComponents/grayLine'
+import GrayLine from '../../../../../globalComponents/grayLine'
+// import GrayLine from '../../..&globalComponents/grayLine'
 
 const { pipelineStartAnnoTask_SelectTab } = actions
 
@@ -41,7 +41,7 @@ class AnnoTaskModal extends Component {
                     stepperData={this.props.pipelineStartAnnoTask}
                     changeCurrentStep={this.changeCurrentStep}
                 />
-                {/* <GrayLine /> */}
+                <GrayLine />
                 {this.renderContent()}
             </div>
         )

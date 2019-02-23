@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
-import '../forAllComponents/node.scss'
+import '../globalComponents/node.scss'
 
 import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './1/SelectPipeline'
 import ShowRunningPipeline from './2/ShowRunningPipeline'
 import actions from 'actions'
-import GrayLine from '../forAllComponents/grayLine'
+import GrayLine from '../globalComponents/grayLine'
 const {selectTab} = actions
 
 
