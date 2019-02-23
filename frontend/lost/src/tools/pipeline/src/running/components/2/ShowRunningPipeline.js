@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import * as http from '../../../http'
 import Modals from './modal'
-import testData from './testData'
 import Graph from 'react-directed-graph'
 import DatasourceNode from './nodes/DatasourceNode'
 import ScriptNode from './nodes/ScriptNode'
@@ -90,9 +89,6 @@ class ShowRunningPipeline extends Component {
 
     renderGraph() {
         if (this.props.stepData.data) {
-            console.log('-----------this.props-------------------------');
-            console.log(this.props);
-            console.log('------------------------------------');
             return (
                 <Graph
                     enableZooming={true}
@@ -107,17 +103,13 @@ class ShowRunningPipeline extends Component {
             )
         }
     }
-    renderModals() {
-        return (
-            <Modals />
-        )
-    }
+
 
     render() {
         return (
             <div ref={this.graphMountPoint}>
                 {this.renderGraph()}
-                {this.renderModals()}
+                <Modals />
             </div>
         )
     }

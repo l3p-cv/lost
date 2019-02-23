@@ -33,3 +33,13 @@ export const pipelineStartGetTemplate = (id) => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/template/${id}`)
     dispatch({type: 'PIPELINE_START_GET_TEMPLATE', payload: response.data})
 }
+
+
+export const pipelineStartToggleModal = (id) => {
+    return {
+        type: 'PIPELINE_START_TOGGLE_MODAL',
+        payload:{
+            id:id
+        }
+    }
+}

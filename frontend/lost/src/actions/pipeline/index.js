@@ -1,4 +1,5 @@
 
 import * as pipelineRunning from './pipelineRunning'
-import * as pipelineStaring from './pipelineStart'
-export default {... pipelineRunning, ... pipelineStaring}
+import * as pipelineStart from './pipelineStart'
+import * as pipelineStartAnnoTask from './pipelineStartAnnoTask'
+export default {... pipelineRunning, ... pipelineStart}

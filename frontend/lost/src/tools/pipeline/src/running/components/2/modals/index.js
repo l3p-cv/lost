@@ -16,8 +16,8 @@ class BaseModal extends Component {
     }
     
     selectModal() {
-        if (this.props.data.data && this.props.data.modalOpened) {
-            const modalData = this.props.data.data.elements.filter(el => el.peN === this.props.data.modalClickedId)[0]
+        if (this.props.stepData.data && this.props.stepData.modalOpened) {
+            const modalData = this.props.stepData.data.elements.filter(el => el.peN === this.props.stepData.modalClickedId)[0]
             if ('datasource' in modalData) {
                 return (
                     <DatasourceModal
@@ -46,7 +46,7 @@ class BaseModal extends Component {
 
     renderModals() {
         return (
-            <Modal size='lg' isOpen={this.props.data.modalOpened} toggle={this.props.toggleModal}>
+            <Modal size='lg' isOpen={this.props.stepData.modalOpened} toggle={this.props.toggleModal}>
                 {this.selectModal()}
                 <ModalFooter>
                     <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
@@ -65,7 +65,7 @@ class BaseModal extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {data: state.pipelineRunning.steps[1]}
+    return {stepData: state.pipelineRunning.steps[1]}
 }
 
 export default connect(

@@ -34,7 +34,7 @@ export const toggleModal = (id) => {
     return {
         type: 'TOGGLE_MODAL',
         payload:{
-            id:id?id:undefined
+            id:id
         }
     }
 }
