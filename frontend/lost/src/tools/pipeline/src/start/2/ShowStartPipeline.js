@@ -5,10 +5,10 @@ import DataExportNode from './nodes/DataExportNode'
 import DatasourceNode from './nodes/DatasourceNode'
 import ScriptNode from './nodes/ScriptNode' 
 import Graph from 'react-directed-graph'
-import actions from 'actions'
+import actions from 'actions/pipeline/pipelineStart'
 import Modals from './modals'
 
-const {pipelineStart_ToggleModal, pipelineStart_SelectTab, pipelineStart_VerifyTab} = actions
+const {toggleModal, selectTab, verifyTab} = actions
 class ShowStartPipeline extends Component {
     constructor(){
         super()
@@ -66,8 +66,8 @@ class ShowStartPipeline extends Component {
     }
 
     nodesOnClick(id) {
-        this.props.pipelineStart_ToggleModal(id)
-        this.props.pipelineStart_VerifyTab(1, true)
+        this.props.toggleModal(id)
+        this.props.verifyTab(1, true)
 
     }
     renderGraph() {
@@ -99,7 +99,7 @@ const mapStateToProps = (state) => {
     return { stepData: state.pipelineStart.steps[1] }
 }
 export default connect(
-    mapStateToProps, {pipelineStart_ToggleModal, pipelineStart_SelectTab, pipelineStart_VerifyTab}
+    mapStateToProps, {toggleModal, selectTab, verifyTab}
 )(ShowStartPipeline)
 
 

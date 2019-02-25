@@ -123,8 +123,8 @@ const BASE_URL = `${API_URL}/pipeline`
 const URLS = {
     GET_TEMPLATES: `${BASE_URL}/template`,
     GET_TEMPLATE: id => `${BASE_URL}/template/${id}`,
-    GET_PIPELINES: `${BASE_URL}`,
-    GET_PIPELINE: id => `${BASE_URL}/${id}`,
+    PIPELINE_RUNNING_GET_PIPELINES: `${BASE_URL}`,
+    PIPELINE_RUNNING_GET_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_START_PIPELINE: `${BASE_URL}/start`,
     DELETE_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_PAUSE_PIPELINE: id => `${BASE_URL}/pause/${id}`,
@@ -162,7 +162,7 @@ export function requestPipelines(){
 		return Promise.resolve(DUMMY_DATA.requestPipelines[0])
 	}
 	return http.get({
-		url: URLS.GET_PIPELINES,
+		url: URLS.PIPELINE_RUNNING_GET_PIPELINES,
 		token,
 	})
 }
@@ -171,7 +171,7 @@ export function requestPipeline(id: Number, token: String){
 		return Promise.resolve(DUMMY_DATA.requestPipeline[0])
 	}
 	return http.get({
-		url: URLS.GET_PIPELINE(id),
+		url: URLS.PIPELINE_RUNNING_GET_PIPELINE(id),
 		token,
 	})
 }

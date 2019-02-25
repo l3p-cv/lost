@@ -43,7 +43,7 @@ const INITITAL_STATE = {
 }
 export default (state = INITITAL_STATE, action) => {
     switch(action.type){
-        case 'GET_PIPELINES':  
+        case 'PIPELINE_RUNNING_GET_PIPELINES':  
             return {
                 ...state,
                 steps: state.steps.map((el,i)=>{
@@ -56,7 +56,7 @@ export default (state = INITITAL_STATE, action) => {
                     return el
                 })
             }
-        case 'GET_PIPELINE':
+        case 'PIPELINE_RUNNING_GET_PIPELINE':
         return {
             ...state,
             steps: state.steps.map((el,i)=>{
@@ -69,12 +69,12 @@ export default (state = INITITAL_STATE, action) => {
                 return el
             })
         }
-        case 'SELECT_TAB':
+        case 'PIPELINE_RUNNING_SELECT_TAB':
             return {
                 ...state,
                 currentStep: action.payload.tabId
             }
-        case 'VERIFY_TAB':
+        case 'PIPELINE_RUNNING_VERIFY_TAB':
             return {
                 ...state,
                 steps: state.steps.map((el,i)=>{
@@ -87,7 +87,7 @@ export default (state = INITITAL_STATE, action) => {
                     return el
                 })
             }            
-        case 'TOGGLE_MODAL':
+        case 'PIPELINE_RUNNING_TOGGLE_MODAL':
         return {
             ...state,
             steps: state.steps.map((el,i)=>{

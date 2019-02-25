@@ -5,7 +5,7 @@ import AnnoTaskModal from './types/AnnoTaskModal'
 import DataExportModal from './types/DataExportModal'
 import { Button, Modal, ModalFooter } from 'reactstrap';
 import {connect} from 'react-redux'
-import actions from 'actions'
+import actions from 'actions/pipeline/pipelineRunning'
 
 const {toggleModal} = actions
 

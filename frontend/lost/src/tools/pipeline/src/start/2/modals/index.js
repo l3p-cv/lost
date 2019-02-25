@@ -3,11 +3,12 @@ import DatasourceModal from './types/DatasourceModal'
 import ScriptModal from './types/ScriptModal'
 import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
 import DataExportModal from './types/DataExportModal'
+import actions from 'actions/pipeline/pipelineStart'
 import { Button, Modal, ModalFooter } from 'reactstrap';
 import {connect} from 'react-redux'
-import actions from 'actions'
 
-const {pipelineStart_ToggleModal} = actions
+
+const {toggleModal} = actions
 
 
 class BaseModal extends Component {
@@ -46,10 +47,10 @@ class BaseModal extends Component {
 
     renderModals() {
         return (
-            <Modal size='lg' isOpen={this.props.stepData.modalOpened} toggle={this.props.pipelineStart_ToggleModal}>
+            <Modal size='lg' isOpen={this.props.stepData.modalOpened} toggle={this.props.toggleModal}>
                 {this.selectModal()}
                 <ModalFooter>
-                    <Button color="secondary" onClick={this.props.pipelineStart_ToggleModal}>Cancel</Button>
+                    <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
                 </ModalFooter>
             </Modal>
         )
@@ -70,5 +71,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    {pipelineStart_ToggleModal}
+    {toggleModal}
 )(BaseModal)

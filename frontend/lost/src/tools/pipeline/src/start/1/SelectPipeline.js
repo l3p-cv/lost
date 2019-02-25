@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-import actions from 'actions'
+import actions from 'actions/pipeline/pipelineStart'
 import {connect} from 'react-redux'
 
 
-const {pipelineStart_GetTemplates, pipelineStart_SelectTab, pipelineStart_VerifyTab, pipelineStart_GetTemplate} = actions
+const {getTemplates, selectTab, verifyTab, getTemplate} = actions
 
 
 class SelectPipeline extends Component{
@@ -12,15 +12,15 @@ class SelectPipeline extends Component{
         this.selectRow = this.selectRow.bind(this)
     }
     async componentDidMount(){
-        this.props.pipelineStart_GetTemplates()
+        this.props.getTemplates()
     }
 
     selectRow(e){
 
         const id = e.currentTarget.getAttribute('id')
-        this.props.pipelineStart_VerifyTab(0, true)
-        this.props.pipelineStart_SelectTab(1)
-        this.props.pipelineStart_GetTemplate(id)
+        this.props.verifyTab(0, true)
+        this.props.selectTab(1)
+        this.props.getTemplate(id)
     }
 
     renderDatatable(){
@@ -46,5 +46,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    {pipelineStart_GetTemplates,pipelineStart_SelectTab,pipelineStart_VerifyTab, pipelineStart_GetTemplate}
+    {getTemplates,selectTab,verifyTab, getTemplate}
 ) (SelectPipeline)

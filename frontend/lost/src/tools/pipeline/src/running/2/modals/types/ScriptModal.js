@@ -2,6 +2,11 @@ import React from 'react'
 import { ModalHeader, ModalBody, Progress } from 'reactstrap';
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
+import ArgumentsTable from '../../../../globalComponents/modals/ScriptArgumentsTable'
+
+
+
+
 export default (props) => {
     const progress = props.script.progress
     return (
@@ -47,24 +52,9 @@ export default (props) => {
                             },
                         ]}
                     />
-                    {/* Argument Table */}
-                    <div style={{ marginLeft: 15, marginRight: 15 }}>
-                        <table className="table table-bordered">
-                            <thead>
-                                <tr><th>Key</th><th>Value</th></tr>
-                            </thead>
-                            <tbody>
-                                {Object.keys(props.script.arguments).map((key) => {
-                                    return (
-                                        <tr key={key}>
-                                            <th>{key}</th>
-                                            <td><input className="form-control" data-ref="polygon" value={key} disabled /></td>
-                                        </tr>
-                                    )
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                    <ArgumentsTable
+                        data = {props.script.arguments}
+                    />
                 </CollapseCard>
             </ModalBody>
         </>

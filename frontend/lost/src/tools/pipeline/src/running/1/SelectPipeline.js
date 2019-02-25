@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import actions from 'actions'
+import actions from 'actions/pipeline/pipelineRunning'
 import {connect} from 'react-redux'
 
 const {getPipelines, getPipeline, verifyTab, selectTab} = actions

@@ -2,39 +2,41 @@ import {API_URL} from '../../settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
 
-export const verifyTab = (tabId, verified) => {
+ const verifyTab = (tabId, verified) => {
     return {
-        type: 'VERIFY_TAB',
+        type: 'PIPELINE_RUNNING_VERIFY_TAB',
         payload: {
             tabId, verified
         }
     }
 }
 
-export const selectTab = (tabId) => {
+ const selectTab = (tabId) => {
     return {
-        type: 'SELECT_TAB',
+        type: 'PIPELINE_RUNNING_SELECT_TAB',
         payload: {
             tabId
         }
     }
 }
 
-export const getPipelines = () => async dispatch =>{
+ const getPipelines = () => async dispatch =>{
     const response = await axios.get(`${API_URL}/pipeline`)
-    dispatch({type: 'GET_PIPELINES', payload: response.data})
+    dispatch({type: 'PIPELINE_RUNNING_GET_PIPELINES', payload: response.data})
 }
 
-export const getPipeline = (id) => async dispatch => {
+ const getPipeline = (id) => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/${id}`)
-    dispatch({type: 'GET_PIPELINE', payload: response.data})
+    dispatch({type: 'PIPELINE_RUNNING_GET_PIPELINE', payload: response.data})
 }
 
-export const toggleModal = (id) => {
+ const toggleModal = (id) => {
     return {
-        type: 'TOGGLE_MODAL',
+        type: 'PIPELINE_RUNNING_TOGGLE_MODAL',
         payload:{
             id:id
         }
     }
 }
+
+export default {verifyTab, selectTab,getPipelines, getPipeline, toggleModal}

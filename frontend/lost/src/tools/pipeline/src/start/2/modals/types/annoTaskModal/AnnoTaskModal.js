@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Stepper from 'react-stepper-wizard'
 import { connect } from 'react-redux'
-import actions from 'actions'
+import actions from 'actions/pipeline/pipelineStartAnnoTask'
 import UserInfo from './1/UserInfo'
 import SelectUser from './2/SelectUser'
 import SelectTree from './3/SelectTree'
@@ -9,7 +9,7 @@ import SelectLabel from './4/SelectLabel'
 import GrayLine from '../../../../../globalComponents/grayLine'
 // import GrayLine from '../../..&globalComponents/grayLine'
 
-const { pipelineStartAnnoTask_SelectTab } = actions
+const { selectTab } = actions
 
 class AnnoTaskModal extends Component {
     constructor(){
@@ -18,7 +18,7 @@ class AnnoTaskModal extends Component {
     }
     changeCurrentStep(newStep) {
 
-        this.props.pipelineStartAnnoTask_SelectTab(newStep)
+        this.props.selectTab(newStep)
     }
 
     renderContent() {
@@ -53,5 +53,5 @@ const mapStateToProps = (state) => {
 }
 export default connect(
     mapStateToProps,
-    { pipelineStartAnnoTask_SelectTab }
+    { selectTab }
 )(AnnoTaskModal)

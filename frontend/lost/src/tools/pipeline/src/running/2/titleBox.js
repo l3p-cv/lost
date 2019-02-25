@@ -1,9 +1,7 @@
 import React from 'react'
 
 const titleBox = (props) =>{
-    console.log('------------props------------------------');
-    console.log(props);
-    console.log('------------------------------------');
+
     return(
         <div>
             <div>

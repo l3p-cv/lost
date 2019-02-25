@@ -7,7 +7,7 @@ import ScriptNode from './nodes/ScriptNode'
 import AnnoTaskNode from './nodes/AnnoTaskNode'
 import DataExportNode from './nodes/DataExportNode'
 import { connect } from 'react-redux'
-import actions from 'actions'
+import actions from 'actions/pipeline/pipelineRunning'
 import TitleBox from './titleBox'
 
 const { toggleModal } = actions

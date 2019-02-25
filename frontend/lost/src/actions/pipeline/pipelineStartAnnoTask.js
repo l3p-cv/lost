@@ -1,4 +1,4 @@
-export const pipelineStartAnnoTask_SelectTab = (tabId) => {
+ const selectTab = (tabId) => {
     return {
         type: 'PIPELINE_START_ANNO_TASK_SELECT_TAB',
         payload: {
@@ -6,7 +6,7 @@ export const pipelineStartAnnoTask_SelectTab = (tabId) => {
         }
     }
 }
-export const pipelineStartAnnoTask_VerifyTab = (tabId, verified) => {
+ const verifyTab = (tabId, verified) => {
     return {
         type: 'PIPELINE_START_ANNO_TASK_VERIFY_TAB',
         payload: {
@@ -14,3 +14,6 @@ export const pipelineStartAnnoTask_VerifyTab = (tabId, verified) => {
         }
     }
 }
+
+
+export default {selectTab, verifyTab}

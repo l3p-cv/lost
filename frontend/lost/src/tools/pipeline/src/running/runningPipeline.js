@@ -6,8 +6,8 @@ import '../globalComponents/node.scss'
 import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './1/SelectPipeline'
 import ShowRunningPipeline from './2/ShowRunningPipeline'
-import actions from 'actions'
 import GrayLine from '../globalComponents/grayLine'
+import actions from 'actions/pipeline/pipelineRunning'
 const {selectTab} = actions
 
 
