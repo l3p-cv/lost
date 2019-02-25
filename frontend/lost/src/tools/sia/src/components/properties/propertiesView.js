@@ -91,6 +91,13 @@ class LabelSelect extends Component {
 		appModel.config.on("update", config => {
 			this.setState({ enabled: config.actions.labeling })
 		})
+        appModel.event.creationEvent.on("change", isActive => {
+            if(isActive){
+                this.root.current.refs.input.disabled = true
+            } else {
+                this.root.current.refs.input.disabled = false
+            }
+        })
 	}
 	render(){
 		return (
@@ -344,6 +351,9 @@ export function resetDescription(){
     html.refs["label-description"].textContent = "Select or create a Drawable to edit it."
 }
 
+export function disableLabelSelect(){
+
+}
 export function enableNextButton(){
     html.refs["btn-next"].disabled = false
 }
