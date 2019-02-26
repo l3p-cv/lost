@@ -113,8 +113,31 @@ click on the **Users** icon on the left menu bar.
 Please note that only users with the role **Designer** are allowed to 
 manage users.
 
-Starting a Pipeline
-===================
+Starting an Annotation Pipeline
+==============================
+All annotation processes in LOST are modeled as pipelines.
+Such a pipeline defines the order in which specific pipeline elements will
+be executed.
+Possible elements are
+**Datasources**, **Scripts**, **AnnotationTasks**, **DataExports**
+and **VisualOutputs**. 
+
+Each version of LOST is equipped with a selection of standard pipelines 
+that can be used as a quick start to annotate your data.
+In order to start an annotation pipeline you need to be loggin in as 
+a user with role **Designer** and click on the **Start Pipeline** button
+on the left navigation bar.
+Now you will see a table with possible pipelines that can be started.
+
+After selecting a pipeline by a click on a specific row in the table 
+you need to configure it.
+A visualization of the selected pipeline will now pop up.
+In most cases a **Datasource** will be the first element of a pipeline.
+Click on it and select an available dataset.
+The next element you need to look for is an **AnnotationTask**.
+After clicking on it a Wizard will pop up and guide you trough the 
+configuration of this **AnnotationTask**. 
+
 
 Annotate Your Images
 ====================
