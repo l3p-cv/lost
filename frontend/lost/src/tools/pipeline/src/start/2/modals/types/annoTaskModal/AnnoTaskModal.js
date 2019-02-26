@@ -6,7 +6,6 @@ import UserInfo from './1/UserInfo'
 import SelectUser from './2/SelectUser'
 import SelectTree from './3/SelectTree'
 import SelectLabel from './4/SelectLabel'
-import GrayLine from '../../../../../globalComponents/grayLine'
 // import GrayLine from '../../..&globalComponents/grayLine'
 
 const { selectTab } = actions
@@ -22,6 +21,9 @@ class AnnoTaskModal extends Component {
     }
 
     renderContent() {
+        console.log('--------this.propsthis.props----------------------------');
+        console.log(this.props);
+        console.log('------------------------------------');
         switch (this.props.pipelineStartAnnoTask.currentStep) {
             case 0: return (<UserInfo />)
             case 1: return (<SelectUser />)
@@ -32,16 +34,13 @@ class AnnoTaskModal extends Component {
 
 
     render() {
-        console.log('------------this.props------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
+
         return (
             <div>
                 <Stepper
                     stepperData={this.props.pipelineStartAnnoTask}
                     changeCurrentStep={this.changeCurrentStep}
                 />
-                <GrayLine />
                 {this.renderContent()}
             </div>
         )

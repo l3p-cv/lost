@@ -67,8 +67,6 @@ class ShowStartPipeline extends Component {
 
     nodesOnClick(id) {
         this.props.toggleModal(id)
-        this.props.verifyTab(1, true)
-
     }
     renderGraph() {
         if (this.props.stepData.data) {
