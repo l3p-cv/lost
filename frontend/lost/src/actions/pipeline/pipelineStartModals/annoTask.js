@@ -15,6 +15,23 @@ const instructionsOnInput = (elementId, value) => {
     }
 }
 
+const selectUser = (elementId, assignee, workerId) => {
+    return {
+        type: 'PIPELINE_START_ANNO_TASK_SELECT_USER',
+        payload: {
+            elementId, assignee, workerId
+        }
+    }
+}
+
+const selectLabelTree = (elementId, value) => {
+    return {
+        type: 'PIPELINE_START_ANNO_TASK_SELECT_TREE',
+        payload: {
+            elementId, value
+        }
+    }
+}
 
 
 const selectTab = (tabId, elementId) => {
@@ -31,7 +48,7 @@ const selectTab = (tabId, elementId) => {
 
 
 
- const verifyTab = (tabId, verified, elementId) => {
+ const verifyTab = (elementId, tabId, verified ) => {
     return {
         type: 'PIPELINE_START_ANNO_TASK_VERIFY_TAB',
         payload: {
@@ -44,5 +61,7 @@ export default {
     nameOnInput,
     instructionsOnInput,
     selectTab,
-    verifyTab
+    verifyTab,
+    selectUser,
+    selectLabelTree
 }

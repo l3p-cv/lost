@@ -145,6 +145,9 @@ export default (state = INITITAL_STATE, action)=>{
                 })
             }
         }
+
+        // ANNO TASK START
+
         case 'PIPELINE_START_ANNO_TASK_SELECT_TAB':
             return {
                 ...state,
@@ -191,6 +194,79 @@ export default (state = INITITAL_STATE, action)=>{
                     })
                 }
             }
+        case 'PIPELINE_START_ANNO_TASK_NAME_INPUT':
+            return{
+                ...state,
+                step1Data:{
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el)=>{
+                        if('annoTask' in el && (el.peN == action.payload.elementId)){
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        name: action.payload.value
+                                    }
+                                }
+                            }
+                        }
+                        return el
+                    })
+                }
+            }
+        case 'PIPELINE_START_ANNO_TASK_INSTRUCTIONS_INPUT':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                annoTask: {
+                                    ...el.exportData.annoTask,
+                                    instructions: action.payload.value
+                                }
+                            }
+                        }
+                    }
+                    return el
+                })
+            }
+        }
+        case 'PIPELINE_START_ANNO_TASK_SELECT_USER':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                annoTask: {
+                                    ...el.exportData.annoTask,
+                                    assignee: action.payload.assignee,
+                                    workerId: action.payload.workerId
+                                }
+                            }
+                        }
+                    }
+                    return el
+                })
+            }
+        }
+        case 'PIPELINE_START_ANNO_TASK_SELECT_TREE':
+        return {
+            ...state,
+
+        }
+        // ANNO TASK END
 
         case 'PIPELINE_START_GET_TEMPLATES':
             return {

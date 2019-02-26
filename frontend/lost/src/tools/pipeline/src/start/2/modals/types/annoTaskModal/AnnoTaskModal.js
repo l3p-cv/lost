@@ -21,9 +21,13 @@ class AnnoTaskModal extends Component {
 
     renderContent() {
         switch (this.props.stepper.currentStep) {
-            case 0: return (<UserInfo data = {this.props}/>)
-            case 1: return (<SelectUser />)
-            case 2: return (<SelectTree />)
+            case 0: return (<UserInfo {...this.props}/>)
+            case 1: return (<SelectUser 
+                {...this.props} 
+                />)
+            case 2: return (<SelectTree 
+                {...this.props} 
+                />)
             case 3: return (<SelectLabel />)
         }
     }

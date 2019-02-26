@@ -34,6 +34,8 @@ class BaseModal extends Component {
                 return (
                     <AnnoTaskModal
                     {...modalData}
+                    availableLabelTrees= {this.props.data.availableLabelTrees}
+                    availableGroups = {this.props.data.availableGroups}
                     />
                 )
             }else if('dataExport' in modalData){

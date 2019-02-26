@@ -1,14 +1,21 @@
 import React, { Component } from 'react'
 import { Card, CardBody, Form, FormGroup, Label, Input } from 'reactstrap';
-import actions from 'actions/pipeline/pipelineStart'
+import actions from 'actions/pipeline/pipelineStartModals/annoTask'
 import {connect} from 'react-redux'
 
-const {annoTaskNameOnInput, annoTaskInstructionsOnInput} = actions
+const {nameOnInput, instructionsOnInput} = actions
 
 class UserInfo extends Component {
-
+    constructor(){
+        super()
+        this.nameOnInput = this.nameOnInput.bind(this)
+        this.instructionsOnInput = this.instructionsOnInput.bind(this)
+    }
     nameOnInput(e){
-        //this.props.
+        this.props.nameOnInput(this.props.peN, e.target.value)
+    }
+    instructionsOnInput(e){
+        this.props.instructionsOnInput(this.props.peN, e.target.value)
     }
     render() {
         return (
@@ -17,11 +24,11 @@ class UserInfo extends Component {
                     <Form>
                         <FormGroup>
                             <Label for="name">Name</Label>
-                            <Input onInput={this.nameOnInput} type="text" name="name" id="name" placeholder="" />
+                            <Input value={this.props.exportData.annoTask.name} onChange={this.nameOnInput} type="text"  name="name" id="name"  />
                         </FormGroup>
                         <FormGroup>
                             <Label for="instruction">Instructions</Label>
-                            <Input type="text" name="instruction" id="instruction" placeholder="" />
+                            <Input value={this.props.exportData.annoTask.instructions} onChange={this.instructionsOnInput} type="text" name="instruction" id="instruction"  />
                         </FormGroup>
                     </Form>
                 </CardBody>
@@ -31,4 +38,5 @@ class UserInfo extends Component {
     }
 }
 
-export default connect(null, {annoTaskInstructionsOnInput, annoTaskNameOnInput})(UserInfo)
+
+export default connect(null, {nameOnInput, instructionsOnInput})(UserInfo)
