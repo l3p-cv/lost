@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import actions from 'actions/pipeline/pipelineStartModals/annoTask'
 import { connect } from 'react-redux';
-const {selectUser, selectLabelTree} = actions
+const {selectUser} = actions
 class SelectUser extends Component{
     constructor(){
         super()
@@ -14,6 +14,7 @@ class SelectUser extends Component{
             e.currentTarget.getAttribute('name'),
             e.currentTarget.getAttribute('id'))
         this.props.verifyTab(this.props.peN, 1, true)
+        this.props.selectTab(this.props.peN, 2)
         
     }
 
@@ -21,7 +22,7 @@ class SelectUser extends Component{
     renderTable(){
         return this.props.availableGroups.map((el)=>{
             return(
-                <div id={el.id} name={el.groupName} onClick={this.selectRow}>{el.groupName}</div>
+                <div key={el.id} id={el.id} name={el.groupName} onClick={this.selectRow}>{el.groupName}</div>
             )
         })
     }
@@ -34,4 +35,4 @@ class SelectUser extends Component{
     }
 }
 
-export default connect(null, {selectUser, selectLabelTree})(SelectUser)
+export default connect(null, {selectUser})(SelectUser)

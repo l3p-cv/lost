@@ -252,7 +252,7 @@ export default (state = INITITAL_STATE, action)=>{
                                 annoTask: {
                                     ...el.exportData.annoTask,
                                     assignee: action.payload.assignee,
-                                    workerId: action.payload.workerId
+                                    workerId: parseInt(action.payload.workerId)
                                 }
                             }
                         }
@@ -262,9 +262,26 @@ export default (state = INITITAL_STATE, action)=>{
             }
         }
         case 'PIPELINE_START_ANNO_TASK_SELECT_TREE':
-        return {
+        return{
             ...state,
-
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                annoTask: {
+                                    ...el.exportData.annoTask,
+                                    selectedLabelTree: parseInt(action.payload.value)
+                                }
+                            }
+                        }
+                    }
+                    return el
+                })
+            }
         }
         // ANNO TASK END
 

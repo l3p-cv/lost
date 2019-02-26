@@ -16,19 +16,15 @@ class AnnoTaskModal extends Component {
         this.changeCurrentStep = this.changeCurrentStep.bind(this)
     }
     changeCurrentStep(newStep) {
-        this.props.selectTab(newStep, this.props.peN)
+        this.props.selectTab(this.props.peN, newStep)
     }
 
     renderContent() {
         switch (this.props.stepper.currentStep) {
             case 0: return (<UserInfo {...this.props}/>)
-            case 1: return (<SelectUser 
-                {...this.props} 
-                />)
-            case 2: return (<SelectTree 
-                {...this.props} 
-                />)
-            case 3: return (<SelectLabel />)
+            case 1: return (<SelectUser {...this.props} />)
+            case 2: return (<SelectTree {...this.props} />)
+            case 3: return (<SelectLabel {...this.props} />)
         }
     }
 

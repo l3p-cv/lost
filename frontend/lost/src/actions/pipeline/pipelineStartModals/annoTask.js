@@ -34,7 +34,7 @@ const selectLabelTree = (elementId, value) => {
 }
 
 
-const selectTab = (tabId, elementId) => {
+const selectTab = (elementId, tabId ) => {
     return {
         type: 'PIPELINE_START_ANNO_TASK_SELECT_TAB',
         payload: {
