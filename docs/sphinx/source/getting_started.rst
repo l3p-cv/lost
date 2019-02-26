@@ -62,7 +62,7 @@ Image Data
 ----------------------
 In the current version there is no GUI available in order to load images 
 into LOST. 
-So we will use the good old command line to do that.
+So we will use the command line or a file explorer to do that.
 An image dataset in LOST is just a folder with images. 
 LOST will recognize all folders that are located at 
 *path_to_lost/data/data/media* in your filesystem as a dataset.
@@ -80,8 +80,19 @@ In order to add your dataset just copy it to the path above e.g.:
 
 LabelTrees
 ----------------------
+Labels are organized in LabelTrees.
+Each LabelLeaf need to have at least a **name**.
+Optional information for a LabelLeaf are a **description**,
+an **abbreviation** and an **external ID** (maybe from another system).
+LOST provides a GUI to create or edit LabelTrees and an import 
+of LabelTrees defined in a CSV file via the command line.
+In order to be able to edit LabelTrees in LOST you need to login as a user
+with role **Designer**.
+After login you need to click on the **Labels** button on the left 
+navigation bar. 
 
-Users and Groups
+
+Users, Groups and Roles
 =======================
 There are two main user roles in LOST: 
 A **Designer** and an **Annotator** role.
