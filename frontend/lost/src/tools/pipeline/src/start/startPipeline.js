@@ -23,6 +23,7 @@ class StartPipeline extends Component {
     }
 
     renderContent() {
+
         switch (this.props.stepperData.currentStep) {
             case 0: return (<SelectPipeline />)
             case 1: return (<ShowStartPipeline />)

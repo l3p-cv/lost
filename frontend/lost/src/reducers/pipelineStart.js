@@ -84,7 +84,7 @@ const INITITAL_STATE_ANNO_TASK_MODAL = {
           shapeBorderColor: 'green',
           shapeBackgroundColor: 'white',
           shapeContentColor: 'green',
-          verified: false,
+          verified: true,
         },
         {
           text: '2',
@@ -147,9 +147,50 @@ export default (state = INITITAL_STATE, action)=>{
         }
         case 'PIPELINE_START_ANNO_TASK_SELECT_TAB':
             return {
-                
+                ...state,
+                step1Data:{
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el)=>{
+                        if('annoTask' in el && (el.peN == action.payload.elementId)){
+                            return {
+                                ...el,
+                                stepper: {
+                                    ...el.stepper,
+                                    currentStep: action.payload.tabId
+                                }
+                            }
+                        }
+                        return el
+                    })
+                }
             }
         case 'PIPELINE_START_ANNO_TASK_VERIFY_TAB':
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el)=> {
+                        if('annoTask' in el && (el.peN == action.payload.elementId)){
+                            return {
+                                ...el,
+                                stepper: {
+                                    ...el.stepper,
+                                    steps: el.stepper.steps.map((el,i )=>{
+                                        if(i === action.payload.tabId){
+                                            return {
+                                                ...el,
+                                                verified: action.payload.verified
+                                            }
+                                        }
+                                        return el
+                                    })
+                                }
+                            }
+                        }
+                        return el
+                    })
+                }
+            }
 
         case 'PIPELINE_START_GET_TEMPLATES':
             return {
@@ -179,9 +220,9 @@ export default (state = INITITAL_STATE, action)=>{
                                     }
                                 }
                             }
-                        }else {
-                            return el
                         }
+                        return el
+                        
                     })
                 }
             }

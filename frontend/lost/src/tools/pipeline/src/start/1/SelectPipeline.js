@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import actions from 'actions/pipeline/pipelineStart'
 import {connect} from 'react-redux'
-
-
 const {getTemplates, selectTab, verifyTab, getTemplate} = actions
 
 
