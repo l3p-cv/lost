@@ -2,21 +2,7 @@ import React, {Component} from 'react'
 import Graph from 'react-graph-vis';
 import {connect} from 'react-redux'
 
-const graph = {
-    nodes: [
-        {id: 1, label: 'Node 1'},
-        {id: 2, label: 'Node 2'},
-        {id: 3, label: 'Node 3'},
-        {id: 4, label: 'Node 4'},
-        {id: 5, label: 'Node 5', chosen: false}
-      ],
-    edges: [
-        {from: 1, to: 2},
-        {from: 1, to: 3},
-        {from: 2, to: 4},
-        {from: 2, to: 5}
-      ]
-  };
+
   
   const options = {
       height: '600px',
@@ -39,13 +25,19 @@ const graph = {
         zoomView: true
       },
       layout: {
-          hierarchical: true
-      },
+        hierarchical: {
+            enabled: true,
+            sortMethod: 'directed'
+        }
+    },
       edges: {
           color: "#000000",
           chosen: false
       }
   };
+
+
+
   
   const events = {
       select: function(event) {
@@ -56,13 +48,58 @@ const graph = {
 
 
 class SelectLabel extends Component{
+    constructor(){
+        super()
+
+    }
+    mapTreeToGraph(tree, parent){
+        tree.children.forEach((el)=>{
+            if(parent){
+                this.graph.edges.push({
+                    from: parent,
+                    to: el.idx
+                })
+            }
+            let nodeObj = {
+                id: el.idx,
+                chosen: true,
+                label: el.name
+            }
+            if(el.children.length){
+                this.mapTreeToGraph(el, el.idx)
+            }else{
+                nodeObj.chosen = false
+            }
+            this.graph.nodes.push(nodeObj)
+
+
+        })
+    }
 
     render(){
-        console.log('---------this.props---------------------------');
-        console.log(this.props);
+        this.graph = {
+            nodes: [],
+            edges: []
+        }
+        const tree = this.props.availableLabelTrees.filter(el=>el.idx === this.props.selectedLabelTree)[0]
+        this.graph.nodes.push({
+            id: tree.idx,
+            label: tree.name,
+            chosen: true
+        })
+        console.log('-------tree-----------------------------');
+        console.log(tree);
         console.log('------------------------------------');
+        console.log('-----------this.graph-------------------------');
+        console.log(this.graph);
+        console.log('------------------------------------');
+        this.mapTreeToGraph(tree, tree.idx)
+        
         return(
-            <Graph graph={graph} options={options} events={events}/>
+            <>
+            <p style={{textAlign:"center"}}>Long press to choose multiple lables</p>
+            <Graph graph={this.graph} options={options} events={events}/>
+            </>
         )
     }
 }
