@@ -15,7 +15,7 @@ class ShowStartPipeline extends Component {
         this.nodesOnClick = this.nodesOnClick.bind(this)
     }
     renderNodes() {
-        return this.props.stepData.data.elements.map((el) => {
+        return this.props.data.elements.map((el) => {
             let connections = []
             if(el.peOut){
                  connections = el.peOut.map(el => {
@@ -69,12 +69,12 @@ class ShowStartPipeline extends Component {
         this.props.toggleModal(id)
     }
     renderGraph() {
-        if (this.props.stepData.data) {
+        if (this.props.data) {
             return (
                 <Graph
                     enableZooming={true}
                     centerGraph={true}
-                    svgStyle={this.props.stepData.svgStyle}
+                    svgStyle={this.props.step.svgStyle}
                     ref={this.graph}
                     nodesOnClick={this.nodesOnClick}
                 >
@@ -94,7 +94,10 @@ class ShowStartPipeline extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return { stepData: state.pipelineStart.steps[1] }
+    return { 
+        step: state.pipelineStart.stepper.steps[1],
+        data: state.pipelineStart.step1Data
+    }
 }
 export default connect(
     mapStateToProps, {toggleModal, selectTab, verifyTab}

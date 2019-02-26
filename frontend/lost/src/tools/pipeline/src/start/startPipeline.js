@@ -23,7 +23,7 @@ class StartPipeline extends Component {
     }
 
     renderContent() {
-        switch (this.props.pipelineStart.currentStep) {
+        switch (this.props.stepperData.currentStep) {
             case 0: return (<SelectPipeline />)
             case 1: return (<ShowStartPipeline />)
             case 2: return (<StartPipelineForm />)
@@ -36,7 +36,7 @@ class StartPipeline extends Component {
         return (
             <div>
                 <Stepper
-                    stepperData={this.props.pipelineStart}
+                    stepperData={this.props.stepperData}
                     changeCurrentStep={this.changeCurrentStep}
                 />
                 <GrayLine />
@@ -47,7 +47,7 @@ class StartPipeline extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return { pipelineStart: state.pipelineStart }
+    return { stepperData: state.pipelineStart.stepper }
 }
 export default connect(
     mapStateToProps,

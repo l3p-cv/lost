@@ -6,6 +6,7 @@ import DataExportModal from './types/DataExportModal'
 import actions from 'actions/pipeline/pipelineStart'
 import { Button, Modal, ModalFooter } from 'reactstrap';
 import {connect} from 'react-redux'
+import { stat } from 'fs';
 
 
 const {toggleModal} = actions
@@ -17,8 +18,8 @@ class BaseModal extends Component {
     }
     
     selectModal() {
-        if (this.props.stepData.data && this.props.stepData.modalOpened) {
-            const modalData = this.props.stepData.data.elements.filter(el => el.peN === this.props.stepData.modalClickedId)[0]
+        if (this.props.data && this.props.step.modalOpened) {
+            const modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
             if ('datasource' in modalData) {
                 return (
                     <DatasourceModal
@@ -47,7 +48,7 @@ class BaseModal extends Component {
 
     renderModals() {
         return (
-            <Modal size='lg' isOpen={this.props.stepData.modalOpened} toggle={this.props.toggleModal}>
+            <Modal size='lg' isOpen={this.props.step.modalOpened} toggle={this.props.toggleModal}>
                 {this.selectModal()}
                 <ModalFooter>
                     <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
@@ -66,7 +67,10 @@ class BaseModal extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {stepData: state.pipelineStart.steps[1]}
+    return {
+        step: state.pipelineStart.stepper.steps[1],
+        data: state.pipelineStart.step1Data
+    }
 }
 
 export default connect(
