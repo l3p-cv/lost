@@ -103,10 +103,9 @@ an **Annotator** may do.
 For example a **Designer** will start annotation piplines and choose or edit
 LabelTrees for the annotation tasks.
 
-Independent of ist role a user can be part of one or multiple user **Groups**.
+Independent of its role a user can be part of one or multiple user **Groups**.
 In this way annotation tasks can be a assigned to **Groups** of users that 
 can work collaborative on the same task.
-
 
 In order to manage users and groups, 
 click on the **Users** icon on the left menu bar.
