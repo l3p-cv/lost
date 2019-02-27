@@ -163,6 +163,11 @@ After entering these information you can click on the checkmark symbol
 to get to the **Start Pipe** button. 
 With a click on this button your annotation pipeline will be started :-)
 
+You can monitor the state of all running pipelines on your **Designer**
+dashboard.
+To get to a specific pipeline click on the **Dashboard** button in the 
+left navigation bar and select a pipeline in the table.
+
 Annotate Your Images
 ====================
 Once your pipeline has requested all annotations for an **AnnotationTask**,
