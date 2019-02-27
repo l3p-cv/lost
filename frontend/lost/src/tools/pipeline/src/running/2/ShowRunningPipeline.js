@@ -18,23 +18,14 @@ class ShowRunningPipeline extends Component {
         this.graphMountPoint = React.createRef()
         this.nodesOnClick = this.nodesOnClick.bind(this)
     }
-    componentDidMount() {
-        // const mountPointWidth = this.graphMountPoint.current.offsetWidth
-        // this.setState({
-        //     svgStyle: {
-        //         width: mountPointWidth
-        //     }
-        // }
-        // )
 
-    }
 
     nodesOnClick(id) {
         this.props.toggleModal(id)
     }
 
     renderNodes() {
-        return this.props.stepData.data.elements.map((el) => {
+        return this.props.data.elements.map((el) => {
                 let connections = []
                 if(el.peOut){
                     connections = el.peOut.map(el => {
@@ -88,15 +79,15 @@ class ShowRunningPipeline extends Component {
     }
 
     renderGraph() {
-        if (this.props.stepData.data) {
+        if (this.props.data) {
             return (
                 <Graph
                     enableZooming={true}
                     centerGraph={true}
-                    svgStyle={this.props.stepData.svgStyle}
+                    svgStyle={this.props.step.svgStyle}
                     ref={this.graph}
                     nodesOnClick={this.nodesOnClick}
-                    titleBox= {<TitleBox {...this.props.stepData.data}/>}
+                    titleBox= {<TitleBox {...this.props.data}/>}
                 >
                     {this.renderNodes()}
                 </Graph>
@@ -116,7 +107,12 @@ class ShowRunningPipeline extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return { stepData: state.pipelineRunning.steps[1] }
+    console.log('------------------------------kk------');
+    console.log(state.pipelineRunning );
+    console.log('------------------------------------');
+    return { 
+        step: state.pipelineRunning.steps[1],
+        data: state.pipelineRunning.step1Data }
 }
 
 

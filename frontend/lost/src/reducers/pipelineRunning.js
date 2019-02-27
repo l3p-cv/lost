@@ -46,28 +46,21 @@ export default (state = INITITAL_STATE, action) => {
         case 'PIPELINE_RUNNING_GET_PIPELINES':  
             return {
                 ...state,
-                steps: state.steps.map((el,i)=>{
-                    // DataTable Data
-                    if(!i){
-                        return {
-                            ...el,
-                            data :action.payload}
-                    }
-                    return el
-                })
+                step0Data: action.payload
             }
         case 'PIPELINE_RUNNING_GET_PIPELINE':
         return {
             ...state,
-            steps: state.steps.map((el,i)=>{
-                // Graph Data
-                if(i == 1){
-                    return {
-                        ...el,
-                        data :action.payload}
-                }
-                return el
-            })
+            // steps: state.steps.map((el,i)=>{
+            //     // Graph Data
+            //     if(i == 1){
+            //         return {
+            //             ...el,
+            //             data :action.payload}
+            //     }
+            //     return el
+            // })
+            step1Data: action.payload
         }
         case 'PIPELINE_RUNNING_SELECT_TAB':
             return {

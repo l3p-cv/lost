@@ -399,9 +399,7 @@ export default (state = INITITAL_STATE, action)=>{
                                 exportData: {
                                     peN: el.peN,
                                     datasource: {
-                                        fileTree: el.datasource.fileTree,
                                         rawFilePath: null,
-                                        type: el.datasource.type
                                     }
                                 }
                             }

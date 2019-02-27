@@ -13,11 +13,12 @@ const {toggleModal} = actions
 class BaseModal extends Component {
     constructor() {
         super()
+        this.toggleModal = this.toggleModal.bind(this)
     }
     
     selectModal() {
-        if (this.props.stepData.data && this.props.stepData.modalOpened) {
-            const modalData = this.props.stepData.data.elements.filter(el => el.peN === this.props.stepData.modalClickedId)[0]
+        if (this.props.data && this.props.step.modalOpened) {
+            const modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
             if ('datasource' in modalData) {
                 return (
                     <DatasourceModal
@@ -43,13 +44,15 @@ class BaseModal extends Component {
             }
         }
     }
-
+    toggleModal(){
+        this.props.toggleModal(this.props.step.modalClickedId)
+    }
     renderModals() {
         return (
-            <Modal size='lg' isOpen={this.props.stepData.modalOpened} toggle={this.props.toggleModal}>
+            <Modal size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
                 {this.selectModal()}
                 <ModalFooter>
-                    <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
+                    <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
                 </ModalFooter>
             </Modal>
         )
@@ -65,7 +68,10 @@ class BaseModal extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {stepData: state.pipelineRunning.steps[1]}
+    return {
+        step: state.pipelineRunning.steps[1],
+        data: state.pipelineRunning.step1Data
+    }
 }
 
 export default connect(
