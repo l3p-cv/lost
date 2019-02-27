@@ -33,6 +33,15 @@ const selectLabelTree = (elementId, value) => {
     }
 }
 
+const updateLabels = (elementId, lableArr) => {
+    return {
+        type: 'PIPELINE_START_ANNO_TASK_UPDATE_LABELS',
+        payload: {
+            elementId, lableArr
+        }
+    }
+}
+
 
 const selectTab = (elementId, tabId ) => {
     return {
@@ -62,6 +71,7 @@ export default {
     instructionsOnInput,
     selectTab,
     verifyTab,
+    updateLabels,
     selectUser,
     selectLabelTree
 }

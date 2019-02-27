@@ -1,114 +1,170 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import Graph from 'react-graph-vis';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
+import actions from 'actions/pipeline/pipelineStartModals/annoTask'
+const { updateLabels } = actions
+import _ from 'lodash'
 
 
-  
-  const options = {
-      height: '600px',
-      interaction:{
-        dragNodes:false,
+const options = {
+    height: '600px',
+    interaction: {
+        dragNodes: false,
         dragView: true,
         hideEdgesOnDrag: false,
         hideNodesOnDrag: false,
-        hover: true,
+        hover: false,
         hoverConnectedEdges: false,
         keyboard: {
-          enabled: false,
-          speed: {x: 10, y: 10, zoom: 0.02},
-          bindToWindow: true
+            enabled: false,
+            speed: { x: 10, y: 10, zoom: 0.02 },
+            bindToWindow: true
         },
-        multiselect: true,
+        multiselect: false,
         selectable: true,
         selectConnectedEdges: false,
         tooltipDelay: 100,
         zoomView: true
-      },
-      layout: {
+    },
+    layout: {
         hierarchical: {
             enabled: true,
             sortMethod: 'directed'
         }
     },
-      edges: {
-          color: "#000000",
-          chosen: false
-      }
-  };
-
-
-
-  
-  const events = {
-      select: function(event) {
-          var { nodes, edges } = event;
-      }
-  }
-
-
-
-class SelectLabel extends Component{
-    constructor(){
-        super()
-
+    edges: {
+        color: "#000000",
+        chosen: false
+    },
+    physics: {
+        enabled: false
     }
-    mapTreeToGraph(tree, parent){
-        tree.children.forEach((el)=>{
-            if(parent){
-                this.graph.edges.push({
+};
+
+
+
+class SelectLabel extends Component {
+    constructor() {
+        super()
+        this.events = {
+            select: (event) => {
+                if (this.graphData.isLeafArr.includes(event.nodes[0])) {
+                    // leaf item clicked
+                    this.selectionHandler()
+                    return
+                }
+                const arr = event.nodes.map((el) => {
+                    return {
+                        id: el,
+                        maxLabels: "3"
+                    }
+                })
+                const isDoublicated = this.props.labelLeaves.filter(el => el.id === event.nodes[0]).length > 0
+                let editedArr
+                if (isDoublicated) {
+                    // deselect --> filter array
+                    editedArr = this.props.labelLeaves.filter(el => !(el.id === event.nodes[0]))
+                } else {
+                    // select --> merge arrays
+                    editedArr = _.unionBy(arr, this.props.labelLeaves, "id")
+                }
+                this.props.updateLabels(this.props.peN, editedArr)
+
+                this.selectionHandler()
+            }
+        }
+        this.graph = React.createRef()
+    }
+
+    selectionHandler() {
+        this.selectedArr = this.props.labelLeaves.map(el => el.id)
+        this.selectChildrenArr = []
+        const parentIsInList = this.selectedArr.filter(el => (el === this.tree.idx)).length > 0
+        if (parentIsInList) {
+            this.selectChildrenArr = this.tree.children.map(el => el.idx)
+        }
+        this.findChildren(this.tree)
+        this.graph.current.Network.selectNodes(this.selectChildrenArr)
+    }
+
+    findChildren(branch) {
+        branch.children.forEach((el) => {
+            const isInList = this.selectedArr.filter((el2 => (el2 === el.idx))).length > 0
+            if (isInList) {
+                this.selectChildrenArr = [...this.selectChildrenArr, ...el.children.map(el3 => el3.idx)]
+
+
+            }
+            if (el.children.length) {
+                this.findChildren(el)
+            }
+        })
+    }
+
+    componentDidMount(){
+        this.selectionHandler()
+    }
+
+    mapTreeToGraph(branch, parent) {
+        branch.children.forEach((el) => {
+            if (parent) {
+                this.graphData.edges.push({
                     from: parent,
                     to: el.idx
                 })
             }
             let nodeObj = {
                 id: el.idx,
-                chosen: true,
-                label: el.name
+                label: String(el.name)
             }
-            if(el.children.length){
+            if (el.children.length) {
                 this.mapTreeToGraph(el, el.idx)
-            }else{
-                nodeObj.chosen = false
+            } else {
+                this.graphData.isLeafArr.push(el.idx)
+
             }
-            this.graph.nodes.push(nodeObj)
+            this.graphData.nodes.push(nodeObj)
 
 
         })
     }
 
-    render(){
-        this.graph = {
+
+
+    render() {
+        this.graphData = {
             nodes: [],
-            edges: []
+            edges: [],
+            isLeafArr: []
+
         }
-        const tree = this.props.availableLabelTrees.filter(el=>el.idx === this.props.selectedLabelTree)[0]
-        this.graph.nodes.push({
-            id: tree.idx,
-            label: tree.name,
+        this.tree = this.props.availableLabelTrees.filter(el => el.idx === this.props.selectedLabelTree)[0]
+        this.graphData.nodes.push({
+            id: this.tree.idx,
+            label: this.tree.name,
             chosen: true
         })
-        console.log('-------tree-----------------------------');
-        console.log(tree);
-        console.log('------------------------------------');
-        console.log('-----------this.graph-------------------------');
-        console.log(this.graph);
-        console.log('------------------------------------');
-        this.mapTreeToGraph(tree, tree.idx)
-        
-        return(
+
+        this.mapTreeToGraph(this.tree, this.tree.idx)
+
+        return (
             <>
-            <p style={{textAlign:"center"}}>Long press to choose multiple lables</p>
-            <Graph graph={this.graph} options={options} events={events}/>
+                <p style={{ textAlign: "center" }}>Long press to choose multiple lables</p>
+                <Graph ref={this.graph} graph={this.graphData} options={options} events={this.events} />
             </>
         )
     }
 }
 
 const mapStateToProps = (state, test) => {
-    const element = state.pipelineStart.step1Data.elements.filter(el=>el.peN == test.peN)[0]
-     return {selectedLabelTree:element.exportData.annoTask.selectedLabelTree}
-             
+    const element = state.pipelineStart.step1Data.elements.filter(el => el.peN == test.peN)[0]
 
-     
+    return {
+        selectedLabelTree: element.exportData.annoTask.selectedLabelTree,
+        labelLeaves: element.exportData.annoTask.labelLeaves
+    }
+
+
+
 }
-export default connect(mapStateToProps, {})(SelectLabel)
+export default connect(mapStateToProps, { updateLabels })(SelectLabel)

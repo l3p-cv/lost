@@ -274,7 +274,30 @@ export default (state = INITITAL_STATE, action)=>{
                                 ...el.exportData,
                                 annoTask: {
                                     ...el.exportData.annoTask,
-                                    selectedLabelTree: parseInt(action.payload.value)
+                                    selectedLabelTree: parseInt(action.payload.value),
+                                    labelLeaves: []
+                                }
+                            }
+                        }
+                    }
+                    return el
+                })
+            }
+        }
+        case 'PIPELINE_START_ANNO_TASK_UPDATE_LABELS':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                annoTask: {
+                                    ...el.exportData.annoTask,
+                                    labelLeaves: action.payload.lableArr
                                 }
                             }
                         }
