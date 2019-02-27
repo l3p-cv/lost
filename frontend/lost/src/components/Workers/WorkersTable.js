@@ -66,17 +66,13 @@ class WorkersTable extends Component {
         logFile.then(response=>
             this.setState({logBlobUrl: window.URL.createObjectURL(response)})
         )
-        // this.modaltimer = setInterval(()=>  logFile.then(response=>
-        //     this.setState({logBlobUrl: window.URL.createObjectURL(response)})
-        // ), 1000)
+
         this.openModal()
     }
 
     componentWillUnmount() {
         clearInterval(this.workertimer)
         this.workertimer = null
-        clearInterval(this.modaltimer)
-        this.modaltimer = null
       }
     
     renderLogFile(){

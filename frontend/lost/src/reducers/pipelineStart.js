@@ -500,7 +500,7 @@ export default (state = INITITAL_STATE, action)=>{
             return{
                 ...state,
                 step3Data: {
-                    response: action.payload.response
+                    response: action.payload
                 }
             }
         default:

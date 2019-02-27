@@ -10,13 +10,21 @@ import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineRunning'
 import TitleBox from './titleBox'
 
-const { toggleModal } = actions
+const { toggleModal, getPipeline } = actions
 
 class ShowRunningPipeline extends Component {
     constructor() {
         super()
         this.graphMountPoint = React.createRef()
         this.nodesOnClick = this.nodesOnClick.bind(this)
+    }
+
+    componentDidMount(){
+        this.timer = setInterval(()=>  this.props.getPipeline(this.props.data.id), 2000)
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.timer)
     }
 
 
@@ -107,9 +115,6 @@ class ShowRunningPipeline extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log('------------------------------kk------');
-    console.log(state.pipelineRunning );
-    console.log('------------------------------------');
     return { 
         step: state.pipelineRunning.steps[1],
         data: state.pipelineRunning.step1Data }
@@ -118,7 +123,7 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    { toggleModal }
+    { toggleModal, getPipeline }
 )(ShowRunningPipeline)
 
 

@@ -1,51 +1,64 @@
 import React, { Component } from 'react'
 import { faPlayCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {Button} from 'reactstrap'
-import {connect} from 'react-redux'
+import { Button } from 'reactstrap'
+import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineStart'
-const {postPipeline} = actions
+import Swal from 'sweetalert2'
+
+const { postPipeline } = actions
 class StartPipeline extends Component {
-    constructor(){
+    constructor() {
         super()
         this.startPipe = this.startPipe.bind(this)
     }
-    startPipe(){
-        console.log('-------this.propsthis.props-----------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
+    startPipe() {
         const json = {}
         json.name = this.props.step2Data.name
         json.description = this.props.step2Data.description
-        json.elements = this.props.step1Data.elements.map(el=>el.exportData)
+        json.elements = this.props.step1Data.elements.map(el => el.exportData)
         json.templateId = this.props.step0Data.templateId
         this.props.postPipeline(json)
-        console.log('----json--------------------------------');
-        console.log(json);
-        console.log('------------------------------------');
+        Swal.fire({
+            title: 'Loading...',
+            onBeforeOpen: () => {
+                Swal.showLoading()
+            }
+        })
     }
 
-    componentDidMount(){
-        console.log('---------iopop1---------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
+    componentDidUpdate() {
+        Swal.clickCancel()
+        let type
+        if (this.props.step3Data.response === 'success') {
+            type = 'success'
+        } else {
+            type = 'error'
+        }
+        Swal.fire({
+            position: 'top-end',
+            type: type,
+            title: 'Pipeline started successfully',
+            showConfirmButton: false,
+            timer: 1500
+        })
     }
 
     render() {
         return (
-                <div className='pipeline-start-tab3-conainer'>
-                    <h3>Complete</h3>
-                    <p>You have successfully completed all steps.</p>
-                    <Button onClick={this.startPipe} color="primary" size="lg">
-                        <FontAwesomeIcon icon={faPlayCircle} size="5x" />
-                        Start Pipe
+            <div className='pipeline-start-tab3-conainer'>
+                <h3>Complete</h3>
+                <p>You have successfully completed all steps.</p>
+                <Button onClick={this.startPipe} color="primary" size="lg">
+                    <FontAwesomeIcon icon={faPlayCircle} size="5x" />
+                    Start Pipe
                     </Button>
-                </div>
+            </div>
         )
     }
 }
 
-const mapStateToProps = (state) =>{
+const mapStateToProps = (state) => {
     return {
         step0Data: state.pipelineStart.step0Data,
         step1Data: state.pipelineStart.step1Data,
@@ -54,7 +67,7 @@ const mapStateToProps = (state) =>{
     }
 }
 
-export default connect(mapStateToProps, {postPipeline})(StartPipeline)
+export default connect(mapStateToProps, { postPipeline })(StartPipeline)
 
 
 
@@ -70,4 +83,3 @@ export default connect(mapStateToProps, {postPipeline})(StartPipeline)
     </button>
 </div>
 </div> */}
-        

@@ -27,6 +27,7 @@ class RunningPipeline extends Component{
     
 
 
+
       changeCurrentStep(newStep) {    
         this.props.selectTab(newStep)
       }

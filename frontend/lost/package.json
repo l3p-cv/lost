@@ -51,7 +51,8 @@
     "redux": "^4.0.1",
     "redux-form": "^7.4.2",
     "redux-thunk": "^2.3.0",
-    "simple-line-icons": "^2.4.1"
+    "simple-line-icons": "^2.4.1",
+    "sweetalert2": "^8.2.6"
   },
   "devDependencies": {
     "circular-dependency-plugin": "^5.0.2",
