@@ -24,11 +24,14 @@ import axios from 'axios'
     }
 }
 
+// TAB0
 
 const getTemplates = () => async dispatch =>{
     const response = await axios.get(`${API_URL}/pipeline/template`)
     dispatch({type: 'PIPELINE_START_GET_TEMPLATES', payload: response.data})
 }
+
+// TAB1
 
  const getTemplate = (id) => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/template/${id}`)
@@ -54,11 +57,35 @@ const verifyNode = (elementId, verified) => {
     }
 }
 
+// TAB2
+const nameOnInput = (value) => {
+    return {
+        type: 'PIPELINE_START_NAME_INPUT',
+        payload: {
+            value
+        }
+    }
+}
+const descriptionOnInput = (value) => {
+    return {
+        type: 'PIPELINE_START_DESCRIPTION_INPUT',
+        payload: {
+            value
+        }
+    }
+}
+
+//TAB3
+
+
+
 export default {
     selectTab, 
     getTemplates, 
     verifyTab, 
     getTemplate, 
     toggleModal, 
-    verifyNode
+    verifyNode,
+    nameOnInput,
+    descriptionOnInput
 }

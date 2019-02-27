@@ -56,6 +56,10 @@ const INITITAL_STATE = {
              }
         ],
         currentStep: 0
+    },
+    step2Data: {
+        name: '',
+        description: ''
     }
 }
 
@@ -396,9 +400,6 @@ export default (state = INITITAL_STATE, action)=>{
                                 }
                             }
                         }else if('script' in el){
-                            console.log('----- Object.keys(script.arguments).filter(el=>!script.arguments[el].value).length === 0-------------------------------');
-                            console.log(el);
-                            console.log('------------------------------------');
                             return {
                                 ...el,
                                 verified: Object.keys(el.script.arguments).filter(el2=>!el.script.arguments[el2].value).length === 0,
@@ -465,7 +466,24 @@ export default (state = INITITAL_STATE, action)=>{
                         return el
                     })
                 }
+            }
 
+            // TAB2
+        case 'PIPELINE_START_NAME_INPUT':
+            return {
+                ...state,
+                step2Data: {
+                    ...state.step2Data,
+                    name: action.payload.value,
+                }
+            }
+        case 'PIPELINE_START_DESCRIPTION_INPUT':
+            return {
+                ...state,
+                step2Data: {
+                    ...state.step2Data,
+                    description: action.payload.value,
+                }
             }
         default:
             return state

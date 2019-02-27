@@ -5,7 +5,7 @@ import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
 import actions from 'actions/pipeline/pipelineStart'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
-const { toggleModal, verifyNode } = actions
+const { toggleModal, verifyNode, verifyTab } = actions
 
 
 class BaseModal extends Component {
@@ -50,7 +50,7 @@ class BaseModal extends Component {
             } else if ('annoTask' in this.modalData) {
                 this.type = 'annoTask'
                 return ('Annotation Task')
-            } 
+            }
         }
     }
 
@@ -58,19 +58,19 @@ class BaseModal extends Component {
         let verified = false
         switch (this.type) {
             case 'datasource':
-                const {datasource} = this.modalData.exportData
-                if(datasource.rawFilePath){
+                const { datasource } = this.modalData.exportData
+                if (datasource.rawFilePath) {
                     verified = true
-                }else{
+                } else {
                     verified = false
                 }
                 break
             case 'script':
-                const {script} = this.modalData.exportData
-                verified = Object.keys(script.arguments).filter(el=>!script.arguments[el].value).length === 0
+                const { script } = this.modalData.exportData
+                verified = Object.keys(script.arguments).filter(el => !script.arguments[el].value).length === 0
                 break
             case 'annoTask':
-                const {annoTask} = this.modalData.exportData
+                const { annoTask } = this.modalData.exportData
                 if (annoTask.name &&
                     annoTask.instructions &&
                     annoTask.assignee &&
@@ -83,14 +83,33 @@ class BaseModal extends Component {
                     verified = false
                 }
                 break
-        }   
+        }
+
+
         this.props.verifyNode(this.modalData.peN, verified)
+
+        const allNodesVerified = this.props.data.elements.filter((el) => {
+            // because store is not yet updated check current Node validation
+            if (el.peN === this.modalData.peN) {
+                return !verified
+            }
+            return !el.verified
+        }
+        ).length === 0
+
+        this.props.verifyTab(1, allNodesVerified)
 
 
     }
 
+    componentDidMount(){
+        
+    }
+
+
     toggleModal() {
         this.props.toggleModal(this.props.step.modalClickedId)
+
     }
 
     renderModals() {
@@ -127,5 +146,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    { toggleModal, verifyNode }
+    { toggleModal, verifyNode, verifyTab }
 )(BaseModal)
