@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
 import '../globalComponents/node.scss'
-
+import '../globalComponents/pipeline.scss'
 import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './1/SelectPipeline'
 import ShowRunningPipeline from './2/ShowRunningPipeline'

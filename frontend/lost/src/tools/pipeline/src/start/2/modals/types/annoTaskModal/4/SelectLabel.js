@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Graph from 'react-graph-vis';
 import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineStartModals/annoTask'
+import {Card, CardBody} from 'reactstrap'
 const { updateLabels } = actions
 import _ from 'lodash'
 
@@ -148,10 +149,13 @@ class SelectLabel extends Component {
         this.mapTreeToGraph(this.tree, this.tree.idx)
 
         return (
-            <>
-                <p style={{ textAlign: "center" }}>Long press to choose multiple lables</p>
+            <Card className='annotask-modal-card'>
+            <CardBody>
+                <p style={{ textAlign: "center" }}>Click on label</p>
                 <Graph ref={this.graph} graph={this.graphData} options={options} events={this.events} />
-            </>
+                </CardBody>
+            </Card>
+
         )
     }
 }

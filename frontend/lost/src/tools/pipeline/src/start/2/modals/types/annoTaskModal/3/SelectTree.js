@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import actions from 'actions/pipeline/pipelineStartModals/annoTask'
 import {connect} from 'react-redux'
 const {selectLabelTree} = actions
-
+import {Card, CardBody} from 'reactstrap'
 
 class SelectTree extends Component{
     constructor(){
@@ -29,9 +29,11 @@ class SelectTree extends Component{
     }
     render(){
         return(
-            <div>
+            <Card className='annotask-modal-card'>
+            <CardBody>
                 {this.renderTable()}
-            </div>
+                </CardBody>
+                </Card>
         )
     }
 }

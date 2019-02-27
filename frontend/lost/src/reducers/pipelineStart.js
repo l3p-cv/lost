@@ -93,8 +93,6 @@ const INITITAL_STATE_ANNO_TASK_MODAL = {
           shapeBackgroundColor: 'white',
           shapeContentColor: '#f4b042',
           verified: false,
-          modalOpened: false,
-          modalClickedId: 0,
           svgStyle: {
             width: "800px"
         }
@@ -275,7 +273,6 @@ export default (state = INITITAL_STATE, action)=>{
                                 annoTask: {
                                     ...el.exportData.annoTask,
                                     selectedLabelTree: parseInt(action.payload.value),
-                                    labelLeaves: []
                                 }
                             }
                         }
@@ -306,6 +303,22 @@ export default (state = INITITAL_STATE, action)=>{
                 })
             }
         }
+        case 'PIPELINE_START_VERIFY_ANNO_TASK_NODE':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        return {
+                            ...el,
+                            verified: action.payload.verified
+                        }
+                    }
+                    return el
+                })
+            }
+        }
         // ANNO TASK END
 
         case 'PIPELINE_START_GET_TEMPLATES':
@@ -325,6 +338,7 @@ export default (state = INITITAL_STATE, action)=>{
                             return {
                                 ...el,
                                 stepper: INITITAL_STATE_ANNO_TASK_MODAL,
+                                verified: false,
                                 exportData: {
                                     peN: el.peN,
                                     peOut: el.peOut,
@@ -332,7 +346,13 @@ export default (state = INITITAL_STATE, action)=>{
                                         name: el.annoTask.name,
                                         type: el.annoTask.type,
                                         instructions: el.annoTask.instructions,
-                                        configuration: el.annoTask.configuration 
+                                        configuration: el.annoTask.configuration,
+                                        assignee: null,
+                                        workerId: null,
+                                        labelLeaves: [],
+                                        selectedLabelTree: null
+
+
                                     }
                                 }
                             }

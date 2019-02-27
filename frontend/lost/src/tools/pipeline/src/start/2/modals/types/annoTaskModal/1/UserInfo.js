@@ -19,7 +19,7 @@ class UserInfo extends Component {
     }
     render() {
         return (
-            <Card>
+            <Card className='annotask-modal-card'>
                 <CardBody>
                     <Form>
                         <FormGroup>

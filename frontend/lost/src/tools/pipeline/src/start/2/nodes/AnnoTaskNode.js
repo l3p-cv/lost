@@ -6,7 +6,7 @@ import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 const AnnoTaskNode = (props) =>{
     return(
         <div className='graph-node'>
-        <div className='bg-orange graph-node-title'>
+        <div className={`${props.verified?'bg-green':'bg-orange'} graph-node-title`}>
             <span className='graph-node-title-icon' ><FontAwesomeIcon icon={faDatabase} /></span>
             <span className='graph-node-title-text'>{props.title}</span>
         </div>

@@ -6,54 +6,74 @@ import DataExportModal from './types/DataExportModal'
 import actions from 'actions/pipeline/pipelineStart'
 import { Button, Modal, ModalFooter } from 'reactstrap';
 import {connect} from 'react-redux'
-import { stat } from 'fs';
-
-
-const {toggleModal} = actions
+const {toggleModal, verifyAnnoTaskNode} = actions
 
 
 class BaseModal extends Component {
     constructor() {
         super()
+        this.modalOnClosed = this.modalOnClosed.bind(this)
+        this.toggleModal = this.toggleModal.bind(this)
     }
     
     selectModal() {
         if (this.props.data && this.props.step.modalOpened) {
-            const modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
-            if ('datasource' in modalData) {
+            this.modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
+            if ('datasource' in this.modalData) {
                 return (
                     <DatasourceModal
-                        {...modalData} />
+                        {...this.modalData} />
                 )
-            } else if ('script' in modalData) {
+            } else if ('script' in this.modalData) {
                 return (
                     <ScriptModal
-                        {...modalData} />
+                        {...this.modalData} />
                 )
-            } else if('annoTask' in modalData){
+            } else if('annoTask' in this.modalData){
                 return (
                     <AnnoTaskModal
-                    {...modalData}
+                    {...this.modalData}
                     availableLabelTrees= {this.props.data.availableLabelTrees}
                     availableGroups = {this.props.data.availableGroups}
                     />
                 )
-            }else if('dataExport' in modalData){
+            }else if('dataExport' in this.modalData){
                 return (
                     <DataExportModal
-                    {...modalData}
+                    {...this.modalData}
                     />
                 )
             }
         }
     }
 
+    modalOnClosed(){
+        if('annoTask' in this.modalData){
+            const {annoTask} = this.modalData.exportData
+            if(annoTask.name &&
+                 annoTask.instructions &&
+                 annoTask.assignee &&
+                 (annoTask.labelLeaves.length > 0) &&
+                 annoTask.workerId &&
+                 annoTask.selectedLabelTree
+                 ){
+                    this.props.verifyAnnoTaskNode(this.modalData.peN, true)
+                 }else{
+                    this.props.verifyAnnoTaskNode(this.modalData.peN, false)
+                 }
+        }
+    }
+
+    toggleModal(){
+        this.props.toggleModal(this.props.step.modalClickedId)
+    }
+
     renderModals() {
         return (
-            <Modal size='lg' isOpen={this.props.step.modalOpened} toggle={this.props.toggleModal}>
+            <Modal  onClosed={this.modalOnClosed} size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
                 {this.selectModal()}
                 <ModalFooter>
-                    <Button color="secondary" onClick={this.props.toggleModal}>Cancel</Button>
+                    <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
                 </ModalFooter>
             </Modal>
         )
@@ -77,5 +97,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    {toggleModal}
+    {toggleModal, verifyAnnoTaskNode}
 )(BaseModal)
