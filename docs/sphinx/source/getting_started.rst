@@ -114,7 +114,7 @@ Please note that only users with the role **Designer** are allowed to
 manage users.
 
 Starting an Annotation Pipeline
-==============================
+===============================
 All annotation processes in LOST are modeled as pipelines.
 Such a pipeline defines the order in which specific pipeline elements will
 be executed.
@@ -124,19 +124,45 @@ and **VisualOutputs**.
 
 Each version of LOST is equipped with a selection of standard pipelines 
 that can be used as a quick start to annotate your data.
-In order to start an annotation pipeline you need to be loggin in as 
+In order to start an annotation pipeline you need to be logged in in as 
 a user with role **Designer** and click on the **Start Pipeline** button
 on the left navigation bar.
 Now you will see a table with possible pipelines that can be started.
 
 After selecting a pipeline by a click on a specific row in the table 
 you need to configure it.
-A visualization of the selected pipeline will now pop up.
-In most cases a **Datasource** will be the first element of a pipeline.
+A visualization of the selected pipeline will be displayed.
+In most cases a **Datasource** is the first element of a pipeline.
 Click on it and select an available dataset.
+After a click on the **OK** button the pipeline element will turn green
+to indicate that the configuration was successful. 
+
 The next element you need to look for is an **AnnotationTask**.
-After clicking on it a Wizard will pop up and guide you trough the 
-configuration of this **AnnotationTask**. 
+After clicking on it a wizard will pop up and guide you through the
+configuration of this AnnotationTask.
+In the first step a **name** and **instructions** for the AnnotationTask
+can be defined.
+Click on the next button and select a user or 
+group of users that should perform this AnnotationTask.
+Now a **LabelTree** need to be selected by clicking on a specific 
+tree in the table.
+Now a visualization of the **LabelTree** will be displayed. 
+Here you can select a subset of labels that should be used for the
+AnnotationTask.
+The idea is that each parent leaf represents a category that can 
+be selected to use all direct child leafs as labels.
+So if you click on a leaf, 
+all direct child leafs will be used as possible labels for the AnnotationTask.
+It is possible to select multiple leafs as label categories.
+After selecting the label subset click on **OK** and the configuration
+of this AnnotationTask is done.
+
+Now visit all other elements that not have been configured
+(indicated by a yellow color) and move on to the next step in the wizard.
+Here you can enter a **name** and a **description** of your pipeline.
+After entering these information you can click on the checkmark symbol 
+to get to the **Start Pipe** button. 
+With a click on this button your annotation pipeline will be started :-)
 
 
 Annotate Your Images
