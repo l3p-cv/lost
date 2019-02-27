@@ -1,20 +1,30 @@
 import React from 'react'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 import VerificationTitle from './VerificationTitle'
+import NodeBody from './NodeBody'
 const DatasourceNode = (props) => {
+    console.log('-----------props-------------------------');
+    console.log(props);
+    console.log('------------------------------------');
     return (
         <div className='graph-node'>
             <VerificationTitle
                 verified={props.verified}
-                title= {props.title}
-                icon= {faDatabase}
+                title={props.title}
+                icon={faDatabase}
             />
-            <div className='graph-node-body'>
-                <div className='graph-node-body-row'>
-                    <span className='graph-node-body-left-text'>Type: </span>
-                    <span>{props.data.type}</span>
-                </div>
-            </div>
+            <NodeBody
+                data={[
+                    {
+                        key: 'Type',
+                        value: props.data.type
+                    },
+                    {
+                        key: 'Source',
+                        value: props.exportData.datasource.rawFilePath
+                    }
+                ]}
+            />
             <div className='graph-node-footer'></div>
         </div>
 

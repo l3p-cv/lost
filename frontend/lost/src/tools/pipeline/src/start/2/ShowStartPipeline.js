@@ -27,7 +27,8 @@ class ShowStartPipeline extends Component {
             const obj = {
                 id: el.peN,
                 connection: connections,
-                verified: el.verified
+                verified: el.verified,
+                exportData: el.exportData
             }
             if ('datasource' in el) {
                 obj.type = 'datasource'
