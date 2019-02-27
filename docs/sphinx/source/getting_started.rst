@@ -182,3 +182,11 @@ Now instructions will pop up and you are ready to annotate.
 
 Download Your Annotation Results
 ================================
+All example pipelines in LOST have a **Script** element that will export
+your annotations to a CSV file when the annotation process has finished.
+To download this file go to the **Designer** dashboard that is part of the
+**Designer** view and select a pipeline.
+A visualization of the annotation process will be displayed.
+Look for a **DataExport** element and click on it.
+A pop up will appear that shows all files that are available for download.
+Now click on a file and the download will start.
