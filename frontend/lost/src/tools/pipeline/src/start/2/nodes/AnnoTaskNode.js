@@ -1,23 +1,24 @@
 import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import VerificationTitle from './VerificationTitle'
 
-
-const AnnoTaskNode = (props) =>{
-    return(
+const AnnoTaskNode = (props) => {
+    return (
         <div className='graph-node'>
-        <div className={`${props.verified?'bg-green':'bg-orange'} graph-node-title`}>
-            <span className='graph-node-title-icon' ><FontAwesomeIcon icon={faDatabase} /></span>
-            <span className='graph-node-title-text'>{props.title}</span>
-        </div>
-        <div className='graph-node-body'>
-            <div className='graph-node-body-row'>
-                <span className='graph-node-body-left-text'>Name: </span>
-                <span>{props.data.name}</span>
+            <VerificationTitle
+                verified={props.verified}
+                title= {props.title}
+                icon= {faDatabase}
+            />
+
+            <div className='graph-node-body'>
+                <div className='graph-node-body-row'>
+                    <span className='graph-node-body-left-text'>Name: </span>
+                    <span>{props.data.name}</span>
+                </div>
             </div>
+            <div className='graph-node-footer'></div>
         </div>
-        <div className='graph-node-footer'></div>
-    </div>
     )
 }
 

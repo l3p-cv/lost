@@ -45,9 +45,9 @@ const getTemplates = () => async dispatch =>{
     }
 }
 
-const verifyAnnoTaskNode = (elementId, verified) => {
+const verifyNode = (elementId, verified) => {
     return {
-        type: 'PIPELINE_START_VERIFY_ANNO_TASK_NODE',
+        type: 'PIPELINE_START_VERIFY_NODE',
         payload: {
             elementId, verified
         }
@@ -60,5 +60,5 @@ export default {
     verifyTab, 
     getTemplate, 
     toggleModal, 
-    verifyAnnoTaskNode
+    verifyNode
 }

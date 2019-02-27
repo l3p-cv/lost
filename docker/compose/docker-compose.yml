@@ -25,6 +25,7 @@ services:
       container_name: db-lost
       volumes:
         - ${LOST_HOME}/mysql:/var/lib/mysql
+      restart: always
       environment:
         MYSQL_DATABASE: ${LOST_DB_NAME}
         MYSQL_USER: ${LOST_DB_USER}
@@ -52,6 +53,7 @@ services:
     rabbitmqlost:
       image: rabbitmq:3-management
       container_name: rabbitmqlost
+      restart: always
       volumes:
         - ${LOST_HOME}/rabbitmq:/var/lib/rabbitmq
 
@@ -59,6 +61,7 @@ services:
     phpmyadmin:
       image: phpmyadmin/phpmyadmin
       container_name: phpmyadmin
+      restart: always
       environment:
         PMA_ARBITRARY: 1
         MYSQL_USER: ${LOST_DB_USER}

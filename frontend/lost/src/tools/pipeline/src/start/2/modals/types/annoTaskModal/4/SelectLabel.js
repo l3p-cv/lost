@@ -56,9 +56,7 @@ class SelectLabel extends Component {
                 }
                 const arr = event.nodes.map((el) => {
                     return {
-                        id: el,
-                        maxLabels: "3"
-                    }
+                        id: el                    }
                 })
                 const isDoublicated = this.props.labelLeaves.filter(el => el.id === event.nodes[0]).length > 0
                 let editedArr

@@ -144,6 +144,31 @@ export default (state = INITITAL_STATE, action)=>{
             }
         }
 
+        // DATASOURCE START
+        case 'PIPELINE_START_DATASOURCE_SELECT_DROPDOWN':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('datasource' in el && (el.peN == action.payload.elementId)){
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                datasource: {
+                                    ...el.exportData.annoTask,
+                                    rawFilePath: action.payload.value
+                                }
+                            }
+                        }
+                    }
+                    return el
+                })
+            }
+        }
+        // DATASOURCE END
+
         // ANNO TASK START
 
         case 'PIPELINE_START_ANNO_TASK_SELECT_TAB':
@@ -303,13 +328,16 @@ export default (state = INITITAL_STATE, action)=>{
                 })
             }
         }
-        case 'PIPELINE_START_VERIFY_ANNO_TASK_NODE':
+
+        // ANNO TASK END
+
+        case 'PIPELINE_START_VERIFY_NODE':
         return{
             ...state,
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                    if((el.peN == action.payload.elementId)){
                         return {
                             ...el,
                             verified: action.payload.verified
@@ -319,8 +347,6 @@ export default (state = INITITAL_STATE, action)=>{
                 })
             }
         }
-        // ANNO TASK END
-
         case 'PIPELINE_START_GET_TEMPLATES':
             return {
                 ...state,
@@ -341,7 +367,6 @@ export default (state = INITITAL_STATE, action)=>{
                                 verified: false,
                                 exportData: {
                                     peN: el.peN,
-                                    peOut: el.peOut,
                                     annoTask:{
                                         name: el.annoTask.name,
                                         type: el.annoTask.type,
@@ -353,6 +378,18 @@ export default (state = INITITAL_STATE, action)=>{
                                         selectedLabelTree: null
 
 
+                                    }
+                                }
+                            }
+                        }
+                        if('datasource' in el){
+                            return {
+                                ...el,
+                                verified: false,
+                                exportData: {
+                                    peN: el.peN,
+                                    datasource: {
+                                        rawFilePath: null
                                     }
                                 }
                             }

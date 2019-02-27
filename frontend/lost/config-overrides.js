@@ -31,6 +31,7 @@ module.exports = (config, env) => {
 
 	// Actions alias
 	config.resolve.alias["actions"] = absolutePath("src/actions")
+	config.resolve.alias["pipelineGlobalComponents"] = absolutePath("src/tools/pipeline/src/globalComponents")
 
 
 	
