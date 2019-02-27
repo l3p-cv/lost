@@ -7,6 +7,7 @@ import ScriptNode from './nodes/ScriptNode'
 import Graph from 'react-directed-graph'
 import actions from 'actions/pipeline/pipelineStart'
 import Modals from './modals'
+import { faIgloo } from '@fortawesome/free-solid-svg-icons';
 
 const {toggleModal, selectTab, verifyTab} = actions
 class ShowStartPipeline extends Component {
@@ -68,7 +69,12 @@ class ShowStartPipeline extends Component {
     }
 
     nodesOnClick(id) {
-        this.props.toggleModal(id)
+        const element = this.props.data.elements.filter(el => el.peN === id)[0]
+        const isDataExport = 'dataExport' in element
+        if(!isDataExport){
+            this.props.toggleModal(id)
+
+        }
     }
     renderGraph() {
         if (this.props.data) {

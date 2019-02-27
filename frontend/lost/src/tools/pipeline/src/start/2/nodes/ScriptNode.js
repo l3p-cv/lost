@@ -1,24 +1,29 @@
 import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import VerificationTitle from './VerificationTitle'
+import NodeBody from './NodeBody'
 
 const ScriptNode = (props) => {
-    return(
+    return (
         <div className='graph-node'>
-        <div className='bg-orange graph-node-title'>
-            <span className='graph-node-title-icon' ><FontAwesomeIcon icon={faDatabase} /></span>
-            <span className='graph-node-title-text'>{props.title}</span>
+            <VerificationTitle
+                verified={props.verified}
+                title={props.title}
+                icon={faDatabase}
+            />
+            <NodeBody
+                data={[
+                    {
+                        key: 'Name',
+                        value: props.data.name
+                    }
+                ]}
+            />
+            <div className='graph-node-footer'></div>
         </div>
-        <div className='graph-node-body'>
-            <div className='graph-node-body-row'>
-                <span className='graph-node-body-left-text'>Name: </span>
-                <span>{props.data.name}</span>
-            </div>
-        </div>
-        <div className='graph-node-footer'></div>
-    </div>
-
     )
 }
 
 export default ScriptNode
+
+

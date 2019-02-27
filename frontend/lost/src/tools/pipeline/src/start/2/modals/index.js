@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import DatasourceModal from './types/DatasourceModal'
 import ScriptModal from './types/ScriptModal'
 import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
-import DataExportModal from './types/DataExportModal'
 import actions from 'actions/pipeline/pipelineStart'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
@@ -12,7 +11,7 @@ const { toggleModal, verifyNode } = actions
 class BaseModal extends Component {
     constructor() {
         super()
-        this.modalOnClosed = this.modalOnClosed.bind(this)
+        this.verifyNode = this.verifyNode.bind(this)
         this.toggleModal = this.toggleModal.bind(this)
     }
 
@@ -34,12 +33,7 @@ class BaseModal extends Component {
                         availableGroups={this.props.data.availableGroups}
                     />
                 )
-                case 'dataExport': return (
-                    <DataExportModal
-                        {...this.modalData}
-                    />
-                )
-                default: throw new Error("unknown node type")
+
             }
         }
     }
@@ -56,16 +50,11 @@ class BaseModal extends Component {
             } else if ('annoTask' in this.modalData) {
                 this.type = 'annoTask'
                 return ('Annotation Task')
-            } else if ('dataExport' in this.modalData) {
-                this.type = 'dataExport'
-                return ('Data Export')
-            } else {
-                throw new Error("unknown node type")
-            }
+            } 
         }
     }
 
-    modalOnClosed() {
+    verifyNode() {
         let verified = false
         switch (this.type) {
             case 'datasource':
@@ -77,6 +66,8 @@ class BaseModal extends Component {
                 }
                 break
             case 'script':
+                const {script} = this.modalData.exportData
+                verified = Object.keys(script.arguments).filter(el=>!script.arguments[el].value).length === 0
                 break
             case 'annoTask':
                 const {annoTask} = this.modalData.exportData
@@ -92,9 +83,6 @@ class BaseModal extends Component {
                     verified = false
                 }
                 break
-            case 'dataExport':
-                break
-            default: throw new Error("unknown node type")
         }   
         this.props.verifyNode(this.modalData.peN, verified)
 
@@ -107,7 +95,7 @@ class BaseModal extends Component {
 
     renderModals() {
         return (
-            <Modal onClosed={this.modalOnClosed} size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
+            <Modal onClosed={this.verifyNode} size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
                 <ModalHeader >
                     {this.renderTitle()}
                 </ModalHeader>

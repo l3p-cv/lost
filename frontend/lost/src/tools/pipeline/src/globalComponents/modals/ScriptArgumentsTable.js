@@ -1,6 +1,9 @@
 import React from 'react'
 
 const ArgumentsTable = (props) => {
+    console.log('-------propssss-----------------------------');
+    console.log(props);
+    console.log('------------------------------------');
     return (
         <div style={{ marginLeft: 15, marginRight: 15 }}>
             <table className="table table-bordered">
@@ -12,7 +15,7 @@ const ArgumentsTable = (props) => {
                         return (
                             <tr key={key}>
                                 <th>{key}</th>
-                                <td><input onInput={props.onInput} className="form-control" data-ref="polygon" defaultValue={key} disabled={props.onInput?'': 'disabled'} /></td>
+                                <td><input onInput={props.onInput} className="form-control" data-ref="polygon" defaultValue={props.data[key].value} disabled={props.onInput?'': 'disabled'} /></td>
                             </tr>
                         )
                     })}

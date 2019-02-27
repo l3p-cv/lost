@@ -3,9 +3,6 @@ import { faDatabase, faFontAwesomeLogoFull } from '@fortawesome/free-solid-svg-i
 import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 const AnnoTaskNode = (props) => {
-    console.log('-------props-----------------------------');
-    console.log(props);
-    console.log('------------------------------------');
     return (
         <div className='graph-node'>
             <VerificationTitle

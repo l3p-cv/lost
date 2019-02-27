@@ -1,19 +1,22 @@
 import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import VerificationTitle from './VerificationTitle'
+import NodeBody from './NodeBody'
 
-
-const DataExportNode = (props) =>{
-    return(
+const DataExportNode = (props) => {
+    return (
         <div className='graph-node'>
-        <div className='bg-orange graph-node-title'>
-            <span className='graph-node-title-icon' ><FontAwesomeIcon icon={faDatabase} /></span>
-            <span className='graph-node-title-text'>{props.title}</span>
+
+            <VerificationTitle
+                verified={props.verified}
+                title={props.title}
+                icon={faDatabase}
+            />
+            <NodeBody
+            />
+            <div className='graph-node-footer'></div>
+
         </div>
-        <div className='graph-node-body'>
-        </div>
-        <div className='graph-node-footer'></div>
-    </div>
     )
 }
 

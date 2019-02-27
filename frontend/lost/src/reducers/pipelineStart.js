@@ -169,6 +169,30 @@ export default (state = INITITAL_STATE, action)=>{
         }
         // DATASOURCE END
 
+        //SCRIPT START
+        case 'PIPELINE_START_SCRIPT_UPDATE_ARGUMENTS':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('script' in el && (el.peN == action.payload.elementId)){
+                        // return {
+                        //     ...el,
+                        //     exportData: {
+                        //         ...el.exportData,
+                        //         datasource: {
+                        //             ...el.exportData.annoTask,
+                        //             rawFilePath: action.payload.value
+                        //         }
+                        //     }
+                        // }
+                    }
+                    return el
+                })
+            }
+        }
+        //SCRIPT END
         // ANNO TASK START
 
         case 'PIPELINE_START_ANNO_TASK_SELECT_TAB':
@@ -360,7 +384,38 @@ export default (state = INITITAL_STATE, action)=>{
                 step1Data: {
                     ...action.payload,
                     elements: action.payload.elements.map((el) =>{
-                        if('annoTask' in el){
+                        if('datasource' in el){
+                            return {
+                                ...el,
+                                verified: false,
+                                exportData: {
+                                    peN: el.peN,
+                                    datasource: {
+                                        rawFilePath: null
+                                    }
+                                }
+                            }
+                        }else if('script' in el){
+                            console.log('----- Object.keys(script.arguments).filter(el=>!script.arguments[el].value).length === 0-------------------------------');
+                            console.log(el);
+                            console.log('------------------------------------');
+                            return {
+                                ...el,
+                                verified: Object.keys(el.script.arguments).filter(el2=>!el.script.arguments[el2].value).length === 0,
+                                exportData: {
+                                    peN: el.peN,
+                                    script: {
+                                        arguments: el.script.arguments,
+                                        description: el.script.description,
+                                        envs: el.script.envs,
+                                        id: el.script.id,
+                                        name: el.script.name,
+                                        path: el.script.path
+                                    }
+                                }
+                            }
+                        }
+                        else if('annoTask' in el){
                             return {
                                 ...el,
                                 stepper: INITITAL_STATE_ANNO_TASK_MODAL,
@@ -381,19 +436,13 @@ export default (state = INITITAL_STATE, action)=>{
                                     }
                                 }
                             }
-                        }
-                        if('datasource' in el){
-                            return {
+                        }else if('dataExport' in el){
+                            return{
                                 ...el,
-                                verified: false,
-                                exportData: {
-                                    peN: el.peN,
-                                    datasource: {
-                                        rawFilePath: null
-                                    }
-                                }
+                                verified:true
                             }
                         }
+
                         return el
                         
                     })
