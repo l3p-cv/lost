@@ -3,6 +3,16 @@ import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 
+function renderArgumentsLabel(isArgument){
+    if(isArgument){
+        return(
+            <div  className='graph-node-body-row'>
+                <span className='arguments-lable graph-node-body-left-text'>Arguments Avaiable</span>
+            </div>
+        )
+    }
+}
+
 const ScriptNode = (props) => {
     return (
         <div className='graph-node'>
@@ -18,7 +28,9 @@ const ScriptNode = (props) => {
                         value: props.data.name
                     }
                 ]}
-            />
+            >
+            {renderArgumentsLabel(Object.keys(props.exportData.script.arguments).length > 0)}
+            </NodeBody>
             <div className='graph-node-footer'></div>
         </div>
     )

@@ -18,6 +18,7 @@ const NodeBody = (props) => {
     return(
         <div className='graph-node-body'>
         {renderTable(props.data)}
+        {props.children}
     </div>
     )
 }

@@ -15,7 +15,7 @@ const ArgumentsTable = (props) => {
                         return (
                             <tr key={key}>
                                 <th>{key}</th>
-                                <td><input onInput={props.onInput} className="form-control" data-ref="polygon" defaultValue={props.data[key].value} disabled={props.onInput?'': 'disabled'} /></td>
+                                <td><input onInput={props.onInput} className="form-control" data-ref={key} defaultValue={props.data[key].value} disabled={props.onInput?'': 'disabled'} /></td>
                             </tr>
                         )
                     })}

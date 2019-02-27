@@ -14,6 +14,12 @@ class ScriptModal extends Component {
         let arg = this.props.exportData.script.arguments
         const key = e.target.getAttribute('data-ref')
         const value = e.target.value
+        console.log('---------key---------------------------');
+        console.log(key);
+        console.log('------------------------------------');
+        console.log('--------arg----------------------------');
+        console.log(arg);
+        console.log('------------------------------------');
         arg[key].value = value
         this.props.updateArguments(this.props.peN, arg)
     }
