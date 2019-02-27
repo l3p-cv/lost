@@ -161,7 +161,7 @@ export default (state = INITITAL_STATE, action)=>{
                             exportData: {
                                 ...el.exportData,
                                 datasource: {
-                                    ...el.exportData.annoTask,
+                                    ...el.exportData.datasource,
                                     rawFilePath: action.payload.value
                                 }
                             }
@@ -385,9 +385,13 @@ export default (state = INITITAL_STATE, action)=>{
 
             return {
                 ...state,
+                step0Data: {
+                    ...state.step0Data,
+                    templateId: parseInt(action.payload.templateId)
+                },
                 step1Data: {
-                    ...action.payload,
-                    elements: action.payload.elements.map((el) =>{
+                    ...action.payload.response,
+                    elements: action.payload.response.elements.map((el) =>{
                         if('datasource' in el){
                             return {
                                 ...el,
@@ -395,7 +399,9 @@ export default (state = INITITAL_STATE, action)=>{
                                 exportData: {
                                     peN: el.peN,
                                     datasource: {
-                                        rawFilePath: null
+                                        fileTree: el.datasource.fileTree,
+                                        rawFilePath: null,
+                                        type: el.datasource.type
                                     }
                                 }
                             }
@@ -411,7 +417,8 @@ export default (state = INITITAL_STATE, action)=>{
                                         envs: el.script.envs,
                                         id: el.script.id,
                                         name: el.script.name,
-                                        path: el.script.path
+                                        path: el.script.path,
+                                        isDebug: false
                                     }
                                 }
                             }
@@ -440,6 +447,10 @@ export default (state = INITITAL_STATE, action)=>{
                         }else if('dataExport' in el){
                             return{
                                 ...el,
+                                exportData: {
+                                    dataExport: {},
+                                    peN: el.peN
+                                },
                                 verified:true
                             }
                         }
@@ -483,6 +494,15 @@ export default (state = INITITAL_STATE, action)=>{
                 step2Data: {
                     ...state.step2Data,
                     description: action.payload.value,
+                }
+            }
+
+        // TAB 3
+        case 'PIPELINE_START_POST_PIPE':
+            return{
+                ...state,
+                step3Data: {
+                    response: action.payload.response
                 }
             }
         default:

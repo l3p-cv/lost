@@ -1,7 +1,7 @@
-import {API_URL} from '../../settings'
+import { API_URL } from '../../settings'
 import axios from 'axios'
 
- const selectTab = (tabId) => {
+const selectTab = (tabId) => {
     return {
         type: 'PIPELINE_START_SELECT_TAB',
         payload: {
@@ -15,7 +15,7 @@ import axios from 'axios'
 
 
 
- const verifyTab = (tabId, verified) => {
+const verifyTab = (tabId, verified) => {
     return {
         type: 'PIPELINE_START_VERIFY_TAB',
         payload: {
@@ -26,24 +26,32 @@ import axios from 'axios'
 
 // TAB0
 
-const getTemplates = () => async dispatch =>{
+const getTemplates = () => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/template`)
-    dispatch({type: 'PIPELINE_START_GET_TEMPLATES', payload: response.data})
+    dispatch({ type: 'PIPELINE_START_GET_TEMPLATES', payload: response.data })
 }
+
+
 
 // TAB1
 
- const getTemplate = (id) => async dispatch => {
+const getTemplate = (id) => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/template/${id}`)
-    dispatch({type: 'PIPELINE_START_GET_TEMPLATE', payload: response.data})
+    dispatch({
+        type: 'PIPELINE_START_GET_TEMPLATE',
+        payload: {
+            response: response.data,
+            templateId: id
+        }
+    })
 }
 
 
- const toggleModal = (id) => {
+const toggleModal = (id) => {
     return {
         type: 'PIPELINE_START_TOGGLE_MODAL',
-        payload:{
-            id:id
+        payload: {
+            id
         }
     }
 }
@@ -77,15 +85,25 @@ const descriptionOnInput = (value) => {
 
 //TAB3
 
+const postPipeline = (data) => async dispatch => {
+    const response = await axios({
+        method: 'post',
+        url: `${API_URL}/pipeline/start`,
+        data: data,
+        headers: {'Content-Type': 'application/json'}
+    })
+    dispatch({ type: 'PIPELINE_START_POST_PIPE', payload: response.data })
+}
 
 
 export default {
-    selectTab, 
-    getTemplates, 
-    verifyTab, 
-    getTemplate, 
-    toggleModal, 
+    selectTab,
+    getTemplates,
+    verifyTab,
+    getTemplate,
+    toggleModal,
     verifyNode,
     nameOnInput,
-    descriptionOnInput
+    descriptionOnInput,
+    postPipeline
 }
