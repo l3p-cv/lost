@@ -163,6 +163,22 @@ After entering these information you can click on the checkmark symbol
 to get to the **Start Pipe** button. 
 With a click on this button your annotation pipeline will be started :-)
 
-
 Annotate Your Images
 ====================
+Once your pipeline has requested all annotations for an **AnnotationTask**,
+selected annotators will be able to work on it.
+If you are logged in as a user with role **Designer** you can now 
+switch to the annotator view by clicking on the **Annotator** button
+at the upper right corner of your browser.
+You will be redirected to the :ref:`annotator dashboard <annotators-your-dashboard>`.
+If you are logged in as a user with role **Annotator** you see this 
+dashboard directly after login.
+
+Here you can see a table with all available **AnnotationTasks** for you.
+Click on a task you want to work on and you will be redirected to one of 
+the annotation tools (see also the :ref:`annotators` chapter).
+Now instructions will pop up and you are ready to annotate.
+
+
+Download Your Annotation Results
+================================
