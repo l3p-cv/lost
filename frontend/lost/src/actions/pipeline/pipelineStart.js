@@ -37,6 +37,9 @@ const getTemplates = () => async dispatch => {
 
 const getTemplate = (id) => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/template/${id}`)
+    console.log('---------responseresponse---------------------------');
+    console.log(response);
+    console.log('------------------------------------');
     dispatch({
         type: 'PIPELINE_START_GET_TEMPLATE',
         payload: {

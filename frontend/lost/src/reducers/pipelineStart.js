@@ -404,9 +404,6 @@ export default (state = INITITAL_STATE, action)=>{
                                 }
                             }
                         }else if('script' in el){
-                            console.log('--------el----------------------------');
-                            console.log(el);
-                            console.log('------------------------------------');
                             return {
                                 ...el,
                                 verified: el.script.arguments?Object.keys(el.script.arguments).filter(el2=>!el.script.arguments[el2].value).length === 0: true,
@@ -453,6 +450,15 @@ export default (state = INITITAL_STATE, action)=>{
                                     peN: el.peN
                                 },
                                 verified:true
+                            }
+                        }else if('loop' in el){
+                            return{
+                                ...el,
+                                verified: true,
+                                exportData: {
+                                    ...el.loop,
+                                    peN: el.peN
+                                }
                             }
                         }
 

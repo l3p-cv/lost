@@ -7,8 +7,7 @@ import ScriptNode from './nodes/ScriptNode'
 import Graph from 'react-directed-graph'
 import actions from 'actions/pipeline/pipelineStart'
 import Modals from './modals'
-import { faIgloo } from '@fortawesome/free-solid-svg-icons';
-
+import Loop from './nodes/LoopNode'
 const {toggleModal, selectTab, verifyTab} = actions
 class ShowStartPipeline extends Component {
     constructor(){
@@ -61,6 +60,29 @@ class ShowStartPipeline extends Component {
                 obj.data = el.dataExport
                 return <DataExportNode
                     key={obj.id}
+                    {...obj}
+                />
+            }else if('loop' in el){
+                obj.type = 'loop'
+                obj.title = 'Loop',
+                obj.data = el.loop
+                if(el.loop.peJumpId){
+                    obj.connection.push({
+                        id: el.loop.peJumpId,
+                        lineStyle: {
+                            stroke: 'red',
+                            strokeWidth: '1.8px',
+                            fill: 'white',
+                            strokeDasharray: '5, 5'
+                        },
+                        arrowheadStyle: {
+                            fill: 'red',
+                            stroke: 'none'
+                        }
+                    })
+                }
+                return <Loop
+                    key= {obj.id}
                     {...obj}
                 />
             }
