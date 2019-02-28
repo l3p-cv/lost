@@ -67,7 +67,7 @@ class BaseModal extends Component {
                 break
             case 'script':
                 const { script } = this.modalData.exportData
-                verified = Object.keys(script.arguments).filter(el => !script.arguments[el].value).length === 0
+                verified = script.arguments?Object.keys(script.arguments).filter(el => !script.arguments[el].value).length === 0:true
                 break
             case 'annoTask':
                 const { annoTask } = this.modalData.exportData
@@ -84,7 +84,6 @@ class BaseModal extends Component {
                 }
                 break
         }
-
 
         this.props.verifyNode(this.modalData.peN, verified)
 

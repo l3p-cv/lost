@@ -404,9 +404,12 @@ export default (state = INITITAL_STATE, action)=>{
                                 }
                             }
                         }else if('script' in el){
+                            console.log('--------el----------------------------');
+                            console.log(el);
+                            console.log('------------------------------------');
                             return {
                                 ...el,
-                                verified: Object.keys(el.script.arguments).filter(el2=>!el.script.arguments[el2].value).length === 0,
+                                verified: el.script.arguments?Object.keys(el.script.arguments).filter(el2=>!el.script.arguments[el2].value).length === 0: true,
                                 exportData: {
                                     peN: el.peN,
                                     script: {

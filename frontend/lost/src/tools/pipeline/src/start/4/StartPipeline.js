@@ -69,17 +69,3 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, { postPipeline })(StartPipeline)
 
-
-
-
-
-{/* <div>
-<div style={{width: '50%', margin: 0, textAlign:'center'}}>
-    <h3 className='title-start-pipeline-completed' >Complete</h3>
-    <p>You have successfully completed all steps.</p>
-    <button data-ref='btnStartPipe' type='button' className='btn btn-primary btn-lg'>
-        <FontAwesomeIcon icon={faPlayCircle} size="5x" />
-        Start Pipe
-    </button>
-</div>
-</div> */}
