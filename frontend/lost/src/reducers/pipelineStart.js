@@ -392,10 +392,22 @@ export default (state = INITITAL_STATE, action)=>{
                 step1Data: {
                     ...action.payload.response,
                     elements: action.payload.response.elements.map((el) =>{
+                        let connection = []
+                        if(el.peOut){
+                            connection = el.peOut.map(el => {
+                               return {
+                                   id: el
+                               }
+                           })
+                       }
                         if('datasource' in el){
                             return {
                                 ...el,
+                                id: el.peN,
                                 verified: false,
+                                type: 'datasource',
+                                title: 'Datasource',
+                                connection: connection,
                                 exportData: {
                                     peN: el.peN,
                                     datasource: {
@@ -406,7 +418,11 @@ export default (state = INITITAL_STATE, action)=>{
                         }else if('script' in el){
                             return {
                                 ...el,
+                                id: el.peN,
                                 verified: el.script.arguments?Object.keys(el.script.arguments).filter(el2=>!el.script.arguments[el2].value).length === 0: true,
+                                type: 'script',
+                                title: 'Script',
+                                connection: connection,
                                 exportData: {
                                     peN: el.peN,
                                     script: {
@@ -424,8 +440,12 @@ export default (state = INITITAL_STATE, action)=>{
                         else if('annoTask' in el){
                             return {
                                 ...el,
+                                id: el.peN,
                                 stepper: INITITAL_STATE_ANNO_TASK_MODAL,
                                 verified: false,
+                                type: 'annoTask',
+                                title: 'Annotation Task',
+                                connection: connection,
                                 exportData: {
                                     peN: el.peN,
                                     annoTask:{
@@ -445,25 +465,47 @@ export default (state = INITITAL_STATE, action)=>{
                         }else if('dataExport' in el){
                             return{
                                 ...el,
+                                id: el.peN,
                                 exportData: {
                                     dataExport: {},
                                     peN: el.peN
                                 },
-                                verified:true
+                                verified:true,
+                                type: 'dataExport',
+                                title: 'Data Export',
+                                connection: connection
                             }
                         }else if('loop' in el){
+                            if(el.loop.peJumpId){
+                                connection.push({
+                                    id: el.loop.peJumpId,
+                                    lineStyle: {
+                                        stroke: 'red',
+                                        strokeWidth: '1.8px',
+                                        fill: 'white',
+                                        strokeDasharray: '5, 5'
+                                    },
+                                    arrowheadStyle: {
+                                        fill: 'red',
+                                        stroke: 'none'
+                                    }
+                                })
+                            }
                             return{
                                 ...el,
+                                id: el.peN,
                                 verified: true,
                                 exportData: {
                                     loop: el.loop,
                                     peN: el.peN
-                                }
+                                },
+                                type: 'loop',
+                                title: 'Loop',
+                                connection: connection
                             }
-                        }
-
-                        return el
-                        
+                        }else{
+                            throw new Error(`Unknown Node Type: ${el}`)
+                        }                        
                     })
                 }
             }

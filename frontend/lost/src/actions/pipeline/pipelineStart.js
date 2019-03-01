@@ -97,12 +97,10 @@ const postPipeline = (data) => async dispatch => {
     catch (e){
         response = e
     }
-
-    console.log('-------------response-----------------------');
-    console.log(response);
-    console.log('------------------------------------');
     dispatch({ type: 'PIPELINE_START_POST_PIPE', payload: response })
 }
+
+
 
 
 export default {

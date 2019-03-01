@@ -26,7 +26,7 @@ const ScriptNode = (props) => {
                 data={[
                     {
                         key: 'Name',
-                        value: props.data.name
+                        value: props.name
                     }
                 ]}
             >

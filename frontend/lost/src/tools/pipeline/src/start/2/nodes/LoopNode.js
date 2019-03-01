@@ -3,9 +3,6 @@ import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 const DatasourceNode = (props) => {
-    console.log('-------propspropsprops-----------------------------');
-    console.log(props);
-    console.log('------------------------------------');
     return (
         <div className='graph-node'>
             <VerificationTitle

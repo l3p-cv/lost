@@ -14,7 +14,7 @@ const DatasourceNode = (props) => {
                 data={[
                     {
                         key: 'Type',
-                        value: props.data.type
+                        value: props.type
                     },
                     {
                         key: 'Source',

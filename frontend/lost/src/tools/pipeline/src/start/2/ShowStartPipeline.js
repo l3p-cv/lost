@@ -3,88 +3,56 @@ import { connect } from 'react-redux'
 import AnnoTaskNode from './nodes/AnnoTaskNode'
 import DataExportNode from './nodes/DataExportNode'
 import DatasourceNode from './nodes/DatasourceNode'
-import ScriptNode from './nodes/ScriptNode' 
+import ScriptNode from './nodes/ScriptNode'
 import Graph from 'react-directed-graph'
 import actions from 'actions/pipeline/pipelineStart'
 import Modals from './modals'
 import Loop from './nodes/LoopNode'
-const {toggleModal, selectTab, verifyTab} = actions
+const { toggleModal, selectTab, verifyTab } = actions
 class ShowStartPipeline extends Component {
-    constructor(){
+    constructor() {
         super()
         this.nodesOnClick = this.nodesOnClick.bind(this)
     }
     renderNodes() {
         return this.props.data.elements.map((el) => {
-            let connections = []
-            if(el.peOut){
-                 connections = el.peOut.map(el => {
-                    return {
-                        id: el
-                    }
-                })
-            }
-            const obj = {
-                id: el.peN,
-                connection: connections,
-                verified: el.verified,
-                exportData: el.exportData
-            }
-            if ('datasource' in el) {
-                obj.type = 'datasource'
-                obj.title = 'Datasource'
-                obj.data = el.datasource
-                return <DatasourceNode
-                    key={obj.id}
-                    {...obj}
-                />
-            } else if ('script' in el) {
-                obj.type = 'script'
-                obj.title = 'Script'
-                obj.data = el.script
-                return <ScriptNode
-                    key={obj.id}
-                    {...obj}
-                />
-            } else if ('annoTask' in el) {
-                obj.type = 'annoTask'
-                obj.title = 'Annotation Task'
-                obj.data = el.annoTask
-                return <AnnoTaskNode
-                    key={obj.id}
-                    {...obj}
-                />
-            } else if ('dataExport' in el) {
-                obj.type = 'dataExport'
-                obj.title = 'Data Export'
-                obj.data = el.dataExport
-                return <DataExportNode
-                    key={obj.id}
-                    {...obj}
-                />
-            }else if('loop' in el){
-                obj.type = 'loop'
-                obj.title = 'Loop',
-                obj.data = el.loop
-                if(el.loop.peJumpId){
-                    obj.connection.push({
-                        id: el.loop.peJumpId,
-                        lineStyle: {
-                            stroke: 'red',
-                            strokeWidth: '1.8px',
-                            fill: 'white',
-                            strokeDasharray: '5, 5'
-                        },
-                        arrowheadStyle: {
-                            fill: 'red',
-                            stroke: 'none'
-                        }
-                    })
-                }
-                return <Loop
-                    key= {obj.id}
-                    {...obj}
-                />
+            switch (el.type) {
+                case 'datasource':
+                    return (
+                        <DatasourceNode
+                            key={el.id}
+                            {...el}
+                        />
+                    )
+                case 'script':
+                    return (
+                        <ScriptNode
+                            key={el.id}
+                            {...el}
+                        />
+                    )
+                case 'annoTask':
+                    return (
+                        <AnnoTaskNode
+                            key={el.id}
+                            {...el}
+                        />
+                    )
+                case 'dataExport':
+                    return (
+                        <DataExportNode
+                            key={el.id}
+                            {...el}
+                        />
+                    )
+                case 'visualOutput':
+                case 'loop':
+                    return (
+                        <Loop
+                            key={el.id}
+                            {...el}
+                        />
+                    )
             }
         })
 
@@ -93,7 +61,7 @@ class ShowStartPipeline extends Component {
     nodesOnClick(id) {
         const element = this.props.data.elements.filter(el => el.peN === id)[0]
         const isDataExport = 'dataExport' in element
-        if(!isDataExport){
+        if (!isDataExport) {
             this.props.toggleModal(id)
         }
     }
@@ -116,20 +84,20 @@ class ShowStartPipeline extends Component {
         return (
             <div>
                 {this.renderGraph()}
-                <Modals/>
+                <Modals />
             </div>
         )
     }
 }
 
 const mapStateToProps = (state) => {
-    return { 
+    return {
         step: state.pipelineStart.stepper.steps[1],
         data: state.pipelineStart.step1Data
     }
 }
 export default connect(
-    mapStateToProps, {toggleModal, selectTab, verifyTab}
+    mapStateToProps, { toggleModal, selectTab, verifyTab }
 )(ShowStartPipeline)
 
 
