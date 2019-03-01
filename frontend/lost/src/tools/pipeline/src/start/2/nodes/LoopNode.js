@@ -17,7 +17,7 @@ const DatasourceNode = (props) => {
                 data={[
                     {
                         key: 'Max Iterations',
-                        value: props.data.maxIteration?props.data.maxIteration: '0'
+                        value: props.exportData.loop.maxIteration?props.exportData.loop.maxIteration: '0'
                     }
                 ]}
             />

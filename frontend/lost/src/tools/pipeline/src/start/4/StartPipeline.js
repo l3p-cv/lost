@@ -5,6 +5,7 @@ import { Button } from 'reactstrap'
 import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineStart'
 import Swal from 'sweetalert2'
+import {alertLoading, alertClose, alertSuccess, alertError} from 'pipelineGlobalComponents/sweetalert'
 
 const { postPipeline } = actions
 class StartPipeline extends Component {
@@ -19,29 +20,17 @@ class StartPipeline extends Component {
         json.elements = this.props.step1Data.elements.map(el => el.exportData)
         json.templateId = this.props.step0Data.templateId
         this.props.postPipeline(json)
-        Swal.fire({
-            title: 'Loading...',
-            onBeforeOpen: () => {
-                Swal.showLoading()
-            }
-        })
+        alertLoading()
     }
 
     componentDidUpdate() {
-        Swal.clickCancel()
-        let type
-        if (this.props.step3Data.response === 'success') {
-            type = 'success'
+        alertClose()
+        if (this.props.step3Data.response.status === 200) {
+            alertSuccess('Pipeline started successfully')
         } else {
-            type = 'error'
+            alertError(`(${this.props.step3Data.response.response.status}) ${this.props.step3Data.response.response.statusText}`)
         }
-        Swal.fire({
-            position: 'top-end',
-            type: type,
-            title: 'Pipeline started successfully',
-            showConfirmButton: false,
-            timer: 1500
-        })
+
     }
 
     render() {

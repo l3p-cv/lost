@@ -95,7 +95,6 @@ class ShowStartPipeline extends Component {
         const isDataExport = 'dataExport' in element
         if(!isDataExport){
             this.props.toggleModal(id)
-
         }
     }
     renderGraph() {

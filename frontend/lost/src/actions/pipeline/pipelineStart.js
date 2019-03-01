@@ -37,9 +37,6 @@ const getTemplates = () => async dispatch => {
 
 const getTemplate = (id) => async dispatch => {
     const response = await axios.get(`${API_URL}/pipeline/template/${id}`)
-    console.log('---------responseresponse---------------------------');
-    console.log(response);
-    console.log('------------------------------------');
     dispatch({
         type: 'PIPELINE_START_GET_TEMPLATE',
         payload: {
@@ -89,13 +86,22 @@ const descriptionOnInput = (value) => {
 //TAB3
 
 const postPipeline = (data) => async dispatch => {
-    const response = await axios({
+    let response
+    try{
+    response = await axios({
         method: 'post',
         url: `${API_URL}/pipeline/start`,
         data: data,
         headers: {'Content-Type': 'application/json'}
-    })
-    dispatch({ type: 'PIPELINE_START_POST_PIPE', payload: response.data })
+    })}
+    catch (e){
+        response = e
+    }
+
+    console.log('-------------response-----------------------');
+    console.log(response);
+    console.log('------------------------------------');
+    dispatch({ type: 'PIPELINE_START_POST_PIPE', payload: response })
 }
 
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import DatasourceModal from './types/DatasourceModal'
 import ScriptModal from './types/ScriptModal'
 import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
+import LoopModal from './types/LoopModal'
 import actions from 'actions/pipeline/pipelineStart'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
@@ -33,6 +34,11 @@ class BaseModal extends Component {
                         availableGroups={this.props.data.availableGroups}
                     />
                 )
+                case 'loop': return (
+                    <LoopModal
+                        {...this.modalData}
+                    />
+                )
 
             }
         }
@@ -50,6 +56,9 @@ class BaseModal extends Component {
             } else if ('annoTask' in this.modalData) {
                 this.type = 'annoTask'
                 return ('Annotation Task')
+            } else if('loop' in this.modalData) {
+                this.type = 'loop'
+                return('Loop')
             }
         }
     }
@@ -83,6 +92,8 @@ class BaseModal extends Component {
                     verified = false
                 }
                 break
+            case 'loop':
+                verified = true
         }
 
         this.props.verifyNode(this.modalData.peN, verified)
@@ -101,9 +112,6 @@ class BaseModal extends Component {
 
     }
 
-    componentDidMount(){
-        
-    }
 
 
     toggleModal() {
@@ -111,7 +119,9 @@ class BaseModal extends Component {
 
     }
 
-    renderModals() {
+
+
+    render() {
         return (
             <Modal onClosed={this.verifyNode} size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
                 <ModalHeader >
@@ -124,14 +134,6 @@ class BaseModal extends Component {
                     <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
                 </ModalFooter>
             </Modal>
-        )
-    }
-
-    render() {
-        return (
-            <div>
-                {this.renderModals()}
-            </div>
         )
     }
 }

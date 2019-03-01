@@ -456,7 +456,7 @@ export default (state = INITITAL_STATE, action)=>{
                                 ...el,
                                 verified: true,
                                 exportData: {
-                                    ...el.loop,
+                                    loop: el.loop,
                                     peN: el.peN
                                 }
                             }
