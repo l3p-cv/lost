@@ -8,6 +8,7 @@ import Graph from 'react-directed-graph'
 import actions from 'actions/pipeline/pipelineStart'
 import Modals from './modals'
 import Loop from './nodes/LoopNode'
+import VisualOutputNode from './nodes/VisualOutputNode'
 const { toggleModal, selectTab, verifyTab } = actions
 class ShowStartPipeline extends Component {
     constructor() {
@@ -16,6 +17,9 @@ class ShowStartPipeline extends Component {
     }
     renderNodes() {
         return this.props.data.elements.map((el) => {
+            console.log('------el------------------------------');
+            console.log(el);
+            console.log('------------------------------------');
             switch (el.type) {
                 case 'datasource':
                     return (
@@ -46,6 +50,12 @@ class ShowStartPipeline extends Component {
                         />
                     )
                 case 'visualOutput':
+                    return (
+                        <VisualOutputNode
+                            key={el.id}
+                            {...el}
+                        />
+                    )
                 case 'loop':
                     return (
                         <Loop
@@ -66,6 +76,8 @@ class ShowStartPipeline extends Component {
         }
     }
     renderGraph() {
+        console.log("GRAPH RERENDER");
+        
         if (this.props.data) {
             return (
                 <Graph

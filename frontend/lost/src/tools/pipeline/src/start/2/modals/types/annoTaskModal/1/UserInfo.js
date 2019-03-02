@@ -24,11 +24,11 @@ class UserInfo extends Component {
                     <Form>
                         <FormGroup>
                             <Label for="name">Name</Label>
-                            <Input value={this.props.exportData.annoTask.name} onChange={this.nameOnInput} type="text"  name="name" id="name"  />
+                            <Input defaultValue={this.props.exportData.annoTask.name} onChange={this.nameOnInput} type="text"  name="name" id="name"  />
                         </FormGroup>
                         <FormGroup>
                             <Label for="instruction">Instructions</Label>
-                            <Input value={this.props.exportData.annoTask.instructions} onChange={this.instructionsOnInput} type="text" name="instruction" id="instruction"  />
+                            <Input defaultValue={this.props.exportData.annoTask.instructions} onChange={this.instructionsOnInput} type="text" name="instruction" id="instruction"  />
                         </FormGroup>
                     </Form>
                 </CardBody>

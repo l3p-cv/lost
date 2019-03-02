@@ -181,16 +181,16 @@ export default (state = INITITAL_STATE, action)=>{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
                     if('script' in el && (el.peN == action.payload.elementId)){
-                        // return {
-                        //     ...el,
-                        //     exportData: {
-                        //         ...el.exportData,
-                        //         datasource: {
-                        //             ...el.exportData.annoTask,
-                        //             rawFilePath: action.payload.value
-                        //         }
-                        //     }
-                        // }
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                datasource: {
+                                    ...el.exportData.annoTask,
+                                    rawFilePath: action.payload.value
+                                }
+                            }
+                        }
                     }
                     return el
                 })
@@ -503,7 +503,23 @@ export default (state = INITITAL_STATE, action)=>{
                                 title: 'Loop',
                                 connection: connection
                             }
-                        }else{
+                        }else if ('visualOutput' in el) {
+                            return {
+                                ...el,
+                                id: el.peN,
+                                connection: connection,
+                                verified: true,
+                                type: 'visualOutput',
+                                title: 'Visualization',
+                                exportData: {
+                                    peN: el.peN,
+                                    visualOutput: el.visualOutput
+                                }
+                            }
+
+                        }
+                        
+                        else{
                             throw new Error(`Unknown Node Type: ${el}`)
                         }                        
                     })

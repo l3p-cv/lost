@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from 'reactstrap'
 import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineStart'
-import Swal from 'sweetalert2'
 import {alertLoading, alertClose, alertSuccess, alertError} from 'pipelineGlobalComponents/sweetalert'
 
 const { postPipeline } = actions

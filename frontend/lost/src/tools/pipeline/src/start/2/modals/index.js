@@ -17,55 +17,36 @@ class BaseModal extends Component {
     }
 
     selectModal() {
-        if (this.props.data && this.props.step.modalOpened) {
-            switch (this.type) {
-                case 'datasource': return (
-                    <DatasourceModal
-                        {...this.modalData} />
-                )
-                case 'script': return (
-                    <ScriptModal
-                        {...this.modalData} />
-                )
-                case 'annoTask': return (
-                    <AnnoTaskModal
-                        {...this.modalData}
-                        availableLabelTrees={this.props.data.availableLabelTrees}
-                        availableGroups={this.props.data.availableGroups}
-                    />
-                )
-                case 'loop': return (
-                    <LoopModal
-                        {...this.modalData}
-                    />
-                )
+        switch (this.modalData.type) {
+            case 'datasource': return (
+                <DatasourceModal
+                    {...this.modalData} />
+            )
+            case 'script': return (
+                <ScriptModal
+                    {...this.modalData} />
+            )
+            case 'annoTask': return (
+                <AnnoTaskModal
+                    {...this.modalData}
+                    availableLabelTrees={this.props.data.availableLabelTrees}
+                    availableGroups={this.props.data.availableGroups}
+                />
+            )
+            case 'loop': return (
+                <LoopModal
+                    {...this.modalData}
+                />
+            )
 
-            }
         }
     }
 
-    renderTitle() {
-        if (this.props.data && this.props.step.modalOpened) {
-            this.modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
-            if ('datasource' in this.modalData) {
-                this.type = 'datasource'
-                return ('Datasource')
-            } else if ('script' in this.modalData) {
-                this.type = 'script'
-                return ('Script')
-            } else if ('annoTask' in this.modalData) {
-                this.type = 'annoTask'
-                return ('Annotation Task')
-            } else if('loop' in this.modalData) {
-                this.type = 'loop'
-                return('Loop')
-            }
-        }
-    }
+
 
     verifyNode() {
         let verified = false
-        switch (this.type) {
+        switch (this.modalData.type) {
             case 'datasource':
                 const { datasource } = this.modalData.exportData
                 if (datasource.rawFilePath) {
@@ -76,7 +57,7 @@ class BaseModal extends Component {
                 break
             case 'script':
                 const { script } = this.modalData.exportData
-                verified = script.arguments?Object.keys(script.arguments).filter(el => !script.arguments[el].value).length === 0:true
+                verified = script.arguments ? Object.keys(script.arguments).filter(el => !script.arguments[el].value).length === 0 : true
                 break
             case 'annoTask':
                 const { annoTask } = this.modalData.exportData
@@ -118,18 +99,24 @@ class BaseModal extends Component {
         this.props.toggleModal(this.props.step.modalClickedId)
 
     }
-
-
-
     render() {
+        if(this.props.data && this.props.step.modalOpened){
+            this.modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
+        }
         return (
             <Modal onClosed={this.verifyNode} size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
-                <ModalHeader >
-                    {this.renderTitle()}
-                </ModalHeader>
-                <ModalBody>
-                    {this.selectModal()}
-                </ModalBody>
+                {(this.props.data && this.props.step.modalOpened) &&
+                    <>
+                        <ModalHeader >
+                            {this.modalData.title}
+                        </ModalHeader>
+                        <ModalBody>
+                            {this.selectModal()}
+                        </ModalBody>
+                    </>
+
+                }
+
                 <ModalFooter>
                     <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
                 </ModalFooter>
