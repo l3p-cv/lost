@@ -17,9 +17,6 @@ class ShowStartPipeline extends Component {
     }
     renderNodes() {
         return this.props.data.elements.map((el) => {
-            console.log('------el------------------------------');
-            console.log(el);
-            console.log('------------------------------------');
             switch (el.type) {
                 case 'datasource':
                     return (
@@ -71,13 +68,12 @@ class ShowStartPipeline extends Component {
     nodesOnClick(id) {
         const element = this.props.data.elements.filter(el => el.peN === id)[0]
         const isDataExport = 'dataExport' in element
-        if (!isDataExport) {
+        const isVisualOutput = 'visualOutput' in element
+        if (!isDataExport && !isVisualOutput) {
             this.props.toggleModal(id)
         }
     }
-    renderGraph() {
-        console.log("GRAPH RERENDER");
-        
+    renderGraph() {        
         if (this.props.data) {
             return (
                 <Graph

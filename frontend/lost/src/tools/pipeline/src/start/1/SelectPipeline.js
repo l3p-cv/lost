@@ -1,35 +1,70 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import actions from 'actions/pipeline/pipelineStart'
-import {connect} from 'react-redux'
-const {getTemplates, selectTab, verifyTab, getTemplate} = actions
+import { connect } from 'react-redux'
+const { getTemplates, selectTab, verifyTab, getTemplate } = actions
+import ReactTable from 'react-table'
+import 'react-table/react-table.css'
+import {alertLoading, alertClose} from 'pipelineGlobalComponents/sweetalert'
 
 
-class SelectPipeline extends Component{
-    constructor(){
+class SelectPipeline extends Component {
+    constructor() {
         super()
         this.selectRow = this.selectRow.bind(this)
     }
-    async componentDidMount(){
-        this.props.getTemplates()
+    async componentDidMount() {
+        alertLoading()
+        await this.props.getTemplates()
+        alertClose()
     }
 
-    selectRow(e){
-
-        const id = e.currentTarget.getAttribute('id')
+   async selectRow(id) {
+        alertLoading()
+        await this.props.getTemplate(id)
         this.props.verifyTab(0, true)
         this.props.selectTab(1)
-        this.props.getTemplate(id)
+        alertClose()
     }
 
-    renderDatatable(){
-        if(this.props.data){
-            return this.props.data.templates.map((el)=>{
-                return (<div id={el.id} key={el.id} onClick={this.selectRow}>{el.name}</div>)
-            })
+    renderDatatable() {
+        if (this.props.data) {
+            return (
+                <ReactTable
+                    columns={[
+                        {
+                            Header: "Name",
+                            accessor: "name"
+                        },
+                        {
+                            Header: "Description",
+                            accessor: "description"
+                        },
+                        {
+                            Header: "Author",
+                            accessor: "author"
+                        },
+                        {
+                            Header: "Date",
+                            accessor: "date"
+                        }
+                    ]}
+                    getTrProps={(state, rowInfo) => ({
+                        onClick: () => this.selectRow(rowInfo.original.id)
+                    })}
+                    defaultSorted={[
+                        {
+                            id: "date",
+                            desc: true
+                        }
+                    ]}
+                    data={this.props.data.templates}
+                    defaultPageSize={10}
+                    className="-striped -highlight"
+                />)
         }
     }
 
-    render(){
+    render() {
         return (
             <div>
                 {this.renderDatatable()}
@@ -46,5 +81,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    {getTemplates,selectTab,verifyTab, getTemplate}
-) (SelectPipeline)
+    { getTemplates, selectTab, verifyTab, getTemplate }
+)(SelectPipeline)

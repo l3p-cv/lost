@@ -1,35 +1,102 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import actions from 'actions/pipeline/pipelineRunning'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
+import ReactTable from 'react-table'
+import 'react-table/react-table.css'
+import {alertLoading, alertClose} from 'pipelineGlobalComponents/sweetalert'
+const { getPipelines, getPipeline, verifyTab, selectTab } = actions
 
-const {getPipelines, getPipeline, verifyTab, selectTab} = actions
 
-
-class SelectPipeline extends Component{
-    constructor(){
+class SelectPipeline extends Component {
+    constructor() {
         super()
         this.selectRow = this.selectRow.bind(this)
     }
-    async componentDidMount(){
+    async componentDidMount() {
+        alertLoading()
         this.props.getPipelines()
     }
 
-    selectRow(e){
-        const id = e.currentTarget.getAttribute('id')
+    selectRow(id) {
         this.props.verifyTab(0, true)
         this.props.selectTab(1)
         this.props.getPipeline(id)
     }
 
-    renderDatatable(){
+
+
+    renderDatatable() {
         if(this.props.data){
-            return this.props.data.pipes.map((el)=>{
-                return (<div id={el.id} key={el.id} onClick={this.selectRow}>{el.name}</div>)
-            })
+            alertClose()
+            return(<ReactTable
+                columns={[
+                  {
+                    Header: "Name",
+                    accessor: "name"
+                  },
+                  {
+                    Header: "Description",
+                    accessor: "description"
+                  },
+                  {
+                    Header: "Template Name",
+                    accessor: "templateName"
+                  },
+                  {
+                    Header: "Author",
+                    accessor: "creatorName"
+                  },
+                  {
+                    Header: "Progress",
+                    accessor: "progress",
+                    Cell: (row) => {
+                        row.value = parseInt(row.value)
+                        return(
+                        <div
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: '#dadada',
+                            borderRadius: '2px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: `${row.value}%`,
+                              height: '100%',
+                              backgroundColor: row > 66 ? '#85cc00'
+                                : row > 33 ? '#ffbf00'
+                                : '#ff2e00',
+                              borderRadius: '2px',
+                              transition: 'all .2s ease-out'
+                            }}
+                          />
+                        </div>
+                      )}
+                  },
+                  {
+                    Header: "Date",
+                    accessor: "date"
+                  }
+                ]}
+                getTrProps={(state, rowInfo) => ({
+                    onClick: () => this.selectRow(rowInfo.original.id)
+                  })}
+                defaultSorted={[
+                    {
+                      id: "date",
+                      desc: true
+                    }
+                  ]}
+                data={this.props.data.pipes}
+                defaultPageSize={10}
+                className="-striped -highlight"
+              />)
         }
+        
     }
 
-    render(){
+    render() {
         return (
             <div>
                 {this.renderDatatable()}
@@ -39,10 +106,10 @@ class SelectPipeline extends Component{
 }
 
 const mapStateToProps = (state) => {
-    return {data: state.pipelineRunning.step0Data}
+    return { data: state.pipelineRunning.step0Data }
 }
 
 export default connect(
     mapStateToProps,
-    {getPipelines,getPipeline,verifyTab, selectTab}
-) (SelectPipeline)
+    { getPipelines, getPipeline, verifyTab, selectTab }
+)(SelectPipeline)

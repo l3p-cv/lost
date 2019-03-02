@@ -9,7 +9,7 @@ export const alertLoading =  () => {
 }
 
 export const alertClose = () =>{
-    Swal.clickCancel()
+    Swal.close()
 }
 
 export const alertSuccess = (title) => {
