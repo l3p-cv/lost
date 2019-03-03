@@ -50,7 +50,7 @@ class SelectPipeline extends Component {
                     Header: "Progress",
                     accessor: "progress",
                     Cell: (row) => {
-                        row.value = parseInt(row.value)
+                        const progress= parseInt(row.value)
                         return(
                         <div
                           style={{
@@ -62,10 +62,10 @@ class SelectPipeline extends Component {
                         >
                           <div
                             style={{
-                              width: `${row.value}%`,
+                              width: `${progress}%`,
                               height: '100%',
-                              backgroundColor: row > 66 ? '#85cc00'
-                                : row > 33 ? '#ffbf00'
+                              backgroundColor: progress > 66 ? '#85cc00'
+                                : progress > 33 ? '#ffbf00'
                                 : '#ff2e00',
                               borderRadius: '2px',
                               transition: 'all .2s ease-out'

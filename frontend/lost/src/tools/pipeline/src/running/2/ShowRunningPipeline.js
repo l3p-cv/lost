@@ -9,6 +9,7 @@ import DataExportNode from './nodes/DataExportNode'
 import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineRunning'
 import TitleBox from './titleBox'
+import LoopNode from './nodes/LoopNode';
 
 const { toggleModal, getPipeline } = actions
 
@@ -76,6 +77,14 @@ class ShowRunningPipeline extends Component {
                     obj.title = 'Data Export'
                     obj.data = el.dataExport
                     return <DataExportNode
+                        key={obj.id}
+                        {...obj}
+                    />
+                } else if('loop' in el){
+                    obj.type = 'loop'
+                    obj.title = 'Loop'
+                    obj.data = el.loop
+                    return <LoopNode
                         key={obj.id}
                         {...obj}
                     />
