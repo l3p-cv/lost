@@ -30,7 +30,9 @@ def get_env_config(data_path, release):
         ['LOST_DB_ROOT_PASSWORD', 'root'],
         ['PROJECT_NAME', 'myProject'],
         ['SECRET_KEY', gen_rand_string(16)],
-        ['PIPE_SCHEDULE', '5']
+        ['PIPE_SCHEDULE', '5'],
+        ['WORKER_BEAT', 10],
+        ['WORKER_TIMEOUT',30]
     ]
     return config
 

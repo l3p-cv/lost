@@ -48,7 +48,7 @@ tested for Ubuntu):
     .. code-block:: bash
 
         # Change to directory where LOST was installed in previous step
-        cd ~/lost 
+        cd ~/lost/docker 
         # Start LOST
         docker-compose up
 6. Open a browser and navigate to: http://localhost

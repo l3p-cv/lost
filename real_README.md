@@ -47,7 +47,7 @@ tested for Ubuntu):
 5. Run LOST:
    ``` 
    # Change to directory where LOST was installed
-   cd ~/lost 
+   cd ~/lost/docker 
    # Start LOST
    docker-compose up
    ```
