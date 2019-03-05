@@ -14,7 +14,7 @@ const DatasourceNode = (props) =>{
         <div className='graph-node-body'>
         <div className='graph-node-body-row'>
         <span className='graph-node-body-left-text'>Type: </span>
-        <span>{props.data.type}</span>
+        <span>{props.datasource.type}</span>
         </div>
         </div>
         <NodeFooter footer={props.footer}/>

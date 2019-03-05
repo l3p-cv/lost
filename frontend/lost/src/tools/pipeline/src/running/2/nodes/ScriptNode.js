@@ -14,9 +14,9 @@ const ScriptNode = (props) => {
         <div className='graph-node-body'>
             <div className='graph-node-body-row'>
                 <span className='graph-node-body-left-text'>Name: </span>
-                <span>{props.data.name}</span>
+                <span>{props.script.name}</span>
             </div>
-            <Progress value={props.data.progress}>{props.data.progress}%</Progress>
+            <Progress value={props.script.progress}>{props.script.progress}%</Progress>
         </div>
         <NodeFooter footer={props.footer}/>
     </div>

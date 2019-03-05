@@ -14,7 +14,9 @@ class SelectPipeline extends Component {
     }
     async componentDidMount() {
         alertLoading()
-        this.props.getPipelines()
+        await this.props.getPipelines()
+        alertClose()
+
     }
 
     selectRow(id) {
@@ -27,7 +29,6 @@ class SelectPipeline extends Component {
 
     renderDatatable() {
         if(this.props.data){
-            alertClose()
             return(<ReactTable
                 columns={[
                   {

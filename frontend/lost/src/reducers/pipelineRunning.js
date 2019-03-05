@@ -49,6 +49,9 @@ export default (state = INITITAL_STATE, action) => {
                 step0Data: action.payload
             }
         case 'PIPELINE_RUNNING_GET_PIPELINE':
+        console.log('---------action.payload---------------------------');
+        console.log(action.payload);
+        console.log('------------------------------------');
         return {
             ...state,
             // steps: state.steps.map((el,i)=>{
@@ -60,7 +63,95 @@ export default (state = INITITAL_STATE, action) => {
             //     }
             //     return el
             // })
-            step1Data: action.payload
+            // step1Data: action.payload,
+            step1Data: {
+                ...action.payload,
+                elements: action.payload.elements.map((el)=>{
+                    let connection = []
+                    if(el.peOut){
+                        connection = el.peOut.map(el => {
+                           return {
+                               id: el
+                           }
+                       })
+                   }
+                    if('datasource' in el){
+                        return {
+                            ...el,
+                            id: el.peN,
+                            type: 'datasource',
+                            title: 'Datasource',
+                            connection: connection,
+                            footer: el.state
+                        }
+                    }else if('script' in el){
+                        return {
+                            ...el,
+                            id: el.peN,
+                            type: 'script',
+                            title: 'Script',
+                            connection: connection,
+                            footer: el.state
+                        }
+
+                    }else if('annoTask' in el){
+                        return {
+                            ...el,
+                            id: el.peN,
+                            type: 'annoTask',
+                            title: 'Annotation Task',
+                            connection: connection,
+                            footer: el.state
+                        }
+
+                    }else if('visualOutput' in el){
+                        return {
+                            ...el,
+                            id: el.peN,
+                            type: 'visualOutput',
+                            title: 'Visualization',
+                            connection: connection,
+                            footer: el.state
+                        }
+
+                    }else if('dataExport' in el){
+                        return {
+                            ...el,
+                            id: el.peN,
+                            type: 'dataExport',
+                            title: 'Data Export',
+                            connection: connection,
+                            footer: el.state
+                        }
+
+                    }else if('loop' in el){
+                        if(el.loop.peJumpId){
+                            connection.push({
+                                id: el.loop.peJumpId,
+                                lineStyle: {
+                                    stroke: 'red',
+                                    strokeWidth: '1.8px',
+                                    fill: 'white',
+                                    strokeDasharray: '5, 5'
+                                },
+                                arrowheadStyle: {
+                                    fill: 'red',
+                                    stroke: 'none'
+                                }
+                            })
+                        }
+                        return {
+                            ...el,
+                            id: el.peN,
+                            type: 'loop',
+                            title: 'Loop',
+                            connection: connection,
+                            footer: el.state
+                        }
+
+                    }
+                })
+            }
         }
         case 'PIPELINE_RUNNING_SELECT_TAB':
             return {
