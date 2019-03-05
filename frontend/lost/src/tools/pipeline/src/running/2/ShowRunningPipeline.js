@@ -30,6 +30,8 @@ class ShowRunningPipeline extends Component {
 
 
     nodesOnClick(id) {
+        console.log(id)
+        console.log(this.props)
         this.props.toggleModal(id)
     }
 
@@ -56,6 +58,11 @@ class ShowRunningPipeline extends Component {
                         {...el}
                     />
                 } else if('loop' in el){
+                    return <LoopNode
+                        key={el.id}
+                        {...el}
+                    />
+                }else if('visualOutput' in el){
                     return <LoopNode
                         key={el.id}
                         {...el}

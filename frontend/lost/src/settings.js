@@ -1,7 +1,7 @@
 // Production API URL - this url locates to nginx web server which is
 // hosting this app. Reverse Proxy to Flask API is configured in nginx configuration.
 // To make changes to the API URL, the reverse proxy configuration must be modified.
-const DEV = false
+const DEV = true
 
 let API_URL = ""
 if(DEV){

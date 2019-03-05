@@ -1,10 +1,10 @@
 import React from 'react'
+import { Progress } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDatabase } from '@fortawesome/free-solid-svg-icons'
 import NodeFooter from './NodeFooter'
 
-
-const LoopNode = (props) =>{
+const ScriptNode = (props) => {
     return(
         <div className='graph-node'>
         <div className='graph-node-title'>
@@ -12,10 +12,6 @@ const LoopNode = (props) =>{
             <span className='graph-node-title-text'>{props.title}</span>
         </div>
         <div className='graph-node-body'>
-        <div className='graph-node-body-row'>
-        <span className='graph-node-body-left-text'>Type: </span>
-        {/* <span>{props.loop.type}</span> */}
-        </div>
         </div>
         <NodeFooter footer={props.footer}/>
     </div>
@@ -23,4 +19,4 @@ const LoopNode = (props) =>{
     )
 }
 
-export default LoopNode
+export default ScriptNode

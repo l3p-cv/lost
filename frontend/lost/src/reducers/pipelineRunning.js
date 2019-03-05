@@ -34,7 +34,7 @@ const INITITAL_STATE = {
           modalOpened: false,
           modalClickedId: 0,
           svgStyle: {
-            width: "800px"
+            width: "1000px"
         }
         },
     ],
@@ -49,21 +49,8 @@ export default (state = INITITAL_STATE, action) => {
                 step0Data: action.payload
             }
         case 'PIPELINE_RUNNING_GET_PIPELINE':
-        console.log('---------action.payload---------------------------');
-        console.log(action.payload);
-        console.log('------------------------------------');
         return {
             ...state,
-            // steps: state.steps.map((el,i)=>{
-            //     // Graph Data
-            //     if(i == 1){
-            //         return {
-            //             ...el,
-            //             data :action.payload}
-            //     }
-            //     return el
-            // })
-            // step1Data: action.payload,
             step1Data: {
                 ...action.payload,
                 elements: action.payload.elements.map((el)=>{
