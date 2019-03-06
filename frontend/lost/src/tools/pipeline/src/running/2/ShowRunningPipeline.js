@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineRunning'
 import TitleBox from './titleBox'
 import LoopNode from './nodes/LoopNode';
+import ToolBar from './Toolbar'
 
 const { toggleModal, getPipeline } = actions
 
@@ -76,16 +77,20 @@ class ShowRunningPipeline extends Component {
     renderGraph() {
         if (this.props.data) {
             return (
-                <Graph
-                    enableZooming={true}
-                    centerGraph={true}
-                    svgStyle={this.props.step.svgStyle}
-                    ref={this.graph}
-                    nodesOnClick={this.nodesOnClick}
-                    titleBox={<TitleBox {...this.props.data} />}
-                >
-                    {this.renderNodes()}
-                </Graph>
+                <div>
+                    <ToolBar/>
+                    <Graph
+                        enableZooming={true}
+                        centerGraph={true}
+                        svgStyle={this.props.step.svgStyle}
+                        ref={this.graph}
+                        nodesOnClick={this.nodesOnClick}
+                        titleBox={<TitleBox {...this.props.data} />}
+                    >
+                        {this.renderNodes()}
+                    </Graph>
+                </div>
+
             )
         }
     }

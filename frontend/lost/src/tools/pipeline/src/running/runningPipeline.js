@@ -6,7 +6,6 @@ import '../globalComponents/pipeline.scss'
 import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './1/SelectPipeline'
 import ShowRunningPipeline from './2/ShowRunningPipeline'
-import GrayLine from '../globalComponents/grayLine'
 import actions from 'actions/pipeline/pipelineRunning'
 const {selectTab} = actions
 
@@ -42,7 +41,6 @@ class RunningPipeline extends Component{
             changeCurrentStep={this.changeCurrentStep}
           />
 
-          <GrayLine/>
           
   
           {this.renderContent()}
