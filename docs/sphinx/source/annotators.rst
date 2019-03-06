@@ -117,10 +117,65 @@ annotated in this task.
 
 Meet MIA - A Multi Image Annotation Tool
 ========================================
+
+**MIA** was designed to annotate clusters of similar objects or images.
+The idea here is to speed up the annotation process by assigning a 
+class label to a whole cluster of images.
+The annotators task is remove images that do not belong to the cluster
+clicking on these images.
+When all wrong images are removed,
+the remaining images get the same label assigned by the annotator.
+
+As an example,
+in |fig-mia| the annotator clicked on the car since it does not belong 
+to the cluster of aeroplanes.
+Since he clicked on it the car is grayed out.
+Now the annotator moved on to the label input field and selected
+**Aeroplane** as label for the remaining images.
+Now the annotator needs to click on the **Submit** button to complete 
+this annotation step.
+
 .. figure:: images/mia-example.*
 
     |fig-mia|: An example of MIA.
 
+|fig-mia-controls1| shows the left part of the MIA control panel.
+You can see the **label input field** and the current **selected label**
+in a red box.
+
+.. figure:: images/mia-controls1.*
+
+    |fig-mia-controls1|: Left part of the MIA control panel.
+
+In |fig-mia-controls2| the right part of the MIA control panel is
+presented.
+The blue **submit button** on the left can be used to submit the
+annotations.
+
+On the right part of the figure there is a **reverse button** to invert
+your selection.
+When clicked in the example of |fig-mia| the car would be selected for 
+annotation again and all aeroplanes would be grayed out.
+Next to the **reverse button** there are two **zoom buttons** that can 
+be used to scale all presented images simultaneously.
+Next to the **zoom buttons** there is a dropdown with name **amount** 
+here the annotator can select the maximum number of images that are 
+presented at the same time within the cluster view.
+
+.. figure:: images/mia-controls2.*
+
+    |fig-mia-controls2|: Right part of the MIA control panel.
+
+In some cases the annotator may want to have a closer look at a specific
+image of the cluster.
+In order to **zoom a single image** perform a **double click** on it.
+|fig-mia-zoom| shows an example of a single image zoom.
+To scale the image back to original size, 
+**double click** again.
+
+.. figure:: images/mia-example-zoom.*
+
+    |fig-mia-zoom|: Zoomed view of a specific image of the cluster.
 
 .. |fig-dashboard| replace:: Figure 1
 .. |fig-sia| replace:: Figure 2
@@ -129,3 +184,6 @@ Meet MIA - A Multi Image Annotation Tool
 .. |fig-sia-toolbar| replace:: Figure 5
 .. |fig-sia-footer| replace:: Figure 6
 .. |fig-mia| replace:: Figure 7
+.. |fig-mia-controls1| replace:: Figure 8
+.. |fig-mia-controls2| replace:: Figure 9
+.. |fig-mia-zoom| replace:: Figure 10
