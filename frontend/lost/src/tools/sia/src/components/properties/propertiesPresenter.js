@@ -132,9 +132,11 @@ $(propertiesView.html.refs["btn-latest"]).on("click", ($event) => {
 
 
 function onCreationEventStart(){
+    disableLabeling()
     disableNavigationButtons()
 }
 function onCreationEventEnd(){
+    enableLabeling()
     enableNavigationButtons()
 }
 function onChangeEventStart(){
@@ -331,6 +333,9 @@ function enableLabeling(){
 		})){
 			// prevent default (focus browser adress line)
 			$event.preventDefault()
+            // hitting controll while having multipoint drawable selected will enter change mode.
+            // did not find a good solution to fix it. just leaving change mode here...
+            appModel.event.changeEvent.update(false)
 			if(document.activeElement !== propertiesView.html.refs["label-select"].querySelector("input")){
 				// open the dropdown
 				propertiesView.html.refs["label-select"].querySelector("input").focus()

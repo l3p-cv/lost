@@ -53,10 +53,10 @@ appModel.config.on("update", config => {
 // on tool change
 appModel.controls.tool.on("update", imageEventActions.resetSelection)
 // on creation event
-// appModel.event.creationEvent.on("change", isActive => isActive ? console.log(" - on creation start - ") : console.log(" - on creation end - "))
+appModel.event.creationEvent.on("change", isActive => isActive ? console.log(" - on creation start - ") : console.log(" - on creation end - "))
 appModel.event.creationEvent.on("change", isActive => isActive ? onCreationEventStart() : onCreationEventEnd())
 // on change event
-// appModel.event.changeEvent.on("change", isActive => isActive ? console.log(" - on change start - ") : console.log(" - on change end - "))
+appModel.event.changeEvent.on("change", isActive => isActive ? console.log(" - on change start - ") : console.log(" - on change end - "))
 appModel.event.changeEvent.on("change", isActive => isActive ? onChangeEventStart() : onChangeEventEnd())
 
 
