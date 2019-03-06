@@ -35,7 +35,7 @@ const INITITAL_STATE = {
               modalOpened: false,
               modalClickedId: 0,
               svgStyle: {
-                width: "1000px"
+                width: "100%"
             }
             },
             {

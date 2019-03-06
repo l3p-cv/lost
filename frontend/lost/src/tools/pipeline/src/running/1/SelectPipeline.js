@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import {alertLoading, alertClose} from 'pipelineGlobalComponents/sweetalert'
-const { getPipelines, getPipeline, verifyTab, selectTab } = actions
+const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
 
 class SelectPipeline extends Component {
@@ -22,6 +22,7 @@ class SelectPipeline extends Component {
     selectRow(id) {
         this.props.verifyTab(0, true)
         this.props.selectTab(1)
+        this.props.reset()
         this.props.getPipeline(id)
     }
 
@@ -112,5 +113,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    { getPipelines, getPipeline, verifyTab, selectTab }
+    { getPipelines, getPipeline, verifyTab, selectTab, reset }
 )(SelectPipeline)

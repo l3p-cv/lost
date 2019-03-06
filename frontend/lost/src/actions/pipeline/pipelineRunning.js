@@ -30,6 +30,15 @@ import TYPES from '../../types/index'
     dispatch({type: 'PIPELINE_RUNNING_GET_PIPELINE', payload: response.data})
 }
 
+
+
+const reset = () => {
+    return {
+        type: 'PIPELINE_RUNNNING_RESET',
+        payload: null
+    }
+}
+
  const toggleModal = (id) => {
     return {
         type: 'PIPELINE_RUNNING_TOGGLE_MODAL',
@@ -39,4 +48,4 @@ import TYPES from '../../types/index'
     }
 }
 
-export default {verifyTab, selectTab,getPipelines, getPipeline, toggleModal}
+export default {verifyTab, selectTab,getPipelines, getPipeline, toggleModal, reset}

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import Modals from './modals'
+import Modal from './modals'
 import Graph from 'react-directed-graph'
 import DatasourceNode from './nodes/DatasourceNode'
 import ScriptNode from './nodes/ScriptNode'
@@ -20,11 +20,11 @@ class ShowRunningPipeline extends Component {
         this.nodesOnClick = this.nodesOnClick.bind(this)
     }
 
-    componentDidMount(){
-        this.timer = setInterval(()=>  this.props.getPipeline(this.props.data.id), 2000)
+    componentDidMount() {
+        this.timer = setInterval(() => this.props.getPipeline(this.props.data.id), 2000)
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         clearInterval(this.timer)
     }
 
@@ -37,40 +37,40 @@ class ShowRunningPipeline extends Component {
 
     renderNodes() {
         return this.props.data.elements.map((el) => {
-                if ('datasource' in el) {
-                    return <DatasourceNode
-                        key={el.id}
-                        {...el}
-                    />
-                } else if ('script' in el) {
-                    return <ScriptNode
-                        key={el.id}
-                        {...el}
-                    />
-                } else if ('annoTask' in el) {
-                    return <AnnoTaskNode
-                        key={el.id}
-                        {...el}
-                    />
-                } else if ('dataExport' in el) {
-                    return <DataExportNode
-                        key={el.id}
-                        {...el}
-                    />
-                } else if('loop' in el){
-                    return <LoopNode
-                        key={el.id}
-                        {...el}
-                    />
-                }else if('visualOutput' in el){
-                    return <LoopNode
-                        key={el.id}
-                        {...el}
-                    />
-                }
+            if ('datasource' in el) {
+                return <DatasourceNode
+                    key={el.id}
+                    {...el}
+                />
+            } else if ('script' in el) {
+                return <ScriptNode
+                    key={el.id}
+                    {...el}
+                />
+            } else if ('annoTask' in el) {
+                return <AnnoTaskNode
+                    key={el.id}
+                    {...el}
+                />
+            } else if ('dataExport' in el) {
+                return <DataExportNode
+                    key={el.id}
+                    {...el}
+                />
+            } else if ('loop' in el) {
+                return <LoopNode
+                    key={el.id}
+                    {...el}
+                />
+            } else if ('visualOutput' in el) {
+                return <LoopNode
+                    key={el.id}
+                    {...el}
+                />
             }
-            )
-        
+        }
+        )
+
     }
 
     renderGraph() {
@@ -82,7 +82,7 @@ class ShowRunningPipeline extends Component {
                     svgStyle={this.props.step.svgStyle}
                     ref={this.graph}
                     nodesOnClick={this.nodesOnClick}
-                    titleBox= {<TitleBox {...this.props.data}/>}
+                    titleBox={<TitleBox {...this.props.data} />}
                 >
                     {this.renderNodes()}
                 </Graph>
@@ -90,21 +90,34 @@ class ShowRunningPipeline extends Component {
         }
     }
 
+    renderModal() {
+        if (this.props.data) {
+            const modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
+            if (modalData) {
+                return (
+                    <Modal
+                        data={modalData}
+                    />
+                )
+            }
+        }
+    }
 
     render() {
         return (
             <div ref={this.graphMountPoint}>
                 {this.renderGraph()}
-                <Modals />
+                {this.renderModal()}
             </div>
         )
     }
 }
 
 const mapStateToProps = (state) => {
-    return { 
+    return {
         step: state.pipelineRunning.steps[1],
-        data: state.pipelineRunning.step1Data }
+        data: state.pipelineRunning.step1Data
+    }
 }
 
 

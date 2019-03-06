@@ -34,7 +34,7 @@ const INITITAL_STATE = {
           modalOpened: false,
           modalClickedId: 0,
           svgStyle: {
-            width: "1000px"
+            width: "100%"
         }
         },
     ],
@@ -43,6 +43,10 @@ const INITITAL_STATE = {
 }
 export default (state = INITITAL_STATE, action) => {
     switch(action.type){
+        case 'PIPELINE_RUNNING_RESET':
+            return  {
+                ...INITITAL_STATE
+            }
         case 'PIPELINE_RUNNING_GET_PIPELINES':  
             return {
                 ...state,

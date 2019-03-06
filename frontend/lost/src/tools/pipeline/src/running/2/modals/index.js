@@ -20,42 +20,38 @@ class BaseModal extends Component {
     
     selectModal() {
         if (this.props.data && this.props.step.modalOpened) {
-            const modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
-            console.log(modalData)
-            console.log(DataExportModal)
-            console.log(LoopModal)
-            if ('datasource' in modalData) {
+            if ('datasource' in this.props.data) {
                 return (
                     <DatasourceModal
-                        {...modalData} />
+                        {...this.props.data} />
                 )
-            } else if ('script' in modalData) {
+            } else if ('script' in this.props.data) {
                 return (
                     <ScriptModal
-                        {...modalData} />
+                        {...this.props.data} />
                 )
-            } else if('annoTask' in modalData){
+            } else if('annoTask' in this.props.data){
                 return (
                     <AnnoTaskModal
-                    {...modalData}
+                    {...this.props.data}
                     />
                 )
-            }else if('dataExport' in modalData){
+            }else if('dataExport' in this.props.data){
                 return (
                     <DataExportModal
-                    {...modalData}
+                    {...this.props.data}
                     />
                 )
-            }else if('loop' in modalData){
+            }else if('loop' in this.props.data){
                 return(
                     <LoopModal
-                    {...modalData}
+                    {...this.props.data}
                     />
                 )
-            }else if('visualOutput' in modalData){
+            }else if('visualOutput' in this.props.data){
                 return(
                     <VisualOutputModal
-                    {...modalData}
+                    {...this.props.data}
                     />
                 )
             }
@@ -87,7 +83,6 @@ class BaseModal extends Component {
 const mapStateToProps = (state) => {
     return {
         step: state.pipelineRunning.steps[1],
-        data: state.pipelineRunning.step1Data
     }
 }
 
