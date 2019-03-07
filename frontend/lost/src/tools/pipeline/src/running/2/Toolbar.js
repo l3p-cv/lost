@@ -5,13 +5,13 @@ import actions from 'actions/pipeline/pipelineRunning'
 import { connect } from 'react-redux'
 import { alertDeletePipeline } from 'pipelineGlobalComponents/sweetalert'
 
-const { pausePipeline, playPipeline, deletePipeline, regeneratePipeline } = actions
+const { pausePipeline, playPipeline, deletePipeline, regeneratePipeline, downloadLogfile } = actions
 
 class Toolbar extends Component {
     constructor() {
         super()
         this.delete = this.delete.bind(this)
-        this.download = this.download.bind(this)
+        this.downloadLogfile = this.downloadLogfile.bind(this)
         this.pause = this.pause.bind(this)
         this.regenerate = this.regenerate.bind(this)
         this.play = this.play.bind(this)
@@ -25,7 +25,8 @@ class Toolbar extends Component {
         }
 
     }
-    download() {
+    downloadLogfile() {
+        this.props.downloadLogfile(this.props.data.logfilePath, this.props.data.id)
     }
 
     pause() {
@@ -49,7 +50,7 @@ class Toolbar extends Component {
             <div className='pipeline-running-toolbar'>
                 <GrayLine />
                 <Button className='pipeline-running-toolbar-button' onClick={this.delete} color="info">Delete Pipeline</Button>
-                <Button className='pipeline-running-toolbar-button' onClick={this.download} color="info">Download Logfile</Button>
+                <Button className='pipeline-running-toolbar-button' onClick={this.downloadLogfile} color="info">Download Logfile</Button>
                 <Button className='pipeline-running-toolbar-button'
                     onClick={this.props.data.progress === 'PAUSED' ? this.play : this.pause}
                     color="info">
@@ -62,4 +63,5 @@ class Toolbar extends Component {
     }
 }
 
-export default connect(null, { pausePipeline, playPipeline, deletePipeline, regeneratePipeline })(Toolbar)
+export default connect(null, { pausePipeline, playPipeline, deletePipeline, regeneratePipeline, downloadLogfile })(Toolbar)
+
