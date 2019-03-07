@@ -1,21 +1,27 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import { faSync } from '@fortawesome/free-solid-svg-icons'
 import NodeFooter from './NodeFooter'
 
 
 const LoopNode = (props) =>{
+    console.log('-------kkkkkkkkkkkkkk-----------------------------');
+    console.log(props);
+    console.log('------------------------------------');
     return(
         <div className='graph-node'>
         <div className='graph-node-title'>
-            <span className='graph-node-title-icon' ><FontAwesomeIcon icon={faDatabase} /></span>
+            <span className='graph-node-title-icon' ><FontAwesomeIcon icon={faSync} /></span>
             <span className='graph-node-title-text'>{props.title}</span>
         </div>
         <div className='graph-node-body'>
         <div className='graph-node-body-row'>
-        <span className='graph-node-body-left-text'>Type: </span>
-        {/* <span>{props.loop.type}</span> */}
+        <span className='graph-node-body-left-text'>Max Iteration: </span>
+         <span>{props.loop.maxIteration}</span> 
         </div>
+
+
+        
         </div>
         <NodeFooter footer={props.footer}/>
     </div>

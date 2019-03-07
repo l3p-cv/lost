@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import actions from 'actions/pipeline/pipelineRunning'
 import TitleBox from './titleBox'
 import LoopNode from './nodes/LoopNode';
+import VisualOutputNode from './nodes/VisualOutputNode'
 import ToolBar from './Toolbar'
 
 const { toggleModal, getPipeline } = actions
@@ -64,7 +65,7 @@ class ShowRunningPipeline extends Component {
                     {...el}
                 />
             } else if ('visualOutput' in el) {
-                return <LoopNode
+                return <VisualOutputNode
                     key={el.id}
                     {...el}
                 />

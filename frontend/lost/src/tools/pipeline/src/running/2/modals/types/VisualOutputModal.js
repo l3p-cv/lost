@@ -5,7 +5,7 @@ export default (props) =>{
     <>
       <ModalHeader>VisualOutput Modal</ModalHeader>
       <ModalBody>
-        <div>VisualOutput Modal</div>
+        <div>TO DO</div>
       </ModalBody>
     </>
   )
