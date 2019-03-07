@@ -49,7 +49,7 @@ cd /code/backend/lost/cli && bash import_examples.sh && cd -
 cd /code/docs/sphinx &&  make html && cd -
 python3 /code/backend/lost/logic/init/initworker.py
 
-if [ ${DEV} = "True" ]; then
+if [ ${DEBUG} = "True" ]; then
   nginx="service nginx start"
   eval $nginx &
 
@@ -68,5 +68,5 @@ if [ ${DEV} = "True" ]; then
 
 else
   echo "Production version not yet supported."
-  #gunicorn lost.wsgi -b 0.0.0.0:8000
+  #cd /code/backend/lost/ && uwsgi --socket 0.0.0.0:8000 --protocol=http -w wsgi
 fi

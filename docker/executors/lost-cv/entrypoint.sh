@@ -45,7 +45,7 @@ echo "All Services ready. Starting celery worker now."
 #mkdir -p ${LOST_HOME}/logs
 python3 /code/backend/lost/logic/init/initworker.py
 
-if [ ${DEV} = "True" ]; then
+if [ ${DEBUG} = "True" ]; then
   echo "In DEV mode"
   #start a celery worker.
   worker="celery -A flaskapp.celery worker -Q worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"

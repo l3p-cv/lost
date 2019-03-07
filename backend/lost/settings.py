@@ -1,7 +1,6 @@
 import os
 from lost.logic.config import LOSTConfig
 
-FLASK_DEBUG = True
 FLASK_THREADED = True
 
 RESTPLUS_SWAGGER_EXPANSIONS = 'list'
@@ -9,6 +8,8 @@ RESTPLUS_VAL = True
 RESTPLUS_MASK_SWAGGER = False
 
 LOST_CONFIG = LOSTConfig()
+
+FLASK_DEBUG = LOST_CONFIG.debug
 
 # Flask settings
 SECRET_KEY = 'Test'
