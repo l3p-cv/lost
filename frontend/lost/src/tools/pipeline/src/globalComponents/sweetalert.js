@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2'
+
 export const alertLoading =  () => {
     Swal.fire({
         title: 'Loading...',
@@ -30,4 +31,16 @@ export const alertError = (error) => {
         showConfirmButton: false,
         timer: 4000
     })
+}
+
+ export  const  alertDeletePipeline=  (id) => {
+    return Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      })
 }

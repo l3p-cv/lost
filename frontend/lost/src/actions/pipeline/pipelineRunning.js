@@ -1,7 +1,9 @@
 import {API_URL} from '../../settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
-
+console.log('----------API_URLAPI_URL--------------------------');
+console.log(API_URL);
+console.log('------------------------------------');
  const verifyTab = (tabId, verified) => {
     return {
         type: 'PIPELINE_RUNNING_VERIFY_TAB',
@@ -20,6 +22,7 @@ import TYPES from '../../types/index'
     }
 }
 
+
  const getPipelines = () => async dispatch =>{
     const response = await axios.get(`${API_URL}/pipeline`)
     dispatch({type: 'PIPELINE_RUNNING_GET_PIPELINES', payload: response.data})
@@ -31,7 +34,13 @@ import TYPES from '../../types/index'
 }
 
 const deletePipeline = (id) => async dispatch => {
-
+    const response = await axios.delete(`${API_URL}/pipeline/${id}`)
+    if(response.data === 'success'){
+        if (typeof window !== 'undefined') {
+            window.location.href = `${window.location.origin}/dashboard`;
+       }
+    }
+    dispatch({type: 'PIPELINE_RUNNING_DELETE', payload: response.data})
 }
 
 const pausePipeline = (id) => async dispatch => {
@@ -47,6 +56,7 @@ const playPipeline = (id) => async dispatch => {
 const regeneratePipeline = (id) => async dispatch => {
 
 }
+
 
 
 

@@ -6,6 +6,7 @@ const DEV = true
 let API_URL = ""
 if(DEV){
 	console.warn('TURN OF DEV MODE IN PRODUCTION')
+
 	API_URL = `${window.location.origin.replace(/:\d+?$/, "")}/api`
 } else {
 	API_URL = `${window.location.origin}/api`
