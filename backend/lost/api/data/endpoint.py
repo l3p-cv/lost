@@ -37,4 +37,4 @@ class Logs(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'logs'), path)
+            return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data/logs'), path)
