@@ -2,11 +2,12 @@ import React, { Component } from 'react'
 import { Button } from 'reactstrap'
 import GrayLine from 'pipelineGlobalComponents/grayLine'
 import actions from 'actions/pipeline/pipelineRunning'
+import startActions from 'actions/pipeline/pipelineStart'
 import { connect } from 'react-redux'
-import { alertDeletePipeline } from 'pipelineGlobalComponents/sweetalert'
+import { alertLoading, alertClose, alertSuccess, alertDeletePipeline } from 'pipelineGlobalComponents/sweetalert'
 
 const { pausePipeline, playPipeline, deletePipeline, regeneratePipeline, downloadLogfile } = actions
-
+const { postPipeline } = startActions
 class Toolbar extends Component {
     constructor() {
         super()
@@ -19,9 +20,8 @@ class Toolbar extends Component {
     async delete() {
         const response = await alertDeletePipeline()
         if (response.value) {
-            if (this.props.data) {
-                this.props.deletePipeline(this.props.data.id)
-            }
+            this.props.deletePipeline(this.props.data.id)
+
         }
 
     }
@@ -30,38 +30,43 @@ class Toolbar extends Component {
     }
 
     pause() {
-        if (this.props.data) {
-            this.props.pausePipeline(this.props.data.id)
-        }
+        this.props.pausePipeline(this.props.data.id)
+
     }
 
     play() {
-        if (this.props.data) {
-            this.props.playPipeline(this.props.data.id)
-        }
+        this.props.playPipeline(this.props.data.id)
+
     }
 
-    regenerate() {
-
+    async regenerate() {
+        alertLoading()
+        await this.props.postPipeline(this.props.data.startDefinition)
+        alertClose ()
+        if (typeof window !== 'undefined') {
+            window.location.href = `${window.location.origin}/dashboard`;
+        }
     }
 
     render() {
         return (
             <div className='pipeline-running-toolbar'>
-                <GrayLine />
-                <Button className='pipeline-running-toolbar-button' onClick={this.delete} color="info">Delete Pipeline</Button>
-                <Button className='pipeline-running-toolbar-button' onClick={this.downloadLogfile} color="info">Download Logfile</Button>
-                <Button className='pipeline-running-toolbar-button'
-                    onClick={this.props.data.progress === 'PAUSED' ? this.play : this.pause}
-                    color="info">
-                    {this.props.data.progress === 'PAUSED' ? 'Play' : 'Pause'}
-                </Button>
-                <Button className='pipeline-running-toolbar-button' onClick={this.regenerate} color="info">Regenerate Pipeline</Button>
-                <GrayLine />
+                {this.props.data && <>
+                    <GrayLine />
+                    <Button className='pipeline-running-toolbar-button' onClick={this.delete} color="info">Delete Pipeline</Button>
+                    <Button className='pipeline-running-toolbar-button' onClick={this.downloadLogfile} color="info">Download Logfile</Button>
+                    <Button className='pipeline-running-toolbar-button'
+                        onClick={this.props.data.progress === 'PAUSED' ? this.play : this.pause}
+                        color="info">
+                        {this.props.data.progress === 'PAUSED' ? 'Play' : 'Pause'}
+                    </Button>
+                    <Button className='pipeline-running-toolbar-button' onClick={this.regenerate} color="info">Regenerate Pipeline</Button>
+                    <GrayLine />
+                </>}
             </div>
         )
     }
 }
 
-export default connect(null, { pausePipeline, playPipeline, deletePipeline, regeneratePipeline, downloadLogfile })(Toolbar)
+export default connect(null, { pausePipeline, playPipeline, deletePipeline, regeneratePipeline, downloadLogfile, postPipeline })(Toolbar)
 

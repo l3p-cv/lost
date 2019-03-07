@@ -1,5 +1,5 @@
 import React from 'react'
-import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import { faRocket } from '@fortawesome/free-solid-svg-icons'
 import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 
@@ -20,7 +20,7 @@ const ScriptNode = (props) => {
             <VerificationTitle
                 verified={props.verified}
                 title={props.title}
-                icon={faDatabase}
+                icon={faRocket}
             />
             <NodeBody
                 data={[

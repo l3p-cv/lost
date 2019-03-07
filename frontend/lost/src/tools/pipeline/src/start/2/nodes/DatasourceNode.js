@@ -1,5 +1,5 @@
 import React from 'react'
-import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import { faHdd } from '@fortawesome/free-solid-svg-icons'
 import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 const DatasourceNode = (props) => {
@@ -8,7 +8,7 @@ const DatasourceNode = (props) => {
             <VerificationTitle
                 verified={props.verified}
                 title={props.title}
-                icon={faDatabase}
+                icon={faHdd}
             />
             <NodeBody
                 data={[

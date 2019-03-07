@@ -2,10 +2,6 @@ import { API_URL } from '../../settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
-
-console.log('----------API_URLAPI_URL--------------------------');
-console.log(API_URL);
-console.log('------------------------------------');
 const verifyTab = (tabId, verified) => {
     return {
         type: 'PIPELINE_RUNNING_VERIFY_TAB',

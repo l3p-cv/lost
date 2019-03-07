@@ -25,7 +25,9 @@ class StartPipeline extends Component {
     componentDidUpdate() {
         alertClose()
         if (this.props.step3Data.response.status === 200) {
-            alertSuccess('Pipeline started successfully')
+            if (typeof window !== 'undefined') {
+                window.location.href = `${window.location.origin}/dashboard`;
+            }
         } else {
             alertError(`(${this.props.step3Data.response.response.status}) ${this.props.step3Data.response.response.statusText}`)
         }

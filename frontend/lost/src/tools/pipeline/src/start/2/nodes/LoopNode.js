@@ -1,5 +1,5 @@
 import React from 'react'
-import { faDatabase } from '@fortawesome/free-solid-svg-icons'
+import { faSync } from '@fortawesome/free-solid-svg-icons'
 import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 const LoopNode = (props) => {
@@ -8,7 +8,7 @@ const LoopNode = (props) => {
             <VerificationTitle
                 verified={props.verified}
                 title={props.title}
-                icon={faDatabase}
+                icon={faSync}
             />
             <NodeBody
                 data={[
