@@ -78,7 +78,9 @@ class ShowRunningPipeline extends Component {
         if (this.props.data) {
             return (
                 <div>
-                    <ToolBar/>
+                    <ToolBar
+                     data={this.props.data}
+                    />
                     <Graph
                         enableZooming={true}
                         centerGraph={true}

@@ -30,6 +30,29 @@ import TYPES from '../../types/index'
     dispatch({type: 'PIPELINE_RUNNING_GET_PIPELINE', payload: response.data})
 }
 
+const deletePipeline = (id) => async dispatch => {
+
+}
+
+const pausePipeline = (id) => async dispatch => {
+    const response = await axios.post(`${API_URL}/pipeline/pause/${id}`)
+    dispatch({type: 'PIPELINE_RUNNING_PAUSE', payload: response.data})
+}
+
+const playPipeline = (id) => async dispatch => {
+    const response = await axios.post(`${API_URL}/pipeline/play/${id}`)
+    dispatch({type: 'PIPELINE_RUNNING_PLAY', payload: response.data})
+}
+
+const regeneratePipeline = (id) => async dispatch => {
+
+}
+
+
+
+
+
+
 
 
 const reset = () => {
@@ -48,4 +71,4 @@ const reset = () => {
     }
 }
 
-export default {verifyTab, selectTab,getPipelines, getPipeline, toggleModal, reset}
+export default {verifyTab, selectTab,getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline}
