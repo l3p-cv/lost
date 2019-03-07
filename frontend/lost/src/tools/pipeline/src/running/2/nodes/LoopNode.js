@@ -5,9 +5,6 @@ import NodeFooter from './NodeFooter'
 
 
 const LoopNode = (props) =>{
-    console.log('-------kkkkkkkkkkkkkk-----------------------------');
-    console.log(props);
-    console.log('------------------------------------');
     return(
         <div className='graph-node'>
         <div className='graph-node-title'>
