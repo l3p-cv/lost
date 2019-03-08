@@ -67,6 +67,18 @@ if [ ${DEBUG} = "True" ]; then
 
 
 else
-  echo "Production version not yet supported."
-  #cd /code/backend/lost/ && uwsgi --socket 0.0.0.0:8000 --protocol=http -w wsgi
+  nginx="service nginx start"
+  eval $nginx &
+
+  # celery cronjob.
+  celery="celery -A flaskapp.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
+  eval $celery &
+
+  #start a celery worker.
+  worker="celery -A flaskapp.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+  eval $worker &
+
+  # start uswgi server
+  endpoint="cd /code/backend/lost/ && uwsgi --ini wsgi.ini --logto ${LOST_HOME}/logs/uswgi.log"
+  eval $endpoint 
 fi

@@ -53,5 +53,8 @@ if [ ${DEBUG} = "True" ]; then
 
 else
   echo "Production version not yet supported."
-  #gunicorn lost.wsgi -b 0.0.0.0:8000
+  #start a celery worker.
+  worker="celery -A flaskapp.celery worker -Q worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+  eval $worker
+
 fi

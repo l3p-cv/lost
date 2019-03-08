@@ -55,6 +55,7 @@ class PipelineList(Resource):
     # @api.marshal_with(pipelines) 
     @jwt_required
     def get(self):
+        x = 1/0
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
