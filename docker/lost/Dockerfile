@@ -1,6 +1,6 @@
 ARG base_image=l3pcv/lost-base:latest
 FROM $base_image
-# Add Code 
+# Add Code  
 ADD /docker/lost/entrypoint.sh /
 ADD /docker/lost/pytest.sh /
 ADD /docker/lost/nginx/ /code/docker/lost/nginx
