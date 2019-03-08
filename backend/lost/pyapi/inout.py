@@ -265,12 +265,9 @@ class ScriptOutput(Output):
             if pe.dtype == dtype.PipeElement.VISUALIZATION:
                 if img_path is not None:
                     rel_path = self._script.file_man.make_path_relative(img_path)
-                    vo_type = dtype.VisualOutput.IMAGE
                 else:
                     rel_path = None
-                    vo_type = dtype.VisualOutput.HTML
-                vis_out = model.VisualOutput(dtype=vo_type,
-                                          img_path=rel_path,
+                vis_out = model.VisualOutput(img_path=rel_path,
                                           html_string=html,
                                           result_id=self._result_map[pe.idx],
                                           iteration=self._script._pipe_element.iteration)

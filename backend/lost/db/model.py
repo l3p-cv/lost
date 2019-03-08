@@ -1219,7 +1219,6 @@ class VisualOutput(Base):
 
     Attributes:
         idx (int): db id.
-        dtype (enum): Type of this VisualOutput.
         img_path (str): Path to an image that contains some useful informations. For
             example a diagram.
         html_string (str): HTML that should be presented by a visualise Element.
@@ -1228,14 +1227,12 @@ class VisualOutput(Base):
     '''
     __tablename__ = "visual_output"
     idx = Column(Integer, primary_key=True)
-    dtype = Column(Integer)
     img_path = Column(String(4096))
     html_string = Column(Text)
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
 
-    def __init__(self, dtype=None, img_path=None, html_string=None, result_id=None, iteration=0):
-        self.dtype = dtype
+    def __init__(self, img_path=None, html_string=None, result_id=None, iteration=0):
         self.img_path = img_path
         self.html_string = html_string
         self.result_id = result_id
