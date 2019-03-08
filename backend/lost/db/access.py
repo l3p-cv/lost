@@ -679,7 +679,7 @@ class DBMan(object):
             return self.session.execute(sql).first()
 
     def get_worker(self, worker_name=None):
-        '''Get an AnnoationTask object.
+        '''Get an Worker object.
 
         Args:
             worker_name (str): Name of the worker to get.
@@ -692,6 +692,19 @@ class DBMan(object):
         else:
             return self.session.query(model.Worker)\
                 .filter(model.Worker.worker_name==worker_name).first()
+
+    def get_worker_and_lock(self, worker_name):
+        '''Get an worker object and lock for update in database.
+
+        Args:
+            worker_name (str): Name of the worker to get.
+
+        Returns:
+            :class:`model.Worker`
+        '''
+        
+        return self.session.query(model.Worker).with_for_update()\
+            .filter(model.Worker.worker_name==worker_name).first()
     
     def get_amount_per_label(self, anno_task_id, label_leaf_id, anno_type):
         if anno_type == 'imageBased':

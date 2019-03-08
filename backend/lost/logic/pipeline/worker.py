@@ -108,6 +108,7 @@ class CurrentWorker(object):
             script (:class:`model.PipeElement`): Pipeline element that is related to script.
             script (:class:`model.Script`): Script that is executed.
         '''
+        self.worker = self.dbm.get_worker_and_lock(self.lostconfig.worker_name)
         if self.worker.in_progress is not None:
             scripts = json.loads(self.worker.in_progress)
         else:
@@ -127,6 +128,7 @@ class CurrentWorker(object):
             script (:class:`model.PipeElement`): Pipeline element that is related to script.
             script (:class:`model.Script`): Script that is executed.
         '''
+        self.worker = self.dbm.get_worker_and_lock(self.lostconfig.worker_name)
         if self.worker.in_progress is not None:
             scripts = json.loads(self.worker.in_progress)
         else:

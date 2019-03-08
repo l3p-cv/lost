@@ -53,7 +53,7 @@
       "peN": 3,
       "peOut": [4],
       "script": {
-        "path": "export_annos.py",
+        "path": "export_csv.py",
         "description": "Export annotations to csv file.",
         "arguments": {
           "file_name": {
@@ -72,16 +72,14 @@
       "peN" : 5,
       "peOut" : [6],
       "script" : {
-        "path": "vis_arguments.py",
-        "description" : "Write the out argument to a visual output."
+        "path": "vis_image.py",
+        "description" : "Visualize a cat image and add a caption."
       }
     },
     {
       "peN" : 6,
       "peOut" : [7],
-      "visualOutput" : {
-        "type" : "html"
-      }
+      "visualOutput" : {}
     },
     {
       "peN" : 7,
