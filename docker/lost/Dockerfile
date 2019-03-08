@@ -3,7 +3,7 @@ FROM $base_image
 # Add Code 
 ADD /docker/lost/entrypoint.sh /
 ADD /docker/lost/pytest.sh /
-ADD /docker/lost/nginx/prod.conf /etc/nginx/conf.d/default.conf
+ADD /docker/lost/nginx/ /code/docker/lost/nginx
 ADD /backend/ /code/backend
 ADD /frontend/ /code/frontend
 ADD /docs/ /code/docs
