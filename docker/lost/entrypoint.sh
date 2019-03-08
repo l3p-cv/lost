@@ -49,24 +49,24 @@ cd /code/backend/lost/cli && bash import_examples.sh && cd -
 cd /code/docs/sphinx &&  make html && cd -
 python3 /code/backend/lost/logic/init/initworker.py
 
-if [ ${DEV} = "True" ]; then
-  nginx="service nginx start"
-  eval $nginx &
+# start nginx web server
+nginx="service nginx start"
+eval $nginx &
 
-  # celery cronjob.
-  celery="celery -A flaskapp.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
-  eval $celery &
+# celery cronjob.
+celery="celery -A flaskapp.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
+eval $celery &
 
-  #start a celery worker.
-  worker="celery -A flaskapp.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
-  eval $worker &
+#start a celery worker.
+worker="celery -A flaskapp.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+eval $worker &
 
-
+if [ ${DEBUG} = "True" ]; then
+  # start flask dev server
   endpoint="python3 /code/backend/lost/app.py"
   eval $endpoint 
-
-
 else
-  echo "Production version not yet supported."
-  #gunicorn lost.wsgi -b 0.0.0.0:8000
+  # start uswgi server
+  endpoint="cd /code/backend/lost/ && uwsgi --ini wsgi.ini --logto ${LOST_HOME}/logs/uswgi.log"
+  eval $endpoint 
 fi

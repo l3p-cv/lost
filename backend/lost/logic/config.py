@@ -3,6 +3,10 @@ import os
 class LOSTConfig(object):
 
     def __init__(self):
+        self.debug = False
+        if "DEBUG" in os.environ:
+            if os.environ['DEBUG'] == 'True':
+                self.debug = True
         self.project_name = os.environ['PROJECT_NAME']
         self.project_path = os.environ['LOST_HOME']
         self.py3_init = os.environ['PY3_INIT']
