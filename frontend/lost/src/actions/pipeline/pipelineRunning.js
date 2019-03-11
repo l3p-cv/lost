@@ -71,12 +71,28 @@ const downloadLogfile = (path, id) => async  dispatch => {
     window.URL.revokeObjectURL(objectURL);
 }
 
+const downloadDataExport = (filePath) => async dispatch => {
+    const token = localStorage.getItem('token')
+    const response = await http.get({
+        url: `${API_URL}/${filePath}?nocache=${Math.random()}`,
+		token,
+		type: 'image'
+	})
+        // create blob url
+        const objectURL = window.URL.createObjectURL(response)
+        // simulate click on download button
+        const link = document.createElement('a');
+        link.href = objectURL;
+        link.download= filePath.split('/').pop()
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(objectURL);
+}
 
+const downloadImage = (path) => async dispatch => {
 
-
-
-
-// fetch("http://localhost/api/pipeline/api/data/logs/pipes/p-13.log?nocache=0.9217589871654794", {"credentials":"omit","referrer":"http://localhost:3000/","referrerPolicy":"no-referrer-when-downgrade","body":null,"method":"OPTIONS","mode":"cors"});
+}
 
 
 const reset = () => {
@@ -95,4 +111,4 @@ const toggleModal = (id) => {
     }
 }
 
-export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile }
+export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, downloadDataExport }
