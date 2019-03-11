@@ -33,7 +33,7 @@ landscape.
 Starting on the left side of the illustration we see the 
 *LOST data folder* that is used to store all data of LOST on the
 host machine.
-This folder is mounted inside most containers LOST.
+This folder is mounted inside the most containers of LOST.
 On the right side of |fig-lost-ecosystem| your can see all containers 
 that are started together with the help of 
 `Docker Compose <https://docs.docker.com/compose/overview/>`_.
