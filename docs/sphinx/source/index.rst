@@ -12,6 +12,7 @@ Welcome to lost's documentation!
 
         Getting Started <getting_started.rst>
         For Annotators <annotators.rst>
+        The LOST Ecosystem <lost_ecosystem.rst>
         For Pipeline Designers <designers.rst>
         Annotation Tools <anno_tools.rst>
         Conventions <conventions.rst>
