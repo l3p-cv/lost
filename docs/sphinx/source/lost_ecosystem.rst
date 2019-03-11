@@ -34,7 +34,7 @@ Starting on the left side of the illustration we see the
 *LOST data folder* that is used to store all data of LOST on the
 host machine.
 This folder is mounted inside the most containers of LOST.
-On the right side of |fig-lost-ecosystem| your can see all containers 
+On the right side of |fig-lost-ecosystem| you can see all containers 
 that are started together with the help of 
 `Docker Compose <https://docs.docker.com/compose/overview/>`_.
 We see the containers called **rabbitmqlost**,
@@ -43,6 +43,7 @@ We see the containers called **rabbitmqlost**,
 **lost-cv** and **phpmyadmin**,
 while the numbers indicate the ports where the applications can 
 be accessed.
+
 The most important container to understand here is the container called
 **lost**.
 This container will serve the LOST web application with NGINX on port *80*
@@ -51,6 +52,10 @@ It is connected to the **rabbitmqlost** container to use Celery for
 script execution scheduling and to the **db-lost** container
 in order to access the MySQL database that contains the current
 application state.
+The container called **lost-cv** is connected analog to **lost**.
+The **pypmyadmin** container is used for easy database monitoring during 
+development and serves a graphical user interface to the MySQL database 
+on port *8081*. 
 
 Pipeline Engine and Workers
 ===========================
