@@ -57,6 +57,8 @@ The **pypmyadmin** container is used for easy database monitoring during
 development and serves a graphical user interface to the MySQL database 
 on port *8081*. 
 
+.. _lost-ecosystem-pipe-engine:
+
 Pipeline Engine and Workers
 ===========================
 

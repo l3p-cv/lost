@@ -22,6 +22,8 @@ required to accomplish the selected AnnotationTask.
 Rows that have a grey background mark finished tasks and can not be 
 selected to work on.
 
+.. _annotators-sia:
+
 Getting To Know SIA - A Single Image Annotation Tool
 ====================================================
 

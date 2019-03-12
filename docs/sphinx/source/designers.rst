@@ -49,11 +49,18 @@ which are highlighted in the listing.
 .. literalinclude:: sia_pipe_project.txt
    :emphasize-lines: 2,3,6
 
-Pipeline Definition Files?
+A Pipeline Definition File
 --------------------------
-Below you can see the first part of the **pipeline definition file**
+Below you can see the **pipeline definition file**
 of the **sia_all_tools** pipeline.
-The pipeline is defined by a json object that has a *description*,
+This pipeline will request annotations for all images inside a folder 
+from the :ref:`Single Image Annotation (SIA) tool <annotators-sia>`
+and export these annotations to a csv file.
+The created csv file will be available for download by means of a 
+**DataExport** element inside the web gui. 
+
+As you can see in the listing, 
+the pipeline is defined by a json object that has a *description*,
 a *author*, 
 a *pipe-schema-version* and a list of pipeline *elements*.
 Each element is defined by a json object and has a *peN*
@@ -62,23 +69,162 @@ itself.
 All elements need also a attribute that is called *peOut* and contains a 
 list of elements where the current element is connected to.
 
-The first pipeline element is a **Datasource** (lines 5 - 11)
+The first element in the **sia_all_tools** pipeline  is a **Datasource** 
+(lines 5 - 11)
 of type **rawFile**.
+This **Datasource** will provide a path to a folder with images inside 
+of the LOST filesystem. 
+The exact path is selected when the pipeline will be started.
+The **Datasource** element is connected to the **Script** element with
+*peN: 1*.
+This **Script** element is defined by *peN*,
+*peOut* and a script *path* plus a script *description*.
+The script *path* needs to be defined relative to the **pipeline project folder**.
 
+The **Script** element is connected to an **AnnotationTask** element
+with *peN: 2* of type *sia* (lines 20 - 45).
+Within the json object of the **AnnotationTask** you can specify the 
+*name* of the task and also *instructions* for the annotator.
+In the *configuration* part all *tools* and *actions* are allowed for 
+SIA in this pipeline.
+If you would like that a annotator should only use bounding boxes for
+annotation, 
+you could set *point*, *line* and *polygon* to *false*.
+
+The **AnnotationTask** element is connected to a **Script** element with
+*path: export_csv.py*. 
+This script will read all annotations from the **AnnotationTask** and 
+create a csv file with these annotations inside the LOST filesystem.
+The created csv file will be made available for download by
+the **DataExport** element with *peN: 4*.
+A **DataExport** element may serve an arbitrary file from the LOST
+filesystem for download.
 
 .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/sia_all_tools.json
     :language: json
     :linenos:
 
-The first element in the pipeline is a 
 
 How to write a script?
 ----------------------
+
+request_annos.py
+~~~~~~~~~~~~~~~~
+A script in LOST is just a normal python3 module.
+In the listing below you can see the *request_annos.py* script from our 
+example pipeline (*sia_all_tools*). 
 
 .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
    :language: python
    :linenos:
 
+In order to write a LOST script you need to define a class that inherits
+from *lost.pyapi* and defines a *main* method (see below).
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 1, 15-21
+
+Later on you need to instantiate it and your LOST script is done.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 46-47   
+
+In the *request_annos.py* script you can also see some special variables
+**ENVS** and **ARGUMENTS**.
+These variables will be read during the :ref:`import process <designers-pipeline-import>`.
+The **EVNS** variable provides meta information for the
+:ref:`pipeline engine <lost-ecosystem-pipe-engine>` by defining a list
+of environments (similar to conda environments)
+where this script may be executed in.
+In this way you can assure that a script will only be executed in
+environments where all your dependencies are installed.
+All environments are installed in :ref:`workers <lost-ecosystem-pipe-engine>`
+that may execute your script.
+If many different environments are defined within the **ENVS** list
+of a script,
+the pipeline engine will try to assign the script to a worker in the 
+same order as defined within the **ENVS** list.
+So if a worker is online that has installed the first environment in the
+list the pipeline engine will assign the script to this worker.
+If no worker with the first environment is online,
+it will try to assign the script to a worker with the second environment
+in the list and so on.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 5 
+
+The **ARGUMENTS** variable will be used to provide script arguments that 
+can be set during the start process of a pipline within the web gui.
+**ARGUMENTS** are defined as a dictionary of dictionaries that contain
+the arguments.
+Each argument is again a dictionary with keys *value* and *help*.
+As you can see in the listing below the first argument is called 
+*polygon* its *value* is *false* and its *help* text is 
+*Add a dummy polygon as example*.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 6-14 
+
+Within your script you can access the value of an argument with the 
+*get_arg(...)* method as shown below.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 25-28
+
+A script can access all the elements it is connected to. 
+Each script has an input and an output object.
+Since the input of our *request_annos.py* script is connected to a the 
+*Datasource* element of type *rawFile* we access it by iterating over all
+*raw_file* objects that are connected to the input and read out the *path*
+where a folder with images is provided:
+
+ .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 21-22
+
+Now we can use the *path* provided by the datasource to read all image 
+files that are located there and request annotations for each image,
+as you can see in the listing below.
+
+It would be sufficient to provide only the *img_path* argument to the 
+*request_annos(..)* method, 
+but in our example script there is also the option to send some dummy
+annotations to the annotation tool.
+In a semi automatic setup, 
+you could use an ai to generate some annotation proposal and send these
+proposals to the annotation tool in the same way.
+
+ .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 41-43
+
+Since each script has a logger, 
+we can also write which images we have requested to the pipeline log 
+file.
+The log file can be downloaded in the web gui.
+The logger object is a standard `python logger <https://docs.python.org/3.6/howto/logging.html>`_.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
+   :language: python
+   :lines: 44
+
+
+export_csv.py
+~~~~~~~~~~~~~
+
 .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
    :language: python
    :linenos:
+
+.. _designers-pipeline-import:
+
+Importing a pipeline project
+----------------------------
+
+Debugging a script
+------------------
