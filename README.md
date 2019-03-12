@@ -1,5 +1,3 @@
 [![pipeline status](https://gitlab.com/l3p-cv/lost/badges/master/pipeline.svg)](https://gitlab.com/l3p-cv/lost/pipelines)
 
-LOST is currently under development.
-
-Our first release is planned for march 2019.
+First pipeline tests... Looking to integrate redux

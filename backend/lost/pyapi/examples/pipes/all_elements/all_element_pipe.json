@@ -85,7 +85,7 @@
       "peN" : 7,
       "peOut" : null,
       "loop" : {
-        "max_iteration" : 3,
+        "maxIteration" : 3,
         "peJumpId" : 0
       }
     }
