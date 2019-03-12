@@ -1,5 +1,5 @@
 {
-  "description": "This pipeline selects all images of an rawFile and request annotations.",
+  "description": "This pipeline selects all images of a datasource and requests annotations.",
   "author": "Jonas Jaeger",
   "pipe-schema-version" : 0.0,
   "elements": [{
@@ -38,12 +38,6 @@
               "label": true,
               "bounds": true,
               "delete": true
-            }
-          },
-          "drawables": {
-            "bbox": {
-              "minArea": 25,
-              "minAreaType": "abs"
             }
           }
         }

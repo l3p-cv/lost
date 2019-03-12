@@ -90,8 +90,6 @@ class PipeImporter(object):
                 # Do everything relative from pipeline definition file path.
                 oldwd = os.getcwd()
                 os.chdir(self.src_pipe_template_path)
-                db_pipe.json_template = json.dumps(pipe)
-                self.dbm.save_obj(db_pipe)
                 logging.info('Updated pipeline: {}'.format(db_json['name']))           
                 for pe_j in pipe['elements']:
                     if 'script' in pe_j:
@@ -129,6 +127,9 @@ class PipeImporter(object):
                             db_script.resources = json.dumps(script_resources)
                             self.dbm.save_obj(db_script)
                             logging.info('Updated script: {}'.format(db_script.name))
+                    self._fix_sia_config(pe_j)
+                db_pipe.json_template = json.dumps(pipe)
+                self.dbm.save_obj(db_pipe)
                 os.chdir(oldwd) # Change dir back to old working directory.                
                 return
         # import pipe if not already present in database    
@@ -161,10 +162,6 @@ class PipeImporter(object):
                     logging.warning("Name of this template is: %s"%(pipe['name'],))
                     logging.warning("Will not import PipeTemplate.")
                     return db_pipe.idx
-            pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
-                                            timestamp=datetime.now())
-            self.dbm.save_obj(pipe_temp)
-            logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
             for pe_j in pipe['elements']:
                 if 'script' in pe_j:
                     element_j = pe_j['script']
@@ -197,6 +194,11 @@ class PipeImporter(object):
                     else:
                         logging.warning("Script is already present in database.")
                         logging.warning((str(db_script.idx), db_script.name, db_script.path))
+                self._fix_sia_config(pe_j)
+            pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
+                                            timestamp=datetime.now())
+            self.dbm.save_obj(pipe_temp)
+            logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
             os.chdir(oldwd) # Change dir back to old working directory.
             return pipe_temp.idx
         except Exception as e:
@@ -252,6 +254,24 @@ class PipeImporter(object):
                 logging.info("Removed pipeline successfull: {}".format(pipe['name']))
                 return True
         return True
+    
+    def _fix_sia_config(self, pe):
+        '''A quick fix to clean up pipeline definition file and keep SIA running.
+        
+        Due to changes in SIA constraints on drawables are not longer
+        supported but still need to be defined in SIA config to keep SIA
+        running.
+        ''' 
+        if 'annoTask' in pe:
+            if pe['annoTask']['type'].lower() == 'sia':
+                if 'drawables' not in pe['annoTask']['configuration']:
+                    pe['annoTask']['configuration']['drawables'] = {
+                        'bbox' : {
+                            "minArea": 25,
+                            "minAreaType": "abs"
+                        }
+                    }
+        return pe
 
 class PipePacker(object):
 
