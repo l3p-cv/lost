@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 import argparse
 from lost.db import model, access
