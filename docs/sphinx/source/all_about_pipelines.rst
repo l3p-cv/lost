@@ -52,6 +52,16 @@ If **"type"** is **"mia"** the configuration will be the following:
       "addContext": "[float]"
     }
 
+**"type"**
+    * If "type" is **"imageBased"** a whole image will be presented in the clustered view.
+    * If "type" is **"annoBased"** all TwoDAnnotations related to an image will be cropped and presented in the clustered view.
+**"showProposedLabel"**
+    * If **true**, the assigned sim_class will be interpreted as label and be used as pre-selection of the label in the MIA tool. 
+**"drawAnno"**
+    * If **"true"** and **"type" : "annoBased"** a box will be drawn around the TwoDAnnotations.
+**"addContext"**
+    * If **"type" : "annoBased"** and **"addContext" > 0.0**, "addContext" defines the amount of pixels that will be added to the area of the annotation relative to the width and height of the annotation.  
+
 If **"type"** is **"sia"** the configuration will be the following:
 
 .. code-block:: json
@@ -71,12 +81,6 @@ If **"type"** is **"sia"** the configuration will be the following:
           "label": "[boolean]",
           "bounds": "[boolean]",
           "delete": "[boolean]"
-        }
-      },
-      "drawables": {
-        "bbox": {
-            "minArea": "[float]",
-            "minAreaType": "abs|rel"
         }
       }
     }

@@ -26,9 +26,14 @@ module.exports = (config, env) => {
 
 	// PIP aliases
 	config.resolve.alias["pipRoot"] = absolutePath("src/tools/pipeline/src/")
-	config.resolve.alias["apps"] = absolutePath("src/tools/pipeline/src/apps")
-	config.resolve.alias["running"] = absolutePath("src/tools/pipeline/src/apps/running")
-	config.resolve.alias["start"] = absolutePath("src/tools/pipeline/src/apps/start")
+	config.resolve.alias["runningPipe"] = absolutePath("src/tools/pipeline/src/running")
+	config.resolve.alias["startPipe"] = absolutePath("src/tools/pipeline/src/start")
+
+	// Actions alias
+	config.resolve.alias["actions"] = absolutePath("src/actions")
+	config.resolve.alias["pipelineGlobalComponents"] = absolutePath("src/tools/pipeline/src/globalComponents")
+
+
 	
 	config.devtool = "source-map"
 

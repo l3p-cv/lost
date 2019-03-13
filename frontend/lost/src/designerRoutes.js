@@ -5,13 +5,13 @@ function Loading() {
   return <div>Loading...</div>
 }
 
-const Dashboard = Loadable({
-  loader: () => import('./views/DesignerDashboard.js'),
-  loading: Loading,
-})
 
 const StartPipeline = Loadable({
-  loader: () => import('./views/StartPipeline.js'),
+  loader: () => import('./views/Pipelines/StartPipeline.js'),
+  loading: Loading,
+})
+const RunningPipeline = Loadable({
+  loader: () => import('./views/Pipelines/RunningPipeline.js'),
   loading: Loading,
 })
 
@@ -40,7 +40,7 @@ const Workers = Loadable({
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
-  { path: '/dashboard', name: 'Dashboard', component: Dashboard }, // first version just with pipelines in dashboard
+  { path: '/dashboard', name: 'Dashboard', component: RunningPipeline }, // first version just with pipelines in dashboard
   { path: '/start-pipeline', name: 'Start a Pipeline', component: StartPipeline },
   // { path: '/pipelines', name: 'Pipelines', component: Pipelines },
   { path: '/labels', name: 'Manage Labels', component: Label },

@@ -2,7 +2,6 @@ import { http } from 'l3p-frontend'
 // import { http } from 'root/l3p-frontend'
 
 import { API_URL } from 'root/settings'
-
 // test data for running pipelines.
 const DEV = false
 const DUMMY_DATA = {
@@ -124,8 +123,8 @@ const BASE_URL = `${API_URL}/pipeline`
 const URLS = {
     GET_TEMPLATES: `${BASE_URL}/template`,
     GET_TEMPLATE: id => `${BASE_URL}/template/${id}`,
-    GET_PIPELINES: `${BASE_URL}`,
-    GET_PIPELINE: id => `${BASE_URL}/${id}`,
+    PIPELINE_RUNNING_GET_PIPELINES: `${BASE_URL}`,
+    PIPELINE_RUNNING_GET_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_START_PIPELINE: `${BASE_URL}/start`,
     DELETE_PIPELINE: id => `${BASE_URL}/${id}`,
     POST_PAUSE_PIPELINE: id => `${BASE_URL}/pause/${id}`,
@@ -157,12 +156,13 @@ export function startPipe(data: any, token: String){
 }
 
 // RUNNING
-export function requestPipelines(token: String){
+export function requestPipelines(){
+	const token = localStorage.getItem('token')
 	if(DEV){
 		return Promise.resolve(DUMMY_DATA.requestPipelines[0])
 	}
 	return http.get({
-		url: URLS.GET_PIPELINES,
+		url: URLS.PIPELINE_RUNNING_GET_PIPELINES,
 		token,
 	})
 }
@@ -171,7 +171,7 @@ export function requestPipeline(id: Number, token: String){
 		return Promise.resolve(DUMMY_DATA.requestPipeline[0])
 	}
 	return http.get({
-		url: URLS.GET_PIPELINE(id),
+		url: URLS.PIPELINE_RUNNING_GET_PIPELINE(id),
 		token,
 	})
 }

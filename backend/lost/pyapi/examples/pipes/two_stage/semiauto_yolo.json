@@ -24,7 +24,7 @@
       "annoTask": {
         "name": "BBoxAnnotation",
         "type": "sia",
-        "instructions": "Please draw bounding boxes for all objects in image.",
+        "instructions": "Please draw bounding boxes for all objects in the image.",
         "configuration": {
           "tools": {
             "point": false,
@@ -39,12 +39,6 @@
               "label": false,
               "bounds": true,
               "delete": true
-            }
-          },
-          "drawables": {
-            "bbox": {
-              "minArea": 25,
-              "minAreaType": "abs"
             }
           }
         }

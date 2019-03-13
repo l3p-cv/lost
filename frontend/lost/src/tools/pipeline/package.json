@@ -3,25 +3,9 @@
   "name": "pipeline",
   "version": "2.0.0",
   "dependencies": {
-    "@cartok/dagre-d3": "^0.4.59",
-    "bootstrap": "^4.1.3",
-    "bootstrap-tree": "^1.2.0",
-    "d3": "^4.10.0",
-    "d3-tip": "^0.9.1",
-    "datatables.net": "^1.10.19",
-    "datatables.net-bs4": "^1.10.19",
-    "jquery": "^3.2.1",
-    "l3p-frontend": "^3.3.0",
-    "list.js": "^1.5.0",
-    "lodash-es": "^4.17.10",
-    "moment": "^2.21.0",
-    "react": "^16.6.3",
-    "react-dom": "^16.6.3",
-    "react-treebeard": "^3.1.0",
-    "sweetalert": "^2.1.2",
-    "sweetalert2": "^6.11.5",
-    "vis": "^4.21.0",
-    "webpack-jquery-ui": "^2.0.1"
+    "react-directed-graph": "^1.0.5",
+    "react-stepper-wizard": "^1.1.4",
+    "sweetalert2": "^8.2.6"
   },
   "devDependencies": {
     "sinon": "^7.2.2"
