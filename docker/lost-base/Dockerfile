@@ -12,7 +12,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.4-Linux-x86_
     /opt/conda/bin/conda clean -tipsy && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc
+    echo "conda activate lost" >> ~/.bashrc
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs
 ADD /docker/lost-base/environment.yml .
@@ -22,4 +22,4 @@ RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install sphinx"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install sphinx-rtd-theme"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pandas"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pytest"
-WORKDIR /code
+WORKDIR /code/backend/lost/cli
