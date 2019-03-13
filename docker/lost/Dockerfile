@@ -8,3 +8,4 @@ ADD /backend/ /code/backend
 ADD /frontend/ /code/frontend
 ADD /docs/ /code/docs
 RUN echo "export PATH=$PATH:/code/backend/lost/cli" >> ~/.bashrc
+RUN echo "conda activate lost" >> ~/.bashrc
