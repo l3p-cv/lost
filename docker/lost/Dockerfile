@@ -7,3 +7,4 @@ ADD /docker/lost/nginx/ /code/docker/lost/nginx
 ADD /backend/ /code/backend
 ADD /frontend/ /code/frontend
 ADD /docs/ /code/docs
+RUN echo "export PATH=$PATH:/code/backend/lost/cli" >> ~/.bashrc
