@@ -17,6 +17,7 @@ import json
 import pickle
 from lost.pyapi import pipe_elements
 from lost.logic.label import LabelTree
+from lost.logic import email
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
@@ -39,6 +40,8 @@ def report_script_err(pipe_element, task, dbm, msg):
     dbm.add(task)
     dbm.add(pipe_element)
     dbm.commit()
+    # Send mail to inform user about script error.
+    email.send_script_error(task, pipe_element)
 
 class Script(pipe_elements.Element):
     '''Superclass for a user defined Script.

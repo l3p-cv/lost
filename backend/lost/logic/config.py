@@ -37,3 +37,30 @@ class LOSTConfig(object):
         self.rabbitmq_ip = "rabbitmqlost"
         if "RABBITMQ_IP" in os.environ:
             self.rabbitmq_ip = os.environ['RABBITMQ_IP']
+
+        self.send_mail = False
+        self.mail_server = ""
+        self.mail_port = ""
+        self.mail_use_ssl = False
+        self.mail_use_tls = False
+        self.mail_username = ""
+        self.mail_password = ""
+        self.mail_default_sender = ""
+        
+        if 'MAIL_SERVER' in os.environ:
+            self.mail_server = os.environ['MAIL_SERVER']
+            self.send_mail = True
+        if 'MAIL_PORT' in os.environ:
+            self.mail_port = os.environ['MAIL_PORT']
+        if 'MAIL_USE_SSL' in os.environ:
+            if os.environ['MAIL_USE_SSL'] == 'True':
+                self.mail_use_ssl = True
+        if 'MAIL_USE_TLS' in os.environ:
+            if os.environ['MAIL_USE_TLS'] == 'True':
+                self.mail_use_tls = True
+        if 'MAIL_USERNAME' in os.environ:
+            self.mail_username = os.environ['MAIL_USERNAME']
+        if 'MAIL_PASSWORD' in os.environ:
+            self.mail_password = os.environ['MAIL_PASSWORD']
+        if 'MAIL_DEFAULT_SENDER' in os.environ:
+            self.mail_default_sender = os.environ['MAIL_DEFAULT_SENDER']

@@ -1,5 +1,5 @@
 from lost.pyapi import script
-import os
+#import os
 
 ENVS = ['lost']
 

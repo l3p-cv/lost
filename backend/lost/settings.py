@@ -15,13 +15,13 @@ FLASK_DEBUG = LOST_CONFIG.debug
 SECRET_KEY = 'Test'
 
 # Flask-Mail SMTP server settings
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 465
-MAIL_USE_SSL = True
-MAIL_USE_TLS = False
-MAIL_USERNAME = 'email@example.com'
-MAIL_PASSWORD = 'password'
-MAIL_DEFAULT_SENDER = '"MyApp" <noreply@example.com>'
+MAIL_SERVER = LOST_CONFIG.mail_server #'smtp.gmail.com'
+MAIL_PORT = LOST_CONFIG.mail_port #465
+MAIL_USE_SSL = LOST_CONFIG.mail_use_ssl #True
+MAIL_USE_TLS = LOST_CONFIG.mail_use_tls #False
+MAIL_USERNAME = LOST_CONFIG.mail_username #'email@example.com'
+MAIL_PASSWORD = LOST_CONFIG.mail_password #'password'
+MAIL_DEFAULT_SENDER = LOST_CONFIG.mail_default_sender #'"MyApp" <noreply@example.com>'
 
 # Flask-User settings
 USER_APP_NAME = "LOST"      # Shown in and email templates and page footers

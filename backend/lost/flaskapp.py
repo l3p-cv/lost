@@ -1,6 +1,7 @@
 from flask import Flask
 from lost import settings
 from lost.taskman import make_celery
+from flask_mail import Mail
 import os 
 
 app = Flask(__name__)
@@ -17,3 +18,14 @@ app.config['CELERY_BROKER_URL'] = settings.CELERY_BROKER_URL
 app.config['CELERY_RESULT_BACKEND'] = settings.CELERY_RESULT_BACKEND
 
 celery = make_celery(app)
+
+
+app.config['MAIL_SERVER'] = settings.MAIL_SERVER
+app.config['MAIL_PORT'] = settings.MAIL_PORT
+app.config['MAIL_USE_SSL'] = settings.MAIL_USE_SSL
+app.config['MAIL_USE_TLS'] = settings.MAIL_USE_TLS
+app.config['MAIL_USERNAME'] = settings.MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = settings.MAIL_PASSWORD
+app.config['MAIL_DEFAULT_SENDER'] = settings.MAIL_DEFAULT_SENDER
+mail = Mail()
+mail.init_app(app)
