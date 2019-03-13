@@ -22,4 +22,5 @@ RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install sphinx"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install sphinx-rtd-theme"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pandas"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pytest"
+# Change to CLI
 WORKDIR /code/backend/lost/cli
