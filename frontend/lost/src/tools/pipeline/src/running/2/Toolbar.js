@@ -44,7 +44,7 @@ class Toolbar extends Component {
         await this.props.postPipeline(this.props.data.startDefinition)
         alertClose ()
         if (typeof window !== 'undefined') {
-            window.location.href = `${window.location.origin}/dashboard`;
+            window.location.href = `${window.location.origin}`;
         }
     }
 

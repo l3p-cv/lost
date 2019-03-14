@@ -3,6 +3,8 @@ import actions from 'actions/pipeline/pipelineRunning'
 import { connect } from 'react-redux'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
+import {Progress} from 'reactstrap'
+import {getColor} from '../../../../../components/AnnoTask/utils'
 import {alertLoading, alertClose} from 'pipelineGlobalComponents/sweetalert'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
@@ -53,27 +55,11 @@ class SelectPipeline extends Component {
                     accessor: "progress",
                     Cell: (row) => {
                         const progress= parseInt(row.value)
+                        if(row.value==="ERROR"){
+                          return(<div><font color="red">ERROR</font></div>)
+                        }
                         return(
-                        <div
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: '#dadada',
-                            borderRadius: '2px'
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: `${progress}%`,
-                              height: '100%',
-                              backgroundColor: progress > 66 ? '#85cc00'
-                                : progress > 33 ? '#ffbf00'
-                                : '#ff2e00',
-                              borderRadius: '2px',
-                              transition: 'all .2s ease-out'
-                            }}
-                          />
-                        </div>
+                          <Progress className='progress-xs' color={getColor(progress)} value={progress}/>
                       )}
                   },
                   {
