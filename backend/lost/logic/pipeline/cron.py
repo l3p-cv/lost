@@ -23,6 +23,7 @@ from celery import task
 from lost.db.access import DBMan
 from lost.logic.config import LOSTConfig
 from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
+from lost.logic import email
 
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig):
@@ -172,8 +173,14 @@ class PipeEngine(pipe_model.PipeEngine):
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
                     update_anno_task(self.dbm, pipe_e.anno_task.idx)
-                pipe_e.state = state.PipeElement.IN_PROGRESS
-                self.dbm.save_obj(pipe_e)
+                    try: 
+                        email.send_annotask_available(self.dbm, pipe_e.anno_task)
+                    except:
+                        msg = "Could not send Email. \n"
+                        msg += traceback.format_exc()
+                        self.logger.error(msg)
+                    pipe_e.state = state.PipeElement.IN_PROGRESS
+                    self.dbm.save_obj(pipe_e)
                 self.process_annotask(pipe_e)
             elif pipe_e.dtype == dtype.PipeElement.DATASOURCE:
                 pipe_e.state = state.PipeElement.FINISHED
@@ -217,15 +224,6 @@ class PipeEngine(pipe_model.PipeEngine):
             self.dbm.save_obj(p)
             raise
 
-    # def process_paths(self):
-    #     for path in self.get_all_paths():
-    #         self.current_path = path
-    #         self.process_next_path_element()
-
-    ''' def process_next_path_element(self):
-        pe = self.get_pe_to_start(self.current_path)
-        self.process_pipe_element(pe) '''
-
     def get_next_element(self):
         pe_wait = None
         for candidate in self.get_to_visit():
@@ -235,7 +233,13 @@ class PipeEngine(pipe_model.PipeEngine):
                     self.pipe.timestamp_finished = datetime.now()
                     self.dbm.save_obj(self.pipe)
                     self.logger.info("%d: Task is finished (Name: %s)"%(self.pipe.idx,
-                                                                    self.pipe.name))
+                                                                    self.pipe.name))                                    
+                    try: 
+                        email.send_pipeline_finished(self.pipe)
+                    except:
+                        msg = "Could not send Email. \n"
+                        msg += traceback.format_exc()
+                        self.logger.error(msg)
                     return None
                 else:
                     continue

@@ -19,6 +19,10 @@ create_user_parser.add_argument('password',
                            type=str,
                            required=True,
                            help="Password.")
+create_user_parser.add_argument('email',
+                           type=str,
+                           required=True,
+                           help="Email.")
 create_user_parser.add_argument('groups',
                            action='append',
                            help="List of groups.")

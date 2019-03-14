@@ -90,6 +90,7 @@ class Group(Base):
     name = Column(String(50), unique=True)
     manager_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     is_user_default = Column(Boolean(), nullable=False, server_default='0')
+    users = relationship("User", secondary="user_groups")
 
 class UserGroups(Base):
     __tablename__ = 'user_groups'

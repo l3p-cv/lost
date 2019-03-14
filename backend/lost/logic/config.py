@@ -46,6 +46,7 @@ class LOSTConfig(object):
         self.mail_username = ""
         self.mail_password = ""
         self.mail_default_sender = ""
+        self.mail_lost_url = ""
         
         if 'MAIL_SERVER' in os.environ:
             self.mail_server = os.environ['MAIL_SERVER']
@@ -64,3 +65,5 @@ class LOSTConfig(object):
             self.mail_password = os.environ['MAIL_PASSWORD']
         if 'MAIL_DEFAULT_SENDER' in os.environ:
             self.mail_default_sender = os.environ['MAIL_DEFAULT_SENDER']
+        if 'MAIL_LOST_URL' in os.environ:
+            self.mail_lost_url = os.environ['MAIL_LOST_URL']

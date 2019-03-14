@@ -3,6 +3,7 @@ from lost.db import model, state, dtype
 from datetime import datetime
 from lost.pyapi import pipe_elements
 import pandas as pd
+from lost.logic import email
 
 def update_anno_task(dbm, anno_task_id, user_id=None):
     remaining = None
@@ -78,6 +79,13 @@ def set_finished(dbm, anno_task_id):
             pipe_e.state = state.PipeElement.FINISHED
             dbm.add(pipe_e)
             dbm.commit()
+            try: 
+                email.send_annotask_finished(dbm, anno_task)
+            except:
+                pass
+                #msg = "Could not send Email. \n"
+                #msg += traceback.format_exc()
+                #self.logger.error(msg)
             for chat in dbm.get_choosen_annotask(anno_task_id=anno_task_id):
                 dbm.delete(chat)
                 dbm.commit()

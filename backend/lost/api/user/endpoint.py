@@ -7,6 +7,7 @@ from lost.api.user.parsers import login_parser, create_user_parser, update_user_
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
 from lost.db.model import User as DBUser, Role, Group
+from lost.logic import email 
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
@@ -54,6 +55,7 @@ class UserList(Resource):
         else: 
             user = DBUser(
             user_name = data['user_name'],
+            email = data['email'],
             email_confirmed_at=datetime.datetime.utcnow(),
             password= data['password'],
             )
@@ -75,6 +77,10 @@ class UserList(Resource):
                         user.groups.append(group)
             dbm.save_obj(user)
             dbm.close_session()
+            try:
+                email.send_new_user(user,data['password'])
+            except:
+                pass
             return {
                 'message': 'success'
             }, 200
