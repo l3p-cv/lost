@@ -71,6 +71,7 @@ class Script(pipe_elements.Element):
             self.pipe_info.logfile_path = self.get_rel_path(logfile_path)
         self._inp = inout.Input(self)
         self._outp = inout.ScriptOutput(self)
+        self.rejected_execution = False
         # If pe_id is None we have a normal script
         # If pe_id is not None a JupyterNotebook uses this script
         if pe_id is None:
@@ -165,6 +166,15 @@ class Script(pipe_elements.Element):
         if loop_e is not None:
             loop_e.loop.break_loop = True
         self._dbm.add(loop_e)
+
+    def loop_is_broken(self):
+        '''Check if the current loop is broken'''
+        loop_e = self._pipe_man.get_next_loop(self._pipe_element)
+        if loop_e is not None:
+            return loop_e.loop.break_loop
+        else:
+            self.logger.warning('loop_is_broken method was used, but no loop seems to be in this pipeline!')
+            return False
 
     def get_arg(self, arg_name):
         '''Get argument value by name for this script.
@@ -268,83 +278,25 @@ class Script(pipe_elements.Element):
         self._pipe_element.progress = value
         self._dbm.commit()
 
-    def write(self, obj, file_name, f_type='ocv_img', context='instance'):
-        '''Write a file in specific format to a given context in file_sytem.
 
-        Args:
-            obj (object): The object to store.
-            file_name (str): Name of the file that should be written to file_system.
-                Can also be a relative path.
-            f_type (str): Options: *ocv_img*, *sk_img*, *json*, *pickle*
-            context (str): Options: *instance*, *pipe*, *static*
-        Returns:
-            str: Absolute path where file was stored.
+    def reject_execution(self):
+        '''Reject execution of this script and set it to PENDING again.
+
+        Note:
+            This method is useful if you want to execute this script only
+            when some condition based on previous pipeline elements is 
+            meet.
         '''
-        if context == 'instance':
-            context_path = self.instance_context
-        elif context == 'pipe':
-            context_path = self.pipe_context
-        elif context == 'static':
-            context_path = self.static_context
-        else:
-            raise Exception('Unknown context: {}'.format(context))
-        store_path = os.path.join(context_path, file_name)
-        if not os.path.exists(store_path):
-            store_dirs = os.path.split(store_path)[0]
-            os.makedirs(store_dirs, exist_ok=True)
-        if f_type == 'ocv_img':
-            import cv2
-            cv2.imwrite(store_path, obj)
-        elif f_type =='sk_img':
-            import skimage.io
-            skimage.io.imsave(store_path, obj)
-        elif f_type == 'json':
-            with open(store_path, 'w') as the_file:
-                json.dump(obj, the_file, indent=4)
-        elif f_type == 'pickle':
-            with open(store_path, 'wb') as the_file:
-                pickle.dump(obj, the_file)
-        else:
-            raise Exception('Unknown f_type: {}'.format(f_type))
-        return store_path
-
-    def read(self, file_name, f_type='ocv_img', context='instance'):
-        '''Read file in specific format from specified context in file_sytem.
-
-        Args:
-            file_name (str): Name of the file that should be written to file_system.
-                Can also be a relative path.
-            f_type (str): Options: *ocv_img*, *json*, *pickle*
-            context (str): Options: *instance*, *pipe*, *static*
-
-        Returns:
-            object: The loaded object.
-        '''
-        if context == 'instance':
-            context_path = self.instance_context
-        elif context == 'pipe':
-            context_path = self.pipe_context
-        elif context == 'static':
-            context_path = self.static_context
-        else:
-            raise Exception('Unknown context: {}'.format(context))
-        load_path = os.path.join(context_path, file_name)
-        if f_type == 'ocv_img':
-            #obj = cv2.imread(load_path)
-            raise NotImplementedError('Hi future JJ:-) Use sk-image instead of opencv')
-        elif f_type == 'json':
-            with open(load_path) as the_file:
-                obj = json.load(the_file)
-        elif f_type == 'pickle':
-            with open(load_path, 'rb') as the_file:
-                obj = pickle.load(the_file)
-        else:
-            raise Exception('Unknown f_type: {}'.format(f_type))
-        return obj
-
-
+        self.rejected_execution = True
 
     def i_am_done(self):
+        if self.rejected_execution:
+            self._pipe_element.state = state.PipeElement.PENDING
+            self._dbm.add(self._pipe)
+            self._dbm.add(self._pipe_element)
+            self._dbm.commit()
+            return            
+
         #Save all changes to database
         if self._pipe_element.is_debug_mode == False:
             self._pipe_element.state = state.PipeElement.FINISHED

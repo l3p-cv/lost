@@ -113,6 +113,7 @@ class PipeEngine(object):
         v_pe = self.pe_graph.vs.select(pe_eq=pe)[0]
         min_path = None
         min_loop_e = None
+        loop_e = None
         for loop_e in self.get_all_loop_elements():
             v_loop = self.pe_graph.vs.select(pe_eq=loop_e)[0]
             # TODO:We just need the distance in between two elements in the graph
