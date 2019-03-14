@@ -76,7 +76,10 @@ class UserList(Resource):
                     if group:
                         user.groups.append(group)
             dbm.save_obj(user)
-            email.send_new_user(user,data['password'])
+            try:
+                email.send_new_user(user,data['password'])
+            except:
+                pass
             dbm.close_session()
             return {
                 'message': 'success'
