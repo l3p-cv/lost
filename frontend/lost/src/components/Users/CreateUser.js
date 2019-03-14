@@ -17,6 +17,7 @@ class CreateUser extends Component {
         this.state = {
             createUsername: '',
             createPassword: '',
+            createEmail: '',
             createChoosenGroups: [],
             createChoosenRoles: [],
         };
@@ -26,6 +27,9 @@ class CreateUser extends Component {
             .bind(this);
         this.handleCreatePassword = this
             .handleCreatePassword
+            .bind(this);
+        this.handleCreateEmail = this
+            .handleCreateEmail
             .bind(this);
         this.handleCreate = this
             .handleCreate
@@ -43,11 +47,15 @@ class CreateUser extends Component {
     handleCreatePassword(e) {
         this.setState({createPassword: e.target.value})
     }
+    handleCreateEmail(e) {
+        this.setState({createEmail: e.target.value})
+    }
     handleCreate(e) {
         if (this.validateCreationData()) {
             const payload = {
                 user_name: this.state.createUsername,
                 password: this.state.createPassword,
+                email: this.state.createEmail,
                 groups: this.state.createChoosenGroups,
                 roles: this.state.createChoosenRoles
             }
@@ -90,6 +98,10 @@ class CreateUser extends Component {
                             placeholder="username"
                             value={this.state.createUsername}
                             onChange={this.handleCreateUsername}></Input>
+                        <Input
+                            placeholder="email"
+                            value={this.state.createEmail}
+                            onChange={this.handleCreateEmail}></Input>
                         <Input
                             type="password"
                             placeholder="password"

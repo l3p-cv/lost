@@ -76,11 +76,8 @@ class UserList(Resource):
                     if group:
                         user.groups.append(group)
             dbm.save_obj(user)
+            email.send_new_user(user,data['password'])
             dbm.close_session()
-            try:
-                email.send_new_user(user,data['password'])
-            except:
-                pass
             return {
                 'message': 'success'
             }, 200
@@ -122,6 +119,7 @@ class User(Resource):
             for g in requesteduser.groups:
                     if g.is_user_default:
                         dbm.delete(g)
+                        dbm.commit()
             dbm.delete(requesteduser) 
             dbm.commit()
             dbm.close_session()

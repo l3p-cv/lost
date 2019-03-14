@@ -294,7 +294,7 @@
     </style>
   </head>
   <body class="">
-    <span class="preheader">AnnotationTask has been finished.</span>
+    <span class="preheader">New User Account has been created.</span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td>&nbsp;</td>
@@ -310,28 +310,10 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-                        <p>Hello {{ user.first_name }} {{ user.last_name }},</p>
-                        <p>Your AnnotationTask in Pipeline <b>{{ annotask.pipe_element.pipe.name}}</b> has been finished!</p>
-                        <p>
-                        <table style="width:100%">
-                          <tr>
-                            <td><b>Name:</b></td>
-                            <td>{{ annotask.name }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>Type:</b></td>
-                            <td>{{ type }}</td> 
-                          </tr>
-                          <tr>
-                            <td><b>Number of Assignees:</b></td>
-                            <td>{{ number_assignees }}</td> 
-                          </tr>
-                          <tr>
-                            <td><b>Number of Annotations:</b></td>
-                            <td>{{ size }}</td> 
-                          </tr>
-                        </table>
-                        </p>
+                        <p>Hello {{ user.user_name }},</p>
+                        <p>A new LOST User Account has been created for you !</p>
+                        <p>Your password is: <b>{{password}}</b></p>
+                        <p>Please remember to change your password immediately the first time you visit LOST.</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
                             <tr>

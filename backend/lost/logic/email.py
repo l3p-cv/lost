@@ -70,9 +70,8 @@ def send_annotask_finished(dbm, annotask):
                                     number_assignees=len(list(annotask.group.users))))
 
 def send_new_user(user, password):
-    with app.app_context():
         send_email("LOST: User account '{}' has been created.".format(user.user_name),
             [user.email],
             render_template("email/new_user.html", 
-                            user = user))
+                            user = user, password=password))
 
