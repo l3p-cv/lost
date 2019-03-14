@@ -1,6 +1,6 @@
 my_pipeline_project/
 ├── an_ai_script.py
-├── annother_pipeline.json
+├── another_pipeline.json
 ├── another_script.py
 ├── a_pretrained_model_for_the_ai.md5
 ├── export_the_annos.py

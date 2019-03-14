@@ -1,6 +1,8 @@
 All About Pipelines
 *******************
 
+.. _aapipelines-pipe-projects:
+
 PipeProjects
 ============
 
@@ -17,11 +19,11 @@ Directory Structure
     :caption: Example directory structure for a pipeline project.
     :name: pp-dir-structure
 
-The :ref:`listing above <pp-dir-structure>` show an example for a 
-directory structure.
-Within the project there are two pipeline definition files 
+The :ref:`listing above <pp-dir-structure>` show an example for a
+pipeline directory structure.
+Within the project there are two pipeline definition files
 **another_pipeline.json** and **my_pipeline.json**.
-These pipelines can use all the scripts (**an_ai_script.py**, 
+These pipelines can use all the scripts (**an_ai_script.py**,
 **another_script.py**, **export_the_annos.py**, **my_script.py**)
 inside the project folder.
 Some of the scripts may require a special python package you have written.
@@ -30,40 +32,198 @@ just place it also inside the pipeline project folder.
 Sometimes it is also useful to place some files into the project folder,
 for example a pretrained ai model that should be loaded inside a script.
 
-Importing a Pipeline into LOST
-------------------------------
+.. _aapipelines-import:
+
+Importing a Pipeline Project into LOST
+--------------------------------------
+After creating a pipeline it needs to be imported into LOST.
+In order to do that we need to copy the  
+pipeline project folder into the 
+*lost data folder* in your file system e.g:
+
+    .. code-block:: bash
+
+        # Copy your pipe_project into the LOST data folder
+        cp -r my_pipe_project path_to_lost/data/ 
+
+Every file that is located under *path_to_lost/data/* will be 
+visible inside the lost docker container.
+Now we will login to the container with:
+
+    .. code-block:: bash
+
+        # Log in to the docker container.
+        # If your user is not part of the docker group, 
+        # you may need to use *sudo* 
+        docker exec -it lost bash
+
+After a successful login we can start the pipeline import.
+For this import we will use the lost command line tools.
+To import a pipeline project we use a program called 
+*import_pipe_project.py*.
+This program expects the path to the *pipeline project* as argument.
+Please note that we mapped the path to the *lost data folder* inside 
+the container to the path outside of the container.
+So if you installed lost to */home/my_user/lost*, 
+this path can also be used inside the container.
+If you copied your *pipeline project* to 
+*/home/my_user/lost/data/my_pipe_project* on the host machine,
+it will be also available inside the container under the same path.
+Let do the import:
+
+    .. code-block:: bash
+
+        # Import my_pipe_project into LOST
+        import_pipe_project.py /home/my_user/lost/data/my_pipe_project
+
+The **import_pipe_project.py** program will copy your pipeline project 
+folder into the folder *path_to_lost/data/data/pipes* and write all the 
+meta information into the lost database.
+After this import the pipeline should be visible in the web gui when 
+clicking on the *Start Pipeline* button in the *Designer* view.
+
+Updating a LOST Pipeline
+------------------------
+If you changed anything inside your pipe project, 
+e.g. bug fixes, 
+you need to update your pipe project in LOST.
+In order to do this, 
+the procedure is the same as for 
+:ref:`importing a pipeline <aapipelines-import>` with the difference
+that you need to call the **update_pipe_project.py** program:
+
+    .. code-block:: bash
+
+        # Update my_pipe_project in LOST
+        update_pipe_project.py /home/my_user/lost/data/my_pipe_project
 
 Namespacing
 -----------
+When importing or updating a pipeline project in LOST the following 
+namespacing will be applied to pipelines: 
+**<name of pipeline project folder>.<name of pipeline json file>**.
+In the same way scripts will be namespaced internally by LOST:
+**<name of pipeline project folder>.<name of python script file>**.
+
+So in :ref:`our example <pp-dir-structure>` the pipelines would be named
+**my_pipe_project.another_pipeline** and **my_pipe_project.my_pipeline**. 
+
 
 Pipeline Definition Files
 =========================
 
+Within the **pipeline definition file** you define your annotation
+process.
+Such a pipeline is composed of different standard elements that are
+supported by LOST like **datasource**,
+**script**,
+**annotTask**,
+**dataExport**,
+**visualOutput** and **loop**.
+Each pipeline element is represented by a json object inside the
+pipeline definition.
+
+As you can see in the :ref:`example <aapipelines-example>`,
+the pipeline itself is also defined by a json object.
+This object has a *description*,
+a *author*,
+a *pipe-schema-version* and a list of pipeline *elements*.
+Each element object has a *peN* (*pipeline element number*)
+which is the identifier of the element itself.
+An element needs also an attribute that is called *peOut* and contains a 
+list of elements where the current element is connected to.
+
 An Example
 ----------
-.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/sia_all_tools.json
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/mia/anno_all_imgs.json
     :language: json
     :linenos:
+    :caption: A simple example pipeline.
+    :name: aapipelines-example
+
 
 Possible Pipeline Elements
 --------------------------
+Below you will find the definition of all possible pipeline elements in 
+LOST.
+
+Datasource Element
+~~~~~~~~~~~~~~~~~~
+.. code-block:: json
+   :linenos:
+   :emphasize-lines: 4
+
+    {
+      "peN" : "[int]",
+      "peOut" : "[list of int]|[null]",
+      "datasource" : {
+        "type" : "rawFile"
+      }
+    }
+
+**Datasource** elements are intended to provide datasets to **Script**
+elements.
+To be more specific it will provide a path inside the LOST system.
+In most cases this will be a path to a folder with images that should be
+annotated.
+The listing above shows the definition of a **Datasource** element.
+At the current state only type **rawFile** is supported,
+which will provide a path.
+
+
+Script Element
+~~~~~~~~~~~~~~
+.. code-block:: json
+   :linenos:
+   :emphasize-lines: 4
+
+    {
+      "peN" : "[int]",
+      "peOut" : "[list of int]|[null]",
+      "script" : {
+        "path": "[string]",
+        "description" : "[string]"
+      }
+    }
+
+**Script** elements represent python3 scripts that are executed as part
+of your pipeline.
+In order to define a **Script** you need to specify a **path** to the
+script file relative to the
+:ref:`pipeline project folder <aapipelines-pipe-projects>` and a short
+**description** of your script.
 
 AnnoTask Element 
 ~~~~~~~~~~~~~~~~
 .. code-block:: json
    :linenos:
-   :emphasize-lines: 4
+   :emphasize-lines: 4-8
     
     {
       "peN" : "[int]",
       "peOut" : "[list of int]|[null]",
       "annoTask" : {
-        "name" : "[string]",
         "type" : "mia|sia",
+        "name" : "[string]",
         "instructions" : "[string]",
         "configuration":{"..."}
       }
     }
+
+An **AnnoTask** represents an annotation task for a human-in-the-loop.
+**Scripts** can request annotations for specific images that will be
+presented in one of the annotation tools in the web gui.
+
+Right now two types of annotation tools are available.
+If you set **type** to **sia** the 
+:ref:`single image annotation tool <annotators-sia>` will be 
+used for annotation.
+When choosing **mia** the images will be present in the 
+:ref:`multi image annotation tool <annotators-mia>`.
+
+An **AnnoTask** requires also a **name** and **instructions** for the 
+annotator.
+Based on the **type** a specific configuration is required.
 
 If **"type"** is **"mia"** the configuration will be the following:
 
@@ -77,15 +237,25 @@ If **"type"** is **"mia"** the configuration will be the following:
       "addContext": "[float]"
     }
 
-**"type"**
-    * If "type" is **"imageBased"** a whole image will be presented in the clustered view.
-    * If "type" is **"annoBased"** all TwoDAnnotations related to an image will be cropped and presented in the clustered view.
-**"showProposedLabel"**
-    * If **true**, the assigned sim_class will be interpreted as label and be used as pre-selection of the label in the MIA tool. 
-**"drawAnno"**
-    * If **"true"** and **"type" : "annoBased"** a box will be drawn around the TwoDAnnotations.
-**"addContext"**
-    * If **"type" : "annoBased"** and **"addContext" > 0.0**, "addContext" defines the amount of pixels that will be added to the area of the annotation relative to the width and height of the annotation.  
+
+MIA configuration:
+    * **type**
+        * If **imageBased** a whole image will be presented in the clustered view.
+        * If **annoBased** all :py:class:`lost.db.model.TwoDAnno` objects related to an image will be cropped and presented in the clustered view.
+    * **showProposedLabel**
+        * If **true**, the assigned sim_class will be interpreted as label and be used as pre-selection of the label in the MIA tool. 
+    * **drawAnno**
+        * If **true** and **type : annoBased** the specific annotation will be drawn inside the cropped image.
+    * **addContext**
+        * If **type : annoBased** and **addContext > 0.0**, 
+          some amount of pixels will be added around the annotation when the
+          annotation is cropped.
+          The number of pixels that are add is calculated relative to the
+          image size.
+          So if you set **addContext** to **0.1**,
+          10 percent of the image size will be added to the crop.
+          This setting is useful to provide the annotator some more visual
+          context during the annotation step.
 
 If **"type"** is **"sia"** the configuration will be the following:
 
@@ -110,36 +280,13 @@ If **"type"** is **"sia"** the configuration will be the following:
       }
     }
 
-DataSource Element 
-~~~~~~~~~~~~~~~~~~
-.. code-block:: json
-   :linenos:
-   :emphasize-lines: 4
-
-    {
-      "peN" : "[int]",
-      "peOut" : "[list of int]|[null]",
-      "datasource" : {
-        "type" : "rawFile"
-      }
-    }
-
-Script Element
-~~~~~~~~~~~~~~
-.. code-block:: json
-   :linenos:
-   :emphasize-lines: 4
-
-    {
-      "peN" : "[int]",
-      "peOut" : "[list of int]|[null]",
-      "script" : {
-        "path": "[string]",
-        "description" : "[string]"
-      }
-    }
-
-Overwriting Script Arguments
+SIA configuration:
+    * **tools**
+        * Inside the **tools** object you can select which drawing tools
+          are available in the SIA gui.
+          You may choose either **true** or **false** for each of the 
+          tools (**point, line, polygon, bbox**).
+    * **actions**
 
 DataExport
 ~~~~~~~~~~

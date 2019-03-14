@@ -68,7 +68,7 @@ a *pipe-schema-version* and a list of pipeline *elements*.
 Each element is defined by a json object and has a *peN*
 (*pipeline element number*) which is the identifier of the element
 itself.
-All elements need also a attribute that is called *peOut* and contains a 
+All elements need also an attribute that is called *peOut* and contains a 
 list of elements where the current element is connected to.
 
 The first element in the **sia_all_tools** pipeline  is a **Datasource** 
@@ -305,47 +305,7 @@ web gui.
 Importing a pipeline project
 ============================
 After creating a pipeline it needs to be imported into LOST.
-In order to do that we need to copy the  
-:ref:`pipeline project folder <designers-pipeline-project>` into the 
-*lost data folder* in your file system e.g:
-
-    .. code-block:: bash
-
-        # Copy your pipe_project into the LOST data folder
-        cp -r my_pipe_project path_to_lost/data/ 
-
-Every file that is located under *path_to_lost/data/* will be 
-visible inside the lost docker container.
-Now we will log in to the container with:
-
-    .. code-block:: bash
-
-        # Log in to the docker container.
-        # If your user is not part of the docker group, 
-        # you may need to use *sudo* 
-        docker exec -it lost bash
-
-After a successful login we can start the pipeline import.
-For this import we will use the lost command line tools.
-To import a pipeline project we use a program called 
-*import_pipe_project.py*.
-This program expects the path to the *pipeline project* as argument.
-Please note that we mapped the path to the *lost data folder* inside 
-the container to the path outside of the container.
-So if you installed lost to */home/my_user/lost*, 
-this path can also be used inside the container.
-If you copied your *pipeline project* to 
-*/home/my_user/lost/data/my_pipe_project* on the host machine,
-it will be also available inside the container under the same path.
-Let do the import:
-
-    .. code-block:: bash
-
-        # Import my_pipe_project into LOST
-        import_pipe_project.py /home/my_user/lost/data/my_pipe_project
-
-After this import the pipeline should be visible in the web gui when 
-clicking on the *Start Pipeline* button in the *Designer* view.
+Please see :ref:`aapipelines-import` for more information.
 
 Debugging a script
 ==================
