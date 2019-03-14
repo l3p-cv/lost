@@ -1,11 +1,34 @@
-All About Pipeline
-******************
+All About Pipelines
+*******************
 
 PipeProjects
 ============
 
+A pipeline project in LOST is defined as a folder that contains
+pipeline definition files in json format and related python3 scripts.
+Additional,
+other files can be placed into this folder that can be accessed by the 
+scripts of a pipeline.
+
 Directory Structure
---------------------
+-------------------
+
+.. literalinclude:: my_pipeline_project.txt
+    :caption: Example directory structure for a pipeline project.
+    :name: pp-dir-structure
+
+The :ref:`listing above <pp-dir-structure>` show an example for a 
+directory structure.
+Within the project there are two pipeline definition files 
+**another_pipeline.json** and **my_pipeline.json**.
+These pipelines can use all the scripts (**an_ai_script.py**, 
+**another_script.py**, **export_the_annos.py**, **my_script.py**)
+inside the project folder.
+Some of the scripts may require a special python package you have written.
+So if you want to use this package (e.g. **my_special_python_lib**),
+just place it also inside the pipeline project folder.
+Sometimes it is also useful to place some files into the project folder,
+for example a pretrained ai model that should be loaded inside a script.
 
 Importing a Pipeline into LOST
 ------------------------------
@@ -13,18 +36,20 @@ Importing a Pipeline into LOST
 Namespacing
 -----------
 
-Pipeline Definition files
+Pipeline Definition Files
 =========================
 
-Example
--------
-.. literalinclude:: ../../examples/pipes/anno_all_imgs/anno_all_mia.json
-   :language: json
-   :emphasize-lines: 1
-   :linenos:
+An Example
+----------
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/sia_all_tools.json
+    :language: json
+    :linenos:
+
+Possible Pipeline Elements
+--------------------------
 
 AnnoTask Element 
------------------
+~~~~~~~~~~~~~~~~
 .. code-block:: json
    :linenos:
    :emphasize-lines: 4
@@ -86,7 +111,7 @@ If **"type"** is **"sia"** the configuration will be the following:
     }
 
 DataSource Element 
-------------------
+~~~~~~~~~~~~~~~~~~
 .. code-block:: json
    :linenos:
    :emphasize-lines: 4
@@ -100,7 +125,7 @@ DataSource Element
     }
 
 Script Element
---------------
+~~~~~~~~~~~~~~
 .. code-block:: json
    :linenos:
    :emphasize-lines: 4
@@ -117,7 +142,7 @@ Script Element
 Overwriting Script Arguments
 
 DataExport
-----------
+~~~~~~~~~~
 .. code-block:: json
    :linenos:
    :emphasize-lines: 4
@@ -129,7 +154,7 @@ DataExport
     }
 
 VisualOutput
-------------
+~~~~~~~~~~~~
 .. code-block:: json
    :linenos:
    :emphasize-lines: 4
@@ -141,7 +166,7 @@ VisualOutput
     }
 
 Loop
-----
+~~~~
 .. code-block:: json
    :linenos:
    :emphasize-lines: 4
