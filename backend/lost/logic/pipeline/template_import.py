@@ -78,9 +78,9 @@ class PipeImporter(object):
             logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         else:
-            logging.warning('Cannot update. No such pipe project: {}'.format(
-                self.namespace
-            ))
+            logging.warning(('Cannot update. No such pipe project: *{}*. '
+                            'Maybe you want to import a pipeline instead ' 
+                            'of updating it.').format(self.namespace))
     
     def update_pipe(self, pipe):
         for db_pipe in self.dbm.get_all_pipeline_templates():

@@ -25,12 +25,14 @@ A *PipelineTemplate* may define a graph that consits of the following
   a loop in the graph. A loop element implements a similar behaviour as a while
   loop in a programming language.
 
-Designing a Pipeline
-====================
+Designing a pipeline - A first example
+======================================
 In the following we will have a look at the **sia_all_tools** pipeline
 which is part of the **sia** pipeline project example in LOST.
 Based on this example we will discuss all the important steps when 
 developing your own pipeline.
+
+.. _designers-pipeline-project:
 
 Pipeline Projects
 -----------------
@@ -112,7 +114,13 @@ request_annos.py
 ~~~~~~~~~~~~~~~~
 A script in LOST is just a normal python3 module.
 In the listing below you can see the *request_annos.py* script from our 
-example pipeline (*sia_all_tools*). 
+example pipeline (*sia_all_tools*).
+The *request_annos.py* script will read in a *path* to an imageset from 
+the previous *datasource* element in the pipeline and will request
+annotations from the next *annotation task* element in the pipeline.
+This script will also send dummy annotation proposals to the 
+annotation task if one of the arguments is set to *ture* when the 
+pipeline is started in the web gui.
 
 .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
    :language: python
@@ -217,14 +225,162 @@ The logger object is a standard `python logger <https://docs.python.org/3.6/howt
 export_csv.py
 ~~~~~~~~~~~~~
 
+The *export_csv.py* (see :ref:`export-csv-full`) 
+script will read all annotations from its input and 
+create a csv file from these annotations.
+This csv file will then be added to a *DataExport* element,
+which will provide the file in the web gui for download.
+
 .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
    :language: python
    :linenos:
+   :caption: |ls-export-full|: Full export_csv.py script.
+   :name: export-csv-full
+
+Now we will do a step by step walk through the code.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
+   :language: python
+   :lines: 5-8
+   :caption: |ls-export-envs-args|: ENVS and ARGUMENTS of *export_csv.py*.
+   :name: export-envs-args
+
+As you can see in the :ref:`listing above <export-envs-args>`,
+the script is executed in the standard *lost* environment.
+The name of the csv file can be set by the argument *file_name* and has 
+a default value of *annos.csv*.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
+   :language: python
+   :lines: 15
+   :caption: |ls-export-to-df|: Transforming all annotations from input into a pandas.DataFrame.
+   :name: export-to-df
+
+The :py:meth:`lost.pyapi.inout.Input.to_df` method will read all annotations
+form *self.inp* (Input of this script :py:attr:`lost.pyapi.script.Script.inp`)
+and transform the annotations into a 
+`pandas.DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
+   :language: python
+   :lines: 16
+   :caption: |ls-export-get-path|: Get the path to store the csv file.
+   :name: export-get-path
+
+Now the script will calculate the path to store the csv file 
+(:py:meth:`lost.pyapi.script.Script.get_path`).
+In general a script can store files to three different contexts.
+Since our csv file should only be used by this instance of the script,
+the *instance* *context* was selected.
+
+It would be also possible to store a file to a *context* called *pipe*.
+In the *pipe context* all scripts within an annotation pipeline can access
+the file and exchange information in this way.
+The third *context* is called *static*. 
+The *static context* allows to access and store files in the pipe 
+project folder.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
+   :language: python
+   :lines: 17-20
+   :caption: |ls-export-to-csv|: Store csv file to the LOST filesystem.
+   :name: export-to-csv
+
+After we have calculated the *csv_path*,
+the csv file can be stored to this path.
+In order to do that the `to_csv method from the pandas.DataFrame is used <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_csv.html>`_.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
+   :language: python
+   :lines: 21
+   :caption: |ls-export-add-data-export|: Adding the csv file path to all connected *DataExport* elements.
+   :name: export-add-data-export
+
+As final step the path to the csv file is assigned to the connected
+*DataExport* element in order to make it available for download via the
+web gui.
 
 .. _designers-pipeline-import:
 
 Importing a pipeline project
-----------------------------
+============================
+After creating a pipeline it needs to be imported into LOST.
+In order to do that we need to copy the  
+:ref:`pipeline project folder <designers-pipeline-project>` into the 
+*lost data folder* in your file system e.g:
+
+    .. code-block:: bash
+
+        # Copy your pipe_project into the LOST data folder
+        cp -r my_pipe_project path_to_lost/data/ 
+
+Every file that is located under *path_to_lost/data/* will be 
+visible inside the lost docker container.
+Now we will log in to the container with:
+
+    .. code-block:: bash
+
+        # Log in to the docker container.
+        # If your user is not part of the docker group, 
+        # you may need to use *sudo* 
+        docker exec -it lost bash
+
+After a successful login we can start the pipeline import.
+For this import we will use the lost command line tools.
+To import a pipeline project we use a program called 
+*import_pipe_project.py*.
+This program expects the path to the *pipeline project* as argument.
+Please note that we mapped the path to the *lost data folder* inside 
+the container to the path outside of the container.
+So if you installed lost to */home/my_user/lost*, 
+this path can also be used inside the container.
+If you copied your *pipeline project* to 
+*/home/my_user/lost/data/my_pipe_project* on the host machine,
+it will be also available inside the container under the same path.
+Let do the import:
+
+    .. code-block:: bash
+
+        # Import my_pipe_project into LOST
+        import_pipe_project.py /home/my_user/lost/data/my_pipe_project
+
+After this import the pipeline should be visible in the web gui when 
+clicking on the *Start Pipeline* button in the *Designer* view.
 
 Debugging a script
-------------------
+==================
+Most likely, 
+if you imported your pipeline and run it for the first time no script will
+work,
+since you placed some tiny bug into your code :-D
+
+Inside the web GUI all exceptions and error of your script will be 
+visualized when clicking on the respective script element in the 
+pipeline visualization.
+In this way you get a first hint what's wrong.
+
+In order to debug your code you need to login to the docker container 
+and find the instance folder that is created for each script instance.
+Inside this folder there is a bash script called *debug.sh* that need to 
+be executed in order to start the `pudb <https://documen.tician.de/pudb/>`_
+debugger.
+You will find your script by its unique *pipeline element id*.
+If you installed lost to */home/my_user/lost*,
+the path to the script instance folder will be 
+*/home/my_user/lost/data/data/instance/i-<pipe_element_id>*
+
+.. code-block:: bash
+
+        # Log in to docker
+        docker exec -it lost bash
+        # Change directory to the instance path of your script
+        cd /home/my_user/lost/data/data/instance/i-<pipe_element_id>
+        # Start debugging
+        bash debug.sh
+
+.. |ls-export-full| replace:: Listing e1
+.. |ls-export-envs-args| replace:: Listing e2
+.. |ls-export-to-df| replace:: Listing e3
+.. |ls-export-get-path| replace:: Listing e4
+.. |ls-export-to-csv| replace:: Listing e5
+.. |ls-export-add-data-export| replace:: Listing e6
