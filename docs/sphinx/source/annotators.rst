@@ -117,6 +117,8 @@ annotated in this task.
 
     |fig-sia-footer|: SIA footer - with information on image name and id.
 
+.. _annotators-mia:
+
 Meet MIA - A Multi Image Annotation Tool
 ========================================
 

@@ -1,0 +1,14 @@
+my_pipeline_project/
+├── an_ai_script.py
+├── another_pipeline.json
+├── another_script.py
+├── a_pretrained_model_for_the_ai.md5
+├── export_the_annos.py
+├── my_pipeline.json
+├── my_script.py
+└── my_special_python_lib
+    ├── __init__.py
+    ├── my_magic_module.py
+    └── utils.py
+
+1 directory, 10 files
