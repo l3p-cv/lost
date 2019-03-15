@@ -670,12 +670,15 @@ class DBMan(object):
     def get_user_groups_by_user_id(self, user_id):
         return self.session.query(model.UserGroups).filter(model.UserGroups.user_id==user_id).all()
     
-    def mean_anno_time(self, anno_task_id, user_id, anno_type):
+    def mean_anno_time(self, anno_task_id, anno_type, user_id=None):
+        user_id_query = 'user_id={} AND'.format(user_id)
+        if not user_id:
+            user_id_query = ''
         if anno_type == 'imageBased':
-            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
             return self.session.execute(sql).first()
 
     def get_worker(self, worker_name=None):

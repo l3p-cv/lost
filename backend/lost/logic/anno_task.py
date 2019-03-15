@@ -209,7 +209,7 @@ def has_annotation(dbm, anno_task_id):
         return True
     else: return False
 
-def __get_seconds_per_anno(dbm, pipeelement, user_id, anno_type):
+def __get_seconds_per_anno(dbm, pipeelement, anno_type, user_id=None):
     mean_time = dbm.mean_anno_time(pipeelement.anno_task.idx, user_id, anno_type)[0]
     if mean_time is not None:
         return '{:.2f}'.format(mean_time)
@@ -227,3 +227,7 @@ def __get_amount_per_label(dbm, pipeelement, finished, anno_type):
                 'amount': result
             })
     return dist 
+
+def get_annotask_statistics(dbm, annotask_id):
+    anno_task = dbm.get_anno_task(anno_task_id=annotask_id)
+    return __get_at_info(dbm, anno_task, None, True)

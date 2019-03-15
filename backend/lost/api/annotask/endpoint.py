@@ -66,3 +66,20 @@ class Working(Resource):
             #    data = json.load(f)
             #return data
             return working_task
+
+
+@namespace.route('/statistic/<int:annotask_id>')
+@namespace.param('annotask_id', 'The id of the annotation task.')
+class Statistic(Resource):
+    @jwt_required 
+    def get(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            annotask_statistics = annotask_service.get_annotask_statistics(dbm, annotask_id)
+            dbm.close_session()
+            return annotask_statistics
