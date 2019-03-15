@@ -3,6 +3,17 @@ import os
 class LOSTConfig(object):
 
     def __init__(self):
+        
+        self.send_mail = False
+        self.mail_server = ""
+        self.mail_port = ""
+        self.mail_use_ssl = False
+        self.mail_use_tls = False
+        self.mail_username = ""
+        self.mail_password = ""
+        self.mail_default_sender = ""
+        self.mail_lost_url = ""
+
         try:
             self.debug = False
             if "DEBUG" in os.environ:
@@ -39,15 +50,15 @@ class LOSTConfig(object):
             if "RABBITMQ_IP" in os.environ:
                 self.rabbitmq_ip = os.environ['RABBITMQ_IP']
 
-            self.send_mail = False
-            self.mail_server = ""
-            self.mail_port = ""
-            self.mail_use_ssl = False
-            self.mail_use_tls = False
-            self.mail_username = ""
-            self.mail_password = ""
-            self.mail_default_sender = ""
-            self.mail_lost_url = ""
+            # self.send_mail = False
+            # self.mail_server = ""
+            # self.mail_port = ""
+            # self.mail_use_ssl = False
+            # self.mail_use_tls = False
+            # self.mail_username = ""
+            # self.mail_password = ""
+            # self.mail_default_sender = ""
+            # self.mail_lost_url = ""
             
             if 'MAIL_SERVER' in os.environ:
                 self.mail_server = os.environ['MAIL_SERVER']
