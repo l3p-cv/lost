@@ -15,8 +15,6 @@ __author__ = "Gereon Reus"
 def start(db_man, data, manager_id):
     # data = json.loads(data)
     # load template
-    print('---------------------------------')
-    print('data',data)
     template = db_man.get_pipe_template(data['templateId'])
     # initialize pipe starter
     pipe_starter = PipeStarter(template, data, manager_id)
@@ -345,7 +343,6 @@ def get_running_pipe(db_man, identity, pipe_id, media_url):
     return pipe_serialize.pipe_json
 
 def serialize_elements(db_man, pipe_serialize, pipe_id):
-    print("PIPE ID:", pipe_id)
     for pe in db_man.get_pipe_elements(pipe_id):
         # dependent on dtype fill json with relevant information
         ########## DATASOURCE #############
@@ -433,9 +430,6 @@ class PipeSerialize(object):
         # create datasource json
         datasource_json = dict()
         # fill datasource with info
-        # DEBUG
-        print("--- DATASOURCE ---")
-        print(datasource)
         dump(datasource, "--- dump ---") 
         datasource_json['id'] = datasource.idx
         if datasource.dtype == dtype.Datasource.DATASET:
@@ -491,7 +485,6 @@ class PipeSerialize(object):
         script_json['description'] = script.description
         script_json['path'] = script.path
         # * language was not defined in any pipeline definition file i looked at.
-        # print("cartok: (warning) made script.language optional in service.py add_script.")
         # if hasattr(script, 'language'): 
         #     if script.language == dtype.ScriptLanguage.PYTHON2:
         #         script_json['language'] = "python2"
@@ -593,7 +586,6 @@ def get_completed_pipe(db_man, pipe_id, media_url):
 #                                                                 #
 ###################################################################
 def delete(db_man, pipe_id):
-    print("DELETE PIPE NO." + str(pipe_id))
     pipe_godfather = PipeGodfather(db_man, pipe_id)
     pipe_godfather.delete()
     return True

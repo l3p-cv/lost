@@ -215,6 +215,8 @@ class PipeEngine(pipe_model.PipeEngine):
                 self.process_pipe_element()
             elif p.state == state.Pipe.FINISHED:
                 return
+            elif p.state == state.Pipe.ERROR:
+                self.__report_error(p)
             else:
                 raise Exception("Unknown PipeState!")
             p.is_locked = False
@@ -285,6 +287,20 @@ class PipeEngine(pipe_model.PipeEngine):
                     return candidate
         return candidate
 
+    def __report_error(self, pipe):
+        for pipe_element in self.dbm.get_script_errors(pipe.idx):
+            # Send mail to inform user about script error.
+            try:
+                email.send_script_error(pipe, pipe_element)
+                pipe_element.error_reported = True
+                self.dbm.add(pipe_element)
+                self.dbm.commit()    
+            except:
+                pipe_element.error_reported = True
+                pipe_element.error_msg +=  traceback.format_exc()
+                self.dbm.add(pipe_element)
+                self.dbm.commit()    
+
 def gen_run_cmd(program, pipe_e, lostconfig):
     # script = self.dbm.get_script(pipe_e.script_id)
     script_path = os.path.join(lostconfig.project_path, pipe_e.script.path)
@@ -337,4 +353,5 @@ def celery_exec_script(pipe_element_id):
             pipe.idx, pipe_e.script.path))
         msg = traceback.format_exc()
         logger.error(msg)
-        script_api.report_script_err(pipe_e, pipe, dbm, msg)
+        script_api.report_script_err(pipe_e, pipe, dbm, msg)    
+

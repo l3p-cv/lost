@@ -41,7 +41,7 @@ const deletePipeline = (id) => async dispatch => {
     const response = await axios.delete(`${API_URL}/pipeline/${id}`)
     if (response.data === 'success') {
         if (typeof window !== 'undefined') {
-            window.location.href = `${window.location.origin}/dashboard`;
+            window.location.href = `${window.location.origin}`;
         }
     }
     dispatch({ type: 'PIPELINE_RUNNING_DELETE', payload: response.data })
