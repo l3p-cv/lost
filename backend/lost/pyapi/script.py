@@ -44,8 +44,10 @@ def report_script_err(pipe_element, task, dbm, msg):
     dbm.add(pipe_element)
     dbm.commit()
     # Send mail to inform user about script error.
-    email.send_script_error(task, pipe_element)
-
+    try:
+        email.send_script_error(task, pipe_element)
+    except:
+        pass    
 class Script(pipe_elements.Element):
     '''Superclass for a user defined Script.
 
