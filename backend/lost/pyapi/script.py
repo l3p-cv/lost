@@ -20,7 +20,7 @@ from lost.logic.label import LabelTree
 try:
     from lost.logic import email
 except Exception as e:
-    print('Failed to import lost.logic.email.\n{}'.format(e))
+    print('Failed to import lost.logic.email module.\n{}'.format(e))
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
