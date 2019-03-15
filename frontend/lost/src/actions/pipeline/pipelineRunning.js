@@ -90,8 +90,18 @@ const downloadDataExport = (filePath) => async dispatch => {
         window.URL.revokeObjectURL(objectURL);
 }
 
-const downloadImage = (path) => async dispatch => {
-
+const downloadImage = (filePath) => async dispatch => {
+    const token = localStorage.getItem('token')
+    const response = await http.get({
+        url: `${API_URL}/${filePath}`,
+		token,
+		type: 'image'
+    })
+    const objectURL = window.URL.createObjectURL(response)
+    return objectURL
+    console.log('----objectURL--------------------------------');
+    console.log(objectURL);
+    console.log('------------------------------------');
 }
 
 
@@ -111,4 +121,13 @@ const toggleModal = (id) => {
     }
 }
 
-export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, downloadDataExport }
+export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, downloadDataExport, downloadImage }
+
+
+
+
+
+
+
+
+
