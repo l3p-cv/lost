@@ -27,7 +27,13 @@ const getPipelines = () => async dispatch => {
 }
 
 const getPipeline = (id) => async dispatch => {
-    const response = await axios.get(`${API_URL}/pipeline/${id}`)
+    let response ={}
+    try {
+        response = await axios.get(`${API_URL}/pipeline/${id}`)
+    }catch(err){
+        console.warn(err)
+        response.data = 'ERROR'
+    }
     dispatch({ type: 'PIPELINE_RUNNING_GET_PIPELINE', payload: response.data })
 }
 
@@ -99,9 +105,6 @@ const downloadImage = (filePath) => async dispatch => {
     })
     const objectURL = window.URL.createObjectURL(response)
     return objectURL
-    console.log('----objectURL--------------------------------');
-    console.log(objectURL);
-    console.log('------------------------------------');
 }
 
 

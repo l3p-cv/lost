@@ -65,7 +65,7 @@ class BaseModal extends Component {
             <Modal size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
                 {this.selectModal()}
                 <ModalFooter>
-                    <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
+                    <Button color="secondary" onClick={this.toggleModal}>Okay</Button>
                 </ModalFooter>
             </Modal>
         )
