@@ -17,7 +17,10 @@ import json
 import pickle
 from lost.pyapi import pipe_elements
 from lost.logic.label import LabelTree
-from lost.logic import email
+try:
+    from lost.logic import email
+except Exception as e:
+    print('Failed to import lost.logic.email.\n{}'.format(e))
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
