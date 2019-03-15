@@ -18,6 +18,7 @@ Welcome to lost's documentation!
         All About Scripts <all_about_scripts.rst>
         Users and Groups <users_groups.rst>
         Conventions <conventions.rst>
+        PyAPI <pyapi.rst>
 
 Indices and tables
 ==================
