@@ -108,6 +108,7 @@ In the same way scripts will be namespaced internally by LOST:
 So in :ref:`our example <pp-dir-structure>` the pipelines would be named
 **my_pipe_project.another_pipeline** and **my_pipe_project.my_pipeline**. 
 
+.. _aapipelines-pipe-def-files:
 
 Pipeline Definition Files
 =========================
