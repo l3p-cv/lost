@@ -259,6 +259,13 @@ class ScriptOutput(Output):
     #         self._script._dbm.add(anno)
 
     def add_visual_output(self, img_path=None, html=None):
+        '''Display an image and html in the web gui via a VisualOutput element.
+
+        Args:
+            img_path (str): Path in the lost filesystem to the image 
+                to display.
+            html (str): HTML text to display.
+        '''
         if img_path is None and html is None:
             raise Exception('One of the arguments need to be not None!')
         for pe in self._connected_pes:
@@ -274,6 +281,12 @@ class ScriptOutput(Output):
                 self._script._dbm.add(vis_out)
 
     def add_data_export(self, file_path):
+        '''Serve a file for download inside the web gui via a DataExport element.
+
+        Args:
+            file_path (str): Path to the file that should be provided 
+                for download.
+        '''
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.DATA_EXPORT:
                 rel_path = self._script.file_man.make_path_relative(file_path)
