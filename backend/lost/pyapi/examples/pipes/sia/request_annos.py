@@ -18,8 +18,8 @@ class RequestAnnos(script.Script):
     An imageset is basicly a folder with images.
     '''
     def main(self):
-        for raw_file in self.inp.raw_files:
-            media_path = raw_file.path
+        for ds in self.inp.datasources:
+            media_path = ds.path
             annos = []
             anno_types = []
             if self.get_arg('polygon').lower() == 'true':

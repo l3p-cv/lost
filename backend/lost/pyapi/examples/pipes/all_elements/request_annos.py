@@ -8,8 +8,8 @@ class RequestAnnos(script.Script):
     An imageset is basicly a folder with images.
     '''
     def main(self):
-        for raw_file in self.inp.raw_files:
-            media_path = raw_file.path
+        for ds in self.inp.datasources:
+            media_path = ds.path
             for img_file in os.listdir(media_path):
                 img_path = os.path.join(media_path, img_file)
                 self.outp.request_annos(img_path)

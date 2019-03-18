@@ -84,8 +84,8 @@ class RequestYoloAnnos(script.Script):
         self.logger.info('Loaded model into memory!')
         for annotask in self.outp.anno_tasks:
             possible_labels = annotask.possible_label_df
-        for raw_file in self.inp.raw_files:
-            media_path = raw_file.path
+        for ds in self.inp.datasources:
+            media_path = ds.path
             file_list = os.listdir(media_path)
             total = float(len(file_list))
             for index, img_file in enumerate(file_list):

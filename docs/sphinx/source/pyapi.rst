@@ -62,6 +62,25 @@ SIATask
     :members:
     :inherited-members:
 
+DataExport
+------------
+.. autoclass:: lost.pyapi.pipe_elements.DataExport
+    :members:
+    :inherited-members:
+
+VisualOutput
+------------
+.. autoclass:: lost.pyapi.pipe_elements.VisualOutput
+    :members:
+    :inherited-members:
+
+Loop
+------------
+.. autoclass:: lost.pyapi.pipe_elements.Loop
+    :members:
+    :inherited-members:
+
+
 model
 ================
 

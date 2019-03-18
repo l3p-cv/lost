@@ -10,8 +10,8 @@ class AnnoAllImgs(script.Script):
     '''
     def main(self):
         self.logger.info("Request image annotations for:")
-        for raw_file in self.inp.raw_files:
-            media_path = raw_file.path
+        for ds in self.inp.datasources:
+            media_path = ds.path
             for img_file in os.listdir(media_path):
                 img_path = os.path.join(media_path, img_file)
                 self.outp.request_image_anno(img_path=img_path)
