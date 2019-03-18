@@ -9,6 +9,9 @@ import {alertLoading, alertClose} from 'pipelineGlobalComponents/sweetalert'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
 
+
+
+
 class SelectPipeline extends Component {
     constructor() {
         super()
@@ -63,6 +66,7 @@ class SelectPipeline extends Component {
                           }
                         return(
                           <Progress className='progress-xs' color={getColor(progress)} value={progress}/>
+
                       )}
                   },
                   {

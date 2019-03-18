@@ -556,7 +556,7 @@ class PipeSerialize(object):
             visual_output_json = dict()
             visual_output_json['id'] = vs.idx
             visual_output_json['iteration'] = vs.iteration
-            visual_output_json['imagePath'] = self.media_url + vs.img_path
+            visual_output_json['imagePath'] = vs.img_path
             visual_output_json['htmlOutput'] = vs.html_string
             visual_outputs_json.append(visual_output_json)
         pe_json['visualOutput'] = visual_outputs_json

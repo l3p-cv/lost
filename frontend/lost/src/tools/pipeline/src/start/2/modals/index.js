@@ -118,7 +118,7 @@ class BaseModal extends Component {
                 }
 
                 <ModalFooter>
-                    <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
+                    <Button color="secondary" onClick={this.toggleModal}>Okay</Button>
                 </ModalFooter>
             </Modal>
         )

@@ -51,10 +51,10 @@ class Toolbar extends Component {
     render() {
         return (
             <div className='pipeline-running-toolbar'>
-                {this.props.data && <>
+                 
                     <GrayLine />
                     <Button className='pipeline-running-toolbar-button' onClick={this.delete} color="info">Delete Pipeline</Button>
-                    <Button className='pipeline-running-toolbar-button' onClick={this.downloadLogfile} color="info">Download Logfile</Button>
+                    {this.props.data &&<><Button className='pipeline-running-toolbar-button' onClick={this.downloadLogfile} color="info">Download Logfile</Button>
                     <Button className='pipeline-running-toolbar-button'
                         onClick={this.props.data.progress === 'PAUSED' ? this.play : this.pause}
                         color="info">

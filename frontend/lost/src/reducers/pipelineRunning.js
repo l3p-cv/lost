@@ -18,7 +18,7 @@ const INITITAL_STATE = {
     steps: [
         {
             text: '1',
-            icon: 'fa-puzzle-piece',
+            icon: 'fa-rocket',
             shapeBorderColor: '#147289',
             shapeBackgroundColor: 'white',
             shapeContentColor: '#147289',
@@ -55,94 +55,97 @@ export default (state = INITITAL_STATE, action) => {
         case 'PIPELINE_RUNNING_GET_PIPELINE':
             return {
                 ...state,
-                step1Data: {
-                    ...action.payload,
-                    elements: action.payload.elements.map((el) => {
-                        let connection = []
-                        if (el.peOut) {
-                            connection = el.peOut.map(el => {
-                                return {
-                                    id: el
+
+                step1Data:
+                    action.payload === 'ERROR' ? false : {
+                        ...action.payload,
+                        elements:
+                            action.payload.elements.map((el) => {
+                                let connection = []
+                                if (el.peOut) {
+                                    connection = el.peOut.map(el => {
+                                        return {
+                                            id: el
+                                        }
+                                    })
+                                }
+                                if ('datasource' in el) {
+                                    return {
+                                        ...el,
+                                        id: el.peN,
+                                        type: 'datasource',
+                                        title: 'Datasource',
+                                        connection: connection,
+                                        footer: el.state
+                                    }
+                                } else if ('script' in el) {
+                                    return {
+                                        ...el,
+                                        id: el.peN,
+                                        type: 'script',
+                                        title: 'Script',
+                                        connection: connection,
+                                        footer: el.state
+                                    }
+
+                                } else if ('annoTask' in el) {
+                                    return {
+                                        ...el,
+                                        id: el.peN,
+                                        type: 'annoTask',
+                                        title: 'Annotation Task',
+                                        connection: connection,
+                                        footer: el.state
+                                    }
+
+                                } else if ('visualOutput' in el) {
+                                    return {
+                                        ...el,
+                                        id: el.peN,
+                                        type: 'visualOutput',
+                                        title: 'Visualization',
+                                        connection: connection,
+                                        footer: el.state
+                                    }
+
+                                } else if ('dataExport' in el) {
+                                    return {
+                                        ...el,
+                                        id: el.peN,
+                                        type: 'dataExport',
+                                        title: 'Data Export',
+                                        connection: connection,
+                                        footer: el.state
+                                    }
+
+                                } else if ('loop' in el) {
+                                    if (el.loop.peJumpId) {
+                                        connection.push({
+                                            id: el.loop.peJumpId,
+                                            lineStyle: {
+                                                stroke: 'red',
+                                                strokeWidth: '1.8px',
+                                                fill: 'white',
+                                                strokeDasharray: '5, 5'
+                                            },
+                                            arrowheadStyle: {
+                                                fill: 'red',
+                                                stroke: 'none'
+                                            }
+                                        })
+                                    }
+                                    return {
+                                        ...el,
+                                        id: el.peN,
+                                        type: 'loop',
+                                        title: 'Loop',
+                                        connection: connection,
+                                        footer: el.state
+                                    }
+
                                 }
                             })
-                        }
-                        if ('datasource' in el) {
-                            return {
-                                ...el,
-                                id: el.peN,
-                                type: 'datasource',
-                                title: 'Datasource',
-                                connection: connection,
-                                footer: el.state
-                            }
-                        } else if ('script' in el) {
-                            return {
-                                ...el,
-                                id: el.peN,
-                                type: 'script',
-                                title: 'Script',
-                                connection: connection,
-                                footer: el.state
-                            }
-
-                        } else if ('annoTask' in el) {
-                            return {
-                                ...el,
-                                id: el.peN,
-                                type: 'annoTask',
-                                title: 'Annotation Task',
-                                connection: connection,
-                                footer: el.state
-                            }
-
-                        } else if ('visualOutput' in el) {
-                            return {
-                                ...el,
-                                id: el.peN,
-                                type: 'visualOutput',
-                                title: 'Visualization',
-                                connection: connection,
-                                footer: el.state
-                            }
-
-                        } else if ('dataExport' in el) {
-                            return {
-                                ...el,
-                                id: el.peN,
-                                type: 'dataExport',
-                                title: 'Data Export',
-                                connection: connection,
-                                footer: el.state
-                            }
-
-                        } else if ('loop' in el) {
-                            if (el.loop.peJumpId) {
-                                connection.push({
-                                    id: el.loop.peJumpId,
-                                    lineStyle: {
-                                        stroke: 'red',
-                                        strokeWidth: '1.8px',
-                                        fill: 'white',
-                                        strokeDasharray: '5, 5'
-                                    },
-                                    arrowheadStyle: {
-                                        fill: 'red',
-                                        stroke: 'none'
-                                    }
-                                })
-                            }
-                            return {
-                                ...el,
-                                id: el.peN,
-                                type: 'loop',
-                                title: 'Loop',
-                                connection: connection,
-                                footer: el.state
-                            }
-
-                        }
-                    })
-                }
+                    }
             }
         case 'PIPELINE_RUNNING_SELECT_TAB':
             return {
@@ -167,7 +170,7 @@ export default (state = INITITAL_STATE, action) => {
                 ...state,
                 step1Data: {
                     ...state.step1Data,
-                    progress: action.payload === 'success'?'PAUSED': 'ERROR'
+                    progress: action.payload === 'success' ? 'PAUSED' : 'ERROR'
                 }
             }
         case 'PIPELINE_RUNNING_PLAY':
@@ -175,7 +178,7 @@ export default (state = INITITAL_STATE, action) => {
                 ...state,
                 step1Data: {
                     ...state.step1Data,
-                    progress: action.payload === 'success'?'1': 'ERROR'
+                    progress: action.payload === 'success' ? '1' : 'ERROR'
                 }
             }
         case 'PIPELINE_RUNNING_TOGGLE_MODAL':

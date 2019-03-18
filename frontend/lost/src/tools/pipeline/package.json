@@ -3,8 +3,9 @@
   "name": "pipeline",
   "version": "2.0.0",
   "dependencies": {
+    "react-contexify": "^4.0.2",
     "react-directed-graph": "^1.0.5",
-    "react-stepper-wizard": "^1.1.4",
+    "react-stepper-wizard": "^1.1.5",
     "sweetalert2": "^8.2.6"
   },
   "devDependencies": {
