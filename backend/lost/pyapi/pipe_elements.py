@@ -1,39 +1,9 @@
 import lost
-from lost.logic.pipeline import pipe_model
-from lost.pyapi import inout
 import os
-from lost.logic import file_man
-from lost.pyapi.pipeline import PipeInfo
-from lost.db import model
 import pandas as pd
 from lost.db import dtype
+from lost.pyapi.pe_base import Element
 from lost.pyapi import script
-
-class Element(object):
-
-    def __init__(self, pe, dbm):
-        self._dbm = dbm #type: lost.db.access.DBMan
-        self._lostconfig = dbm.lostconfig
-        self._pipe_element = pe
-        self._pipe = self._dbm.get_pipe(pipe_id=self._pipe_element.pipe_id)
-        self._pipe_man = pipe_model.PipeEngine(self._dbm, self._pipe)
-        self._inp = inout.Input(self)
-        self._outp = inout.Output(self)
-        self._fm = file_man.FileMan(self._lostconfig)
-        self.pipe_info = PipeInfo(self._pipe, dbm)
-
-    @property
-    def inp(self):
-        ''':class:`lost.pyapi.inout.Input`: Input of this pipeline element
-        '''
-        return self._inp
-
-    @property
-    def outp(self):
-        ''':class:`lost.pyapi.inout.Output`: Output of this pipeline element
-        '''
-        return self._outp
-
 
 class RawFile(Element):
 

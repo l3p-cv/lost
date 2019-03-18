@@ -15,7 +15,7 @@ import os
 from lost.logic.config import LOSTConfig
 import json
 import pickle
-from lost.pyapi import pipe_elements
+from lost.pyapi import pe_base
 from lost.logic.label import LabelTree
 try:
     from lost.logic import email
@@ -46,7 +46,7 @@ def report_script_err(pipe_element, task, dbm, msg):
     # Send mail to inform user about script error.
     email.send_script_error(task, pipe_element)
 
-class Script(pipe_elements.Element):
+class Script(pe_base.Element):
     '''Superclass for a user defined Script.
 
     Custom scripts need to inherit from Script and implement the main method.
