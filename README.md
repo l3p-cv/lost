@@ -1,5 +1,5 @@
 [![pipeline status](https://gitlab.com/l3p-cv/lost/badges/master/pipeline.svg)](https://gitlab.com/l3p-cv/lost/pipelines)
-
+[![Documentation Status](https://readthedocs.org/projects/lost/badge/?version=latest)](https://lost.readthedocs.io/en/latest/?badge=latest)
 # LOST - Label Objects and Save Time
 LOST (Label Object and Save Time) is a **flexible** **web-based** framework
 for **semi-automatic** image annotation.
