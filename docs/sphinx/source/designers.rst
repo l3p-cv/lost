@@ -186,9 +186,9 @@ Within your script you can access the value of an argument with the
 
 A script can access all the elements it is connected to. 
 Each script has an input and an output object.
-Since the input of our *request_annos.py* script is connected to a the 
-*Datasource* element of type *rawFile* we access it by iterating over all
-*raw_file* objects that are connected to the input and read out the *path*
+Since the input of our *request_annos.py* script is connected to a 
+*Datasource* element, we access it by iterating over all
+*Datasource* objects that are connected to the input and read out the *path*
 where a folder with images is provided:
 
  .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py

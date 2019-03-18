@@ -38,6 +38,12 @@ Element
 .. autoclass:: lost.pyapi.pipe_elements.Element
     :members:
 
+Datasource
+------------
+.. autoclass:: lost.pyapi.pipe_elements.Datasource
+    :members:
+    :inherited-members:
+    
 RawFile
 ------------
 .. autoclass:: lost.pyapi.pipe_elements.RawFile
