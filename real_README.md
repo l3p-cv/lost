@@ -57,18 +57,3 @@ tested for Ubuntu):
     user: admin
     password: admin
     ```
-
-
-## Getting data into LOST
-### Images
-### Labels
-
-## Start annotating
-
-# For Developers
-
-## General
-[Develop](docs/develop.md)
-
-## Python API for Pipeline Development
-Link to API docs
