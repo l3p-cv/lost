@@ -19,20 +19,27 @@ def gen_rand_string(n):
 
 def get_env_config(data_path, release):
     config = [
-        ['DEV','True'],
+        ['DEBUG','False'],
         ['ADD_EXAMPLES','True'],
         ['LOST_VERSION', release],
         ['LOST_FRONTEND_PORT', 80],
         ['LOST_HOME', data_path],
         ['LOST_DB_NAME', 'lost'],
         ['LOST_DB_USER', 'lost'],
-        ['LOST_DB_PASSWORD', 'LostDevLost'],
-        ['LOST_DB_ROOT_PASSWORD', 'root'],
-        ['PROJECT_NAME', 'myProject'],
+        ['LOST_DB_PASSWORD', 'LostDbLost'],
+        ['LOST_DB_ROOT_PASSWORD', 'LostRootLost'],
         ['SECRET_KEY', gen_rand_string(16)],
         ['PIPE_SCHEDULE', '5'],
         ['WORKER_BEAT', 10],
-        ['WORKER_TIMEOUT',30]
+        ['WORKER_TIMEOUT',30],
+        ['#MAIL_SERVER','mailserver.com'],
+        ['#MAIL_PORT','465'],
+        ['#MAIL_USE_SSL','True'],
+        ['#MAIL_USE_TLS','True'],
+        ['#MAIL_USERNAME','email@email.com'],
+        ['#MAIL_PASSWORD','password'],
+        ['#MAIL_DEFAULT_SENDER','LOST Notification System <email@email.com>'],
+        ['#MAIL_LOST_URL','http://mylostinstance.url/']
     ]
     return config
 
@@ -49,7 +56,7 @@ def main(args):
     dst_docker_dir = os.path.join(args.install_path, 'docker')
     os.makedirs(dst_docker_dir)
     logging.info('Created: {}'.format(dst_docker_dir))
-    example_config_path = '../compose/docker-compose.yml'
+    example_config_path = '../compose/prod-docker-compose.yml'
     dst_config = os.path.join(dst_docker_dir, 'docker-compose.yml')
     shutil.copy(example_config_path, dst_config)
     logging.info('Copied docker-compose config to: {}'.format(dst_config))
