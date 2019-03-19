@@ -66,7 +66,14 @@ This program expects the path to the *pipeline project* as argument.
 If you copied your *pipeline project* to
 */home/my_user/lost/data/my_pipes/my_pipe_project* on the host machine,
 it will be available inside the container under
-*/home/lost/my_pipes/my_pipe_project*
+*/home/lost/my_pipes/my_pipe_project*.
+
+.. note::
+  It is just a convention to place your pipelines that should be 
+  imported into the **my_pipes** folder. 
+  Theoretical you could place your **pipeline projects** anywhere in the
+  *lost_data_folder*,
+  but life is easier when following this convention.
 
 Let do the import:
 
