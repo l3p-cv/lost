@@ -39,8 +39,8 @@ def report_script_err(pipe_element, task, dbm, msg):
     dbm.add(task)
     dbm.add(pipe_element)
     dbm.commit()
-    
-class Script(pipe_elements.Element):
+
+class Script(pe_base.Element):
     '''Superclass for a user defined Script.
 
     Custom scripts need to inherit from Script and implement the main method.
