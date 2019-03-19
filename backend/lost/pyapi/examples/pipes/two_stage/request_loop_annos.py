@@ -18,8 +18,8 @@ class RequestLoopAnnos(script.Script):
         if os.path.exists(used_path):
             with open(used_path, 'r') as f:
                 used =json.load(f)
-        for raw_file in self.inp.raw_files:
-            media_path = raw_file.path
+        for ds in self.inp.datasources:
+            media_path = ds.path
             for i, img_file in enumerate(os.listdir(media_path)):
                 img_path = os.path.join(media_path, img_file)
                 if img_file not in used:

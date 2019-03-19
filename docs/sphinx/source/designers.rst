@@ -186,9 +186,9 @@ Within your script you can access the value of an argument with the
 
 A script can access all the elements it is connected to. 
 Each script has an input and an output object.
-Since the input of our *request_annos.py* script is connected to a the 
-*Datasource* element of type *rawFile* we access it by iterating over all
-*raw_file* objects that are connected to the input and read out the *path*
+Since the input of our *request_annos.py* script is connected to a 
+*Datasource* element, we access it by iterating over all
+*Datasource* objects that are connected to the input and read out the *path*
 where a folder with images is provided:
 
  .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
@@ -309,39 +309,10 @@ Please see :ref:`aapipelines-import` for more information.
 
 Debugging a script
 ==================
-Most likely,
-if you imported your pipeline and run it for the first time some scripts
-will not work,
-since you placed some tiny bug into your code :-D
 
-Inside the web GUI all exceptions and errors of your script will be
-visualized when clicking on the respective script element in the
-pipeline visualization.
-In this way you get a first hint what's wrong.
-
-In order to debug your code you need to login to the docker container
-and find the instance folder that is created for each script instance.
-Inside this folder there is a bash script called *debug.sh* that need to
-be executed in order to start the `pudb <https://documen.tician.de/pudb/>`_
-debugger.
-You will find your script by its unique *pipeline element id*.
-If you installed lost to */home/my_user/lost*,
-the path to the script instance folder will be
-*/home/my_user/lost/data/data/instance/i-<pipe_element_id>*
-
-.. code-block:: bash
-
-    # Log in to docker
-    docker exec -it lost bash
-    # Change directory to the instance path of your script
-    cd /home/my_user/lost/data/data/instance/i-<pipe_element_id>
-    # Start debugging
-    bash debug.sh
-
-.. note::
-    If your script requires a special ENV to be executed,
-    you need to login to a container that has installed this environment
-    for debugging.
+When your script starts to throw errors it is time for debugging your 
+script inside the docker container.
+Please see :ref:`aascripts-debugging` for more information.
 
 .. |ls-export-full| replace:: Listing e1
 .. |ls-export-envs-args| replace:: Listing e2

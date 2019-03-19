@@ -23,6 +23,7 @@ SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
 MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
 JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
+MY_PIPES_PATH = "my_pipes/"
 
 class FileMan(object):
     def __init__(self, lostconfig):
@@ -219,6 +220,9 @@ class FileMan(object):
         if not os.path.exists(join(root,DEBUG_ROOT_PATH)):
             os.mkdir(join(root,DEBUG_ROOT_PATH))
             print("\t Created: %s"%(join(root,DEBUG_ROOT_PATH),))
+        if not os.path.exists(join(root, MY_PIPES_PATH)):
+            os.mkdir(join(root, MY_PIPES_PATH))
+            print("\t Created: %s"%(join(root, MY_PIPES_PATH),))
 
     @property
     def media_root_path(self):

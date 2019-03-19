@@ -6,6 +6,9 @@ source /opt/conda/bin/activate lost
 rm -rf /tmp/celerybeat.pid
 
  # init env vars 
+
+export LOST_HOME="/home/lost"
+
 if [ -z "${LOST_DB_IP}" ]; then
   export LOST_DB_IP="db-lost"
 fi

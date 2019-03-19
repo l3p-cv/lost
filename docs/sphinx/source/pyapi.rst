@@ -38,6 +38,12 @@ Element
 .. autoclass:: lost.pyapi.pipe_elements.Element
     :members:
 
+Datasource
+------------
+.. autoclass:: lost.pyapi.pipe_elements.Datasource
+    :members:
+    :inherited-members:
+    
 RawFile
 ------------
 .. autoclass:: lost.pyapi.pipe_elements.RawFile
@@ -61,6 +67,25 @@ SIATask
 .. autoclass:: lost.pyapi.pipe_elements.SIATask
     :members:
     :inherited-members:
+
+DataExport
+------------
+.. autoclass:: lost.pyapi.pipe_elements.DataExport
+    :members:
+    :inherited-members:
+
+VisualOutput
+------------
+.. autoclass:: lost.pyapi.pipe_elements.VisualOutput
+    :members:
+    :inherited-members:
+
+Loop
+------------
+.. autoclass:: lost.pyapi.pipe_elements.Loop
+    :members:
+    :inherited-members:
+
 
 model
 ================

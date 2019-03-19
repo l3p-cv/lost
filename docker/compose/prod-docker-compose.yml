@@ -7,7 +7,7 @@ services:
       env_file:
         - .env
       volumes:
-        - ${LOST_HOME}:/${LOST_HOME}
+        - ${LOST_DATA}:/home/lost
       restart: always
       ports:
         - "${LOST_FRONTEND_PORT}:8080"
@@ -24,7 +24,7 @@ services:
       image: mysql:5.7
       container_name: db-lost
       volumes:
-        - ${LOST_HOME}/mysql:/var/lib/mysql
+        - ${LOST_DATA}/mysql:/var/lib/mysql
       restart: always
       environment:
         MYSQL_DATABASE: ${LOST_DB_NAME}
@@ -39,7 +39,7 @@ services:
       env_file:
         - .env
       volumes:
-        - ${LOST_HOME}:/${LOST_HOME}
+        - ${LOST_DATA}:/home/lost
       restart: always
       environment:
           PYTHONPATH: "/code/backend"
@@ -55,4 +55,4 @@ services:
       container_name: rabbitmqlost
       restart: always
       volumes:
-        - ${LOST_HOME}/rabbitmq:/var/lib/rabbitmq
+        - ${LOST_DATA}/rabbitmq:/var/lib/rabbitmq

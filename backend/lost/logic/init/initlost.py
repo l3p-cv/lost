@@ -9,7 +9,7 @@ from lost.db.model import User, UserRoles, Role, Group
 
 def main():
     lostconfig = config.LOSTConfig()
-    project_root = join(os.environ['LOST_HOME'], "data")
+    project_root = join(lostconfig.project_path, "data")
     if not os.path.exists(project_root):
         os.makedirs(project_root)
     fman = file_man.FileMan(lostconfig)

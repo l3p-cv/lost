@@ -15,7 +15,7 @@ import os
 from lost.logic.config import LOSTConfig
 import json
 import pickle
-from lost.pyapi import pipe_elements
+from lost.pyapi import pe_base
 from lost.logic.label import LabelTree
 
 def report_script_err(pipe_element, task, dbm, msg):
@@ -39,7 +39,8 @@ def report_script_err(pipe_element, task, dbm, msg):
     dbm.add(task)
     dbm.add(pipe_element)
     dbm.commit()
-class Script(pipe_elements.Element):
+
+class Script(pe_base.Element):
     '''Superclass for a user defined Script.
 
     Custom scripts need to inherit from Script and implement the main method.
@@ -64,7 +65,7 @@ class Script(pipe_elements.Element):
             pe = dbm.get_pipe_element(pe_id)
         super().__init__(pe, dbm)
         logfile_path = self.file_man.get_pipe_log_path(self._pipe.idx)
-        self.logger = log.get_file_logger(os.path.basename(pe.script.path),
+        self._logger = log.get_file_logger(os.path.basename(pe.script.path),
                                           logfile_path)
         if self.pipe_info.logfile_path is None or not self.pipe_info.logfile_path:
             self.pipe_info.logfile_path = self.get_rel_path(logfile_path)
@@ -90,6 +91,14 @@ class Script(pipe_elements.Element):
     def main(self):
         #raise NotImplementedError("You need to implement a main method to get your Script running.")
         pass
+
+    @property
+    def logger(self):
+        '''A standard python logger for this script. 
+        
+        It will log to the pipline log file.
+        '''
+        return self._logger
 
     @property
     def inp(self):

@@ -27,6 +27,15 @@ class Input(object):
         return res_list
 
     @property
+    def datasources(self):
+        '''list of :class:`lost.pyapi.pipe_elements.Datasource` objects'''
+        res_list = []
+        for pe in self._connected_pes:
+            if pe.dtype == dtype.PipeElement.DATASOURCE:
+                res_list.append(pipe_elements.RawFile(pe, self._element._dbm))
+        return res_list
+
+    @property
     def mia_tasks(self):
         '''list of :class:`lost.pyapi.pipe_elements.MIATask` objects'''
         res_list = []
@@ -53,6 +62,27 @@ class Input(object):
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 if pe.anno_task.dtype == dtype.AnnoTask.SIA:
                     res_list.append(pipe_elements.SIATask(pe, self._element._dbm))
+        return res_list
+
+    @property
+    def visual_outputs(self):
+        '''list of :class:`lost.pyapi.pipe_elements.VisualOutput` objects.
+        '''
+        res_list = []
+        for pe in self._connected_pes:
+            if pe.dtype == dtype.PipeElement.VISUALIZATION:
+                res_list.append(pipe_elements.VisualOutput(pe, self._element._dbm))
+        return res_list
+
+
+    @property
+    def data_exports(self):
+        '''list of :class:`lost.pyapi.pipe_elements.VisualOutput` objects.
+        '''
+        res_list = []
+        for pe in self._connected_pes:
+            if pe.dtype == dtype.PipeElement.DATA_EXPORT:
+                res_list.append(pipe_elements.DataExport(pe, self._element._dbm))
         return res_list
 
     @property
@@ -193,23 +223,6 @@ class Input(object):
             for img_anno in result.img_annos:
                 for tda in img_anno.polygon_annos:
                     yield tda #type: lost.db.model.TwoDAnno
-
-    @property
-    def visual_outputs(self):
-        '''Iterate over all :class:`.project.VisualOutput` objects in this Resultset.
-
-        Returns:
-            Iterator: :class:`.project.VisualOutput`.
-        '''
-        for result in self._results:
-            for v_out in result.visual_outputs:
-                yield v_out
-
-    @property
-    def data_exports(self):
-        for result in self._results:
-            for v_out in result.data_exports:
-                yield v_out
 
 
 class Output(Input):
