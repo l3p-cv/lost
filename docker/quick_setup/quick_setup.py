@@ -23,7 +23,7 @@ def get_env_config(data_path, release):
         ['ADD_EXAMPLES','True'],
         ['LOST_VERSION', release],
         ['LOST_FRONTEND_PORT', 80],
-        ['LOST_HOME', data_path],
+        ['LOST_DATA', data_path],
         ['LOST_DB_NAME', 'lost'],
         ['LOST_DB_USER', 'lost'],
         ['LOST_DB_PASSWORD', 'LostDbLost'],
