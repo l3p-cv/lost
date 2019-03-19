@@ -247,7 +247,7 @@ class UserLogin(Resource):
 
         # check password
         if user and user.check_password(data['password']):
-            expires = datetime.timedelta(hours=2)
+            expires = datetime.timedelta(hours=3)
             if FLASK_DEBUG:
                 expires = datetime.timedelta(days=365)
             access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
