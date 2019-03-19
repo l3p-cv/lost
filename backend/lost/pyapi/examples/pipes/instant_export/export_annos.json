@@ -1,0 +1,20 @@
+{
+  "description" : "This pipeline emulates a script and exports all annotations of this script",
+  "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 0.0,
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1],
+      "script" : {
+        "path": "emulate_script.py",
+        "description" : "Emulate a script an export all annotations to a csv file."
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : null,
+      "dataExport" : {}
+    }
+  ]
+}
