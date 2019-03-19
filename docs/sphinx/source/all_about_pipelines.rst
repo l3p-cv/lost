@@ -39,14 +39,14 @@ Importing a Pipeline Project into LOST
 After creating a pipeline it needs to be imported into LOST.
 In order to do that we need to copy the  
 pipeline project folder into the 
-*lost data folder* in your file system e.g:
+*lost_data_folder/my_pipes* in your/host file system e.g:
 
     .. code-block:: bash
 
         # Copy your pipe_project into the LOST data folder
-        cp -r my_pipe_project path_to_lost/data/ 
+        cp -r my_pipe_project path_to_lost_data/my_pipes/ 
 
-Every file that is located under *path_to_lost/data/* will be 
+Every file that is located under *lost_data_folder* will be 
 visible inside the lost docker container.
 Now we will login to the container with:
 
@@ -62,22 +62,21 @@ For this import we will use the lost command line tools.
 To import a pipeline project we use a program called 
 *import_pipe_project.py*.
 This program expects the path to the *pipeline project* as argument.
-Please note that we mapped the path to the *lost data folder* inside 
-the container to the path outside of the container.
-So if you installed lost to */home/my_user/lost*, 
-this path can also be used inside the container.
-If you copied your *pipeline project* to 
-*/home/my_user/lost/data/my_pipe_project* on the host machine,
-it will be also available inside the container under the same path.
+
+If you copied your *pipeline project* to
+*/home/my_user/lost/data/my_pipes/my_pipe_project* on the host machine,
+it will be available inside the container under
+*/home/lost/my_pipes/my_pipe_project*
+
 Let do the import:
 
     .. code-block:: bash
 
         # Import my_pipe_project into LOST
-        import_pipe_project.py /home/my_user/lost/data/my_pipe_project
+        import_pipe_project.py /home/lost/my_pipes/my_pipe_project
 
 The **import_pipe_project.py** program will copy your pipeline project 
-folder into the folder *path_to_lost/data/data/pipes* and write all the 
+folder into the folder */home/lost/data/pipes* and write all the 
 meta information into the lost database.
 After this import the pipeline should be visible in the web gui when 
 clicking on the *Start Pipeline* button in the *Designer* view.
@@ -95,7 +94,7 @@ that you need to call the **update_pipe_project.py** program:
     .. code-block:: bash
 
         # Update my_pipe_project in LOST
-        update_pipe_project.py /home/my_user/lost/data/my_pipe_project
+        update_pipe_project.py /home/lost/my_pipes/my_pipe_project
 
 Namespacing
 -----------
