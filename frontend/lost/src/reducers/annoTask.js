@@ -2,6 +2,7 @@ import TYPES from '../types/index'
 const INITIAL_STATE = {
     annoTasks: [],
     workingOnAnnoTask: null,
+    annoTaskStatistic: null,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -16,6 +17,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 workingOnAnnoTask: action.payload
+            }
+        case TYPES.GET_ANNOTASK_SPECIFIC_STATISTIC:
+            return {
+                ...state,
+                annoTaskStatistic: action.payload
             }
         default:
             return state

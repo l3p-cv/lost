@@ -1064,6 +1064,7 @@ class PipeElement(Base):
         dtype (enum): Type
             (see :class:`data_model.dtype.PipeElement`)
         error_msg (str): Exception message. When script had an error.
+        error_reported (bool): Weather an error has been reported or not.
         debug_session (str): ssh connection string to temporary debug session.
         is_debug_mode (Boolean):  DebugMode only visible for Developers.
         instance_context (str): A path where files of instantiated PipeElement can
@@ -1090,6 +1091,7 @@ class PipeElement(Base):
     pipe_id = Column(Integer, ForeignKey('pipe.idx'))
     dtype = Column(Integer)
     error_msg = Column(Text)
+    error_reported = Column(Boolean)
     warning_msg = Column(String(4096))
     log_msg = Column(String(4096))
     debug_session = Column(String(4096))
@@ -1116,7 +1118,7 @@ class PipeElement(Base):
     
     def __init__(self, idx=None, state=None, dtype=None,
                  anno_task=None, pipe_id=None, is_debug_mode=None,
-                 error_msg=None, warning_msg=None,
+                 error_msg=None, error_reported=False, warning_msg=None,
                  log_msg=None, instance_context=None, iteration=0,
                  pipe_context=None, progress=None, arguments=None):
         self.idx = idx
@@ -1126,6 +1128,7 @@ class PipeElement(Base):
         self.pipe_id = pipe_id
         self.is_debug_mode = is_debug_mode
         self.error_msg = error_msg
+        self.error_reported = error_reported
         self.warning_msg = warning_msg
         self.log_msg = log_msg
         self.instance_context = instance_context

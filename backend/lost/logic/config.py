@@ -8,7 +8,6 @@ class LOSTConfig(object):
         if "DEBUG" in os.environ:
             if os.environ['DEBUG'] == 'True':
                 self.debug = True
-        self.project_name = os.environ['PROJECT_NAME']
         self.project_path = os.environ['LOST_HOME']
         self.py3_init = os.environ['PY3_INIT']
         self.lost_db_user = os.environ['LOST_DB_USER']

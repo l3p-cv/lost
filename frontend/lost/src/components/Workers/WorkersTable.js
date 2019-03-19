@@ -20,7 +20,7 @@ const customStyles = {
       transform             : 'translate(-50%, -50%)',
       width: '85%',
       height: '85%',
-      maxWidth: '85rem'
+      maxWidth: '75rem'
     },
     overlay: {
         backgroundColor: 'rgba(0,0,0,0.75)'
@@ -78,6 +78,7 @@ class WorkersTable extends Component {
     renderLogFile(){
         if(this.state.logBlobUrl!=='')
         {
+            //return(  <LazyLog url={this.state.logBlobUrl} />)
             return( <ScrollFollow
                 startFollowing={true}
                 render={({ follow, onScroll }) => (

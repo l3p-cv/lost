@@ -30,3 +30,13 @@ export const chooseAnnoTask = (id, callBack) => async dispatch => {
 
     }
 }
+
+
+export const getAnnoTaskStatistic = (id) => async dispatch => {
+    try {
+        const response = await axios.get(API_URL + `/annotask/statistic/${id}`)
+        dispatch({ type: TYPES.GET_ANNOTASK_SPECIFIC_STATISTIC, payload: response.data})
+    } catch(e){
+
+    }
+}

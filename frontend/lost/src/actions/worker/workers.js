@@ -15,7 +15,7 @@ export const getWorkers = () => async dispatch => {
 export const getWorkerLogFile = (path) => async dispatch =>{
   
     const config = {
-        url: API_URL +'/data/logs/'+ path,
+        url: API_URL +'/data/workerlogs/'+ path,
         type: 'image',
         token: localStorage.getItem('token')
     }

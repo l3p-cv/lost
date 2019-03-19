@@ -9,6 +9,9 @@ import {alertLoading, alertClose} from 'pipelineGlobalComponents/sweetalert'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
 
+
+
+
 class SelectPipeline extends Component {
     constructor() {
         super()
@@ -58,8 +61,12 @@ class SelectPipeline extends Component {
                         if(row.value==="ERROR"){
                           return(<div><font color="red">ERROR</font></div>)
                         }
+                        if(row.value==="PAUSED"){
+                            return(<div><font color="orange">PAUSED</font></div>)
+                          }
                         return(
                           <Progress className='progress-xs' color={getColor(progress)} value={progress}/>
+
                       )}
                   },
                   {

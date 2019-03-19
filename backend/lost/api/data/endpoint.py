@@ -38,3 +38,17 @@ class Logs(Resource):
             return "You are not authorized.", 401
         else:
             return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data/logs'), path)
+
+@namespace.route('/workerlogs/<path:path>')
+class Logs(Resource): 
+    @jwt_required 
+    def get(self, path):
+        print(path)
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'logs'), path)

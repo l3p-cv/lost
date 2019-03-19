@@ -159,8 +159,7 @@ class DBMan(object):
         return self.session.query(model.Pipe)\
             .filter((model.Pipe.state!=state.Pipe.FINISHED) &\
                     (model.Pipe.state!=state.Pipe.DELETED) &\
-                    (model.Pipe.state!=state.Pipe.PAUSED) &\
-                    (model.Pipe.state!=state.Pipe.ERROR)).all()
+                    (model.Pipe.state!=state.Pipe.PAUSED)).all()
 
     def get_pipes(self, group_ids):
         '''Get all :class:`project.Pipe` objects that are not finished.
@@ -670,12 +669,15 @@ class DBMan(object):
     def get_user_groups_by_user_id(self, user_id):
         return self.session.query(model.UserGroups).filter(model.UserGroups.user_id==user_id).all()
     
-    def mean_anno_time(self, anno_task_id, user_id, anno_type):
+    def mean_anno_time(self, anno_task_id, anno_type, user_id=None):
+        user_id_query = 'user_id={} AND'.format(user_id)
+        if not user_id:
+            user_id_query = ''
         if anno_type == 'imageBased':
-            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE user_id={} AND anno_task_id={} AND anno_time IS NOT NULL".format(user_id, anno_task_id)
+            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
             return self.session.execute(sql).first()
 
     def get_worker(self, worker_name=None):
@@ -713,3 +715,9 @@ class DBMan(object):
         else:
             sql = "SELECT COUNT(`idx`) FROM `label` WHERE `label_leaf_id`={} AND `two_d_anno_id` IN (SELECT `idx` FROM `two_d_anno` WHERE `anno_task_id`={})".format(label_leaf_id, anno_task_id)
             return self.session.execute(sql).first()
+
+    def get_script_errors(self, pipe_id):
+        return self.session.query(model.PipeElement).filter(model.PipeElement.pipe_id==pipe_id,\
+                                                            model.PipeElement.dtype==dtype.PipeElement.SCRIPT,\
+                                                            model.PipeElement.state==state.PipeElement.SCRIPT_ERROR,\
+                                                            model.PipeElement.error_reported==False)

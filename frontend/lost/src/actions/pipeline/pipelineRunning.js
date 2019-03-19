@@ -27,7 +27,13 @@ const getPipelines = () => async dispatch => {
 }
 
 const getPipeline = (id) => async dispatch => {
-    const response = await axios.get(`${API_URL}/pipeline/${id}`)
+    let response ={}
+    try {
+        response = await axios.get(`${API_URL}/pipeline/${id}`)
+    }catch(err){
+        console.warn(err)
+        response.data = 'ERROR'
+    }
     dispatch({ type: 'PIPELINE_RUNNING_GET_PIPELINE', payload: response.data })
 }
 
@@ -35,7 +41,7 @@ const deletePipeline = (id) => async dispatch => {
     const response = await axios.delete(`${API_URL}/pipeline/${id}`)
     if (response.data === 'success') {
         if (typeof window !== 'undefined') {
-            window.location.href = `${window.location.origin}/dashboard`;
+            window.location.href = `${window.location.origin}`;
         }
     }
     dispatch({ type: 'PIPELINE_RUNNING_DELETE', payload: response.data })
@@ -90,8 +96,15 @@ const downloadDataExport = (filePath) => async dispatch => {
         window.URL.revokeObjectURL(objectURL);
 }
 
-const downloadImage = (path) => async dispatch => {
-
+const downloadImage = (filePath) => async dispatch => {
+    const token = localStorage.getItem('token')
+    const response = await http.get({
+        url: `${API_URL}/${filePath}`,
+		token,
+		type: 'image'
+    })
+    const objectURL = window.URL.createObjectURL(response)
+    return objectURL
 }
 
 
@@ -111,4 +124,13 @@ const toggleModal = (id) => {
     }
 }
 
-export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, downloadDataExport }
+export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, downloadDataExport, downloadImage }
+
+
+
+
+
+
+
+
+

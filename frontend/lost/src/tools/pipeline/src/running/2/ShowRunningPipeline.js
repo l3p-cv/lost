@@ -20,20 +20,29 @@ class ShowRunningPipeline extends Component {
         super()
         this.graphMountPoint = React.createRef()
         this.nodesOnClick = this.nodesOnClick.bind(this)
+        this.state = {
+            pollingEnabled: false
+        }
     }
 
-    componentDidMount() {
-        this.timer = setInterval(() => this.props.getPipeline(this.props.data.id), 2000)
+    componentDidUpdate(){
+        if(this.props.data && !this.state.pollingEnabled){
+            this.setState({
+                pollingEnabled:true
+            })
+            this.timer = setInterval(() => this.props.getPipeline(this.props.data.id), 2000)
+        }
     }
 
     componentWillUnmount() {
+        this.setState({
+            pollingEnabled: false
+        })
         clearInterval(this.timer)
     }
 
 
     nodesOnClick(id) {
-        console.log(id)
-        console.log(this.props)
         this.props.toggleModal(id)
     }
 
@@ -79,9 +88,6 @@ class ShowRunningPipeline extends Component {
         if (this.props.data) {
             return (
                 <div>
-                    <ToolBar
-                     data={this.props.data}
-                    />
                     <Graph
                         enableZooming={true}
                         centerGraph={true}
@@ -114,6 +120,9 @@ class ShowRunningPipeline extends Component {
     render() {
         return (
             <div ref={this.graphMountPoint}>
+                                <ToolBar
+                     data={this.props.data}
+                    />
                 {this.renderGraph()}
                 {this.renderModal()}
             </div>

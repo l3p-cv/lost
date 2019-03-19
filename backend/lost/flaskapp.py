@@ -2,7 +2,8 @@ from flask import Flask
 from lost import settings
 from lost.taskman import make_celery
 from flask_mail import Mail
-import os 
+import os
+import traceback 
 
 app = Flask(__name__)
 
@@ -27,5 +28,12 @@ app.config['MAIL_USE_TLS'] = settings.MAIL_USE_TLS
 app.config['MAIL_USERNAME'] = settings.MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = settings.MAIL_PASSWORD
 app.config['MAIL_DEFAULT_SENDER'] = settings.MAIL_DEFAULT_SENDER
-mail = Mail()
-mail.init_app(app)
+mail = None
+if settings.LOST_CONFIG.send_mail:
+    try:
+        mail = Mail()
+        mail.init_app(app)
+    except:
+        msg = "Wrong Email Configuration. Adapt Email Settings in .env file ! \n"
+        msg += traceback.format_exc()
+        app.logger.error(msg)

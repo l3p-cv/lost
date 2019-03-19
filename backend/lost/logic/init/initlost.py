@@ -20,7 +20,7 @@ def main():
     create_first_user(dbm)
 
 def create_first_user(dbm):
-    if not dbm.find_user_by_email('admin@example.com'):
+    if not dbm.find_user_by_user_name('admin'):
         user = User(
             user_name = 'admin',
             email='admin@example.com',
