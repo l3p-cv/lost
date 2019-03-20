@@ -122,6 +122,35 @@ During the annotation process this
 :py:class:`ImageAnno <lost.db.model.ImageAnno>`
 will be filled with information.
 
+Reading Annotations
+===================
+Another important task is to read annotations from previous 
+pipeline elements.
+In most cases this will be
+:py:class:`AnnoTask <lost.pyapi.pipe_elements.AnnoTask>` elements.
+
+If you like to read all annotations at the 
+:py:class:`script input <lost.pyapi.inout.Input>` in a vectorized way,
+you can use :py:meth:`self.inp.to_df() <lost.pyapi.inout.Input.to_df>`
+to get a `pandas DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_
+or :py:meth:`self.inp.to_vec() <lost.pyapi.inout.Input.to_vec>` to get a 
+list of lists.
+
+If you prefer to iterate over all
+:py:class:`ImageAnnos <lost.db.model.ImageAnno>` you can use the
+respective iterator :py:class:`self.inp.img_annos <lost.pyapi.inout.Input.img_annos>`.
+See the :ref:`listing below <aascripts-read-annos>` for an example.
+
+.. code-block:: python
+    :caption: Iterate over all annotation at the script input.
+    :name: aascripts-read-annos
+    
+    for img_anno in self.inp.img_annos:
+        for twod_anno in img_anno.twod_annos:
+            self.logger.info('image path: {}, 2d_anno_data: {}'.format(img_anno.img_path, twod_anno.data)
+
+
+
 Contexts to Store Files
 =======================
 There are three different contexts that can be used to store files

@@ -23,9 +23,10 @@ Such a semi-automatic can be achieved by using AI generated annotation
 proposals that are presented to an annotator inside the annotation tool.
 
 # Getting Started
-If you feel LOST here is the place to get started.
+If you feel LOST, 
+please find our full documentation here: https://lost.readthedocs.io.
 
-## LOST Setup
+## LOST QuickSetup
 LOST releases are hosted on DockerHub and shipped in Containers.
 For a quick setup perform the following steps (these steps have been 
 tested for Ubuntu):

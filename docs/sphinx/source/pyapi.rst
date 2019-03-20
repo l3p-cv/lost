@@ -33,11 +33,6 @@ Input
 pipe_elements
 ================
 
-Element
-------------
-.. autoclass:: lost.pyapi.pipe_elements.Element
-    :members:
-
 Datasource
 ------------
 .. autoclass:: lost.pyapi.pipe_elements.Datasource
