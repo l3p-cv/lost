@@ -24,8 +24,11 @@ def main(args):
     if root_leaf is None:
         logging.warning('LabelTree not present in database! {}'.format(args.csv_file))
     else:
-        LabelTree(dbm, root_leaf=root_leaf, logger=logging).delete_tree()
-        logging.info('Deleted tree with name: {}'.format(name))
+        try:
+            LabelTree(dbm, root_leaf=root_leaf, logger=logging).delete_tree()
+            logging.info('Deleted tree with name: {}'.format(name))
+        except:
+            logging.error('Can not delete label tree. One of the labels is used by a pipeline!')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Remove a label tree from this lost instance')
