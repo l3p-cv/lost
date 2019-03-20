@@ -41,7 +41,7 @@ class RequestAnnos(script.Script):
             for img_file in os.listdir(media_path):
                 img_path = os.path.join(media_path, img_file)
                 self.outp.request_annos(img_path=img_path, annos=annos, anno_types=anno_types)
-                self.logger.info('Requested bbox annos for: {}'.format(img_path))
+                self.logger.info('Requested annos for: {}'.format(img_path))
 
 if __name__ == "__main__":
     my_script = RequestAnnos() 

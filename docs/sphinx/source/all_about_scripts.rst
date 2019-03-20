@@ -1,5 +1,9 @@
 All About Scripts
 *****************
+
+What is a Script?
+=================
+
 **Scripts** are specific elements that are part of a LOST annotation 
 pipeline.
 A script element is implemented as a python3 module.
@@ -41,12 +45,11 @@ Via these objects it is connected to other elements in a pipeline
 (see also :ref:`aapipelines-pipe-def-files`).
 
 Inside a script you can exchange information with the connected elements
-by using the **self.inp** object of type
-:py:class:`lost.pyapi.inout.Input` and
-the **self.outp** of type :py:class:`lost.pyapi.inout.ScriptOutput`.
+by using the :py:class:`self.inp <lost.pyapi.inout.Input>` object and
+the :py:class:`self.outp <lost.pyapi.inout.ScriptOutput>` object.
 
 Reading Imagesets
------------------
+=================
 It is a common pattern to read a **path** to an imageset from a
 **Datasource** element in your annotation pipeline.
 See :ref:`Listing 3 <aascripts-reading-images>` for a code example.
@@ -75,7 +78,7 @@ to get the filesystem path to a folder with images.
         MyScript()
 
 Requesting Annotations
-----------------------
+======================
 The most important feature of the LOST PyAPI is the ability to request
 annotations for a connected **AnnotationTask** element.
 Inside a **Script** you can access the output element and call the
@@ -106,19 +109,217 @@ tool.
 
 Annotation Broadcasting
 -----------------------
-If multiple **AnnoTask** elements are connected to your **Script** output
-and you call :py:meth:`self.outp.request_annos <lost.pyapi.inout.ScriptOutput.request_annos>`,
+If multiple **AnnoTask** elements are connected to your
+:py:class:`ScriptOutput <lost.pyapi.inout.ScriptOutput>`
+and you call
+:py:meth:`self.outp.request_annos <lost.pyapi.inout.ScriptOutput.request_annos>`,
 the annotation request will be **broadcasted** to all connected **AnnoTasks**.
 So each **AnnoTask** will get its own copy of your annotation request.
+Technically, for each annotation request an empty
+:py:class:`ImageAnno <lost.db.model.ImageAnno>` will be created for
+each **AnnoTask**.
+During the annotation process this
+:py:class:`ImageAnno <lost.db.model.ImageAnno>`
+will be filled with information.
 
-Contexts to store files
+Reading Annotations
+===================
+Another important task is to read annotations from previous 
+pipeline elements.
+In most cases this will be
+:py:class:`AnnoTask <lost.pyapi.pipe_elements.AnnoTask>` elements.
+
+If you like to read all annotations at the 
+:py:class:`script input <lost.pyapi.inout.Input>` in a vectorized way,
+you can use :py:meth:`self.inp.to_df() <lost.pyapi.inout.Input.to_df>`
+to get a `pandas DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_
+or :py:meth:`self.inp.to_vec() <lost.pyapi.inout.Input.to_vec>` to get a 
+list of lists.
+
+If you prefer to iterate over all
+:py:class:`ImageAnnos <lost.db.model.ImageAnno>` you can use the
+respective iterator :py:class:`self.inp.img_annos <lost.pyapi.inout.Input.img_annos>`.
+See the :ref:`listing below <aascripts-read-annos>` for an example.
+
+.. code-block:: python
+    :caption: Iterate over all annotation at the script input.
+    :name: aascripts-read-annos
+    
+    for img_anno in self.inp.img_annos:
+        for twod_anno in img_anno.twod_annos:
+            self.logger.info('image path: {}, 2d_anno_data: {}'.format(img_anno.img_path, twod_anno.data)
+
+
+
+Contexts to Store Files
 =======================
+There are three different contexts that can be used to store files
+that should handled by your script.
+Each context is modeled as a specific folder in the lost filesystem.
+In order to get the path to a context call 
+:py:meth:`self.get_path <lost.pyapi.script.Script.get_path>`.
+:ref:`Listing 6 <aascripts-context-example>` shows an application of the 
+:py:meth:`self.get_path <lost.pyapi.script.Script.get_path>` in order to 
+get the path to the **instance** context.
+
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/export_csv.py
+   :language: python
+   :caption: Listing 6: Create a csv file and store this file to the *instance context*.
+   :name: aascripts-context-example
+   :emphasize-lines: 16
+
+There a three types of contexts that can be accessed: 
+**instance**, **pipe**, **static**.
+
+The **instance** context is only accessible by the current instance of
+your script. 
+Each time a pipeline is started each script will get its own instance 
+folder in the LOST filesystem.
+No other script in the same pipeline will access this folder.
+
+If you like to exchange files among the script instances of a started
+pipeline,
+you can choose the **pipe** context.
+When calling :py:meth:`self.get_path <lost.pyapi.script.Script.get_path>`
+with **context = 'pipe'** you will get a path to a folder that is
+available to all script instances of a pipeline instance.
+
+The **static** context is a path to the pipeline project folder where all 
+script instances will have access to.
+In this way you can access files that you have provided inside the
+:ref:`Pipeline Project <aapipelines-pipe-projects>`.
+For example,
+if you like to load a pretrained machine learning model inside of your 
+script, you can put it into the **pipeline project folder** and 
+and access it via the **static** context:
+
+.. code-block:: python
+    :caption: Listing 7: Getting the path to the static context.
+    :name: aascripts-static-context
+
+    path_to_model = self.get_path('pretrained_model.md5', context='static')
+
+Logging
+=======
+Each **Script** will have a its own 
+:py:attr:`logger <lost.pyapi.script.Script.logger>`.
+This logger is an instance of the standard 
+`python logger <https://docs.python.org/3.6/howto/logging.html>`_.
+The :ref:`example below <aascripts-logging>` shows how to log an
+*info message*, a *warning* and an *error*.
+All logs are redirected to a **pipeline log file** that can be downloaded
+via the pipeline view inside the web gui.
+
+.. code-block:: python
+    :caption: Listing 8: Logging examples.
+    :name: aascripts-logging
+
+    self.logger.info('I am a info message')
+    self.logger.warning('I am a warning')
+    self.logger.error('An error occured!')
+
+
+Script Errors and Exceptions
+============================
+If an error occurs in your script,
+the traceback of the exception will be visible in the web gui,
+when clicking on the respective script in your pipeline.
+The error will also be automatically logged to the *pipeline log file*. 
 
 Script ARGUMENTS
 ================
+The **ARGUMENTS** variable will be used to provide script arguments that 
+can be set during the start of a pipline within the web gui.
+**ARGUMENTS** are defined as a dictionary of dictionaries.
+Each argument dictionary has the keys *value* and *help*.
+As you can see in the :ref:`listing below <aascripts-arg-def>` the first
+argument is called *my_arg* its *value* is *true* and its *help* text is 
+*A boolean argument*.
+
+.. code-block:: python
+    :caption: Listing 9: Defining arguments.
+    :name: aascripts-arg-def
+
+    ARGUMENTS = {'my_arg' : { 'value':'true',
+                    'help': 'A boolean argument.'}
+                }
+
+
+Within your script you can access the value of an argument with the 
+:py:meth:`get_arg(...) <lost.pyapi.script.Script.get_arg>` method as 
+shown below.
+
+.. code-block:: python
+    :caption: Listing 10: Accessing argument values.
+    :name: aascripts-arg-access
+
+    if self.get_arg('my_arg').lower() == 'true':
+        self.logger.info('my_arg was true')
 
 Script ENVS
-================
+===========
+The **EVNS** variable provides meta information for the
+:ref:`pipeline engine <lost-ecosystem-pipe-engine>` by defining a list
+of environments (similar to conda environments)
+where this script may be executed in.
+In this way you can assure that a script will only be executed in
+environments where all your dependencies are installed.
+All environments are installed in :ref:`workers <lost-ecosystem-pipe-engine>`
+that may execute your script.
+If many different environments are defined within the **ENVS** list
+of a script,
+the pipeline engine will try to assign the script to a worker in the 
+same order as defined within the **ENVS** list.
+So if a worker is online that has installed the first environment in the
+list the pipeline engine will assign the script to this worker.
+If no worker with the first environment is online,
+it will try to assign the script to a worker with the second environment
+in the list and so on.
+:ref:`Listing 11 <aascripts-env-def>` shows an example of the **ENVS**
+definition in a script that may be executed in two different environments.
 
-Logging
-================
+.. code-block:: python
+    :caption: Listing 11: ENVS definition with inside a script.
+    :name: aascripts-env-def
+
+    ENVS = ['lost', 'lost-cv']
+
+.. _aascripts-debugging:
+
+Debugging a Script
+==================
+
+Most likely,
+if you imported your pipeline and run it for the first time some scripts
+will not work,
+since you placed some tiny bug into your code :-)
+
+Inside the web GUI all exceptions and errors of your script will be
+visualized when clicking on the respective script element in the
+pipeline visualization.
+In this way you get a first hint what's wrong.
+
+In order to debug your code you need to login to the docker container
+and find the instance folder that is created for each script instance.
+Inside this folder there is a bash script called *debug.sh* that need to
+be executed in order to start the `pudb <https://documen.tician.de/pudb/>`_
+debugger.
+You will find your script by its unique *pipeline element id*.
+The path to the script instance folder will be
+*/home/lost/data/instance/i-<pipe_element_id>*.
+
+.. code-block:: bash
+
+    # Log in to docker
+    docker exec -it lost bash
+    # Change directory to the instance path of your script
+    cd /home/lost/data/instance/i-<pipe_element_id>
+    # Start debugging
+    bash debug.sh
+
+.. note::
+    If your script requires a special ENV to be executed,
+    you need to login to a container that has installed this environment
+    for debugging.
+
+

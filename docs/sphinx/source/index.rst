@@ -16,6 +16,7 @@ Welcome to lost's documentation!
         For Pipeline Designers <designers.rst>
         ALL About Pipelines <all_about_pipelines.rst>
         All About Scripts <all_about_scripts.rst>
+        Command Line Interface <lost_cli.rst>
         Users and Groups <users_groups.rst>
         Conventions <conventions.rst>
         PyAPI <pyapi.rst>
