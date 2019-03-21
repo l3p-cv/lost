@@ -2,7 +2,12 @@
 [![Documentation Status](https://readthedocs.org/projects/lost/badge/?version=latest)](https://lost.readthedocs.io/en/latest/?badge=latest)
 # LOST - Label Objects and Save Time
 ![LOST Features](docs/sphinx/source/images/LOSTFeaturesIn40seconds.gif)
+## Demo Videos
+* LOST Trailer: https://www.youtube.com/watch?v=-COnL6vtXOQ
+* LOST Single Image Annotation - Pipeline Demo: https://www.youtube.com/watch?v=DfDla2hAfWw
+* LOST Multi Image Annotation - Pipeline Demo: https://www.youtube.com/watch?v=Q-IpGtH6Xz0
 
+## Description
 LOST (Label Object and Save Time) is a **flexible** **web-based** framework
 for **semi-automatic** image annotation.
 It provides multiple annotation interfaces for fast image annotation.
@@ -64,7 +69,7 @@ tested for Ubuntu):
 # Creators
 ## People
 |   | Github | 
-|---|--------|---------|
+|---|--------|
 |**Jonas Jäger**| [@code-for-fish](https://github.com/code-for-fish) | 
 |**Gereon Reus**| [@gereonreus](https://github.com/gereonreus) | 
 |**Dennis Weiershäuser** | [@cartok](https://github.com/cartok) | 
