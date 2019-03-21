@@ -2,7 +2,14 @@
 [![Documentation Status](https://readthedocs.org/projects/lost/badge/?version=latest)](https://lost.readthedocs.io/en/latest/?badge=latest)
 # LOST - Label Objects and Save Time
 ![LOST Features](docs/sphinx/source/images/LOSTFeaturesIn40seconds.gif)
+## Demo Videos
+1. LOST Trailer: https://www.youtube.com/watch?v=-COnL6vtXOQ
+2. LOST Single Image Annotation - Pipeline Demo: 
+https://www.youtube.com/watch?v=DfDla2hAfWw
+3. LOST Multi Image Annotation - Pipeline Demo: 
+https://www.youtube.com/watch?v=Q-IpGtH6Xz0
 
+## Description 
 LOST (Label Object and Save Time) is a **flexible** **web-based** framework
 for **semi-automatic** image annotation.
 It provides multiple annotation interfaces for fast image annotation.
