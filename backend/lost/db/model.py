@@ -869,7 +869,7 @@ class AnnoTask(Base):
         timestamp (DateTime): Date and time when this anno task was created.
         instructions (str): Instructions for the annotator of this AnnoTask.
         name (str): A name for this annotask.
-        configuration (str): The way the Tool should be configured
+        configuration (str): Configuration of this annotask.
 
     Warning:
         *annotator_id = None* means that all users are assigned to this task.

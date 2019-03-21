@@ -8,6 +8,7 @@ Script
 ----------------
 .. autoclass:: lost.pyapi.script.Script
     :members:
+    :inherited-members:
 
 inout
 ================
@@ -27,6 +28,15 @@ Output
 Input
 ----------------
 .. autoclass:: lost.pyapi.inout.Input
+    :members:
+    :inherited-members:
+
+pipeline
+================
+
+PipeInfo
+----------------
+.. autoclass:: lost.pyapi.pipeline.PipeInfo
     :members:
     :inherited-members:
 

@@ -17,6 +17,7 @@ import json
 import pickle
 from lost.pyapi import pe_base
 from lost.logic.label import LabelTree
+from lost.pyapi import pipe_elements
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
@@ -47,7 +48,7 @@ class Script(pe_base.Element):
 
     Attributes:
         pe_id (int): Pipe element id. Assign the pe id of a pipline script
-            in order to emulate this script in a jupyter notebook.
+            in order to emulate this script in a jupyter notebook for example.
     '''
     def __init__(self, pe_id=None):
         if pe_id is None:
@@ -94,7 +95,7 @@ class Script(pe_base.Element):
 
     @property
     def logger(self):
-        '''A standard python logger for this script. 
+        ''':class:`logging.Logger`: A standard python logger for this script. 
         
         It will log to the pipline log file.
         '''
@@ -228,19 +229,15 @@ class Script(pe_base.Element):
 
     @property
     def iteration(self):
-        '''Get the current iteration.
+        '''int: Get the current iteration.
 
-        Returns:
-            Number of times this script has been executed.
+        Number of times this script has been executed.
         '''
         return self._pipe_element.iteration
 
     @property
     def instance_context(self):
-        '''Get the path to store files that are only valid for this instance.
-
-        Returns:
-            str: path
+        '''str: Get the path to store files that are only valid for this instance.
         '''
         abs_path = self.file_man.create_instance_path(self._pipe_element)
         rel_path = self.file_man.make_path_relative(abs_path)
@@ -257,23 +254,19 @@ class Script(pe_base.Element):
 
     @property
     def static_context(self):
-        '''Get a path that is always valid for this script.
+        '''str: Get the static path.
 
         Files that are stored at this path can be accessed by all instances of a
         script.
-
-        Returns:
-            str: static context path.
         '''
         return os.path.join(self._lostconfig.project_path,
                             os.path.split(self._pipe_element.script.path)[0])
 
     @property
     def progress(self):
-        '''Get current progress that is displayed in the progress bar of this script.
+        '''float: Get current progress that is displayed in the progress bar of this script.
 
-        Returns:
-            float: Current progress in percent 0...100
+        Current progress in percent 0...100
         '''
         return self._pipe_element.progress
 
@@ -296,6 +289,41 @@ class Script(pe_base.Element):
             meet.
         '''
         self.rejected_execution = True
+
+    def get_alien_element(self, pe_id):
+        '''Get an pipeline element by id from somewhere in the LOST system.
+
+        It is an alien element since it is most likely not part of the 
+        pipeline instance this script belongs to.
+
+        Args:
+            pe_id (int): PipeElementID of the alien element.
+        
+        Returns:
+            * :class:`lost.pyapi.script.Script`
+            * :class:`lost.pyapi.pipe_elements.AnnoTask`
+            * :class:`lost.pyapi.pipe_elements.Datasource`
+            * :class:`lost.pyapi.pipe_elements.VisualOutput`
+            * :class:`lost.pyapi.pipe_elements.DataExport`
+            * :class:`lost.pyapi.pipe_elements.Loop`
+
+        '''
+        pe = self._dbm.get_pipe_element(pe_id)
+
+        if pe.dtype == dtype.PipeElement.SCRIPT:
+            return Script(pe_id=pe_id)
+        elif pe.dtype == dtype.PipeElement.ANNO_TASK:
+            return pipe_elements.AnnoTask(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.DATASOURCE:
+            return pipe_elements.Datasource(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.VISUALIZATION:
+            return pipe_elements.VisualOutput(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.DATA_EXPORT:
+            return pipe_elements.DataExport(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.LOOP:
+            return pipe_elements.Loop(pe, self._dbm)
+        else:
+            raise Exception('Unknown pipe element type!')
 
     def i_am_done(self):
         if self.rejected_execution:
