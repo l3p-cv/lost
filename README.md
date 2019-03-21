@@ -60,3 +60,17 @@ tested for Ubuntu):
     user: admin
     password: admin
     ```
+
+# Creators
+## People
+|   | Github | 
+|---|--------|---------|
+|**Jonas Jäger**| [@code-for-fish](https://github.com/code-for-fish) | 
+|**Gereon Reus**| [@gereonreus](https://github.com/gereonreus) | 
+|**Dennis Weiershäuser** | [@cartok](https://github.com/cartok) | 
+|**Tobias Kwant** | [@tkwant](https://github.com/tkwant) | 
+
+
+## Institutions
+[![L3P UG](docs/l3pug.png)](https://l3p-cv.com/)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![CVG Uni Jena](docs/cvgjena.png)](https://www.inf-cv.uni-jena.de/)
+
