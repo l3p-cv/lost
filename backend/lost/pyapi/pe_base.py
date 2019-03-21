@@ -32,4 +32,4 @@ class Element(object):
     def pipe_info(self):
         ''':class:`lost.pyapi.pipeline.PipeInfo`: An object with pipeline informations
         '''
-        self._pipe_info
+        return self._pipe_info

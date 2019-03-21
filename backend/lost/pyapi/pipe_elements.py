@@ -50,28 +50,14 @@ class AnnoTask(Element):
     def idx(self):
         return self._anno_task.idx
 
-    # @property
-    # def req_categories(self):        
-    #     '''Get required label categories for this Task.
-
-    #     Returns:
-    #         list: [[lbl_category_id, lbl_category_name], ..., [...]]
-    #     '''
-    #     lbl_cats = list()
-    #     for req_cat in self._anno_task.req_label_leaves:
-    #         lbl_cats.append([req_cat.label_leaf.idx,
-    #                          req_cat.label_leaf.name])
-    #     return lbl_cats
-
     @property
-    def possible_label_df(self, columns='all'):
-        '''Get all possible labels for this annotation task in DataFrame format
+    def possible_label_df(self):
+        '''pd.DataFrame: Get all possible labels for this annotation task in DataFrame format
 
-        Returns:
-            pd.DataFrame: Column names are:
-                'idx', 'name', 'abbreviation',
-                'description', 'timestamp', 'external_id',
-                'is_deleted', 'parent_leaf_id' ,'is_root'
+        pd.DataFrame: Column names are:
+            'idx', 'name', 'abbreviation',
+            'description', 'timestamp', 'external_id',
+            'is_deleted', 'parent_leaf_id' ,'is_root'
         '''
         lbl_list = list()
         req_categories = self._anno_task.req_label_leaves
@@ -80,10 +66,35 @@ class AnnoTask(Element):
             for leaf in parent_leaf.label_leaves:
                 lbl_list.append(leaf.to_df())
         lbl_df = pd.concat(lbl_list)
-        if columns == 'all':
-            return lbl_df
-        else:
-            return lbl_df[columns]
+        return lbl_df
+
+    
+    @property
+    def instructions(self):
+        '''str: Instructions for the annotator of this AnnoTask.
+        '''
+        return self._anno_task.instructions
+
+    @property
+    def name(self):
+        '''str: A name for this annotask.
+        '''
+        return self._anno_task.name
+    
+    @property
+    def configuration(self):
+        '''str: Configuration of this annotask.
+        '''
+        return self._anno_task.configuration
+
+    @property
+    def progress(self):
+        '''float: Progress in percent.
+
+        Value range 0...100.
+        '''
+        return self._anno_task.progress
+        
 
 
 class MIATask(AnnoTask):
@@ -118,7 +129,16 @@ class Loop(Element):
 
     @property
     def pe_jump(self):
-        '''PipelineElement where this loop will jump to when looping.'''
+        '''PipelineElement where this loop will jump to when looping.
+        
+        Can be of type:
+            * :class:`lost.pyapi.script.Script`
+            * :class:`lost.pyapi.pipe_elements.AnnoTask`
+            * :class:`lost.pyapi.pipe_elements.Datasource`
+            * :class:`lost.pyapi.pipe_elements.VisualOutput`
+            * :class:`lost.pyapi.pipe_elements.DataExport`
+            * :class:`lost.pyapi.pipe_elements.Loop`
+        '''
         if self._loop.pe_jump.dtype == dtype.PipeElement.ANNO_TASK:
             return AnnoTask(self._pipe_element, self._dbm)
         elif self._loop.pe_jump.dtype == dtype.PipeElement.DATA_EXPORT:
@@ -152,7 +172,7 @@ class DataExport(Element):
 
     @property
     def file_path(self):
-        '''str: A list of absolute path to exported files'''
+        '''list of str: A list of absolute path to exported files'''
         path_list = []
         for export in self.data_exports:
             path_list.append(self._fm.get_abs_path(export.file_path))
@@ -160,6 +180,9 @@ class DataExport(Element):
 
     def to_dict(self):
         '''Transform a list of exports to a dictionary.
+
+        Returns:
+            list of dict: [{'iteration':int, 'file_path':str},...]
         '''
         d_list = []
         for export in self.data_exports:
@@ -192,7 +215,7 @@ class VisualOutput(Element):
 
     @property
     def img_paths(self):
-        '''list of absolute paths to images.'''
+        '''list of str: List of absolute paths to images.'''
         path_list = []
         for v_out in self.v_outs:
             path_list.append(self._fm.get_abs_path(v_out.file_path))
@@ -200,7 +223,7 @@ class VisualOutput(Element):
 
     @property
     def html_strings(self):
-        '''list of html strings.'''
+        '''list of str: list of html strings.'''
         path_list = []
         for v_out in self.v_outs:
             path_list.append(self._fm.get_abs_path(v_out.file_path))
@@ -210,8 +233,8 @@ class VisualOutput(Element):
         '''Transforms a list of visualization information into a list of dicts.
 
         Returns:
-            list of dicts: Possible keys of each dict are 
-                *iteration*, *img_path*, *html_string*
+            list of dicts: 
+            [{'iteration':int, 'img_path':str, 'html_string':str},...]
         '''
         d_list = []
         for v_out in self.v_outs:
@@ -223,7 +246,3 @@ class VisualOutput(Element):
                 }
             )
         return d_list
-
-    
-    
-        

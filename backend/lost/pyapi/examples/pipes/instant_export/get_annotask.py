@@ -16,6 +16,9 @@ class ExportAnnoTaskOutput(script.Script):
     def main(self):
         element = self.get_alien_element(int(self.get_arg('pe_id')))
         if isinstance(element, AnnoTask):
+            self.logger.info('AnnoTask name: {}'.format(element.name))
+            self.logger.info('AnnoTask instructions: {}'.format(element.instructions))
+            self.logger.info('AnnoTask configuration: {}'.format(element.configuration))
             df = element.outp.to_df()
             self.logger.info('Found {} annotations'.format(len(df)))
             csv_path = self.get_path(self.get_arg('file_name'), context='instance')
