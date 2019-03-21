@@ -35,8 +35,6 @@ const decodeJwt = (decoded_token, callback) => async dispatch => {
 const checkExpireDateCron = () => async dispatch => {
     if(localStorage.getItem('token')){
         const decodedToken = jwt_decode(localStorage.getItem('token'))
-        console.log(Date.now()/1000)
-        console.log(decodedToken.exp)
         if (decodedToken !== undefined && decodedToken.exp < Date.now() / 1000){
             try{
                 axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('refreshToken')
