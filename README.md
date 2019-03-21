@@ -55,7 +55,7 @@ tested for Ubuntu):
    docker-compose up
    ```
 6. Open a browser and navigate to: http://localhost
-7. Login in with 
+7. Login with 
     ```
     user: admin
     password: admin
