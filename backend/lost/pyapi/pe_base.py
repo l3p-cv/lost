@@ -14,7 +14,7 @@ class Element(object):
         self._inp = inout.Input(self)
         self._outp = inout.Output(self)
         self._fm = file_man.FileMan(self._lostconfig)
-        self.pipe_info = PipeInfo(self._pipe, dbm)
+        self._pipe_info = PipeInfo(self._pipe, dbm)
 
     @property
     def inp(self):
@@ -27,3 +27,9 @@ class Element(object):
         ''':class:`lost.pyapi.inout.Output`: Output of this pipeline element
         '''
         return self._outp
+
+    @property
+    def pipe_info(self):
+        ''':class:`lost.pyapi.pipeline.PipeInfo`: An object with pipeline informations
+        '''
+        self._pipe_info

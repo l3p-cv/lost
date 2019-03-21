@@ -9,22 +9,32 @@ class PipeInfo(object):
 
     @property
     def name(self):
+        '''str: Name of this pipeline
+        '''
         return self._pipe.name
 
     @property
     def timestamp(self):
+        '''str: Timestamp when pipeline was started.
+        '''
         return self._pipe.timestamp.strftime('%Y%m%d%H%M%S')
 
     @property
     def timestamp_finished(self):
+        '''str: Timestamp when pipeline was finished.
+        '''
         return self._pipe.timestamp_finished.strftime('%Y%m%d%H%M%S')
 
     @property
     def description(self):
+        '''str: Description that was defined when pipeline was started.
+        '''
         return self._pipe.description
 
     @property
     def logfile_path(self):
+        '''str: Path to pipeline log file.
+        '''
         return self._pipe.logfile_path
     
     @logfile_path.setter
