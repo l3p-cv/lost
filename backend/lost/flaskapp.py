@@ -37,3 +37,6 @@ if settings.LOST_CONFIG.send_mail:
         msg = "Wrong Email Configuration. Adapt Email Settings in .env file ! \n"
         msg += traceback.format_exc()
         app.logger.error(msg)
+
+
+blacklist = set()

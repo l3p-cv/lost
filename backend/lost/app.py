@@ -33,6 +33,12 @@ app.config['CORS_HEADERS'] = settings.CORS_HEADERS
    
 jwt = JWTManager(app)
 
+
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jti in blacklist
+
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):
     dbm = access.DBMan(settings.LOST_CONFIG)

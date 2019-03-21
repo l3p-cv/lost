@@ -16,7 +16,7 @@ import {
 
 import './Tag.scss';
 
-const {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
+const {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
 
 class Control extends Component {
 
@@ -68,6 +68,7 @@ class Control extends Component {
             labels: [this.props.selectedLabel]
         }
         this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
+        this.props.refreshToken()
         this.props.setMiaSelectedLabel(undefined)
         this.setState({value:''})
 
@@ -161,4 +162,4 @@ function mapStateToProps(state) {
     return ({zoom: state.mia.zoom, maxAmount: state.mia.maxAmount, labels: state.mia.labels, selectedLabel: state.mia.selectedLabel, images: state.mia.images})
 }
 
-export default connect(mapStateToProps, {miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)
+export default connect(mapStateToProps, {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)
