@@ -56,7 +56,7 @@ def get_default_script_resources(script_path):
         res_list = parse_script_constants(script_path, 'RESOURCES', 
                                           bracket_type='[')
         if res_list is None:
-            logging.warning('Script has special RESOURCES requirements: {}!'.format(script_path))
+            logging.warning('Script has no special RESOURCES requirements: {}!'.format(script_path))
             return []
         else:
             res = [e.lower() for e in res_list]
