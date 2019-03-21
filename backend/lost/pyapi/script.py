@@ -48,7 +48,7 @@ class Script(pe_base.Element):
 
     Attributes:
         pe_id (int): Pipe element id. Assign the pe id of a pipline script
-            in order to emulate this script in a jupyter notebook.
+            in order to emulate this script in a jupyter notebook for example.
     '''
     def __init__(self, pe_id=None):
         if pe_id is None:
@@ -95,7 +95,7 @@ class Script(pe_base.Element):
 
     @property
     def logger(self):
-        '''A standard python logger for this script. 
+        ''':class:`logging.Logger`: A standard python logger for this script. 
         
         It will log to the pipline log file.
         '''
@@ -229,19 +229,15 @@ class Script(pe_base.Element):
 
     @property
     def iteration(self):
-        '''Get the current iteration.
+        '''int: Get the current iteration.
 
-        Returns:
-            Number of times this script has been executed.
+        Number of times this script has been executed.
         '''
         return self._pipe_element.iteration
 
     @property
     def instance_context(self):
-        '''Get the path to store files that are only valid for this instance.
-
-        Returns:
-            str: path
+        '''str: Get the path to store files that are only valid for this instance.
         '''
         abs_path = self.file_man.create_instance_path(self._pipe_element)
         rel_path = self.file_man.make_path_relative(abs_path)
@@ -258,23 +254,19 @@ class Script(pe_base.Element):
 
     @property
     def static_context(self):
-        '''Get a path that is always valid for this script.
+        '''str: Get the static path.
 
         Files that are stored at this path can be accessed by all instances of a
         script.
-
-        Returns:
-            str: static context path.
         '''
         return os.path.join(self._lostconfig.project_path,
                             os.path.split(self._pipe_element.script.path)[0])
 
     @property
     def progress(self):
-        '''Get current progress that is displayed in the progress bar of this script.
+        '''float: Get current progress that is displayed in the progress bar of this script.
 
-        Returns:
-            float: Current progress in percent 0...100
+        Current progress in percent 0...100
         '''
         return self._pipe_element.progress
 
