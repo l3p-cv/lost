@@ -249,8 +249,8 @@ class UserTokenRefresh(Resource):
         expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
         expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
         if FLASK_DEBUG:
-            expires = datetime.timedelta(minutes=3)
-            expires_refresh = datetime.timedelta(minutes=4)
+            expires = datetime.timedelta(days=365)
+            expires_refresh = datetime.timedelta(days=366)
         if user:
             access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.idx, expires_delta=expires_refresh)
@@ -280,8 +280,8 @@ class UserLogin(Resource):
             expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
             expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
             if FLASK_DEBUG:
-                expires = datetime.timedelta(minutes=3)
-                expires_refresh = datetime.timedelta(minutes=4)
+                expires = datetime.timedelta(days=365)
+                expires_refresh = datetime.timedelta(days=366)
             access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.idx, expires_delta=expires_refresh)
             return {

@@ -76,7 +76,7 @@ const logout = () => async dispatch => {
 }
 const refreshToken = () => async dispatch => {
     const decoded_token = jwt_decode(localStorage.getItem('token'))
-    const diff = 2
+    const diff = 8
     const compareDate = new Date(Date.now() + diff*60000).getTime()
     if (decoded_token !== undefined && decoded_token.exp < compareDate / 1000){
         try {
@@ -95,7 +95,7 @@ const refreshToken = () => async dispatch => {
             localStorage.removeItem('token')
             localStorage.removeItem('refreshToken')
             localStorage.removeItem('view')
-            window.location('/#/timeout')
+            window.location.replace('/#/timeout')
         }
     }
 }
