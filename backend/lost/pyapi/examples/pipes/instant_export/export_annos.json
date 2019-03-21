@@ -1,5 +1,5 @@
 {
-  "description" : "This pipeline emulates a script and exports all annotations of this script",
+  "description" : "This will read an AnnoTask element and export all annotations at its output.",
   "author" : "Jonas Jaeger",
   "pipe-schema-version" : 0.0,
   "elements" : [
@@ -7,8 +7,8 @@
       "peN" : 0,
       "peOut" : [1],
       "script" : {
-        "path": "emulate_script.py",
-        "description" : "Emulate a script an export all annotations to a csv file."
+        "path": "get_annotask.py",
+        "description" : "Get a AnnoTask element by PipeElementId form somewhere in the LOST space an export annotations."
       }
     },
     {

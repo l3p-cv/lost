@@ -17,6 +17,7 @@ import json
 import pickle
 from lost.pyapi import pe_base
 from lost.logic.label import LabelTree
+from lost.pyapi import pipe_elements
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
@@ -296,6 +297,41 @@ class Script(pe_base.Element):
             meet.
         '''
         self.rejected_execution = True
+
+    def get_alien_element(self, pe_id):
+        '''Get an pipeline element by id from somewhere in the LOST system.
+
+        It is an alien element since it is most likely not part of the 
+        pipeline instance this script belongs to.
+
+        Args:
+            pe_id (int): PipeElementID of the alien element.
+        
+        Returns:
+            * :class:`lost.pyapi.script.Script`
+            * :class:`lost.pyapi.pipe_elements.AnnoTask`
+            * :class:`lost.pyapi.pipe_elements.Datasource`
+            * :class:`lost.pyapi.pipe_elements.VisualOutput`
+            * :class:`lost.pyapi.pipe_elements.DataExport`
+            * :class:`lost.pyapi.pipe_elements.Loop`
+
+        '''
+        pe = self._dbm.get_pipe_element(pe_id)
+
+        if pe.dtype == dtype.PipeElement.SCRIPT:
+            return Script(pe_id=pe_id)
+        elif pe.dtype == dtype.PipeElement.ANNO_TASK:
+            return pipe_elements.AnnoTask(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.DATASOURCE:
+            return pipe_elements.Datasource(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.VISUALIZATION:
+            return pipe_elements.VisualOutput(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.DATA_EXPORT:
+            return pipe_elements.DataExport(pe, self._dbm)
+        elif pe.dtype == dtype.PipeElement.LOOP:
+            return pipe_elements.Loop(pe, self._dbm)
+        else:
+            raise Exception('Unknown pipe element type!')
 
     def i_am_done(self):
         if self.rejected_execution:
