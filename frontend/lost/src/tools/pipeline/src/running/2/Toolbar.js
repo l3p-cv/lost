@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
-import { Button } from 'reactstrap'
+import { Button, Tooltip } from 'reactstrap'
 import GrayLine from 'pipelineGlobalComponents/grayLine'
 import actions from 'actions/pipeline/pipelineRunning'
 import startActions from 'actions/pipeline/pipelineStart'
 import { connect } from 'react-redux'
 import { alertLoading, alertClose, alertSuccess, alertDeletePipeline } from 'pipelineGlobalComponents/sweetalert'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash, faDownload, faPause, faPlay, faRedo } from '@fortawesome/free-solid-svg-icons'
+import ToolbarTooltip from './ToolbarTooltip'
 
-const { pausePipeline, playPipeline, deletePipeline, regeneratePipeline, downloadLogfile } = actions
+
+const { pausePipeline, playPipeline, deletePipeline, downloadLogfile } = actions
 const { postPipeline } = startActions
 class Toolbar extends Component {
     constructor() {
@@ -25,6 +29,7 @@ class Toolbar extends Component {
         }
 
     }
+
     downloadLogfile() {
         this.props.downloadLogfile(this.props.data.logfilePath, this.props.data.id)
     }
@@ -42,7 +47,7 @@ class Toolbar extends Component {
     async regenerate() {
         alertLoading()
         await this.props.postPipeline(this.props.data.startDefinition)
-        alertClose ()
+        alertClose()
         if (typeof window !== 'undefined') {
             window.location.href = `${window.location.origin}`;
         }
@@ -51,22 +56,79 @@ class Toolbar extends Component {
     render() {
         return (
             <div className='pipeline-running-toolbar'>
-                 
-                    <GrayLine />
-                    <Button className='pipeline-running-toolbar-button' onClick={this.delete} color="info">Delete Pipeline</Button>
-                    {this.props.data &&<><Button className='pipeline-running-toolbar-button' onClick={this.downloadLogfile} color="info">Download Logfile</Button>
+
+                <GrayLine />
+                <Button className='pipeline-running-toolbar-button'
+                    id='pipeline-button-delete-pipeline'
+                    onClick={this.delete}
+                    color="secondary">
+                    <FontAwesomeIcon
+                        icon={faTrash}
+                        size="2x"
+                    />
+                </Button>
+                {this.props.data && <>
                     <Button className='pipeline-running-toolbar-button'
-                        onClick={this.props.data.progress === 'PAUSED' ? this.play : this.pause}
-                        color="info">
-                        {this.props.data.progress === 'PAUSED' ? 'Play' : 'Pause'}
+                        id='pipeline-button-download-logfile'
+                        onClick={this.downloadLogfile}
+                        color="secondary">
+                        <FontAwesomeIcon
+                            icon={faDownload}
+                            size="2x"
+                        />
                     </Button>
-                    <Button className='pipeline-running-toolbar-button' onClick={this.regenerate} color="info">Regenerate Pipeline</Button>
+                    <Button className='pipeline-running-toolbar-button'
+                        id='pipeline-button-play-pause'
+                        onClick={this.props.data.progress === 'PAUSED' ? this.play : this.pause}
+                        color="secondary">
+                        {this.props.data.progress === 'PAUSED' ?
+                            <FontAwesomeIcon
+                                icon={faPlay}
+                                size="2x"
+                            /> :
+                            <FontAwesomeIcon
+                                icon={faPause}
+                                size="2x"
+                            />
+                        }
+                    </Button>
+                    <Button className='pipeline-running-toolbar-button'
+                        id='pipeline-button-regenerate'
+                        onClick={this.regenerate}
+                        color="secondary">
+                        <FontAwesomeIcon
+                            icon={faRedo}
+                            size="2x"
+                        />
+                    </Button>
                     <GrayLine />
+
+                    <ToolbarTooltip
+                        target='pipeline-button-delete-pipeline'
+                        text='Delete Pipeline'
+                    />
+                    <ToolbarTooltip
+                        target='pipeline-button-download-logfile'
+                        text='Download Logfile'
+                    />
+                    <ToolbarTooltip
+                        target='pipeline-button-play-pause'
+                        text={this.props.data.progress === 'PAUSED' ?
+                            'Play' :
+                            'Pause'
+                        }
+                    />
+                    <ToolbarTooltip
+                        target='pipeline-button-regenerate'
+                        text='Regenerate'
+                    />
+
+
                 </>}
             </div>
         )
     }
 }
 
-export default connect(null, { pausePipeline, playPipeline, deletePipeline, regeneratePipeline, downloadLogfile, postPipeline })(Toolbar)
+export default connect(null, { pausePipeline, playPipeline, deletePipeline, downloadLogfile, postPipeline })(Toolbar)
 
