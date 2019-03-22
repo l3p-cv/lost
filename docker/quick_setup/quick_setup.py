@@ -72,7 +72,7 @@ def main(args):
     logging.info('Created {}'.format(env_path))
     logging.info('')
     logging.info('Finished setup! To test LOST run:')
-    logging.info('cd {} && docker-compose up'.format(dst_docker_dir))
+    logging.info('cd {}; docker-compose up'.format(dst_docker_dir))
     logging.info('and type localhost into you browser')
 
 
