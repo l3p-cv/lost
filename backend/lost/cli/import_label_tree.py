@@ -24,3 +24,4 @@ if __name__ == "__main__":
     df = pd.read_csv(args.csv_file)
     if tree.import_df(df) is None:
         logging.warning('LabelTree already present in database! {}'.format(args.csv_file))
+    dbm.close_session()

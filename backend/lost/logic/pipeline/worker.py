@@ -31,6 +31,8 @@ def init_worker_on_startup():
         dbm.add(worker)
         dbm.commit()
         print('Reset worker on startup: {}'.format(worker.worker_name))
+    dbm.close_session()
+    
 
 @task
 def send_life_sign():
@@ -46,6 +48,8 @@ def send_life_sign():
         dbm.add(worker)
         dbm.commit()
         logger.info('Sent lifesign: {}'.format(worker.worker_name))
+    dbm.close_session()
+    
 
 
 class WorkerMan(object):
