@@ -77,5 +77,6 @@ tested for Ubuntu):
 
 
 ## Institutions
-[![L3P UG](docs/l3pug.png)](https://l3p-cv.com/)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![CVG Uni Jena](docs/cvgjena.png)](https://www.inf-cv.uni-jena.de/)
-
+| L3P UG | CVG University Jena 
+|--|--|
+|[![L3P UG](docs/l3pug.png)](https://l3p-cv.com/) |[![CVG Uni Jena](docs/cvgjena.png)](https://www.inf-cv.uni-jena.de/) |
