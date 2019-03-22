@@ -85,7 +85,7 @@ class SelectPipeline extends Component {
                 return (<div><font color="orange">PAUSED</font></div>)
               }
               return (
-                <Progress className='progress-xs' color={getColor(progress)} value={progress} />
+                <Progress className='progress-xs rt-progress' color={getColor(progress)} value={progress} />
 
               )
             }
@@ -114,7 +114,7 @@ class SelectPipeline extends Component {
 
   render() {
     return (
-      <div>
+      <div className='pipeline-running-1'>
         {this.renderDatatable()}
       </div>
     )

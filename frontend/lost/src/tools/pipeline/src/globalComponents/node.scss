@@ -10,8 +10,6 @@ $borderRadius: 15px;
     border: $borderWidth solid gray;
     border-radius: $borderRadius ;
     .graph-node-title{
-        font-family: 'Lato';
-        font-weight: 400;
         color: white;
         font-size: large;
         text-align: center;
@@ -45,8 +43,6 @@ $borderRadius: 15px;
     }
     
     .graph-node-footer{
-        font-family: 'Lato';
-        font-weight: 400;
         color: white;
         font-size: small;
         text-align: center;

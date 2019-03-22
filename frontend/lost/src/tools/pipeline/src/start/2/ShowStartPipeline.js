@@ -90,7 +90,7 @@ class ShowStartPipeline extends Component {
     }
     render() {
         return (
-            <div>
+            <div className='pipeline-start-2'>
                 {this.renderGraph()}
                 <Modals />
             </div>

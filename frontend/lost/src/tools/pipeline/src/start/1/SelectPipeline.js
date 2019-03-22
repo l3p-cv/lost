@@ -66,7 +66,7 @@ class SelectPipeline extends Component {
 
     render() {
         return (
-            <div>
+            <div className='pipeline-start-1'>
                 {this.renderDatatable()}
             </div>
         )

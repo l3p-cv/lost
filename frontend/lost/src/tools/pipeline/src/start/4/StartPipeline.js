@@ -36,7 +36,7 @@ class StartPipeline extends Component {
 
     render() {
         return (
-            <div className='pipeline-start-tab3-conainer'>
+            <div className='pipeline-start-4'>
                 <h3>Complete</h3>
                 <p>You have successfully completed all steps.</p>
                 <Button onClick={this.startPipe} color="primary" size="lg">
