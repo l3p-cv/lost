@@ -29,6 +29,8 @@ def main(args):
             logging.info('Deleted tree with name: {}'.format(name))
         except:
             logging.error('Can not delete label tree. One of the labels is used by a pipeline!')
+    dbm.close_session()
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Remove a label tree from this lost instance')

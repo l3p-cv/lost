@@ -20,6 +20,7 @@ def exec_pipe():
     for p in pipe_list:
        pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig)
        pipe_man.process_pipeline()
+    dbm.close_session()
 
 # def release_annos():
 #     lostconfig = config.LOSTConfig()

@@ -18,6 +18,7 @@ def main():
     dbm = access.DBMan(lostconfig)
     dbm.create_database()
     create_first_user(dbm)
+    dbm.close_session()
 
 def create_first_user(dbm):
     if not dbm.find_user_by_user_name('admin'):
@@ -33,8 +34,6 @@ def create_first_user(dbm):
         user.roles.append(Role(name=roles.ANNOTATOR))
         user.groups.append(Group(name=user.user_name, is_user_default=True))
         dbm.save_obj(user)
-        dbm.close_session()
-
 
 
 if __name__ == '__main__':

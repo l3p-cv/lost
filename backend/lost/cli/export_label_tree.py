@@ -28,3 +28,4 @@ if __name__ == "__main__":
         df = tree.to_df()
         df.to_csv(args.out_path, index=False)
         logging.info('Exported label tree to: {}'.format(args.out_path))
+    dbm.close_session()

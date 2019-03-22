@@ -79,10 +79,12 @@ class Script(pe_base.Element):
             try:
                 self.main()
                 self.i_am_done()
+                self._dbm.close_session()
             except:
                 err_msg = str(datetime.datetime.now()) + '\n'
                 err_msg += traceback.format_exc()
                 self.report_err(err_msg)
+                self._dbm.close_session()
     
     def __str__(self):
         my_str = 'I am a Script.\nMy name is: {}\nPipeElementID: {}'.format(self._pipe_element.script.name, 
