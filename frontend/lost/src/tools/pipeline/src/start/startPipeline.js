@@ -36,12 +36,11 @@ class StartPipeline extends Component {
 
     render() {
         return (
-            <div>
+            <div className='pipeline-start-container'>
                 <Stepper
                     stepperData={this.props.stepperData}
                     changeCurrentStep={this.changeCurrentStep}
                 />
-                <GrayLine />
                 {this.renderContent()}
             </div>
         )

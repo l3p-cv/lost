@@ -45,7 +45,10 @@ class SelectPipeline extends Component {
                         },
                         {
                             Header: "Date",
-                            accessor: "date"
+                            accessor: "date",
+                            Cell: (row) => {
+                                return(new Date(row.value).toString())
+                              }
                         }
                     ]}
                     getTrProps={(state, rowInfo) => ({
@@ -66,7 +69,7 @@ class SelectPipeline extends Component {
 
     render() {
         return (
-            <div>
+            <div className='pipeline-start-1'>
                 {this.renderDatatable()}
             </div>
         )

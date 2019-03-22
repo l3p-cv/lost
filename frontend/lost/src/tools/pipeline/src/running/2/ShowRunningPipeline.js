@@ -119,7 +119,7 @@ class ShowRunningPipeline extends Component {
 
     render() {
         return (
-            <div ref={this.graphMountPoint}>
+            <div className='pipeline-running-2' ref={this.graphMountPoint}>
                                 <ToolBar
                      data={this.props.data}
                     />

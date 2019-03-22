@@ -3,7 +3,7 @@ const INITITAL_STATE = {
         style: {
             container: {
               paddingTop: 24,          //pixel
-              paddingBottom: 24,       //pixel
+              paddingBottom: 40,       //pixel
             },
             shape: {
               size: 80,

@@ -26,7 +26,7 @@ class StartPipelineForm extends Component{
     
     render(){
         return(
-            <Card >
+            <Card className='pipeline-start-3' >
                 <CardBody>
                     <Form>
                         <FormGroup>

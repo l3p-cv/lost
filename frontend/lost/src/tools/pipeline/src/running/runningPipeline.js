@@ -35,7 +35,7 @@ class RunningPipeline extends Component{
 
     render(){
         return(
-            <div>
+            <div className='pipeline-running-container'>
             <Stepper
             stepperData={this.props.pipelineRunning}
             changeCurrentStep={this.changeCurrentStep}

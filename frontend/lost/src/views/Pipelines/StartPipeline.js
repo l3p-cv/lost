@@ -20,7 +20,7 @@ class StartPipe extends Component {
 				<Col xs='12' sm='12' lg='12'>
                     <Card>
                         <CardBody>
-							<StartPipeline/>
+							<StartPipeline />
                         </CardBody>
                     </Card>
                 </Col>
