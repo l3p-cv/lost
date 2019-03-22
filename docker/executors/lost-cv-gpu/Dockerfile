@@ -14,6 +14,6 @@ RUN cp -r lost/backend /code && rm -r lost
 #ADD /backend/ /code/backend
 #ADD /frontend/ /code/frontend
 #ADD /docs/ /code/docs
-ADD entrypoint.sh /entrypoint.sh
+ADD /docker/executors/lost-cv-gpu/entrypoint.sh /entrypoint.sh
 RUN echo "export PATH=$PATH:/code/backend/lost/cli" >> ~/.bashrc
 RUN echo "conda activate lost" >> ~/.bashrc

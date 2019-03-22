@@ -15,7 +15,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.4-Linux-x86_
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
     #echo "conda activate lost" >> ~/.bashrc
 
-ADD environment.yml .
+ADD /docker/lost-gpu-base/environment.yml .
 RUN /bin/bash -c "source /opt/conda/bin/activate && conda env create -f environment.yml"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install python-igraph"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pandas"
