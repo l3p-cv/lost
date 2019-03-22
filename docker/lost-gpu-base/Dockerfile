@@ -12,20 +12,14 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.4-Linux-x86_
     rm ~/miniconda.sh && \
     /opt/conda/bin/conda clean -tipsy && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate lost" >> ~/.bashrc
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc
+    #echo "conda activate lost" >> ~/.bashrc
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs
 ADD environment.yml .
 RUN /bin/bash -c "source /opt/conda/bin/activate && conda env create -f environment.yml"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install python-igraph"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install sphinx"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install sphinx-rtd-theme"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pandas"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pytest"
 # Change to CLI
 WORKDIR /code/backend/lost/cli
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install tensorflow-gpu"
-ADD entrypoint.sh /entrypoint.sh
 
