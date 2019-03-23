@@ -53,18 +53,10 @@ tested for Ubuntu):
     python3 quick_setup.py ~/lost
     ```
 5. Run LOST:
-   ``` 
-   # Change to directory where LOST was installed
-   cd ~/lost/docker 
-   # Start LOST
-   docker-compose up
-   ```
-6. Open a browser and navigate to: http://localhost
-7. Login with 
-    ```
-    user: admin
-    password: admin
-    ```
+
+    Follow instructions of the quick_setup script, 
+    printed in the command line.
+
 
 # Creators
 ## People

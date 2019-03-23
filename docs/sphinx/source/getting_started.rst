@@ -4,32 +4,7 @@ Getting Started
 Setup LOST
 =================
 LOST releases are hosted on DockerHub and shipped in Containers.
-For a quick setup perform the following steps (these steps have been 
-tested for Ubuntu):
-
-1. Install docker on your machine or server:
-    https://docs.docker.com/install/
-2. Install docker-compose:
-    https://docs.docker.com/compose/install/
-3. Clone LOST:
-    .. code-block:: bash
-
-        git clone https://github.com/l3p-cv/lost.git
-4. Run quick_setup script:
-    .. code-block:: bash
-
-        cd lost/docker/quick_setup/
-        # python3 quick_setup.py path/to/install/lost
-        python3 quick_setup.py ~/lost
-5. Run LOST:
-    .. code-block:: bash
-
-        # Change to directory where LOST was installed in previous step
-        cd ~/lost/docker 
-        # Start LOST
-        docker-compose up
-6. Open a browser and navigate to: http://localhost
-7. Login in with user **admin** and password **admin**
+See :ref:`quick-setup` for more information.
 
 
 Getting Data into LOST

@@ -27,8 +27,8 @@ sys.path.append(os.path.abspath('../../../backend/'))
 # -- Project information -----------------------------------------------------
 
 project = 'lost'
-copyright = '2018, Jonas Jäger, Gereon Reus, Dennis Weiershäuser, Tobias Kwant'
-author = 'Jonas Jäger, Gereon Reus, Dennis Weiershäuser, Tobias Kwant'
+copyright = '2019, Jonas Jäger, Gereon Reus'
+author = 'Jonas Jäger, Gereon Reus'
 
 # The short X.Y version
 version = ''
@@ -158,7 +158,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'lost.tex', 'lost Documentation',
-     'Jonas Jäger, Gereon Reus, Dennis Weiershäuser, Tobias Kwant', 'manual'),
+     'Jonas Jäger, Gereon Reus', 'manual'),
 ]
 
 

@@ -119,10 +119,12 @@ class QuickSetup(object):
     
     def write_docker_compose(self, store_path):
         builder = DockerComposeBuilder()
-        if self.args.no_ai:
+        if self.args.no_ai or self.args.add_gpu_worker:
             builder.write_production_file(store_path, add_lostcv=False)
         else:
             builder.write_production_file(store_path, add_lostcv=True)
+        logging.info('Wrote docker-compose config to: {}'.format(store_path))
+        
 
     def write_env_config(self, env_path):
         '''Write env file to filesystem
@@ -225,7 +227,6 @@ class QuickSetup(object):
         dst_config = os.path.join(self.dst_docker_dir, 'docker-compose.yml')
         # shutil.copy(example_config_path, dst_config)
         self.write_docker_compose(dst_config)
-        logging.info('Copied docker-compose config to: {}'.format(dst_config))
         env_path = os.path.join(self.dst_docker_dir,'.env')
         self.write_env_config(env_path)
         logging.info('Created {}'.format(env_path))
@@ -242,6 +243,8 @@ class QuickSetup(object):
             logging.info('   cd {}; bash run_gpu_worker.sh'.format(self.dst_docker_dir))
             n += 1
         logging.info('{}) Open your browser and navigate to: http://localhost'.format(n))
+        logging.info('    Login user:     admin')
+        logging.info('    Login password: admin')
         logging.info('======================================================')
 
 
