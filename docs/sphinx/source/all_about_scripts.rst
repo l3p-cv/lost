@@ -284,6 +284,25 @@ definition in a script that may be executed in two different environments.
 
     ENVS = ['lost', 'lost-cv']
 
+
+Script RESOURCES
+================
+
+Sometimes a script will require all resources of a worker.
+And therefore no other script should be executed in parallel by the
+worker that executes your script.
+This is often the case if you train an AI model and you need all GPU 
+memory to do this.
+In those cases, you can define a **RESOURCES** variable inside your python
+script and assign a list containing the string **lock_all** to it.
+See the :ref:`listing below <aascripts-resources-def>` for an example:
+
+.. code-block:: python
+    :caption: Listing 12: RESOURCES definition inside a script.
+    :name: aascripts-resources-def
+    
+    RESOURCES = ['lock_all'] 
+
 .. _aascripts-debugging:
 
 Debugging a Script
