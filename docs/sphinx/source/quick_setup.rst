@@ -4,14 +4,17 @@ LOST Quick Setup
 ****************
 LOST provides a `quick_setup <https://github.com/l3p-cv/lost/tree/master/docker/quick_setup>`_
 script, 
-that will configure LOST and instruct you how to start LOST.
-It will also load some annotation pipelines and example label trees,
-that you can directly start testing it.
+that will configure LOST and instruct you how to start LOST. 
+We designed this script for Linux environments,
+but it will also work on Windows host machines.
+
+The quick_setup will import some out-of-the-box annotation pipelines and
+example label trees.
 When you start LOST,
 all required docker containers will be downloaded from DockerHub and
 started on your machine.
 The following containers are used in different combinations by the LOST
-quick_setup.
+quick_setup:
 
 * **mysql** ~124 MB download (extracted 372 MB)
 * **rabbitmq** ~90 MB download (extracted 149 MB)
