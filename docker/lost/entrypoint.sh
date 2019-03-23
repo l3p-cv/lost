@@ -41,6 +41,7 @@ python3 /code/backend/lost/logic/init/initlost.py
 cd /code/backend/lost/cli && bash import_examples.sh && cd -
 cd /code/docs/sphinx &&  make html && cd -
 python3 /code/backend/lost/logic/init/initworker.py
+python3 /code/backend/lost/logic/init/init_patchsystem.py
 
 
 # celery cronjob.

@@ -28,7 +28,10 @@ MY_DATA_PATH = "my_data/"
 class FileMan(object):
     def __init__(self, lostconfig):
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
-        
+
+    def get_version_log_path(self):
+        return os.path.join(self.lostconfig.project_path, 'version-log.json')
+            
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.lostconfig.project_path, PIPE_LOG_PATH)
         if not os.path.exists(base_path):
