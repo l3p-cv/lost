@@ -37,6 +37,12 @@ for a script.
     if __name__ == "__main__":
         MyScript()
 
+Example Scripts
+===============
+
+More script examples can be found here:
+`lost/backend/lost/pyapi/examples/pipes <https://github.com/l3p-cv/lost/tree/master/backend/lost/pyapi/examples/pipes>`_
+
 The LOST PyAPI Script Model
 ===========================
 

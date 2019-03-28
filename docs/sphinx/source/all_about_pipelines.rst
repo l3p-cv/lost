@@ -14,7 +14,7 @@ scripts of a pipeline.
 
 Pipeline Project Examples
 -------------------------
-Pipeline project examples can be found at:
+Pipeline project examples can be found here:
 `lost/backend/lost/pyapi/examples/pipes <https://github.com/l3p-cv/lost/tree/master/backend/lost/pyapi/examples/pipes>`_
 
 
