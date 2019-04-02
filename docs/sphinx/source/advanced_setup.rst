@@ -3,6 +3,11 @@ Advanced Setup
 
 Nginx Configuration
 ====================
+LOST is shipped in docker containers. 
+The base image inherits from an official nginx container. 
+LOST is installed in this container. 
+The communication to the host system is done via the nginx webserver, which can be configured via a configuration file. 
+A distinction is made between the debug mode and a productive environment:
 
 Routing
 ----------------------
