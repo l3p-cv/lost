@@ -80,7 +80,7 @@ A LOST application may have multiple **Workers** with different
 **Environments** installed,
 since some scripts can have dependencies on specific libraries.
 For example,
-As you can see in |fig-lost-ecosystem| LOST is shipped with two workers 
+as you can see in |fig-lost-ecosystem| LOST is shipped with two workers 
 by default.
 One is called **lost** and the other one **lost-cv**.
 The **lost** worker can execute scripts that just rely on the
