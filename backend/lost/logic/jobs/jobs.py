@@ -47,6 +47,7 @@ def exec_pipe():
     for p in pipe_list:
        pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig)
        pipe_man.process_pipeline()
+    dbm.close_session()
 
 
 def __release_project_annos(dbm):
@@ -99,3 +100,5 @@ def release_annos():
     lostconfig = get_args()
     dbm = DBMan(lostconfig)
     __release_project_annos(dbm)
+    dbm.close_session()
+

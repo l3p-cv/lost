@@ -16,7 +16,7 @@ class ClusterBoxes(script.Script):
                 boxes = []
                 sim_class_list = []
                 for bbox in img.iter_annos('bbox'):
-                    # Use yolo sim_class predictions from first annotation
+                    # Use yolo sim_class predictions from first
                     # annotation stage for clustring in MIA
                     sim_class_list.append(bbox.sim_class)
                     boxes.append(bbox.bbox)

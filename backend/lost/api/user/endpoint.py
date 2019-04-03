@@ -8,6 +8,8 @@ from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
 from lost.db.model import User as DBUser, Role, Group
 from lost.logic import email 
+from lost.logic.user import release_user_annos
+
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
@@ -227,12 +229,14 @@ class UserLogout(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        dbm.close_session()
         if user:
             #TODO: logout stuff
-            return user
+            release_user_annos(dbm, user.idx)
+            #return user
+            return 'success', 200 
         else:
             return "No user found."
+        dbm.close_session()        
 
 @namespace.route('/login')
 class UserLogin(Resource):

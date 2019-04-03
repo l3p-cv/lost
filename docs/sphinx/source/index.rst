@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to lost's documentation!
+Welcome to LOST's documentation!
 ================================
 
 .. figure:: images/LOSTFeaturesIn40seconds.gif
@@ -38,6 +38,7 @@ proposals that are presented to an annotator inside the annotation tool.
    :caption: Contents:
 
         Getting Started <getting_started.rst>
+        Quick Setup <quick_setup.rst>
         For Annotators <annotators.rst>
         The LOST Ecosystem <lost_ecosystem.rst>
         For Pipeline Designers <designers.rst>

@@ -12,6 +12,12 @@ Additional,
 other files can be placed into this folder that can be accessed by the 
 scripts of a pipeline.
 
+Pipeline Project Examples
+-------------------------
+Pipeline project examples can be found here:
+`lost/backend/lost/pyapi/examples/pipes <https://github.com/l3p-cv/lost/tree/master/backend/lost/pyapi/examples/pipes>`_
+
+
 Directory Structure
 -------------------
 

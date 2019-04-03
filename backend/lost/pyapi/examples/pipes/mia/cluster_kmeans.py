@@ -9,7 +9,10 @@ from keras.models import Model
 
 from keras.preprocessing import image as keras_image
 
-ENVS = ['lost-cv']
+ENVS = ['lost-cv-gpu','lost-cv']
+#Lock all resources of a worker when this script is executed. 
+#This will prevent worker from executing other scripts while this script is executed.
+RESOURCES = ['lock_all'] 
 ARGUMENTS = {'n-clusters' : {'value': 20,
                             'help': 'Expected number of clusters - should be equal to number of classes.'}
             }

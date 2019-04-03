@@ -3,7 +3,7 @@
 # LOST - Label Objects and Save Time
 ![LOST Features](docs/sphinx/source/images/LOSTFeaturesIn40seconds.gif)
 ## Demo Videos
-* LOST Trailer: https://www.youtube.com/watch?v=-COnL6vtXOQ
+* LOST Trailer: https://youtu.be/alocNFQmVQw
 * LOST Single Image Annotation - Pipeline Demo: https://www.youtube.com/watch?v=DfDla2hAfWw
 * LOST Multi Image Annotation - Pipeline Demo: https://www.youtube.com/watch?v=Q-IpGtH6Xz0
 
@@ -53,18 +53,10 @@ tested for Ubuntu):
     python3 quick_setup.py ~/lost
     ```
 5. Run LOST:
-   ``` 
-   # Change to directory where LOST was installed
-   cd ~/lost/docker 
-   # Start LOST
-   docker-compose up
-   ```
-6. Open a browser and navigate to: http://localhost
-7. Login with 
-    ```
-    user: admin
-    password: admin
-    ```
+
+    Follow instructions of the quick_setup script, 
+    printed in the command line.
+
 
 # Creators
 ## People
@@ -77,5 +69,6 @@ tested for Ubuntu):
 
 
 ## Institutions
-[![L3P UG](docs/l3pug.png)](https://l3p-cv.com/)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![CVG Uni Jena](docs/cvgjena.png)](https://www.inf-cv.uni-jena.de/)
-
+| L3P UG | CVG University Jena | Hochschule Fulda |
+|--|--|--|
+|[![L3P UG](docs/l3pug.png)](https://lost.training/) | [![CVG Uni Jena](docs/cvgjena.png)](https://www.inf-cv.uni-jena.de/) | [![Hochschule Fulda](docs/hsfd.png)](https://www.hs-fulda.de/elektrotechnik-und-informationstechnik/)

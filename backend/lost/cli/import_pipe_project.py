@@ -18,3 +18,5 @@ if __name__ == "__main__":
     dbm = access.DBMan(lostconfig)
     importer = template_import.PipeImporter(args.pipe_dir, dbm)
     importer.start_import()
+    dbm.close_session()
+

@@ -346,6 +346,7 @@ def celery_exec_script(pipe_element_id):
             raise Exception(err.decode('utf-8'))
         logger.info('{} ({}): Executed script successful: {}'.format(pipe.name, 
             pipe.idx, pipe_e.script.path))
+        dbm.close_session()
 
     except:
         pipe = pipe_e.pipe
@@ -353,5 +354,6 @@ def celery_exec_script(pipe_element_id):
             pipe.idx, pipe_e.script.path))
         msg = traceback.format_exc()
         logger.error(msg)
-        script_api.report_script_err(pipe_e, pipe, dbm, msg)    
+        script_api.report_script_err(pipe_e, pipe, dbm, msg)
+        dbm.close_session()
 
