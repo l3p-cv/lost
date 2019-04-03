@@ -7,7 +7,7 @@ import {
 	Card,
 	CardBody,
 } from 'reactstrap'
-import StartPipeline from '../../tools/pipeline/src/start/startPipeline'
+import StartPipeline from 'pipRoot/start/StartPipeline'
 
 class StartPipe extends Component {
 	constructor(props){
