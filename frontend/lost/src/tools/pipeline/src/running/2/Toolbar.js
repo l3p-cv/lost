@@ -10,10 +10,9 @@ import { faTrash, faDownload, faPause, faPlay, faRedo } from '@fortawesome/free-
 import ToolbarTooltip from './ToolbarTooltip'
 
 
-
-
 const { pausePipeline, playPipeline, deletePipeline, downloadLogfile } = actions
 const { postPipeline } = startActions
+
 class Toolbar extends Component {
     constructor() {
         super()
