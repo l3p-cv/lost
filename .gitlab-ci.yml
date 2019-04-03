@@ -63,10 +63,10 @@ build-lost:
       - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
 
 test-lost:
-  # image: docker/compose:1.24.0
   stage: test-lost
   before_script: 
-    - apk add --update python py-pip python-dev && pip install docker-compose
+    - apk add --no-cache --quiet py-pip
+    - pip install --quiet docker-compose~=1.23.0
   script:
     - cd docker/compose && docker-compose run -e LOST_VERSION=$LOST_VERSION lost bash /pytest.sh
   except: 
