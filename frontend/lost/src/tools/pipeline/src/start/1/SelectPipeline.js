@@ -28,6 +28,9 @@ class SelectPipeline extends Component {
 
     renderDatatable() {
         if (this.props.data) {
+            console.log('--------------uuuuuuuuuuuuuuu----------------------');
+            console.log(this.props.data);
+            console.log('------------------------------------');
             return (
                 <ReactTable
                     columns={[

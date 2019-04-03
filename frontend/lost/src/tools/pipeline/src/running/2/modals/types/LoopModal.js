@@ -21,7 +21,7 @@ export default (props) =>{
             },
             {
               key: 'Breakloop',
-              value: props.loop.isBreakLoop
+              value: String(props.loop.isBreakLoop)
             },
             {
               key: 'Iteration',
@@ -29,7 +29,7 @@ export default (props) =>{
             },
             {
               key: 'Max Iteration',
-              value: props.loop.maxIteration
+              value: typeof props.loop.maxIteration === 'number' && (props.loop.maxIteration > -1)?props.loop.maxIteration:'Infinity'
             },
             {
               key: 'Jump ID',
@@ -45,3 +45,5 @@ export default (props) =>{
     </>
   )
 }
+
+

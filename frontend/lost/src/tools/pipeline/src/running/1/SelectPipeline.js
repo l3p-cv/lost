@@ -54,7 +54,18 @@ class SelectPipeline extends Component {
 
 
   renderDatatable() {
+
     if (this.props.data) {
+      const test = this.props.data.pipes.map((el)=>{
+        return{
+          ...el,
+          date: new Date(el.date).toDateString()
+        }
+      }
+      )
+      console.log('----------this.props.data--------------------------');
+      console.log(this.props.data);
+      console.log('------------------------------------');
       return (<ReactTable
         columns={[
           {
@@ -101,10 +112,10 @@ class SelectPipeline extends Component {
         defaultSorted={[
           {
             id: "date",
-            desc: true
+            desc: false
           }
         ]}
-        data={this.props.data.pipes}
+        data={test}
         defaultPageSize={10}
         className="-striped -highlight"
       />)

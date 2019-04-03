@@ -14,7 +14,7 @@ const LoopNode = (props) => {
                 data={[
                     {
                         key: 'Max Iterations',
-                        value: props.exportData.loop.maxIteration?props.exportData.loop.maxIteration: '0'
+                        value: typeof props.exportData.loop.maxIteration === 'number' && (props.exportData.loop.maxIteration > -1)?props.exportData.loop.maxIteration: 'Infinity'
                     }
                 ]}
             />

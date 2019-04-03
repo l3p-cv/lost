@@ -35,12 +35,8 @@ class Toolbar extends Component {
         const response = await alertDeletePipeline()
         if (response.value) {
             this.props.deletePipeline(this.props.data.id)
-
         }
-
     }
-
-
 
     toggle() {
         this.setState(prevState => ({
@@ -54,12 +50,10 @@ class Toolbar extends Component {
 
     pause() {
         this.props.pausePipeline(this.props.data.id)
-
     }
 
     play() {
         this.props.playPipeline(this.props.data.id)
-
     }
 
     async regenerate() {
@@ -80,7 +74,6 @@ class Toolbar extends Component {
     nameOnInput(e) {
         this.setState({
             name: e.target.value
-
         })
     }
     descriptionOnInput(e) {
@@ -92,7 +85,6 @@ class Toolbar extends Component {
     render() {
         return (
             <div className='pipeline-running-toolbar'>
-
                 <GrayLine />
                 <Button className='pipeline-running-toolbar-button'
                     id='pipeline-button-delete-pipeline'
@@ -158,9 +150,6 @@ class Toolbar extends Component {
                         target='pipeline-button-regenerate'
                         text='Regenerate'
                     />
-
-
-
                     <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                         <ModalHeader toggle={this.toggle}>Regenerate Pipeline</ModalHeader>
                         <ModalBody>
@@ -185,10 +174,6 @@ class Toolbar extends Component {
                             <Button color="secondary" onClick={this.toggle}>Cancel</Button>
                         </ModalFooter>
                     </Modal>
-
-
-
-
                 </>}
             </div>
         )

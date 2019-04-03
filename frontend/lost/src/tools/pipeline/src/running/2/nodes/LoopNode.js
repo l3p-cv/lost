@@ -14,7 +14,7 @@ const LoopNode = (props) =>{
         <div className='graph-node-body'>
         <div className='graph-node-body-row'>
         <span className='graph-node-body-left-text'>Max Iteration: </span>
-         <span>{props.loop.maxIteration}</span> 
+         <span>{typeof props.loop.maxIteration === 'number' && (props.loop.maxIteration > -1)?props.loop.maxIteration:'Infinity'}</span> 
         </div>
 
 
