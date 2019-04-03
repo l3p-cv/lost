@@ -1,4 +1,4 @@
-image: docker:latest
+image: docker:18.06
 services:
 - docker:dind
 
@@ -65,8 +65,8 @@ build-lost:
 test-lost:
   stage: test-lost
   before_script: 
-    - apk add --no-cache py-pip
-    - pip install docker-compose
+    - apk add --no-cache --quiet py-pip
+    - pip install --quiet docker-compose~=1.23.0
   script:
     - cd docker/compose && docker-compose run -e LOST_VERSION=$LOST_VERSION lost bash /pytest.sh
   except: 

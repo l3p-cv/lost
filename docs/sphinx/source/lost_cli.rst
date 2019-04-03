@@ -145,7 +145,7 @@ you need to copy it to *lost_data_folder/my_data/*:
         cp  my_labeltree.csv path_to_lost_data/my_data/
 
 Now your csv file can be accessed from inside of the docker container.
-In order to import your label tree we will login to the container and 
+In order to import your label tree, we will login to the container and 
 call **import_label_tree.py**:
 
 .. code-block:: bash
