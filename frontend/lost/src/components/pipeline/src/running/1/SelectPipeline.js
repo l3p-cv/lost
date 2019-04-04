@@ -5,7 +5,6 @@ import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import { Progress } from 'reactstrap'
 import { getColor } from '../../../../../components/AnnoTask/utils'
-import { alertLoading, alertClose } from 'pipelineGlobalComponents/Sweetalert'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
 
@@ -21,9 +20,8 @@ class SelectPipeline extends Component {
   }
   }
   async componentDidMount() {
-    alertLoading()
-    await this.props.getPipelines()
-    alertClose()
+    const showAlert = true
+    await this.props.getPipelines(showAlert)
 
   }
 
@@ -54,18 +52,19 @@ class SelectPipeline extends Component {
 
 
   renderDatatable() {
-
     if (this.props.data) {
-      const test = this.props.data.pipes.map((el)=>{
-        return{
-          ...el,
-          date: new Date(el.date).toDateString()
-        }
+      if(this.props.data.error){
+        return(
+          <div className='pipeline-error-message'>{this.props.data.error}</div>
+        )
       }
-      )
-      console.log('----------this.props.data--------------------------');
-      console.log(this.props.data);
-      console.log('------------------------------------');
+      // const test = this.props.data.response.pipes.map((el)=>{
+      //   return{
+      //     ...el,
+      //     date: new Date(el.date).toDateString()
+      //   }
+      // }
+      // )
       return (<ReactTable
         columns={[
           {
@@ -103,7 +102,10 @@ class SelectPipeline extends Component {
           },
           {
             Header: "Date",
-            accessor: "date"
+            accessor: "date",
+            Cell: (row) => {
+              return(new Date(row.value).toString())
+            }
           }
         ]}
         getTrProps={(state, rowInfo) => ({
@@ -115,7 +117,7 @@ class SelectPipeline extends Component {
             desc: false
           }
         ]}
-        data={test}
+        data={this.props.data.response.pipes}
         defaultPageSize={10}
         className="-striped -highlight"
       />)

@@ -3,10 +3,7 @@ import actions from 'actions/pipeline/pipelineStart'
 import { connect } from 'react-redux'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
-import {alertLoading, alertClose} from 'pipelineGlobalComponents/Sweetalert'
 const { getTemplates, selectTab, verifyTab, getTemplate } = actions
-
-
 
 class SelectPipeline extends Component {
     constructor() {
@@ -14,24 +11,23 @@ class SelectPipeline extends Component {
         this.selectRow = this.selectRow.bind(this)
     }
     async componentDidMount() {
-        alertLoading()
         await this.props.getTemplates()
-        alertClose()
     }
 
    async selectRow(id) {
-        alertLoading()
         await this.props.getTemplate(id)
         this.props.verifyTab(0, true)
         this.props.selectTab(1)
-        alertClose()
     }
 
     renderDatatable() {
+
         if (this.props.data) {
-            console.log('--------------uuuuuuuuuuuuuuu----------------------');
-            console.log(this.props.data);
-            console.log('------------------------------------');
+            if(this.props.data.error){
+                return(
+                    <div className='pipeline-error-message'>{this.props.data.error}</div>
+                )
+            }
             return (
                 <ReactTable
                     columns={[
@@ -64,7 +60,7 @@ class SelectPipeline extends Component {
                             desc: true
                         }
                     ]}
-                    data={this.props.data.templates}
+                    data={this.props.data.response.templates}
                     defaultPageSize={10}
                     className="-striped -highlight"
                 />)
