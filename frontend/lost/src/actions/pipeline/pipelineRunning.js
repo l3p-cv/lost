@@ -22,14 +22,17 @@ const selectTab = (tabId) => {
 
 const getPipelines = () => async dispatch => {
     let response
+    let error
     try {
         response = await axios.get(`${API_URL}/pipeline`)
     }catch(err){
-        console.log('-----eeeeeeeeeee-------------------------------');
-        console.log(err);
-        console.log('------------------------------------');
+        error = err
     }
-    dispatch({ type: 'PIPELINE_RUNNING_GET_PIPELINES', payload: response.data })
+    dispatch({ type: 'PIPELINE_RUNNING_GET_PIPELINES', 
+    payload: {
+        reponse: response.data,
+        error: error
+    }})
 }
 
 const getPipeline = (id) => async dispatch => {
