@@ -1,4 +1,4 @@
-image: docker:latest
+image: docker:18.06
 services:
 - docker:dind
 
@@ -47,12 +47,12 @@ build-lost:
   stage: build-lost
   script:
     - npm install --prefix frontend/lost/src/tools/sia -d 
-    - npm install --prefix frontend/lost/src/tools/pipeline -d
+    - npm install --prefix frontend/lost/src/components/pipeline -d
     - npm install --prefix frontend/lost -d 
     - CI=false npm run build --prefix frontend/lost -d 
     - rm -rf frontend/lost/node_modules
     - rm -rf frontend/lost/src/tools/sia/node_modules
-    - rm -rf frontend/lost/src/tools/pipeline/node_modules
+    - rm -rf frontend/lost/src/components/pipeline/node_modules
     - docker build --build-arg base_image=$LOST_CI_REGISTRY_BASE_IMAGE --pull -t $LOST_CI_REGISTRY_TEST_IMAGE -f docker/lost/Dockerfile .
     - docker push $LOST_CI_REGISTRY_TEST_IMAGE
   except: 
@@ -65,8 +65,8 @@ build-lost:
 test-lost:
   stage: test-lost
   before_script: 
-    - apk add --no-cache py-pip
-    - pip install docker-compose
+    - apk add --no-cache --quiet py-pip
+    - pip install --quiet docker-compose~=1.23.0
   script:
     - cd docker/compose && docker-compose run -e LOST_VERSION=$LOST_VERSION lost bash /pytest.sh
   except: 

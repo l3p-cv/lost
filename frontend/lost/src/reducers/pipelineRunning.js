@@ -48,14 +48,17 @@ export default (state = INITITAL_STATE, action) => {
                 ...INITITAL_STATE
             }
         case 'PIPELINE_RUNNING_GET_PIPELINES':
+        console.log('--------action.payload----------------------------');
+        console.log(action.payload);
+        console.log('------------------------------------');
             return {
                 ...state,
                 step0Data: action.payload
             }
         case 'PIPELINE_RUNNING_GET_PIPELINE':
+
             return {
                 ...state,
-
                 step1Data:
                     action.payload === 'ERROR' ? false : {
                         ...action.payload,
