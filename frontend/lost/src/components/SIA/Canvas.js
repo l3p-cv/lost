@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
 
+
 import actions from '../../actions'
 
 const { getSiaImage,getSiaAnnos } = actions
@@ -18,7 +19,7 @@ class Canvas extends Component{
         }
     }
     componentDidMount(){
-        this.props.getSiaAnnos(-1)
+        this.props.getSiaAnnos(46)
     }
 
     componentDidUpdate(){
@@ -33,13 +34,28 @@ class Canvas extends Component{
         }
 	}
 
+    renderDrawables(){
+        if(this.props.annos.drawables){
+            this.props.annos.drawables.polygons.map((drawable) => {
+            console.log(drawable)
+          }
+       )}
+       return(
+            <g>
+            <rect x="500" y="0" width="100" height="100" />
+            <circle onClick={(e)=>{console.log("JUUUHUUUUU",e.pageX)}}cx={520} cy={50} r={10} fill="red" />
+            <polygon points="100,100 150,25 150,75 200,0"
+            fill="none" stroke="red" />
+            </g>
+       )
+    }
     render(){
-        return(<div>
-                  <img src={this.state.image.data} width='100%'/>
-                  <svg>
-                    <circle cx={50} cy={50} r={10} fill="red" />
+        return(
+                <div>
+                  <svg width="100%" height='20cm'>
+                    <image href={this.state.image.data} width='70%'/>
+                    {this.renderDrawables()}
                 </svg>
-                
             </div>)
     }
 }
