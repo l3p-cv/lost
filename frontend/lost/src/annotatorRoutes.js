@@ -25,11 +25,17 @@ const Profile = Loadable({
   loading: Loading,
 })
 
+const SiaRewritten = Loadable({
+  loader: () => import('./views/SiaRewritten.js'),
+  loading: Loading,
+})
+
 const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/sia', name: 'Single Image Annotation', component: SingleImageAnnotation },
   { path: '/mia', name: 'Multi Image Annotation', component: MultiImageAnnotation },
   { path: '/profile', name: 'My Profile', component: Profile },
+  { path: '/sia2', name: 'Sia Rewritten', component: SiaRewritten },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]
 
