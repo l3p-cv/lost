@@ -19,7 +19,7 @@ class Canvas extends Component{
         }
     }
     componentDidMount(){
-        this.props.getSiaAnnos(46)
+        this.props.getSiaAnnos(50)
     }
 
     componentDidUpdate(){
