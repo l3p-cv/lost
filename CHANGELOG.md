@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Adjust loop iterations when starting a pipeline
-- Added advanced setup guide to docs
 
 ### Changed
-- 
+- prevent admin user from removing its own designer role
 
 ### Deprecated
 - 
@@ -20,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - update_pipe_project.py bug: update of wrong script (see issue #21)
+- logout bug: clean redux store and reset axios auth header (see issue #18)
 
 ### Security
 -
