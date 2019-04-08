@@ -95,7 +95,7 @@ class PipeImporter(object):
                     if 'script' in pe_j:
                         element_j = pe_j['script']
                         script = parse_script(element_j)
-                        db_script = self.dbm.get_script(file_name=os.path.basename(script.path))
+                        db_script = self.dbm.get_script(name=self._get_script_name(script))
                         script_arguments = get_default_script_arguments(script.path)
                         script_envs = get_default_script_envs(script.path)
                         script_resources = get_default_script_resources(script.path)
@@ -135,6 +135,9 @@ class PipeImporter(object):
         # import pipe if not already present in database    
         self.import_pipe(pipe)
 
+    def _get_script_name(self, script):
+        return self._namespaced_name(os.path.basename(script.path))
+
     def start_import(self):
         if os.path.exists(self.dst_pipe_template_path):
             logging.warning('Cannot import pipeline!')
@@ -166,9 +169,7 @@ class PipeImporter(object):
                 if 'script' in pe_j:
                     element_j = pe_j['script']
                     script = parse_script(element_j)
-                    db_script = self.dbm.get_script(file_name=os.path.join(
-                        self.namespace,
-                        os.path.basename(script.path)))
+                    db_script = self.dbm.get_script(name=self._get_script_name(script))
                     script_arguments = get_default_script_arguments(script.path)
                     script_envs = get_default_script_envs(script.path)
                     script_resources = get_default_script_resources(script.path)

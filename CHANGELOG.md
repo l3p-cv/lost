@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -
 
 ### Fixed
--
+- update_pipe_project.py bug: update of wrong script (see issue #21)
 
 ### Security
 -
