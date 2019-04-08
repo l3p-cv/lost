@@ -2,6 +2,8 @@ import { API_URL } from '../../settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
+import { alertLoading, alertClose, alertError } from 'pipelineGlobalComponents/Sweetalert'
+
 const verifyTab = (tabId, verified) => {
     return {
         type: 'PIPELINE_RUNNING_VERIFY_TAB',
@@ -20,10 +22,25 @@ const selectTab = (tabId) => {
     }
 }
 
-
-const getPipelines = () => async dispatch => {
-    const response = await axios.get(`${API_URL}/pipeline`)
-    dispatch({ type: 'PIPELINE_RUNNING_GET_PIPELINES', payload: response.data })
+const getPipelines = (showAlert) => async dispatch => {
+    let response = {}
+    let error
+    if(showAlert){
+        alertLoading()
+    }
+    try {
+        response = await axios.get(`${API_URL}/pipeline`)
+    }catch(err){
+        error = err.message
+    }
+    if(showAlert){
+        alertClose()
+    }
+    dispatch({ type: 'PIPELINE_RUNNING_GET_PIPELINES', 
+    payload: {
+        response: response.data,
+        error: error
+    }})
 }
 
 const getPipeline = (id) => async dispatch => {

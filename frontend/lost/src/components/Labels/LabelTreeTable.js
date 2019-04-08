@@ -28,9 +28,7 @@ class LabelTreeTable extends Component {
             <React.Fragment>
                 <ReactTable
                     data={data}
-                    columns={[{
-                        Header: 'Users',
-                        columns: [
+                    columns={ [
                             {
                                 Header: 'Tree Name',
                                 accessor: 'name'
@@ -47,7 +45,7 @@ class LabelTreeTable extends Component {
                             }
                         ]
                     }
-                ]}
+                
                     defaultPageSize={10}
                     className='-striped -highlight'
                     getTrProps={(state, rowInfo, column) => this.getProps(state, rowInfo, column)}

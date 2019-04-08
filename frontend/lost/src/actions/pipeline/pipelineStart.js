@@ -1,5 +1,6 @@
 import { API_URL } from '../../settings'
 import axios from 'axios'
+import {alertLoading, alertClose, alertError} from 'pipelineGlobalComponents/Sweetalert'
 
 const selectTab = (tabId) => {
     return {
@@ -27,9 +28,31 @@ const verifyTab = (tabId, verified) => {
 // TAB0
 
 const getTemplates = () => async dispatch => {
-    const response = await axios.get(`${API_URL}/pipeline/template`)
-    dispatch({ type: 'PIPELINE_START_GET_TEMPLATES', payload: response.data })
+    let response = {}
+    let error
+    alertLoading()
+    try {
+        response = await axios.get(`${API_URL}/pipeline/template`)
+    }catch(err){
+        error = err.message
+    }
+    if(error){
+        alertError(error)
+    }
+    alertClose()
+    
+    dispatch({ type: 'PIPELINE_START_GET_TEMPLATES', 
+    payload: {
+        response: response.data,
+        error: error
+    }})
+    
+
+
+
+
 }
+
 
 
 

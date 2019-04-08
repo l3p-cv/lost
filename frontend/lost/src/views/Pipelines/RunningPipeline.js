@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import RunningPipeline from 'pipRoot/running/runningPipeline'
+import RunningPipeline from 'pipRoot/running/RunningPipeline'
 import {
 	Row,
 	Col,
