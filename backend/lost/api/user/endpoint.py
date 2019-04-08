@@ -155,7 +155,7 @@ class User(Resource):
 
             if roles.DESIGNER not in args.get('roles'):
                 for user_role in dbm.get_user_roles_by_user_id(id):
-                    if user_role.role.name == roles.DESIGNER: 
+                    if user_role.role.name == roles.DESIGNER and requesteduser.user_name != 'admin': 
                         dbm.delete(user_role) 
                         dbm.commit()   
 
