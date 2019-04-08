@@ -45,6 +45,7 @@ proposals that are presented to an annotator inside the annotation tool.
         ALL About Pipelines <all_about_pipelines.rst>
         All About Scripts <all_about_scripts.rst>
         Command Line Interface <lost_cli.rst>
+        .. Advanced Setup <advanced_setup.rst>
         Users and Groups <users_groups.rst>
         Conventions <conventions.rst>
         PyAPI <pyapi.rst>

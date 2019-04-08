@@ -7,7 +7,7 @@ $headerPadding: 10px;
     border-top: 0.5px solid gray!important
 }
 .rt-tr.-odd{
-    background-color: whitesmoke !important;
+    // background-color: whitesmoke !important;
     border: 0px solid gray!important
 }
 
@@ -15,8 +15,8 @@ $headerPadding: 10px;
     height: $headerHeight;
     line-height: $headerHeight;
     text-align: center;
-    font-size: large;
-    background-color: lightgray;
+    font-size: medium;
+    // background-color: lightgray;
 }
 
 .rt-resizable-header-content{

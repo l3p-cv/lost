@@ -74,9 +74,9 @@ def full_bbox_anno():
             }
         ),
         dtype=dtype.TwoDAnno.BBOX,
-        annotator=test_user,
         label_leaf_id=label_leaf_id
     )
+    twod_anno.annotator = test_user
     dbm.add(twod_anno)
     dbm.commit()
     yield twod_anno

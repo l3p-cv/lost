@@ -149,7 +149,7 @@ class TwoDAnno(Base):
                  track_n=None, sim_class=None,
                  img_anno_id=None, timestamp_lock=None, 
                  iteration=0, data=None, dtype=None,
-                 confidence=None, anno_time=None, annotator=None,
+                 confidence=None, anno_time=None,
                  label_leaf_id=None):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
@@ -164,7 +164,6 @@ class TwoDAnno(Base):
         self.iteration = iteration
         self.confidence = confidence
         self.anno_time = anno_time
-        self.annotator = annotator
         if label_leaf_id is not None:
             self.label = Label(label_leaf_id=label_leaf_id)
 

@@ -11,6 +11,7 @@ const login = (formProps, callback) => async dispatch => {
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('refreshToken', response.data.refresh_token)
         localStorage.setItem('view', 'Annotator')
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
         callback()
     } catch(e){
         dispatch({ type: TYPES.AUTH_ERR, payload: 'No valid credentials.'})
@@ -44,6 +45,7 @@ const changeView = (view, callback) => async dispatch => {
 const logout = () => async dispatch => {
     axios.post(API_URL + '/user/logout')
     dispatch({type: TYPES.LOGOUT})
+    axios.defaults.headers.common['Authorization'] = undefined
     localStorage.removeItem('token')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('view')
