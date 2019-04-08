@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- 
+
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+-
+
+### Fixed
+- 
+
+### Security
+-
+
+## [0.0.1] - 2019-04-08
+### Added
 - Adjust loop iterations when starting a pipeline
 
 ### Changed
