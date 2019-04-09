@@ -490,6 +490,10 @@ class PipeDefChecker():
             for pe in pipeline_template['elements']:
                 if not self._check_pipe_element(pe):
                     ret = False
+        # Check connections of all pipeline elements.
+        if 'elements' in pipeline_template:
+            if not self._check_connections(pipeline_template['elements']):
+                ret = False
 
         if ret:
             self.logger.info('Pipeline definition file OK!')
@@ -497,6 +501,35 @@ class PipeDefChecker():
         else:
             self.logger.error('Pipeline defintion file WRONG!')
             return False
+
+    def _check_connections(self, pipe_elements):
+        ret = True
+        pe_map = dict()
+        pe_out_set = set()
+        for pe in pipe_elements:
+            if pe['peN'] in pe_map:
+                self.logger.error(('Multiple pipe elements have the '
+                    'same peN: {}\nElements are:\n{}\n{}'.format(
+                        pe['peN'], 
+                        json.dumps(pe_map[pe['peN']], indent=4), 
+                        json.dumps(pe, indent=4))))
+                ret = False
+            else:
+                pe_map[pe['peN']] = pe
+        for pe in pipe_elements:
+            if pe['peOut'] is not None:
+                for pe_out in pe['peOut']:
+                    pe_out_set.add(pe_out)
+                    if pe_out not in pe_map:
+                        self.logger.error(('peN: {} points to peOut: {} '
+                            'that does not exist! See element:\n{}').format(
+                                pe['peN'], pe_out, json.dumps(pe, indent=4)))
+                        ret = False
+        for pe in pipe_elements:
+            if pe['peN'] not in pe_out_set:
+                self.logger.warning('No element is connected to peN: {}'.format(
+                    pe['peN']))
+        return ret
 
 
 
