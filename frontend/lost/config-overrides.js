@@ -25,13 +25,13 @@ module.exports = (config, env) => {
 	config.resolve.alias["shared"] = absolutePath("./src/tools/sia/src/shared")
 
 	// PIP aliases
-	config.resolve.alias["pipRoot"] = absolutePath("src/tools/pipeline/src/")
+	config.resolve.alias["pipRoot"] = absolutePath("src/components/pipeline/src/")
 	config.resolve.alias["runningPipe"] = absolutePath("src/tools/pipeline/src/running")
 	config.resolve.alias["startPipe"] = absolutePath("src/tools/pipeline/src/start")
 
 	// Actions alias
 	config.resolve.alias["actions"] = absolutePath("src/actions")
-	config.resolve.alias["pipelineGlobalComponents"] = absolutePath("src/tools/pipeline/src/globalComponents")
+	config.resolve.alias["pipelineGlobalComponents"] = absolutePath("src/components/pipeline/src/globalComponents")
 
 
 	

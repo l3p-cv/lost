@@ -11,7 +11,7 @@ import worker from './worker'
 import pipelineRunning from './pipelineRunning'
 import pipelineStart from './pipelineStart'
 
-export default combineReducers({
+const appReducer = combineReducers({
     auth,
     label,
     group,
@@ -24,3 +24,14 @@ export default combineReducers({
     pipelineRunning,
     pipelineStart
 })
+
+
+const rootReducer = (state, action) => {
+    if (action.type === 'logout') {
+        state = undefined
+    }
+
+    return appReducer(state, action)
+}
+
+  export default rootReducer

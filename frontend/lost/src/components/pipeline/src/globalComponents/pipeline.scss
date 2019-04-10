@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+
+
+.annotask-modal-card{
+    margin: 20px
+}
+
+.pipeline-start-4{
+    text-align: center
+}
+
+.pipeline-running-toolbar{
+   // background-color: #eee8d5;
+    text-align: center
+}
+
+.pipeline-running-toolbar-button{
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.pipeline-running-container{
+    font-family: 'Lato';
+    font-weight: 400;
+}
+.pipeline-start-container{
+    font-family: 'Lato';
+    font-weight: 400;
+}
+
+
+
+.pipeline-error-message{
+    font-size: xx-large;
+    text-align: center;
+    color: red;
+}

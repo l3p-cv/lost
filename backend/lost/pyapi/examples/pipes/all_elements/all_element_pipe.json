@@ -39,12 +39,6 @@
               "bounds": true,
               "delete": true
             }
-          },
-          "drawables": {
-            "bbox": {
-              "minArea": 9,
-              "minAreaType": "abs"
-            }
           }
         }
       }

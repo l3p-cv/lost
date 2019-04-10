@@ -35,9 +35,9 @@ def full_img_anno():
             }
         ),
         dtype=dtype.TwoDAnno.BBOX,
-        annotator=test_user,
         label_leaf_id=label_vec[0]
     )
+    twod_anno.annotator = test_user
     twod_anno2 = model.TwoDAnno(
         data=json.dumps(
             {
@@ -46,13 +46,13 @@ def full_img_anno():
             }
         ),
         dtype=dtype.TwoDAnno.POINT,
-        annotator=test_user,
         label_leaf_id=label_vec[1]
     )
+    twod_anno2.annotator = test_user
     line = model.TwoDAnno(
-        annotator=test_user,
         label_leaf_id=label_vec[4]
     )
+    line.annotator = test_user
     line.line = REF_LINE
     img_anno = model.ImageAnno(label_leaf_id=label_vec[3],
         img_path='path/to/img1.jpg')

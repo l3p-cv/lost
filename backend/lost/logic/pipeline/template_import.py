@@ -17,6 +17,7 @@ from os.path import join
 from lost.db import dtype
 from glob import glob
 from lost.logic import script as script_man
+import copy
 
 def parse_script(element):
     '''Parese a script element in json string.
@@ -65,16 +66,24 @@ class PipeImporter(object):
                 if 'script' in pe:
                     pe['script']['name'] = self._namespaced_name(
                         pe['script']['path'])
+        self.checker = PipeDefChecker(logging)
+        
 
     def _namespaced_name(self, name):
         return '{}.{}'.format(self.namespace, name)
 
     def update_pipe_project(self):
+
         if os.path.exists(self.dst_pipe_template_path):
+            logging.info('\n\n++++++++++++++++++++++\n\n')
+            for pipe in self.pipes:
+                if not self.checker.check(pipe):
+                    logging.error('Pipeline was not updated!')
+                    return False
             for pipe in self.pipes:
                 self.update_pipe(pipe)
             dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-            logging.info('\n\n++++++++++++++++++++++')
+            
             logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         else:
@@ -95,7 +104,7 @@ class PipeImporter(object):
                     if 'script' in pe_j:
                         element_j = pe_j['script']
                         script = parse_script(element_j)
-                        db_script = self.dbm.get_script(file_name=os.path.basename(script.path))
+                        db_script = self.dbm.get_script(name=self._get_script_name(script))
                         script_arguments = get_default_script_arguments(script.path)
                         script_envs = get_default_script_envs(script.path)
                         script_resources = get_default_script_resources(script.path)
@@ -131,11 +140,20 @@ class PipeImporter(object):
                 db_pipe.json_template = json.dumps(pipe)
                 self.dbm.save_obj(db_pipe)
                 os.chdir(oldwd) # Change dir back to old working directory.                
-                return
+                return True
         # import pipe if not already present in database    
         self.import_pipe(pipe)
 
+    def _get_script_name(self, script):
+        return self._namespaced_name(os.path.basename(script.path))
+
     def start_import(self):
+        logging.info('\n\n++++++++++++++++++++++ \n\n')
+        logging.info('Start pipe project import for: {}'.format(self.src_pipe_template_path))
+        for pipe in self.pipes:
+            if not self.checker.check(pipe):
+                logging.error('Wrong pipeline definition! Did not import pipe project!')
+                return False
         if os.path.exists(self.dst_pipe_template_path):
             logging.warning('Cannot import pipeline!')
             logging.warning('Pipe Template Dir already exist: {}'.format(
@@ -143,7 +161,6 @@ class PipeImporter(object):
             ))
             return
         dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-        logging.info('\n\n++++++++++++++++++++++')
         logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
                                                     self.dst_pipe_template_path))
         for pipe in self.pipes:
@@ -151,7 +168,7 @@ class PipeImporter(object):
 
     def import_pipe(self, pipe):
         try:
-            logging.info('\n---')
+            logging.info('\n---\n')
             # Do everything relative from pipeline definition file path.
             oldwd = os.getcwd()
             os.chdir(self.src_pipe_template_path)
@@ -166,9 +183,7 @@ class PipeImporter(object):
                 if 'script' in pe_j:
                     element_j = pe_j['script']
                     script = parse_script(element_j)
-                    db_script = self.dbm.get_script(file_name=os.path.join(
-                        self.namespace,
-                        os.path.basename(script.path)))
+                    db_script = self.dbm.get_script(name=self._get_script_name(script))
                     script_arguments = get_default_script_arguments(script.path)
                     script_envs = get_default_script_envs(script.path)
                     script_resources = get_default_script_resources(script.path)
@@ -190,9 +205,9 @@ class PipeImporter(object):
                         script.envs = json.dumps(script_envs)
                         script.resources = json.dumps(script_resources)
                         self.dbm.save_obj(script)
-                        logging.info("Added script to database")
+                        logging.info("Added script to database\n")
                     else:
-                        logging.warning("Script is already present in database.")
+                        logging.warning("Script is already present in database.\n")
                         logging.warning((str(db_script.idx), db_script.name, db_script.path))
                 self._fix_sia_config(pe_j)
             pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
@@ -272,6 +287,251 @@ class PipeImporter(object):
                         }
                     }
         return pe
+
+class PipeDefChecker():
+    '''Checks if a pipeline definition file is correct'''
+
+    def __init__(self, logger):
+        self.logger = logger
+
+    def _check_key(self, key_name, dict_element, types, values=None):
+        '''Check if a specific key is present in dict_element.
+        
+        Args:
+            key_name (str): Name of the key.
+            dict_element (dict): A dictionary.
+            types (list): A list of types that are valid for the value.
+            values (list): A list of possible values.
+
+        Returns:
+            Bool: True if key is present.
+        '''
+        # If dict_element is root element, do to not clutter
+            # error message with all element entries!
+        if 'elements' in dict_element:
+            my_element = copy.deepcopy(dict_element)
+            my_element['elements'] = '[...]'
+        else:
+            my_element = dict_element
+        if key_name not in dict_element:
+            self.logger.error(
+                ('No *{}* found! Add a *{}* key '
+                'to the following element:\n{}'
+                ).format(
+                    key_name, key_name, 
+                    json.dumps(my_element, indent=4)
+                )
+            )
+            return False
+        else:
+            type_ok = False
+            value_ok = False
+            # Check if value has correct type
+            for t in types:
+                if isinstance(dict_element[key_name], t):
+                    type_ok = True
+            if not type_ok:
+                self.logger.error(('Value of **{}** needs to be one '
+                        'of these types: {}\nBut got {}\nValue belongs to:\n{}'
+                        ).format(key_name, types, 
+                            type(my_element[key_name]), my_element))
+                return False
+
+            if values is not None:
+                for v in values:
+                    if v == dict_element[key_name]:
+                        value_ok = True
+                if not value_ok:
+                    self.logger.error(('Value of **{}** needs to be one '
+                            'of these specific values: {}\nValue belongs to:\n{}'
+                            ).format(key_name, values, my_element))
+                    return False
+            return True
+
+    def _check_script(self, pe):
+        ret = True
+        if not self._check_key('script', pe, [dict]):
+            return False
+        if not self._check_key('path', pe['script'], [str]):
+            ret = False
+        if not self._check_key('description', pe['script'], [str]):
+            ret = False
+        return ret
+
+    def _check_datasource(self, pe):
+        ret = True
+        if not self._check_key('datasource', pe, [dict]):
+            return False
+        if not self._check_key('type', pe['datasource'], [str], values=['rawFile']):
+            ret = False
+        return ret
+
+    def _check_loop(self, pe):
+        ret = True
+        if not self._check_key('loop', pe, [dict]):
+            return False
+        if not self._check_key('maxIteration', pe['loop'], [int, type(None)]):
+            ret = False
+        if not self._check_key('peJumpId', pe['loop'], [int]):
+            ret = False
+        return ret
+
+    def _check_sia_config(self, pe):
+        ret = True
+        if not self._check_key('tools', pe, [dict]):
+            ret = False
+        else:
+            if not self._check_key('point', pe['tools'], [bool]):
+                ret = False
+            if not self._check_key('line', pe['tools'], [bool]):
+                ret = False
+            if not self._check_key('polygon', pe['tools'], [bool]):
+                ret = False
+            if not self._check_key('bbox', pe['tools'], [bool]):
+                ret = False
+        if not self._check_key('actions', pe, [dict]):
+            ret = False
+        else:
+            if not self._check_key('drawing', pe['actions'], [bool]):
+                ret = False
+            if not self._check_key('labeling', pe['actions'], [bool]):
+                ret = False
+            if not self._check_key('edit', pe['actions'], [dict]):
+                ret = False
+            else:
+                if not self._check_key('label', pe['actions']['edit'], [bool]):
+                    ret = False
+                if not self._check_key('bounds', pe['actions']['edit'], [bool]):
+                    ret = False
+                if not self._check_key('delete', pe['actions']['edit'], [bool]):
+                    ret = False
+        return ret
+        
+    def _check_mia_config(self, pe):
+        ret = True
+        if not self._check_key('type', pe, [str], values=['imageBased', 'annoBased']):
+            ret = False
+        if 'type' in pe:
+            if pe['type'] == 'annoBased':
+                if not self._check_key('drawAnno', pe, [bool]):
+                     ret = False
+                if not self._check_key('addContext', pe, [float]):
+                     ret = False
+        return ret
+
+    def _check_annotask(self, pe):
+        ret = True
+        if not self._check_key('annoTask', pe, [dict]):
+            return False
+        if not self._check_key('name', pe['annoTask'], [str]):
+            ret = False
+        if not self._check_key('instructions', pe['annoTask'], [str]):
+            ret = False
+        if not self._check_key('configuration', pe['annoTask'], [dict]):
+            ret = False
+        if not self._check_key('type', pe['annoTask'], [str], values=['sia', 'mia']):
+            ret = False
+        if pe['annoTask']['type'] == 'sia':
+            ret = self._check_sia_config(pe['annoTask']['configuration'])
+        elif pe['annoTask']['type'] == 'mia':
+            ret = self._check_mia_config(pe['annoTask']['configuration'])
+
+        return ret
+
+    def _check_pipe_element(self, pe):
+        ret = True
+        if not self._check_key('peN', pe, [int]):
+            ret = False
+        if not self._check_key('peOut', pe, [list, type(None)]):
+            ret = False
+        if 'script' in pe:
+            ret = self._check_script(pe)
+        elif 'annoTask' in pe:
+            ret = self._check_annotask(pe)
+        elif 'datasource' in pe:
+            ret = self._check_datasource(pe)
+        elif 'dataExport' in pe:
+            ret = self._check_key('dataExport', pe, [dict])
+        elif 'visualOutput' in pe:
+            ret = self._check_key('visualOutput', pe, [dict])
+        elif 'loop' in pe:
+            ret = self._check_loop(pe)
+        else:
+            self.logger.error((
+                'A pipeline element need to have one of these keys: '
+                '*script*, *annoTask*, *datasource*, *dataExport*, '
+                '*visualOutput* or *loop*'))
+            ret = False
+        if not ret:
+            self.logger.error(
+                'The error above occured in:\n{}'.format(
+                    json.dumps(pe, indent=4))
+            )
+        return ret
+
+    def check(self, pipeline_template):
+        '''Check if pipeline template is correct.
+
+        Args:
+            pipelist_template (dict): The json parsed content of a 
+                pipeline definition file.
+        '''
+        self.logger.info('Check: {}'.format(pipeline_template['name']))
+        ret = True
+        if not self._check_key('description', pipeline_template, [str]):
+            ret = False
+        if not self._check_key('author', pipeline_template, [str]):
+            ret = False
+        if not self._check_key('pipe-schema-version', pipeline_template, [str, float]):
+            ret = False
+        if not self._check_key('elements', pipeline_template, [list]):
+            ret = False
+        else:
+            for pe in pipeline_template['elements']:
+                if not self._check_pipe_element(pe):
+                    ret = False
+        # Check connections of all pipeline elements.
+        if 'elements' in pipeline_template:
+            if not self._check_connections(pipeline_template['elements']):
+                ret = False
+
+        if ret:
+            self.logger.info('Pipeline definition file OK!')
+            return True
+        else:
+            self.logger.error('Pipeline defintion file WRONG!')
+            return False
+
+    def _check_connections(self, pipe_elements):
+        ret = True
+        pe_map = dict()
+        pe_out_set = set()
+        for pe in pipe_elements:
+            if pe['peN'] in pe_map:
+                self.logger.error(('Multiple pipe elements have the '
+                    'same peN: {}\nElements are:\n{}\n{}'.format(
+                        pe['peN'], 
+                        json.dumps(pe_map[pe['peN']], indent=4), 
+                        json.dumps(pe, indent=4))))
+                ret = False
+            else:
+                pe_map[pe['peN']] = pe
+        for pe in pipe_elements:
+            if pe['peOut'] is not None:
+                for pe_out in pe['peOut']:
+                    pe_out_set.add(pe_out)
+                    if pe_out not in pe_map:
+                        self.logger.error(('peN: {} points to peOut: {} '
+                            'that does not exist! See element:\n{}').format(
+                                pe['peN'], pe_out, json.dumps(pe, indent=4)))
+                        ret = False
+        for pe in pipe_elements:
+            if pe['peN'] not in pe_out_set:
+                self.logger.warning('No element is connected to peN: {}'.format(
+                    pe['peN']))
+        return ret
+
+
 
 class PipePacker(object):
 
