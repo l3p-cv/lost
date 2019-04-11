@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Check if pipeline definition files match specification before import or update.
+- Allow custom nginx configuration.
 
 ### Changed
 - 
@@ -18,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -
 
 ### Fixed
-- 
+- change label of predicted annotations in sia (see issue #23)
 
 ### Security
 -
