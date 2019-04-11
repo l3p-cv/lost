@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow custom nginx configuration.
 
 ### Changed
-- 
+- allow assigning annotasks to all users and groups in system (see issue #19)
 
 ### Deprecated
 - 

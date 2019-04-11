@@ -653,6 +653,9 @@ class DBMan(object):
 
     def get_users(self):
         return self.session.query(model.User).all()
+
+    def get_groups(self):
+        return self.session.query(model.Group).all()
         
     def get_user_groups(self, user_defaults=False):
         return self.session.query(model.Group).filter(model.Group.is_user_default==user_defaults).all()
