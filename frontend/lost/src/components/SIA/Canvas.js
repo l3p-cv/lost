@@ -1,10 +1,9 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
-
+import Annotation from './Annotation/Annotation'
 
 import actions from '../../actions'
-import './Canvas.scss';
 
 const { getSiaImage,getSiaAnnos } = actions
 
@@ -21,7 +20,11 @@ class Canvas extends Component{
                 width: '100%',
                 height: '100%',
             },
-            svgTransfrom:''
+            canvas: {
+                scale:1.0,
+                translateX:0,
+                translateY:0
+            }
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -73,47 +76,89 @@ class Canvas extends Component{
         // console.log('img x, y', this.img.current.x.baseVal.value, this.img.current.y.baseVal.value)
         // console.log('img.boundingClientRect', this.img.current.getBoundingClientRect())
         // console.log('screen width, height', document.documentElement.clientWidth, document.documentElement.clientHeight) 
+    }
+    
+    onCanvasWheel(e){
+        const up = e.deltaY < 0
+        const down = !up
+        console.log('CanvasWheelEvent', e, up)
+        console.log('deltaY', e.deltaY)
+        console.log('deltaX', e.deltaX)
+        console.log('deltaZ', e.deltaZ)
+        console.log('offsetX', e.offsetX)
+        console.log('offsetY', e.offsetY)
+        console.log('pageX, pageY', e.pageX, e.pageY)
+        console.log('screenX, screenY', e.screenX, e.screenY)
+    }
 
+    onCanvasRightClick(e){
+        e.preventDefault()
+        console.log('RightClick', e)
+    }
 
-	}
+    onCanvasMouseDown(e){
+        console.log('MouseDown', e.button)
+        console.log('pageX, pageY', e.pageX, e.pageY)
+        console.log('screenX, screenY', e.screenX, e.screenY)
+        if (e.button === 2){
+            this.setState({canvas:{scale: 1.0, translateX: 0, translateY: 0}})
+        }
+    }
 
-    renderDrawables(){
+    onCanvasClick(e){
+        this.setState({canvas:{
+            scale: 1.0,
+            translateX: this.state.canvas.translateX + 10,
+            translateY: 1.0
+        }
+        })
+        console.log(this.state)
+        console.log(e.pageX, e.pageY)
+    }
+
+    renderAnnotations(){
         if(this.props.annos.drawables){
             console.log(this.props.annos.drawables)
-        //     this.props.annos.drawables.bboxes.map((drawable) => {
-        //     console.log(drawable)
-        //   })
+            const boxes = this.props.annos.drawables.bBoxes.map((element) => {
+                return <Annotation annoType='bBox' annoData={element} key={element.id}></Annotation>
+            })
+            const lines = this.props.annos.drawables.lines.map((element) => {
+                return <Annotation annoType='line' annoData={element} key={element.id}></Annotation>
+            })
+            const polygons = this.props.annos.drawables.polygons.map((element) => {
+                return <Annotation annoType='polygon' annoData={element} key={element.id}></Annotation>
+            })
+            const points = this.props.annos.drawables.points.map((element) => {
+                return <Annotation annoType='point' annoData={element} key={element.id}></Annotation>
+            })
+            console.log('boxes, lines, polygons, points', boxes, lines, polygons, points)
+            return (
+                <g>
+                    {boxes}
+                    {lines}
+                    {polygons}
+                    {points}
+                </g>
+            )
        }
-       return(
-            <g>
-            <rect x="500" y="0" width="100" height="100" />
-            <circle onClick={(e)=>{console.log("JUUUHUUUUU",e.pageX, e.pageY)}}cx={520} cy={50} r={10} fill="red" />
-            <polygon points="100,100 150,25 150,75 200,0"
-            fill="none" stroke="red" />
-            <line x1="0" y1="0" x2="200" y2="200" stroke='red'/>
-            </g>
-       )
     }
+
     render(){
         return(
-                <div>
-                  <svg ref={this.svg} width={this.state.svg.width} height={this.state.svg.height}>
-                    <g transform={this.state.svgTransform}>
-                    <image 
-                        
-                        onClick={(e) => {
-                            this.setState({svgTransform: "translate(-200) scale(2)"})
-                            console.log(this.state)
-                        }}
-                        onDoubleClick={(e) => {
-                            this.setState({svgTransform: ""})
-                            console.log(this.state)
-                        }}
-                        href={this.state.image.data} 
-                        width={this.state.svg.width} 
-                        height={this.state.svg.height}
-                         />
-                    {this.renderDrawables()}
+            <div >
+                <svg ref={this.svg} width={this.state.svg.width} 
+                    height={this.state.svg.height}>
+                    <g transform={`scale(${this.state.canvas.scale}) translate(${this.state.canvas.translateX}, ${this.state.canvas.translateY})`}>
+                        <image
+                            onContextMenu={(e) => this.onCanvasRightClick(e)}
+                            onMouseDown={(e) => this.onCanvasMouseDown(e)}
+                            onWheel={(e) => {this.onCanvasWheel(e)}}
+                            onClick={(e) => {this.onCanvasClick(e)}}
+                            href={this.state.image.data} 
+                            width={this.state.svg.width} 
+                            height={this.state.svg.height}
+                        />
+                        {this.renderAnnotations()}
                     </g>
                 </svg>
                 <img style={{display:'none'}} ref={this.img} onLoad={() => {this.initCanvasView()}} src={this.state.image.data} width="100%" height="100%"></img>
