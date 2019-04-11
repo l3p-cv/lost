@@ -64,6 +64,27 @@ class Prev(Resource):
             dbm.close_session()
             return re
 
+@namespace.route('/lastedited')
+class Last(Resource):
+    @api.marshal_with(sia_anno)
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+
+        else:
+            last_sia_image_id = sia.get_last_image_id(dbm, identity)
+            if last_sia_image_id:
+                re = sia.get_next(dbm, identity, last_sia_image_id, DATA_URL)
+            else:
+                re = sia.get_next(dbm, identity, -1, DATA_URL)
+            dbm.close_session()
+            return re
+
 @namespace.route('/update')
 class Update(Resource):
     # @api.expect(sia_update)

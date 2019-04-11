@@ -533,6 +533,14 @@ class DBMan(object):
          %(iteration, anno_task_id, user_id)
         return self.session.execute(sql).first()
 
+    def get_last_edited_sia_anno(self, anno_task_id , iteration, user_id):
+        ''' Get last locked sia annotation
+        '''
+        sql = "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
+         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d AND state=%d)"\
+         %(iteration, anno_task_id, user_id, state.Anno.LABELED)
+        return self.session.execute(sql).first()
+
     def get_first_sia_anno(self, anno_task_id, iteration, user_id ):
         ''' Get first sia annotation of an user
         '''

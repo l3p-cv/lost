@@ -466,3 +466,12 @@ class SiaStatusNotFoundError(Exception):
     """ Base class for SiaStatusNotFoundError
     """
     pass
+
+def get_last_image_id(dbm, user_id):
+    at = get_sia_anno_task(dbm, user_id)
+    if at:
+        iteration = dbm.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
+        tmp_anno = dbm.get_last_edited_sia_anno(at.idx, iteration, user_id)
+        if tmp_anno:
+            return tmp_anno.idx -1 
+    return None
