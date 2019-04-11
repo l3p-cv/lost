@@ -296,12 +296,20 @@ class SiaUpdate(object):
                     self.db_man.delete(label)
                 self.db_man.delete(two_d)
             elif drawable['status'] == "new":
+                drawable_data = drawable['data']
+                try:
+                    drawable_data.pop('left')
+                    drawable_data.pop('right')
+                    drawable_data.pop('top')
+                    drawable_data.pop('bottom')
+                except:
+                    pass
                 two_d = model.TwoDAnno(anno_task_id=self.at.idx,
                                     img_anno_id=self.image_anno.idx,
                                     timestamp=self.timestamp,
                                     timestamp_lock=self.image_anno.timestamp_lock,
                                     anno_time=average_anno_time,
-                                    data=json.dumps(drawable['data']),
+                                    data=json.dumps(drawable_data),
                                     user_id=self.user_id,
                                     iteration=self.iteration,
                                     dtype=two_d_type,
@@ -319,10 +327,18 @@ class SiaUpdate(object):
                 two_d_json = self.__serialize_two_d_json(two_d)
                 drawable_json['new'].append(two_d_json)
             elif drawable['status'] == "changed":
+                drawable_data = drawable['data']
+                try:
+                    drawable_data.pop('left')
+                    drawable_data.pop('right')
+                    drawable_data.pop('top')
+                    drawable_data.pop('bottom')
+                except:
+                    pass
                 two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
                 two_d.timestamp = self.timestamp
                 two_d.timestamp_lock = self.image_anno.timestamp_lock
-                two_d.data = json.dumps(drawable['data'])
+                two_d.data = json.dumps(drawable_data)
                 two_d.user_id = self.user_id
                 if two_d.anno_time is None:
                     two_d.anno_time = 0.0
