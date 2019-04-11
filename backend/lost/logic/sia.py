@@ -54,6 +54,10 @@ def get_next(db_man, user_id, img_id, media_url):
         else:
             image_anno = db_man.get_next_sia_anno_by_last_anno(at.idx, user_id, img_id, iteration)
             if image_anno is None:
+                tmp_annos =  db_man.get_next_locked_sia_anno(at.idx, user_id, iteration)
+                if len(tmp_annos) > 0:
+                    image_anno = tmp_annos[0]
+            if image_anno is None:
                 image_anno = db_man.get_next_unlocked_sia_anno(at.idx, iteration)
         if image_anno:
             is_first_image = True
