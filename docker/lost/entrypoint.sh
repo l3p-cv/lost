@@ -53,7 +53,9 @@ worker="celery -A flaskapp.celery worker -Q celery,worker_status,$ENV_NAME -n $W
 eval $worker &
 
 if [ ${DEBUG} = "True" ]; then
-  cp /code/docker/lost/nginx/dev.conf /etc/nginx/conf.d/default.conf
+  if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
+	cp /code/docker/lost/nginx/dev.conf /etc/nginx/conf.d/default.conf
+  fi
   # start nginx web server
   nginx="service nginx start"
   eval $nginx &
@@ -61,7 +63,9 @@ if [ ${DEBUG} = "True" ]; then
   endpoint="python3 /code/backend/lost/app.py"
   eval $endpoint 
 else
-  cp /code/docker/lost/nginx/prod.conf /etc/nginx/conf.d/default.conf
+  if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
+	cp /code/docker/lost/nginx/prod.conf /etc/nginx/conf.d/default.conf
+  fi
   # start nginx web server
   nginx="service nginx start"
   eval $nginx &
