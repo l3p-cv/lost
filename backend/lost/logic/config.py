@@ -6,7 +6,7 @@ class LOSTConfig(object):
 
         self.debug = False
         if "DEBUG" in os.environ:
-            if os.environ['DEBUG'] == 'True':
+            if os.environ['DEBUG'].lower() == 'true':
                 self.debug = True
         self.project_path = '/home/lost'
         self.py3_init = os.environ['PY3_INIT']
@@ -22,7 +22,12 @@ class LOSTConfig(object):
         # Intervall in seconds in which a worker should give a lifesign
         self.worker_beat = os.environ['WORKER_BEAT']
         self.pipe_schedule = os.environ['PIPE_SCHEDULE']
+        self.session_timeout = 30
         
+        if "SESSION_TIMEOUT" in os.environ:
+            self.session_timeout = os.environ['SESSION_TIMEOUT']
+            if self.session_timeout < 10:
+                self.session_timeout = 10
 
         self.lost_db_port = '3306'
         if "LOST_DB_PORT" in os.environ:

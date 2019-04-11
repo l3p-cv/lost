@@ -1,6 +1,6 @@
 import datetime
 from flask_restplus import Resource
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
 from lost.api.api import api
 from lost.api.user.api_definition import user, user_list, user_login
 from lost.api.user.parsers import login_parser, create_user_parser, update_user_parser
@@ -9,6 +9,7 @@ from lost.db import access, roles
 from lost.db.model import User as DBUser, Role, Group
 from lost.logic import email 
 from lost.logic.user import release_user_annos
+from flaskapp import blacklist
 
 namespace = api.namespace('user', description='Users in System.')
 
@@ -230,17 +231,46 @@ class UserSelf(Resource):
 class UserLogout(Resource):
     @jwt_required 
     def post(self):
+        identity = get_jwt_identity()
         dbm = access.DBMan(LOST_CONFIG)
+        release_user_annos(dbm, identity)
+        dbm.close_session()
+        jti = get_raw_jwt()['jti'] 
+        blacklist.add(jti)
+        return {"msg": "Successfully logged out"}, 200
+
+@namespace.route('/logout2')
+class UserLogoutRefresh(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        jti = get_raw_jwt()['jti']
+        blacklist.add(jti)
+        print(blacklist)
+        return {"msg": "Successfully logged out"}, 200
+
+@namespace.route('/refresh')
+class UserTokenRefresh(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG) 
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
+        expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
+        expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
+        if FLASK_DEBUG:
+            expires = datetime.timedelta(days=365)
+            expires_refresh = datetime.timedelta(days=366)
         if user:
-            #TODO: logout stuff
-            release_user_annos(dbm, user.idx)
-            #return user
-            return 'success', 200 
-        else:
-            return "No user found."
-        dbm.close_session()        
+            access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
+            refresh_token = create_refresh_token(user.idx, expires_delta=expires_refresh)
+            ret = {
+                'token': access_token,
+                'refresh_token': refresh_token
+            }
+            dbm.close_session()
+            return ret, 200
+        dbm.close_session()
+        return {'message': 'Invalid user'}, 401
 
 @namespace.route('/login')
 class UserLogin(Resource):
@@ -255,13 +285,17 @@ class UserLogin(Resource):
 
         # check password
         if user and user.check_password(data['password']):
-            expires = datetime.timedelta(hours=3)
+            dbm.close_session()
+            expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
+            expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
             if FLASK_DEBUG:
                 expires = datetime.timedelta(days=365)
+                expires_refresh = datetime.timedelta(days=366)
             access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
-            refresh_token = create_refresh_token(user.idx)
+            refresh_token = create_refresh_token(user.idx, expires_delta=expires_refresh)
             return {
                 'token': access_token,
                 'refresh_token': refresh_token
             }, 200
+        dbm.close_session()
         return {'message': 'Invalid credentials'}, 401

@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import actions from '../../../actions'
 import { Button, Card, CardBody, CardGroup, Col, Container, Form, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap'
 
-const {login} = actions
+const {login, changeView} = actions
 class Login extends Component {
   onSubmit = formProps => {
     this.props.login(formProps, ()=> {
@@ -77,6 +77,6 @@ function mapStateToProps(state) {
 }
 
 export default compose(
-  connect(mapStateToProps, {login}),
+  connect(mapStateToProps, {login, changeView}),
   reduxForm({ form: 'login' })
 )(Login)

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import jwt_decode from 'jwt-decode'
 import actions from '../actions/index'
-const { decodeJwt, checkExpireDate, checkRole } = actions
+const { decodeJwt, checkExpireDate, checkRole, refreshToken } = actions
 
 
 export default ChildComponent => {
@@ -23,9 +23,7 @@ export default ChildComponent => {
       }else{
         let decoded_token = jwt_decode(this.props.token)
         this.props.decodeJwt(decoded_token)
-        this.props.checkExpireDate(decoded_token, ()=> {
-          this.props.history.push('/timeout')
-        })
+        this.props.refreshToken()
         this.props.checkRole(this.props.view, decoded_token)
       }
     }
@@ -39,5 +37,5 @@ export default ChildComponent => {
     return { token: state.auth.token, view: state.auth.view}
   }
 
-  return connect(mapStateToProps, { decodeJwt, checkExpireDate, checkRole })(ComposedComponent)
+  return connect(mapStateToProps, { decodeJwt, checkExpireDate, checkRole, refreshToken })(ComposedComponent)
 }

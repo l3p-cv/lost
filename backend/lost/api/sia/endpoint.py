@@ -99,7 +99,7 @@ class Update(Resource):
 
         else:
             data = json.loads(request.data)
-            re = sia.update(dbm, data, identity)
+            re = sia.update(dbm, data, user.idx)
             dbm.close_session()
             return re
 

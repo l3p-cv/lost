@@ -194,7 +194,7 @@ class SiaUpdate(object):
         """
         self.timestamp = datetime.now()
         self.db_man = db_man
-        self.user_id = user_id
+        self.user_id = user_id 
         self.at = get_sia_anno_task(db_man, user_id) #type: lost.db.model.AnnoTask
         self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
