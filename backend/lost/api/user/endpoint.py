@@ -120,6 +120,10 @@ class User(Resource):
 
         requesteduser = dbm.get_user_by_id(id)
         
+        if requesteduser.idx == user.idx:
+            dbm.close_session()
+            return "You are not able to delete yourself", 400
+
         if requesteduser:
             for g in requesteduser.groups:
                     if g.is_user_default:

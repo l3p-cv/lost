@@ -19,7 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -
 
 ### Fixed
-- change label of predicted annotations in sia (see issue #23)
+- change label of predicted annotations in sia (see issue #23).
+- prevent users from deleting themselves.
+- prevent users from deleting their default group, which will prevent pipelines from starting.
 
 ### Security
 -
