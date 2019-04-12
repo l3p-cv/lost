@@ -8,12 +8,15 @@ class Line extends Component{
         super(props)
     }
     
+    toPolylineStr(){
+        return this.props.data.map( (e => {
+            return `${e.x},${e.y}`
+        })).join(' ')
+        
+    }
     render(){
         return(
-            <g>
-            
-            <line x1="0" y1="0" x2="200" y2="200" stroke='red'/>
-            </g>
+            <polyline points={this.toPolylineStr()} stroke='red' fill="none"/>
             )
     }
 }

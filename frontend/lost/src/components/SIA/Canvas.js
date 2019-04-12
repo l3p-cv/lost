@@ -148,13 +148,13 @@ class Canvas extends Component{
                 })
             ]
                 
-            console.log('annos', annos)
             return (
                 <g>
                     {
                         annos.map((el) => {
                             const newE = {...el, 
                                 data:transform.toSia(el.data, this.state.svg, el.type)}
+                            console.log('annos', newE)
                             return <Annotation type={el.type} data={newE} key={el.id}></Annotation> 
                         })
                     }
@@ -173,11 +173,11 @@ class Canvas extends Component{
                         onWheel={(e) => {this.onWheel(e)}}
                         onMouseOver={() => {this.onMouseOver()}}
                         onMouseOut={() => {this.onMouseOut()}}
+                        onClick={(e) => {this.onClick(e)}}
                     >
                         <image
                             onContextMenu={(e) => this.onRightClick(e)}
                             onMouseDown={(e) => this.onMouseDown(e)}
-                            onClick={(e) => {this.onClick(e)}}
                             href={this.state.image.data} 
                             width={this.state.svg.width} 
                             height={this.state.svg.height}
