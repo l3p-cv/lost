@@ -25,3 +25,12 @@ export function toSia(data, image, type){
         
     }
 }
+
+export function move(data, movementX, movementY){
+    return data.map(e => {
+        return {
+            x: e.x + movementX,
+            y: e.y + movementY
+        }
+    })
+}

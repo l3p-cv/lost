@@ -7,47 +7,63 @@ class BBox extends Component{
     constructor(props){
         super(props)
         this.state = {
-            selected: false,
-            mouseDown: false,
-            anno: undefined
+            anno: undefined,
+            createMode: false
         }
     }
     componentDidMount(){
         this.setState({anno: {...this.props.data}})
-    }
-    onClick(e: Event){
-        e.stopPropagation()
-        this.setState({selected : true})
-    }
-    onMouseDown(e: Event){
-        this.setState({mouseDown: true})
-    }
-    onMouseUp(e: Event){
-        this.setState({mouseDown: false})
-    }
-    onMouseMove(e: Event){
-        if (this.state.mouseDown){
-            console.log('Mouse is moving on Box:-)', e.movementX, e.movementY)
+        if (this.props.data.createNew){
+            console.log('in Create Pos')
             this.setState({
-                anno : {
-                    ...this.state.anno, 
-                    x: this.state.anno.x + e.movementX,
-                    y: this.state.anno.y + e.movementY
+                createMode:true,
+                anno: {
+                    x: this.props.createPos.x,
+                    y: this.props.createPos.y,
+                    w: 4,
+                    h: 4
                 }
             })
         }
     }
+
     
+    move(movementX, movementY){
+        this.setState({
+            anno : {
+                ...this.state.anno, 
+                x: this.state.anno.x + movementX,
+                y: this.state.anno.y + movementY
+            }
+        })
+    }
+
+    onContextMenu(e: Event){
+        e.preventDefault()
+    }
+
+    onMouseMove(e: Event){
+        if (this.state.createMode){
+            console.log('Bbox is moving')
+
+            this.setState({
+                anno: {
+                    ...this.state.anno,
+                    w: this.state.anno.w + e.movementX,
+                    h: this.state.anno.h + e.movementY
+                }
+            })
+        }
+    }
     render(){
         if (this.state.anno){
             return(
                 <rect x={this.state.anno.x} y={this.state.anno.y} 
                     width={this.state.anno.w} height={this.state.anno.h} 
                     fill="purple" fillOpacity="0.5"
-                    onClick={e => {this.onClick(e)}}
-                    onMouseDown={e => {this.onMouseDown(e)}}
-                    onMouseUp={e => {this.onMouseUp(e)}}
                     onMouseMove={e => {this.onMouseMove(e)}}
+                    onContextMenu={(e) => this.onContextMenu(e)}
+                    
                 />
                 )
         }

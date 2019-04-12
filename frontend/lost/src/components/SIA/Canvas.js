@@ -26,7 +26,8 @@ class Canvas extends Component{
                 scale:1.0,
                 translateX:0,
                 translateY:0
-            }
+            },
+            createAnnoPos: undefined
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -59,6 +60,13 @@ class Canvas extends Component{
         this.props.getSiaAnnos(11)
     }
 
+    getMousePosition(e){
+        return {
+            x: e.pageX - this.svg.current.getBoundingClientRect().left,
+            y: e.pageY - this.svg.current.getBoundingClientRect().top
+        }
+    }
+
     componentDidUpdate(){
         console.log('didupdate')
 		if(this.props.annos.image){
@@ -71,6 +79,9 @@ class Canvas extends Component{
 
         }
         }
+        // if (this.state.createAnnoPos){
+        //     this.setState({createAnnoPos: undefined})
+        // }
         // console.log('img', this.img)
         // console.log('img width', this.img.current.width.baseVal.value)
         // console.log('img height', this.img.current.height.baseVal.value)
@@ -99,41 +110,53 @@ class Canvas extends Component{
         console.log('offsetY', e.offsetY)
         console.log('pageX, pageY', e.pageX, e.pageY)
         console.log('screenX, screenY', e.screenX, e.screenY)
+        console.log('MousePosition in Canvas', this.getMousePosition(e.pageX, e.pageY))
+        const mousePos = this.getMousePosition(e)
+        const zoomFactor=1.25
+        if (up) {
+            this.setState({canvas: {
+                ...this.state.canvas,
+                scale: this.state.canvas.scale * zoomFactor,
+                translateX: -1*(mousePos.x * this.state.canvas.scale*zoomFactor - mousePos.x*this.state.canvas.scale),
+                translateY: -1*(mousePos.y * this.state.canvas.scale*zoomFactor - mousePos.y*this.state.canvas.scale )
+            }})
+        } else {
+            this.setState({canvas: {
+                ...this.state.canvas,
+                scale: this.state.canvas.scale / zoomFactor
+            }})
+        }
     }
 
     onRightClick(e){
         e.preventDefault()
-        console.log('RightClick', e)
     }
 
     onMouseDown(e){
-        console.log('MouseDown', e.button)
-        console.log('pageX, pageY', e.pageX, e.pageY)
-        console.log('screenX, screenY', e.screenX, e.screenY)
-        if (e.button === 2){
+        if (e.button === 1){
             this.setState({canvas:{scale: 1.0, translateX: 0, translateY: 0}})
+        }
+        else if (e.button === 2){
+            this.setState({createAnnoPos: this.getMousePosition(e)})
         }
     }
 
-    onClick(e){
-        this.setState({canvas:{
-            scale: 1.0,
-            translateX: this.state.canvas.translateX + 10,
-            translateY: 1.0
+    onMouseUp(e){
+        if (e.button === 2){
+            if (this.state.createAnnoPos){
+                this.setState({createAnnoPos: undefined})
+            }
         }
-        })
-        console.log(this.state)
-        console.log(e.pageX, e.pageY)
     }
 
     renderAnnotations(){
-        
+        var annos = []
         //Annotation data should be present and a pxiel accurate value 
         //for svg should be calculated
         if(this.props.annos.drawables && this.state.svg.width !== '100%'){
             console.log(this.props.annos.drawables)
             
-            const annos = [
+            annos = [
                 ...this.props.annos.drawables.bBoxes.map((element) => {
                     return {...element, type:'bBox'}
                 }),
@@ -147,22 +170,28 @@ class Canvas extends Component{
                     return {...element, type:'point'}
                 })
             ]
-                
-            return (
-                <g>
-                    {
-                        annos.map((el) => {
-                            const newE = {...el, 
-                                data:transform.toSia(el.data, this.state.svg, el.type)}
-                            console.log('annos', newE)
-                            return <Annotation type={el.type} data={newE} key={el.id}></Annotation> 
-                        })
-                    }
-                </g>
-            )
        }
+       return (
+        <g>
+            {
+                annos.map((el) => {
+                    const newE = {...el, 
+                        data:transform.toSia(el.data, this.state.svg, el.type)}
+                    return <Annotation type={el.type} data={newE} key={el.id}></Annotation> 
+                })
+            }
+        </g>
+    )
     }
 
+    renderNewAnnotation(){
+        if (this.state.createAnnoPos){
+            const createPos = {...this.state.createAnnoPos}
+            return <Annotation type='bBox' createPos={createPos}></Annotation>
+        }
+    }
+
+    
     render(){
         return(
             <div >
@@ -173,7 +202,7 @@ class Canvas extends Component{
                         onWheel={(e) => {this.onWheel(e)}}
                         onMouseOver={() => {this.onMouseOver()}}
                         onMouseOut={() => {this.onMouseOut()}}
-                        onClick={(e) => {this.onClick(e)}}
+                        onMouseUp={(e) => {this.onMouseUp(e)}}
                     >
                         <image
                             onContextMenu={(e) => this.onRightClick(e)}
@@ -183,6 +212,7 @@ class Canvas extends Component{
                             height={this.state.svg.height}
                         />
                         {this.renderAnnotations()}
+                        {this.renderNewAnnotation()}
                     </g>
                 </svg>
                 <img style={{display:'none'}} ref={this.img} onLoad={() => {this.initCanvasView()}} src={this.state.image.data} width="100%" height="100%"></img>
