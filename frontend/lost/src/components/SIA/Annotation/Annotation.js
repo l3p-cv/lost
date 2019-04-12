@@ -13,12 +13,14 @@ class Annotation extends Component{
     }
     
     render(){
-        console.log(this.props.annoType)
-        switch(this.props.annoType) {
+        console.log(this.props.type)
+        const type = this.props.type
+        const data = this.props.data.data
+        switch(this.props.type) {
             case 'point':
                 return <Point ></Point>
             case 'bBox':
-                return <BBox></BBox>
+                return <BBox data={data} ></BBox>
             case 'polygon':
                 return <Polygon></Polygon>
             case 'line':

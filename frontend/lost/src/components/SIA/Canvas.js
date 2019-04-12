@@ -5,6 +5,8 @@ import Annotation from './Annotation/Annotation'
 
 import actions from '../../actions'
 
+import * as transform from './utils/transform'
+
 const { getSiaImage,getSiaAnnos } = actions
 
 class Canvas extends Component{
@@ -78,7 +80,15 @@ class Canvas extends Component{
         // console.log('screen width, height', document.documentElement.clientWidth, document.documentElement.clientHeight) 
     }
     
-    onCanvasWheel(e){
+    onMouseOver(){
+        //Prevent scrolling on canvas
+        document.body.style.overflow = "hidden"
+    }
+    onMouseOut(){
+        //Enable scrolling after leaving canvas
+        document.body.style.overflow = "auto"
+    }
+    onWheel(e){
         const up = e.deltaY < 0
         const down = !up
         console.log('CanvasWheelEvent', e, up)
@@ -91,12 +101,12 @@ class Canvas extends Component{
         console.log('screenX, screenY', e.screenX, e.screenY)
     }
 
-    onCanvasRightClick(e){
+    onRightClick(e){
         e.preventDefault()
         console.log('RightClick', e)
     }
 
-    onCanvasMouseDown(e){
+    onMouseDown(e){
         console.log('MouseDown', e.button)
         console.log('pageX, pageY', e.pageX, e.pageY)
         console.log('screenX, screenY', e.screenX, e.screenY)
@@ -105,7 +115,7 @@ class Canvas extends Component{
         }
     }
 
-    onCanvasClick(e){
+    onClick(e){
         this.setState({canvas:{
             scale: 1.0,
             translateX: this.state.canvas.translateX + 10,
@@ -117,27 +127,37 @@ class Canvas extends Component{
     }
 
     renderAnnotations(){
-        if(this.props.annos.drawables){
+        
+        //Annotation data should be present and a pxiel accurate value 
+        //for svg should be calculated
+        if(this.props.annos.drawables && this.state.svg.width !== '100%'){
             console.log(this.props.annos.drawables)
-            const boxes = this.props.annos.drawables.bBoxes.map((element) => {
-                return <Annotation annoType='bBox' annoData={element} key={element.id}></Annotation>
-            })
-            const lines = this.props.annos.drawables.lines.map((element) => {
-                return <Annotation annoType='line' annoData={element} key={element.id}></Annotation>
-            })
-            const polygons = this.props.annos.drawables.polygons.map((element) => {
-                return <Annotation annoType='polygon' annoData={element} key={element.id}></Annotation>
-            })
-            const points = this.props.annos.drawables.points.map((element) => {
-                return <Annotation annoType='point' annoData={element} key={element.id}></Annotation>
-            })
-            console.log('boxes, lines, polygons, points', boxes, lines, polygons, points)
+            
+            const annos = [
+                ...this.props.annos.drawables.bBoxes.map((element) => {
+                    return {...element, type:'bBox'}
+                }),
+                ...this.props.annos.drawables.lines.map((element) => {
+                    return {...element, type:'line'}
+                }),
+                ...this.props.annos.drawables.polygons.map((element) => {
+                    return {...element, type:'polygon'}
+                }),
+                ...this.props.annos.drawables.points.map((element) => {
+                    return {...element, type:'point'}
+                })
+            ]
+                
+            console.log('annos', annos)
             return (
                 <g>
-                    {boxes}
-                    {lines}
-                    {polygons}
-                    {points}
+                    {
+                        annos.map((el) => {
+                            const newE = {...el, 
+                                data:transform.toSia(el.data, this.state.svg, el.type)}
+                            return <Annotation type={el.type} data={newE} key={el.id}></Annotation> 
+                        })
+                    }
                 </g>
             )
        }
@@ -148,12 +168,16 @@ class Canvas extends Component{
             <div >
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}>
-                    <g transform={`scale(${this.state.canvas.scale}) translate(${this.state.canvas.translateX}, ${this.state.canvas.translateY})`}>
+                    <g 
+                        transform={`scale(${this.state.canvas.scale}) translate(${this.state.canvas.translateX}, ${this.state.canvas.translateY})`}
+                        onWheel={(e) => {this.onWheel(e)}}
+                        onMouseOver={() => {this.onMouseOver()}}
+                        onMouseOut={() => {this.onMouseOut()}}
+                    >
                         <image
-                            onContextMenu={(e) => this.onCanvasRightClick(e)}
-                            onMouseDown={(e) => this.onCanvasMouseDown(e)}
-                            onWheel={(e) => {this.onCanvasWheel(e)}}
-                            onClick={(e) => {this.onCanvasClick(e)}}
+                            onContextMenu={(e) => this.onRightClick(e)}
+                            onMouseDown={(e) => this.onMouseDown(e)}
+                            onClick={(e) => {this.onClick(e)}}
                             href={this.state.image.data} 
                             width={this.state.svg.width} 
                             height={this.state.svg.height}

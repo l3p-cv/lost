@@ -12,7 +12,7 @@ class Point extends Component{
         return(
             <g>
             
-            <circle onClick={(e)=>{console.log("Point",e.pageX, e.pageY)}}cx={520} cy={50} r={10} fill="red" />
+            <circle cx={520} cy={50} r={10} fill="red" />
 
             </g>
             )

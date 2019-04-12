@@ -12,8 +12,8 @@ class BBox extends Component{
         return(
             <g>
             
-            <rect x="600" y="300" width="50" height="50" fill="purple" />
-            <text x="600" y="325" stroke='red'>Hello</text>
+            <rect x={this.props.data.x} y={this.props.data.y} 
+                width={this.props.data.w} height={this.props.data.h} fill="purple" fillOpacity="0.5"/>
             </g>
             )
     }
