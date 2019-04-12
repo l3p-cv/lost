@@ -27,7 +27,8 @@ class Canvas extends Component{
                 translateX:0,
                 translateY:0
             },
-            createAnnoPos: undefined
+            createAnnoPos: undefined,
+            annos: []
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -54,6 +55,33 @@ class Canvas extends Component{
         console.log('img', this.img)
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
         this.setState({svg: {width : imgWidth, height: imgHeight}})
+
+        var annos = []
+        //Annotation data should be present and a pxiel accurate value 
+        //for svg should be calculated
+        if(this.props.annos.drawables){
+            console.log(this.props.annos.drawables)
+            
+            annos = [
+                ...this.props.annos.drawables.bBoxes.map((element) => {
+                    return {...element, type:'bBox'}
+                }),
+                ...this.props.annos.drawables.lines.map((element) => {
+                    return {...element, type:'line'}
+                }),
+                ...this.props.annos.drawables.polygons.map((element) => {
+                    return {...element, type:'polygon'}
+                }),
+                ...this.props.annos.drawables.points.map((element) => {
+                    return {...element, type:'point'}
+                })
+            ]
+       }
+       annos = annos.map((el) => {
+        return {...el, 
+            data:transform.toSia(el.data, {width: imgWidth, height:imgHeight}, el.type)}
+        })
+       this.setState({annos: annos})
     }
 
     componentDidMount(){
@@ -150,34 +178,12 @@ class Canvas extends Component{
     }
 
     renderAnnotations(){
-        var annos = []
-        //Annotation data should be present and a pxiel accurate value 
-        //for svg should be calculated
-        if(this.props.annos.drawables && this.state.svg.width !== '100%'){
-            console.log(this.props.annos.drawables)
-            
-            annos = [
-                ...this.props.annos.drawables.bBoxes.map((element) => {
-                    return {...element, type:'bBox'}
-                }),
-                ...this.props.annos.drawables.lines.map((element) => {
-                    return {...element, type:'line'}
-                }),
-                ...this.props.annos.drawables.polygons.map((element) => {
-                    return {...element, type:'polygon'}
-                }),
-                ...this.props.annos.drawables.points.map((element) => {
-                    return {...element, type:'point'}
-                })
-            ]
-       }
+        
        return (
         <g>
             {
-                annos.map((el) => {
-                    const newE = {...el, 
-                        data:transform.toSia(el.data, this.state.svg, el.type)}
-                    return <Annotation type={el.type} data={newE} key={el.id}></Annotation> 
+                this.state.annos.map((el) => {
+                    return <Annotation type={el.type} data={el} key={el.id}></Annotation> 
                 })
             }
         </g>
