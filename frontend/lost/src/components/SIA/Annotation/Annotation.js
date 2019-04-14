@@ -16,6 +16,10 @@ class Annotation extends Component{
         }
         this.myAnno = React.createRef()
     }
+
+    componentDidUpdate(){
+        console.log('Annotation did update', this.props.data.id)
+    }
     
     onClick(e: Event){
         e.stopPropagation()
@@ -29,7 +33,9 @@ class Annotation extends Component{
         this.setState({readyToMove: false})
     }
     onMouseOut(e: Event){
-        this.setState({readyToMove: false})
+        if (this.state.readyToMove){
+            this.setState({readyToMove: false})
+        }
     }
 
     onMouseMove(e: Event){
@@ -37,10 +43,15 @@ class Annotation extends Component{
             this.myAnno.current.move(e.movementX, e.movementY)
         }
     }
+    
+    getResult(){
+        console.log('Hi there i am a ', this.props.type, this.props.data.id)
+        console.log('My annos are: ', this.myAnno.current.state.anno)
+    }
 
     renderAnno(){
         const type = this.props.type
-        const data = this.props.data ? this.props.data.data : undefined
+        const data = this.props.data
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} data={data}></Point>

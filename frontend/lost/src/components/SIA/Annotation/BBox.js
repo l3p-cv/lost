@@ -12,14 +12,15 @@ class BBox extends Component{
         }
     }
     componentDidMount(){
-        this.setState({anno: {...this.props.data}})
-        if (this.props.data.createNew){
+        this.setState({anno: {...this.props.data.data}})
+        console.log('Component mounted', this.props.data.id)
+        if (this.props.data.justCreated){
             console.log('in Create Pos')
             this.setState({
                 createMode:true,
                 anno: {
-                    x: this.props.createPos.x,
-                    y: this.props.createPos.y,
+                    x: this.props.data.data.x,
+                    y: this.props.data.data.y,
                     w: 4,
                     h: 4
                 }
@@ -55,6 +56,11 @@ class BBox extends Component{
             })
         }
     }
+    onMouseUp(e){
+        if (e.button === 2){
+            this.setState({createMode: false})
+        }
+    }
     render(){
         if (this.state.anno){
             return(
@@ -63,6 +69,7 @@ class BBox extends Component{
                     fill="purple" fillOpacity="0.5"
                     onMouseMove={e => {this.onMouseMove(e)}}
                     onContextMenu={(e) => this.onContextMenu(e)}
+                    onMouseUp={ e => this.onMouseUp(e)}
                     
                 />
                 )

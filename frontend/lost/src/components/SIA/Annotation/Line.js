@@ -12,7 +12,7 @@ class Line extends Component{
         }
     }
     componentDidMount(){
-        this.setState({anno: [...this.props.data]})
+        this.setState({anno: [...this.props.data.data]})
     }
 
     move(movementX, movementY){

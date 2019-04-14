@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-
+import _ from 'lodash'
 import Annotation from './Annotation/Annotation'
 
 import actions from '../../actions'
 
 import * as transform from './utils/transform'
+
 
 const { getSiaImage,getSiaAnnos } = actions
 
@@ -27,11 +28,14 @@ class Canvas extends Component{
                 translateX:0,
                 translateY:0
             },
-            createAnnoPos: undefined,
             annos: []
         }
         this.img = React.createRef()
         this.svg = React.createRef()
+        this.annoRefs =  new Map()
+    }
+    onImageLoad(){
+        this.initCanvasView()
     }
     initCanvasView(){
         var svgBox = this.svg.current.getBoundingClientRect()
@@ -57,23 +61,23 @@ class Canvas extends Component{
         this.setState({svg: {width : imgWidth, height: imgHeight}})
 
         var annos = []
-        //Annotation data should be present and a pxiel accurate value 
+        //Annotation data should be present and a pixel accurate value 
         //for svg should be calculated
         if(this.props.annos.drawables){
             console.log(this.props.annos.drawables)
             
             annos = [
                 ...this.props.annos.drawables.bBoxes.map((element) => {
-                    return {...element, type:'bBox'}
+                    return {...element, type:'bBox', justCreated:false}
                 }),
                 ...this.props.annos.drawables.lines.map((element) => {
-                    return {...element, type:'line'}
+                    return {...element, type:'line', justCreated:false}
                 }),
                 ...this.props.annos.drawables.polygons.map((element) => {
-                    return {...element, type:'polygon'}
+                    return {...element, type:'polygon', justCreated:false}
                 }),
                 ...this.props.annos.drawables.points.map((element) => {
-                    return {...element, type:'point'}
+                    return {...element, type:'point', justCreated:false}
                 })
             ]
        }
@@ -86,6 +90,7 @@ class Canvas extends Component{
 
     componentDidMount(){
         this.props.getSiaAnnos(11)
+        console.log('uniqueID',_.uniqueId('anno'))
     }
 
     getMousePosition(e){
@@ -101,12 +106,17 @@ class Canvas extends Component{
             if(this.props.annos.image.id !== this.state.image.id){
 			this.props.getSiaImage(this.props.annos.image.url).then(response=>
 			{
-                this.setState({image: {...this.state.image, id: this.props.annos.image.id, data:window.URL.createObjectURL(response)}})
+                this.setState({image: {
+                    ...this.state.image, 
+                    id: this.props.annos.image.id, 
+                    data:window.URL.createObjectURL(response)
+                }})
             }
             )       
 
         }
         }
+
         // if (this.state.createAnnoPos){
         //     this.setState({createAnnoPos: undefined})
         // }
@@ -165,39 +175,47 @@ class Canvas extends Component{
             this.setState({canvas:{scale: 1.0, translateX: 0, translateY: 0}})
         }
         else if (e.button === 2){
-            this.setState({createAnnoPos: this.getMousePosition(e)})
+            // this.setState({createAnnoPos: this.getMousePosition(e)})
+            const mousePos = this.getMousePosition(e)
+            this.setState({
+                annos: [...this.state.annos, {
+                    id: _.uniqueId('new'),
+                    type: 'bBox',
+                    data: {x: mousePos.x, y: mousePos.y},
+                    justCreated: true
+                }]
+            })
+            console.log('state annos', this.state.annos)
+            for (let ref of this.annoRefs.values()) {
+                ref.current.getResult()
+              }
         }
     }
 
     onMouseUp(e){
         if (e.button === 2){
-            if (this.state.createAnnoPos){
-                this.setState({createAnnoPos: undefined})
-            }
+            console.log('Mouse up on right click')
         }
     }
 
     renderAnnotations(){
-        
-       return (
-        <g>
-            {
-                this.state.annos.map((el) => {
-                    return <Annotation type={el.type} data={el} key={el.id}></Annotation> 
-                })
+        const annos =  this.state.annos.map((el) => {
+            let annoRef
+            if (!this.annoRefs.has(el.id)){
+                annoRef = React.createRef()
+                this.annoRefs.set(el.id, annoRef)
+            } else {
+                annoRef = this.annoRefs.get(el.id)
             }
-        </g>
-    )
+            return <Annotation ref={annoRef} type={el.type} 
+                    data={el} key={el.id}
+                />
+        })
+        console.log('renderAnnotations',annos)
+        return <g>{annos}</g>
+        
     }
 
-    renderNewAnnotation(){
-        if (this.state.createAnnoPos){
-            const createPos = {...this.state.createAnnoPos}
-            return <Annotation type='bBox' createPos={createPos}></Annotation>
-        }
-    }
-
-    
     render(){
         return(
             <div >
@@ -218,10 +236,9 @@ class Canvas extends Component{
                             height={this.state.svg.height}
                         />
                         {this.renderAnnotations()}
-                        {this.renderNewAnnotation()}
                     </g>
                 </svg>
-                <img style={{display:'none'}} ref={this.img} onLoad={() => {this.initCanvasView()}} src={this.state.image.data} width="100%" height="100%"></img>
+                <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.image.data} width="100%" height="100%"></img>
             </div>)
     }
 }
