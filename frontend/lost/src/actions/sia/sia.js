@@ -19,3 +19,12 @@ export const getSiaImage = (path) => async dispatch =>{
     }
     return await http.get(config)
 }
+
+export const selectAnnotation = (annoId) => {
+    return {
+        type: TYPES.SIA_SELECT_ANNO,
+        payload: {
+            annoId
+        }
+    }
+}

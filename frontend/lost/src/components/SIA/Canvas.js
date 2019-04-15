@@ -8,7 +8,7 @@ import actions from '../../actions'
 import * as transform from './utils/transform'
 
 
-const { getSiaImage,getSiaAnnos } = actions
+const { getSiaImage,getSiaAnnos} = actions
 
 class Canvas extends Component{
 
@@ -32,7 +32,6 @@ class Canvas extends Component{
         }
         this.img = React.createRef()
         this.svg = React.createRef()
-        this.annoRefs =  new Map()
     }
     onImageLoad(){
         this.initCanvasView()
@@ -100,7 +99,7 @@ class Canvas extends Component{
         }
     }
 
-    componentDidUpdate(){
+    componentDidUpdate(prevProps){
         console.log('didupdate')
 		if(this.props.annos.image){
             if(this.props.annos.image.id !== this.state.image.id){
@@ -116,7 +115,8 @@ class Canvas extends Component{
 
         }
         }
-
+        console.log('Selected annotation ', this.props.selectedAnno)
+        this.reorderAnnotations(prevProps)
         // if (this.state.createAnnoPos){
         //     this.setState({createAnnoPos: undefined})
         // }
@@ -185,10 +185,6 @@ class Canvas extends Component{
                     justCreated: true
                 }]
             })
-            console.log('state annos', this.state.annos)
-            for (let ref of this.annoRefs.values()) {
-                ref.current.getResult()
-              }
         }
     }
 
@@ -197,17 +193,30 @@ class Canvas extends Component{
             console.log('Mouse up on right click')
         }
     }
+    
+    reorderAnnotations(prevProps){
+        // The selected annotation need to be rendered as last one in 
+        // oder to be above all other annotations.
+        if (this.props.selectedAnno){
+            console.log('state ', this.state.annos)
+            if (prevProps.selectedAnno !== this.props.selectedAnno){
+                const annos = this.state.annos.filter( (el) => {
+                    return el.id !== this.props.selectedAnno
+                })
+                const lastAnno = this.state.annos.find( el => {
+                    return el.id === this.props.selectedAnno
+                })
+                annos.push(lastAnno)
+                this.setState({annos: [
+                    ...annos
+                ]})
+            }
+        }
+    }
 
     renderAnnotations(){
         const annos =  this.state.annos.map((el) => {
-            let annoRef
-            if (!this.annoRefs.has(el.id)){
-                annoRef = React.createRef()
-                this.annoRefs.set(el.id, annoRef)
-            } else {
-                annoRef = this.annoRefs.get(el.id)
-            }
-            return <Annotation ref={annoRef} type={el.type} 
+            return <Annotation type={el.type} 
                     data={el} key={el.id}
                 />
         })
@@ -247,7 +256,10 @@ class Canvas extends Component{
 
 
 function mapStateToProps(state) {
-    return ({annos: state.sia.annos})
+    return ({
+        annos: state.sia.annos,
+        selectedAnno: state.sia.selectedAnno
+    })
 }
 
 export default connect(mapStateToProps, {getSiaAnnos, getSiaImage})(Canvas)

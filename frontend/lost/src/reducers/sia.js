@@ -1,6 +1,7 @@
 import TYPES from '../types/index'
 const INITIAL_STATE = {
     annos: {},
+    selectedAnno: undefined
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -9,6 +10,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 annos: action.payload
+            }
+        case TYPES.SIA_SELECT_ANNO:
+            return {
+                ...state,
+                selectedAnno: action.payload.annoId
             }
         default:
             return state

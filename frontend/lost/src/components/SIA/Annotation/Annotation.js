@@ -1,9 +1,15 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import _ from 'lodash'
+
+import actions from '../../../actions'
 
 import Point from './Point'
 import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
+
+const {selectAnnotation } = actions
 
 
 class Annotation extends Component{
@@ -15,16 +21,23 @@ class Annotation extends Component{
             readyToMove: false
         }
         this.myAnno = React.createRef()
+        // this.myKey = _.uniqueId('annokey')
     }
 
     componentDidUpdate(){
         console.log('Annotation did update', this.props.data.id)
+        if (this.props.selectedAnno === this.props.data.id){
+            console.log('I am selected :-)')
+        }
     }
     
     onClick(e: Event){
         e.stopPropagation()
         console.log('Clicked on: ', this.props.type)
-        this.setState({selected : true})
+        this.props.selectAnnotation(this.props.data.id)
+        //Create a new key in order to create a completely new compontent
+        //this.myKey = _.uniqueId('annokey')
+
     }
     onMouseDown(e: Event){
         this.setState({readyToMove: true})
@@ -52,11 +65,12 @@ class Annotation extends Component{
     renderAnno(){
         const type = this.props.type
         const data = this.props.data
+
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} data={data}></Point>
             case 'bBox':
-                return <BBox ref={this.myAnno} data={data} ></BBox>
+                return <BBox ref={this.myAnno} data={data}></BBox>
             case 'polygon':
                 return <Polygon ref={this.myAnno} data={data}></Polygon>
             case 'line':
@@ -82,4 +96,10 @@ class Annotation extends Component{
     }
 }
 
-export default Annotation;
+function mapStateToProps(state) {
+    return ({
+        selectedAnno: state.sia.selectedAnno
+    })
+}
+
+export default connect(mapStateToProps, {selectAnnotation})(Annotation)
