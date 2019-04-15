@@ -17,7 +17,6 @@ class Annotation extends Component{
     constructor(props){
         super(props)
         this.state = {
-            selected: false,
             readyToMove: false
         }
         this.myAnno = React.createRef()
@@ -26,7 +25,7 @@ class Annotation extends Component{
 
     componentDidUpdate(){
         console.log('Annotation did update', this.props.data.id)
-        if (this.props.selectedAnno === this.props.data.id){
+        if (this.selected()){
             console.log('I am selected :-)')
         }
     }
@@ -52,16 +51,31 @@ class Annotation extends Component{
     }
 
     onMouseMove(e: Event){
-        if (this.state.readyToMove){
+        if (this.state.readyToMove && this.selected()){
             this.myAnno.current.move(e.movementX, e.movementY)
         }
     }
     
+    selected(){
+        return this.props.selectedAnno === this.props.data.id
+    }
+
     getResult(){
         console.log('Hi there i am a ', this.props.type, this.props.data.id)
         console.log('My annos are: ', this.myAnno.current.state.anno)
     }
-
+    
+    getStyle(){
+        if (this.selected()){
+            return {
+                stroke: 'red',
+                fillOpacity: '0.1',
+                strokeWidth: 4
+            }
+        } else {
+            return {}
+        }
+    }
     renderAnno(){
         const type = this.props.type
         const data = this.props.data
@@ -70,9 +84,9 @@ class Annotation extends Component{
             case 'point':
                 return <Point ref={this.myAnno} data={data}></Point>
             case 'bBox':
-                return <BBox ref={this.myAnno} data={data}></BBox>
+                return <BBox ref={this.myAnno} data={data} style={this.getStyle()}></BBox>
             case 'polygon':
-                return <Polygon ref={this.myAnno} data={data}></Polygon>
+                return <Polygon ref={this.myAnno} data={data} style={this.getStyle()}></Polygon>
             case 'line':
                 return <Line ref={this.myAnno} data={data}></Line>
             default:

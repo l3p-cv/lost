@@ -12,6 +12,10 @@ export function toSia(data, image, type){
                 h: h
             }
         case 'point':
+            return {
+                x: image.width * data.x,
+                y: image.height * data.y
+            }
         case 'line':
         case 'polygon':
             return data.map((e) => {

@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 
-
+import './Annotation.scss';
 
 class BBox extends Component{
 
@@ -61,12 +61,15 @@ class BBox extends Component{
             this.setState({createMode: false})
         }
     }
+
+    
     render(){
         if (this.state.anno){
             return(
                 <rect x={this.state.anno.x} y={this.state.anno.y} 
                     width={this.state.anno.w} height={this.state.anno.h} 
                     fill="purple" fillOpacity="0.5"
+                    style={this.props.style}
                     onMouseMove={e => {this.onMouseMove(e)}}
                     onContextMenu={(e) => this.onContextMenu(e)}
                     onMouseUp={ e => this.onMouseUp(e)}

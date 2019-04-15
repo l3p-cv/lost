@@ -6,16 +6,23 @@ class Point extends Component{
 
     constructor(props){
         super(props)
+        this.state = {
+            anno: undefined
+        }
     }
-    
+    componentDidMount(){
+        this.setState({anno: this.props.data.data})
+    }
     render(){
-        return(
-            <g>
-            
-            <circle cx={520} cy={50} r={10} fill="red" />
-
-            </g>
-            )
+        if (this.state.anno){
+            return(
+                <circle cx={this.state.anno.x} 
+                    cy={this.state.anno.y} 
+                    r={10} fill="red" />
+                )
+        } else {
+            return <g></g>
+        }
     }
 }
 

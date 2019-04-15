@@ -115,18 +115,8 @@ class Canvas extends Component{
 
         }
         }
-        console.log('Selected annotation ', this.props.selectedAnno)
-        this.reorderAnnotations(prevProps)
-        // if (this.state.createAnnoPos){
-        //     this.setState({createAnnoPos: undefined})
-        // }
-        // console.log('img', this.img)
-        // console.log('img width', this.img.current.width.baseVal.value)
-        // console.log('img height', this.img.current.height.baseVal.value)
-        // console.log('img getBBox', this.img.current.getBBox())
-        // console.log('img x, y', this.img.current.x.baseVal.value, this.img.current.y.baseVal.value)
-        // console.log('img.boundingClientRect', this.img.current.getBoundingClientRect())
-        // console.log('screen width, height', document.documentElement.clientWidth, document.documentElement.clientHeight) 
+        // Selected annotation should be on top
+        this.putSelectedOnTop(prevProps)
     }
     
     onMouseOver(){
@@ -139,16 +129,6 @@ class Canvas extends Component{
     }
     onWheel(e){
         const up = e.deltaY < 0
-        const down = !up
-        console.log('CanvasWheelEvent', e, up)
-        console.log('deltaY', e.deltaY)
-        console.log('deltaX', e.deltaX)
-        console.log('deltaZ', e.deltaZ)
-        console.log('offsetX', e.offsetX)
-        console.log('offsetY', e.offsetY)
-        console.log('pageX, pageY', e.pageX, e.pageY)
-        console.log('screenX, screenY', e.screenX, e.screenY)
-        console.log('MousePosition in Canvas', this.getMousePosition(e.pageX, e.pageY))
         const mousePos = this.getMousePosition(e)
         const zoomFactor=1.25
         if (up) {
@@ -194,7 +174,7 @@ class Canvas extends Component{
         }
     }
     
-    reorderAnnotations(prevProps){
+    putSelectedOnTop(prevProps){
         // The selected annotation need to be rendered as last one in 
         // oder to be above all other annotations.
         if (this.props.selectedAnno){
