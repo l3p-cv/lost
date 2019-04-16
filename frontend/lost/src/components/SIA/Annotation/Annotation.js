@@ -85,6 +85,11 @@ class Annotation extends Component{
             return undefined
         }
     }
+
+    onNodeClick(e, idx){
+        console.log('Annotation')
+        console.log('NodeClick on ', idx, e.pageX)
+    }
     renderAnno(){
         const type = this.props.type
         const data = this.props.data
@@ -99,7 +104,8 @@ class Annotation extends Component{
             case 'polygon':
                 return <Polygon ref={this.myAnno} data={data} 
                     style={this.getStyle()}
-                    className={this.getCssClass()}></Polygon>
+                    className={this.getCssClass()}
+                    onNodeClick={(e, idx) => this.onNodeClick(e, idx)}></Polygon>
             case 'line':
                 return <Line ref={this.myAnno} data={data}></Line>
             default:

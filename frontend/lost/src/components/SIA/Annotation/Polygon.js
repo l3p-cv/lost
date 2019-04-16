@@ -32,11 +32,18 @@ class Polygon extends Component{
         })
     }
 
+    //Callback for on NodeClick event
+    onNodeClick(e, idx){
+        if (this.props.onNodeClick){
+            this.props.onNodeClick(e, idx)
+        }
+    }
     renderNodes(){
         return this.state.anno.map((e, idx) => {
             return <Node anno={this.state.anno} idx={idx} 
                 key={idx} style={this.props.style}
-                className={this.props.className}></Node>
+                className={this.props.className} 
+                onClick={(e, idx) => this.onNodeClick(e, idx)}></Node>
         })
     }
 

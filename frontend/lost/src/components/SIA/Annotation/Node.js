@@ -9,6 +9,11 @@ class Node extends Component{
         super(props)
     }
 
+    onClick(e){
+        if (this.props.onClick){
+            this.props.onClick(e, this.props.idx)
+        }
+    }
     render(){
         const data = this.props.anno[this.props.idx]
             return(
@@ -16,7 +21,8 @@ class Node extends Component{
                     cy={data.y} 
                     r={5} fill="red"
                     style={this.props.style}
-                    className={this.props.className} />
+                    className={this.props.className} 
+                    onClick={(e) => this.onClick(e)}/>
                 )
     }
 }
