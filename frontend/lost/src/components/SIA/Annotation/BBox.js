@@ -1,84 +1,115 @@
 import React, {Component} from 'react'
-
+import Polygon from './Polygon'
 import './Annotation.scss';
 
-class BBox extends Component{
+class BBox extends Polygon{
 
-    constructor(props){
-        super(props)
-        this.state = {
-            anno: undefined,
-            createMode: false
-        }
-    }
-    componentDidMount(){
-        this.setState({anno: {...this.props.data.data}})
-        console.log('Component mounted', this.props.data.id)
-        if (this.props.data.justCreated){
-            console.log('in Create Pos')
-            this.setState({
-                createMode:true,
-                anno: {
-                    x: this.props.data.data.x,
-                    y: this.props.data.data.y,
-                    w: 4,
-                    h: 4
-                }
-            })
-        }
-    }
+    // constructor(props){
+    //     super(props)
+    //     this.state = {
+    //         anno: undefined,
+    //         createMode: false
+    //     }
+    //     this.myAnno = React.createRef()
+    // }
 
-    
-    move(movementX, movementY){
-        this.setState({
-            anno : {
-                ...this.state.anno, 
-                x: this.state.anno.x + movementX,
-                y: this.state.anno.y + movementY
-            }
-        })
-    }
-
-    onContextMenu(e: Event){
-        e.preventDefault()
-    }
-
-    onMouseMove(e: Event){
+    onNodeMouseMove(e, idx){
         if (this.state.createMode){
             console.log('Bbox is moving')
-
+            // let newAnno = this.state.anno.map(el => {
+            //     return {
+            //         x: el.x + e.movementX,
+            //         y: el.y + e.movementY
+            //     }
+            // })
+            // newAnno[0] = this.state.anno[0]
+            let newAnno = [...this.state.anno]
+            newAnno[1].x += e.movementX
+            newAnno[2].x += e.movementX
+            newAnno[2].y += e.movementY
+            newAnno[3].y += e.movementY 
             this.setState({
-                anno: {
-                    ...this.state.anno,
-                    w: this.state.anno.w + e.movementX,
-                    h: this.state.anno.h + e.movementY
-                }
+                anno: newAnno
             })
         }
     }
-    onMouseUp(e){
-        if (e.button === 2){
+
+    onNodeMouseUp(e, idx){
+        if (this.state.createMode){
             this.setState({createMode: false})
         }
     }
+    componentDidMount(){
+        console.log('Component mounted', this.props.data.id)
+        if (this.props.data.createMode){
+            console.log('in Create Pos')
+            this.setState({
+                createMode:true,
+                anno: [
+                    {x: this.props.data.data.x, y: this.props.data.data.y},
+                    {x: this.props.data.data.x+1, y: this.props.data.data.y},
+                    {x: this.props.data.data.x+1, y: this.props.data.data.y+1},
+                    {x: this.props.data.data.x, y: this.props.data.data.y+1}
+                ]
+            })
+        } else {
+            this.setState({anno: [...this.props.data.data]})
+        }
+    }
 
     
-    render(){
-        if (this.state.anno){
-            return(
-                <rect x={this.state.anno.x} y={this.state.anno.y} 
-                    width={this.state.anno.w} height={this.state.anno.h} 
-                    fill="purple" fillOpacity="0.5"
-                    style={this.props.style}
-                    onMouseMove={e => {this.onMouseMove(e)}}
-                    onContextMenu={(e) => this.onContextMenu(e)}
-                    onMouseUp={ e => this.onMouseUp(e)}
-                    
-                />
-                )
-        }
-        return <g></g>
-    }
+    // move(movementX, movementY){
+    //     this.myAnno.current.move(movementX, movementY)
+    // }
+
+    // onContextMenu(e: Event){
+    //     e.preventDefault()
+    // }
+
+    // onMouseMove(e: Event){
+    //     if (this.state.createMode){
+    //         console.log('Bbox is moving')
+    //         this.setState({
+    //             anno: this.state.anno.map( e => {
+    //                 return {
+    //                     x: e.x + e.movementX,
+    //                     y: e.y + e.movementY
+    //                 }
+    //             })
+    //         })
+    //     }
+    // }
+    // onMouseUp(e){
+    //     if (e.button === 2){
+    //         this.setState({createMode: false})
+    //     }
+    // }
+
+    // onNodeClick(e, idx){
+    //     if (this.props.onNodeClick){
+    //         this.props.onNodeClick(e, idx)
+    //     }
+    // }
+    
+    // render(){
+    //     if (this.state.anno){
+    //         return(
+
+    //             <g
+    //                 onMouseMove={e => {this.onMouseMove(e)}}
+    //                 onContextMenu={(e) => this.onContextMenu(e)}
+    //                 onMouseUp={e => this.onMouseUp(e)}
+    //             >
+    //                 <Polygon ref={this.myAnno} data={this.props.data} 
+    //                     style={this.props.style}
+    //                     className={this.props.className}
+    //                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
+    //                 />
+    //             </g>
+    //             )
+    //     }
+    //     return <g></g>
+    // }
 }
 
 export default BBox;

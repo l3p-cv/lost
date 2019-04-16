@@ -100,7 +100,9 @@ class Annotation extends Component{
             case 'bBox':
                 return <BBox ref={this.myAnno} data={data} 
                     style={this.getStyle()}
-                    className={this.getCssClass()}></BBox>
+                    className={this.getCssClass()}
+                    onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
+                    />
             case 'polygon':
                 return <Polygon ref={this.myAnno} data={data} 
                     style={this.getStyle()}

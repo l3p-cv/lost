@@ -12,7 +12,8 @@ class Polygon extends Component{
     constructor(props){
         super(props)
         this.state = {
-            anno: undefined
+            anno: undefined,
+            createMode: false
         }
     }
 
@@ -38,12 +39,23 @@ class Polygon extends Component{
             this.props.onNodeClick(e, idx)
         }
     }
+
+    onNodeMouseMove(e, idx){
+        console.log('NodeMouseMoves ', idx, e.movementX, e.movementY )
+    }
+
+    onNodeMouseUp(e, idx){
+        console.log('NodeMouseUP ', idx, e.movementX, e.movementY )        
+    }
     renderNodes(){
         return this.state.anno.map((e, idx) => {
             return <Node anno={this.state.anno} idx={idx} 
                 key={idx} style={this.props.style}
                 className={this.props.className} 
-                onClick={(e, idx) => this.onNodeClick(e, idx)}></Node>
+                onClick={(e, idx) => this.onNodeClick(e, idx)}
+                onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
+                onMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
+            />
         })
     }
 

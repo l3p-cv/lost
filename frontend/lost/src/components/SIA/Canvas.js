@@ -67,16 +67,16 @@ class Canvas extends Component{
             
             annos = [
                 ...this.props.annos.drawables.bBoxes.map((element) => {
-                    return {...element, type:'bBox', justCreated:false}
+                    return {...element, type:'bBox', createMode:false}
                 }),
                 ...this.props.annos.drawables.lines.map((element) => {
-                    return {...element, type:'line', justCreated:false}
+                    return {...element, type:'line', createMode:false}
                 }),
                 ...this.props.annos.drawables.polygons.map((element) => {
-                    return {...element, type:'polygon', justCreated:false}
+                    return {...element, type:'polygon', createMode:false}
                 }),
                 ...this.props.annos.drawables.points.map((element) => {
-                    return {...element, type:'point', justCreated:false}
+                    return {...element, type:'point', createMode:false}
                 })
             ]
        }
@@ -162,7 +162,7 @@ class Canvas extends Component{
                     id: _.uniqueId('new'),
                     type: 'bBox',
                     data: {x: mousePos.x, y: mousePos.y},
-                    justCreated: true
+                    createMode: true
                 }]
             })
         }

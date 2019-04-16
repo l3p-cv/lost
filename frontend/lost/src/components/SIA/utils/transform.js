@@ -5,12 +5,26 @@ export function toSia(data, image, type){
         case 'bBox':
             const w = image.width * data.w
             const h = image.height * data.h
-            return {
-                x: image.width * data.x - w/2.0,
-                y: image.height * data.y - h/2.0,
-                w: w,
-                h: h
-            }
+            const x0 = image.width * data.x - w/2.0
+            const y0 = image.height * data.y - h/2.0
+            return [
+                {
+                    x: x0,
+                    y: y0
+                },
+                {
+                    x: x0 + w,
+                    y: y0
+                },
+                {
+                    x: x0 + w,
+                    y: y0 + h
+                },
+                {
+                    x: x0,
+                    y: y0 + h
+                }
+            ]
         case 'point':
             return {
                 x: image.width * data.x,
