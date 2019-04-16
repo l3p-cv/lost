@@ -67,13 +67,22 @@ class Annotation extends Component{
     
     getStyle(){
         if (this.selected()){
-            return {
-                stroke: 'red',
-                fillOpacity: '0.1',
-                strokeWidth: 4
-            }
+            // return {
+            //     stroke: 'red',
+            //     fillOpacity: '0.1',
+            //     strokeWidth: 4
+            // }
+            return {}
         } else {
             return {}
+        }
+    }
+
+    getCssClass(){
+        if (this.selected()){
+            return 'selected'
+        } else {
+            return undefined
         }
     }
     renderAnno(){
@@ -84,9 +93,13 @@ class Annotation extends Component{
             case 'point':
                 return <Point ref={this.myAnno} data={data}></Point>
             case 'bBox':
-                return <BBox ref={this.myAnno} data={data} style={this.getStyle()}></BBox>
+                return <BBox ref={this.myAnno} data={data} 
+                    style={this.getStyle()}
+                    className={this.getCssClass()}></BBox>
             case 'polygon':
-                return <Polygon ref={this.myAnno} data={data} style={this.getStyle()}></Polygon>
+                return <Polygon ref={this.myAnno} data={data} 
+                    style={this.getStyle()}
+                    className={this.getCssClass()}></Polygon>
             case 'line':
                 return <Line ref={this.myAnno} data={data}></Line>
             default:

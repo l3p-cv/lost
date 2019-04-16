@@ -4,6 +4,7 @@ import Node from './Node'
 import Edge from './Edge'
 
 import * as transform from '../utils/transform'
+import './Annotation.scss'
 
 
 class Polygon extends Component{
@@ -33,15 +34,22 @@ class Polygon extends Component{
 
     renderNodes(){
         return this.state.anno.map((e, idx) => {
-            return <Node anno={this.state.anno} idx={idx} key={idx}></Node>
+            return <Node anno={this.state.anno} idx={idx} 
+                key={idx} style={this.props.style}
+                className={this.props.className}></Node>
         })
     }
 
     renderEdges(){
         let edges = this.state.anno.map((e, idx) => {
-            return <Edge anno={this.state.anno} idx={idx} key={idx}/>
+            return <Edge anno={this.state.anno} 
+                idx={idx} key={idx} style={this.props.style}
+                className={this.props.className}/>
         })
-        edges.push(<Edge anno={this.state.anno} closingEdge={true} key={edges.length}/>)
+        edges.push(<Edge anno={this.state.anno} 
+            closingEdge={true} key={edges.length}
+            style={this.props.style}
+            className={this.props.className}/>)
         return edges
     }
     render(){
@@ -50,7 +58,8 @@ class Polygon extends Component{
                 <g>
                     <polygon points={this.toPolygonStr(this.state.anno)}
                         fill="purple" fillOpacity="0.5" stroke="purple" 
-                        style={this.props.style}/>
+                        // style={this.props.style}
+                        className={this.props.className}/>
                     {this.renderEdges()}
                     {this.renderNodes()}
                 </g>
