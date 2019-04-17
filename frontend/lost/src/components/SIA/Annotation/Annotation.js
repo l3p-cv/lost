@@ -72,12 +72,9 @@ class Annotation extends Component{
     
     getStyle(){
         if (this.isSelected()){
-            // return {
-            //     stroke: 'red',
-            //     fillOpacity: '0.1',
-            //     strokeWidth: 4
-            // }
-            return {}
+            return {
+                stroke: 'orange'
+            }
         } else {
             return {}
         }
@@ -87,7 +84,7 @@ class Annotation extends Component{
         if (this.isSelected()){
             return 'selected'
         } else {
-            return undefined
+            return 'not-selected'
         }
     }
 

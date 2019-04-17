@@ -2,5 +2,20 @@
     stroke: blue;
     fill: blue;
     stroke-width: 5;
-    fill-opacity: 0.1;
+    fill-opacity: 0.01;
+}
+
+circle.selected{
+    fill-opacity: 1.0;
+}
+
+.not-selected{
+    stroke: purple;
+    fill: purple;
+    fill-opacity: 0.3;
+    stroke-width: 3;
+}
+
+circle.not-selected{
+    fill-opacity: 1.0;
 }
