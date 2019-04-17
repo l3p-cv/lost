@@ -14,21 +14,24 @@ class BBox extends Polygon{
     // }
 
     onNodeMouseMove(e, idx){
-        if (this.state.createMode){
-            let newAnno = [...this.state.anno]
-            newAnno[1].x += e.movementX
-            newAnno[2].x += e.movementX
-            newAnno[2].y += e.movementY
-            newAnno[3].y += e.movementY 
-            this.setState({
-                anno: newAnno
-            })
+        switch (this.state.mode){
+            case 'create':
+                let newAnno = [...this.state.anno]
+                newAnno[1].x += e.movementX
+                newAnno[2].x += e.movementX
+                newAnno[2].y += e.movementY
+                newAnno[3].y += e.movementY 
+                this.setState({
+                    anno: newAnno
+                })
+            default:
+                break
         }
     }
 
     onNodeMouseUp(e, idx){
-        if (this.state.createMode){
-            this.setState({createMode: false})
+        if (this.state.mode){
+            this.setState({mode: 'show'})
         }
     }
     componentDidMount(){
@@ -36,7 +39,7 @@ class BBox extends Polygon{
         if (this.props.data.createMode){
             console.log('in Create Pos')
             this.setState({
-                createMode:true,
+                mode:'create',
                 anno: [
                     {x: this.props.data.data.x, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y},
@@ -49,59 +52,6 @@ class BBox extends Polygon{
         }
     }
 
-    
-    // move(movementX, movementY){
-    //     this.myAnno.current.move(movementX, movementY)
-    // }
-
-    // onContextMenu(e: Event){
-    //     e.preventDefault()
-    // }
-
-    // onMouseMove(e: Event){
-    //     if (this.state.createMode){
-    //         console.log('Bbox is moving')
-    //         this.setState({
-    //             anno: this.state.anno.map( e => {
-    //                 return {
-    //                     x: e.x + e.movementX,
-    //                     y: e.y + e.movementY
-    //                 }
-    //             })
-    //         })
-    //     }
-    // }
-    // onMouseUp(e){
-    //     if (e.button === 2){
-    //         this.setState({createMode: false})
-    //     }
-    // }
-
-    // onNodeClick(e, idx){
-    //     if (this.props.onNodeClick){
-    //         this.props.onNodeClick(e, idx)
-    //     }
-    // }
-    
-    // render(){
-    //     if (this.state.anno){
-    //         return(
-
-    //             <g
-    //                 onMouseMove={e => {this.onMouseMove(e)}}
-    //                 onContextMenu={(e) => this.onContextMenu(e)}
-    //                 onMouseUp={e => this.onMouseUp(e)}
-    //             >
-    //                 <Polygon ref={this.myAnno} data={this.props.data} 
-    //                     style={this.props.style}
-    //                     className={this.props.className}
-    //                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
-    //                 />
-    //             </g>
-    //             )
-    //     }
-    //     return <g></g>
-    // }
 }
 
 export default BBox;

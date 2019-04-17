@@ -13,7 +13,7 @@ class Polygon extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            createMode: false
+            mode: 'show'
         }
     }
 

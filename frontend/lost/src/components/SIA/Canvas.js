@@ -33,9 +33,140 @@ class Canvas extends Component{
         this.img = React.createRef()
         this.svg = React.createRef()
     }
+
+    componentDidMount(){
+        this.props.getSiaAnnos(11)
+    }
+
+    componentDidUpdate(prevProps){
+        console.log('didupdate')
+		if(this.props.annos.image){
+            if(this.props.annos.image.id !== this.state.image.id){
+			this.props.getSiaImage(this.props.annos.image.url).then(response=>
+			{
+                this.setState({image: {
+                    ...this.state.image, 
+                    id: this.props.annos.image.id, 
+                    data:window.URL.createObjectURL(response)
+                }})
+            }
+            )       
+
+        }
+        }
+        // Selected annotation should be on top
+        this.putSelectedOnTop(prevProps)
+    }
+    
     onImageLoad(){
         this.initCanvasView()
     }
+
+    onMouseOver(){
+        //Prevent scrolling on canvas
+        document.body.style.overflow = "hidden"
+        this.svg.current.focus()
+        console.log('Mouse Over Canvas')
+    }
+    onMouseOut(){
+        //Enable scrolling after leaving canvas
+        document.body.style.overflow = "auto"
+    }
+    onWheel(e){
+        const up = e.deltaY < 0
+        const mousePos = this.getMousePosition(e)
+        const zoomFactor=1.25
+        if (up) {
+            this.setState({canvas: {
+                ...this.state.canvas,
+                scale: this.state.canvas.scale * zoomFactor,
+                translateX: -1*(mousePos.x * this.state.canvas.scale*zoomFactor - mousePos.x*this.state.canvas.scale),
+                translateY: -1*(mousePos.y * this.state.canvas.scale*zoomFactor - mousePos.y*this.state.canvas.scale )
+            }})
+        } else {
+            this.setState({canvas: {
+                ...this.state.canvas,
+                scale: this.state.canvas.scale / zoomFactor
+            }})
+        }
+    }
+
+    onRightClick(e){
+        e.preventDefault()
+    }
+
+    onMouseDown(e){
+        if (e.button === 1){
+            this.setState({canvas:{scale: 1.0, translateX: 0, translateY: 0}})
+        }
+        else if (e.button === 2){
+            //Create annotation on right click
+           this.createNewAnnotation(e)
+        }
+    }
+
+    onMouseUp(e){
+        if (e.button === 2){
+            console.log('Mouse up on right click')
+        }
+    }
+
+    onKeyPress(e: Event){
+        console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+        if (e.key === 'Delete'){
+            this.removeSelectedAnno()
+        }
+    }
+    
+    getMousePosition(e){
+        return {
+            x: e.pageX - this.svg.current.getBoundingClientRect().left,
+            y: e.pageY - this.svg.current.getBoundingClientRect().top
+        }
+    }
+
+    removeSelectedAnno(){
+        const annos = this.state.annos.filter( (el) => {
+            return el.id !== this.props.selectedAnno
+        })
+        this.setState({annos: annos})
+    }
+
+    createNewAnnotation(e){
+        const mousePos = this.getMousePosition(e)
+        this.setState({
+            annos: [...this.state.annos, {
+                id: _.uniqueId('new'),
+                type: 'bBox',
+                data: {
+                    x: mousePos.x, 
+                    y: mousePos.y
+                },
+                createMode: true
+            }]
+        })
+    }
+
+    putSelectedOnTop(prevProps){
+        // The selected annotation need to be rendered as last one in 
+        // oder to be above all other annotations.
+        if (this.props.selectedAnno){
+            console.log('state ', this.state.annos)
+            if (prevProps.selectedAnno !== this.props.selectedAnno){
+                const annos = this.state.annos.filter( (el) => {
+                    return el.id !== this.props.selectedAnno
+                })
+                const lastAnno = this.state.annos.find( el => {
+                    return el.id === this.props.selectedAnno
+                })
+                annos.push(lastAnno)
+                this.setState({annos: [
+                    ...annos
+                ]})
+            }
+        }
+    }
+
     initCanvasView(){
         var svgBox = this.svg.current.getBoundingClientRect()
         var clientWidth = document.documentElement.clientWidth
@@ -85,132 +216,6 @@ class Canvas extends Component{
             data:transform.toSia(el.data, {width: imgWidth, height:imgHeight}, el.type)}
         })
        this.setState({annos: annos})
-    }
-
-    componentDidMount(){
-        this.props.getSiaAnnos(11)
-    }
-
-    getMousePosition(e){
-        return {
-            x: e.pageX - this.svg.current.getBoundingClientRect().left,
-            y: e.pageY - this.svg.current.getBoundingClientRect().top
-        }
-    }
-
-    componentDidUpdate(prevProps){
-        console.log('didupdate')
-		if(this.props.annos.image){
-            if(this.props.annos.image.id !== this.state.image.id){
-			this.props.getSiaImage(this.props.annos.image.url).then(response=>
-			{
-                this.setState({image: {
-                    ...this.state.image, 
-                    id: this.props.annos.image.id, 
-                    data:window.URL.createObjectURL(response)
-                }})
-            }
-            )       
-
-        }
-        }
-        // Selected annotation should be on top
-        this.putSelectedOnTop(prevProps)
-    }
-    
-    onMouseOver(){
-        //Prevent scrolling on canvas
-        document.body.style.overflow = "hidden"
-        this.svg.current.focus()
-    }
-    onMouseOut(){
-        //Enable scrolling after leaving canvas
-        document.body.style.overflow = "auto"
-    }
-    onWheel(e){
-        const up = e.deltaY < 0
-        const mousePos = this.getMousePosition(e)
-        const zoomFactor=1.25
-        if (up) {
-            this.setState({canvas: {
-                ...this.state.canvas,
-                scale: this.state.canvas.scale * zoomFactor,
-                translateX: -1*(mousePos.x * this.state.canvas.scale*zoomFactor - mousePos.x*this.state.canvas.scale),
-                translateY: -1*(mousePos.y * this.state.canvas.scale*zoomFactor - mousePos.y*this.state.canvas.scale )
-            }})
-        } else {
-            this.setState({canvas: {
-                ...this.state.canvas,
-                scale: this.state.canvas.scale / zoomFactor
-            }})
-        }
-    }
-
-    onRightClick(e){
-        e.preventDefault()
-    }
-
-    onMouseDown(e){
-        if (e.button === 1){
-            this.setState({canvas:{scale: 1.0, translateX: 0, translateY: 0}})
-        }
-        else if (e.button === 2){
-            //Create annotation on right click
-           this.createNewAnnotation(e)
-        }
-    }
-
-    onMouseUp(e){
-        if (e.button === 2){
-            console.log('Mouse up on right click')
-        }
-    }
-
-    onKeyPress(e){
-        console.log(e.key, e.keyCode)
-        if (e.key === 'Delete'){
-            this.removeSelectedAnno()
-        }
-    }
-    
-    removeSelectedAnno(){
-        const annos = this.state.annos.filter( (el) => {
-            return el.id !== this.props.selectedAnno
-        })
-        this.setState({annos: annos})
-    }
-    createNewAnnotation(e){
-        const mousePos = this.getMousePosition(e)
-        this.setState({
-            annos: [...this.state.annos, {
-                id: _.uniqueId('new'),
-                type: 'bBox',
-                data: {
-                    x: mousePos.x, 
-                    y: mousePos.y
-                },
-                createMode: true
-            }]
-        })
-    }
-    putSelectedOnTop(prevProps){
-        // The selected annotation need to be rendered as last one in 
-        // oder to be above all other annotations.
-        if (this.props.selectedAnno){
-            console.log('state ', this.state.annos)
-            if (prevProps.selectedAnno !== this.props.selectedAnno){
-                const annos = this.state.annos.filter( (el) => {
-                    return el.id !== this.props.selectedAnno
-                })
-                const lastAnno = this.state.annos.find( el => {
-                    return el.id === this.props.selectedAnno
-                })
-                annos.push(lastAnno)
-                this.setState({annos: [
-                    ...annos
-                ]})
-            }
-        }
     }
 
     renderAnnotations(){
