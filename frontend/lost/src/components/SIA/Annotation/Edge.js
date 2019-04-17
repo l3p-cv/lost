@@ -9,6 +9,10 @@ class Edge extends Component{
     constructor(props){
         super(props)
     }
+
+    componentDidUpdate(){
+        console.log('Update edge', this.props.idx)
+    }
     
     render(){
         let p1, p2

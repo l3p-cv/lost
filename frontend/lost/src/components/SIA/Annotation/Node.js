@@ -13,6 +13,21 @@ class Node extends Component{
         }
     }
 
+    componentDidUpdate(prevProps){
+        console.log('Node did update', this.props.idx, this.props.anno)
+    }
+
+    // shouldComponentUpdate(nextProps){
+    //     console.log('nextProps', nextProps)
+    //     if (nextProps.anno.x !== this.props.anno.x
+    //         || nextProps.anno.y !== this.props.anno.y
+    //         || nextProps.isSelected !== this.props.isSelected){
+    //             return true
+    //         } else {
+    //             return false
+    //         }
+    // }
+
     onClick(e){
         this.turnHaloOn()
         if (this.props.onClick){
@@ -60,18 +75,20 @@ class Node extends Component{
     }
 
     turnHaloOn(){
+        console.log('Turn halo-on ', this.props.idx)
         this.setState({
             haloCss: 'halo-on'
         })
     }
 
     turnHaloOff(){
+        console.log('Turn halo-off ', this.props.idx)
         this.setState({
             haloCss: 'halo-off'
         })
     }
     render(){
-        const data = this.props.anno[this.props.idx]
+        const data = this.props.anno
             return(
                 <g onClick={(e) => this.onClick(e)}
                     onMouseMove={e => this.onMouseMove(e)}

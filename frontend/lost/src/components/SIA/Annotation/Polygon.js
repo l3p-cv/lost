@@ -32,6 +32,10 @@ class Polygon extends Component{
         }
     }
 
+    componentDidUpdate(){
+        console.log('Update polygon')
+    }
+
     toPolygonStr(data){
         return data.map( (e => {
             return `${e.x},${e.y}`
@@ -99,16 +103,10 @@ class Polygon extends Component{
                 break
         }
     }
-    onKeyPress(e){
-        if (e.key === 'Enter'){
-            console.log('Polygon hit enter')
-            this.setState({mode:'show'})
-        }
-    }
 
     renderNodes(){
         return this.state.anno.map((e, idx) => {
-            return <Node anno={this.state.anno} idx={idx} 
+            return <Node anno={this.state.anno[idx]} idx={idx} 
                 key={idx} style={this.props.style}
                 className={this.props.className} 
                 onClick={(e, idx) => this.onNodeClick(e, idx)}
