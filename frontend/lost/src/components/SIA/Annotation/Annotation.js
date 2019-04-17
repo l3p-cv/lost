@@ -23,9 +23,14 @@ class Annotation extends Component{
         // this.myKey = _.uniqueId('annokey')
     }
 
+    componentDidMount(){
+        if (this.props.data.createMode){
+            this.props.selectAnnotation(this.props.data.id)
+        }
+    }
     componentDidUpdate(){
         console.log('Annotation did update', this.props.data.id)
-        if (this.selected()){
+        if (this.isSelected()){
             console.log('I am selected :-)')
         }
     }
@@ -51,12 +56,12 @@ class Annotation extends Component{
     }
 
     onMouseMove(e: Event){
-        if (this.state.readyToMove && this.selected()){
+        if (this.state.readyToMove && this.isSelected()){
             this.myAnno.current.move(e.movementX, e.movementY)
         }
     }
     
-    selected(){
+    isSelected(){
         return this.props.selectedAnno === this.props.data.id
     }
 
@@ -66,7 +71,7 @@ class Annotation extends Component{
     }
     
     getStyle(){
-        if (this.selected()){
+        if (this.isSelected()){
             // return {
             //     stroke: 'red',
             //     fillOpacity: '0.1',
@@ -79,7 +84,7 @@ class Annotation extends Component{
     }
 
     getCssClass(){
-        if (this.selected()){
+        if (this.isSelected()){
             return 'selected'
         } else {
             return undefined
@@ -96,20 +101,25 @@ class Annotation extends Component{
 
         switch(type) {
             case 'point':
-                return <Point ref={this.myAnno} data={data}></Point>
+                return <Point ref={this.myAnno} data={data} isSelected={this.isSelected()}></Point>
             case 'bBox':
                 return <BBox ref={this.myAnno} data={data} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
+                    isSelected={this.isSelected()}
                     />
             case 'polygon':
                 return <Polygon ref={this.myAnno} data={data} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
-                    onNodeClick={(e, idx) => this.onNodeClick(e, idx)}></Polygon>
+                    onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
+                    isSelected={this.isSelected()}
+                    />
             case 'line':
-                return <Line ref={this.myAnno} data={data}></Line>
+                return <Line ref={this.myAnno} data={data}
+                    isSelected={this.isSelected()}
+                    />
             default:
                 console.log("Wrong annoType for annotations: ",
                     this.props.annoType)

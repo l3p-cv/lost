@@ -55,6 +55,7 @@ class Polygon extends Component{
                 onClick={(e, idx) => this.onNodeClick(e, idx)}
                 onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
+                isSelected={this.props.isSelected}
             />
         })
     }
@@ -63,12 +64,16 @@ class Polygon extends Component{
         let edges = this.state.anno.map((e, idx) => {
             return <Edge anno={this.state.anno} 
                 idx={idx} key={idx} style={this.props.style}
-                className={this.props.className}/>
+                className={this.props.className}
+                isSelected={this.props.isSelected}                
+                />
         })
         edges.push(<Edge anno={this.state.anno} 
             closingEdge={true} key={edges.length}
             style={this.props.style}
-            className={this.props.className}/>)
+            className={this.props.className}
+            isSelected={this.props.isSelected}
+            />)
         return edges
     }
     render(){

@@ -15,14 +15,6 @@ class BBox extends Polygon{
 
     onNodeMouseMove(e, idx){
         if (this.state.createMode){
-            console.log('Bbox is moving')
-            // let newAnno = this.state.anno.map(el => {
-            //     return {
-            //         x: el.x + e.movementX,
-            //         y: el.y + e.movementY
-            //     }
-            // })
-            // newAnno[0] = this.state.anno[0]
             let newAnno = [...this.state.anno]
             newAnno[1].x += e.movementX
             newAnno[2].x += e.movementX

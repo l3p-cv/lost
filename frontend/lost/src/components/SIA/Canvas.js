@@ -155,16 +155,8 @@ class Canvas extends Component{
             this.setState({canvas:{scale: 1.0, translateX: 0, translateY: 0}})
         }
         else if (e.button === 2){
-            // this.setState({createAnnoPos: this.getMousePosition(e)})
-            const mousePos = this.getMousePosition(e)
-            this.setState({
-                annos: [...this.state.annos, {
-                    id: _.uniqueId('new'),
-                    type: 'bBox',
-                    data: {x: mousePos.x, y: mousePos.y},
-                    createMode: true
-                }]
-            })
+            //Create annotation on right click
+           this.createNewAnnotation(e)
         }
     }
 
@@ -174,6 +166,17 @@ class Canvas extends Component{
         }
     }
     
+    createNewAnnotation(e){
+        const mousePos = this.getMousePosition(e)
+        this.setState({
+            annos: [...this.state.annos, {
+                id: _.uniqueId('new'),
+                type: 'bBox',
+                data: {x: mousePos.x, y: mousePos.y},
+                createMode: true
+            }]
+        })
+    }
     putSelectedOnTop(prevProps){
         // The selected annotation need to be rendered as last one in 
         // oder to be above all other annotations.
