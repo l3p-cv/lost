@@ -89,7 +89,6 @@ class Canvas extends Component{
 
     componentDidMount(){
         this.props.getSiaAnnos(11)
-        console.log('uniqueID',_.uniqueId('anno'))
     }
 
     getMousePosition(e){
@@ -122,6 +121,7 @@ class Canvas extends Component{
     onMouseOver(){
         //Prevent scrolling on canvas
         document.body.style.overflow = "hidden"
+        this.svg.current.focus()
     }
     onMouseOut(){
         //Enable scrolling after leaving canvas
@@ -165,7 +165,20 @@ class Canvas extends Component{
             console.log('Mouse up on right click')
         }
     }
+
+    onKeyPress(e){
+        console.log(e.key, e.keyCode)
+        if (e.key === 'Delete'){
+            this.removeSelectedAnno()
+        }
+    }
     
+    removeSelectedAnno(){
+        const annos = this.state.annos.filter( (el) => {
+            return el.id !== this.props.selectedAnno
+        })
+        this.setState({annos: annos})
+    }
     createNewAnnotation(e){
         const mousePos = this.getMousePosition(e)
         this.setState({
@@ -209,10 +222,6 @@ class Canvas extends Component{
         console.log('renderAnnotations',annos)
         return <g>{annos}</g>
         
-    }
-
-    onKeyPress(e){
-        console.log(e.key)
     }
 
     render(){

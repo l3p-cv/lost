@@ -31,9 +31,6 @@ class Annotation extends Component{
     }
     componentDidUpdate(){
         console.log('Annotation did update', this.props.data.id)
-        if (this.isSelected()){
-            console.log('I am selected :-)')
-        }
     }
     
     onClick(e: Event){
