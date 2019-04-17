@@ -172,7 +172,10 @@ class Canvas extends Component{
             annos: [...this.state.annos, {
                 id: _.uniqueId('new'),
                 type: 'bBox',
-                data: {x: mousePos.x, y: mousePos.y},
+                data: {
+                    x: mousePos.x, 
+                    y: mousePos.y
+                },
                 createMode: true
             }]
         })
@@ -208,11 +211,18 @@ class Canvas extends Component{
         
     }
 
+    onKeyPress(e){
+        console.log(e.key)
+    }
+
     render(){
         return(
-            <div >
+            <div>
                 <svg ref={this.svg} width={this.state.svg.width} 
-                    height={this.state.svg.height}>
+                    height={this.state.svg.height}
+                    onKeyPress={e => this.onKeyPress(e)}
+                    tabIndex="0"
+                    >
                     <g 
                         transform={`scale(${this.state.canvas.scale}) translate(${this.state.canvas.translateX}, ${this.state.canvas.translateY})`}
                         onWheel={(e) => {this.onWheel(e)}}

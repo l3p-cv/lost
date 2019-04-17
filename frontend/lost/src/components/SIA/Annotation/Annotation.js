@@ -21,6 +21,7 @@ class Annotation extends Component{
         }
         this.myAnno = React.createRef()
         // this.myKey = _.uniqueId('annokey')
+        
     }
 
     componentDidMount(){
@@ -73,10 +74,12 @@ class Annotation extends Component{
     getStyle(){
         if (this.isSelected()){
             return {
-                stroke: 'orange'
+                stroke: 'blue'
             }
         } else {
-            return {}
+            return {
+                stroke: 'blue'
+            }
         }
     }
 

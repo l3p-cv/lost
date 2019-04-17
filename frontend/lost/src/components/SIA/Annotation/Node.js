@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import './Annotation.scss'
+import './Node.scss'
 
 
 
@@ -8,10 +9,7 @@ class Node extends Component{
     constructor(props){
         super(props)
         this.state = {
-            haloStyle: {
-                fill: 'none'
-            }
-
+            haloCss: 'halo-off'
         }
     }
 
@@ -51,18 +49,13 @@ class Node extends Component{
 
     turnHaloOn(){
         this.setState({
-            haloStyle:{
-                fill: 'orange',
-                fillOpacity: 0.5
-            }
+            haloCss: 'halo-on'
         })
     }
 
     turnHaloOff(){
         this.setState({
-            haloStyle: {
-                fill: 'none'
-            }
+            haloCss: 'halo-off'
         })
     }
     render(){
@@ -74,8 +67,8 @@ class Node extends Component{
                     onMouseUp={e => this.onMouseUp(e)}
                     onMouseLeave={e => this.onMouseLeave(e)}
                 >
-                    <circle cx={data.x} cy={data.y} r={20}
-                        style={this.state.haloStyle}
+                    <circle cx={data.x} cy={data.y} r={30}
+                        className={this.state.haloCss}
                     />
                     <circle cx={data.x} 
                         cy={data.y} 
