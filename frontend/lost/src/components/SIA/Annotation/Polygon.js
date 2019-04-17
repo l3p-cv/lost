@@ -18,8 +18,20 @@ class Polygon extends Component{
     }
 
     componentDidMount(){
-        this.setState({anno: [...this.props.data.data]})
+        if (this.props.data.createMode){
+            console.log('in Create Pos')
+            this.setState({
+                mode:'create',
+                anno: [
+                    {x: this.props.data.data.x, y: this.props.data.data.y},
+                    {x: this.props.data.data.x+1, y: this.props.data.data.y}
+                ]
+            })
+        } else {
+            this.setState({anno: [...this.props.data.data]})
+        }
     }
+
     toPolygonStr(data){
         return data.map( (e => {
             return `${e.x},${e.y}`
@@ -41,12 +53,59 @@ class Polygon extends Component{
     }
 
     onNodeMouseMove(e, idx){
-        console.log('NodeMouseMoves ', idx, e.movementX, e.movementY )
+        switch (this.state.mode){
+            case 'create':
+                let newAnno = [...this.state.anno]
+                newAnno[idx].x += e.movementX
+                newAnno[idx].y += e.movementY
+                this.setState({
+                    anno: newAnno
+                })
+            default:
+                break
+        }
     }
 
     onNodeMouseUp(e, idx){
         console.log('NodeMouseUP ', idx, e.movementX, e.movementY )        
     }
+
+    onNodeMouseDown(e, idx){
+        if (e.button == 2){
+            switch (this.state.mode){
+                case 'create':
+                    let newAnno = [...this.state.anno]
+                    newAnno.push({
+                        x: newAnno[idx].x,
+                        y: newAnno[idx].y
+                    })
+                    this.setState({
+                        anno: newAnno
+                    })
+                default:
+                    break
+            }    
+        }   
+        
+    }
+
+    onNodeDoubleClick(e, idx){
+        switch (this.state.mode){
+            case 'create':
+                this.setState({
+                    mode: 'show'
+                })
+            default:
+                break
+        }
+    }
+    onKeyPress(e){
+        if (e.key === 'Enter'){
+            console.log('Polygon hit enter')
+            this.setState({mode:'show'})
+        }
+    }
+
     renderNodes(){
         return this.state.anno.map((e, idx) => {
             return <Node anno={this.state.anno} idx={idx} 
@@ -55,6 +114,8 @@ class Polygon extends Component{
                 onClick={(e, idx) => this.onNodeClick(e, idx)}
                 onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
+                onMouseDown={(e,idx) => this.onNodeMouseDown(e, idx)}
+                onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
             />
         })
@@ -79,7 +140,7 @@ class Polygon extends Component{
     render(){
         if (this.state.anno){
             return(
-                <g>
+                <g onKeyPress={e => this.onKeyPress(e)}>
                     <polygon points={this.toPolygonStr(this.state.anno)}
                         fill="purple" fillOpacity="0.5" stroke="purple" 
                         // style={this.props.style}

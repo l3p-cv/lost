@@ -35,6 +35,12 @@ class Node extends Component{
             this.props.onMouseUp(e, this.props.idx)
         }
     }
+
+    onMouseDown(e: Event){
+        if (this.props.onMouseDown){
+            this.props.onMouseDown(e, this.props.idx)
+        }
+    }
     onMouseEnter(e: Event){
         if (this.props.isSelected){
             this.turnHaloOn()
@@ -44,6 +50,12 @@ class Node extends Component{
     onMouseLeave(e){
         if (this.props.isSelected){
             this.turnHaloOff()
+        }
+    }
+
+    onDoubleClick(e){
+        if (this.props.onDoubleClick){
+            this.props.onDoubleClick(e, this.props.idx)
         }
     }
 
@@ -65,7 +77,9 @@ class Node extends Component{
                     onMouseMove={e => this.onMouseMove(e)}
                     onContextMenu={e => this.onContextMenu(e)}
                     onMouseUp={e => this.onMouseUp(e)}
+                    onMouseDown={e => this.onMouseDown(e)}
                     onMouseLeave={e => this.onMouseLeave(e)}
+                    onDoubleClick={e => this.onDoubleClick(e)}
                 >
                     <circle cx={data.x} cy={data.y} r={30}
                         className={this.state.haloCss}

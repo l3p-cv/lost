@@ -4,15 +4,6 @@ import './Annotation.scss';
 
 class BBox extends Polygon{
 
-    // constructor(props){
-    //     super(props)
-    //     this.state = {
-    //         anno: undefined,
-    //         createMode: false
-    //     }
-    //     this.myAnno = React.createRef()
-    // }
-
     onNodeMouseMove(e, idx){
         switch (this.state.mode){
             case 'create':
