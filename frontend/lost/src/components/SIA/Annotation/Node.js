@@ -70,6 +70,7 @@ class Node extends Component{
     }
 
     onMouseUp(e: Event){
+
         if (this.props.onMouseUp){
             this.props.onMouseUp(e, this.props.idx)
         }
@@ -163,7 +164,7 @@ class Node extends Component{
                     r={5} fill="red"
                     style={this.props.style}
                     className={this.props.className}
-                    onMouseEnter={e => this.onMouseEnter(e)}
+                    onMouseOver={e => this.onMouseEnter(e)}
                 />
             </g>
         )

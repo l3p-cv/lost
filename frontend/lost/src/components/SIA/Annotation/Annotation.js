@@ -42,10 +42,20 @@ class Annotation extends Component{
 
     }
     onMouseDown(e: Event){
-        this.setState({readyToMove: true})
+        switch(e.button){
+            case 0:
+                this.setState({readyToMove: true})
+            default:
+                break
+        }
     }
     onMouseUp(e: Event){
-        this.setState({readyToMove: false})
+        switch(e.button){
+            case 0:
+                this.setState({readyToMove: false})
+            default:
+                break
+        }
     }
     onMouseOut(e: Event){
         if (this.state.readyToMove){

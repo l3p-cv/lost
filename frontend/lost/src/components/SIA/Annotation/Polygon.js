@@ -46,6 +46,7 @@ class Polygon extends Component{
     move(movementX, movementY){
         console.log('Polygon mode ', this.state.mode)
         if (this.state.mode !== 'move'){
+            console.log('Polygon changed state to move!')
             this.setState({mode: 'move'})
         }
         this.setState({
@@ -79,9 +80,11 @@ class Polygon extends Component{
     }
 
     onNodeMouseDown(e, idx, anno){
+        console.log('onNodeMouseDown', idx, anno)
         if (e.button == 2){
             switch (this.state.mode){
                 case 'create':
+                    console.log('onNodeMouseDown create')
                     let newAnno = [...anno]
                     newAnno.push({
                         x: newAnno[idx].x,
@@ -121,6 +124,7 @@ class Polygon extends Component{
             return null
         }
         if (this.state.mode === 'create'){
+            console.log('Render create nodes')
             return [<ENodeE anno={this.state.anno} idx={0}
                 key={0} 
                 style={this.props.style}
@@ -190,7 +194,7 @@ class Polygon extends Component{
                 return (
                     <g
                         onKeyPress={e => this.onKeyPress(e)}
-                        onMouseUp={e => this.onMouseUp(e)}
+                        // onMouseUp={e => this.onMouseUp(e)}
                     >
                         <polyline points={this.toPolygonStr(this.state.anno)}
                         fill='none' stroke="purple" 
