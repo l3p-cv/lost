@@ -3,7 +3,6 @@ import React, {Component} from 'react'
 import Node from './Node'
 
 import './Annotation.scss'
-import './Node.scss'
 
 
 
@@ -14,13 +13,11 @@ class ENodeE extends Component{
     **************/
     constructor(props){
         super(props)
-        this.state = {
-            haloCss: 'halo-off',
-            selAreaCss: 'sel-area-off',
-            anno: undefined
-        }
     }
 
+    /*************
+     * EVENTS    *
+    **************/
     onNodeClick(e, idx){
         if (this.props.onNodeClick){
             this.props.onNodeClick(e, idx)

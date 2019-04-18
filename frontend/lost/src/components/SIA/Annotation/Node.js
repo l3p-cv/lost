@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import './Annotation.scss'
-import './Node.scss'
 
 
 
@@ -12,7 +11,7 @@ class Node extends Component{
     constructor(props){
         super(props)
         this.state = {
-            haloCss: 'halo-off',
+            haloCss: 'node-halo-off',
             selAreaCss: 'sel-area-off',
             anno: undefined
         }
@@ -32,7 +31,7 @@ class Node extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('ENodeE did update', this.props.idx)
+        console.log('Node did update', this.props.idx)
     }
 
     /*************
@@ -123,14 +122,14 @@ class Node extends Component{
     turnHaloOn(){
         console.log('Turn halo-on ', this.props.idx)
         this.setState({
-            haloCss: 'halo-on'
+            haloCss: 'node-halo-on'
         })
     }
 
     turnHaloOff(){
         console.log('Turn halo-off ', this.props.idx)
         this.setState({
-            haloCss: 'halo-off'
+            haloCss: 'node-halo-off'
         })
     }
 

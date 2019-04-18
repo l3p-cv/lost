@@ -20,3 +20,24 @@ circle.selected{
 circle.not-selected{
     fill-opacity: 1.0;
 }
+
+//Node styling
+.node-halo-on{
+    fill: orange;
+    fill-opacity: 0.5;
+}
+
+.node-halo-off{
+    fill: none;
+}
+
+.sel-area-off{
+    fill: none;
+}
+
+.sel-area-on{
+    fill: blue;
+    fill-opacity:  0.2;
+}
+
+//Edge styling
