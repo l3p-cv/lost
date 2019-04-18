@@ -89,7 +89,8 @@ class Node extends Component{
             this.props.onMouseDown(e, this.props.idx, this.state.anno)
         }
     }
-    onMouseEnter(e: Event){
+    onMouseOver(e: Event){
+        console.log('Mouse over node')
         if (this.props.isSelected){
             this.turnHaloOn()
         }
@@ -164,7 +165,7 @@ class Node extends Component{
                     r={5} fill="red"
                     style={this.props.style}
                     className={this.props.className}
-                    onMouseOver={e => this.onMouseEnter(e)}
+                    onMouseOver={e => this.onMouseOver(e)}
                 />
             </g>
         )
