@@ -22,32 +22,42 @@ class ENodeE extends Component{
     }
 
     onNodeClick(e, idx){
+        if (this.props.onNodeClick){
+            this.props.onNodeClick(e, idx)
+        }
 
     }
 
     onNodeMouseMove(e, idx){
-
+        if (this.props.onNodeMouseMove){
+            this.props.onNodeMouseMove(e, idx)
+        }
     }
 
     onNodeMouseUp(e, idx){
-
+        if (this.props.onNodeMouseUp){
+            this.props.onNodeMouseUp(e, idx)
+        }
     }
 
     onNodeMouseDown(e, idx, myAnno){
+        if (this.props.onNodeMouseDown){
+            this.props.onNodeMouseDown(e, idx, myAnno)
+        }
 
     }
 
     onNodeDoubleClick(e, idx){
-        
+        if (this.props.onNodeDoubleClick){
+            this.props.onNodeDoubleClick(e, idx)
+        }
     }
     
 
     /*************
      * RENDERING *
     **************/
-    renderNodes(){
-        const data = this.props.anno[this.props.idx]
-
+    renderNode(){
         return (
             <Node anno={this.props.anno} idx={this.props.idx} 
                 key={this.props.idx} style={this.props.style}
@@ -65,7 +75,7 @@ class ENodeE extends Component{
     render(){
             return(
                 <g>
-                    {this.renderNodes()}
+                    {this.renderNode()}
                 </g>
                 )
     }

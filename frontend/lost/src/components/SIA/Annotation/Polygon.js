@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
 
-// import ENodeE from './ENodeE'
+import ENodeE from './ENodeE'
 import Edge from './Edge'
-import Node from './Node'
 
 import * as transform from '../utils/transform'
 import './Annotation.scss'
@@ -122,14 +121,14 @@ class Polygon extends Component{
             return null
         }
         return this.state.anno.map((e, idx) => {
-            return <Node anno={this.state.anno} idx={idx} 
+            return <ENodeE anno={this.state.anno} idx={idx} 
                 key={idx} style={this.props.style}
                 className={this.props.className} 
-                onClick={(e, idx) => this.onNodeClick(e, idx)}
-                onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
-                onMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
-                onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
+                onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
+                onNodeMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
+                onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
+                onNodeMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
+                onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
             />

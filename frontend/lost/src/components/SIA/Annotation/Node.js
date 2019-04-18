@@ -76,7 +76,7 @@ class Node extends Component{
     onMouseDown(e: Event){
         switch (this.props.mode){
             case 'create':
-                if (e.button === 2){
+                if (e.button === 2 || e.button === 0){
                     this.turnSelAreaOff()
                 }
             default:
