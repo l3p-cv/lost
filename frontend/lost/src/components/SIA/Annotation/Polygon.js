@@ -120,6 +120,33 @@ class Polygon extends Component{
         if (this.state.mode === 'move'){
             return null
         }
+        if (this.state.mode === 'create'){
+            return [<ENodeE anno={this.state.anno} idx={0}
+                key={0} 
+                style={this.props.style}
+                className={this.props.className} 
+                isSelected={this.props.isSelected}
+                mode={this.state.mode}
+                draw={{
+                    connectedEdge: false, node: true, closingEdge: false
+                }}
+            />, <ENodeE anno={this.state.anno} idx={this.state.anno.length-1} 
+                key={this.state.anno.length-1} 
+                style={this.props.style}
+                className={this.props.className} 
+                onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
+                onNodeMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
+                onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
+                onNodeMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
+                onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
+                isSelected={this.props.isSelected}
+                mode={this.state.mode}
+                draw={{
+                    connectedEdge: true, node: true, closingEdge: true
+                }}
+            />
+            ]
+        }
         return this.state.anno.map((e, idx) => {
             return <ENodeE anno={this.state.anno} idx={idx} 
                 key={idx} style={this.props.style}
@@ -159,6 +186,21 @@ class Polygon extends Component{
     }
     render(){
         if (this.state.anno){
+            if (this.state.mode === 'create'){
+                return (
+                    <g
+                        onKeyPress={e => this.onKeyPress(e)}
+                        onMouseUp={e => this.onMouseUp(e)}
+                    >
+                        <polyline points={this.toPolygonStr(this.state.anno)}
+                        fill='none' stroke="purple" 
+                        style={this.props.style}
+                        className={this.props.className}
+                        />
+                        {this.renderNodes()}
+                    </g>
+                )
+            } 
             return(
                 <g 
                     onKeyPress={e => this.onKeyPress(e)}

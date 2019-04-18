@@ -156,6 +156,7 @@ class Node extends Component{
                 />
                 <circle cx={data.x} cy={data.y} r={20}
                     className={this.state.haloCss}
+                    onMouseLeave={e => this.onMouseLeave(e)}
                 />
                 <circle cx={data.x} 
                     cy={data.y} 
@@ -163,7 +164,6 @@ class Node extends Component{
                     style={this.props.style}
                     className={this.props.className}
                     onMouseEnter={e => this.onMouseEnter(e)}
-                    onMouseLeave={e => this.onMouseLeave(e)}
                 />
             </g>
         )
