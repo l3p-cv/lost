@@ -57,6 +57,9 @@ class Node extends Component{
                 this.setState({
                     anno: newAnno
                 })
+                if (this.props.onAnnoUpdate){
+                    this.props.onAnnoUpdate(e, this.props.idx, newAnno)
+                }
             default:
                 break
         }

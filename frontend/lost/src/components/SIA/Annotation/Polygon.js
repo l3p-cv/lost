@@ -131,6 +131,9 @@ class Polygon extends Component{
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
+                draw={{
+                    connectedEdge: true, node: true, closingEdge: true
+                }}
             />
         })
     }
@@ -165,7 +168,7 @@ class Polygon extends Component{
                         fill="purple" fillOpacity="0.5" stroke="purple" 
                         // style={this.props.style}
                         className={this.props.className}/>
-                    {this.renderEdges()}
+                    {/* {this.renderEdges()} */}
                     {this.renderNodes()}
                 </g>
                 )

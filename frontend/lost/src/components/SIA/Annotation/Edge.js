@@ -17,12 +17,13 @@ class Edge extends Component{
     render(){
         let p1, p2
         if (!this.props.closingEdge){
-            if (this.props.idx + 1 >= this.props.anno.length){
+            if (this.props.idx - 1 < 0 ){
                 return null
             }
-            p1 = this.props.anno[this.props.idx]
-            p2 = this.props.anno[this.props.idx + 1]
+            p1 = this.props.anno[this.props.idx - 1 ]
+            p2 = this.props.anno[this.props.idx]
         } else {
+            if (this.props.idx === 0) return null
             p1 = this.props.anno[this.props.anno.length-1]
             p2 = this.props.anno[0]
         }

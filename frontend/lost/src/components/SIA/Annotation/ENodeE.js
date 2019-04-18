@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 
 import Node from './Node'
+import Edge from './Edge'
 
 import './Annotation.scss'
 
@@ -13,8 +14,23 @@ class ENodeE extends Component{
     **************/
     constructor(props){
         super(props)
+        this.state = {
+            anno: undefined
+        }
     }
 
+    componentDidMount(){
+        this.setState({
+            anno: [...this.props.anno]
+        })
+    }
+
+    componentDidUpdate(prevProps){
+        console.log('ENodeE update', this.props.idx)
+        if (prevProps.anno !== this.props.anno){
+            this.updateAnno(this.props.anno)
+        }
+    }
     /*************
      * EVENTS    *
     **************/
@@ -25,7 +41,7 @@ class ENodeE extends Component{
 
     }
 
-    onNodeMouseMove(e, idx){
+    onNodeMouseMove(e, idx, myAnno){
         if (this.props.onNodeMouseMove){
             this.props.onNodeMouseMove(e, idx)
         }
@@ -49,29 +65,78 @@ class ENodeE extends Component{
             this.props.onNodeDoubleClick(e, idx)
         }
     }
+
+    onNodeAnnoUpdate(e, idx, newAnno){
+        this.updateAnno(newAnno)
+    }
     
+
+    updateAnno(newAnno){
+        switch (this.props.mode){
+            case 'create':
+                this.setState({
+                    anno: [...newAnno]
+                })
+            default:
+                break
+        }
+    }
 
     /*************
      * RENDERING *
     **************/
     renderNode(){
+        if (!this.props.draw.node){
+            return null
+        }
         return (
             <Node anno={this.props.anno} idx={this.props.idx} 
-                key={this.props.idx} style={this.props.style}
+                style={this.props.style}
                 className={this.props.className} 
                 onClick={(e, idx) => this.onNodeClick(e, idx)}
                 onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
                 onMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
                 onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
+                onAnnoUpdate={(e, idx, newAnno) => this.onNodeAnnoUpdate(e, idx, newAnno)}
                 isSelected={this.props.isSelected}
                 mode={this.props.mode}
             />
         )
     }
+    renderConnectedEdge(){
+        if (!this.props.draw.connectedEdge){
+            return null
+        }
+        if (!this.state.anno){
+            return null
+        }
+        return <Edge anno={this.state.anno} 
+                idx={this.props.idx} style={this.props.style}
+                className={this.props.className}
+                isSelected={this.props.isSelected}                
+                />
+    }
+
+    renderClosingEdge(){
+        if (!this.props.draw.closingEdge){
+            return null
+        }
+        if (!this.state.anno){
+            return null
+        }
+        return <Edge anno={this.state.anno} 
+                idx={this.props.idx} style={this.props.style}
+                className={this.props.className}
+                isSelected={this.props.isSelected}
+                closingEdge={true}                
+                />
+    }
     render(){
             return(
                 <g>
+                    {this.renderConnectedEdge()}
+                    {this.renderClosingEdge()}
                     {this.renderNode()}
                 </g>
                 )
