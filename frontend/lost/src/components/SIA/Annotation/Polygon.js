@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
 
-import ENodeE from './ENodeE'
+// import ENodeE from './ENodeE'
 import Edge from './Edge'
+import Node from './Node'
 
 import * as transform from '../utils/transform'
 import './Annotation.scss'
@@ -121,7 +122,7 @@ class Polygon extends Component{
             return null
         }
         return this.state.anno.map((e, idx) => {
-            return <ENodeE anno={this.state.anno} idx={idx} 
+            return <Node anno={this.state.anno} idx={idx} 
                 key={idx} style={this.props.style}
                 className={this.props.className} 
                 onClick={(e, idx) => this.onNodeClick(e, idx)}
