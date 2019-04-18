@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 
-import Node from './Node'
+import ENodeE from './ENodeE'
 import Edge from './Edge'
 
 import * as transform from '../utils/transform'
@@ -44,6 +44,10 @@ class Polygon extends Component{
     }
 
     move(movementX, movementY){
+        console.log('Polygon mode ', this.state.mode)
+        if (this.state.mode !== 'move'){
+            this.setState({mode: 'move'})
+        }
         this.setState({
             anno : transform.move(this.state.anno, movementX, movementY)
         })
@@ -57,28 +61,28 @@ class Polygon extends Component{
     }
 
     onNodeMouseMove(e, idx){
-        switch (this.state.mode){
-            case 'create':
-                let newAnno = [...this.state.anno]
-                newAnno[idx].x += e.movementX
-                newAnno[idx].y += e.movementY
-                this.setState({
-                    anno: newAnno
-                })
-            default:
-                break
-        }
+        // switch (this.state.mode){
+        //     case 'create':
+        //         let newAnno = [...this.state.anno]
+        //         newAnno[idx].x += e.movementX
+        //         newAnno[idx].y += e.movementY
+        //         this.setState({
+        //             anno: newAnno
+        //         })
+        //     default:
+        //         break
+        // }
     }
 
     onNodeMouseUp(e, idx){
         console.log('NodeMouseUP ', idx, e.movementX, e.movementY )        
     }
 
-    onNodeMouseDown(e, idx){
+    onNodeMouseDown(e, idx, anno){
         if (e.button == 2){
             switch (this.state.mode){
                 case 'create':
-                    let newAnno = [...this.state.anno]
+                    let newAnno = [...anno]
                     newAnno.push({
                         x: newAnno[idx].x,
                         y: newAnno[idx].y
@@ -93,6 +97,14 @@ class Polygon extends Component{
         
     }
 
+    onMouseUp(e){
+        switch (e.button){
+            case 0: // on Leftclick
+                this.setState({mode:'show'})
+            default:
+                break
+        }
+    }
     onNodeDoubleClick(e, idx){
         switch (this.state.mode){
             case 'create':
@@ -105,21 +117,28 @@ class Polygon extends Component{
     }
 
     renderNodes(){
+        if (this.state.mode === 'move'){
+            return null
+        }
         return this.state.anno.map((e, idx) => {
-            return <Node anno={this.state.anno[idx]} idx={idx} 
+            return <ENodeE anno={this.state.anno} idx={idx} 
                 key={idx} style={this.props.style}
                 className={this.props.className} 
                 onClick={(e, idx) => this.onNodeClick(e, idx)}
                 onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onMouseDown={(e,idx) => this.onNodeMouseDown(e, idx)}
+                onMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
                 onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
+                mode={this.state.mode}
             />
         })
     }
 
     renderEdges(){
+        if (this.state.mode === 'move'){
+            return null
+        }
         let edges = this.state.anno.map((e, idx) => {
             return <Edge anno={this.state.anno} 
                 idx={idx} key={idx} style={this.props.style}
@@ -138,7 +157,10 @@ class Polygon extends Component{
     render(){
         if (this.state.anno){
             return(
-                <g onKeyPress={e => this.onKeyPress(e)}>
+                <g 
+                    onKeyPress={e => this.onKeyPress(e)}
+                    onMouseUp={e => this.onMouseUp(e)}
+                >
                     <polygon points={this.toPolygonStr(this.state.anno)}
                         fill="purple" fillOpacity="0.5" stroke="purple" 
                         // style={this.props.style}
