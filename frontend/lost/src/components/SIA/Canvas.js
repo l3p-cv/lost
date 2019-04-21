@@ -22,8 +22,6 @@ class Canvas extends Component{
             svg: {
                 width: '100%',
                 height: '100%',
-            },
-            canvas: {
                 scale:1.0,
                 translateX:0,
                 translateY:0
@@ -63,13 +61,13 @@ class Canvas extends Component{
     }
 
     onMouseOver(){
-        //Prevent scrolling on canvas
+        //Prevent scrolling on svg
         document.body.style.overflow = "hidden"
         this.svg.current.focus()
         console.log('Mouse Over Canvas')
     }
     onMouseOut(){
-        //Enable scrolling after leaving canvas
+        //Enable scrolling after leaving svg
         document.body.style.overflow = "auto"
     }
     onWheel(e){
@@ -77,18 +75,19 @@ class Canvas extends Component{
         const mousePos = this.getMousePosition(e)
         const zoomFactor=1.25
         if (up) {
-            this.setState({canvas: {
-                ...this.state.canvas,
-                scale: this.state.canvas.scale * zoomFactor,
-                translateX: -1*(mousePos.x * this.state.canvas.scale*zoomFactor - mousePos.x*this.state.canvas.scale),
-                translateY: -1*(mousePos.y * this.state.canvas.scale*zoomFactor - mousePos.y*this.state.canvas.scale )
+            this.setState({svg: {
+                ...this.state.svg,
+                scale: this.state.svg.scale * zoomFactor,
+                // translateX: -1*(mousePos.x * this.state.svg.scale*zoomFactor - mousePos.x*this.state.svg.scale),
+                // translateY: -1*(mousePos.y * this.state.svg.scale*zoomFactor - mousePos.y*this.state.svg.scale )
             }})
         } else {
-            this.setState({canvas: {
-                ...this.state.canvas,
-                scale: this.state.canvas.scale / zoomFactor
+            this.setState({svg: {
+                ...this.state.svg,
+                scale: this.state.svg.scale / zoomFactor
             }})
         }
+        console.log('svg: ', this.state.svg)
     }
 
     onRightClick(e){
@@ -97,7 +96,7 @@ class Canvas extends Component{
 
     onMouseDown(e){
         if (e.button === 1){
-            this.setState({canvas:{scale: 1.0, translateX: 0, translateY: 0}})
+            this.setState({svg:{...this.state.svg, scale: 1.0, translateX: 0, translateY: 0}})
         }
         else if (e.button === 2){
             //Create annotation on right click
@@ -120,8 +119,8 @@ class Canvas extends Component{
     
     getMousePosition(e){
         return {
-            x: e.pageX - this.svg.current.getBoundingClientRect().left,
-            y: e.pageY - this.svg.current.getBoundingClientRect().top
+            x: (e.pageX - this.svg.current.getBoundingClientRect().left)/this.state.svg.scale,
+            y: (e.pageY - this.svg.current.getBoundingClientRect().top)/this.state.svg.scale
         }
     }
 
@@ -188,7 +187,9 @@ class Canvas extends Component{
         console.log('svg', this.svg)
         console.log('img', this.img)
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
-        this.setState({svg: {width : imgWidth, height: imgHeight}})
+        this.setState({svg: {
+            ...this.state.svg, width : imgWidth, height: imgHeight
+        }})
 
         var annos = []
         //Annotation data should be present and a pixel accurate value 
@@ -238,7 +239,7 @@ class Canvas extends Component{
                     tabIndex="0"
                     >
                     <g 
-                        transform={`scale(${this.state.canvas.scale}) translate(${this.state.canvas.translateX}, ${this.state.canvas.translateY})`}
+                        transform={`scale(${this.state.svg.scale}) translate(${this.state.svg.translateX}, ${this.state.svg.translateY})`}
                         onWheel={(e) => {this.onWheel(e)}}
                         onMouseOver={() => {this.onMouseOver()}}
                         onMouseOut={() => {this.onMouseOut()}}
