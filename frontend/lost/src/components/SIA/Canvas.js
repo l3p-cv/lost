@@ -71,24 +71,28 @@ class Canvas extends Component{
         document.body.style.overflow = "auto"
     }
     onWheel(e){
+        // Zoom implementation. Note that svg is first scaled and 
+        // second translated!
         const up = e.deltaY < 0
-        const mousePos = this.getMousePositionAbs(e)
+        const mousePos = this.getMousePosition(e)
         const zoomFactor=1.25
+        let nextScale
         if (up) {
-            const nextScale = this.state.svg.scale * zoomFactor
-            this.setState({svg: {
-                ...this.state.svg,
-                scale: this.state.svg.scale * zoomFactor,
-                translateX: -1*(mousePos.x * this.state.svg.scale*zoomFactor - mousePos.x)/(this.state.svg.scale*zoomFactor),
-                translateY: -1*(mousePos.y * this.state.svg.scale*zoomFactor - mousePos.y)/((this.state.svg.scale*zoomFactor))
-            }})
+            nextScale = this.state.svg.scale * zoomFactor
+            
         } else {
-            this.setState({svg: {
-                ...this.state.svg,
-                scale: this.state.svg.scale / zoomFactor
-            }})
+            nextScale = this.state.svg.scale / zoomFactor
         }
-        console.log('svg: ', this.state.svg)
+        const oldMousePos = {
+            x: mousePos.x,
+            y: mousePos.y
+        }
+        this.setState({svg: {
+            ...this.state.svg,
+            scale: nextScale,
+            translateX: -1*(mousePos.x * nextScale - mousePos.x)/nextScale,
+            translateY: -1*(mousePos.y * nextScale - mousePos.y)/nextScale
+        }})
     }
 
     onRightClick(e){
@@ -119,9 +123,10 @@ class Canvas extends Component{
     }
     
     getMousePosition(e){
+        const absPos = this.getMousePositionAbs(e)
         return {
-            x: (e.pageX - this.svg.current.getBoundingClientRect().left)/this.state.svg.scale,
-            y: (e.pageY - this.svg.current.getBoundingClientRect().top)/this.state.svg.scale
+            x: (absPos.x )/this.state.svg.scale - this.state.svg.translateX,
+            y: (absPos.y )/this.state.svg.scale - this.state.svg.translateY
         }
     }
 
@@ -158,7 +163,6 @@ class Canvas extends Component{
         // The selected annotation need to be rendered as last one in 
         // oder to be above all other annotations.
         if (this.props.selectedAnno){
-            console.log('state ', this.state.annos)
             if (prevProps.selectedAnno !== this.props.selectedAnno){
                 const annos = this.state.annos.filter( (el) => {
                     return el.id !== this.props.selectedAnno
