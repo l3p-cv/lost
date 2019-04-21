@@ -72,14 +72,15 @@ class Canvas extends Component{
     }
     onWheel(e){
         const up = e.deltaY < 0
-        const mousePos = this.getMousePosition(e)
+        const mousePos = this.getMousePositionAbs(e)
         const zoomFactor=1.25
         if (up) {
+            const nextScale = this.state.svg.scale * zoomFactor
             this.setState({svg: {
                 ...this.state.svg,
                 scale: this.state.svg.scale * zoomFactor,
-                // translateX: -1*(mousePos.x * this.state.svg.scale*zoomFactor - mousePos.x*this.state.svg.scale),
-                // translateY: -1*(mousePos.y * this.state.svg.scale*zoomFactor - mousePos.y*this.state.svg.scale )
+                translateX: -1*(mousePos.x * this.state.svg.scale*zoomFactor - mousePos.x)/(this.state.svg.scale*zoomFactor),
+                translateY: -1*(mousePos.y * this.state.svg.scale*zoomFactor - mousePos.y)/((this.state.svg.scale*zoomFactor))
             }})
         } else {
             this.setState({svg: {
@@ -121,6 +122,13 @@ class Canvas extends Component{
         return {
             x: (e.pageX - this.svg.current.getBoundingClientRect().left)/this.state.svg.scale,
             y: (e.pageY - this.svg.current.getBoundingClientRect().top)/this.state.svg.scale
+        }
+    }
+
+    getMousePositionAbs(e){
+        return {
+            x: (e.pageX - this.svg.current.getBoundingClientRect().left),
+            y: (e.pageY - this.svg.current.getBoundingClientRect().top)
         }
     }
 
