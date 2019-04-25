@@ -26,7 +26,8 @@ class Canvas extends Component{
                 translateX:0,
                 translateY:0
             },
-            annos: []
+            annos: [],
+            mode: 'view'
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -100,8 +101,14 @@ class Canvas extends Component{
     }
 
     onMouseDown(e){
-        if (e.button === 1){
-            this.setState({svg:{...this.state.svg, scale: 1.0, translateX: 0, translateY: 0}})
+        if (e.button === 0){
+            this.setMode('cameraMove')
+            // this.setState({svg:
+            //     {...this.state.svg, 
+            //         scale: 1.0, 
+            //         translateX: 0, 
+            //         translateY: 0
+            //     }})
         }
         else if (e.button === 2){
             //Create annotation on right click
@@ -110,8 +117,12 @@ class Canvas extends Component{
     }
 
     onMouseUp(e){
-        if (e.button === 2){
-            console.log('Mouse up on right click')
+        switch (e.button){
+            case 0:
+                this.setMode('view')
+                break
+            default:
+                break
         }
     }
 
@@ -121,7 +132,28 @@ class Canvas extends Component{
             this.removeSelectedAnno()
         }
     }
+
+    onMouseMove(e: Event){
+        if (this.state.mode === 'cameraMove'){
+            this.moveCamera(e)
+        }
+    }
     
+    /*************
+     * LOGIC     *
+    **************/
+    moveCamera(e){
+        this.setState({svg: {
+            ...this.state.svg,
+            translateX: this.state.svg.translateX + e.movementX / this.state.svg.scale,
+            translateY: this.state.svg.translateY + e.movementY / this.state.svg.scale
+        }})
+    }
+    setMode(mode){
+        if (this.state.mode !== mode){
+            this.setState({mode: mode})
+        }
+    }
     getMousePosition(e){
         const absPos = this.getMousePositionAbs(e)
         return {
@@ -256,6 +288,7 @@ class Canvas extends Component{
                         onMouseOver={() => {this.onMouseOver()}}
                         onMouseOut={() => {this.onMouseOut()}}
                         onMouseUp={(e) => {this.onMouseUp(e)}}
+                        onMouseMove={(e) => {this.onMouseMove(e)}}
                     >
                         <image
                             onContextMenu={(e) => this.onRightClick(e)}
