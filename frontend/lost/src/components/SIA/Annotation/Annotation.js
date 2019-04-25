@@ -17,7 +17,7 @@ class Annotation extends Component{
     constructor(props){
         super(props)
         this.state = {
-            readyToMove: false,
+            mode: 'view',
             selAreaCss: 'sel-area-off',
         }
         this.myAnno = React.createRef()
@@ -45,7 +45,9 @@ class Annotation extends Component{
     onMouseDown(e: Event){
         switch(e.button){
             case 0:
-                this.setState({readyToMove: true})
+                if (this.isSelected()){
+                    this.setMode('move')
+                }
             default:
                 break
         }
@@ -53,7 +55,7 @@ class Annotation extends Component{
     onMouseUp(e: Event){
         switch(e.button){
             case 0:
-                this.setState({readyToMove: false})
+                this.setMode('view')
                 this.disableSelArea()
             default:
                 break
@@ -66,7 +68,7 @@ class Annotation extends Component{
     }
 
     onMouseMove(e: Event){
-        if (this.state.readyToMove && this.isSelected()){
+        if (this.state.mode === 'move'){
             this.enableSelArea()
             this.myAnno.current.move(
                 e.movementX/this.props.svg.scale, 
@@ -74,6 +76,12 @@ class Annotation extends Component{
         }
     }
     
+    setMode(mode){
+        if (this.state.mode !== mode){
+            this.setState({mode: mode})
+        }
+    }
+
     isSelected(){
         return this.props.selectedAnno === this.props.data.id
     }
