@@ -264,13 +264,18 @@ class Canvas extends Component{
     }
 
     renderAnnotations(){
-        const annos =  this.state.annos.map((el) => {
-            return <Annotation type={el.type} 
-                    data={el} key={el.id}
-                />
-        })
-        console.log('renderAnnotations',annos)
-        return <g>{annos}</g>
+        // Do not render annotations while moving the camera!
+        if (this.state.mode !== 'cameraMove'){
+            const annos =  this.state.annos.map((el) => {
+                return <Annotation type={el.type} 
+                        data={el} key={el.id} svg={{...this.state.svg}}
+                    />
+            })
+            console.log('renderAnnotations',annos)
+            return <g>{annos}</g>
+        } else {
+            return null
+        }
         
     }
 

@@ -17,7 +17,8 @@ class Annotation extends Component{
     constructor(props){
         super(props)
         this.state = {
-            readyToMove: false
+            readyToMove: false,
+            selAreaCss: 'sel-area-off',
         }
         this.myAnno = React.createRef()
         // this.myKey = _.uniqueId('annokey')
@@ -53,19 +54,23 @@ class Annotation extends Component{
         switch(e.button){
             case 0:
                 this.setState({readyToMove: false})
+                this.disableSelArea()
             default:
                 break
         }
     }
     onMouseOut(e: Event){
-        if (this.state.readyToMove){
-            this.setState({readyToMove: false})
-        }
+        // if (this.state.readyToMove){
+        //     this.setState({readyToMove: false})
+        // }
     }
 
     onMouseMove(e: Event){
         if (this.state.readyToMove && this.isSelected()){
-            this.myAnno.current.move(e.movementX, e.movementY)
+            this.enableSelArea()
+            this.myAnno.current.move(
+                e.movementX/this.props.svg.scale, 
+                e.movementY/this.props.svg.scale)
         }
     }
     
@@ -73,6 +78,16 @@ class Annotation extends Component{
         return this.props.selectedAnno === this.props.data.id
     }
 
+    enableSelArea(){
+        if (this.state.selAreaCss !== 'sel-area-on'){
+            this.setState({selAreaCss: 'sel-area-on'})
+        }
+    }
+    disableSelArea(){
+        if (this.state.selAreaCss !== 'sel-area-off'){
+            this.setState({selAreaCss: 'sel-area-off'})
+        }
+    }
     getResult(){
         console.log('Hi there i am a ', this.props.type, this.props.data.id)
         console.log('My annos are: ', this.myAnno.current.state.anno)
@@ -141,6 +156,14 @@ class Annotation extends Component{
                 onMouseMove={e => {this.onMouseMove(e)}}
                 onMouseOut={e => {this.onMouseOut(e)}}
             >
+                <circle 
+                    cx={this.props.svg.width/2} 
+                    cy={this.props.svg.height/2} 
+                    r={'100%'}
+                    className={this.state.selAreaCss}
+                    onMouseMove={e => {this.onMouseMove(e)}}
+
+                />
                 {this.renderAnno()}
             </g>
         )
