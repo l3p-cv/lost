@@ -21,6 +21,10 @@ class Line extends Component{
         })
     }
     
+    getResult(){
+        return this.state.anno
+    }
+    
     toPolylineStr(data){
         return data.map( (e => {
             return `${e.x},${e.y}`

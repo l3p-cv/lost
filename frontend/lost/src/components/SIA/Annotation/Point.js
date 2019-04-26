@@ -13,6 +13,10 @@ class Point extends Component{
     componentDidMount(){
         this.setState({anno: this.props.data.data})
     }
+
+    getResult(){
+        return this.state.anno
+    }
     render(){
         if (this.state.anno){
             return(

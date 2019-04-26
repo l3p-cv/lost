@@ -9,7 +9,7 @@ import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
 
-const {selectAnnotation } = actions
+const {selectAnnotation, updateSiaAnnos} = actions
 
 
 class Annotation extends Component{
@@ -30,10 +30,24 @@ class Annotation extends Component{
             this.props.selectAnnotation(this.props.data.id)
         }
     }
-    componentDidUpdate(){
+    componentDidUpdate(prevProps){
         console.log('Annotation did update', this.props.data.id)
+        if (prevProps.updateTrigger !== this.props.updateTrigger){
+            console.log('Update was triggered ', this.props.data.id, this.props.type)
+            console.log(this.props.data)
+            this.props.updateSiaAnnos(
+                {
+                ...this.props.data,
+                data: this.myAnno.current.getResult()
+
+                }
+            )
+        }
     }
     
+    /*************
+     * EVENTS    *
+    **************/
     onClick(e: Event){
         e.stopPropagation()
         console.log('Clicked on: ', this.props.type)
@@ -76,6 +90,14 @@ class Annotation extends Component{
         }
     }
     
+    onNodeClick(e, idx){
+        console.log('Annotation')
+        console.log('NodeClick on ', idx, e.pageX)
+    }
+
+    /*************
+     * LOGIC     *
+     *************/
     setMode(mode){
         if (this.state.mode !== mode){
             this.setState({mode: mode})
@@ -121,10 +143,9 @@ class Annotation extends Component{
         }
     }
 
-    onNodeClick(e, idx){
-        console.log('Annotation')
-        console.log('NodeClick on ', idx, e.pageX)
-    }
+    /*************
+     * RENDERING *
+    **************/
     renderAnno(){
         const type = this.props.type
         const data = this.props.data
@@ -181,8 +202,9 @@ class Annotation extends Component{
 
 function mapStateToProps(state) {
     return ({
-        selectedAnno: state.sia.selectedAnno
+        selectedAnno: state.sia.selectedAnno,
+        updateTrigger: state.sia.updateTrigger
     })
 }
 
-export default connect(mapStateToProps, {selectAnnotation})(Annotation)
+export default connect(mapStateToProps, {selectAnnotation, updateSiaAnnos})(Annotation)

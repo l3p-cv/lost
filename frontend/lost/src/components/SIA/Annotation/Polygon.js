@@ -119,6 +119,10 @@ class Polygon extends Component{
         }
     }
 
+    getResult(){
+        return this.state.anno
+    }
+
     renderNodes(){
         if (this.state.mode === 'move'){
             return null
