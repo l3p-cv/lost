@@ -165,7 +165,7 @@ class Canvas extends Component{
             translateY: this.state.svg.translateY + e.movementY / this.state.svg.scale
         }})
     }
-    
+
     setMode(mode){
         if (this.state.mode !== mode){
             this.setState({mode: mode})
@@ -249,7 +249,8 @@ class Canvas extends Component{
         console.log('img', this.img)
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
         this.setState({svg: {
-            ...this.state.svg, width : imgWidth, height: imgHeight
+            ...this.state.svg, width : imgWidth, height: imgHeight,
+            left: svgBox.left, top: svgBox.top
         }})
 
         var annos = []

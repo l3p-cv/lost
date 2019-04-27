@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import './Annotation.scss'
+import * as mouse from '../utils/mouse'
 
 
 
@@ -52,8 +53,9 @@ class Node extends Component{
         switch (this.props.mode){
             case 'create':
                 let newAnno = [...this.state.anno]
-                newAnno[this.props.idx].x += e.movementX/this.props.svg.scale
-                newAnno[this.props.idx].y += e.movementY/this.props.svg.scale
+                const mousePos = mouse.getMousePosition(e, this.props.svg)
+                newAnno[this.props.idx].x = mousePos.x
+                newAnno[this.props.idx].y = mousePos.y
                 this.setState({
                     anno: newAnno
                 })

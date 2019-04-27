@@ -4,6 +4,7 @@ import ENodeE from './ENodeE'
 import Edge from './Edge'
 
 import * as transform from '../utils/transform'
+
 import './Annotation.scss'
 
 
