@@ -9,7 +9,7 @@ import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
 
-const {selectAnnotation, updateSiaAnnos} = actions
+const {selectAnnotation} = actions
 
 
 class Annotation extends Component{
@@ -32,17 +32,6 @@ class Annotation extends Component{
     }
     componentDidUpdate(prevProps){
         console.log('Annotation did update', this.props.data.id)
-        if (prevProps.updateTrigger !== this.props.updateTrigger){
-            console.log('Update was triggered ', this.props.data.id, this.props.type)
-            console.log(this.props.data)
-            this.props.updateSiaAnnos(
-                {
-                ...this.props.data,
-                data: this.myAnno.current.getResult()
-
-                }
-            )
-        }
     }
     
     /*************
@@ -208,13 +197,12 @@ class Annotation extends Component{
 
 function mapStateToProps(state) {
     return ({
-        selectedAnno: state.sia.selectedAnno,
-        updateTrigger: state.sia.updateTrigger
+        selectedAnno: state.sia.selectedAnno
     })
 }
 
 export default connect(
     mapStateToProps, 
-    {selectAnnotation, updateSiaAnnos}
+    {selectAnnotation}
     ,null,
     {forwardRef:true})(Annotation)
