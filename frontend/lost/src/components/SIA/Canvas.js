@@ -148,12 +148,16 @@ class Canvas extends Component{
     // Collect the current data of all annotations and update state
     collectAnnos(){
         console.log('this.annoRefs', this.annoRefs)
-        const annos =  this.annoRefs.map( ref => {
-            return ref.current.getResult()
+        let annos = []  
+        this.annoRefs.forEach( ref => {
+            if (ref) {
+                annos.push(ref.current.getResult())
+            }
         })
         console.log('Result annos', annos)
         this.setState({annos: [...annos]})
     }
+
     moveCamera(e){
         this.setState({svg: {
             ...this.state.svg,
@@ -161,6 +165,7 @@ class Canvas extends Component{
             translateY: this.state.svg.translateY + e.movementY / this.state.svg.scale
         }})
     }
+    
     setMode(mode){
         if (this.state.mode !== mode){
             this.setState({mode: mode})
