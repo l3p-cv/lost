@@ -79,15 +79,28 @@ class Node extends Component{
     onMouseDown(e: Event){
         switch (this.props.mode){
             case 'create':
-                if (e.button === 2 || e.button === 0){
-                    this.turnSelAreaOff()
+                switch (e.button){
+                    case 0:
+                        this.turnSelAreaOff()
+                        break
+                    case 2:
+                        this.turnSelAreaOff()
+                        if (this.props.onAnnoUpdate){
+                            this.props.onAnnoUpdate(
+                                e, this.props.idx, this.state.anno
+                            )
+                        }
+                        break
+                    default:
+                        break
                 }
+
             default:
                 break
         }
-        if (this.props.onMouseDown){
-            this.props.onMouseDown(e, this.props.idx, this.state.anno)
-        }
+        // if (this.props.onMouseDown){
+        //     this.props.onMouseDown(e, this.props.idx, this.state.anno)
+        // }
     }
     onMouseOver(e: Event){
         console.log('Mouse over node')

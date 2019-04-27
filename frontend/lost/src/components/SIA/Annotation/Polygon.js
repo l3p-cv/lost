@@ -79,12 +79,12 @@ class Polygon extends Component{
         console.log('NodeMouseUP ', idx, e.movementX, e.movementY )        
     }
 
-    onNodeMouseDown(e, idx, anno){
-        console.log('onNodeMouseDown', idx, anno)
+    onNodeAnnoUpdate(e, idx, anno){
+        console.log('onNodeAnnoUpdate', idx, anno)
         if (e.button == 2){
             switch (this.state.mode){
                 case 'create':
-                    console.log('onNodeMouseDown create')
+                    console.log('onNodeAnnoUpdate create')
                     let newAnno = [...anno]
                     newAnno.push({
                         x: newAnno[idx].x,
@@ -145,7 +145,7 @@ class Polygon extends Component{
                 onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                 onNodeMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onNodeMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
+                onNodeAnnoUpdate={(e,idx, myAnno) => this.onNodeAnnoUpdate(e, idx, myAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
@@ -162,7 +162,7 @@ class Polygon extends Component{
                 onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                 onNodeMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onNodeMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
+                onNodeAnnoUpdate={(e,idx, myAnno) => this.onNodeAnnoUpdate(e, idx, myAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}

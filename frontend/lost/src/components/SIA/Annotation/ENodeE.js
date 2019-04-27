@@ -53,9 +53,10 @@ class ENodeE extends Component{
         }
     }
 
-    onNodeMouseDown(e, idx, myAnno){
-        if (this.props.onNodeMouseDown){
-            this.props.onNodeMouseDown(e, idx, myAnno)
+    onNodeAnnoUpdate(e, idx, newAnno){
+        this.updateAnno(newAnno)
+        if (this.props.onNodeAnnoUpdate){
+            this.props.onNodeAnnoUpdate(e, idx, newAnno)
         }
 
     }
@@ -66,9 +67,9 @@ class ENodeE extends Component{
         }
     }
 
-    onNodeAnnoUpdate(e, idx, newAnno){
-        this.updateAnno(newAnno)
-    }
+    // onNodeAnnoUpdate(e, idx, newAnno){
+    //     this.updateAnno(newAnno)
+    // }
     
 
     updateAnno(newAnno){
@@ -96,7 +97,7 @@ class ENodeE extends Component{
                 onClick={(e, idx) => this.onNodeClick(e, idx)}
                 onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onMouseDown={(e,idx, myAnno) => this.onNodeMouseDown(e, idx, myAnno)}
+                // onMouseDown={(e,idx, myAnno) => this.onNodeAnnoUpdate(e, idx, myAnno)}
                 onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 onAnnoUpdate={(e, idx, newAnno) => this.onNodeAnnoUpdate(e, idx, newAnno)}
                 isSelected={this.props.isSelected}
