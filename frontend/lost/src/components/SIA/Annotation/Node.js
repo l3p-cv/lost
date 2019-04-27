@@ -52,8 +52,8 @@ class Node extends Component{
         switch (this.props.mode){
             case 'create':
                 let newAnno = [...this.state.anno]
-                newAnno[this.props.idx].x += e.movementX
-                newAnno[this.props.idx].y += e.movementY
+                newAnno[this.props.idx].x += e.movementX/this.props.svg.scale
+                newAnno[this.props.idx].y += e.movementY/this.props.svg.scale
                 this.setState({
                     anno: newAnno
                 })
@@ -85,8 +85,8 @@ class Node extends Component{
                         break
                     case 2:
                         this.turnSelAreaOff()
-                        if (this.props.onAnnoUpdate){
-                            this.props.onAnnoUpdate(
+                        if (this.props.onFinalAnnoUpdate){
+                            this.props.onFinalAnnoUpdate(
                                 e, this.props.idx, this.state.anno
                             )
                         }

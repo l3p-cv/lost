@@ -61,6 +61,13 @@ class ENodeE extends Component{
 
     }
 
+    onNodeFinalAnnoUpdate(e, idx, newAnno){
+        if (this.props.onNodeFinalAnnoUpdate){
+            this.props.onNodeFinalAnnoUpdate(e, idx, newAnno)
+        }
+
+    }
+
     onNodeDoubleClick(e, idx){
         if (this.props.onNodeDoubleClick){
             this.props.onNodeDoubleClick(e, idx)
@@ -100,9 +107,11 @@ class ENodeE extends Component{
                 // onMouseDown={(e,idx, myAnno) => this.onNodeAnnoUpdate(e, idx, myAnno)}
                 onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 onAnnoUpdate={(e, idx, newAnno) => this.onNodeAnnoUpdate(e, idx, newAnno)}
+                onFinalAnnoUpdate={(e, idx, newAnno) => this.onNodeFinalAnnoUpdate(e, idx, newAnno)}
                 isSelected={this.props.isSelected}
                 mode={this.props.mode}
-            />
+                svg={this.props.svg}
+                />
         )
     }
     renderConnectedEdge(){

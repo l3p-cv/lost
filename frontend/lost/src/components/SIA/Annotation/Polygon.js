@@ -79,12 +79,12 @@ class Polygon extends Component{
         console.log('NodeMouseUP ', idx, e.movementX, e.movementY )        
     }
 
-    onNodeAnnoUpdate(e, idx, anno){
-        console.log('onNodeAnnoUpdate', idx, anno)
+    onNodeFinalAnnoUpdate(e, idx, anno){
+        console.log('onNodeFinalAnnoUpdate', idx, anno)
         if (e.button == 2){
             switch (this.state.mode){
                 case 'create':
-                    console.log('onNodeAnnoUpdate create')
+                    console.log('onNodeFinalAnnoUpdate create')
                     let newAnno = [...anno]
                     newAnno.push({
                         x: newAnno[idx].x,
@@ -138,21 +138,23 @@ class Polygon extends Component{
                 draw={{
                     connectedEdge: false, node: true, closingEdge: false
                 }}
-            />, <ENodeE anno={this.state.anno} idx={this.state.anno.length-1} 
+                svg={this.props.svg}
+                />, <ENodeE anno={this.state.anno} idx={this.state.anno.length-1} 
                 key={this.state.anno.length-1} 
                 style={this.props.style}
                 className={this.props.className} 
                 onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                 onNodeMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onNodeAnnoUpdate={(e,idx, myAnno) => this.onNodeAnnoUpdate(e, idx, myAnno)}
+                onNodeFinalAnnoUpdate={(e,idx, myAnno) => this.onNodeFinalAnnoUpdate(e, idx, myAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
                 draw={{
                     connectedEdge: true, node: true, closingEdge: true
                 }}
-            />
+                svg={this.props.svg}
+                />
             ]
         }
         return this.state.anno.map((e, idx) => {
@@ -162,14 +164,15 @@ class Polygon extends Component{
                 onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                 onNodeMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onNodeAnnoUpdate={(e,idx, myAnno) => this.onNodeAnnoUpdate(e, idx, myAnno)}
+                onNodeFinalAnnoUpdate={(e,idx, myAnno) => this.onNodeFinalAnnoUpdate(e, idx, myAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
                 draw={{
                     connectedEdge: true, node: true, closingEdge: true
                 }}
-            />
+                svg={this.props.svg}
+                />
         })
     }
 

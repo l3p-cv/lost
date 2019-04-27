@@ -147,13 +147,17 @@ class Annotation extends Component{
 
         switch(type) {
             case 'point':
-                return <Point ref={this.myAnno} data={data} isSelected={this.isSelected()}></Point>
+                return <Point ref={this.myAnno} data={data} 
+                    isSelected={this.isSelected()}
+                    svg={this.props.svg}
+                    />
             case 'bBox':
                 return <BBox ref={this.myAnno} data={data} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
+                    svg={this.props.svg}
                     />
             case 'polygon':
                 return <Polygon ref={this.myAnno} data={data} 
@@ -161,10 +165,12 @@ class Annotation extends Component{
                     className={this.getCssClass()}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
+                    svg={this.props.svg}
                     />
             case 'line':
                 return <Line ref={this.myAnno} data={data}
                     isSelected={this.isSelected()}
+                    svg={this.props.svg}
                     />
             default:
                 console.log("Wrong annoType for annotations: ",
