@@ -119,8 +119,14 @@ class Annotation extends Component{
         }
     }
     getResult(){
-        console.log('Hi there i am a ', this.props.type, this.props.data.id)
-        console.log('My annos are: ', this.myAnno.current.state.anno)
+        // console.log('Hi there i am a ', this.props.type, 
+        //     this.props.data.id, this.props.data)
+        // console.log('My annos are: ', this.myAnno.current.state.anno)
+        return {
+            ...this.props.data,
+            data: this.myAnno.current.state.anno,
+            createMode: this.myAnno.current.state.mode === 'create' 
+        }
     }
     
     getStyle(){
@@ -207,4 +213,8 @@ function mapStateToProps(state) {
     })
 }
 
-export default connect(mapStateToProps, {selectAnnotation, updateSiaAnnos})(Annotation)
+export default connect(
+    mapStateToProps, 
+    {selectAnnotation, updateSiaAnnos}
+    ,null,
+    {forwardRef:true})(Annotation)

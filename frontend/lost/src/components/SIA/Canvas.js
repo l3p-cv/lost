@@ -6,6 +6,7 @@ import Annotation from './Annotation/Annotation'
 import actions from '../../actions'
 
 import * as transform from './utils/transform'
+import { isShortcutHit } from 'l3p-frontend';
 
 
 const { getSiaImage,getSiaAnnos} = actions
@@ -31,6 +32,7 @@ class Canvas extends Component{
         }
         this.img = React.createRef()
         this.svg = React.createRef()
+        this.annoRefs = []
     }
 
     componentDidMount(){
@@ -102,6 +104,7 @@ class Canvas extends Component{
 
     onMouseDown(e){
         if (e.button === 0){
+            this.collectAnnos()
             this.setMode('cameraMove')
             // this.setState({svg:
             //     {...this.state.svg, 
@@ -142,6 +145,15 @@ class Canvas extends Component{
     /*************
      * LOGIC     *
     **************/
+    // Collect the current data of all annotations and update state
+    collectAnnos(){
+        console.log('this.annoRefs', this.annoRefs)
+        const annos =  this.annoRefs.map( ref => {
+            return ref.current.getResult()
+        })
+        console.log('Result annos', annos)
+        this.setState({annos: [...annos]})
+    }
     moveCamera(e){
         this.setState({svg: {
             ...this.state.svg,
@@ -266,9 +278,12 @@ class Canvas extends Component{
     renderAnnotations(){
         // Do not render annotations while moving the camera!
         if (this.state.mode !== 'cameraMove'){
+            this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
+                this.annoRefs.push(React.createRef())
                 return <Annotation type={el.type} 
                         data={el} key={el.id} svg={{...this.state.svg}}
+                        ref={this.annoRefs[this.annoRefs.length - 1]}
                     />
             })
             console.log('renderAnnotations',annos)
