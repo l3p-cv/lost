@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import './Annotation.scss'
 import * as mouse from '../utils/mouse'
-
+import * as modes from './modes'
 
 
 class Node extends Component{
@@ -51,7 +51,7 @@ class Node extends Component{
             this.props.onMouseMove(e, this.props.idx)
         }
         switch (this.props.mode){
-            case 'create':
+            case modes.CREATE:
                 let newAnno = [...this.state.anno]
                 const mousePos = mouse.getMousePosition(e, this.props.svg)
                 newAnno[this.props.idx].x = mousePos.x
@@ -80,7 +80,7 @@ class Node extends Component{
 
     onMouseDown(e: Event){
         switch (this.props.mode){
-            case 'create':
+            case modes.CREATE:
                 switch (e.button){
                     case 0:
                         this.turnSelAreaOff()
