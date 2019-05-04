@@ -6,6 +6,7 @@ import Edge from './Edge'
 import * as transform from '../utils/transform'
 
 import './Annotation.scss'
+import * as modes from './modes'
 
 
 class Polygon extends Component{
@@ -14,7 +15,7 @@ class Polygon extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            mode: 'show'
+            mode: modes.VIEW
         }
     }
 
@@ -46,9 +47,9 @@ class Polygon extends Component{
 
     move(movementX, movementY){
         console.log('Polygon mode ', this.state.mode)
-        if (this.state.mode !== 'move'){
+        if (this.state.mode !== modes.MOVE){
             console.log('Polygon changed state to move!')
-            this.setState({mode: 'move'})
+            this.setState({mode: modes.MOVE})
         }
         this.setState({
             anno : transform.move(this.state.anno, movementX, movementY)
@@ -90,7 +91,7 @@ class Polygon extends Component{
     onMouseUp(e){
         switch (e.button){
             case 0: // on Leftclick
-                this.setState({mode:'show'})
+                this.setState({mode:modes.VIEW})
             default:
                 break
         }
@@ -99,7 +100,7 @@ class Polygon extends Component{
         switch (this.state.mode){
             case 'create':
                 this.setState({
-                    mode: 'show'
+                    mode: modes.VIEW
                 })
             default:
                 break
@@ -111,7 +112,7 @@ class Polygon extends Component{
     }
 
     renderNodes(){
-        if (this.state.mode === 'move'){
+        if (this.state.mode === modes.MOVE){
             return null
         }
         if (this.state.mode === 'create'){
@@ -132,7 +133,7 @@ class Polygon extends Component{
                 className={this.props.className} 
                 onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onNodeFinalAnnoUpdate={(e,idx, myAnno) => this.onNodeFinalAnnoUpdate(e, idx, myAnno)}
+                onNodeFinalAnnoUpdate={(e,idx, newAnno) => this.onNodeFinalAnnoUpdate(e, idx, newAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
@@ -162,7 +163,7 @@ class Polygon extends Component{
     }
 
     renderEdges(){
-        if (this.state.mode === 'move'){
+        if (this.state.mode === modes.MOVE){
             return null
         }
         let edges = this.state.anno.map((e, idx) => {

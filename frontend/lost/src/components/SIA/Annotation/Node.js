@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import './Annotation.scss'
-import * as mouse from '../utils/mouse'
 import * as modes from './modes'
 
 
@@ -19,11 +18,11 @@ class Node extends Component{
     }
 
     componentDidMount(){
+        console.log('Node did mount ', this.props.idx, this.props.mode)
         this.setState({anno: this.props.anno})
         switch (this.props.mode){
-            case 'create':
+            case modes.CREATE:
                 if (this.props.idx !== 0){
-                    console.log('Turn selArea on', this.props.idx)
                     this.turnSelAreaOn()
                 }
             default:
@@ -50,21 +49,21 @@ class Node extends Component{
         if (this.props.onMouseMove){
             this.props.onMouseMove(e, this.props.idx)
         }
-        switch (this.props.mode){
-            case modes.CREATE:
-                let newAnno = [...this.state.anno]
-                const mousePos = mouse.getMousePosition(e, this.props.svg)
-                newAnno[this.props.idx].x = mousePos.x
-                newAnno[this.props.idx].y = mousePos.y
-                this.setState({
-                    anno: newAnno
-                })
-                if (this.props.onAnnoUpdate){
-                    this.props.onAnnoUpdate(e, this.props.idx, newAnno)
-                }
-            default:
-                break
-        }
+        // switch (this.props.mode){
+        //     case modes.CREATE:
+        //         let newAnno = [...this.state.anno]
+        //         const mousePos = mouse.getMousePosition(e, this.props.svg)
+        //         newAnno[this.props.idx].x = mousePos.x
+        //         newAnno[this.props.idx].y = mousePos.y
+        //         this.setState({
+        //             anno: newAnno
+        //         })
+        //         if (this.props.onAnnoUpdate){
+        //             this.props.onAnnoUpdate(e, this.props.idx, newAnno)
+        //         }
+        //     default:
+        //         break
+        // }
     }
 
     onContextMenu(e: Event){
@@ -87,11 +86,6 @@ class Node extends Component{
                         break
                     case 2:
                         this.turnSelAreaOff()
-                        if (this.props.onFinalAnnoUpdate){
-                            this.props.onFinalAnnoUpdate(
-                                e, this.props.idx, this.state.anno
-                            )
-                        }
                         break
                     default:
                         break
@@ -100,10 +94,11 @@ class Node extends Component{
             default:
                 break
         }
-        // if (this.props.onMouseDown){
-        //     this.props.onMouseDown(e, this.props.idx, this.state.anno)
-        // }
+        if (this.props.onMouseDown){
+            this.props.onMouseDown(e, this.props.idx)
+        }
     }
+    
     onMouseOver(e: Event){
         console.log('Mouse over node')
         if (this.props.isSelected){

@@ -20,6 +20,9 @@ class Edge extends Component{
             if (this.props.idx - 1 < 0 ){
                 return null
             }
+            if (this.props.idx > this.props.anno.length - 1){
+                return null
+            }
             p1 = this.props.anno[this.props.idx - 1 ]
             p2 = this.props.anno[this.props.idx]
         } else {

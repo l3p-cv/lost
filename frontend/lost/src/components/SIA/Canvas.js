@@ -171,6 +171,7 @@ class Canvas extends Component{
             this.setState({mode: mode})
         }
     }
+    
     getMousePosition(e){
         const absPos = this.getMousePositionAbs(e)
         return {
