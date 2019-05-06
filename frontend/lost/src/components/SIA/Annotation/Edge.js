@@ -26,7 +26,7 @@ class Edge extends Component{
             p1 = this.props.anno[this.props.idx - 1 ]
             p2 = this.props.anno[this.props.idx]
         } else {
-            if (this.props.idx === 0) return null
+            if (this.props.idx === 0 && this.props.anno.length === 1) return null
             p1 = this.props.anno[this.props.anno.length-1]
             p2 = this.props.anno[0]
         }

@@ -67,6 +67,7 @@ class ENodeE extends Component{
                 if (e.button == 0){
                     if (this.props.isSelected){
                         this.setMode(modes.EDIT)
+                        e.stopPropagation()
                     }
                 }
             default:
@@ -160,7 +161,9 @@ class ENodeE extends Component{
     setMode(mode){
         if (this.state.mode !== mode){
             this.setState({mode: mode})
-            console.log('Changed mode to!!! ',mode)
+            if (this.props.onModeChange){
+                this.props.onModeChange(this.props.idx, mode)
+            }
         }
     }
 

@@ -15,7 +15,8 @@ class Polygon extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            mode: modes.VIEW
+            mode: modes.VIEW,
+            editNode: undefined
         }
     }
 
@@ -23,7 +24,7 @@ class Polygon extends Component{
         if (this.props.data.createMode){
             console.log('in Create Pos')
             this.setState({
-                mode:'create',
+                mode: modes.CREATE,
                 anno: [
                     {x: this.props.data.data.x, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y}
@@ -34,26 +35,11 @@ class Polygon extends Component{
         }
     }
 
-    componentDidUpdate(){
+    componentDidUpdate(prevProps){
         console.log('Update polygon')
-    }
-
-    toPolygonStr(data){
-        return data.map( (e => {
-            return `${e.x},${e.y}`
-        })).join(' ')
-        
-    }
-
-    move(movementX, movementY){
-        console.log('Polygon mode ', this.state.mode)
-        if (this.state.mode !== modes.MOVE){
-            console.log('Polygon changed state to move!')
-            this.setState({mode: modes.MOVE})
+        if (prevProps.mode !== this.props.mode){
+            this.setMode(this.props.mode)
         }
-        this.setState({
-            anno : transform.move(this.state.anno, movementX, movementY)
-        })
     }
 
     //Callback for on NodeClick event
@@ -107,15 +93,47 @@ class Polygon extends Component{
         }
     }
 
+    onENEModeChange(idx, newMode){
+        // this.setMode(newMode)
+        // if(this.state.editNode !== idx){
+        //     this.setState({editNode: idx})
+        // }
+    }
+
+    toPolygonStr(data){
+        return data.map( (e => {
+            return `${e.x},${e.y}`
+        })).join(' ')
+        
+    }
+
+    setMode(mode){
+        if (this.state.mode !== mode){
+            this.setState({mode: mode})
+        }
+    }
+
+    move(movementX, movementY){
+        // console.log('Polygon mode ', this.state.mode)
+        // if (this.state.mode !== modes.MOVE){
+        //     console.log('Polygon changed state to move!')
+        //     this.setState({mode: modes.MOVE})
+        // }
+        this.setState({
+            anno : transform.move(this.state.anno, movementX, movementY)
+        })
+    }
+
     getResult(){
         return this.state.anno
     }
 
     renderNodes(){
+        if (!this.props.isSelected) return null
         if (this.state.mode === modes.MOVE){
             return null
         }
-        if (this.state.mode === 'create'){
+        if (this.state.mode === modes.CREATE){
             console.log('Render create nodes')
             return [<ENodeE anno={this.state.anno} idx={0}
                 key={0} 
@@ -126,6 +144,7 @@ class Polygon extends Component{
                 draw={{
                     connectedEdge: false, node: true, closingEdge: false
                 }}
+                onModeChange={(idx, newMode) => this.onENEModeChange(idx, newMode)}
                 svg={this.props.svg}
                 />, <ENodeE anno={this.state.anno} idx={this.state.anno.length-1} 
                 key={this.state.anno.length-1} 
@@ -135,6 +154,7 @@ class Polygon extends Component{
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
                 onNodeFinalAnnoUpdate={(e,idx, newAnno) => this.onNodeFinalAnnoUpdate(e, idx, newAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
+                onModeChange={(idx, newMode) => this.onENEModeChange(idx, newMode)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
                 draw={{
@@ -144,6 +164,7 @@ class Polygon extends Component{
                 />
             ]
         }
+
         return this.state.anno.map((e, idx) => {
             return <ENodeE anno={this.state.anno} idx={idx} 
                 key={idx} style={this.props.style}
@@ -152,6 +173,7 @@ class Polygon extends Component{
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
                 onNodeFinalAnnoUpdate={(e,idx, myAnno) => this.onNodeFinalAnnoUpdate(e, idx, myAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
+                onModeChange={(idx, newMode) => this.onENEModeChange(idx, newMode)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
                 draw={{

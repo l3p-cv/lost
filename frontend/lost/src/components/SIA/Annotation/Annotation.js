@@ -8,6 +8,8 @@ import Point from './Point'
 import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
+import * as modes from './modes'
+
 
 const {selectAnnotation} = actions
 
@@ -49,7 +51,7 @@ class Annotation extends Component{
         switch(e.button){
             case 0:
                 if (this.isSelected()){
-                    this.setMode('move')
+                    this.setMode(modes.MOVE)
                 }
             default:
                 break
@@ -58,7 +60,7 @@ class Annotation extends Component{
     onMouseUp(e: Event){
         switch(e.button){
             case 0:
-                this.setMode('view')
+                this.setMode(modes.VIEW)
                 this.disableSelArea()
             default:
                 break
@@ -71,7 +73,7 @@ class Annotation extends Component{
     }
 
     onMouseMove(e: Event){
-        if (this.state.mode === 'move'){
+        if (this.state.mode === modes.MOVE){
             this.enableSelArea()
             this.myAnno.current.move(
                 e.movementX/this.props.svg.scale, 
@@ -150,6 +152,7 @@ class Annotation extends Component{
                 return <Point ref={this.myAnno} data={data} 
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
+                    mode={this.state.mode}
                     />
             case 'bBox':
                 return <BBox ref={this.myAnno} data={data} 
@@ -158,6 +161,7 @@ class Annotation extends Component{
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
+                    mode={this.state.mode}
                     />
             case 'polygon':
                 return <Polygon ref={this.myAnno} data={data} 
@@ -166,11 +170,13 @@ class Annotation extends Component{
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
+                    mode={this.state.mode}
                     />
             case 'line':
                 return <Line ref={this.myAnno} data={data}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
+                    mode={this.state.mode}
                     />
             default:
                 console.log("Wrong annoType for annotations: ",

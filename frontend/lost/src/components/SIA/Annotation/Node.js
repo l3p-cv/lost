@@ -31,7 +31,14 @@ class Node extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Node did update', this.props.idx)
+        console.log('Node did update', this.props.idx, this.props.mode)
+        switch (this.props.mode){
+            case modes.EDIT:
+                this.turnSelAreaOn()
+                break
+            default:
+                break
+        }
     }
 
     /*************
@@ -71,13 +78,27 @@ class Node extends Component{
     }
 
     onMouseUp(e: Event){
-
+        switch (this.props.mode){
+            case modes.EDIT:
+                switch (e.button){
+                    case 0:
+                        this.turnSelAreaOff()
+                        break
+                    default:
+                        break
+                }
+            default:
+                break
+        }
         if (this.props.onMouseUp){
             this.props.onMouseUp(e, this.props.idx)
         }
     }
 
     onMouseDown(e: Event){
+        if (this.props.onMouseDown){
+            this.props.onMouseDown(e, this.props.idx)
+        }
         switch (this.props.mode){
             case modes.CREATE:
                 switch (e.button){
@@ -90,12 +111,17 @@ class Node extends Component{
                     default:
                         break
                 }
+            // case modes.EDIT:
+            //     switch (e.button){
+            //         case 0:
+            //             this.turnSelAreaOn()
+            //             break
+            //         default:
+            //             break
+            //     }
 
             default:
                 break
-        }
-        if (this.props.onMouseDown){
-            this.props.onMouseDown(e, this.props.idx)
         }
     }
     
@@ -123,15 +149,19 @@ class Node extends Component{
      * LOGIC     *
     **************/
     turnSelAreaOn(){
-        this.setState({
-            selAreaCss: 'sel-area-on'
-        })
+        if (this.state.selAreaCss !== 'sel-area-on'){
+            this.setState({
+                selAreaCss: 'sel-area-on'
+            })
+        }
     }
 
     turnSelAreaOff(){
-        this.setState({
-            selAreaCss: 'sel-area-off'
-        })
+        if (this.state.selAreaCss !== 'sel-area-off'){
+            this.setState({
+                selAreaCss: 'sel-area-off'
+            })
+        }
     }
 
     turnHaloOn(){
