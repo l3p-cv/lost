@@ -14,6 +14,22 @@ class Edge extends Component{
         console.log('Update edge', this.props.idx)
     }
     
+    onMouseOver(e){
+        console.log('Mouse over edge', this.props.idx)
+    }
+
+    onMouseDown(e){
+        e.stopPropagation()
+        console.log('Clicked on Edge', this.props.idx)
+        if (this.props.onMouseDown){
+            this.props.onMouseDown(e, this.props.idx)
+        }
+    }
+
+    onMouseUp(e){
+        e.stopPropagation()
+    }
+
     render(){
         let p1, p2
         if (!this.props.closingEdge){
@@ -33,7 +49,12 @@ class Edge extends Component{
         return(
             <line x1={p1.x} y1={p1.y} 
                 x2={p2.x} y2={p2.y} stroke="black"
-                style={this.props.style} className={this.props.className}/>
+                style={this.props.style} 
+                className={this.props.className}
+                onMouseOver={(e) => {this.onMouseOver(e)}}
+                onMouseDown={e => this.onMouseDown(e)}
+                onMouseUp={e => this.onMouseUp(e)}
+                />
             )
     }
 }

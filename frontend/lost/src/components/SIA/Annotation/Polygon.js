@@ -7,6 +7,7 @@ import * as transform from '../utils/transform'
 
 import './Annotation.scss'
 import * as modes from './modes'
+import * as mouse from '../utils/mouse'
 
 
 class Polygon extends Component{
@@ -92,16 +93,16 @@ class Polygon extends Component{
                 break
         }
     }
-
-    onENEModeChange(idx, newMode){
-        // if (newMode === modes.EDIT){
-        //     this.setState({show: idx})
-        // }
-        // else{
-        //     if (this.state.mode !== 'all'){
-        //         this.setState({show:'all'})
-        //     }
-        // }
+    
+    onEdgeMouseDown(e, idx){
+        console.log('Edge mouse down', idx)
+        switch (this.state.mode){
+            case modes.ADD:
+                this.addNode(e, idx)
+                break
+            default:
+                break
+        }
     }
 
     toPolygonStr(data){
@@ -126,6 +127,15 @@ class Polygon extends Component{
         this.setState({
             anno : transform.move(this.state.anno, movementX, movementY)
         })
+    }
+
+    addNode(e, idx){
+        console.log('Add Node to Polygon', idx)
+        const mPos = mouse.getMousePosition(e, this.props.svg)
+        let newAnno = this.state.anno.slice(0,idx)
+        newAnno.push(mPos)
+        const oldRest = this.state.anno.slice(idx)
+        this.setState({anno: newAnno.concat(oldRest)})
     }
 
     getResult(){
@@ -158,7 +168,6 @@ class Polygon extends Component{
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
                 onNodeFinalAnnoUpdate={(e,idx, newAnno) => this.onNodeFinalAnnoUpdate(e, idx, newAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
-                onModeChange={(idx, newMode) => this.onENEModeChange(idx, newMode)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
                 draw={{
@@ -194,7 +203,6 @@ class Polygon extends Component{
                 onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
                 onNodeFinalAnnoUpdate={(e,idx, myAnno) => this.onNodeFinalAnnoUpdate(e, idx, myAnno)}
                 onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
-                onModeChange={(idx, newMode) => this.onENEModeChange(idx, newMode)}
                 isSelected={this.props.isSelected}
                 mode={this.state.mode}
                 draw={{
@@ -206,6 +214,7 @@ class Polygon extends Component{
     }
 
     renderEdges(){
+        if (!this.props.isSelected) return null
         if (this.state.mode === modes.MOVE){
             return null
         }
@@ -213,14 +222,17 @@ class Polygon extends Component{
             return <Edge anno={this.state.anno} 
                 idx={idx} key={idx} style={this.props.style}
                 className={this.props.className}
-                isSelected={this.props.isSelected}                
+                isSelected={this.props.isSelected}
+                onMouseDown={(e, idx) => {this.onEdgeMouseDown(e, idx)}}                
                 />
         })
         edges.push(<Edge anno={this.state.anno} 
             closingEdge={true} key={edges.length}
+            idx={0}
             style={this.props.style}
             className={this.props.className}
             isSelected={this.props.isSelected}
+            onMouseDown={(e, idx) => {this.onEdgeMouseDown(e, idx)}}  
             />)
         return edges
     }
@@ -250,7 +262,7 @@ class Polygon extends Component{
                         fill="purple" fillOpacity="0.5" stroke="purple" 
                         // style={this.props.style}
                         className={this.props.className}/>
-                    {/* {this.renderEdges()} */}
+                    {this.renderEdges()}
                     {this.renderNodes()}
                 </g>
                 )

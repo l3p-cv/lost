@@ -28,3 +28,21 @@ export const selectAnnotation = (annoId) => {
         }
     }
 }
+
+export const siaKeyUp = (key) => {
+    return {
+        type: TYPES.SIA_KEY_UP,
+        payload: {
+            key
+        }
+    }
+}
+
+export const siaKeyDown = (key) => {
+    return {
+        type: TYPES.SIA_KEY_DOWN,
+        payload: {
+            key
+        }
+    }
+}

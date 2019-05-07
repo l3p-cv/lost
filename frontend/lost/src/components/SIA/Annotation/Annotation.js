@@ -19,7 +19,7 @@ class Annotation extends Component{
     constructor(props){
         super(props)
         this.state = {
-            mode: 'view',
+            mode: modes.VIEW,
             selAreaCss: 'sel-area-off',
         }
         this.myAnno = React.createRef()
@@ -32,8 +32,31 @@ class Annotation extends Component{
             this.props.selectAnnotation(this.props.data.id)
         }
     }
+
     componentDidUpdate(prevProps){
         console.log('Annotation did update', this.props.data.id)
+        if (prevProps.keyDown !== this.props.keyDown){
+            if (this.isSelected()){
+                switch (this.props.keyDown){
+                    case 'Control':
+                        this.setMode(modes.ADD)
+                        break
+                    default:
+                        break
+                }
+            }
+        }
+        if (prevProps.keyUp !== this.props.keyUp){
+            if (this.isSelected()){
+                switch (this.props.keyUp){
+                    case 'Control':
+                        this.setMode(modes.VIEW)
+                        break
+                    default:
+                        break
+                }
+            }
+        }
     }
     
     /*************
@@ -209,7 +232,9 @@ class Annotation extends Component{
 
 function mapStateToProps(state) {
     return ({
-        selectedAnno: state.sia.selectedAnno
+        selectedAnno: state.sia.selectedAnno,
+        keyDown: state.sia.keyDown,
+        keyUp: state.sia.keyUp
     })
 }
 

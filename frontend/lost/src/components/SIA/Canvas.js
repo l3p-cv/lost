@@ -9,7 +9,7 @@ import * as transform from './utils/transform'
 import { isShortcutHit } from 'l3p-frontend';
 
 
-const { getSiaImage,getSiaAnnos} = actions
+const { getSiaImage,getSiaAnnos,siaKeyDown, siaKeyUp} = actions
 
 class Canvas extends Component{
 
@@ -129,11 +129,27 @@ class Canvas extends Component{
         }
     }
 
-    onKeyPress(e: Event){
-        console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+    // onKeyPress(e: Event){
+    //     e.preventDefault()
+    //     console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+    //     if (e.key === 'Delete'){
+    //         this.removeSelectedAnno()
+    //     }
+    // }
+
+    onKeyDown(e: Event){
+        e.preventDefault()
         if (e.key === 'Delete'){
             this.removeSelectedAnno()
         }
+        this.props.siaKeyDown(e.key)
+        console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+    }
+
+    onKeyUp(e: Event){
+        e.preventDefault()
+        this.props.siaKeyUp(e.key)
+        console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
     onMouseMove(e: Event){
@@ -306,7 +322,8 @@ class Canvas extends Component{
             <div>
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
-                    onKeyPress={e => this.onKeyPress(e)}
+                    onKeyDown={e => this.onKeyDown(e)}
+                    onKeyUp={e => this.onKeyUp(e)}
                     tabIndex="0"
                     >
                     <g 
@@ -342,4 +359,6 @@ function mapStateToProps(state) {
     })
 }
 
-export default connect(mapStateToProps, {getSiaAnnos, getSiaImage})(Canvas)
+export default connect(mapStateToProps, 
+    {getSiaAnnos, getSiaImage, siaKeyDown, siaKeyUp}
+)(Canvas)
