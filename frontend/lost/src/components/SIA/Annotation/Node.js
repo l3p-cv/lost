@@ -13,26 +13,32 @@ class Node extends Component{
         this.state = {
             haloCss: 'node-halo-off',
             selAreaCss: 'sel-area-off',
-            anno: undefined
+            anno: undefined,
+            nodeSelected: false
         }
     }
 
     componentDidMount(){
         console.log('Node did mount ', this.props.idx, this.props.mode)
         this.setState({anno: this.props.anno})
-        switch (this.props.mode){
-            case modes.CREATE:
-                if (this.props.idx !== 0){
-                    this.turnSelAreaOn()
-                }
-            default:
-                break
-        }
+        // switch (this.props.mode){
+        //     case modes.CREATE:
+        //         if (this.props.idx !== 0){
+        //             this.turnSelAreaOn()
+        //         }
+        //     default:
+        //         break
+        // }
     }
 
     componentDidUpdate(prevProps){
         console.log('Node did update', this.props.idx, this.props.mode)
         switch (this.props.mode){
+            case modes.CREATE:
+                if (this.props.idx !== 0){
+                    this.turnSelAreaOn()
+                }
+                break
             case modes.EDIT:
                 this.turnSelAreaOn()
                 break
@@ -181,6 +187,15 @@ class Node extends Component{
     /*************
      * RENDERING *
     **************/
+   renderHalo(){
+       if (this.state.haloCss === 'node-halo-off') return null
+       const data = this.props.anno[this.props.idx]
+
+       return <circle cx={data.x} cy={data.y} r={20}
+                className={this.state.haloCss}
+                 onMouseLeave={e => this.onMouseLeave(e)}
+   />
+   }
     renderNodes(){
         const data = this.props.anno[this.props.idx]
 
@@ -196,10 +211,7 @@ class Node extends Component{
                 <circle cx={data.x} cy={data.y} r={'100%'}
                     className={this.state.selAreaCss}
                 />
-                <circle cx={data.x} cy={data.y} r={20}
-                    className={this.state.haloCss}
-                    onMouseLeave={e => this.onMouseLeave(e)}
-                />
+                {this.renderHalo()}
                 <circle cx={data.x} 
                     cy={data.y} 
                     r={5} fill="red"

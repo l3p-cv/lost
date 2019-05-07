@@ -106,45 +106,16 @@ class ENodeE extends Component{
         }
     }
 
-    // onNodeAnnoUpdate(e, idx, newAnno){
-    //     this.updateAnno(newAnno)
-    //     // if (this.props.onNodeAnnoUpdate){
-    //     //     this.props.onNodeAnnoUpdate(e, idx, newAnno)
-    //     // }
-
-    // }
-
-    // onNodeFinalAnnoUpdate(e, idx, newAnno){
-    //     if (this.props.onNodeFinalAnnoUpdate){
-    //         this.props.onNodeFinalAnnoUpdate(e, idx, newAnno)
-    //     }
-
-    // }
-
     onNodeDoubleClick(e, idx){
         if (this.props.onNodeDoubleClick){
             this.props.onNodeDoubleClick(e, idx)
         }
     }
-
-    // onNodeAnnoUpdate(e, idx, newAnno){
-    //     this.updateAnno(newAnno)
-    // }
     
 
     /*************
      *   LOGIC   *
     **************/
-    // updateAnno(newAnno){
-    //     switch (this.props.mode){
-    //         case modes.CREATE:
-    //             this.setState({
-    //                 anno: [...newAnno]
-    //             })
-    //         default:
-    //             break
-    //     }
-    // }
     updateAnnoByMousePos(e, idx){
         const mousePos = mouse.getMousePosition(e, this.props.svg)
         let newAnno = [...this.state.anno]
@@ -198,11 +169,17 @@ class ENodeE extends Component{
         if (!this.state.anno){
             return null
         }
-        return<Edge anno={this.state.anno} 
-                idx={this.props.idx} style={this.props.style}
-                className={this.props.className}
-                isSelected={this.props.isSelected}                
-                />
+        if (this.state.mode === modes.EDIT || 
+            this.state.mode === modes.CREATE){
+
+            return<Edge anno={this.state.anno} 
+                    idx={this.props.idx} style={this.props.style}
+                    className={this.props.className}
+                    isSelected={this.props.isSelected}                
+                    />
+        } else {
+            return null
+        }
                 
     }
 
@@ -232,12 +209,17 @@ class ENodeE extends Component{
         if (!this.state.anno){
             return null
         }
-        return <Edge anno={this.state.anno} 
+        if (this.state.mode === modes.EDIT || 
+            this.state.mode === modes.CREATE){
+            return <Edge anno={this.state.anno} 
                 idx={this.props.idx} style={this.props.style}
                 className={this.props.className}
                 isSelected={this.props.isSelected}
                 closingEdge={true}                
                 />
+        }else{
+            return null
+        }
     }
     render(){
             return(
