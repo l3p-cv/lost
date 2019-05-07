@@ -41,12 +41,15 @@ circle.not-selected{
 //****************
 .node-halo-on{
     fill: orange;
+    stroke: orange;
     fill-opacity: 0.5;
+    stroke-opacity: 0.5;
     cursor: grab;
 }
 
 .node-halo-off{
     fill: none;
+    stroke: none;
 }
 
 

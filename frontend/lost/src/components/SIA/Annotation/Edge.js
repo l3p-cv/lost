@@ -8,6 +8,9 @@ class Edge extends Component{
 
     constructor(props){
         super(props)
+        this.state = {
+            haloCss: 'node-halo-off'
+        }
     }
 
     componentDidUpdate(){
@@ -16,6 +19,16 @@ class Edge extends Component{
     
     onMouseOver(e){
         console.log('Mouse over edge', this.props.idx)
+        if (this.props.isSelected){
+            this.setState({haloCss: 'node-halo-on'})
+        }
+    }
+
+    onMouseLeave(e){
+        console.log('Mouse Leave, ', this.props.isSelected)
+        if (this.props.isSelected){
+            this.setState({haloCss: 'node-halo-off'})
+        }
     }
 
     onMouseDown(e){
@@ -46,15 +59,28 @@ class Edge extends Component{
             p1 = this.props.anno[this.props.anno.length-1]
             p2 = this.props.anno[0]
         }
-        return(
+        return(<g
+            onMouseOver={(e) => {this.onMouseOver(e)}}
+            onMouseLeave={e => {this.onMouseLeave(e)}}
+            
+        >
             <line x1={p1.x} y1={p1.y} 
                 x2={p2.x} y2={p2.y} stroke="black"
-                style={this.props.style} 
-                className={this.props.className}
+                // style={this.props.style} 
+                stroke-width="20"
+                className={this.state.haloCss}
                 onMouseOver={(e) => {this.onMouseOver(e)}}
                 onMouseDown={e => this.onMouseDown(e)}
                 onMouseUp={e => this.onMouseUp(e)}
                 />
+            <line x1={p1.x} y1={p1.y} 
+                x2={p2.x} y2={p2.y} stroke="black"
+                style={this.props.style} 
+                className={this.props.className}
+                onMouseDown={e => this.onMouseDown(e)}
+                onMouseUp={e => this.onMouseUp(e)}
+                />
+                </g>
             )
     }
 }
