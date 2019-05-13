@@ -9,7 +9,7 @@ import * as transform from './utils/transform'
 import * as modes from './Annotation/modes'
 
 
-const { getSiaImage,getSiaAnnos,siaKeyDown, siaKeyUp} = actions
+const { getSiaImage,getSiaAnnos,siaKeyDown, siaKeyUp, selectAnnotation} = actions
 
 class Canvas extends Component{
 
@@ -86,10 +86,10 @@ class Canvas extends Component{
         } else {
             nextScale = this.state.svg.scale / zoomFactor
         }
-        const oldMousePos = {
-            x: mousePos.x,
-            y: mousePos.y
-        }
+        // const oldMousePos = {
+        //     x: mousePos.x,
+        //     y: mousePos.y
+        // }
         this.setState({svg: {
             ...this.state.svg,
             scale: nextScale,
@@ -103,7 +103,10 @@ class Canvas extends Component{
     }
 
     onMouseDown(e){
-        if (e.button === 1){
+        if (e.button === 0){
+            this.props.selectAnnotation(undefined)
+        }
+        else if (e.button === 1){
             this.collectAnnos()
             this.setMode(modes.CAMERA_MOVE)
             // this.setState({svg:
@@ -304,6 +307,7 @@ class Canvas extends Component{
             this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
                 this.annoRefs.push(React.createRef())
+                console.log('render annotation', el)
                 return <Annotation type={el.type} 
                         data={el} key={el.id} svg={{...this.state.svg}}
                         ref={this.annoRefs[this.annoRefs.length - 1]}
@@ -360,5 +364,5 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, 
-    {getSiaAnnos, getSiaImage, siaKeyDown, siaKeyUp}
+    {getSiaAnnos, getSiaImage, siaKeyDown, siaKeyUp, selectAnnotation}
 )(Canvas)
