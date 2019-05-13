@@ -9,6 +9,7 @@ import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
 import * as modes from './modes'
+import * as colorlut from '../utils/colorlut'
 
 
 const {selectAnnotation} = actions
@@ -144,14 +145,21 @@ class Annotation extends Component{
     }
     
     getStyle(){
+        console.log(this.props.data)
+        const color = colorlut.getColor(this.props.data.labelIds[0])
         if (this.isSelected()){
             return {
-                stroke: 'blue',
-                strokeWidth: "10"
+                stroke: color,
+                strokeWidth: 5/this.props.svg.scale,
+                r:5/this.props.svg.scale
+
             }
         } else {
             return {
-                stroke: 'blue'
+                stroke: color,
+                fill: color,
+                strokeWidth: 5/this.props.svg.scale,
+
             }
         }
     }

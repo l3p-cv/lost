@@ -262,7 +262,7 @@ class Polygon extends Component{
                 >
                     <polygon points={this.toPolygonStr(this.state.anno)}
                         fill="purple" fillOpacity="0.5" stroke="purple" 
-                        // style={this.props.style}
+                        style={this.props.style}
                         className={this.props.className}/>
                     {this.renderEdges()}
                     {this.renderNodes()}
