@@ -24,7 +24,10 @@ class Node extends Component{
         console.log('Node did mount ', this.props.idx, this.props.mode)
         this.setState({
             anno: this.props.anno,
-            style: this.props.style
+            style: {
+                ...this.props.style,
+                cursor: this.getCursorStyle(this.props.mode)
+            }
         })
         // switch (this.props.mode){
         //     case modes.CREATE:
@@ -52,7 +55,18 @@ class Node extends Component{
         }
         //on mode change
         if (prevProps.mode !== this.props.mode){
-            this.setStyle(this.props.mode)
+            this.setState({
+                style: {...this.state.style,
+                    cursor: this.getCursorStyle(this.props.mode)
+                }
+            })
+        }
+        if (prevProps.style !== this.props.style){
+            this.setState({style: 
+                {...this.state.style,
+                ...this.props.style,
+                cursor: this.getCursorStyle(this.props.mode)}
+            })
         }
     }
 
@@ -163,24 +177,14 @@ class Node extends Component{
     /*************
      * LOGIC     *
     **************/
-    setStyle(mode){
-        console.log('Set Node style', this.props.idx)
+    getCursorStyle(mode){
         switch(mode){
             case modes.CREATE:
-                this.setState({style: 
-                    {...this.state.style, cursor: cursorstyles.CREATE_NODE}
-                })
-                break
+                return cursorstyles.CREATE_NODE
             case modes.EDIT:
-                this.setState({style: 
-                    {...this.state.style, cursor: cursorstyles.EDIT_NODE}
-                })
-                break
+                return  cursorstyles.EDIT_NODE
             case modes.VIEW:
-                this.setState({style: 
-                    {...this.state.style, cursor:cursorstyles.NORMAL_NODE}
-                })
-                break
+                return cursorstyles.NORMAL_NODE
             default:
                 break
         }
@@ -223,14 +227,14 @@ class Node extends Component{
        if (this.state.haloCss === 'node-halo-off') return null
        const data = this.props.anno[this.props.idx]
 
-       return <circle cx={data.x} cy={data.y} r={20}
+       return <circle cx={data.x} cy={data.y} r={this.props.style.r * 3}
                 className={this.state.haloCss}
                  onMouseLeave={e => this.onMouseLeave(e)}
    />
    }
     renderNodes(){
         const data = this.props.anno[this.props.idx]
-
+        console.log('Node style', this.props.style)
         return (
             <g
                 onClick={(e) => this.onClick(e)}
@@ -246,7 +250,7 @@ class Node extends Component{
                 {this.renderHalo()}
                 <circle cx={data.x} 
                     cy={data.y} 
-                    r={5} fill="red"
+                    r={3} fill="red"
                     style={this.state.style}
                     className={this.props.className}
                     onMouseOver={e => this.onMouseOver(e)}

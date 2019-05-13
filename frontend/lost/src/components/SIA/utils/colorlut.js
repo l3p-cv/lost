@@ -50,11 +50,18 @@ const colors20 = ["#46aed7",
 "#7166d9",
 "#d14734"]
 
+const colors = colors20
+const nColors = 20
+
 export function getColor(n){
     if (n){
-        return colors20[n%20]
+        return colors[n%nColors]
     }
     else{
-        return colors20[0]
+        return getDefaultColor()    
     }
+}
+
+export function getDefaultColor(){
+    return colors[0]
 }

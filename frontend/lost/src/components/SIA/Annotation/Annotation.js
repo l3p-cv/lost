@@ -146,10 +146,17 @@ class Annotation extends Component{
     
     getStyle(){
         console.log(this.props.data)
-        const color = colorlut.getColor(this.props.data.labelIds[0])
+        let color
+        if (this.props.data.labelIds){
+            color = colorlut.getColor(this.props.data.labelIds[0])
+        }
+        else {
+            color = colorlut.getDefaultColor()
+        }
         if (this.isSelected()){
             return {
                 stroke: color,
+                fill: color,
                 strokeWidth: 5/this.props.svg.scale,
                 r:5/this.props.svg.scale
 
