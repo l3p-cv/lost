@@ -6,7 +6,7 @@ import Annotation from './Annotation/Annotation'
 import actions from '../../actions'
 
 import * as transform from './utils/transform'
-import { isShortcutHit } from 'l3p-frontend';
+import * as modes from './Annotation/modes'
 
 
 const { getSiaImage,getSiaAnnos,siaKeyDown, siaKeyUp} = actions
@@ -28,7 +28,7 @@ class Canvas extends Component{
                 translateY:0
             },
             annos: [],
-            mode: 'view'
+            mode: modes.VIEW
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -103,9 +103,9 @@ class Canvas extends Component{
     }
 
     onMouseDown(e){
-        if (e.button === 0){
+        if (e.button === 1){
             this.collectAnnos()
-            this.setMode('cameraMove')
+            this.setMode(modes.CAMERA_MOVE)
             // this.setState({svg:
             //     {...this.state.svg, 
             //         scale: 1.0, 
@@ -121,8 +121,8 @@ class Canvas extends Component{
 
     onMouseUp(e){
         switch (e.button){
-            case 0:
-                this.setMode('view')
+            case 1:
+                this.setMode(modes.VIEW)
                 break
             default:
                 break
@@ -153,7 +153,7 @@ class Canvas extends Component{
     }
 
     onMouseMove(e: Event){
-        if (this.state.mode === 'cameraMove'){
+        if (this.state.mode === modes.CAMERA_MOVE){
             this.moveCamera(e)
         }
     }
@@ -300,7 +300,7 @@ class Canvas extends Component{
 
     renderAnnotations(){
         // Do not render annotations while moving the camera!
-        if (this.state.mode !== 'cameraMove'){
+        if (this.state.mode !== modes.CAMERA_MOVE){
             this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
                 this.annoRefs.push(React.createRef())
