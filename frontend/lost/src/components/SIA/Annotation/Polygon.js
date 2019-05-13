@@ -48,6 +48,7 @@ class Polygon extends Component{
         if (this.props.onNodeClick){
             this.props.onNodeClick(e, idx)
         }
+        
     }
 
     onNodeMouseUp(e, idx){
@@ -85,10 +86,11 @@ class Polygon extends Component{
     }
     onNodeDoubleClick(e, idx){
         switch (this.state.mode){
-            case 'create':
-                this.setState({
-                    mode: modes.VIEW
-                })
+            case modes.CREATE:
+                this.setMode(modes.VIEW)
+                // this.setState({
+                //     mode: modes.VIEW
+                // })
             default:
                 break
         }

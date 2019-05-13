@@ -146,7 +146,8 @@ class Annotation extends Component{
     getStyle(){
         if (this.isSelected()){
             return {
-                stroke: 'blue'
+                stroke: 'blue',
+                strokeWidth: "10"
             }
         } else {
             return {

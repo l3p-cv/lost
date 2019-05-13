@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import './Annotation.scss'
 import * as modes from './modes'
+import * as cursorstyles from './cursorstyles'
 
 
 class Node extends Component{
@@ -14,13 +15,17 @@ class Node extends Component{
             haloCss: 'node-halo-off',
             selAreaCss: 'sel-area-off',
             anno: undefined,
-            nodeSelected: false
+            nodeSelected: false,
+            style: {}
         }
     }
 
     componentDidMount(){
         console.log('Node did mount ', this.props.idx, this.props.mode)
-        this.setState({anno: this.props.anno})
+        this.setState({
+            anno: this.props.anno,
+            style: this.props.style
+        })
         // switch (this.props.mode){
         //     case modes.CREATE:
         //         if (this.props.idx !== 0){
@@ -44,6 +49,10 @@ class Node extends Component{
                 break
             default:
                 break
+        }
+        //on mode change
+        if (prevProps.mode !== this.props.mode){
+            this.setStyle(this.props.mode)
         }
     }
 
@@ -154,6 +163,29 @@ class Node extends Component{
     /*************
      * LOGIC     *
     **************/
+    setStyle(mode){
+        console.log('Set Node style', this.props.idx)
+        switch(mode){
+            case modes.CREATE:
+                this.setState({style: 
+                    {...this.state.style, cursor: cursorstyles.CREATE_NODE}
+                })
+                break
+            case modes.EDIT:
+                this.setState({style: 
+                    {...this.state.style, cursor: cursorstyles.EDIT_NODE}
+                })
+                break
+            case modes.VIEW:
+                this.setState({style: 
+                    {...this.state.style, cursor:cursorstyles.NORMAL_NODE}
+                })
+                break
+            default:
+                break
+        }
+    }
+
     turnSelAreaOn(){
         if (this.state.selAreaCss !== 'sel-area-on'){
             this.setState({
@@ -215,7 +247,7 @@ class Node extends Component{
                 <circle cx={data.x} 
                     cy={data.y} 
                     r={5} fill="red"
-                    style={this.props.style}
+                    style={this.state.style}
                     className={this.props.className}
                     onMouseOver={e => this.onMouseOver(e)}
                 />

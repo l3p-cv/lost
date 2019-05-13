@@ -63,6 +63,7 @@ class ENodeE extends Component{
                         )
                     }
                 }
+                break
             case modes.VIEW:
                 if (e.button == 0){
                     if (this.props.isSelected){
@@ -70,6 +71,7 @@ class ENodeE extends Component{
                         e.stopPropagation()
                     }
                 }
+                break
             default:
                 break
         }
