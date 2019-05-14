@@ -47,16 +47,18 @@ class BBox extends Component{
                 const idxMinus = idx - 1 < 0 ? 3 : idx -1
                 const idxPlus = idx + 1 > 3 ? 0 : idx +1
                 let newAnno = [...this.state.anno]
+                const movementX = e.movementX / this.props.svg.scale
+                const movementY = e.movementY / this.props.svg.scale
                 if (idx % 2 === 0){
-                    newAnno[idxMinus].x += e.movementX
-                    newAnno[idx].x += e.movementX
-                    newAnno[idx].y += e.movementY
-                    newAnno[idxPlus].y += e.movementY
+                    newAnno[idxMinus].x += movementX
+                    newAnno[idx].x += movementX
+                    newAnno[idx].y += movementY
+                    newAnno[idxPlus].y += movementY
                 } else {
-                    newAnno[idxMinus].y += e.movementY
-                    newAnno[idx].x += e.movementX
-                    newAnno[idx].y += e.movementY
-                    newAnno[idxPlus].x += e.movementX
+                    newAnno[idxMinus].y += movementY
+                    newAnno[idx].x += movementX
+                    newAnno[idx].y += movementY
+                    newAnno[idxPlus].x += movementX
                 }
                 this.setState({
                     anno: newAnno
@@ -90,6 +92,26 @@ class BBox extends Component{
                 if (e.button === 2){
                     this.setMode(modes.VIEW)
                 }
+        }
+    }
+
+    onMouseDown(e){
+        switch(this.state.mode){
+            case modes.VIEW:
+                if (e.button === 0){
+                    this.setMode(modes.MOVE)
+                }
+                break
+        }
+    }
+
+    onMouseUp(e){
+        switch(this.state.mode){
+            case modes.MOVE:
+                if (e.button === 0){
+                    this.setMode(modes.VIEW)
+                }
+                break
         }
     }
     /*************
@@ -131,6 +153,8 @@ class BBox extends Component{
                             fill='none' stroke="purple" 
                             style={this.props.style}
                             className={this.props.className}
+                            onMouseDown={e => this.onMouseDown(e)}
+                            onMouseUp={e => this.onMouseUp(e)}
                         />
             default:
                 return null 
