@@ -125,6 +125,7 @@ class Node extends Component{
     }
 
     onMouseDown(e: Event){
+        e.stopPropagation()
         if (this.props.onMouseDown){
             this.props.onMouseDown(e, this.props.idx)
         }
@@ -155,7 +156,6 @@ class Node extends Component{
     }
     
     onMouseOver(e: Event){
-        console.log('Mouse over node')
         if (this.props.isSelected){
             this.turnHaloOn()
         }
@@ -207,14 +207,12 @@ class Node extends Component{
     }
 
     turnHaloOn(){
-        console.log('Turn halo-on ', this.props.idx)
         this.setState({
             haloCss: 'node-halo-on'
         })
     }
 
     turnHaloOff(){
-        console.log('Turn halo-off ', this.props.idx)
         this.setState({
             haloCss: 'node-halo-off'
         })
@@ -234,7 +232,6 @@ class Node extends Component{
    }
     renderNodes(){
         const data = this.props.anno[this.props.idx]
-        console.log('Node style', this.props.style)
         return (
             <g
                 onClick={(e) => this.onClick(e)}

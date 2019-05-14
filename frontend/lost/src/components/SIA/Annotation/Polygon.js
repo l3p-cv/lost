@@ -178,23 +178,6 @@ class Polygon extends Component{
                 />
             ]
         }
-        // if (this.state.show !== 'all'){
-        //     return <ENodeE anno={this.state.anno} idx={this.state.show} 
-        //         style={this.props.style}
-        //         className={this.props.className} 
-        //         onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
-        //         onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-        //         onNodeFinalAnnoUpdate={(e,idx, myAnno) => this.onNodeFinalAnnoUpdate(e, idx, myAnno)}
-        //         onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
-        //         onModeChange={(idx, newMode) => this.onENEModeChange(idx, newMode)}
-        //         isSelected={this.props.isSelected}
-        //         mode={this.state.mode}
-        //         draw={{
-        //             connectedEdge: true, node: true, closingEdge: true
-        //         }}
-        //         svg={this.props.svg}
-        //         />
-        // }
 
         return this.state.anno.map((e, idx) => {
             return <ENodeE anno={this.state.anno} idx={idx} 

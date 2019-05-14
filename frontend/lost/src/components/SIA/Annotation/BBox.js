@@ -1,45 +1,184 @@
 import React, {Component} from 'react'
-import Polygon from './Polygon'
 import './Annotation.scss';
+import * as modes from './modes'
+import * as transform from '../utils/transform'
+import Node from './Node'
 
-class BBox extends Polygon{
+class BBox extends Component{
 
-    onNodeMouseMove(e, idx){
-        switch (this.state.mode){
-            case 'create':
-                let newAnno = [...this.state.anno]
-                newAnno[1].x += e.movementX
-                newAnno[2].x += e.movementX
-                newAnno[2].y += e.movementY
-                newAnno[3].y += e.movementY 
-                this.setState({
-                    anno: newAnno
-                })
-            default:
-                break
+    /*************
+     * LIFECYCLE *
+    **************/
+    constructor(props){
+        super(props)
+        this.state = {
+            anno: undefined,
+            selectedNode: undefined,
+            mode: modes.VIEW
         }
     }
 
-    onNodeMouseUp(e, idx){
-        if (this.state.mode){
-            this.setState({mode: 'show'})
-        }
-    }
-    componentDidMount(){
+    componentDidMount(prevProps){
         console.log('Component mounted', this.props.data.id)
         if (this.props.data.createMode){
             console.log('in Create Pos')
             this.setState({
-                mode:'create',
+                mode: modes.CREATE,
                 anno: [
                     {x: this.props.data.data.x, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y+1},
                     {x: this.props.data.data.x, y: this.props.data.data.y+1}
-                ]
+                ],
+                selectedNode: 2
             })
         } else {
             this.setState({anno: [...this.props.data.data]})
+        }
+    }
+
+    /*************
+    * EVENTS    *
+    **************/
+    onNodeMouseMove(e, idx){
+        switch (this.state.mode){
+            case modes.CREATE:
+            case modes.EDIT:
+                const idxMinus = idx - 1 < 0 ? 3 : idx -1
+                const idxPlus = idx + 1 > 3 ? 0 : idx +1
+                let newAnno = [...this.state.anno]
+                if (idx % 2 === 0){
+                    newAnno[idxMinus].x += e.movementX
+                    newAnno[idx].x += e.movementX
+                    newAnno[idx].y += e.movementY
+                    newAnno[idxPlus].y += e.movementY
+                } else {
+                    newAnno[idxMinus].y += e.movementY
+                    newAnno[idx].x += e.movementX
+                    newAnno[idx].y += e.movementY
+                    newAnno[idxPlus].x += e.movementX
+                }
+                this.setState({
+                    anno: newAnno
+                })
+                break
+            default:
+                break
+        }
+    }
+
+    onNodeMouseDown(e,idx){
+        switch(this.state.mode){
+            case modes.VIEW:
+                if (e.button === 0){
+                    console.log('Node mouse Down', idx)
+                    this.setMode(modes.EDIT, idx)
+                    // this.setState({selectedNode: idx})
+                }
+                break
+        }
+    }
+
+    onNodeMouseUp(e, idx){
+        switch(this.state.mode){
+            case modes.EDIT:
+                if (e.button === 0){
+                    this.setMode(modes.VIEW)
+                }
+                break
+            case modes.CREATE:
+                if (e.button === 2){
+                    this.setMode(modes.VIEW)
+                }
+        }
+    }
+    /*************
+     * LOGIC     *
+    **************/
+    setMode(mode, nodeIdx=undefined){
+        if (this.state.mode !== mode){
+            this.setState({
+                mode: mode,
+                selectedNode: nodeIdx
+            })
+        }
+    }
+    toPolygonStr(data){
+        return data.map( (e => {
+            return `${e.x},${e.y}`
+        })).join(' ')
+        
+    }
+
+    move(movementX, movementY){
+        this.setState({
+            anno : transform.move(this.state.anno, movementX, movementY)
+        })
+    }
+
+    /*************
+     * RENDERING *
+    **************/
+
+    renderPolygon(){
+        switch(this.state.mode){
+            case modes.MOVE:
+            case modes.EDIT:
+            case modes.VIEW:
+            case modes.CREATE:
+                return <polygon 
+                            points={this.toPolygonStr(this.state.anno)}
+                            fill='none' stroke="purple" 
+                            style={this.props.style}
+                            className={this.props.className}
+                        />
+            default:
+                return null 
+        }
+    }
+
+    renderNodes(){
+        if (!this.props.isSelected) return null 
+        switch(this.state.mode){
+            case modes.MOVE:
+                return null
+            case modes.EDIT:
+            case modes.CREATE:
+                return <Node anno={this.state.anno}
+                            key={this.state.selectedNode}
+                            idx={this.state.selectedNode} 
+                            style={this.props.style}
+                            className={this.props.className} 
+                            isSelected={this.props.isSelected}
+                            mode={this.state.mode}
+                            svg={this.props.svg}
+                            onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
+                            onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
+                            onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
+                        />
+            default:
+                return this.state.anno.map((e, idx) => {
+                    return <Node anno={this.state.anno} idx={idx} 
+                        key={idx} style={this.props.style}
+                        className={this.props.className} 
+                        isSelected={this.props.isSelected}
+                        mode={this.state.mode}
+                        svg={this.props.svg}
+                        onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
+                        onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
+                        />
+                })
+        }
+    }
+
+    render(){
+        if (this.state.anno){
+            return (<g>
+                {this.renderPolygon()}
+                {this.renderNodes()}
+            </g>)
+        } else {
+            return <g></g>
         }
     }
 

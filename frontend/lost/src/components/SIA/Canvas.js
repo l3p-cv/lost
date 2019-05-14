@@ -218,7 +218,7 @@ class Canvas extends Component{
         this.setState({
             annos: [...this.state.annos, {
                 id: _.uniqueId('new'),
-                type: 'polygon',
+                type: 'bBox',
                 data: {
                     x: mousePos.x, 
                     y: mousePos.y

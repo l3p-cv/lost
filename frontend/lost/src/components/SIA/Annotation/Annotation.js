@@ -35,7 +35,7 @@ class Annotation extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Annotation did update', this.props.data.id)
+        console.log('Annotation did update', this.props.data.id, this.state.mode)
         if (prevProps.keyDown !== this.props.keyDown){
             if (this.isSelected()){
                 switch (this.props.keyDown){
@@ -109,6 +109,7 @@ class Annotation extends Component{
         console.log('Annotation')
         console.log('NodeClick on ', idx, e.pageX)
     }
+
 
     /*************
      * LOGIC     *
@@ -198,6 +199,7 @@ class Annotation extends Component{
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
+                    onNodeMouseDown={(e, idx) => this.onNodeMouseDown(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
@@ -218,7 +220,7 @@ class Annotation extends Component{
                     mode={this.state.mode}
                     />
             default:
-                console.log("Wrong annoType for annotations: ",
+                console.error("Wrong annoType for annotations: ",
                     this.props.annoType)
         } 
     }
