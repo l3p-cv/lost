@@ -16,8 +16,7 @@ class Polygon extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            mode: modes.VIEW,
-            show: 'all'
+            mode: modes.VIEW
         }
     }
 
@@ -240,7 +239,7 @@ class Polygon extends Component{
     }
     render(){
         if (this.state.anno){
-            if (this.state.mode === 'create'){
+            if (this.state.mode === modes.CREATE){
                 return (
                     <g
                         onKeyPress={e => this.onKeyPress(e)}
