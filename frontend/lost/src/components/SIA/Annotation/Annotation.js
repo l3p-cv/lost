@@ -157,15 +157,15 @@ class Annotation extends Component{
             return {
                 stroke: color,
                 fill: color,
-                strokeWidth: 5/this.props.svg.scale,
-                r:5/this.props.svg.scale
+                strokeWidth: this.props.uiConfig.strokeWidth/this.props.svg.scale,
+                r:this.props.uiConfig.nodeRadius/this.props.svg.scale
 
             }
         } else {
             return {
                 stroke: color,
                 fill: color,
-                strokeWidth: 5/this.props.svg.scale,
+                strokeWidth: this.props.uiConfig.strokeWidth/this.props.svg.scale,
 
             }
         }
@@ -250,7 +250,8 @@ function mapStateToProps(state) {
     return ({
         selectedAnno: state.sia.selectedAnno,
         keyDown: state.sia.keyDown,
-        keyUp: state.sia.keyUp
+        keyUp: state.sia.keyUp,
+        uiConfig: state.sia.uiConfig
     })
 }
 

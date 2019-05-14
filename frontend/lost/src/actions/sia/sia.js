@@ -46,3 +46,12 @@ export const siaKeyDown = (key) => {
         }
     }
 }
+
+export const siaSetUIConfig = (config) => {
+    return {
+        type: TYPES.SIA_SET_UICONFIG,
+        payload: {
+            ...config
+        }
+    }
+}
