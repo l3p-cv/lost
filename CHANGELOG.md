@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 
 
 ### Changed
-- allow arbitrary ports for api access through frontend
+- allow arbitrary ports for api access through lost frontend
 
 ### Deprecated
 - 
