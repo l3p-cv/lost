@@ -63,7 +63,7 @@ class Annotation extends Component{
     /*************
      * EVENTS    *
     **************/
-    onClick(e: Event){
+    onMouseEnter(e: Event){
         e.stopPropagation()
         console.log('Clicked on: ', this.props.type)
         this.props.selectAnnotation(this.props.data.id)
@@ -71,45 +71,6 @@ class Annotation extends Component{
         //this.myKey = _.uniqueId('annokey')
 
     }
-    onMouseDown(e: Event){
-        switch(e.button){
-            case 0:
-                // if (this.isSelected()){
-                //     this.setMode(modes.MOVE)
-                // }
-            default:
-                break
-        }
-    }
-    onMouseUp(e: Event){
-        switch(e.button){
-            case 0:
-                this.setMode(modes.VIEW)
-                this.disableSelArea()
-            default:
-                break
-        }
-    }
-    onMouseOut(e: Event){
-        // if (this.state.readyToMove){
-        //     this.setState({readyToMove: false})
-        // }
-    }
-
-    onMouseMove(e: Event){
-        if (this.state.mode === modes.MOVE){
-            this.enableSelArea()
-            this.myAnno.current.move(
-                e.movementX/this.props.svg.scale, 
-                e.movementY/this.props.svg.scale)
-        }
-    }
-    
-    onNodeClick(e, idx){
-        console.log('Annotation')
-        console.log('NodeClick on ', idx, e.pageX)
-    }
-
 
     /*************
      * LOGIC     *
@@ -124,16 +85,6 @@ class Annotation extends Component{
         return this.props.selectedAnno === this.props.data.id
     }
 
-    enableSelArea(){
-        if (this.state.selAreaCss !== 'sel-area-on'){
-            this.setState({selAreaCss: 'sel-area-on'})
-        }
-    }
-    disableSelArea(){
-        if (this.state.selAreaCss !== 'sel-area-off'){
-            this.setState({selAreaCss: 'sel-area-off'})
-        }
-    }
     getResult(){
         // console.log('Hi there i am a ', this.props.type, 
         //     this.props.data.id, this.props.data)
@@ -231,19 +182,13 @@ class Annotation extends Component{
     render(){
         return (
             <g 
-                onClick={e => this.onClick(e)}
-                onMouseDown={e => {this.onMouseDown(e)}}
-                onMouseUp={e => {this.onMouseUp(e)}}
-                onMouseMove={e => {this.onMouseMove(e)}}
-                onMouseOut={e => {this.onMouseOut(e)}}
+                onMouseEnter={e => this.onMouseEnter(e)}
             >
                 <circle 
                     cx={this.props.svg.width/2} 
                     cy={this.props.svg.height/2} 
                     r={'100%'}
                     className={this.state.selAreaCss}
-                    onMouseMove={e => {this.onMouseMove(e)}}
-
                 />
                 {this.renderAnno()}
             </g>
