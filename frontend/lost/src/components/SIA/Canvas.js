@@ -86,10 +86,10 @@ class Canvas extends Component{
         } else {
             nextScale = this.state.svg.scale / zoomFactor
         }
-        // const oldMousePos = {
-        //     x: mousePos.x,
-        //     y: mousePos.y
-        // }
+        //Constrain zoom
+        if (nextScale < 1.0){
+            nextScale = 1.0
+        }
         this.setState({svg: {
             ...this.state.svg,
             scale: nextScale,
