@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import './Annotation.scss';
 import * as modes from './modes'
 import * as transform from '../utils/transform'
+import InfSelectionArea from './InfSelectionArea'
 import Node from './Node'
 
 class BBox extends Component{
@@ -95,21 +96,41 @@ class BBox extends Component{
         }
     }
 
-    onMouseDown(e){
-        switch(this.state.mode){
-            case modes.VIEW:
-                if (e.button === 0){
-                    this.setMode(modes.MOVE)
-                }
+    /**************
+    * ANNO EVENTS *
+    ***************/
+    onMouseMove(e){
+        switch (this.state.mode){
+            case modes.MOVE:
+                this.move(
+                    e.movementX/this.props.svg.scale, 
+                    e.movementY/this.props.svg.scale
+                )
+                break
+            default:
                 break
         }
     }
 
     onMouseUp(e){
-        switch(this.state.mode){
+        switch (this.state.mode){
             case modes.MOVE:
                 if (e.button === 0){
                     this.setMode(modes.VIEW)
+                }
+                break
+            default:
+                break
+        }
+    }
+
+    onMouseDown(e){
+        switch (this.state.mode){
+            case modes.VIEW:
+                if (e.button === 0){
+                    if (this.props.isSelected){
+                        this.setMode(modes.MOVE)
+                    }
                 }
                 break
         }
@@ -195,11 +216,28 @@ class BBox extends Component{
         }
     }
 
+    renderInfSelectionArea(){
+        switch (this.state.mode){
+            case modes.MOVE:
+                return <InfSelectionArea enable={true} 
+                        svg={this.props.svg}
+                    />
+            default:
+                return null
+        }
+    }
+
     render(){
         if (this.state.anno){
-            return (<g>
+            return (
+            <g
+                onMouseMove={e => this.onMouseMove(e)}
+                onMouseUp={e => this.onMouseUp(e)}
+                onMouseDown={e => this.onMouseDown(e)}
+            >
                 {this.renderPolygon()}
                 {this.renderNodes()}
+                {this.renderInfSelectionArea()}
             </g>)
         } else {
             return <g></g>
