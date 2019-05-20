@@ -185,6 +185,9 @@ class Polygon extends Component{
                 mode,
                 selectedNode
             })
+            if (this.props.onModeChange){
+                this.props.onModeChange(mode)
+            }
         }
     }
 

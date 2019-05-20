@@ -167,7 +167,7 @@ class Annotation extends Component{
                 stroke: color,
                 fill: color,
                 strokeWidth: this.props.uiConfig.strokeWidth/this.props.svg.scale,
-
+                r:this.props.uiConfig.nodeRadius/this.props.svg.scale
             }
         }
     }
@@ -190,6 +190,8 @@ class Annotation extends Component{
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} data={data} 
+                    style={this.getStyle()}
+                    className={this.getCssClass()}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
