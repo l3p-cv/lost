@@ -118,6 +118,11 @@ class Polygon extends Component{
             case modes.ADD:
                 this.addNode(e, idx)
                 break
+            case modes.VIEW:
+                if (e.button === 0){
+                    this.setMode(modes.MOVE)
+                }
+                break
             default:
                 break
         }
@@ -238,6 +243,8 @@ class Polygon extends Component{
     }
 
     renderPolygon(){
+        console.log('Polygon style', this.props.style)
+        console.log('Polygon className', this.props.className)
         return <polygon points={this.toPolygonStr(this.state.anno)}
             fill='none' stroke="purple" 
             style={this.props.style}

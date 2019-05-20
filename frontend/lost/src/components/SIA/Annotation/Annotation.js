@@ -215,6 +215,8 @@ class Annotation extends Component{
                     />
             case 'line':
                 return <Line ref={this.myAnno} data={data}
+                    style={this.getStyle()}
+                    className={this.getCssClass()}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
