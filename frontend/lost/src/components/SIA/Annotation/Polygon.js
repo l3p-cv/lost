@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
-import ENodeE from './ENodeE'
 import Edge from './Edge'
+import Node from './Node'
 
 import * as transform from '../utils/transform'
 
@@ -12,11 +12,15 @@ import * as mouse from '../utils/mouse'
 
 class Polygon extends Component{
 
+    /*************
+    *  LIFECYCLE *
+    **************/
     constructor(props){
         super(props)
         this.state = {
             anno: undefined,
-            mode: modes.VIEW
+            mode: modes.VIEW,
+            selectedNode: undefined
         }
     }
 
@@ -25,6 +29,7 @@ class Polygon extends Component{
             console.log('in Create Pos')
             this.setState({
                 mode: modes.CREATE,
+                selectedNode: 1,
                 anno: [
                     {x: this.props.data.data.x, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y}
@@ -42,47 +47,56 @@ class Polygon extends Component{
         }
     }
 
-    //Callback for on NodeClick event
-    onNodeClick(e, idx){
-        if (this.props.onNodeClick){
-            this.props.onNodeClick(e, idx)
-        }
-        
-    }
+    /**************
+    * NODE EVENTS *
+    ***************/
 
     onNodeMouseUp(e, idx){
-        console.log('NodeMouseUP ', idx, e.movementX, e.movementY )        
+        switch (this.state.mode){
+            case modes.EDIT:
+                this.setMode(modes.VIEW)
+                break
+            default:
+                break
+        }
     }
 
-    onNodeFinalAnnoUpdate(e, idx, anno){
-        console.log('onNodeFinalAnnoUpdate', idx, anno)
-        if (e.button == 2){
-            switch (this.state.mode){
-                case 'create':
-                    console.log('onNodeFinalAnnoUpdate create')
-                    let newAnno = [...anno]
+    onNodeMouseDown(e,idx){
+        switch (this.state.mode){
+            case modes.CREATE:
+                if (e.button === 2){
+                    console.log('onNodeMouseDown create')
+                    let newAnno = [...this.state.anno]
                     newAnno.push({
                         x: newAnno[idx].x,
                         y: newAnno[idx].y
                     })
                     this.setState({
-                        anno: newAnno
+                        anno: newAnno,
+                        selectedNode: this.state.selectedNode + 1
                     })
-                default:
-                    break
-            }    
-        }   
-        
+                }
+                break
+            case modes.VIEW:
+                if (e.button === 0){
+                    this.setMode(modes.EDIT, idx)
+                }
+        }
     }
 
-    onMouseUp(e){
-        switch (e.button){
-            case 0: // on Leftclick
-                this.setState({mode:modes.VIEW})
+    onNodeMouseMove(e, idx){
+        switch (this.state.mode){
+            case modes.CREATE:
+                this.updateAnnoByMousePos(e, idx)
+            case modes.EDIT:
+                e.stopPropagation()
+                this.updateAnnoByMousePos(e, idx)
+                break
             default:
                 break
         }
     }
+
     onNodeDoubleClick(e, idx){
         switch (this.state.mode){
             case modes.CREATE:
@@ -95,6 +109,9 @@ class Polygon extends Component{
         }
     }
     
+    /**************
+    * EDGE EVENTS *
+    ***************/
     onEdgeMouseDown(e, idx){
         console.log('Edge mouse down', idx)
         switch (this.state.mode){
@@ -106,6 +123,9 @@ class Polygon extends Component{
         }
     }
 
+    /*************
+    *  LOGIC     *
+    *************/
     toPolygonStr(data){
         return data.map( (e => {
             return `${e.x},${e.y}`
@@ -113,18 +133,16 @@ class Polygon extends Component{
         
     }
 
-    setMode(mode){
+    setMode(mode, selectedNode=undefined){
         if (this.state.mode !== mode){
-            this.setState({mode: mode})
+            this.setState({
+                mode,
+                selectedNode
+            })
         }
     }
 
     move(movementX, movementY){
-        // console.log('Polygon mode ', this.state.mode)
-        // if (this.state.mode !== modes.MOVE){
-        //     console.log('Polygon changed state to move!')
-        //     this.setState({mode: modes.MOVE})
-        // }
         this.setState({
             anno : transform.move(this.state.anno, movementX, movementY)
         })
@@ -139,117 +157,100 @@ class Polygon extends Component{
         this.setState({anno: newAnno.concat(oldRest)})
     }
 
+    updateAnnoByMousePos(e, idx){
+        const mousePos = mouse.getMousePosition(e, this.props.svg)
+        let newAnno = [...this.state.anno]
+        newAnno[idx].x = mousePos.x
+        newAnno[idx].y = mousePos.y
+        this.setState({
+            anno: newAnno
+        })
+    }
+
     getResult(){
         return this.state.anno
     }
 
+    /*************
+    *  RENDERING *
+    **************/
+
     renderNodes(){
         if (!this.props.isSelected) return null
-        if (this.state.mode === modes.MOVE){
-            return null
+        switch (this.state.mode){
+            case modes.MOVE:
+                return null
+            case modes.EDIT:
+            case modes.CREATE:
+                return <Node anno={this.state.anno} idx={this.state.selectedNode} 
+                        key={this.state.selectedNode} style={this.props.style}
+                        className={this.props.className} 
+                        isSelected={this.props.isSelected}
+                        mode={this.state.mode}
+                        svg={this.props.svg}
+                        onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
+                        onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
+                        onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
+                        onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
+                    />
+            default:
+                return this.state.anno.map((e, idx) => {
+                    return <Node anno={this.state.anno} idx={idx} 
+                        key={idx} style={this.props.style}
+                        className={this.props.className} 
+                        isSelected={this.props.isSelected}
+                        mode={this.state.mode}
+                        svg={this.props.svg}
+                        onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
+                        onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
+                        onDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
+                        onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
+                        />
+                })
         }
-        if (this.state.mode === modes.CREATE){
-            console.log('Render create nodes')
-            return [<ENodeE anno={this.state.anno} idx={0}
-                key={0} 
-                style={this.props.style}
-                className={this.props.className} 
-                isSelected={this.props.isSelected}
-                mode={this.state.mode}
-                draw={{
-                    connectedEdge: false, node: true, closingEdge: false
-                }}
-                onModeChange={(idx, newMode) => this.onENEModeChange(idx, newMode)}
-                svg={this.props.svg}
-                />, <ENodeE anno={this.state.anno} idx={this.state.anno.length-1} 
-                key={this.state.anno.length-1} 
-                style={this.props.style}
-                className={this.props.className} 
-                onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
-                onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onNodeFinalAnnoUpdate={(e,idx, newAnno) => this.onNodeFinalAnnoUpdate(e, idx, newAnno)}
-                onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
-                isSelected={this.props.isSelected}
-                mode={this.state.mode}
-                draw={{
-                    connectedEdge: true, node: true, closingEdge: true
-                }}
-                svg={this.props.svg}
-                />
-            ]
-        }
-
-        return this.state.anno.map((e, idx) => {
-            return <ENodeE anno={this.state.anno} idx={idx} 
-                key={idx} style={this.props.style}
-                className={this.props.className} 
-                onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
-                onNodeMouseUp={(e,idx) => this.onNodeMouseUp(e, idx)}
-                onNodeFinalAnnoUpdate={(e,idx, myAnno) => this.onNodeFinalAnnoUpdate(e, idx, myAnno)}
-                onNodeDoubleClick={(e, idx) => this.onNodeDoubleClick(e, idx)}
-                isSelected={this.props.isSelected}
-                mode={this.state.mode}
-                draw={{
-                    connectedEdge: true, node: true, closingEdge: true
-                }}
-                svg={this.props.svg}
-                />
-        })
     }
 
     renderEdges(){
         if (!this.props.isSelected) return null
-        if (this.state.mode === modes.MOVE){
-            return null
+        switch (this.state.mode){
+            case modes.VIEW:
+            case modes.ADD:
+                let edges = this.state.anno.map((e, idx) => {
+                    return <Edge anno={this.state.anno} 
+                        idx={idx} key={idx} style={this.props.style}
+                        className={this.props.className}
+                        isSelected={this.props.isSelected}
+                        onMouseDown={(e, idx) => {this.onEdgeMouseDown(e, idx)}}                
+                        />
+                })
+                edges.push(<Edge anno={this.state.anno} 
+                    closingEdge={true} key={edges.length}
+                    idx={0}
+                    style={this.props.style}
+                    className={this.props.className}
+                    isSelected={this.props.isSelected}
+                    onMouseDown={(e, idx) => {this.onEdgeMouseDown(e, idx)}}  
+                    />)
+                return edges
+            default:
+                return null
         }
-        let edges = this.state.anno.map((e, idx) => {
-            return <Edge anno={this.state.anno} 
-                idx={idx} key={idx} style={this.props.style}
-                className={this.props.className}
-                isSelected={this.props.isSelected}
-                onMouseDown={(e, idx) => {this.onEdgeMouseDown(e, idx)}}                
-                />
-        })
-        edges.push(<Edge anno={this.state.anno} 
-            closingEdge={true} key={edges.length}
-            idx={0}
+    }
+
+    renderPolygon(){
+        return <polygon points={this.toPolygonStr(this.state.anno)}
+            fill='none' stroke="purple" 
             style={this.props.style}
             className={this.props.className}
-            isSelected={this.props.isSelected}
-            onMouseDown={(e, idx) => {this.onEdgeMouseDown(e, idx)}}  
-            />)
-        return edges
+        />
     }
     render(){
         if (this.state.anno){
-            if (this.state.mode === modes.CREATE){
-                return (
-                    <g
-                        onKeyPress={e => this.onKeyPress(e)}
-                        // onMouseUp={e => this.onMouseUp(e)}
-                    >
-                        <polyline points={this.toPolygonStr(this.state.anno)}
-                        fill='none' stroke="purple" 
-                        style={this.props.style}
-                        className={this.props.className}
-                        />
-                        {this.renderNodes()}
-                    </g>
-                )
-            } 
-            return(
-                <g 
-                    onKeyPress={e => this.onKeyPress(e)}
-                    onMouseUp={e => this.onMouseUp(e)}
-                >
-                    <polygon points={this.toPolygonStr(this.state.anno)}
-                        fill="purple" fillOpacity="0.5" stroke="purple" 
-                        style={this.props.style}
-                        className={this.props.className}/>
-                    {this.renderEdges()}
-                    {this.renderNodes()}
-                </g>
-                )
+            return <g>
+                {this.renderPolygon()}
+                {this.renderEdges()}
+                {this.renderNodes()}
+            </g>
         } else {
             return <g></g>
         }

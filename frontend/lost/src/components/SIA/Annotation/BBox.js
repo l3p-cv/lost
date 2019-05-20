@@ -115,7 +115,7 @@ class BBox extends Component{
         }
     }
     /*************
-     * LOGIC     *
+    *  LOGIC     *
     **************/
     setMode(mode, nodeIdx=undefined){
         if (this.state.mode !== mode){
