@@ -32,7 +32,7 @@ class Edge extends Component{
     }
 
     onMouseDown(e){
-        e.stopPropagation()
+        // e.stopPropagation()
         console.log('Clicked on Edge', this.props.idx)
         if (this.props.onMouseDown){
             this.props.onMouseDown(e, this.props.idx)

@@ -74,9 +74,9 @@ class Annotation extends Component{
     onMouseDown(e: Event){
         switch(e.button){
             case 0:
-                if (this.isSelected()){
-                    this.setMode(modes.MOVE)
-                }
+                // if (this.isSelected()){
+                //     this.setMode(modes.MOVE)
+                // }
             default:
                 break
         }

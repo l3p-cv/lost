@@ -42,11 +42,18 @@ class Line extends Polygon{
     }
     render(){
         if (this.state.anno){
-            return <g>
-                {this.renderPolyline()}
-                {this.renderEdges()}
-                {this.renderNodes()}
-            </g>
+            return (
+                <g
+                    onMouseMove={e => this.onMouseMove(e)}
+                    onMouseUp={e => this.onMouseUp(e)}
+                    onMouseDown={e => this.onMouseDown(e)}
+                >
+                    {this.renderPolyline()}
+                    {this.renderEdges()}
+                    {this.renderNodes()}
+                    {this.renderInfSelectionArea()}
+                </g>
+            )
         } else {
             return <g></g>
         }

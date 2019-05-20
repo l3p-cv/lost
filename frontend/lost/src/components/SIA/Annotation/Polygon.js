@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 
 import Edge from './Edge'
 import Node from './Node'
+import InfSelectionArea from './InfSelectionArea'
 
 import * as transform from '../utils/transform'
 
@@ -41,12 +42,52 @@ class Polygon extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Update polygon')
+        console.log('Update polygon', this.state.mode)
         if (prevProps.mode !== this.props.mode){
             this.setMode(this.props.mode)
         }
     }
 
+
+    /**************
+    * ANNO EVENTS *
+    ***************/
+    onMouseMove(e){
+        switch (this.state.mode){
+            case modes.MOVE:
+                this.move(
+                    e.movementX/this.props.svg.scale, 
+                    e.movementY/this.props.svg.scale
+                )
+                break
+            default:
+                break
+        }
+    }
+
+    onMouseUp(e){
+        switch (this.state.mode){
+            case modes.MOVE:
+                if (e.button === 0){
+                    this.setMode(modes.VIEW)
+                }
+                break
+            default:
+                break
+        }
+    }
+
+    onMouseDown(e){
+        switch (this.state.mode){
+            case modes.VIEW:
+                if (e.button === 0){
+                    if (this.props.isSelected){
+                        this.setMode(modes.MOVE)
+                    }
+                }
+                break
+        }
+    }
     /**************
     * NODE EVENTS *
     ***************/
@@ -251,13 +292,32 @@ class Polygon extends Component{
             className={this.props.className}
         />
     }
+
+    renderInfSelectionArea(){
+        switch (this.state.mode){
+            case modes.MOVE:
+                return <InfSelectionArea enable={true} 
+                        svg={this.props.svg}
+                    />
+            default:
+                return null
+        }
+    }
+
     render(){
         if (this.state.anno){
-            return <g>
-                {this.renderPolygon()}
-                {this.renderEdges()}
-                {this.renderNodes()}
-            </g>
+            return (
+                <g
+                    onMouseMove={e => this.onMouseMove(e)}
+                    onMouseUp={e => this.onMouseUp(e)}
+                    onMouseDown={e => this.onMouseDown(e)}
+                >
+                    {this.renderPolygon()}
+                    {this.renderEdges()}
+                    {this.renderNodes()}
+                    {this.renderInfSelectionArea()}
+                </g>
+            )
         } else {
             return <g></g>
         }
