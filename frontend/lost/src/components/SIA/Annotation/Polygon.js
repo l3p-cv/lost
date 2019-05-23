@@ -7,7 +7,7 @@ import InfSelectionArea from './InfSelectionArea'
 import * as transform from '../utils/transform'
 
 import './Annotation.scss'
-import * as modes from './modes'
+import * as modes from '../types/modes'
 import * as mouse from '../utils/mouse'
 
 
@@ -176,7 +176,6 @@ class Polygon extends Component{
     }
 
     setMode(mode, selectedNode=undefined){
-        console.log('Poylgon SetMode oldMode', this.state.mode)
         if (this.state.mode !== mode){
             if (this.props.onModeChange){
                 this.props.onModeChange(mode, this.state.mode)

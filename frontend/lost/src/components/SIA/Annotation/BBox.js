@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import './Annotation.scss';
-import * as modes from './modes'
+import * as modes from '../types/modes'
 import * as transform from '../utils/transform'
 import InfSelectionArea from './InfSelectionArea'
 import Node from './Node'

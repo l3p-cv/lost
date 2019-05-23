@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import './Annotation.scss'
-import * as modes from './modes'
-import * as cursorstyles from './cursorstyles'
+import * as modes from '../types/modes'
+import * as cursorstyles from '../types/cursorstyles'
 
 
 class Node extends Component{

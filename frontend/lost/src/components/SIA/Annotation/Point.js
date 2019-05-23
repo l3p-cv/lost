@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import InfSelectionArea from './InfSelectionArea'
 import Node from './Node'
-import * as modes from './modes'
+import * as modes from '../types/modes'
 import * as transform from '../utils/transform'
 
 class Point extends Component{

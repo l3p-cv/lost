@@ -6,7 +6,7 @@ import Annotation from './Annotation/Annotation'
 import actions from '../../actions'
 
 import * as transform from './utils/transform'
-import * as modes from './Annotation/modes'
+import * as modes from './types/modes'
 
 
 const { getSiaImage,getSiaAnnos,siaKeyDown, siaKeyUp, selectAnnotation} = actions

@@ -8,7 +8,7 @@ import Point from './Point'
 import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
-import * as modes from './modes'
+import * as modes from '../types/modes'
 import * as colorlut from '../utils/colorlut'
 
 

@@ -3,7 +3,7 @@ import Polygon from './Polygon'
 import Edge from './Edge'
 
 import * as transform from '../utils/transform'
-import * as modes from './modes'
+import * as modes from '../types/modes'
 
 
 
