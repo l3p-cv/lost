@@ -19,7 +19,7 @@ class Point extends Component{
 
     componentDidMount(prevProps){
         console.log('Component mounted', this.props.data.id)
-        if (this.props.data.createMode){
+        if (this.props.mode === modes.CREATE){
             console.log('in Create Pos')
             this.setState({
                 mode: modes.VIEW,
@@ -61,7 +61,6 @@ class Point extends Component{
     }
 
     onNodeMouseDown(e, idx){
-        console.log('Mouse Down on Point')
         switch (this.state.mode){
             case modes.VIEW:
                 if (e.button === 0){
@@ -78,13 +77,13 @@ class Point extends Component{
     **************/
     setMode(mode, selectedNode=undefined){
         if (this.state.mode !== mode){
+            if (this.props.onModeChange){
+                this.props.onModeChange(mode, this.state.mode)
+            }
             this.setState({
                 mode,
                 selectedNode
             })
-            if (this.props.onModeChange){
-                this.props.onModeChange(mode)
-            }
         }
     }
 
@@ -106,7 +105,6 @@ class Point extends Component{
     }
 
     renderNode(){
-        console.log('Point style', this.props.style)
         if (!this.props.isSelected) return null 
         switch(this.state.mode){
             case modes.MOVE:

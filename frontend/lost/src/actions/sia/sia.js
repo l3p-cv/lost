@@ -55,3 +55,11 @@ export const siaSetUIConfig = (config) => {
         }
     }
 }
+
+export const siaShowSingleAnno = (annoId) => {
+    return {
+        type: TYPES.SIA_SHOW_SINGLE_ANNO,
+        payload: annoId
+    
+    }
+}

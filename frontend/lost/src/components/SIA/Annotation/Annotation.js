@@ -12,7 +12,7 @@ import * as modes from './modes'
 import * as colorlut from '../utils/colorlut'
 
 
-const {selectAnnotation} = actions
+const {selectAnnotation, siaShowSingleAnno} = actions
 
 
 class Annotation extends Component{
@@ -22,15 +22,19 @@ class Annotation extends Component{
         this.state = {
             mode: modes.VIEW,
             selAreaCss: 'sel-area-off',
+            visibility: 'visible'
         }
         this.myAnno = React.createRef()
         // this.myKey = _.uniqueId('annokey')
         
     }
 
-    componentDidMount(){
+    
+    componentWillMount(){
+        console.log('Annotation did mount ', this.props.data.id)
         if (this.props.data.createMode){
             this.props.selectAnnotation(this.props.data.id)
+            this.setMode(modes.CREATE)
         }
     }
 
@@ -58,6 +62,17 @@ class Annotation extends Component{
                 }
             }
         }
+        if (prevProps.showSingleAnno !== this.props.showSingleAnno){
+            if (this.props.showSingleAnno === undefined){
+                this.setVisible(true)
+            } else {
+                if (this.props.showSingleAnno !== this.props.data.id){
+                    this.setVisible(false)
+                } else {
+                    this.setVisible(true)
+                }
+            }
+        }
     }
     
     /*************
@@ -72,12 +87,39 @@ class Annotation extends Component{
 
     }
 
+    onModeChange(newMode, oldMode){
+        console.log('MODE CHANGED: ',this.props.data.id, newMode, oldMode)
+        switch (newMode){
+            case modes.ADD:
+            case modes.EDIT:
+            case modes.MOVE:
+            case modes.CREATE:
+                this.props.siaShowSingleAnno(this.props.data.id)
+                break
+            default:
+                this.props.siaShowSingleAnno(undefined)
+                break
+        }
+    }
+
     /*************
      * LOGIC     *
      *************/
     setMode(mode){
         if (this.state.mode !== mode){
             this.setState({mode: mode})
+        }
+    }
+
+    setVisible(visible){
+        if (visible){
+            if (this.state.visibility !== 'visible'){
+                this.setState({visibility: 'visible'})
+            }
+        } else {
+            if (this.state.visibility !== 'hidden'){
+                this.setState({visibility: 'hidden'})
+            }
         }
     }
 
@@ -92,12 +134,11 @@ class Annotation extends Component{
         return {
             ...this.props.data,
             data: this.myAnno.current.state.anno,
-            createMode: this.myAnno.current.state.mode === 'create' 
+            createMode: this.myAnno.current.state.mode === modes.CREATE
         }
     }
     
     getStyle(){
-        console.log(this.props.data)
         let color
         if (this.props.data.labelIds){
             color = colorlut.getColor(this.props.data.labelIds[0])
@@ -137,7 +178,6 @@ class Annotation extends Component{
     renderAnno(){
         const type = this.props.type
         const data = this.props.data
-
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} data={data} 
@@ -146,6 +186,7 @@ class Annotation extends Component{
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
+                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'bBox':
                 return <BBox ref={this.myAnno} data={data} 
@@ -156,6 +197,7 @@ class Annotation extends Component{
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
+                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'polygon':
                 return <Polygon ref={this.myAnno} data={data} 
@@ -165,6 +207,7 @@ class Annotation extends Component{
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
+                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'line':
                 return <Line ref={this.myAnno} data={data}
@@ -173,28 +216,35 @@ class Annotation extends Component{
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
+                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             default:
                 console.error("Wrong annoType for annotations: ",
                     this.props.annoType)
         } 
     }
+
     render(){
         return (
-            <g 
+            <g visibility={this.state.visibility}
                 onMouseEnter={e => this.onMouseEnter(e)}
             >
-                <circle 
-                    cx={this.props.svg.width/2} 
-                    cy={this.props.svg.height/2} 
-                    r={'100%'}
-                    className={this.state.selAreaCss}
-                />
                 {this.renderAnno()}
             </g>
         )
-        
     }
+    
+    // render(){
+    //     if (this.props.showSingleAnno === undefined){
+    //         return this.renderStuff()
+    //     } else if (this.props.showSingleAnno === this.props.data.id) {
+    //         return this.renderStuff()
+    //     } else {
+    //         return null
+    //     }
+        
+        
+    // }
 }
 
 function mapStateToProps(state) {
@@ -202,12 +252,13 @@ function mapStateToProps(state) {
         selectedAnno: state.sia.selectedAnno,
         keyDown: state.sia.keyDown,
         keyUp: state.sia.keyUp,
-        uiConfig: state.sia.uiConfig
+        uiConfig: state.sia.uiConfig,
+        showSingleAnno: state.sia.showSingleAnno
     })
 }
 
 export default connect(
     mapStateToProps, 
-    {selectAnnotation}
+    {selectAnnotation, siaShowSingleAnno}
     ,null,
     {forwardRef:true})(Annotation)

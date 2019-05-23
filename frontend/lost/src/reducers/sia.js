@@ -7,7 +7,8 @@ const INITIAL_STATE = {
     uiConfig: {
         nodeRadius: 4,
         strokeWidth: 4
-    }
+    },
+    showSingleAnno: undefined
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -38,6 +39,12 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 uiConfig: {...state.uiConfig,...action.payload}
+            }
+        case TYPES.SIA_SHOW_SINGLE_ANNO:
+            return {
+                ...state,
+                showSingleAnno: action.payload
+
             }
         default:
             return state

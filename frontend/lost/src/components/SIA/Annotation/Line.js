@@ -32,8 +32,6 @@ class Line extends Polygon{
     }
 
     renderPolyline(){
-        console.log('line style', this.props.style)
-        console.log('line className', this.props.className)
         return <polyline points={this.toPolygonStr(this.state.anno)}
             fill='none' stroke="purple" 
             style={{...this.props.style, fill:'none'}}

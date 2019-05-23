@@ -26,16 +26,15 @@ class Polygon extends Component{
     }
 
     componentDidMount(){
-        if (this.props.data.createMode){
+        if (this.props.mode === modes.CREATE){
             console.log('in Create Pos')
             this.setState({
-                mode: modes.CREATE,
-                selectedNode: 1,
                 anno: [
                     {x: this.props.data.data.x, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y}
                 ]
             })
+            this.setMode(modes.CREATE, 1)
         } else {
             this.setState({anno: [...this.props.data.data]})
         }
@@ -142,9 +141,6 @@ class Polygon extends Component{
         switch (this.state.mode){
             case modes.CREATE:
                 this.setMode(modes.VIEW)
-                // this.setState({
-                //     mode: modes.VIEW
-                // })
             default:
                 break
         }
@@ -180,14 +176,15 @@ class Polygon extends Component{
     }
 
     setMode(mode, selectedNode=undefined){
+        console.log('Poylgon SetMode oldMode', this.state.mode)
         if (this.state.mode !== mode){
+            if (this.props.onModeChange){
+                this.props.onModeChange(mode, this.state.mode)
+            }
             this.setState({
                 mode,
                 selectedNode
             })
-            if (this.props.onModeChange){
-                this.props.onModeChange(mode)
-            }
         }
     }
 
@@ -287,8 +284,6 @@ class Polygon extends Component{
     }
 
     renderPolygon(){
-        console.log('Polygon style', this.props.style)
-        console.log('Polygon className', this.props.className)
         return <polygon points={this.toPolygonStr(this.state.anno)}
             fill='none' stroke="purple" 
             style={this.props.style}

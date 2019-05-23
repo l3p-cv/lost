@@ -218,7 +218,7 @@ class Canvas extends Component{
         this.setState({
             annos: [...this.state.annos, {
                 id: _.uniqueId('new'),
-                type: 'point',
+                type: 'polygon',
                 data: {
                     x: mousePos.x, 
                     y: mousePos.y
@@ -304,17 +304,26 @@ class Canvas extends Component{
     renderAnnotations(){
         // Do not render annotations while moving the camera!
         if (this.state.mode !== modes.CAMERA_MOVE){
+            // if (this.props.showSingleAnno){
+            //     let idx = this.state.annos.findIndex( e => {
+            //         return e.id === this.props.showSingleAnno
+            //     })
+            //     return <Annotation type={this.state.annos[idx].type}
+            //             data={this.state.annos[idx]} key={this.state.annos[idx].id}
+            //             svg={this.state.svg} ref={this.annoRefs[idx]}/>
+            // } else {
+
             this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
                 this.annoRefs.push(React.createRef())
-                console.log('render annotation', el)
                 return <Annotation type={el.type} 
                         data={el} key={el.id} svg={{...this.state.svg}}
                         ref={this.annoRefs[this.annoRefs.length - 1]}
                     />
             })
-            console.log('renderAnnotations',annos)
             return <g>{annos}</g>
+            // }
+
         } else {
             return null
         }
@@ -359,7 +368,7 @@ class Canvas extends Component{
 function mapStateToProps(state) {
     return ({
         annos: state.sia.annos,
-        selectedAnno: state.sia.selectedAnno
+        selectedAnno: state.sia.selectedAnno,
     })
 }
 

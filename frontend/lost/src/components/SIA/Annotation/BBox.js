@@ -21,18 +21,17 @@ class BBox extends Component{
 
     componentDidMount(prevProps){
         console.log('Component mounted', this.props.data.id)
-        if (this.props.data.createMode){
+        if (this.props.mode === modes.CREATE){
             console.log('in Create Pos')
             this.setState({
-                mode: modes.CREATE,
                 anno: [
                     {x: this.props.data.data.x, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y},
                     {x: this.props.data.data.x+1, y: this.props.data.data.y+1},
                     {x: this.props.data.data.x, y: this.props.data.data.y+1}
-                ],
-                selectedNode: 2
+                ]
             })
+            this.setMode(modes.CREATE, 2)
         } else {
             this.setState({anno: [...this.props.data.data]})
         }
@@ -140,6 +139,9 @@ class BBox extends Component{
     **************/
     setMode(mode, nodeIdx=undefined){
         if (this.state.mode !== mode){
+            if (this.props.onModeChange){
+                this.props.onModeChange(mode, this.state.mode)
+            }
             this.setState({
                 mode: mode,
                 selectedNode: nodeIdx
