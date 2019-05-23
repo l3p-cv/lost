@@ -8,7 +8,8 @@ const INITIAL_STATE = {
         nodeRadius: 4,
         strokeWidth: 4
     },
-    showSingleAnno: undefined
+    showSingleAnno: undefined,
+    selectedTool: undefined
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -44,6 +45,12 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 showSingleAnno: action.payload
+
+            }
+        case TYPES.SIA_SELECT_TOOL:
+            return {
+                ...state,
+                selectedTool: action.payload
 
             }
         default:

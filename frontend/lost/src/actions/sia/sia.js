@@ -60,6 +60,12 @@ export const siaShowSingleAnno = (annoId) => {
     return {
         type: TYPES.SIA_SHOW_SINGLE_ANNO,
         payload: annoId
-    
+    }
+}
+
+export const siaSelectTool = (tool) => {
+    return {
+        type: TYPES.SIA_SELECT_TOOL,
+        payload: tool
     }
 }

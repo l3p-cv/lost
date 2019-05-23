@@ -218,7 +218,7 @@ class Canvas extends Component{
         this.setState({
             annos: [...this.state.annos, {
                 id: _.uniqueId('new'),
-                type: 'polygon',
+                type: this.props.selectedTool,
                 data: {
                     x: mousePos.x, 
                     y: mousePos.y
@@ -369,6 +369,7 @@ function mapStateToProps(state) {
     return ({
         annos: state.sia.annos,
         selectedAnno: state.sia.selectedAnno,
+        selectedTool: state.sia.selectedTool
     })
 }
 
