@@ -120,9 +120,17 @@ class PipelineStart(Resource):
             # quick and dirty here, data was binary but should be dictonary without using json.loads locally.
             import json
             data = json.loads(data)
-            pipeline_service.start(dbm, data, identity)
-            dbm.close_session()
-            return "success"
+            group_id = None
+            for user_group in dbm.get_user_groups_by_user_id(identity):
+                if user_group.group.is_user_default:
+                    group_id = user_group.group.idx
+            if group_id:
+                pipeline_service.start(dbm, data, identity, group_id)
+                dbm.close_session()
+                return "success"
+            else:
+                dbm.close_session()
+                return "default group for user {} not found.".format(identity), 400
 
 
 

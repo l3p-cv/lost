@@ -12,12 +12,12 @@ __author__ = "Gereon Reus"
 ###################################################################
 
 
-def start(db_man, data, manager_id):
+def start(db_man, data, manager_id, group_id):
     # data = json.loads(data)
     # load template
     template = db_man.get_pipe_template(data['templateId'])
     # initialize pipe starter
-    pipe_starter = PipeStarter(template, data, manager_id)
+    pipe_starter = PipeStarter(template, data, manager_id, group_id)
     # create general pipe and fill with info
     db_man.save_obj(pipe_starter.create_pipe())
     # create raw pipe elements and map the ids in pipe_starter.pe_map
@@ -77,7 +77,7 @@ def handle_multiple_result_links(db_man, pipe_starter, pe_n):
         handle_result_links(db_man, pipe_starter, pe_n, result_link.result_id)
 
 class PipeStarter(object):
-    def __init__(self, template, data, manager_id):
+    def __init__(self, template, data, manager_id, group_id):
         self.pipe = model.Pipe()
         self.data_map = dict()
         self.pe_map = dict()
@@ -85,6 +85,7 @@ class PipeStarter(object):
         self.template = template
         self.data = data
         self.manager_id = manager_id
+        self.group_id = group_id
         self.timestamp_now = datetime.now()
         self.template_content = json.loads(template.json_template)
         for element in self.template_content['elements']:
@@ -103,7 +104,7 @@ class PipeStarter(object):
                         description=self.data['description'],
                         manager_id=self.manager_id,
                         is_debug_mode=is_debug_mode,
-                        group_id=self.manager_id,
+                        group_id=self.group_id,
                         timestamp=self.timestamp_now,
                         start_definition = json.dumps(self.data)
                         )
