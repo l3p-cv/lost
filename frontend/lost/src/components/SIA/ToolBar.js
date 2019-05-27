@@ -11,7 +11,7 @@ class ToolBar extends Component{
     onClick(e, tool){
         this.props.siaSelectTool(tool)
     }
-    
+
     render(){
         return(<div>
                 <Button onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">Point</Button>{' '}

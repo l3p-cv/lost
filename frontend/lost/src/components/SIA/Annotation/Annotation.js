@@ -4,6 +4,7 @@ import _ from 'lodash'
 
 import actions from '../../../actions'
 
+import AnnoBar from './AnnoBar'
 import Point from './Point'
 import BBox from './BBox'
 import Line from './Line'
@@ -22,7 +23,8 @@ class Annotation extends Component{
         this.state = {
             mode: modes.VIEW,
             selAreaCss: 'sel-area-off',
-            visibility: 'visible'
+            visibility: 'visible',
+            anno: undefined
         }
         this.myAnno = React.createRef()
         // this.myKey = _.uniqueId('annokey')
@@ -34,6 +36,7 @@ class Annotation extends Component{
         console.log('Annotation did mount ', this.props.data.id)
         if (this.props.data.createMode){
             this.props.selectAnnotation(this.props.data.id)
+            this.setState({anno: [...this.props.data.data]})
             this.setMode(modes.CREATE)
         }
     }
@@ -224,12 +227,18 @@ class Annotation extends Component{
         } 
     }
 
+    renderAnnoBar(){
+        if (!this.myAnno.current) return null
+        return <AnnoBar anno={this.myAnno.current.anno} label={'Test'}/>
+    }
+
     render(){
         return (
             <g visibility={this.state.visibility}
                 onMouseEnter={e => this.onMouseEnter(e)}
             >
                 {this.renderAnno()}
+                {this.renderAnnoBar()}
             </g>
         )
     }
