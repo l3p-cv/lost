@@ -65,6 +65,16 @@ def get_default_script_resources(script_path):
     except Exception:
         logging.error(traceback.format_exc())
 
+def _is_comment_line(line_raw):
+    line = line_raw.replace(" ", "")
+    line = line.replace("\t", "")
+    if len(line) < 1:
+        return False
+    if line[0] == '#':
+        return True
+    else:
+        return False
+
 def parse_script_constants(script_path, constant_name, bracket_type='{'):
     if bracket_type == '{':
         b_open = '{'
@@ -78,6 +88,8 @@ def parse_script_constants(script_path, constant_name, bracket_type='{'):
     with open(script_path) as f:
         args = ''
         for line in f:
+            if _is_comment_line(line):
+                continue
             if constant_name in line:
                 open_count = line.count(b_open)
                 start = line.find(b_open)
