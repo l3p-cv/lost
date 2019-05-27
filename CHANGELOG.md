@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -
 
 ### Fixed
-- 
+- Fixed import of script ENV variables that have been commented out (see commit 72fddfa)
 
 ### Security
 - 
