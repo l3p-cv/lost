@@ -20,20 +20,21 @@ class BBox extends Component{
     }
 
     componentDidMount(prevProps){
-        console.log('Component mounted', this.props.data.id)
+        // console.log('Component mounted', this.props.data.id)
         if (this.props.mode === modes.CREATE){
             console.log('in Create Pos')
+            const data = this.props.anno[0]
             this.setState({
                 anno: [
-                    {x: this.props.data.data.x, y: this.props.data.data.y},
-                    {x: this.props.data.data.x+1, y: this.props.data.data.y},
-                    {x: this.props.data.data.x+1, y: this.props.data.data.y+1},
-                    {x: this.props.data.data.x, y: this.props.data.data.y+1}
+                    {x: data.x, y: data.y},
+                    {x: data.x+1, y: data.y},
+                    {x: data.x+1, y: data.y+1},
+                    {x: data.x, y: data.y+1}
                 ]
             })
             this.setMode(modes.CREATE, 2)
         } else {
-            this.setState({anno: [...this.props.data.data]})
+            this.setState({anno: [...this.props.anno]})
         }
     }
 

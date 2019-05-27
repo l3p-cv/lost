@@ -18,17 +18,18 @@ class Point extends Component{
     }
 
     componentDidMount(prevProps){
-        console.log('Component mounted', this.props.data.id)
+        // console.log('Component mounted', this.props.data.id)
         if (this.props.mode === modes.CREATE){
             console.log('in Create Pos')
+            const data = this.props.anno[0]
             this.setState({
                 mode: modes.VIEW,
                 anno: [
-                    {x: this.props.data.data.x, y: this.props.data.data.y}
+                    {x: data.x, y: data.y}
                 ]
             })
         } else {
-            this.setState({anno: [...this.props.data.data]})
+            this.setState({anno: [...this.props.anno]})
         }
     }
 

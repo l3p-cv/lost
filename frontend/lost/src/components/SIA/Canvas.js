@@ -146,13 +146,13 @@ class Canvas extends Component{
             this.removeSelectedAnno()
         }
         this.props.siaKeyDown(e.key)
-        console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+        console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
     onKeyUp(e: Event){
         e.preventDefault()
         this.props.siaKeyUp(e.key)
-        console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+        console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
     onMouseMove(e: Event){
@@ -219,10 +219,10 @@ class Canvas extends Component{
             annos: [...this.state.annos, {
                 id: _.uniqueId('new'),
                 type: this.props.selectedTool,
-                data: {
+                data: [{
                     x: mousePos.x, 
                     y: mousePos.y
-                },
+                }],
                 createMode: true
             }]
         })

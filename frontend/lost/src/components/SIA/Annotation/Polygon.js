@@ -28,15 +28,16 @@ class Polygon extends Component{
     componentDidMount(){
         if (this.props.mode === modes.CREATE){
             console.log('in Create Pos')
+            const data = this.props.anno[0]
             this.setState({
                 anno: [
-                    {x: this.props.data.data.x, y: this.props.data.data.y},
-                    {x: this.props.data.data.x+1, y: this.props.data.data.y}
+                    {x: data.x, y: data.y},
+                    {x: data.x+1, y: data.y}
                 ]
             })
             this.setMode(modes.CREATE, 1)
         } else {
-            this.setState({anno: [...this.props.data.data]})
+            this.setState({anno: [...this.props.anno]})
         }
     }
 

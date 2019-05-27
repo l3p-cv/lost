@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import _ from 'lodash'
-
 import actions from '../../../actions'
 
 import AnnoBar from './AnnoBar'
@@ -36,9 +35,9 @@ class Annotation extends Component{
         console.log('Annotation did mount ', this.props.data.id)
         if (this.props.data.createMode){
             this.props.selectAnnotation(this.props.data.id)
-            this.setState({anno: [...this.props.data.data]})
             this.setMode(modes.CREATE)
-        }
+        } 
+        this.setState({anno: [...this.props.data.data]})
     }
 
     componentDidUpdate(prevProps){
@@ -180,10 +179,11 @@ class Annotation extends Component{
     **************/
     renderAnno(){
         const type = this.props.type
-        const data = this.props.data
+        const anno = this.state.anno
+        console.log('Annotation state.anno', this.state.anno, this.props.type)
         switch(type) {
             case 'point':
-                return <Point ref={this.myAnno} data={data} 
+                return <Point ref={this.myAnno} anno={anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     isSelected={this.isSelected()}
@@ -192,7 +192,7 @@ class Annotation extends Component{
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'bBox':
-                return <BBox ref={this.myAnno} data={data} 
+                return <BBox ref={this.myAnno} anno={anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
@@ -203,7 +203,7 @@ class Annotation extends Component{
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'polygon':
-                return <Polygon ref={this.myAnno} data={data} 
+                return <Polygon ref={this.myAnno} anno={anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
@@ -213,7 +213,7 @@ class Annotation extends Component{
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'line':
-                return <Line ref={this.myAnno} data={data}
+                return <Line ref={this.myAnno} anno={anno}
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     isSelected={this.isSelected()}
@@ -226,19 +226,31 @@ class Annotation extends Component{
                     this.props.annoType)
         } 
     }
-
+    
     renderAnnoBar(){
-        if (!this.myAnno.current) return null
-        return <AnnoBar anno={this.myAnno.current.anno} label={'Test'}/>
-    }
+        // console.log('Inputfile gerändert')
+        // return (
+        //     <foreignObject x="10" y="10" width="100" height="150"> 
+        //         <div xmlns="http://www.w3.org/1999/xhtml">
+        //             <input placeholder='JUnge' onKeyDown={e => this.onFocus(e)} onKeyUp={e => this.onFocus(e)}></input>
+        //         </div>
+        //     </foreignObject>
+        // )
+        // if (!this.myAnno.current) return null
+        //return <g style={{position:'absolute', color:'orange', left:this.props.svg.left}}>Text</g>
 
+        return <AnnoBar anno={this.state.anno} label={'Test'}/>
+    }
     render(){
+        if(!this.state.anno) return null
         return (
+            <g>
             <g visibility={this.state.visibility}
                 onMouseEnter={e => this.onMouseEnter(e)}
             >
                 {this.renderAnno()}
-                {this.renderAnnoBar()}
+            </g>
+            {this.renderAnnoBar()}
             </g>
         )
     }

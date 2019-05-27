@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import { Button } from 'reactstrap';
 import {connect} from 'react-redux'
 import actions from '../../actions'
-
 import * as TOOLS from './types/tools'
 const { siaSelectTool } = actions
 

@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
 // import {connect} from 'react-redux'
 import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap'
-
 // import actions from '../../../actions'
-
+import Autocomplete from 'react-autocomplete'
 // const {selectAnnotation, siaShowSingleAnno} = actions
 
 
@@ -11,6 +10,9 @@ class AnnoBar extends Component{
 
     constructor(props){
         super(props)
+        this.state = {
+            value: ''
+        }
     }
     
     /*************
@@ -26,11 +28,48 @@ class AnnoBar extends Component{
     /*************
      * RENDERING *
     **************/
+    onKeyDown(e: Event){
+        e.stopPropagation()
+        console.log('Focus on Input field: ', e.key)
+    }
+
+    onKeyUp(e:Event){
+        e.stopPropagation()
+    }
 
     render(){
         console.log('AnnoBar', this.props.anno)
 
-        return (<text x={10} y={10} fill="red"> {this.props.label}</text>
+        return (
+            // <text x={10} y={10} fill="red"> {this.props.label}</text>
+            <foreignObject x={this.props.anno[0].x} y={this.props.anno[0].y} width="500" height="500"> 
+                {/* <div xmlns="http://www.w3.org/1999/xhtml"> */}
+                    <input placeholder={this.props.label} onKeyDown={e => this.onKeyDown(e)} onKeyUp={e => this.onKeyUp(e)}></input>
+                    <div>TEXT</div>
+                    {/* <Autocomplete
+                        items={[
+                        { id: 'foo', label: 'foo' },
+                        { id: 'bar', label: 'bar' },
+                        { id: 'baz', label: 'baz' },
+                        ]}
+                        shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
+                        getItemValue={item => item.label}
+                        renderItem={(item, highlighted) =>
+                            <div
+                                key={item.id}
+                                style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}}
+                            >
+                                {item.label}
+                            </div>
+                        }
+                        value={this.state.value}
+                        onChange={e => this.setState({ value: e.target.value })}
+                        onSelect={value => this.setState({ value })}
+                        onKeyDown={e => this.onKeyDown(e)}
+                        onKeyUp={e => this.onKeyUp(e)}
+                    /> */}
+                {/* </div> */}
+            </foreignObject>
         //     <g class="drawable-menubar drawable-menubar-locked drawable-menubar-selected" transform="translate(0,-20)" style="display: block;">
         //     <svg data-ref="label" class="drawable-label" x="0" y="-22" height="20" style="display: none;"><rect data-ref="label-background" rx="3" ry="3" height="100%" width="8"></rect>
         //         <text data-ref="label-text" x="4" y="50%" dominant-baseline="central" style="font-size: 12px;">no label</text>
