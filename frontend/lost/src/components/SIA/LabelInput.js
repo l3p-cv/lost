@@ -1,15 +1,9 @@
 import React, {Component} from 'react'
-// import {connect} from 'react-redux'
+import {connect} from 'react-redux'
 import { InputGroup,
     InputGroupAddon,
-    InputGroupButtonDropdown,
-    InputGroupDropdown,
     Input,
     Button,
-    Dropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem,
     UncontrolledPopover, 
     PopoverHeader, 
     PopoverBody
@@ -17,7 +11,7 @@ import { InputGroup,
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
-// import actions from '../../../actions'
+import actions from '../../actions'
 import Autocomplete from 'react-autocomplete'
 // const {selectAnnotation, siaShowSingleAnno} = actions
 
@@ -27,14 +21,33 @@ class LabelInput extends Component{
     constructor(props){
         super(props)
         this.state = {
-            value: ''
+            value: '',
+            top: 400,
+            left: 100
         }
     }
     
+    componentDidUpdate(prevProps){
+        if (this.props.selectedAnno.annoId !== prevProps.selectedAnno.annoId){
+            if (this.props.selectedAnno.annoId){
+                this.setState({
+                    top: this.props.svg.top + this.props.selectedAnno.anno[0].y,
+                    left: this.props.svg.left + this.props.selectedAnno.anno[0].x
+                })
+            }
+        }
+    }
     /*************
      * EVENTS    *
     **************/
+    onKeyDown(e: Event){
+        e.stopPropagation()
+        console.log('LabelInput KeyDown on Input field: ', e.key)
+    }
 
+    // onKeyUp(e:Event){
+    //     e.stopPropagation()
+    // }
 
     /*************
      * LOGIC     *
@@ -44,22 +57,12 @@ class LabelInput extends Component{
     /*************
      * RENDERING *
     **************/
-    onKeyDown(e: Event){
-        e.stopPropagation()
-        console.log('LabelInput KeyDown on Input field: ', e.key)
-    }
 
-    onKeyUp(e:Event){
-        e.stopPropagation()
-    }
-
-    renderInput(props){
-        return <Input {...props} />
-    }
     render(){
         console.log('LabelInput', this.props.anno)
+        if (!this.props.showLabelInput) return null
         return (
-            <div style={{position:'fixed', height:'auto', width:'400px', top:'400px', left:'100px'}}>
+            <div style={{position:'fixed', height:'auto', width:'400px', top:this.state.top, left:this.state.left}}>
                 <InputGroup>
                     {/* <Input onKeyDown={e => this.onKeyDown(e)}/> */}
                     <Autocomplete
@@ -78,7 +81,7 @@ class LabelInput extends Component{
                             {item.label}
                         </div>
                         }
-                        inputProps={{className:"form-control"}} //Added bootstrap class for input styling -.-
+                        inputProps={{className:"form-control", onKeyDown: e => this.onKeyDown(e)}} //Added bootstrap class for input styling -.-
                         value={this.state.value}
                         onChange={e => this.setState({ value: e.target.value })}
                         onSelect={value => this.setState({ value })}
@@ -97,10 +100,15 @@ class LabelInput extends Component{
     
 }
 
-// function mapStateToProps(state) {
-//     return ({
-//         selectedAnno: state.sia.selectedAnno,
-//     })
-// }
+function mapStateToProps(state) {
+    return ({
+        selectedAnno: state.sia.selectedAnno,
+        showLabelInput: state.sia.showLabelInput
+    })
+}
 
-export default LabelInput
+export default connect(
+    mapStateToProps, 
+    {}
+    ,null,
+    {forwardRef:true})(LabelInput)

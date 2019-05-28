@@ -20,11 +20,13 @@ export const getSiaImage = (path) => async dispatch =>{
     return await http.get(config)
 }
 
-export const selectAnnotation = (annoId) => {
+export const selectAnnotation = (annoId, anno=undefined, type=undefined) => {
     return {
         type: TYPES.SIA_SELECT_ANNO,
         payload: {
-            annoId
+            annoId,
+            anno,
+            type
         }
     }
 }
@@ -67,5 +69,12 @@ export const siaSelectTool = (tool) => {
     return {
         type: TYPES.SIA_SELECT_TOOL,
         payload: tool
+    }
+}
+
+export const siaShowLabelInput = (show) => {
+    return {
+        type: TYPES.SIA_SHOW_LABEL_INPUT,
+        payload: show
     }
 }

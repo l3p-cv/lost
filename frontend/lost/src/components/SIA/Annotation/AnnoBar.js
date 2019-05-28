@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 // import {connect} from 'react-redux'
-import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap'
+import { Button, Popover, PopoverHeader, PopoverBody, Input } from 'reactstrap'
 // import actions from '../../../actions'
 import Autocomplete from 'react-autocomplete'
 // const {selectAnnotation, siaShowSingleAnno} = actions
@@ -39,13 +39,18 @@ class AnnoBar extends Component{
 
     render(){
         console.log('AnnoBar', this.props.anno)
-
+        return null
         return (
             // <text x={10} y={10} fill="red"> {this.props.label}</text>
-            <foreignObject x={this.props.anno[0].x} y={this.props.anno[0].y} width="500" height="500"> 
+            <foreignObject x={this.props.anno[0].x} y={this.props.anno[0].y} width="100" height="100"> 
                 {/* <div xmlns="http://www.w3.org/1999/xhtml"> */}
-                    <input placeholder={this.props.label} onKeyDown={e => this.onKeyDown(e)} onKeyUp={e => this.onKeyUp(e)}></input>
+                    <Input placeholder={this.props.label} onKeyDown={e => this.onKeyDown(e)} onKeyUp={e => this.onKeyUp(e)} ></Input>
+                    {/* <Button id={'Popover-' + this.props.idx}></Button> */}
                     <div>TEXT</div>
+                    {/* <Popover placement={'top'} isOpen={true} target={'Popover-' + this.props.idx} >
+                    <PopoverHeader>Popover Title</PopoverHeader>
+                    <PopoverBody>Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</PopoverBody>
+                    </Popover> */}
                     {/* <Autocomplete
                         items={[
                         { id: 'foo', label: 'foo' },

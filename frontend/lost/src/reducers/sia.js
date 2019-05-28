@@ -1,7 +1,11 @@
 import TYPES from '../types/index'
 const INITIAL_STATE = {
     annos: {},
-    selectedAnno: undefined,
+    selectedAnno: {
+        annoId: undefined,
+        anno: undefined,
+        type: undefined
+    },
     keyUp: undefined,
     keyDown: undefined,
     uiConfig: {
@@ -9,7 +13,8 @@ const INITIAL_STATE = {
         strokeWidth: 4
     },
     showSingleAnno: undefined,
-    selectedTool: undefined
+    selectedTool: undefined,
+    showLabelInput: false
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -22,7 +27,7 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.SIA_SELECT_ANNO:
             return {
                 ...state,
-                selectedAnno: action.payload.annoId
+                selectedAnno: {...action.payload}
             }
         case TYPES.SIA_KEY_DOWN:
             return {
@@ -51,6 +56,12 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 selectedTool: action.payload
+
+            }
+        case TYPES.SIA_SHOW_LABEL_INPUT:
+            return {
+                ...state,
+                showLabelInput: action.payload
 
             }
         default:

@@ -209,7 +209,7 @@ class Canvas extends Component{
 
     removeSelectedAnno(){
         const annos = this.state.annos.filter( (el) => {
-            return el.id !== this.props.selectedAnno
+            return el.id !== this.props.selectedAnno.annoId
         })
         this.setState({annos: annos})
     }
@@ -232,13 +232,13 @@ class Canvas extends Component{
     putSelectedOnTop(prevProps){
         // The selected annotation need to be rendered as last one in 
         // oder to be above all other annotations.
-        if (this.props.selectedAnno){
-            if (prevProps.selectedAnno !== this.props.selectedAnno){
+        if (this.props.selectedAnno.annoId){
+            if (prevProps.selectedAnno.annoId !== this.props.selectedAnno.annoId){
                 const annos = this.state.annos.filter( (el) => {
-                    return el.id !== this.props.selectedAnno
+                    return el.id !== this.props.selectedAnno.annoId
                 })
                 const lastAnno = this.state.annos.find( el => {
-                    return el.id === this.props.selectedAnno
+                    return el.id === this.props.selectedAnno.annoId
                 })
                 annos.push(lastAnno)
                 this.setState({annos: [
@@ -334,7 +334,7 @@ class Canvas extends Component{
     render(){
         return(
             <div>
-                <LabelInput></LabelInput>
+                <LabelInput svg={this.state.svg}></LabelInput>
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}

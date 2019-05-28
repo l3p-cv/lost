@@ -12,7 +12,7 @@ import * as modes from '../types/modes'
 import * as colorlut from '../utils/colorlut'
 
 
-const {selectAnnotation, siaShowSingleAnno} = actions
+const {selectAnnotation, siaShowSingleAnno, siaShowLabelInput} = actions
 
 
 class Annotation extends Component{
@@ -32,9 +32,11 @@ class Annotation extends Component{
 
     
     componentWillMount(){
+        this.props.siaShowLabelInput(true)
+        console.warn('Remove siaShowLabelInput from here!')
         console.log('Annotation did mount ', this.props.data.id)
         if (this.props.data.createMode){
-            this.props.selectAnnotation(this.props.data.id)
+            this.props.selectAnnotation(this.props.data.id, this.props.data.data, this.props.type)
             this.setMode(modes.CREATE)
         } 
         this.setState({anno: [...this.props.data.data]})
@@ -83,7 +85,7 @@ class Annotation extends Component{
     onMouseEnter(e: Event){
         e.stopPropagation()
         console.log('Clicked on: ', this.props.type)
-        this.props.selectAnnotation(this.props.data.id)
+        this.props.selectAnnotation(this.props.data.id, this.state.anno, this.props.type)
         //Create a new key in order to create a completely new compontent
         //this.myKey = _.uniqueId('annokey')
 
@@ -126,7 +128,7 @@ class Annotation extends Component{
     }
 
     isSelected(){
-        return this.props.selectedAnno === this.props.data.id
+        return this.props.selectedAnno.annoId === this.props.data.id
     }
 
     getResult(){
@@ -239,7 +241,7 @@ class Annotation extends Component{
         // if (!this.myAnno.current) return null
         //return <g style={{position:'absolute', color:'orange', left:this.props.svg.left}}>Text</g>
 
-        return <AnnoBar anno={this.state.anno} label={'Test'}/>
+        return <AnnoBar anno={this.state.anno} idx={this.props.data.id} label={'Test'}/>
     }
     render(){
         if(!this.state.anno) return null
@@ -280,6 +282,6 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps, 
-    {selectAnnotation, siaShowSingleAnno}
+    {selectAnnotation, siaShowSingleAnno, siaShowLabelInput}
     ,null,
     {forwardRef:true})(Annotation)
