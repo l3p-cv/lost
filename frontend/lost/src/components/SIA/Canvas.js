@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import Annotation from './Annotation/Annotation'
+import LabelInput from './LabelInput'
 
 import actions from '../../actions'
 
@@ -333,6 +334,7 @@ class Canvas extends Component{
     render(){
         return(
             <div>
+                <LabelInput></LabelInput>
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}
