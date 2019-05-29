@@ -21,7 +21,6 @@ class Node extends Component{
     }
 
     componentDidMount(){
-        console.log('Node did mount ', this.props.idx, this.props.mode)
         this.setState({
             anno: this.props.anno,
             style: {
@@ -40,7 +39,6 @@ class Node extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Node did update', this.props.idx, this.props.mode)
         switch (this.props.mode){
             case modes.CREATE:
                 if (this.props.idx !== 0){

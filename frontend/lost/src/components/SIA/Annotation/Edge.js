@@ -14,7 +14,6 @@ class Edge extends Component{
     }
 
     componentDidUpdate(){
-        console.log('Update edge', this.props.idx)
     }
     
     onMouseOver(e){

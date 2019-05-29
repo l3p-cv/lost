@@ -32,8 +32,6 @@ class Annotation extends Component{
 
     
     componentWillMount(){
-        this.props.siaShowLabelInput(true)
-        console.warn('Remove siaShowLabelInput from here!')
         console.log('Annotation did mount ', this.props.data.id)
         if (this.props.data.createMode){
             this.props.selectAnnotation(this.props.data.id, this.props.data.data, this.props.type)
@@ -43,13 +41,15 @@ class Annotation extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Annotation did update', this.props.data.id, this.state.mode)
+        console.log('Annotation Update', this.state.mode, this.props.type, this.props.data.id)
         if (prevProps.keyDown !== this.props.keyDown){
             if (this.isSelected()){
                 switch (this.props.keyDown){
                     case 'Control':
                         this.setMode(modes.ADD)
                         break
+                    case 'Enter':
+                        this.setMode(modes.EDIT_LABEL)
                     default:
                         break
                 }
@@ -77,6 +77,9 @@ class Annotation extends Component{
                 }
             }
         }
+        if (prevProps.showLabelInput !== this.props.showLabelInput){
+            if (!this.props.showLabelInput) this.setMode(modes.VIEW)
+        }
     }
     
     /*************
@@ -100,9 +103,18 @@ class Annotation extends Component{
             case modes.CREATE:
                 this.props.siaShowSingleAnno(this.props.data.id)
                 break
+            case modes.EDIT_LABEL:
+                break
             default:
                 this.props.siaShowSingleAnno(undefined)
                 break
+        }
+        switch (oldMode){
+            case modes.CREATE:
+                console.log('oldMode Create anno', this.myAnno.current.state.anno)
+                this.setState({anno: this.myAnno.current.state.anno})
+                this.props.selectAnnotation(this.props.data.id, this.myAnno.current.state.anno, this.props.type)
+
         }
     }
 
@@ -112,6 +124,14 @@ class Annotation extends Component{
     setMode(mode){
         if (this.state.mode !== mode){
             this.setState({mode: mode})
+            switch (mode){
+                case modes.EDIT_LABEL:
+                    this.props.siaShowLabelInput(true)
+                    this.props.siaShowSingleAnno(this.props.data.id)
+                    break
+                default:
+                    break
+            }
         }
     }
 
@@ -182,7 +202,6 @@ class Annotation extends Component{
     renderAnno(){
         const type = this.props.type
         const anno = this.state.anno
-        console.log('Annotation state.anno', this.state.anno, this.props.type)
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} anno={anno} 
@@ -276,7 +295,8 @@ function mapStateToProps(state) {
         keyDown: state.sia.keyDown,
         keyUp: state.sia.keyUp,
         uiConfig: state.sia.uiConfig,
-        showSingleAnno: state.sia.showSingleAnno
+        showSingleAnno: state.sia.showSingleAnno,
+        showLabelInput: state.sia.showLabelInput
     })
 }
 

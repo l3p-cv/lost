@@ -334,7 +334,7 @@ class Canvas extends Component{
     render(){
         return(
             <div>
-                <LabelInput svg={this.state.svg}></LabelInput>
+                <LabelInput svg={this.state.svg} svgRef={this.svg}></LabelInput>
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}

@@ -30,7 +30,6 @@ class AnnoBar extends Component{
     **************/
     onKeyDown(e: Event){
         e.stopPropagation()
-        console.log('Focus on Input field: ', e.key)
     }
 
     onKeyUp(e:Event){
@@ -38,7 +37,6 @@ class AnnoBar extends Component{
     }
 
     render(){
-        console.log('AnnoBar', this.props.anno)
         return null
         return (
             // <text x={10} y={10} fill="red"> {this.props.label}</text>
