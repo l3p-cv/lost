@@ -11,6 +11,7 @@ import { InputGroup,
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import actions from '../../actions'
 import Autocomplete from 'react-autocomplete'
 import * as transform from './utils/transform'
@@ -26,6 +27,7 @@ class LabelInput extends Component{
             value: '',
             top: 400,
             left: 100,
+            deleteColor: '#505050'
         }
         this.inputGroupRef = React.createRef()
         // this.inputRef = React.createRef()
@@ -62,6 +64,21 @@ class LabelInput extends Component{
         }
     }
 
+    mouseOverDelete(e){
+        console.log('Mouse over delete :-)')
+        this.setState({deleteColor:'#A9A9A9'})
+    }
+    
+    mouseOutDelete(e){
+        console.log('Mouse over delete :-)')
+        this.setState({deleteColor:'#505050'})
+    }
+
+    onClickDelete(e){
+        console.log('Clicked on delete')
+        this.setState({value:'Hi Davi:-)'})
+    }
+
     // onKeyUp(e:Event){
     //     e.stopPropagation()
     // }
@@ -74,7 +91,7 @@ class LabelInput extends Component{
             const center = transform.getCenter(this.props.selectedAnno.anno, this.props.selectedAnno.type)
             const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
             const inputRect = this.inputGroupRef.current.getBoundingClientRect()
-            const top = this.props.svg.top + annoBox[0].y + 5
+            const top = this.props.svg.top + center.y - 20
             const left = this.props.svg.left + center.x - inputRect.width /2.0
             if (this.state.top !== top || this.state.left !== left){  
                 this.setState({
@@ -102,6 +119,9 @@ class LabelInput extends Component{
                         { id: 'foo', label: 'foo' },
                         { id: 'bar', label: 'bar' },
                         { id: 'baz', label: 'baz' },
+                        { id: 'person', label: 'person' },
+                        { id: 'bike', label: 'bike' },
+                        { id: 'cat', label: 'cat' },
                         ]}
                         shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                         getItemValue={item => item.label}
@@ -123,7 +143,17 @@ class LabelInput extends Component{
                     </InputGroupAddon>
                 </InputGroup>
                 <UncontrolledPopover placement="top" target="LabelInputPopover">
-                    <PopoverHeader><input/></PopoverHeader>
+                    <PopoverHeader>
+                        {this.state.value}
+                        {/* <Button style={{right:'0', position:'absolute'}}> */}
+                            <FontAwesomeIcon icon={faTrashAlt} 
+                                style={{float:'right', color:this.state.deleteColor}} 
+                                onMouseOut={e => this.mouseOutDelete(e)} 
+                                onMouseOver={e => this.mouseOverDelete(e)}
+                                onClick={e => this.onClickDelete(e)}
+                                />
+                        {/* </Button> */}
+                    </PopoverHeader>
                     <PopoverBody>Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</PopoverBody>
                 </UncontrolledPopover>
             </div>
