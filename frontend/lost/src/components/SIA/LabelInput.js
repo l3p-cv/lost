@@ -79,7 +79,7 @@ class LabelInput extends Component{
         //Reset keyDown on delete
         this.props.siaKeyDown(undefined) 
         if (this.props.onDeleteClick){
-            this.props.onDeleteClick(this.props.selectedAnno.annoId)
+            this.props.onDeleteClick(this.props.selectedAnno.id)
         }
     }
 
@@ -100,8 +100,8 @@ class LabelInput extends Component{
      * LOGIC     *
      *************/
     setPosition(){
-        if (this.props.selectedAnno.annoId){
-            const center = transform.getCenter(this.props.selectedAnno.anno, this.props.selectedAnno.type)
+        if (this.props.selectedAnno.id){
+            const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
             // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
             const inputRect = this.inputGroupRef.current.getBoundingClientRect()
             const top = this.props.svg.top + center.y - 20

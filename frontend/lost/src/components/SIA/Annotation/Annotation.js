@@ -32,7 +32,7 @@ class Annotation extends Component{
 
     
     componentWillMount(){
-        console.log('Annotation did mount ', this.props.data.id)
+        console.log('Annotation did mount ', this.props.data.id, this.props.data)
         if (this.props.data.createMode){
             this.props.selectAnnotation(this.props.data.id, this.props.data.data, this.props.type)
             this.setMode(modes.CREATE)
@@ -148,7 +148,7 @@ class Annotation extends Component{
     }
 
     isSelected(){
-        return this.props.selectedAnno.annoId === this.props.data.id
+        return this.props.selectedAnno.id === this.props.data.id
     }
 
     getResult(){

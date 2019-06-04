@@ -213,7 +213,7 @@ class Canvas extends Component{
 
     removeSelectedAnno(){
         const annos = this.state.annos.filter( (el) => {
-            return el.id !== this.props.selectedAnno.annoId
+            return el.id !== this.props.selectedAnno.id
         })
         this.setState({annos: annos})
     }
@@ -236,13 +236,13 @@ class Canvas extends Component{
     putSelectedOnTop(prevProps){
         // The selected annotation need to be rendered as last one in 
         // oder to be above all other annotations.
-        if (this.props.selectedAnno.annoId){
-            if (prevProps.selectedAnno.annoId !== this.props.selectedAnno.annoId){
+        if (this.props.selectedAnno.id){
+            if (prevProps.selectedAnno.id !== this.props.selectedAnno.id){
                 const annos = this.state.annos.filter( (el) => {
-                    return el.id !== this.props.selectedAnno.annoId
+                    return el.id !== this.props.selectedAnno.id
                 })
                 const lastAnno = this.state.annos.find( el => {
-                    return el.id === this.props.selectedAnno.annoId
+                    return el.id === this.props.selectedAnno.id
                 })
                 annos.push(lastAnno)
                 this.setState({annos: [
