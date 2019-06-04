@@ -85,7 +85,7 @@ class Annotation extends Component{
     /*************
      * EVENTS    *
     **************/
-    onMouseEnter(e: Event){
+    onClick(e: Event){
         e.stopPropagation()
         console.log('Clicked on: ', this.props.type)
         this.props.selectAnnotation(this.props.data.id, this.state.anno, this.props.type)
@@ -267,7 +267,7 @@ class Annotation extends Component{
         return (
             <g>
             <g visibility={this.state.visibility}
-                onMouseEnter={e => this.onMouseEnter(e)}
+                onClick={e => this.onClick(e)}
             >
                 {this.renderAnno()}
             </g>
