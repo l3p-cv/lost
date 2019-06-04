@@ -10,6 +10,13 @@ export const getSiaAnnos = (imageId) => async dispatch => {
     } catch (e) {console.log(e)}
 }
 
+export const getSiaLabels = () => async dispatch => {
+    try {
+        const response = await axios.get(API_URL + '/sia/label')
+        dispatch({type: TYPES.GET_SIA_LABELS, payload: response.data.labels})
+    } catch (e) {console.log(e)}
+}
+
 export const getSiaImage = (path) => async dispatch =>{
   
     const config = {

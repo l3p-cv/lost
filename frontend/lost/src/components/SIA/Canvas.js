@@ -10,7 +10,10 @@ import * as transform from './utils/transform'
 import * as modes from './types/modes'
 
 
-const { getSiaImage,getSiaAnnos,siaKeyDown, siaKeyUp, selectAnnotation} = actions
+const { 
+    getSiaImage, getSiaAnnos, siaKeyDown, 
+    siaKeyUp, selectAnnotation, getSiaLabels
+} = actions
 
 class Canvas extends Component{
 
@@ -38,6 +41,7 @@ class Canvas extends Component{
 
     componentDidMount(){
         this.props.getSiaAnnos(11)
+        this.props.getSiaLabels()
     }
 
     componentDidUpdate(prevProps){
@@ -381,5 +385,8 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, 
-    {getSiaAnnos, getSiaImage, siaKeyDown, siaKeyUp, selectAnnotation}
+    {
+        getSiaAnnos, getSiaImage, siaKeyDown, 
+        siaKeyUp, selectAnnotation, getSiaLabels
+    }
 )(Canvas)

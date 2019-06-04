@@ -28,7 +28,9 @@ class LabelInput extends Component{
             value: '',
             top: 400,
             left: 100,
-            deleteColor: '#505050'
+            deleteColor: '#505050',
+            label: undefined,
+            visibility: 'hidden'
         }
         this.inputGroupRef = React.createRef()
         // this.inputRef = React.createRef()
@@ -39,13 +41,11 @@ class LabelInput extends Component{
     }
     
     componentDidUpdate(prevProps){
-        if (!this.props.showLabelInput) return
-        this.setPosition()
-        // if (this.props.showLabelInput !== prevProps.showLabelInput){
         if (this.props.showLabelInput){
             console.log('ShowLabelInput')
+            this.setPosition()
             this.inputRef.focus()
-        }
+        } 
         // }
         if (prevProps.canvasKeyDown !== this.props.canvasKeyDown){
             this.performKeyAction(this.props.canvasKeyDown)
@@ -92,6 +92,27 @@ class LabelInput extends Component{
         //Reset keyDown after leaving with a click instead of keyDown
         this.props.siaKeyDown(undefined) 
     }
+
+    onLabelSelect(value, item){
+        console.log('LabelInput selected item', item)
+        this.setState({ value, label: {...item} })
+    }
+
+    onChange(e){
+        // const label = this.props.possibleLabels.find( el => {
+        //     return el.label.toLowerCase().includes(e.target.value.toLowerCase())
+        // })
+        // console.log('LabelInput label search', label)
+        this.setState({ value: e.target.value })
+    }
+
+    onDropDownSelect(item){
+        console.log('LabelInput selected Dropdown entry', item)
+        if (this.state.label !== item ){
+            this.setState({ label: item})
+        }
+    }
+
     // onKeyUp(e:Event){
     //     e.stopPropagation()
     // }
@@ -131,13 +152,14 @@ class LabelInput extends Component{
         this.props.siaShowLabelInput(false)
         this.props.siaShowSingleAnno(undefined)
     }
+
     /*************
      * RENDERING *
     **************/
 
     render(){
         if (!this.props.showLabelInput) return null
-        console.log('Render LabelInput with state', this.state)
+        // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
         return (
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
                 <InputGroup >
@@ -147,31 +169,30 @@ class LabelInput extends Component{
                     </InputGroupAddon> */}
                     <Autocomplete
                         ref = {el => this.inputRef = el}
-                        items={[
-                        { id: 'foo', label: 'foo' },
-                        { id: 'bar', label: 'bar' },
-                        { id: 'baz', label: 'baz' },
-                        { id: 'person', label: 'person' },
-                        { id: 'bike', label: 'bike' },
-                        { id: 'cat', label: 'cat' },
-                        ]}
+                        items={this.props.possibleLabels}
                         shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                         getItemValue={item => item.label}
-                        renderItem={(item, highlighted) =>
+                        renderItem={(item, highlighted) => {
+                        if (highlighted){
+                            this.onDropDownSelect(item)
+                        }
+                        return (
                         <div
                             key={item.id}
                             style={{ backgroundColor: highlighted ? 'orange' : 'transparent'}}
+                            // onMouseOver={e => this.onDropDownSelect(e, item)}
                         >
                             {item.label}
                         </div>
-                        }
+                        )
+                        }}
                         inputProps={{
                             className:"form-control", //Added bootstrap class for input styling -.-
                             onKeyDown: e => this.onKeyDown(e),
                         }} 
                         value={this.state.value}
-                        onChange={e => this.setState({ value: e.target.value })}
-                        onSelect={value => this.setState({ value })}
+                        onChange={e => this.onChange(e)}
+                        onSelect={(value, item) => this.onLabelSelect(value, item)}
                     />
                     <InputGroupAddon addonType="append">
                         <Button id="LabelInputPopover"><FontAwesomeIcon icon={faQuestionCircle}/></Button>
@@ -181,7 +202,7 @@ class LabelInput extends Component{
                 </InputGroup>
                 <UncontrolledPopover placement="top" target="LabelInputPopover">
                     <PopoverHeader style={{minHeight:'30px'}}>
-                        {this.state.value}
+                        {!this.state.label ? 'No label': this.state.label.label}
                         {/* <Button style={{right:'0', position:'absolute'}}> */}
                             
                             <FontAwesomeIcon icon={faTrashAlt} 
@@ -193,7 +214,7 @@ class LabelInput extends Component{
                         {/* </Button> */}
                     </PopoverHeader>
                     <PopoverBody>
-                        Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+                        {!this.state.label ? 'no label selected': this.state.label.description}
                         
                     </PopoverBody>
                 </UncontrolledPopover>
@@ -207,7 +228,8 @@ function mapStateToProps(state) {
     return ({
         selectedAnno: state.sia.selectedAnno,
         showLabelInput: state.sia.showLabelInput,
-        canvasKeyDown: state.sia.keyDown
+        canvasKeyDown: state.sia.keyDown,
+        possibleLabels: state.sia.possibleLabels
     })
 }
 

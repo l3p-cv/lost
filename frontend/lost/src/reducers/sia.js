@@ -14,7 +14,8 @@ const INITIAL_STATE = {
     },
     showSingleAnno: undefined,
     selectedTool: undefined,
-    showLabelInput: false
+    showLabelInput: false,
+    possibleLabels: []
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -28,6 +29,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 selectedAnno: {...action.payload}
+            }
+        case TYPES.GET_SIA_LABELS:
+            return {
+                ...state,
+                possibleLabels: [...action.payload]
             }
         case TYPES.SIA_KEY_DOWN:
             return {
