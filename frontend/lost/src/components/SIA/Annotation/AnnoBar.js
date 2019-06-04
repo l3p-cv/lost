@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-// import {connect} from 'react-redux'
+import {connect} from 'react-redux'
 import { Button, Popover, PopoverHeader, PopoverBody, Input } from 'reactstrap'
-// import actions from '../../../actions'
+import actions from '../../../actions'
 import Autocomplete from 'react-autocomplete'
-// const {selectAnnotation, siaShowSingleAnno} = actions
+const {selectAnnotation, siaShowSingleAnno} = actions
 
 
 class AnnoBar extends Component{
@@ -94,10 +94,14 @@ class AnnoBar extends Component{
     
 }
 
-// function mapStateToProps(state) {
-//     return ({
-//         selectedAnno: state.sia.selectedAnno,
-//     })
-// }
+function mapStateToProps(state) {
+    return ({
+        selectedAnno: state.sia.selectedAnno,
+    })
+}
 
-export default AnnoBar
+export default connect(
+    mapStateToProps, 
+    {}
+    ,null,
+    {}) (AnnoBar)
