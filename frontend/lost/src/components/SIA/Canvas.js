@@ -161,6 +161,10 @@ class Canvas extends Component{
             this.moveCamera(e)
         }
     }
+
+    onLabelInputDeleteClick(annoId){
+        this.removeSelectedAnno()
+    }
     
     /*************
      * LOGIC     *
@@ -334,7 +338,8 @@ class Canvas extends Component{
     render(){
         return(
             <div>
-                <LabelInput svg={this.state.svg} svgRef={this.svg}></LabelInput>
+                <LabelInput svg={this.state.svg} svgRef={this.svg} 
+                    onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}></LabelInput>
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}

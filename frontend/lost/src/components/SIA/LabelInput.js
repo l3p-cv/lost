@@ -11,12 +11,13 @@ import { InputGroup,
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faTrashAlt, faCheck } from '@fortawesome/free-solid-svg-icons'
 import actions from '../../actions'
 import Autocomplete from 'react-autocomplete'
 import * as transform from './utils/transform'
 
-const {siaShowLabelInput, siaShowSingleAnno} = actions
+const {siaShowLabelInput, siaShowSingleAnno, selectAnnotation,
+siaKeyDown} = actions
 
 
 class LabelInput extends Component{
@@ -46,6 +47,9 @@ class LabelInput extends Component{
             this.inputRef.focus()
         }
         // }
+        if (prevProps.canvasKeyDown !== this.props.canvasKeyDown){
+            this.performKeyAction(this.props.canvasKeyDown)
+        }
     }
     /*************
      * EVENTS    *
@@ -53,15 +57,8 @@ class LabelInput extends Component{
     onKeyDown(e: Event){
         e.stopPropagation()
         console.log('LabelInput KeyDown on Input field: ', e.key)
-        switch(e.key){
-            case 'Enter':
-                this.props.svgRef.current.focus()
-                this.props.siaShowLabelInput(false)
-                this.props.siaShowSingleAnno(undefined)
-                break
-            default:
-                break
-        }
+        this.performKeyAction(e.key)
+        
     }
 
     mouseOverDelete(e){
@@ -76,9 +73,25 @@ class LabelInput extends Component{
 
     onClickDelete(e){
         console.log('Clicked on delete')
-        this.setState({value:'Hi Davi:-)'})
+        this.props.siaShowLabelInput(false)
+        this.props.siaShowSingleAnno(undefined)
+        this.props.selectAnnotation(undefined)
+        //Reset keyDown on delete
+        this.props.siaKeyDown(undefined) 
+        if (this.props.onDeleteClick){
+            this.props.onDeleteClick(this.props.selectedAnno.annoId)
+        }
     }
 
+    onAutocompleteClick(e){
+        console.log('Clicked on Autocomplete :-) ')
+    }
+
+    onCheckClick(e){
+        this.closeLabelInput()
+        //Reset keyDown after leaving with a click instead of keyDown
+        this.props.siaKeyDown(undefined) 
+    }
     // onKeyUp(e:Event){
     //     e.stopPropagation()
     // }
@@ -89,7 +102,7 @@ class LabelInput extends Component{
     setPosition(){
         if (this.props.selectedAnno.annoId){
             const center = transform.getCenter(this.props.selectedAnno.anno, this.props.selectedAnno.type)
-            const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
+            // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
             const inputRect = this.inputGroupRef.current.getBoundingClientRect()
             const top = this.props.svg.top + center.y - 20
             const left = this.props.svg.left + center.x - inputRect.width /2.0
@@ -102,6 +115,22 @@ class LabelInput extends Component{
         }
     }
 
+    performKeyAction(key){
+        switch(key){
+            // case 'Enter':
+            case 'Escape':
+                this.closeLabelInput()
+                break
+            default:
+                break
+        }
+    }
+
+    closeLabelInput(){
+        this.props.svgRef.current.focus()
+        this.props.siaShowLabelInput(false)
+        this.props.siaShowSingleAnno(undefined)
+    }
     /*************
      * RENDERING *
     **************/
@@ -113,6 +142,9 @@ class LabelInput extends Component{
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
                 <InputGroup >
                     {/* <Input onKeyDown={e => this.onKeyDown(e)}/> */}
+                    {/* <InputGroupAddon addonType="prepend">
+                    <Button><FontAwesomeIcon icon={faCheck}/></Button>
+                    </InputGroupAddon> */}
                     <Autocomplete
                         ref = {el => this.inputRef = el}
                         items={[
@@ -128,24 +160,30 @@ class LabelInput extends Component{
                         renderItem={(item, highlighted) =>
                         <div
                             key={item.id}
-                            style={{ backgroundColor: highlighted ? '#eee' : 'transparent'}}
+                            style={{ backgroundColor: highlighted ? 'orange' : 'transparent'}}
                         >
                             {item.label}
                         </div>
                         }
-                        inputProps={{className:"form-control", onKeyDown: e => this.onKeyDown(e)}} //Added bootstrap class for input styling -.-
+                        inputProps={{
+                            className:"form-control", //Added bootstrap class for input styling -.-
+                            onKeyDown: e => this.onKeyDown(e),
+                        }} 
                         value={this.state.value}
                         onChange={e => this.setState({ value: e.target.value })}
                         onSelect={value => this.setState({ value })}
                     />
                     <InputGroupAddon addonType="append">
                         <Button id="LabelInputPopover"><FontAwesomeIcon icon={faQuestionCircle}/></Button>
+                        <Button onClick={e => this.onCheckClick(e)}><FontAwesomeIcon icon={faCheck} />
+                        </Button>
                     </InputGroupAddon>
                 </InputGroup>
                 <UncontrolledPopover placement="top" target="LabelInputPopover">
-                    <PopoverHeader>
+                    <PopoverHeader style={{minHeight:'30px'}}>
                         {this.state.value}
                         {/* <Button style={{right:'0', position:'absolute'}}> */}
+                            
                             <FontAwesomeIcon icon={faTrashAlt} 
                                 style={{float:'right', color:this.state.deleteColor}} 
                                 onMouseOut={e => this.mouseOutDelete(e)} 
@@ -154,7 +192,10 @@ class LabelInput extends Component{
                                 />
                         {/* </Button> */}
                     </PopoverHeader>
-                    <PopoverBody>Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</PopoverBody>
+                    <PopoverBody>
+                        Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+                        
+                    </PopoverBody>
                 </UncontrolledPopover>
             </div>
         )
@@ -165,12 +206,13 @@ class LabelInput extends Component{
 function mapStateToProps(state) {
     return ({
         selectedAnno: state.sia.selectedAnno,
-        showLabelInput: state.sia.showLabelInput
+        showLabelInput: state.sia.showLabelInput,
+        canvasKeyDown: state.sia.keyDown
     })
 }
 
 export default connect(
     mapStateToProps, 
-    {siaShowLabelInput, siaShowSingleAnno}
+    {siaShowLabelInput, siaShowSingleAnno, selectAnnotation, siaKeyDown}
     ,null,
     {forwardRef:true})(LabelInput)
