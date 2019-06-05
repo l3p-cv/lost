@@ -140,7 +140,20 @@ class LabelInput extends Component{
         switch(key){
             // case 'Enter':
             case 'Escape':
+                console.log('LabelInput Escape current label', this.state.label.id)
+                if (this.state.label){
+                    this.props.selectAnnotation({
+                        ...this.props.selectedAnno,
+                        labelIds: [this.state.label.id]
+                    })
+                } else {
+                    this.props.selectAnnotation({
+                        ...this.props.selectedAnno,
+                        labelIds: []
+                    })
+                }
                 this.closeLabelInput()
+                
                 break
             default:
                 break

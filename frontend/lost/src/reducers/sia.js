@@ -26,9 +26,16 @@ export default function (state = INITIAL_STATE, action) {
                 annos: action.payload
             }
         case TYPES.SIA_SELECT_ANNO:
-            return {
-                ...state,
-                selectedAnno: {...action.payload}
+            if (action.payload){
+                return {
+                    ...state,
+                    selectedAnno: {...state.selectedAnno, ...action.payload}
+                }
+            } else {
+                return {
+                    ...state,
+                    selectedAnno: { id: undefined}
+                }
             }
         case TYPES.GET_SIA_LABELS:
             return {

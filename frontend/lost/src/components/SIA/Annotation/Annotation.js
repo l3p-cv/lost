@@ -34,10 +34,10 @@ class Annotation extends Component{
     componentWillMount(){
         console.log('Annotation did mount ', this.props.data.id, this.props.data)
         if (this.props.data.createMode){
-            this.props.selectAnnotation(this.props.data.id, this.props.data.data, this.props.type)
+            this.props.selectAnnotation(this.props.data)
             this.setMode(modes.CREATE)
         } 
-        this.setState({anno: [...this.props.data.data]})
+        this.setState({anno: {...this.props.data}})
     }
 
     componentDidUpdate(prevProps){
@@ -80,6 +80,11 @@ class Annotation extends Component{
         if (prevProps.showLabelInput !== this.props.showLabelInput){
             if (!this.props.showLabelInput) this.setMode(modes.VIEW)
         }
+        if (this.isSelected()){
+            if(this.state.anno !== this.props.selectedAnno){
+                this.setState({anno: this.props.selectedAnno})
+            }
+        }
     }
     
     /*************
@@ -88,7 +93,7 @@ class Annotation extends Component{
     onClick(e: Event){
         e.stopPropagation()
         console.log('Clicked on: ', this.props.type)
-        this.props.selectAnnotation(this.props.data.id, this.state.anno, this.props.type)
+        this.props.selectAnnotation(this.props.data)
         //Create a new key in order to create a completely new compontent
         //this.myKey = _.uniqueId('annokey')
 
@@ -113,7 +118,7 @@ class Annotation extends Component{
             case modes.CREATE:
                 console.log('oldMode Create anno', this.myAnno.current.state.anno)
                 this.setState({anno: this.myAnno.current.state.anno})
-                this.props.selectAnnotation(this.props.data.id, this.myAnno.current.state.anno, this.props.type)
+                this.props.selectAnnotation(this.props.data)
 
         }
     }
@@ -164,8 +169,8 @@ class Annotation extends Component{
     
     getStyle(){
         let color
-        if (this.props.data.labelIds){
-            color = colorlut.getColor(this.props.data.labelIds[0])
+        if (this.state.anno.labelIds){
+            color = colorlut.getColor(this.state.anno.labelIds[0])
         }
         else {
             color = colorlut.getDefaultColor()
@@ -201,7 +206,7 @@ class Annotation extends Component{
     **************/
     renderAnno(){
         const type = this.props.type
-        const anno = this.state.anno
+        const anno = this.state.anno.data
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} anno={anno} 
@@ -260,10 +265,10 @@ class Annotation extends Component{
         // if (!this.myAnno.current) return null
         //return <g style={{position:'absolute', color:'orange', left:this.props.svg.left}}>Text</g>
 
-        return <AnnoBar anno={this.state.anno} idx={this.props.data.id} label={'Test'}/>
+        return <AnnoBar anno={this.state.anno.data} idx={this.props.data.id} label={'Test'}/>
     }
     render(){
-        if(!this.state.anno) return null
+        if(!this.state.anno.data) return null
         return (
             <g>
             <g visibility={this.state.visibility}

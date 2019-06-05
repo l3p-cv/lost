@@ -27,15 +27,10 @@ export const getSiaImage = (path) => async dispatch =>{
     return await http.get(config)
 }
 
-export const selectAnnotation = (annoId, anno=undefined, type=undefined, labelIds=[]) => {
+export const selectAnnotation = (anno) => {
     return {
         type: TYPES.SIA_SELECT_ANNO,
-        payload: {
-            id: annoId,
-            data: anno,
-            type,
-            labelIds
-        }
+        payload: anno
     }
 }
 
