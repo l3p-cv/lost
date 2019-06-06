@@ -100,7 +100,7 @@ class Annotation extends Component{
     }
 
     onModeChange(newMode, oldMode){
-        console.log('MODE CHANGED: ',this.props.data.id, newMode, oldMode)
+        console.log('MODE CHANGED (id, old, new): ',this.props.data.id, oldMode, '->', newMode)
         switch (newMode){
             case modes.ADD:
             case modes.EDIT:
@@ -110,17 +110,34 @@ class Annotation extends Component{
                 break
             case modes.EDIT_LABEL:
                 break
-            default:
+            case modes.VIEW:
                 this.props.siaShowSingleAnno(undefined)
+                break
+            default:
                 break
         }
         switch (oldMode){
+            case modes.ADD:
+            case modes.EDIT:
+            case modes.MOVE:
             case modes.CREATE:
-                console.log('oldMode Create anno', this.myAnno.current.state.anno)
-                this.setState({anno: this.myAnno.current.state.anno})
-                this.props.selectAnnotation(this.props.data)
-
+                const newAnno = {
+                    ...this.state.anno,
+                    data: [...this.myAnno.current.state.anno]
+                }
+                this.setState({anno: newAnno})
+                this.props.selectAnnotation(newAnno)
+                break
+            // case modes.CREATE:
+            //     console.log('oldMode Create anno', this.myAnno.current.state.anno)
+            //     this.setState({anno: {...this.myAnno.current.state.anno}})
+            //     this.props.selectAnnotation(this.myAnno.current.state.anno)
+            //     break
+            default:
+                break
+                
         }
+        this.setMode(newMode)
     }
 
     /*************
@@ -265,7 +282,8 @@ class Annotation extends Component{
         // if (!this.myAnno.current) return null
         //return <g style={{position:'absolute', color:'orange', left:this.props.svg.left}}>Text</g>
 
-        return <AnnoBar anno={this.state.anno.data} idx={this.props.data.id} label={'Test'}/>
+
+        return <AnnoBar anno={this.state.anno} mode={this.state.mode}/>
     }
     render(){
         if(!this.state.anno.data) return null
@@ -275,8 +293,9 @@ class Annotation extends Component{
                 onClick={e => this.onClick(e)}
             >
                 {this.renderAnno()}
+                {this.renderAnnoBar()}
+
             </g>
-            {this.renderAnnoBar()}
             </g>
         )
     }
