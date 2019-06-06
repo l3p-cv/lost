@@ -93,7 +93,7 @@ class Annotation extends Component{
     onClick(e: Event){
         e.stopPropagation()
         console.log('Clicked on: ', this.props.type)
-        this.props.selectAnnotation(this.props.data)
+        this.props.selectAnnotation(this.state.anno)
         //Create a new key in order to create a completely new compontent
         //this.myKey = _.uniqueId('annokey')
 
