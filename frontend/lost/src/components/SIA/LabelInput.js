@@ -30,13 +30,15 @@ class LabelInput extends Component{
             left: 100,
             deleteColor: '#505050',
             label: undefined,
-            visibility: 'hidden'
+            visibility: 'hidden',
+            possibleLabels: []
         }
         this.inputGroupRef = React.createRef()
         // this.inputRef = React.createRef()
     }
 
     componentWillMount(){
+        this.updatePossibleLabels()
         this.setPosition()
     }
     
@@ -49,6 +51,9 @@ class LabelInput extends Component{
         // }
         if (prevProps.canvasKeyDown !== this.props.canvasKeyDown){
             this.performKeyAction(this.props.canvasKeyDown)
+        }
+        if (prevProps.possibleLabels !== this.props.possibleLabels){
+            this.updatePossibleLabels()
         }
     }
     /*************
@@ -121,6 +126,11 @@ class LabelInput extends Component{
     /*************
      * LOGIC     *
      *************/
+    updatePossibleLabels(){
+        const possibleLabels = [{id: -1, label:"no label"},...this.props.possibleLabels]
+        this.setState({possibleLabels})
+
+    }
     setPosition(){
         if (this.props.selectedAnno.id){
             const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
@@ -151,11 +161,19 @@ class LabelInput extends Component{
     }
 
     confirmLabel(){
+        console.log('LabelInput confirmLabel label', this.state.label)
         if (this.state.label){
-            this.props.selectAnnotation({
-                ...this.props.selectedAnno,
-                labelIds: [this.state.label.id]
-            })
+            if (this.state.label.id !== -1){
+                this.props.selectAnnotation({
+                    ...this.props.selectedAnno,
+                    labelIds: [this.state.label.id]
+                })
+            } else {
+                this.props.selectAnnotation({
+                    ...this.props.selectedAnno,
+                    labelIds: []
+                })
+            }
         } else {
             this.props.selectAnnotation({
                 ...this.props.selectedAnno,
@@ -187,7 +205,7 @@ class LabelInput extends Component{
                     </InputGroupAddon> */}
                     <Autocomplete
                         ref = {el => this.inputRef = el}
-                        items={this.props.possibleLabels}
+                        items={this.state.possibleLabels}
                         shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                         getItemValue={item => item.label}
                         renderItem={(item, highlighted) => {

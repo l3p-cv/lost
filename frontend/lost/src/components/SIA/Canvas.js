@@ -175,14 +175,14 @@ class Canvas extends Component{
     **************/
     // Collect the current data of all annotations and update state
     collectAnnos(){
-        console.log('this.annoRefs', this.annoRefs)
+        // console.log('Canvas collectAnnos this.annoRefs', this.annoRefs)
         let annos = []  
         this.annoRefs.forEach( ref => {
             if (ref) {
                 annos.push(ref.current.getResult())
             }
         })
-        console.log('Result annos', annos)
+        // console.log('collectAnnos Result annos', annos)
         this.setState({annos: [...annos]})
     }
 

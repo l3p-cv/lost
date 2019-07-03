@@ -178,7 +178,7 @@ class Annotation extends Component{
         //     this.props.data.id, this.props.data)
         // console.log('My annos are: ', this.myAnno.current.state.anno)
         return {
-            ...this.props.data,
+            ...this.state.anno,
             data: this.myAnno.current.state.anno,
             createMode: this.myAnno.current.state.mode === modes.CREATE
         }
