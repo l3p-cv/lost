@@ -88,9 +88,10 @@ class LabelInput extends Component{
     }
 
     onCheckClick(e){
-        this.closeLabelInput()
+        //this.closeLabelInput()
         //Reset keyDown after leaving with a click instead of keyDown
-        this.props.siaKeyDown(undefined) 
+        //this.props.siaKeyDown(undefined) 
+        this.confirmLabel()
     }
 
     onLabelSelect(value, item){
@@ -141,23 +142,27 @@ class LabelInput extends Component{
             // case 'Enter':
             case 'Escape':
                 console.log('LabelInput Escape current label', this.state.label.id)
-                if (this.state.label){
-                    this.props.selectAnnotation({
-                        ...this.props.selectedAnno,
-                        labelIds: [this.state.label.id]
-                    })
-                } else {
-                    this.props.selectAnnotation({
-                        ...this.props.selectedAnno,
-                        labelIds: []
-                    })
-                }
-                this.closeLabelInput()
+                this.confirmLabel()
                 
                 break
             default:
                 break
         }
+    }
+
+    confirmLabel(){
+        if (this.state.label){
+            this.props.selectAnnotation({
+                ...this.props.selectedAnno,
+                labelIds: [this.state.label.id]
+            })
+        } else {
+            this.props.selectAnnotation({
+                ...this.props.selectedAnno,
+                labelIds: []
+            })
+        }
+        this.closeLabelInput()
     }
 
     closeLabelInput(){

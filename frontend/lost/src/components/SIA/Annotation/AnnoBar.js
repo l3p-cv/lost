@@ -54,11 +54,18 @@ class AnnoBar extends Component{
 
 
     render(){
+        let label = 'None'
+        if (this.props.anno.labelIds){
+            console.log('AnnoBar',this.props.anno)
+            label = this.props.possibleLabels.find(el => {
+                return el.id === this.props.anno.labelIds[0]
+            }).label
+        }
         switch(this.props.mode){
             case modes.VIEW:
                 return (
                     <text x={this.state.left} y={this.state.top} fill="white"> 
-                        {'Test'}
+                        {label}
                     </text>
                 )
             default:
@@ -70,8 +77,10 @@ class AnnoBar extends Component{
 }
 
 function mapStateToProps(state) {
+    console.log('AnnoBar selected anno', state.sia.selectedAnno)
     return ({
-        // selectedAnno: state.sia.selectedAnno,
+        selectedAnno: state.sia.selectedAnno,
+        possibleLabels: state.sia.possibleLabels
     })
 }
 
