@@ -9,6 +9,7 @@ import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
 import * as modes from '../types/modes'
+import * as annoStatus from '../types/annoStatus'
 import * as colorlut from '../utils/colorlut'
 
 
@@ -41,7 +42,7 @@ class Annotation extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Annotation Update', this.state.mode, this.props.type, this.props.data.id)
+        console.log('Annotation Update', this.state.mode, this.props.type, this.props.data.id, this.state.anno)
         if (prevProps.keyDown !== this.props.keyDown){
             if (this.isSelected()){
                 switch (this.props.keyDown){
@@ -50,6 +51,8 @@ class Annotation extends Component{
                         break
                     case 'Enter':
                         this.setMode(modes.EDIT_LABEL)
+                    case 'Delete':
+                        this.setMode(modes.DELETED)
                     default:
                         break
                 }
@@ -116,14 +119,24 @@ class Annotation extends Component{
             default:
                 break
         }
+        let newAnno
         switch (oldMode){
             case modes.ADD:
             case modes.EDIT:
             case modes.MOVE:
-            case modes.CREATE:
-                const newAnno = {
+                newAnno = {
                     ...this.state.anno,
-                    data: [...this.myAnno.current.state.anno]
+                    data: [...this.myAnno.current.state.anno],
+                    status: annoStatus.CHANGED
+                }
+                this.setState({anno: newAnno})
+                this.props.selectAnnotation(newAnno)
+                break
+            case modes.CREATE:
+                newAnno = {
+                    ...this.state.anno,
+                    data: [...this.myAnno.current.state.anno],
+                    status: annoStatus.NEW
                 }
                 this.setState({anno: newAnno})
                 this.props.selectAnnotation(newAnno)
@@ -150,6 +163,18 @@ class Annotation extends Component{
                 case modes.EDIT_LABEL:
                     this.props.siaShowLabelInput(true)
                     this.props.siaShowSingleAnno(this.props.data.id)
+                    break
+                case modes.DELETED:
+                    this.props.siaShowSingleAnno(undefined)
+                    this.props.selectAnnotation(undefined)
+                    this.setVisible(false)
+                    this.setState({
+                        anno: {
+                            ...this.state.anno, 
+                            status: annoStatus.DELETED
+                        }
+                    })
+                    console.log('Annotation in deleted state')
                     break
                 default:
                     break

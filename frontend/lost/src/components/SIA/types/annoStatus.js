@@ -1,4 +1,4 @@
 export const NEW='new'
 export const DELETED='deleted'
 export const DATABASE='database'
-export const changed='changed'
+export const CHANGED='changed'

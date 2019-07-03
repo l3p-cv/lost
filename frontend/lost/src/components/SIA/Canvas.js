@@ -157,9 +157,9 @@ class Canvas extends Component{
 
     onKeyDown(e: Event){
         e.preventDefault()
-        if (e.key === 'Delete'){
-            this.removeSelectedAnno()
-        }
+        // if (e.key === 'Delete'){
+        //     this.removeSelectedAnno()
+        // }
         this.props.siaKeyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
@@ -252,12 +252,12 @@ class Canvas extends Component{
         }
     }
 
-    removeSelectedAnno(){
-        const annos = this.state.annos.filter( (el) => {
-            return el.id !== this.props.selectedAnno.id
-        })
-        this.setState({annos: annos})
-    }
+    // removeSelectedAnno(){
+    //     const annos = this.state.annos.filter( (el) => {
+    //         return el.id !== this.props.selectedAnno.id
+    //     })
+    //     this.setState({annos: annos})
+    // }
 
     createNewAnnotation(e){
         const mousePos = this.getMousePosition(e)

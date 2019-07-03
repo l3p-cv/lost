@@ -15,6 +15,7 @@ import { faTrashAlt, faCheck } from '@fortawesome/free-solid-svg-icons'
 import actions from '../../actions'
 import Autocomplete from 'react-autocomplete'
 import * as transform from './utils/transform'
+import * as annoStatus from './types/annoStatus'
 
 const {siaShowLabelInput, siaShowSingleAnno, selectAnnotation,
 siaKeyDown} = actions
@@ -166,18 +167,21 @@ class LabelInput extends Component{
             if (this.state.label.id !== -1){
                 this.props.selectAnnotation({
                     ...this.props.selectedAnno,
-                    labelIds: [this.state.label.id]
+                    labelIds: [this.state.label.id],
+                    status: annoStatus.CHANGED
                 })
             } else {
                 this.props.selectAnnotation({
                     ...this.props.selectedAnno,
-                    labelIds: []
+                    labelIds: [],
+                    status: annoStatus.CHANGED
                 })
             }
         } else {
             this.props.selectAnnotation({
                 ...this.props.selectedAnno,
-                labelIds: []
+                labelIds: [],
+                status: annoStatus.CHANGED
             })
         }
         this.closeLabelInput()
