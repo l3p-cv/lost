@@ -8,11 +8,13 @@ import actions from '../../actions'
 
 import * as transform from './utils/transform'
 import * as modes from './types/modes'
+import * as annoStatus from './types/annoStatus'
 
 
 const { 
     getSiaImage, getSiaAnnos, siaKeyDown, 
-    siaKeyUp, selectAnnotation, getSiaLabels
+    siaKeyUp, selectAnnotation, getSiaLabels,
+    siaUpdateAnnos
 } = actions
 
 class Canvas extends Component{
@@ -61,9 +63,11 @@ class Canvas extends Component{
         }
         }
         if (prevProps.getNextImage !== this.props.getNextImage){
+            this.updateBackendAnnos()
             this.props.getSiaAnnos(this.props.getNextImage)
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
+            this.updateBackendAnnos()
             this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
         }
         // Selected annotation should be on top
@@ -192,6 +196,33 @@ class Canvas extends Component{
         this.setState({annos: [...annos]})
     }
 
+    updateBackendAnnos(){
+        let annos = []  
+        //Get newest anno data from components
+        this.annoRefs.forEach( ref => {
+            if (ref) {
+                annos.push(ref.current.getResult())
+            }
+        })
+        const bAnnos = annos.map( el => {
+            return {
+                ...el,
+                id: (typeof el.id) === "string" ? undefined : el.id,
+                data: transform.toBackend(el.data, this.state.svg, el.type)
+            }
+        })
+        const finalData = {
+            imgId: this.props.annos.image.id,
+            drawables: {
+                bBoxes: bAnnos.filter((el) => {return el.type == 'bBox'}),
+                lines: bAnnos.filter((el) => {return el.type == 'line'}),
+                points: bAnnos.filter((el) => {return el.type == 'point'}),
+                polygons: bAnnos.filter((el) => {return el.type == 'polygon'}),
+            }
+        }
+        this.props.siaUpdateAnnos(finalData)
+    }
+
     moveCamera(e){
         this.setState({svg: {
             ...this.state.svg,
@@ -238,7 +269,8 @@ class Canvas extends Component{
                     x: mousePos.x, 
                     y: mousePos.y
                 }],
-                createMode: true
+                createMode: true,
+                status: annoStatus.NEW
             }]
         })
     }
@@ -296,16 +328,16 @@ class Canvas extends Component{
             
             annos = [
                 ...this.props.annos.drawables.bBoxes.map((element) => {
-                    return {...element, type:'bBox', createMode:false}
+                    return {...element, type:'bBox', createMode:false, status: annoStatus.DATABASE}
                 }),
                 ...this.props.annos.drawables.lines.map((element) => {
-                    return {...element, type:'line', createMode:false}
+                    return {...element, type:'line', createMode:false, status: annoStatus.DATABASE}
                 }),
                 ...this.props.annos.drawables.polygons.map((element) => {
-                    return {...element, type:'polygon', createMode:false}
+                    return {...element, type:'polygon', createMode:false, status: annoStatus.DATABASE}
                 }),
                 ...this.props.annos.drawables.points.map((element) => {
-                    return {...element, type:'point', createMode:false}
+                    return {...element, type:'point', createMode:false, status: annoStatus.DATABASE}
                 })
             ]
        }
@@ -395,6 +427,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, 
     {
         getSiaAnnos, getSiaImage, siaKeyDown, 
-        siaKeyUp, selectAnnotation, getSiaLabels
+        siaKeyUp, selectAnnotation, getSiaLabels,
+        siaUpdateAnnos
     }
 )(Canvas)

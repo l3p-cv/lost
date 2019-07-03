@@ -1,5 +1,3 @@
-import { faCommentsDollar } from "@fortawesome/free-solid-svg-icons";
-
 export function toSia(data, image, type){
     
     switch(type) {
@@ -37,6 +35,42 @@ export function toSia(data, image, type){
                 return {
                     x: image.width * e.x,
                     y: image.height * e.y
+                }
+            })
+        default:
+            console.log("Wrong annotation type!")
+        
+    }
+}
+
+export function toBackend(data, image, type){
+    console.log('toBackend image', image)
+    switch(type) {
+        case 'bBox':
+            // const w = image.width * data.w
+            // const h = image.height * data.h
+            // const x0 = image.width * data.x - w/2.0
+            // const y0 = image.height * data.y - h/2.0
+            const w = data[1].x - data[0].x
+            const h = data[2].y - data[0].y
+            const x = data[0].x + w/2.0
+            const y = data[0].y + h/2.0
+            return {
+                x:x/image.width,
+                y:y/image.height,
+                w:w/image.width,
+                h:h/image.height}
+        case 'point':
+            return {
+                x: data[0].x/image.width,
+                y: data[0].y/image.height
+            }
+        case 'line':
+        case 'polygon':
+            return data.map((e) => {
+                return {
+                    x: e.x/ image.width,
+                    y: e.y/ image.height
                 }
             })
         default:

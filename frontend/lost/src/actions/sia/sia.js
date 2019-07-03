@@ -10,6 +10,12 @@ export const getSiaAnnos = (imageId, type='next') => async dispatch => {
     } catch (e) {console.log(e)}
 }
 
+export const siaUpdateAnnos = (data) => async dispatch => {
+    try {
+        const response = await axios.post(API_URL + '/sia/update', data)
+    } catch (e) {console.error(e)}
+}
+
 export const getSiaLabels = () => async dispatch => {
     try {
         const response = await axios.get(API_URL + '/sia/label')
