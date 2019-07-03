@@ -2,16 +2,27 @@ import React, {Component} from 'react'
 import { Button } from 'reactstrap';
 import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle } from '@fortawesome/free-solid-svg-icons'
+import { 
+    faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle, 
+    faArrowRight, faArrowLeft 
+} from '@fortawesome/free-solid-svg-icons'
 import Draggable from 'react-draggable';
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
-const { siaSelectTool } = actions
+const { siaSelectTool, siaGetNextImage, siaGetPrevImage } = actions
 
 class ToolBar extends Component{
 
     onClick(e, tool){
         this.props.siaSelectTool(tool)
+    }
+
+    getNextImg(){
+        this.props.siaGetNextImage(this.props.currentImage.id)
+    }
+
+    getPrevImg(){
+        this.props.siaGetPrevImage(this.props.currentImage.id)
     }
 
     render(){
@@ -33,11 +44,22 @@ class ToolBar extends Component{
                 <Button onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
                     <FontAwesomeIcon icon={faDrawPolygon} size="3x"/>
                 </Button>{' '}
+                <Button onClick={() => this.getNextImg()} color="primary">
+                    <FontAwesomeIcon icon={faArrowRight} />
+                </Button>{' '}
+                <Button onClick={() => this.getPrevImg()} color="primary">
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                </Button>{' '}
             </div>
         </Draggable>)
     }
 }
 
-export default connect(null, 
-    {siaSelectTool}
+function mapStateToProps(state) {
+    return ({
+        currentImage: state.sia.annos.image
+    })
+}
+export default connect(mapStateToProps, 
+    {siaSelectTool, siaGetNextImage, siaGetPrevImage}
 )(ToolBar)

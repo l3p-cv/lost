@@ -3,9 +3,9 @@ import TYPES from '../../types/index'
 import {API_URL} from '../../settings'
 import {http} from 'l3p-frontend'
 
-export const getSiaAnnos = (imageId) => async dispatch => {
+export const getSiaAnnos = (imageId, type='next') => async dispatch => {
     try {
-        const response = await axios.get(API_URL + '/sia/next/' + imageId)
+        const response = await axios.get(API_URL + '/sia/' + type + '/' + imageId)
         dispatch({type: TYPES.GET_SIA_ANNOS, payload: response.data})
     } catch (e) {console.log(e)}
 }
@@ -79,5 +79,19 @@ export const siaShowLabelInput = (show) => {
     return {
         type: TYPES.SIA_SHOW_LABEL_INPUT,
         payload: show
+    }
+}
+
+export const siaGetNextImage = (currentImgId) => {
+    return {
+        type: TYPES.SIA_GET_NEXT_IMAGE,
+        payload: currentImgId
+    }
+}
+
+export const siaGetPrevImage = (currentImgId) => {
+    return {
+        type: TYPES.SIA_GET_PREV_IMAGE,
+        payload: currentImgId
     }
 }

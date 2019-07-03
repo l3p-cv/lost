@@ -60,6 +60,12 @@ class Canvas extends Component{
 
         }
         }
+        if (prevProps.getNextImage !== this.props.getNextImage){
+            this.props.getSiaAnnos(this.props.getNextImage)
+        }
+        if (prevProps.getPrevImage !== this.props.getPrevImage){
+            this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
+        }
         // Selected annotation should be on top
         this.putSelectedOnTop(prevProps)
     }
@@ -380,7 +386,9 @@ function mapStateToProps(state) {
     return ({
         annos: state.sia.annos,
         selectedAnno: state.sia.selectedAnno,
-        selectedTool: state.sia.selectedTool
+        selectedTool: state.sia.selectedTool,
+        getNextImage: state.sia.getNextImage,
+        getPrevImage: state.sia.getPrevImage
     })
 }
 

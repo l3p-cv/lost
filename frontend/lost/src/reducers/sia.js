@@ -15,7 +15,9 @@ const INITIAL_STATE = {
     showSingleAnno: undefined,
     selectedTool: undefined,
     showLabelInput: false,
-    possibleLabels: []
+    possibleLabels: [],
+    getNextImage: undefined,
+    getPrevImage: undefined
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -75,6 +77,18 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 showLabelInput: action.payload
+
+            }
+        case TYPES.SIA_GET_NEXT_IMAGE:
+            return {
+                ...state,
+                getNextImage: action.payload
+
+            }
+        case TYPES.SIA_GET_PREV_IMAGE:
+            return {
+                ...state,
+                getPrevImage: action.payload
 
             }
         default:
