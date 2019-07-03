@@ -55,7 +55,7 @@ class AnnoBar extends Component{
 
     render(){
         let label = 'no label'
-        if (this.props.anno.labelIds.length > 0){
+        if (this.props.anno.labelIds && this.props.anno.labelIds.length > 0){
             console.log('AnnoBar',this.props.anno)
             label = this.props.possibleLabels.find(el => {
                 return el.id === this.props.anno.labelIds[0]
