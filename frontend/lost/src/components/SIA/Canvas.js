@@ -80,13 +80,16 @@ class Canvas extends Component{
 
     onMouseOver(){
         //Prevent scrolling on svg
-        document.body.style.overflow = "hidden"
+        document.body.style.position = "fixed"
+        document.body.style.overflowY = "scroll"
         this.svg.current.focus()
         console.log('Mouse Over Canvas')
     }
     onMouseOut(){
         //Enable scrolling after leaving svg
-        document.body.style.overflow = "auto"
+        // document.body.style.overflow = "auto"
+        document.body.style.position = "static"
+        document.body.style.overflowY = "auto"
     }
     onWheel(e){
         // Zoom implementation. Note that svg is first scaled and 
