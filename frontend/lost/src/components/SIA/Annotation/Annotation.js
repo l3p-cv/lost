@@ -51,8 +51,10 @@ class Annotation extends Component{
                         break
                     case 'Enter':
                         this.setMode(modes.EDIT_LABEL)
+                        break
                     case 'Delete':
                         this.setMode(modes.DELETED)
+                        break
                     default:
                         break
                 }

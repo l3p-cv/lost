@@ -152,7 +152,7 @@ class LabelInput extends Component{
         switch(key){
             // case 'Enter':
             case 'Escape':
-                console.log('LabelInput Escape current label', this.state.label.id)
+                // console.log('LabelInput Escape current label', this.state.label.id)
                 this.confirmLabel()
                 
                 break
