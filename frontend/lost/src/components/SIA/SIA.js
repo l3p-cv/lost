@@ -18,12 +18,13 @@ class SIA extends Component{
         return(
             <React.Fragment>
                 <Row>
-                    <Col xs='11' sm='11' lg='11'>
-                        <Canvas></Canvas>
-                    </Col>
                     <Col xs='1' sm='1' lg='1'>
                         <ToolBar></ToolBar>
                     </Col>
+                    <Col xs='11' sm='11' lg='11'>
+                        <Canvas></Canvas>
+                    </Col>
+                    
                 </Row>
                 <Row>
                     <Col>
