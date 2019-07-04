@@ -38,11 +38,12 @@ class Canvas extends Component{
         }
         this.img = React.createRef()
         this.svg = React.createRef()
+        this.container = React.createRef()
         this.annoRefs = []
     }
 
     componentDidMount(){
-        this.props.getSiaAnnos(11)
+        this.props.getSiaAnnos(-1)
         this.props.getSiaLabels()
     }
 
@@ -80,18 +81,21 @@ class Canvas extends Component{
 
     onMouseOver(){
         //Prevent scrolling on svg
-        document.body.style.position = "fixed"
-        document.body.style.overflowY = "scroll"
+        
+        // document.body.style.position = "fixed"
+        // document.body.style.overflowY = "scroll"
+        document.body.style.overflow = "hidden"
         this.svg.current.focus()
         console.log('Mouse Over Canvas')
     }
     onMouseOut(){
         //Enable scrolling after leaving svg
         // document.body.style.overflow = "auto"
-        document.body.style.position = "static"
-        document.body.style.overflowY = "auto"
+        
+        // document.body.style.position = "static"
+        // document.body.style.overflowY = "auto"
     }
-    onWheel(e){
+    onWheel(e:Event){
         // Zoom implementation. Note that svg is first scaled and 
         // second translated!
         const up = e.deltaY < 0
@@ -298,7 +302,7 @@ class Canvas extends Component{
     }
 
     initCanvasView(){
-        var svgBox = this.svg.current.getBoundingClientRect()
+        var svgBox = this.container.current.getBoundingClientRect()
         var clientWidth = document.documentElement.clientWidth
         var clientHeight = document.documentElement.clientHeight
         var maxImgWidth = svgBox.right -svgBox.left
@@ -308,6 +312,9 @@ class Canvas extends Component{
         var imgHeight = "100%"
         console.log('naturalWidth', this.img.current.naturalWidth)
         console.log('naturalHeight', this.img.current.naturalHeight)
+        console.log('maxImgWidth', maxImgWidth)
+        console.log('maxImgHeight', maxImgHeight)
+        console.log('ratio', ratio)
         if (maxImgHeight * ratio > maxImgWidth){
             imgWidth = maxImgWidth
             imgHeight = maxImgWidth / ratio
@@ -382,7 +389,8 @@ class Canvas extends Component{
 
     render(){
         return(
-            <div>
+            <div ref={this.container}>
+                <div>
                 <LabelInput svg={this.state.svg} svgRef={this.svg} 
                     onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}></LabelInput>
                 <svg ref={this.svg} width={this.state.svg.width} 
@@ -393,10 +401,10 @@ class Canvas extends Component{
                     >
                     <g 
                         transform={`scale(${this.state.svg.scale}) translate(${this.state.svg.translateX}, ${this.state.svg.translateY})`}
-                        onWheel={(e) => {this.onWheel(e)}}
                         onMouseOver={() => {this.onMouseOver()}}
                         onMouseOut={() => {this.onMouseOut()}}
                         onMouseUp={(e) => {this.onMouseUp(e)}}
+                        onWheel={(e) => {this.onWheel(e)}}
                         onMouseMove={(e) => {this.onMouseMove(e)}}
                     >
                         <image
@@ -410,6 +418,7 @@ class Canvas extends Component{
                     </g>
                 </svg>
                 <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.image.data} width="100%" height="100%"></img>
+                </div>
             </div>)
     }
 }
