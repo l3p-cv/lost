@@ -135,7 +135,7 @@ class Annotation extends Component{
                 newAnno = {
                     ...this.state.anno,
                     data: [...this.myAnno.current.state.anno],
-                    status: annoStatus.CHANGED
+                    status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 }
                 this.setState({anno: newAnno})
                 this.props.selectAnnotation(newAnno)

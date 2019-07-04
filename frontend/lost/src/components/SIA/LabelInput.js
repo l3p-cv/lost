@@ -168,20 +168,20 @@ class LabelInput extends Component{
                 this.props.selectAnnotation({
                     ...this.props.selectedAnno,
                     labelIds: [this.state.label.id],
-                    status: annoStatus.CHANGED
+                    status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 })
             } else {
                 this.props.selectAnnotation({
                     ...this.props.selectedAnno,
                     labelIds: [],
-                    status: annoStatus.CHANGED
+                    status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 })
             }
         } else {
             this.props.selectAnnotation({
                 ...this.props.selectedAnno,
                 labelIds: [],
-                status: annoStatus.CHANGED
+                status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
             })
         }
         this.closeLabelInput()
