@@ -39,10 +39,13 @@ class Annotation extends Component{
             this.setMode(modes.CREATE)
         } 
         this.setState({anno: {...this.props.data}})
+        if (this.props.data.status === annoStatus.DELETED){
+            this.setVisible(false)
+        }
     }
 
     componentDidUpdate(prevProps){
-        console.log('Annotation Update', this.state.mode, this.props.type, this.props.data.id, this.state.anno)
+        console.log('Annotation Update', this.state, this.props.type, this.props.data.id)
         if (prevProps.keyDown !== this.props.keyDown){
             if (this.isSelected()){
                 switch (this.props.keyDown){
@@ -89,6 +92,9 @@ class Annotation extends Component{
             if(this.state.anno !== this.props.selectedAnno){
                 this.setState({anno: this.props.selectedAnno})
             }
+        }
+        if (this.state.anno.status === annoStatus.DELETED){
+            this.setVisible(false)
         }
     }
     
