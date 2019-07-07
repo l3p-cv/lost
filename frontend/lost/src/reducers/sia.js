@@ -17,7 +17,9 @@ const INITIAL_STATE = {
     showLabelInput: false,
     possibleLabels: [],
     getNextImage: undefined,
-    getPrevImage: undefined
+    getPrevImage: undefined,
+    fullscreenMode: false,
+    imageLoaded: false
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -90,6 +92,16 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 getPrevImage: action.payload
 
+            }
+        case TYPES.SIA_FULLSCREEN:
+            return {
+                ...state,
+                fullscreenMode: action.payload
+            }
+        case TYPES.SIA_IMAGE_LOADED:
+            return {
+                ...state,
+                imageLoaded: action.payload
             }
         default:
             return state

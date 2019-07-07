@@ -4,12 +4,14 @@ import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
     faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle, 
-    faArrowRight, faArrowLeft 
+    faArrowRight, faArrowLeft , faExpandArrowsAlt
 } from '@fortawesome/free-solid-svg-icons'
 import Draggable from 'react-draggable';
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
-const { siaSelectTool, siaGetNextImage, siaGetPrevImage } = actions
+const { 
+    siaSelectTool, siaGetNextImage, siaGetPrevImage, 
+    siaSetFullscreen, siaSetImageLoaded } = actions
 
 class ToolBar extends Component{
 
@@ -18,11 +20,17 @@ class ToolBar extends Component{
     }
 
     getNextImg(){
+        this.props.siaSetImageLoaded(false)
         this.props.siaGetNextImage(this.props.currentImage.id)
     }
 
     getPrevImg(){
+        this.props.siaSetImageLoaded(false)
         this.props.siaGetPrevImage(this.props.currentImage.id)
+    }
+
+    toggleFullscreen(){
+        this.props.siaSetFullscreen(!this.props.fullscreenMode)
     }
 
     render(){
@@ -33,22 +41,25 @@ class ToolBar extends Component{
           <div className="handle" style={{cursor: 'grab'}}>Drag from here</div>
         </div>
                 <Button onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
-                    Point <FontAwesomeIcon icon={faDotCircle} />
+                    <FontAwesomeIcon icon={faDotCircle} />
                 </Button>{' '}
                 <Button onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
-                    Line <FontAwesomeIcon icon={faWaveSquare} />
+                    <FontAwesomeIcon icon={faWaveSquare} />
                 </Button>{' '}
                 <Button onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
-                    BBox <FontAwesomeIcon icon={faVectorSquare} size="3x"/>
+                    <FontAwesomeIcon icon={faVectorSquare} size="1x"/>
                 </Button>{' '}
                 <Button onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
-                    <FontAwesomeIcon icon={faDrawPolygon} size="3x"/>
+                    <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
                 </Button>{' '}
                 <Button onClick={() => this.getNextImg()} color="primary">
                     <FontAwesomeIcon icon={faArrowRight} />
                 </Button>{' '}
                 <Button onClick={() => this.getPrevImg()} color="primary">
                     <FontAwesomeIcon icon={faArrowLeft} />
+                </Button>{' '}
+                <Button outline onClick={() => this.toggleFullscreen()} color="secondary">
+                    <FontAwesomeIcon icon={faExpandArrowsAlt} />
                 </Button>{' '}
             </div>
         </Draggable>)
@@ -57,9 +68,11 @@ class ToolBar extends Component{
 
 function mapStateToProps(state) {
     return ({
-        currentImage: state.sia.annos.image
+        currentImage: state.sia.annos.image,
+        fullscreenMode: state.sia.fullscreenMode
     })
 }
 export default connect(mapStateToProps, 
-    {siaSelectTool, siaGetNextImage, siaGetPrevImage}
+    {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
+        siaSetFullscreen, siaSetImageLoaded}
 )(ToolBar)

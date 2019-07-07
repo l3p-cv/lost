@@ -101,3 +101,17 @@ export const siaGetPrevImage = (currentImgId) => {
         payload: currentImgId
     }
 }
+
+export const siaSetFullscreen = (fullscreen) => {
+    return {
+        type: TYPES.SIA_FULLSCREEN,
+        payload: fullscreen
+    }
+}
+
+export const siaSetImageLoaded = (loaded) => {
+    return {
+        type: TYPES.SIA_IMAGE_LOADED,
+        payload: loaded
+    }
+}

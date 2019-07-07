@@ -14,7 +14,7 @@ import * as annoStatus from './types/annoStatus'
 const { 
     getSiaImage, getSiaAnnos, siaKeyDown, 
     siaKeyUp, selectAnnotation, getSiaLabels,
-    siaUpdateAnnos
+    siaUpdateAnnos, siaSetImageLoaded
 } = actions
 
 class Canvas extends Component{
@@ -38,7 +38,6 @@ class Canvas extends Component{
         }
         this.img = React.createRef()
         this.svg = React.createRef()
-        this.container = React.createRef()
         this.annoRefs = []
     }
 
@@ -73,10 +72,18 @@ class Canvas extends Component{
         }
         // Selected annotation should be on top
         this.putSelectedOnTop(prevProps)
+        if (this.props.imageLoaded){
+            // if (prevProps.container !== this.props.container){
+            //     this.updateImageSize()
+            // }
+            if (prevProps.imageLoaded !== this.props.imageLoaded){
+                this.initCanvasView()
+            }
+        }
     }
     
     onImageLoad(){
-        this.initCanvasView()
+        this.props.siaSetImageLoaded(true)
     }
 
     onMouseOver(){
@@ -84,7 +91,8 @@ class Canvas extends Component{
         
         // document.body.style.position = "fixed"
         // document.body.style.overflowY = "scroll"
-        document.body.style.overflow = "hidden"
+        
+        // document.body.style.overflow = "hidden"
         this.svg.current.focus()
         console.log('Mouse Over Canvas')
     }
@@ -301,15 +309,19 @@ class Canvas extends Component{
         }
     }
 
-    initCanvasView(){
-        var svgBox = this.container.current.getBoundingClientRect()
+    updateImageSize(){
+        
+        var container = this.props.container
+        console.log('Canvas container', container)
         var clientWidth = document.documentElement.clientWidth
         var clientHeight = document.documentElement.clientHeight
-        var maxImgWidth = svgBox.right -svgBox.left
-        var maxImgHeight = clientHeight - svgBox.top
+        var maxImgWidth = container.right -container.left
+        var maxImgHeight = clientHeight - container.top
         var ratio = this.img.current.naturalWidth / this.img.current.naturalHeight
         var imgWidth = "100%"
         var imgHeight = "100%"
+        console.log('clientHeight', clientHeight)
+        console.log('window.innerHeight', window.innerHeight)
         console.log('naturalWidth', this.img.current.naturalWidth)
         console.log('naturalHeight', this.img.current.naturalHeight)
         console.log('maxImgWidth', maxImgWidth)
@@ -322,20 +334,24 @@ class Canvas extends Component{
             imgWidth = maxImgHeight * ratio
             imgHeight = maxImgHeight
         }
-        console.log('svg', this.svg)
+        // console.log('svg', this.svg)
         console.log('img', this.img)
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
         this.setState({svg: {
             ...this.state.svg, width : imgWidth, height: imgHeight,
-            left: svgBox.left, top: svgBox.top
+            left: container.left, top: container.top
         }})
+        return {imgWidth, imgHeight}
+    }
+    initCanvasView(){
+        
 
         var annos = []
         //Annotation data should be present and a pixel accurate value 
         //for svg should be calculated
         if(this.props.annos.drawables){
             console.log(this.props.annos.drawables)
-            
+            const imgSize = this.updateImageSize()
             annos = [
                 ...this.props.annos.drawables.bBoxes.map((element) => {
                     return {...element, type:'bBox', createMode:false, status: annoStatus.DATABASE}
@@ -350,12 +366,12 @@ class Canvas extends Component{
                     return {...element, type:'point', createMode:false, status: annoStatus.DATABASE}
                 })
             ]
-       }
-       annos = annos.map((el) => {
-        return {...el, 
-            data:transform.toSia(el.data, {width: imgWidth, height:imgHeight}, el.type)}
-        })
-       this.setState({annos: annos})
+            annos = annos.map((el) => {
+                return {...el, 
+                    data:transform.toSia(el.data, {width: imgSize.imgWidth, height:imgSize.imgHeight}, el.type)}
+                })
+            this.setState({annos: annos})
+        }
     }
 
     renderAnnotations(){
@@ -388,9 +404,12 @@ class Canvas extends Component{
     }
 
     render(){
+        if (!this.props.container) return null
         return(
-            <div ref={this.container}>
-                <div>
+            <div height={this.state.svg.height} 
+            // style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}
+            >
+                {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 <LabelInput svg={this.state.svg} svgRef={this.svg} 
                     onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}></LabelInput>
                 <svg ref={this.svg} width={this.state.svg.width} 
@@ -418,7 +437,7 @@ class Canvas extends Component{
                     </g>
                 </svg>
                 <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.image.data} width="100%" height="100%"></img>
-                </div>
+                {/* </div> */}
             </div>)
     }
 }
@@ -432,7 +451,8 @@ function mapStateToProps(state) {
         selectedAnno: state.sia.selectedAnno,
         selectedTool: state.sia.selectedTool,
         getNextImage: state.sia.getNextImage,
-        getPrevImage: state.sia.getPrevImage
+        getPrevImage: state.sia.getPrevImage,
+        imageLoaded: state.sia.imageLoaded
     })
 }
 
@@ -440,6 +460,6 @@ export default connect(mapStateToProps,
     {
         getSiaAnnos, getSiaImage, siaKeyDown, 
         siaKeyUp, selectAnnotation, getSiaLabels,
-        siaUpdateAnnos
+        siaUpdateAnnos, siaSetImageLoaded
     }
 )(Canvas)
