@@ -17,27 +17,16 @@ class SIA extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            container: undefined,
             fullscreenCSS: ''
         }
-        this.container = React.createRef()
     }
 
     componentDidMount() {
         document.body.style.overflow = "hidden"
         //document.body.style.position = "fixed"
-
-        this.setState({
-            container: this.container.current.getBoundingClientRect()
-        })
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.fullscreenCSS !== this.state.fullscreenCSS) {
-            this.setState({
-                container: this.container.current.getBoundingClientRect()
-            })
-        }
         this.setFullscreen(this.props.fullscreenMode)
     }
 
@@ -62,9 +51,7 @@ class SIA extends Component {
                     <ToolBar></ToolBar>
                 </Col>
                 <Col xs='10' sm='10' lg='10' >
-                <div ref={this.container}>
-                    <Canvas container={this.state.container}></Canvas>
-                    </div>
+                    <Canvas ></Canvas>
                 </Col>
                 </Row>
             </div>

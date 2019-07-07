@@ -39,6 +39,7 @@ class Canvas extends Component{
         this.img = React.createRef()
         this.svg = React.createRef()
         this.annoRefs = []
+        this.container = React.createRef()
     }
 
     componentDidMount(){
@@ -80,6 +81,11 @@ class Canvas extends Component{
                 this.initCanvasView()
             }
         }
+        // // Workaround to find out when workingOnAnnoTask component has rendered,
+        // // in order to calculate correct position for canvas
+        // if (prevProps.workingOnAnnoTask !== this.props.workingOnAnnoTask){
+        //     this.initCanvasView()
+        // }
     }
     
     onImageLoad(){
@@ -311,7 +317,7 @@ class Canvas extends Component{
 
     updateImageSize(){
         
-        var container = this.props.container
+        var container = this.container.current.getBoundingClientRect()
         console.log('Canvas container', container)
         var clientWidth = document.documentElement.clientWidth
         var clientHeight = document.documentElement.clientHeight
@@ -404,8 +410,9 @@ class Canvas extends Component{
     }
 
     render(){
-        if (!this.props.container) return null
+        // if (!this.props.container) return null
         return(
+            <div ref={this.container}>
             <div height={this.state.svg.height} 
             // style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}
             >
@@ -438,6 +445,7 @@ class Canvas extends Component{
                 </svg>
                 <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.image.data} width="100%" height="100%"></img>
                 {/* </div> */}
+                </div>
             </div>)
     }
 }
@@ -452,7 +460,8 @@ function mapStateToProps(state) {
         selectedTool: state.sia.selectedTool,
         getNextImage: state.sia.getNextImage,
         getPrevImage: state.sia.getPrevImage,
-        imageLoaded: state.sia.imageLoaded
+        imageLoaded: state.sia.imageLoaded,
+        workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
     })
 }
 
