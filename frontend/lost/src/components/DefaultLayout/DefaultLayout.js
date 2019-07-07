@@ -93,7 +93,7 @@ class DefaultLayout extends Component {
                 </AppHeader>
                 <div className='app-body'>
                     <main className='main'>
-                        <AppBreadcrumb appRoutes={annotatorRoutes}/>
+                        {/* <AppBreadcrumb appRoutes={annotatorRoutes}/> */}
                         <Container fluid>
                             <Switch>
                                 {annotatorRoutes.map((route, idx) => {
