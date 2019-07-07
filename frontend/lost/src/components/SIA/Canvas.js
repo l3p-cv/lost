@@ -461,7 +461,7 @@ function mapStateToProps(state) {
         getNextImage: state.sia.getNextImage,
         getPrevImage: state.sia.getPrevImage,
         imageLoaded: state.sia.imageLoaded,
-        workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
+        // workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
     })
 }
 
