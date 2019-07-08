@@ -86,14 +86,14 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.SIA_GET_NEXT_IMAGE:
             return {
                 ...state,
-                getNextImage: action.payload
-
+                getNextImage: action.payload,
+                getPrevImage: undefined
             }
         case TYPES.SIA_GET_PREV_IMAGE:
             return {
                 ...state,
-                getPrevImage: action.payload
-
+                getPrevImage: action.payload,
+                getNextImage: undefined
             }
         case TYPES.SIA_FULLSCREEN:
             return {

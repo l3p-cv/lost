@@ -64,12 +64,16 @@ class Canvas extends Component{
         }
         }
         if (prevProps.getNextImage !== this.props.getNextImage){
-            this.updateBackendAnnos()
-            this.props.getSiaAnnos(this.props.getNextImage)
+            if (this.props.getNextImage){
+                this.updateBackendAnnos()
+                this.props.getSiaAnnos(this.props.getNextImage)
+            }
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
-            this.updateBackendAnnos()
-            this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
+            if (this.props.getPrevImage){
+                this.updateBackendAnnos()
+                this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
+            }
         }
         
         if (this.props.imageLoaded){
@@ -86,6 +90,7 @@ class Canvas extends Component{
                 // 
             // }
             if (prevProps.requestAnnoUpdate !== this.props.requestAnnoUpdate){
+                console.log('Canvas siaUpdateReduxAnnos')
                 this.props.siaUpdateReduxAnnos(
                     {...this.props.annos,
                         drawables: this.getAnnoBackendFormat()
@@ -341,6 +346,7 @@ class Canvas extends Component{
         var clientHeight = document.documentElement.clientHeight
         var maxImgWidth = container.right -container.left
         var maxImgHeight = clientHeight - container.top - 10
+        if (this.props.appliedFullscreen) maxImgHeight = maxImgHeight + 10 
         var ratio = this.img.current.naturalWidth / this.img.current.naturalHeight
         var imgWidth = "100%"
         var imgHeight = "100%"
