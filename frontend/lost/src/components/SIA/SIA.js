@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import actions from '../../actions'
 import './SIA.scss';
 
 import {
@@ -11,6 +12,9 @@ import Canvas from './Canvas'
 import NavBar from './NavBar'
 import ToolBar from './ToolBar'
 
+const { 
+    siaAppliedFullscreen
+} = actions
 
 class SIA extends Component {
 
@@ -28,6 +32,9 @@ class SIA extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         this.setFullscreen(this.props.fullscreenMode)
+        if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
+            this.props.siaAppliedFullscreen(this.props.fullscreenMode)
+        }
     }
 
     setFullscreen(fullscreen = true) {
@@ -67,7 +74,7 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    {}
+    {siaAppliedFullscreen}
     , null,
     {})(SIA)
 

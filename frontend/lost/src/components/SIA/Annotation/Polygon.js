@@ -46,6 +46,9 @@ class Polygon extends Component{
         if (prevProps.mode !== this.props.mode){
             this.setMode(this.props.mode)
         }
+        if (prevProps.anno !== this.props.anno){
+            this.setState({anno: [...this.props.anno]})
+        }
     }
 
 

@@ -46,6 +46,10 @@ class Annotation extends Component{
 
     componentDidUpdate(prevProps){
         console.log('Annotation Update', this.state, this.props.type, this.props.data.id)
+        if (prevProps.data !== this.props.data){
+            console.log('Annotation got new annotation data from props', this.props.data)
+            this.setState({anno: {...this.props.data}})
+        }
         if (prevProps.keyDown !== this.props.keyDown){
             if (this.isSelected()){
                 switch (this.props.keyDown){

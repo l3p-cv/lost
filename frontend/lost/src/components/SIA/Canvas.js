@@ -14,7 +14,7 @@ import * as annoStatus from './types/annoStatus'
 const { 
     getSiaImage, getSiaAnnos, siaKeyDown, 
     siaKeyUp, selectAnnotation, getSiaLabels,
-    siaUpdateAnnos, siaSetImageLoaded
+    siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos
 } = actions
 
 class Canvas extends Component{
@@ -71,20 +71,33 @@ class Canvas extends Component{
             this.updateBackendAnnos()
             this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
         }
-        // Selected annotation should be on top
-        this.putSelectedOnTop(prevProps)
+        
         if (this.props.imageLoaded){
-            // if (prevProps.container !== this.props.container){
-            //     this.updateImageSize()
-            // }
+            // Selected annotation should be on top
+            this.putSelectedOnTop(prevProps)
             if (prevProps.imageLoaded !== this.props.imageLoaded){
-                this.initCanvasView()
+                this.updateCanvasView(this.props.annos.drawables)
+            } 
+            if (prevProps.appliedFullscreen !== this.props.appliedFullscreen){
+                console.log('Canvas applied Fullscreen', this.props.appliedFullscreen)
+                this.updateCanvasView(this.props.annos.drawables)
+            } 
+            // else if (prevProps.annos !== this.props.annos){
+                // 
+            // }
+            if (prevProps.requestAnnoUpdate !== this.props.requestAnnoUpdate){
+                this.props.siaUpdateReduxAnnos(
+                    {...this.props.annos,
+                        drawables: this.getAnnoBackendFormat()
+                    })
             }
+            console.log('Canvas this.state.annos',this.state.annos)
+            
         }
         // // Workaround to find out when workingOnAnnoTask component has rendered,
         // // in order to calculate correct position for canvas
         // if (prevProps.workingOnAnnoTask !== this.props.workingOnAnnoTask){
-        //     this.initCanvasView()
+        //     this.updateCanvasView()
         // }
     }
     
@@ -217,7 +230,7 @@ class Canvas extends Component{
         this.setState({annos: [...annos]})
     }
 
-    updateBackendAnnos(){
+    getAnnoBackendFormat(){
         let annos = []  
         //Get newest anno data from components
         this.annoRefs.forEach( ref => {
@@ -232,14 +245,19 @@ class Canvas extends Component{
                 data: transform.toBackend(el.data, this.state.svg, el.type)
             }
         })
-        const finalData = {
-            imgId: this.props.annos.image.id,
-            drawables: {
+        const backendFormat = {
                 bBoxes: bAnnos.filter((el) => {return el.type == 'bBox'}),
                 lines: bAnnos.filter((el) => {return el.type == 'line'}),
                 points: bAnnos.filter((el) => {return el.type == 'point'}),
                 polygons: bAnnos.filter((el) => {return el.type == 'polygon'}),
-            }
+        }
+        return backendFormat
+    }
+    updateBackendAnnos(){
+        const backendFormat = this.getAnnoBackendFormat()
+        const finalData = {
+            imgId: this.props.annos.image.id,
+            drawables: backendFormat
         }
         this.props.siaUpdateAnnos(finalData)
     }
@@ -322,7 +340,7 @@ class Canvas extends Component{
         var clientWidth = document.documentElement.clientWidth
         var clientHeight = document.documentElement.clientHeight
         var maxImgWidth = container.right -container.left
-        var maxImgHeight = clientHeight - container.top
+        var maxImgHeight = clientHeight - container.top - 10
         var ratio = this.img.current.naturalWidth / this.img.current.naturalHeight
         var imgWidth = "100%"
         var imgHeight = "100%"
@@ -349,26 +367,27 @@ class Canvas extends Component{
         }})
         return {imgWidth, imgHeight}
     }
-    initCanvasView(){
+
+    updateCanvasView(drawables){
         
 
         var annos = []
         //Annotation data should be present and a pixel accurate value 
         //for svg should be calculated
-        if(this.props.annos.drawables){
-            console.log(this.props.annos.drawables)
+        if(drawables){
+            console.log('UpdateCanvasView drawables', drawables)
             const imgSize = this.updateImageSize()
             annos = [
-                ...this.props.annos.drawables.bBoxes.map((element) => {
+                ...drawables.bBoxes.map((element) => {
                     return {...element, type:'bBox', createMode:false, status: annoStatus.DATABASE}
                 }),
-                ...this.props.annos.drawables.lines.map((element) => {
+                ...drawables.lines.map((element) => {
                     return {...element, type:'line', createMode:false, status: annoStatus.DATABASE}
                 }),
-                ...this.props.annos.drawables.polygons.map((element) => {
+                ...drawables.polygons.map((element) => {
                     return {...element, type:'polygon', createMode:false, status: annoStatus.DATABASE}
                 }),
-                ...this.props.annos.drawables.points.map((element) => {
+                ...drawables.points.map((element) => {
                     return {...element, type:'point', createMode:false, status: annoStatus.DATABASE}
                 })
             ]
@@ -376,7 +395,8 @@ class Canvas extends Component{
                 return {...el, 
                     data:transform.toSia(el.data, {width: imgSize.imgWidth, height:imgSize.imgHeight}, el.type)}
                 })
-            this.setState({annos: annos})
+            console.log('Canvas annos', annos)
+            this.setState({annos: [...annos]})
         }
     }
 
@@ -461,6 +481,8 @@ function mapStateToProps(state) {
         getNextImage: state.sia.getNextImage,
         getPrevImage: state.sia.getPrevImage,
         imageLoaded: state.sia.imageLoaded,
+        appliedFullscreen: state.sia.appliedFullscreen,
+        requestAnnoUpdate: state.sia.requestAnnoUpdate
         // workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
     })
 }
@@ -469,6 +491,6 @@ export default connect(mapStateToProps,
     {
         getSiaAnnos, getSiaImage, siaKeyDown, 
         siaKeyUp, selectAnnotation, getSiaLabels,
-        siaUpdateAnnos, siaSetImageLoaded
+        siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos
     }
 )(Canvas)

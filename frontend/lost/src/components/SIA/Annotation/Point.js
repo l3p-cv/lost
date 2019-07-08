@@ -33,6 +33,12 @@ class Point extends Component{
         }
     }
 
+    componentDidUpdate(prevProps){
+        if (prevProps.anno !== this.props.anno){
+            this.setState({anno: [...this.props.anno]})
+        }
+    }
+    
     /**************
     * ANNO EVENTS *
     ***************/

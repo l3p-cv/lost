@@ -19,7 +19,9 @@ const INITIAL_STATE = {
     getNextImage: undefined,
     getPrevImage: undefined,
     fullscreenMode: false,
-    imageLoaded: false
+    imageLoaded: false,
+    requestAnnoUpdate: 0,
+    appliedFullscreen: false
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -102,6 +104,21 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 imageLoaded: action.payload
+            }
+        case TYPES.SIA_UPDATE_REDUX_ANNOS:
+            return {
+                ...state,
+                annos: action.payload
+            }
+        case TYPES.SIA_REQUEST_ANNO_UPDATE:
+            return {
+                ...state,
+                requestAnnoUpdate: state.requestAnnoUpdate + 1
+            }
+        case TYPES.SIA_APPLIED_FULLSCREEN:
+            return {
+                ...state,
+                appliedFullscreen: action.payload
             }
         default:
             return state

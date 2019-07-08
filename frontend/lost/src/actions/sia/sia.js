@@ -115,3 +115,23 @@ export const siaSetImageLoaded = (loaded) => {
         payload: loaded
     }
 }
+
+export const siaUpdateReduxAnnos = (annos) => {
+    return {
+        type: TYPES.SIA_UPDATE_REDUX_ANNOS,
+        payload: annos
+    }
+}
+
+export const siaRequestAnnoUpdate = (annos) => {
+    return {
+        type: TYPES.SIA_REQUEST_ANNO_UPDATE,
+    }
+}
+
+export const siaAppliedFullscreen = (appliedFullscreen) => {
+    return {
+        type: TYPES.SIA_APPLIED_FULLSCREEN,
+        payload: appliedFullscreen
+    }
+}

@@ -1,5 +1,6 @@
 export function toSia(data, image, type){
-    
+    console.info('toSia data',data)
+    console.info('toSia image',image)
     switch(type) {
         case 'bBox':
             const w = image.width * data.w
