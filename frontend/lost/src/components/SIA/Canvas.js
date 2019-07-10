@@ -86,7 +86,8 @@ class Canvas extends Component{
                 console.log('Canvas applied Fullscreen', this.props.appliedFullscreen)
                 this.updateCanvasView(this.props.annos.drawables)
             } else if(prevProps.layoutUpdate !== this.props.layoutUpdate){
-                this.updateCanvasView(this.props.annos.drawables)
+                this.props.selectAnnotation(undefined)
+                this.updateCanvasView(this.getAnnoBackendFormat())
             }
             // else if (prevProps.annos !== this.props.annos){
                 // 
