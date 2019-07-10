@@ -85,7 +85,9 @@ class Canvas extends Component{
             if (prevProps.appliedFullscreen !== this.props.appliedFullscreen){
                 console.log('Canvas applied Fullscreen', this.props.appliedFullscreen)
                 this.updateCanvasView(this.props.annos.drawables)
-            } 
+            } else if(prevProps.layoutUpdate !== this.props.layoutUpdate){
+                this.updateCanvasView(this.props.annos.drawables)
+            }
             // else if (prevProps.annos !== this.props.annos){
                 // 
             // }
@@ -340,11 +342,13 @@ class Canvas extends Component{
 
     updateImageSize(){
         
-        var container = this.container.current.getBoundingClientRect()
+        var container = this.props.container.current.getBoundingClientRect()
+        var canvasLeft = container.left + this.props.uiConfig.toolBarWidth
         console.log('Canvas container', container)
+        console.log('CanvasLeft', canvasLeft, this.props.uiConfig.toolBarWidth)
         var clientWidth = document.documentElement.clientWidth
         var clientHeight = document.documentElement.clientHeight
-        var maxImgWidth = container.right -container.left
+        var maxImgWidth = container.right -canvasLeft
         var maxImgHeight = clientHeight - container.top - 10
         if (this.props.appliedFullscreen) maxImgHeight = maxImgHeight + 10 
         var ratio = this.img.current.naturalWidth / this.img.current.naturalHeight
@@ -369,7 +373,7 @@ class Canvas extends Component{
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
         this.setState({svg: {
             ...this.state.svg, width : imgWidth, height: imgHeight,
-            left: container.left, top: container.top
+            left: canvasLeft, top: container.top
         }})
         return {imgWidth, imgHeight}
     }
@@ -438,9 +442,9 @@ class Canvas extends Component{
     render(){
         // if (!this.props.container) return null
         return(
-            <div ref={this.container}>
+            <div ref={this.container} >
             <div height={this.state.svg.height} 
-            // style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}
+            style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 <LabelInput svg={this.state.svg} svgRef={this.svg} 
@@ -472,6 +476,8 @@ class Canvas extends Component{
                 <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.image.data} width="100%" height="100%"></img>
                 {/* </div> */}
                 </div>
+                {/* Placeholder for Layout*/}
+                <div style={{minHeight: this.state.svg.height}}></div> 
             </div>)
     }
 }
@@ -488,7 +494,9 @@ function mapStateToProps(state) {
         getPrevImage: state.sia.getPrevImage,
         imageLoaded: state.sia.imageLoaded,
         appliedFullscreen: state.sia.appliedFullscreen,
-        requestAnnoUpdate: state.sia.requestAnnoUpdate
+        requestAnnoUpdate: state.sia.requestAnnoUpdate,
+        uiConfig: state.sia.uiConfig,
+        layoutUpdate: state.sia.layoutUpdate
         // workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
     })
 }

@@ -13,7 +13,7 @@ import NavBar from './NavBar'
 import ToolBar from './ToolBar'
 
 const { 
-    siaAppliedFullscreen
+    siaAppliedFullscreen, siaLayoutUpdate
 } = actions
 
 class SIA extends Component {
@@ -21,19 +21,28 @@ class SIA extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            fullscreenCSS: ''
+            fullscreenCSS: '',
+            didMount: false
         }
+        this.container = React.createRef()
     }
 
     componentDidMount() {
         document.body.style.overflow = "hidden"
+        this.setState({didMount:true})
         //document.body.style.position = "fixed"
+        window.addEventListener("resize", this.props.siaLayoutUpdate);
+    }
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.props.siaLayoutUpdate);
     }
 
     componentDidUpdate(prevProps, prevState) {
+        console.log('Sia did update', this.container.current.getBoundingClientRect())
         this.setFullscreen(this.props.fullscreenMode)
         if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
             this.props.siaAppliedFullscreen(this.props.fullscreenMode)
+            this.props.siaLayoutUpdate()
         }
     }
 
@@ -51,17 +60,27 @@ class SIA extends Component {
         }
     }
     render() {
+        console.log('Sia renders')
         return (
-            <div className={this.state.fullscreenCSS}>
-                <Row>
+            <div className={this.state.fullscreenCSS} ref={this.container}>
+                {/* <Row>
                 <Col xs='1' sm='1' lg='1'>
                     <ToolBar></ToolBar>
                 </Col>
                 <Col xs='10' sm='10' lg='10' >
                     <Canvas ></Canvas>
                 </Col>
-                </Row>
-            </div>
+                
+                </Row> */}
+                {/* <div style={{float:'left', paddingLeft:'10px', width:'60px'}}>
+                    
+                </div>
+                <div> */}
+                
+                    <Canvas container={this.container}></Canvas>
+                    <ToolBar container={this.container}></ToolBar>
+                
+             </div>
         )
     }
 }
@@ -74,7 +93,7 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps,
-    {siaAppliedFullscreen}
+    {siaAppliedFullscreen, siaLayoutUpdate}
     , null,
     {})(SIA)
 

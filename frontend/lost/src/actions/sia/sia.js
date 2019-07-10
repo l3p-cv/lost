@@ -135,3 +135,9 @@ export const siaAppliedFullscreen = (appliedFullscreen) => {
         payload: appliedFullscreen
     }
 }
+
+export const siaLayoutUpdate = (annos) => {
+    return {
+        type: TYPES.SIA_LAYOUT_UPDATE,
+    }
+}

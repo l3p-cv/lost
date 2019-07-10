@@ -10,7 +10,8 @@ const INITIAL_STATE = {
     keyDown: undefined,
     uiConfig: {
         nodeRadius: 4,
-        strokeWidth: 4
+        strokeWidth: 4,
+        toolBarWidth: 60
     },
     showSingleAnno: undefined,
     selectedTool: undefined,
@@ -21,7 +22,8 @@ const INITIAL_STATE = {
     fullscreenMode: false,
     imageLoaded: false,
     requestAnnoUpdate: 0,
-    appliedFullscreen: false
+    appliedFullscreen: false,
+    layoutUpdate: 0
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -119,6 +121,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 appliedFullscreen: action.payload
+            }
+        case TYPES.SIA_LAYOUT_UPDATE:
+            return {
+                ...state,
+                layoutUpdate: state.layoutUpdate + 1
             }
         default:
             return state
