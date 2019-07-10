@@ -328,7 +328,8 @@ class Canvas extends Component{
                     y: mousePos.y
                 }],
                 createMode: true,
-                status: annoStatus.NEW
+                status: annoStatus.NEW,
+                labelIds: []
             }]
         })
     }
