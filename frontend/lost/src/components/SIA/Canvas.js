@@ -180,11 +180,15 @@ class Canvas extends Component{
     }
 
     onAnnoMouseDown(e){
-        if (e.button === 2){
-                //Create annotation on right click
-               this.createNewAnnotation(e)
-            }
+        if (e.button === 1){
+            this.collectAnnos()
+            this.setMode(modes.CAMERA_MOVE)
         }
+        else if (e.button === 2){
+            //Create annotation on right click
+           this.createNewAnnotation(e)
+        }
+    }
 
     onMouseUp(e){
         switch (e.button){
