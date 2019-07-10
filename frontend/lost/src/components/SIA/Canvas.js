@@ -179,6 +179,13 @@ class Canvas extends Component{
         }
     }
 
+    onAnnoMouseDown(e){
+        if (e.button === 2){
+                //Create annotation on right click
+               this.createNewAnnotation(e)
+            }
+        }
+
     onMouseUp(e){
         switch (e.button){
             case 1:
@@ -318,20 +325,24 @@ class Canvas extends Component{
     // }
 
     createNewAnnotation(e){
-        const mousePos = this.getMousePosition(e)
-        this.setState({
-            annos: [...this.state.annos, {
-                id: _.uniqueId('new'),
-                type: this.props.selectedTool,
-                data: [{
-                    x: mousePos.x, 
-                    y: mousePos.y
-                }],
-                createMode: true,
-                status: annoStatus.NEW,
-                labelIds: []
-            }]
-        })
+        if (this.props.selectedTool){
+            const mousePos = this.getMousePosition(e)
+            this.setState({
+                annos: [...this.state.annos, {
+                    id: _.uniqueId('new'),
+                    type: this.props.selectedTool,
+                    data: [{
+                        x: mousePos.x, 
+                        y: mousePos.y
+                    }],
+                    createMode: true,
+                    status: annoStatus.NEW,
+                    labelIds: []
+                }]
+            })
+        } else {
+            console.warn('No annotation tool selected!')
+        }
     }
 
     putSelectedOnTop(prevProps){
@@ -446,6 +457,7 @@ class Canvas extends Component{
                 return <Annotation type={el.type} 
                         data={el} key={el.id} svg={{...this.state.svg}}
                         ref={this.annoRefs[this.annoRefs.length - 1]}
+                        onMouseDown={e => this.onAnnoMouseDown(e)}
                     />
             })
             return <g>{annos}</g>

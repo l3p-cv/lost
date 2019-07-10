@@ -115,6 +115,18 @@ class Annotation extends Component{
 
     }
 
+    onMouseDown(e: Event){
+        e.preventDefault()
+        console.log('Mouse Down on Anno', e)
+        if (this.props.onMouseDown){
+            this.props.onMouseDown(e)
+        }
+    }
+
+    onContextMenu(e: Event){
+        e.preventDefault()
+    }
+
     onModeChange(newMode, oldMode){
         console.log('MODE CHANGED (id, old, new): ',this.props.data.id, oldMode, '->', newMode)
         switch (newMode){
@@ -329,6 +341,8 @@ class Annotation extends Component{
             <g>
             <g visibility={this.state.visibility}
                 onClick={e => this.onClick(e)}
+                onMouseDown={e => this.onMouseDown(e)}
+                onContextMenu={e => this.onContextMenu(e)}
             >
                 {this.renderAnno()}
                 {this.renderAnnoBar()}
