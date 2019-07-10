@@ -95,6 +95,7 @@ class Annotation extends Component{
         if (this.isSelected()){
             if(this.state.anno !== this.props.selectedAnno){
                 this.setState({anno: this.props.selectedAnno})
+                console.log('Annotation update anno', this.props.selectedAnno)
             }
         }
         if (this.state.anno.status === annoStatus.DELETED){
