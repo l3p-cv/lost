@@ -258,6 +258,7 @@ class Canvas extends Component{
                 points: bAnnos.filter((el) => {return el.type == 'point'}),
                 polygons: bAnnos.filter((el) => {return el.type == 'polygon'}),
         }
+        console.log('Annotation getAnnoBackendFormat', backendFormat)
         return backendFormat
     }
     updateBackendAnnos(){
@@ -390,16 +391,21 @@ class Canvas extends Component{
             const imgSize = this.updateImageSize()
             annos = [
                 ...drawables.bBoxes.map((element) => {
-                    return {...element, type:'bBox', createMode:false, status: annoStatus.DATABASE}
+                    return {...element, type:'bBox', createMode:false, 
+                    status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...drawables.lines.map((element) => {
-                    return {...element, type:'line', createMode:false, status: annoStatus.DATABASE}
+                    return {...element, type:'line', createMode:false, 
+                    status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...drawables.polygons.map((element) => {
-                    return {...element, type:'polygon', createMode:false, status: annoStatus.DATABASE}
+                    return {...element, type:'polygon', createMode:false, 
+                    status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...drawables.points.map((element) => {
-                    return {...element, type:'point', createMode:false, status: annoStatus.DATABASE}
+                    return {...element, type:'point', createMode:false, 
+                        status: element.status ? element.status : annoStatus.DATABASE
+                    }
                 })
             ]
             annos = annos.map((el) => {
