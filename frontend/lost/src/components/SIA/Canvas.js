@@ -233,7 +233,7 @@ class Canvas extends Component{
                 annos.push(ref.current.getResult())
             }
         })
-        // console.log('collectAnnos Result annos', annos)
+        console.log('collectAnnos Result annos', annos)
         this.setState({annos: [...annos]})
     }
 
@@ -266,6 +266,7 @@ class Canvas extends Component{
             imgId: this.props.annos.image.id,
             drawables: backendFormat
         }
+        console.log('Update Backend annos', finalData)
         this.props.siaUpdateAnnos(finalData)
     }
 
