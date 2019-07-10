@@ -37,7 +37,7 @@ export default function (state = INITIAL_STATE, action) {
             if (action.payload){
                 return {
                     ...state,
-                    selectedAnno: {...state.selectedAnno, ...action.payload}
+                    selectedAnno: {...action.payload}
                 }
             } else {
                 return {
