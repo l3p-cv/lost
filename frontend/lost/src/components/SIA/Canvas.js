@@ -237,7 +237,7 @@ class Canvas extends Component{
         this.setState({annos: [...annos]})
     }
 
-    getAnnoBackendFormat(){
+    getAnnoBackendFormat(forBackendPost=false){
         let annos = []  
         //Get newest anno data from components
         this.annoRefs.forEach( ref => {
@@ -246,9 +246,18 @@ class Canvas extends Component{
             }
         })
         const bAnnos = annos.map( el => {
+            var annoId 
+            if (forBackendPost){
+                // If an annotation will be send to backend,
+                // ids of new created annoations need to be set to 
+                // undefined.
+                annoId = (typeof el.id) === "string" ? undefined : el.id
+            } else {
+                annoId = el.id
+            }
             return {
                 ...el,
-                id: (typeof el.id) === "string" ? undefined : el.id,
+                id: annoId,
                 data: transform.toBackend(el.data, this.state.svg, el.type)
             }
         })
@@ -262,7 +271,7 @@ class Canvas extends Component{
         return backendFormat
     }
     updateBackendAnnos(){
-        const backendFormat = this.getAnnoBackendFormat()
+        const backendFormat = this.getAnnoBackendFormat(true)
         const finalData = {
             imgId: this.props.annos.image.id,
             drawables: backendFormat
@@ -428,7 +437,7 @@ class Canvas extends Component{
             //             data={this.state.annos[idx]} key={this.state.annos[idx].id}
             //             svg={this.state.svg} ref={this.annoRefs[idx]}/>
             // } else {
-
+            console.log('Canvas render annotations', this.state.annos)
             this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
                 this.annoRefs.push(React.createRef())
