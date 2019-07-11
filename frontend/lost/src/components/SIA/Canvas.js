@@ -14,7 +14,8 @@ import * as annoStatus from './types/annoStatus'
 const { 
     getSiaImage, getSiaAnnos, siaKeyDown, 
     siaKeyUp, selectAnnotation, getSiaLabels,
-    siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos
+    siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
+    siaSetSVG
 } = actions
 
 class Canvas extends Component{
@@ -371,7 +372,12 @@ class Canvas extends Component{
     updateImageSize(){
         
         var container = this.props.container.current.getBoundingClientRect()
-        var canvasLeft = container.left + this.props.uiConfig.toolBarWidth
+        var canvasLeft
+        if (container.left < this.props.uiConfig.toolBarWidth){
+            canvasLeft = this.props.uiConfig.toolBarWidth + 10
+        } else {
+            canvasLeft = container.left
+        }
         console.log('Canvas container', container)
         console.log('CanvasLeft', canvasLeft, this.props.uiConfig.toolBarWidth)
         var clientWidth = document.documentElement.clientWidth
@@ -399,10 +405,12 @@ class Canvas extends Component{
         // console.log('svg', this.svg)
         console.log('img', this.img)
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
-        this.setState({svg: {
+        const svg = {
             ...this.state.svg, width : imgWidth, height: imgHeight,
             left: canvasLeft, top: container.top
-        }})
+        }
+        this.setState({svg})
+        this.props.siaSetSVG(svg)
         return {imgWidth, imgHeight}
     }
 
@@ -539,6 +547,7 @@ export default connect(mapStateToProps,
     {
         getSiaAnnos, getSiaImage, siaKeyDown, 
         siaKeyUp, selectAnnotation, getSiaLabels,
-        siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos
+        siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
+        siaSetSVG
     }
 )(Canvas)

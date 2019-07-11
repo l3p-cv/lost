@@ -35,13 +35,11 @@ class ImgBar extends Component{
     }
     componentDidUpdate(prevProps){
 
-        if (this.props.layoutUpdate !== prevProps.layoutUpdate){
-            const container = this.props.container.current.getBoundingClientRect()
-            console.log('ImgBar layout update container', container)
+        if (this.props.svg !== prevProps.svg){
             this.setState({
                 position: {...this.state.position,
-                left: container.left + this.props.uiConfig.toolBarWidth,
-                top: container.top,
+                left: this.props.svg.left,
+                top: this.props.svg.top,
                 }
             })
         }
@@ -91,7 +89,8 @@ function mapStateToProps(state) {
         annos: state.sia.annos,
         layoutUpdate: state.sia.layoutUpdate,
         uiConfig: state.sia.uiConfig,
-        imgBar: state.sia.imgBar
+        imgBar: state.sia.imgBar,
+        svg: state.sia.svg
     })
 }
 export default connect(mapStateToProps, 

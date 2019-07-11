@@ -148,3 +148,10 @@ export const siaShowImgBar = (show) => {
         payload: show
     }
 }
+
+export const siaSetSVG = (svg) => {
+    return {
+        type: TYPES.SIA_SET_SVG,
+        payload: svg
+    }
+}

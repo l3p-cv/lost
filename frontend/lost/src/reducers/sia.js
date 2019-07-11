@@ -26,7 +26,8 @@ const INITIAL_STATE = {
     layoutUpdate: 0,
     imgBar : {
         show: true
-    }
+    },
+    svg : undefined
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -136,6 +137,13 @@ export default function (state = INITIAL_STATE, action) {
                 imgBar: {
                     ...state.imgBar,
                     show:action.payload
+                }
+            }
+        case TYPES.SIA_SET_SVG:
+            return {
+                ...state,
+                svg: {
+                    ...action.payload
                 }
             }
         default:
