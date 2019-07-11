@@ -77,9 +77,9 @@ class SIA extends Component {
                     
                 </div>
                 <div> */}
-                    <ToolBar container={this.container}></ToolBar>
                 
                     <Canvas container={this.container}></Canvas>
+                    <ToolBar container={this.container}></ToolBar>
                     <ImgBar container={this.container}></ImgBar>
                     <InfoBoxes container={this.container}></InfoBoxes>
                 

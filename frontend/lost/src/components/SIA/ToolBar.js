@@ -27,7 +27,7 @@ class ToolBar extends Component{
             position: {
                 left: 0,
                 top: 0,
-                width: 50
+                width: 40
             }
         }
     }
@@ -45,8 +45,8 @@ class ToolBar extends Component{
             console.log('Toolbar container', container)
             this.setState({
                 position: {...this.state.position,
-                left: container.left + 10,
-                top: container.top + 10,
+                left: 0,
+                top: container.top,
                 }
             })
         }
@@ -87,7 +87,7 @@ class ToolBar extends Component{
         // <Draggable handle=".handle">
         <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
                 {/* <div className="handle" style={{cursor: 'grab'}}>Drag</div> */}
-                {/* <Toast><ToastBody> */}
+                <Toast><ToastBody>
             <div style={{width:this.state.position.width}}>
                 <Button outline onClick={() => this.toggleImgBar()} color="primary" active={this.props.imgBar.show}>
                     <FontAwesomeIcon icon={faImage} size='1x'/>
@@ -115,7 +115,7 @@ class ToolBar extends Component{
                     <FontAwesomeIcon icon={faExpandArrowsAlt} />
                 </Button>{' '}
             </div>
-            {/* </ToastBody></Toast> */}
+            </ToastBody></Toast>
         </div>
         // </Draggable>
         )
