@@ -15,7 +15,7 @@ import * as TOOLS from './types/tools'
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 
     siaSetFullscreen, siaSetImageLoaded, siaRequestAnnoUpdate,
-    selectAnnotation
+    selectAnnotation, siaShowImgBar
 } = actions
 
 class ToolBar extends Component{
@@ -77,6 +77,10 @@ class ToolBar extends Component{
         // this.props.siaSetFullscreen(!this.props.fullscreenMode)
     }
 
+    toggleImgBar(){
+        this.props.siaShowImgBar(!this.props.imgBar.show)
+    }
+
     render(){
         console.log('Toobar state', this.state)
         return(
@@ -84,7 +88,7 @@ class ToolBar extends Component{
         <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
                 {/* <div className="handle" style={{cursor: 'grab'}}>Drag</div> */}
             <div style={{width:this.state.position.width}}>
-                <Button outline onClick={e => console.log('Add caption')} color="primary">
+                <Button outline onClick={() => this.toggleImgBar()} color="primary" active={this.props.imgBar.show}>
                     <FontAwesomeIcon icon={faImage} size='1x'/>
                 </Button>{' '}
                 <Button outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
@@ -105,7 +109,8 @@ class ToolBar extends Component{
                 <Button outline onClick={() => this.getPrevImg()} color="primary">
                     <FontAwesomeIcon icon={faArrowLeft} />
                 </Button>{' '}
-                <Button outline onClick={() => this.toggleFullscreen()} color="secondary">
+                <Button outline onClick={() => this.toggleFullscreen()} color="secondary"
+                    active={this.props.fullscreenMode}>
                     <FontAwesomeIcon icon={faExpandArrowsAlt} />
                 </Button>{' '}
             </div>
@@ -121,10 +126,12 @@ function mapStateToProps(state) {
         fullscreenMode: state.sia.fullscreenMode,
         annos: state.sia.annos,
         appliedFullscreen: state.sia.appliedFullscreen,
-        layoutUpdate: state.sia.layoutUpdate
+        layoutUpdate: state.sia.layoutUpdate,
+        imgBar: state.sia.imgBar
     })
 }
 export default connect(mapStateToProps, 
     {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
-        siaSetFullscreen, siaSetImageLoaded, siaRequestAnnoUpdate, selectAnnotation}
+        siaSetFullscreen, siaSetImageLoaded, siaRequestAnnoUpdate, 
+        selectAnnotation, siaShowImgBar}
 )(ToolBar)

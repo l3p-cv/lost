@@ -9,8 +9,8 @@ import {
 } from 'reactstrap'
 
 import Canvas from './Canvas'
-import NavBar from './NavBar'
 import ToolBar from './ToolBar'
+import ImgBar from './ImgBar'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate
@@ -76,9 +76,10 @@ class SIA extends Component {
                     
                 </div>
                 <div> */}
+                    <ToolBar container={this.container}></ToolBar>
                 
                     <Canvas container={this.container}></Canvas>
-                    <ToolBar container={this.container}></ToolBar>
+                    <ImgBar container={this.container}></ImgBar>
                 
              </div>
         )

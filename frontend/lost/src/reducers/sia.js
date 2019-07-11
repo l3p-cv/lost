@@ -23,7 +23,10 @@ const INITIAL_STATE = {
     imageLoaded: false,
     requestAnnoUpdate: 0,
     appliedFullscreen: false,
-    layoutUpdate: 0
+    layoutUpdate: 0,
+    imgBar : {
+        show: true
+    }
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -126,6 +129,14 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 layoutUpdate: state.layoutUpdate + 1
+            }
+        case TYPES.SIA_IMGBAR_SHOW:
+            return {
+                ...state,
+                imgBar: {
+                    ...state.imgBar,
+                    show:action.payload
+                }
             }
         default:
             return state

@@ -141,3 +141,10 @@ export const siaLayoutUpdate = (annos) => {
         type: TYPES.SIA_LAYOUT_UPDATE,
     }
 }
+
+export const siaShowImgBar = (show) => {
+    return {
+        type: TYPES.SIA_IMGBAR_SHOW,
+        payload: show
+    }
+}
