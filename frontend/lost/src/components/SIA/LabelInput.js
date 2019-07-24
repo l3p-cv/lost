@@ -29,7 +29,7 @@ class LabelInput extends Component{
             value: '',
             top: 400,
             left: 100,
-            deleteColor: '#505050',
+            // deleteColor: '#505050',
             label: undefined,
             visibility: 'hidden',
             possibleLabels: []
@@ -67,15 +67,15 @@ class LabelInput extends Component{
         
     }
 
-    mouseOverDelete(e){
-        console.log('Mouse over delete :-)')
-        this.setState({deleteColor:'#A9A9A9'})
-    }
+    // mouseOverDelete(e){
+    //     console.log('Mouse over delete :-)')
+    //     this.setState({deleteColor:'#A9A9A9'})
+    // }
     
-    mouseOutDelete(e){
-        console.log('Mouse over delete :-)')
-        this.setState({deleteColor:'#505050'})
-    }
+    // mouseOutDelete(e){
+    //     console.log('Mouse over delete :-)')
+    //     this.setState({deleteColor:'#505050'})
+    // }
 
     onClickDelete(e){
         console.log('Clicked on delete')
@@ -241,14 +241,14 @@ class LabelInput extends Component{
                     </InputGroupAddon>
                 </InputGroup>
                 <UncontrolledPopover placement="top" target="LabelInputPopover">
-                    <PopoverHeader style={{minHeight:'30px'}}>
+                    <PopoverHeader >
                         {!this.state.label ? 'No label': this.state.label.label}
                         {/* <Button style={{right:'0', position:'absolute'}}> */}
                             
-                            <FontAwesomeIcon icon={faTrashAlt} 
-                                style={{float:'right', color:this.state.deleteColor}} 
-                                onMouseOut={e => this.mouseOutDelete(e)} 
-                                onMouseOver={e => this.mouseOverDelete(e)}
+                            <Button close
+                                // style={{float:'right'}} 
+                                // onMouseOut={e => this.mouseOutDelete(e)} 
+                                // onMouseOver={e => this.mouseOverDelete(e)}
                                 onClick={e => this.onClickDelete(e)}
                                 />
                         {/* </Button> */}
