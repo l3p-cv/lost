@@ -82,31 +82,32 @@ class ToolBar extends Component{
     }
 
     renderToolButtons(){
+        if (!this.props.allowedActions.drawing) return null
         let btns = []
         if (this.props.allowedTools.point){
             btns.push(
-                <Button outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
+                <Button key={TOOLS.POINT} outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
                     <FontAwesomeIcon icon={faDotCircle} size='1x' />
                 </Button>
             )
         }
         if (this.props.allowedTools.line){
             btns.push(
-                <Button outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
+                <Button key={TOOLS.LINE} outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
                     <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
                 </Button>
             )
         }
         if (this.props.allowedTools.bbox){
             btns.push(
-                <Button outline onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
+                <Button key={TOOLS.BBOX} outline onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
                     <FontAwesomeIcon icon={faVectorSquare} size="1x"/>
                 </Button>
             )
         }
         if (this.props.allowedTools.polygon){
             btns.push(
-                <Button outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
+                <Button key={TOOLS.POLYGON} outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
                     <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
                 </Button>
             )
@@ -123,18 +124,18 @@ class ToolBar extends Component{
             <div style={{width:this.state.position.width}}>
                 <Button outline onClick={() => this.toggleImgBar()} color="primary" active={this.props.imgBar.show}>
                     <FontAwesomeIcon icon={faImage} size='1x'/>
-                </Button>{' '}
+                </Button>
                 {this.renderToolButtons()}
                 <Button outline onClick={() => this.getNextImg()} color="primary">
                     <FontAwesomeIcon icon={faArrowRight} />
-                </Button>{' '}
+                </Button>
                 <Button outline onClick={() => this.getPrevImg()} color="primary">
                     <FontAwesomeIcon icon={faArrowLeft} />
-                </Button>{' '}
+                </Button>
                 <Button outline onClick={() => this.toggleFullscreen()} color="secondary"
                     active={this.props.fullscreenMode}>
                     <FontAwesomeIcon icon={faExpandArrowsAlt} />
-                </Button>{' '}
+                </Button>
             </div>
             </ToastBody></Toast>
         </div>
@@ -151,7 +152,8 @@ function mapStateToProps(state) {
         appliedFullscreen: state.sia.appliedFullscreen,
         layoutUpdate: state.sia.layoutUpdate,
         imgBar: state.sia.imgBar,
-        allowedTools: state.sia.config.tools
+        allowedTools: state.sia.config.tools,
+        allowedActions: state.sia.config.actions
     })
 }
 export default connect(mapStateToProps, 

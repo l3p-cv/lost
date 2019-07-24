@@ -46,7 +46,8 @@ class Canvas extends Component{
     componentDidMount(){
         this.props.getSiaAnnos(-1)
         this.props.getSiaLabels()
-        this.props.getSiaConfig()
+        // this.props.getSiaConfig()
+        console.warn('No sia config will be loaded')
     }
 
     componentDidUpdate(prevProps){

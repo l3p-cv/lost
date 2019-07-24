@@ -162,6 +162,8 @@ class LabelInput extends Component{
     }
 
     confirmLabel(){
+        //If not allowed to label -> return
+        if (!this.props.allowedActions.labeling) return
         console.log('LabelInput confirmLabel label', this.state.label)
         if (this.state.label){
             if (this.state.label.id !== -1){
@@ -269,7 +271,8 @@ function mapStateToProps(state) {
         selectedAnno: state.sia.selectedAnno,
         showLabelInput: state.sia.showLabelInput,
         canvasKeyDown: state.sia.keyDown,
-        possibleLabels: state.sia.possibleLabels
+        possibleLabels: state.sia.possibleLabels,
+        allowedActions: state.sia.config.actions
     })
 }
 

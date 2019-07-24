@@ -183,13 +183,16 @@ class Annotation extends Component{
      *************/
     setMode(mode){
         if (this.state.mode !== mode){
-            this.setState({mode: mode})
             switch (mode){
                 case modes.EDIT_LABEL:
-                    this.props.siaShowLabelInput(true)
-                    this.props.siaShowSingleAnno(this.props.data.id)
+                    if (this.props.allowedActions.labeling){
+                        this.setState({mode: mode})
+                        this.props.siaShowLabelInput(true)
+                        this.props.siaShowSingleAnno(this.props.data.id)
+                    }
                     break
                 case modes.DELETED:
+                    this.setState({mode: mode})
                     this.props.siaShowSingleAnno(undefined)
                     this.props.selectAnnotation(undefined)
                     this.setVisible(false)
@@ -202,6 +205,7 @@ class Annotation extends Component{
                     console.log('Annotation in deleted state')
                     break
                 default:
+                    this.setState({mode: mode})
                     break
             }
         }
@@ -372,7 +376,8 @@ function mapStateToProps(state) {
         keyUp: state.sia.keyUp,
         uiConfig: state.sia.uiConfig,
         showSingleAnno: state.sia.showSingleAnno,
-        showLabelInput: state.sia.showLabelInput
+        showLabelInput: state.sia.showLabelInput,
+        allowedActions: state.sia.config.actions
     })
 }
 
