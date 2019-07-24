@@ -27,7 +27,24 @@ const INITIAL_STATE = {
     imgBar : {
         show: true
     },
-    svg : undefined
+    svg : undefined,
+    config : {
+        tools: {
+            point: true,
+            line: true,
+            polygon: true,
+            bbox: true
+        },
+        actions: {
+            drawing: true,
+            labeling: true,
+            edit: {
+                label: true,
+                bounds: true,
+                delete: true
+            }
+        }
+    }
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -36,6 +53,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 annos: action.payload
+            }
+        case TYPES.GET_SIA_CONFIG:
+            return {
+                ...state,
+                config: action.payload
             }
         case TYPES.SIA_SELECT_ANNO:
             if (action.payload){

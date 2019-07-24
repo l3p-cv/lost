@@ -81,6 +81,38 @@ class ToolBar extends Component{
         this.props.siaShowImgBar(!this.props.imgBar.show)
     }
 
+    renderToolButtons(){
+        let btns = []
+        if (this.props.allowedTools.point){
+            btns.push(
+                <Button outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
+                    <FontAwesomeIcon icon={faDotCircle} size='1x' />
+                </Button>
+            )
+        }
+        if (this.props.allowedTools.line){
+            btns.push(
+                <Button outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
+                    <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
+                </Button>
+            )
+        }
+        if (this.props.allowedTools.bbox){
+            btns.push(
+                <Button outline onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
+                    <FontAwesomeIcon icon={faVectorSquare} size="1x"/>
+                </Button>
+            )
+        }
+        if (this.props.allowedTools.polygon){
+            btns.push(
+                <Button outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
+                    <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
+                </Button>
+            )
+        }
+        return btns
+    }
     render(){
         console.log('Toobar state', this.state)
         return(
@@ -92,18 +124,7 @@ class ToolBar extends Component{
                 <Button outline onClick={() => this.toggleImgBar()} color="primary" active={this.props.imgBar.show}>
                     <FontAwesomeIcon icon={faImage} size='1x'/>
                 </Button>{' '}
-                <Button outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
-                    <FontAwesomeIcon icon={faDotCircle} size='1x' />
-                </Button>{' '}
-                <Button outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
-                    <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
-                </Button>{' '}
-                <Button outline onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
-                    <FontAwesomeIcon icon={faVectorSquare} size="1x"/>
-                </Button>{' '}
-                <Button outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
-                    <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
-                </Button>{' '}
+                {this.renderToolButtons()}
                 <Button outline onClick={() => this.getNextImg()} color="primary">
                     <FontAwesomeIcon icon={faArrowRight} />
                 </Button>{' '}
@@ -129,7 +150,8 @@ function mapStateToProps(state) {
         annos: state.sia.annos,
         appliedFullscreen: state.sia.appliedFullscreen,
         layoutUpdate: state.sia.layoutUpdate,
-        imgBar: state.sia.imgBar
+        imgBar: state.sia.imgBar,
+        allowedTools: state.sia.config.tools
     })
 }
 export default connect(mapStateToProps, 

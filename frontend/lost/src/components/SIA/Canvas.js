@@ -15,7 +15,7 @@ const {
     getSiaImage, getSiaAnnos, siaKeyDown, 
     siaKeyUp, selectAnnotation, getSiaLabels,
     siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
-    siaSetSVG
+    siaSetSVG, getSiaConfig
 } = actions
 
 class Canvas extends Component{
@@ -46,6 +46,7 @@ class Canvas extends Component{
     componentDidMount(){
         this.props.getSiaAnnos(-1)
         this.props.getSiaLabels()
+        this.props.getSiaConfig()
     }
 
     componentDidUpdate(prevProps){
@@ -548,6 +549,6 @@ export default connect(mapStateToProps,
         getSiaAnnos, getSiaImage, siaKeyDown, 
         siaKeyUp, selectAnnotation, getSiaLabels,
         siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
-        siaSetSVG
+        siaSetSVG, getSiaConfig
     }
 )(Canvas)
