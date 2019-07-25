@@ -11,6 +11,7 @@ import Polygon from './Polygon'
 import * as modes from '../types/modes'
 import * as annoStatus from '../types/annoStatus'
 import * as colorlut from '../utils/colorlut'
+import * as constraints from '../utils/constraints'
 
 
 const {selectAnnotation, siaShowSingleAnno, siaShowLabelInput} = actions
@@ -185,24 +186,32 @@ class Annotation extends Component{
         if (this.state.mode !== mode){
             switch (mode){
                 case modes.EDIT_LABEL:
-                    if (this.props.allowedActions.labeling){
+                    if (constraints.allowedToLabel(
+                        this.props.allowedActions,
+                        this.state.anno
+                    )){
                         this.setState({mode: mode})
                         this.props.siaShowLabelInput(true)
                         this.props.siaShowSingleAnno(this.props.data.id)
                     }
                     break
                 case modes.DELETED:
-                    this.setState({mode: mode})
-                    this.props.siaShowSingleAnno(undefined)
-                    this.props.selectAnnotation(undefined)
-                    this.setVisible(false)
-                    this.setState({
-                        anno: {
-                            ...this.state.anno, 
-                            status: annoStatus.DELETED
-                        }
-                    })
-                    console.log('Annotation in deleted state')
+                    if(constraints.allowedToDelete(
+                        this.props.allowedActions,
+                        this.state.anno
+                    )){
+                        this.setState({mode: mode})
+                        this.props.siaShowSingleAnno(undefined)
+                        this.props.selectAnnotation(undefined)
+                        this.setVisible(false)
+                        this.setState({
+                            anno: {
+                                ...this.state.anno, 
+                                status: annoStatus.DELETED
+                            }
+                        })
+                        console.log('Annotation in deleted state')
+                    }
                     break
                 default:
                     this.setState({mode: mode})

@@ -16,6 +16,7 @@ import actions from '../../actions'
 import Autocomplete from 'react-autocomplete'
 import * as transform from './utils/transform'
 import * as annoStatus from './types/annoStatus'
+import * as constraints from './utils/constraints'
 
 const {siaShowLabelInput, siaShowSingleAnno, selectAnnotation,
 siaKeyDown} = actions
@@ -163,7 +164,8 @@ class LabelInput extends Component{
 
     confirmLabel(){
         //If not allowed to label -> return
-        if (!this.props.allowedActions.labeling) return
+        if (!constraints.allowedToLabel(
+            this.props.allowedActions, this.props.selectedAnno)) return
         console.log('LabelInput confirmLabel label', this.state.label)
         if (this.state.label){
             if (this.state.label.id !== -1){

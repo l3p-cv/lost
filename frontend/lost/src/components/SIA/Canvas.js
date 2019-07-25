@@ -10,7 +10,6 @@ import * as transform from './utils/transform'
 import * as modes from './types/modes'
 import * as annoStatus from './types/annoStatus'
 
-
 const { 
     getSiaImage, getSiaAnnos, siaKeyDown, 
     siaKeyUp, selectAnnotation, getSiaLabels,
