@@ -50,3 +50,25 @@ import * as annoStatus from '../types/annoStatus'
             return true
         }
     }
+
+    /**
+     * Check if config allows to edit bounds a specific annotation.
+     * 
+     * @param allowedActions Actions that are allowed, read from config
+     * @param anno Annotation that should be checked
+     * @returns {Boolean}
+     */
+    export function allowedToEditBounds(allowedActions, anno){
+        const status = anno.status
+        if (!status) return true
+        if (status !== annoStatus.NEW){
+            if(allowedActions.edit.bounds){
+                return true
+            } else {
+                console.warn('You may not edit bounds of this annotation as defined by config!', anno)
+                return false
+            }
+        } else {
+            return true
+        }
+    }

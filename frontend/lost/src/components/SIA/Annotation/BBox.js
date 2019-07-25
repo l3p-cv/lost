@@ -146,13 +146,29 @@ class BBox extends Component{
     **************/
     setMode(mode, nodeIdx=undefined){
         if (this.state.mode !== mode){
-            if (this.props.onModeChange){
-                this.props.onModeChange(mode, this.state.mode)
+            switch (mode){
+                case modes.MOVE:
+                case modes.EDIT:
+                    if (this.props.allowedToEdit){
+                        if (this.props.onModeChange){
+                            this.props.onModeChange(mode, this.state.mode)
+                        }
+                        this.setState({
+                            mode: mode,
+                            selectedNode: nodeIdx
+                        })
+                    }
+                    break
+                default:
+                    if (this.props.onModeChange){
+                        this.props.onModeChange(mode, this.state.mode)
+                    }
+                    this.setState({
+                        mode: mode,
+                        selectedNode: nodeIdx
+                    })
+                    break
             }
-            this.setState({
-                mode: mode,
-                selectedNode: nodeIdx
-            })
         }
     }
     toPolygonStr(data){

@@ -41,7 +41,7 @@ const INITIAL_STATE = {
             edit: {
                 label: true,
                 bounds: true,
-                delete: false
+                delete: true
             }
         }
     }

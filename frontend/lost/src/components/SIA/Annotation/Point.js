@@ -82,15 +82,28 @@ class Point extends Component{
     /*************
     *  LOGIC     *
     **************/
+
+   forceMode(mode, selectedNode){
+        if (this.props.onModeChange){
+            this.props.onModeChange(mode, this.state.mode)
+        }
+        this.setState({
+            mode,
+            selectedNode
+        })
+    }
     setMode(mode, selectedNode=undefined){
         if (this.state.mode !== mode){
-            if (this.props.onModeChange){
-                this.props.onModeChange(mode, this.state.mode)
+            switch(mode){
+                case modes.MOVE:
+                    if (this.props.allowedToEdit){
+                        this.forceMode(mode, selectedNode)
+                    }
+                    break
+                default:
+                    this.forceMode(mode, selectedNode)
+                    break
             }
-            this.setState({
-                mode,
-                selectedNode
-            })
         }
     }
 

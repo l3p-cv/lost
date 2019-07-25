@@ -287,11 +287,16 @@ class Annotation extends Component{
     renderAnno(){
         const type = this.props.type
         const anno = this.state.anno.data
+        const allowedToEdit = constraints.allowedToEditBounds(
+            this.props.allowedActions,
+            this.state.anno
+        )
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} anno={anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
+                    allowedToEdit={allowedToEdit}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
@@ -301,6 +306,7 @@ class Annotation extends Component{
                 return <BBox ref={this.myAnno} anno={anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
+                    allowedToEdit={allowedToEdit}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     onNodeMouseDown={(e, idx) => this.onNodeMouseDown(e, idx)}
                     isSelected={this.isSelected()}
@@ -312,6 +318,7 @@ class Annotation extends Component{
                 return <Polygon ref={this.myAnno} anno={anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
+                    allowedToEdit={allowedToEdit}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
@@ -322,6 +329,7 @@ class Annotation extends Component{
                 return <Line ref={this.myAnno} anno={anno}
                     style={this.getStyle()}
                     className={this.getCssClass()}
+                    allowedToEdit={allowedToEdit}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     mode={this.state.mode}
