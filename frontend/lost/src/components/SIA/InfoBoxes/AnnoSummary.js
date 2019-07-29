@@ -39,15 +39,15 @@ class AnnoSummary extends Component{
         if (!this.props.annos.image) return null
         return(
         <Draggable handle=".handle">
-        <Toast>
-            <ToastHeader>
+        <Card>
+            <CardHeader>
             <div className="handle" style={{cursor: 'grab'}}>Annotation Summary</div> 
 
-            </ToastHeader>
-            <ToastBody>
+            </CardHeader>
+            <CardBody>
                 Bla Bla
-            </ToastBody>
-        </Toast>
+            </CardBody>
+        </Card>
         
         </Draggable>
         )

@@ -58,8 +58,8 @@ class ImgBar extends Component{
             }}>
                 {/* <div className="handle" style={{cursor: 'grab'}}>Drag</div> */}
             <Fade in={this.props.imgBar.show}> 
-            <Toast style={{minWidth:"600px"}} >
-            <ToastBody>
+            <Card style={{minWidth:"600px"}} >
+            <CardBody>
             {/* <ToastHeader><Button close /></ToastHeader> */}
                 <Row>
                     <Col xs='5' sm='5' lg='5'>
@@ -75,8 +75,8 @@ class ImgBar extends Component{
                          <Button close onClick={() => this.props.siaShowImgBar(false)} />
                     </Col>
                 </Row>
-                </ToastBody>
-            </Toast>
+                </CardBody>
+            </Card>
             </Fade>
         </div>
         // </Draggable>
