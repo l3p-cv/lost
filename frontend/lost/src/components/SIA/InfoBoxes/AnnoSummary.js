@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import { 
-    Button, CardHeader, Card, 
+    Button, CardHeader, 
     CardBody, Input, Container, 
     Row, Col, Fade, Toast, ToastBody, ToastHeader
     } from 'reactstrap';
@@ -13,6 +13,7 @@ import {
 import { 
     faImage
 } from '@fortawesome/free-regular-svg-icons'
+import { Card, Icon } from 'semantic-ui-react'
 import Draggable from 'react-draggable';
 import actions from '../../../actions'
 import * as TOOLS from '../types/tools'
@@ -39,15 +40,17 @@ class AnnoSummary extends Component{
         if (!this.props.annos.image) return null
         return(
         <Draggable handle=".handle">
-        <Card>
-            <CardHeader>
-            <div className="handle" style={{cursor: 'grab'}}>Annotation Summary</div> 
-
-            </CardHeader>
-            <CardBody>
-                Bla Bla
-            </CardBody>
+            <div className="handle" style={{cursor: 'grab'}}>
+        <Card style={{opacity:0.9}}>
+            <Card.Content header="Annotation Summary"/>
+            
+            <Card.Content description="Description" />
+            <Card.Content extra>
+                <Icon name='user' />
+                    4 Friends
+            </Card.Content>
         </Card>
+        </div> 
         
         </Draggable>
         )

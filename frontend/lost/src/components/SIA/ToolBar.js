@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import { Button, CardHeader, Card, CardBody, Toast, ToastBody } from 'reactstrap';
+import { Icon, Menu } from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -90,30 +91,54 @@ class ToolBar extends Component{
         let btns = []
         if (this.props.allowedTools.point){
             btns.push(
-                <Button key={TOOLS.POINT} outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
-                    <FontAwesomeIcon icon={faDotCircle} size='1x' />
-                </Button>
+                <Menu.Item name='dot circle' key={TOOLS.POINT}
+                    active={false} 
+                    onClick={e => this.onClick(e, TOOLS.POINT)}
+                >
+                    <Icon name='dot circle' />
+                </Menu.Item>
+                // <Button key={TOOLS.POINT} outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
+                //     <FontAwesomeIcon icon={faDotCircle} size='1x' />
+                // </Button>
             )
         }
         if (this.props.allowedTools.line){
             btns.push(
-                <Button key={TOOLS.LINE} outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
-                    <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
-                </Button>
+                <Menu.Item name='paint brush' key={TOOLS.LINE}
+                    active={false} 
+                    onClick={e => this.onClick(e, TOOLS.LINE)}
+                >
+                    <Icon name='paint brush' />
+                </Menu.Item>
+                // <Button key={TOOLS.LINE} outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
+                //     <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
+                // </Button>
             )
         }
         if (this.props.allowedTools.bbox){
             btns.push(
-                <Button key={TOOLS.BBOX} outline onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
-                    <FontAwesomeIcon icon={faVectorSquare} size="1x"/>
-                </Button>
+                <Menu.Item name='square outline' key={TOOLS.BBOX}
+                    active={false} 
+                    onClick={e => this.onClick(e, TOOLS.BBOX)}
+                >
+                    <Icon name='square outline' />
+                </Menu.Item>
+                // <Button key={TOOLS.BBOX} outline onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
+                //     <FontAwesomeIcon icon={faVectorSquare} size="1x"/>
+                // </Button>
             )
         }
         if (this.props.allowedTools.polygon){
             btns.push(
-                <Button key={TOOLS.POLYGON} outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
-                    <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
-                </Button>
+                <Menu.Item name='pencil alternate' key={TOOLS.POLYGON}
+                    active={false} 
+                    onClick={e => this.onClick(e, TOOLS.POLYGON)}
+                >
+                    <Icon name='pencil alternate' />
+                </Menu.Item>
+                // <Button key={TOOLS.POLYGON} outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
+                //     <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
+                // </Button>
             )
         }
         return btns
@@ -128,21 +153,40 @@ class ToolBar extends Component{
         if (this.props.currentImage){
             if (this.props.currentImage.isLast){
                 btns.push(
-                    <Button key='finish' outline onClick={() => this.setFinished()} color="primary" >
-                        <FontAwesomeIcon icon={faPaperPlane} />
-                    </Button>
+                    <Menu.Item name='paper plane outline' key='finish'
+                        active={false} 
+                        onClick={() => this.setFinished()}
+                    >
+                        <Icon name='paper plane outline' />
+                    </Menu.Item>
+                    // <Button key='finish' outline onClick={() => this.setFinished()} color="primary" >
+                    //     <FontAwesomeIcon icon={faPaperPlane} />
+                    // </Button>
                 )
             } else {
                 btns.push(
-                    <Button key='next' outline onClick={() => this.getNextImg()} color="primary">
-                        <FontAwesomeIcon icon={faArrowRight} />
-                    </Button>
+                    <Menu.Item name='arrow right'  key='next'
+                        active={false} 
+                        onClick={() => this.getNextImg()}
+                    >
+                        <Icon name='arrow right' />
+
+                    </Menu.Item>
+                    // <Button key='next' outline onClick={() => this.getNextImg()} color="primary">
+                    //     <FontAwesomeIcon icon={faArrowRight} />
+                    // </Button>
                 )
             }
             btns.push(
-                <Button key='prev' outline onClick={() => this.getPrevImg()} color="primary" disabled={!this.props.currentImage ? false : this.props.currentImage.isFirst}>
-                    <FontAwesomeIcon icon={faArrowLeft} />
-                </Button>
+                    <Menu.Item name='arrow left' key='prev'
+                        active={false} 
+                        onClick={() => this.getPrevImg()}
+                    >
+                        <Icon name='arrow left' />
+                    </Menu.Item>
+                // <Button key='prev' outline onClick={() => this.getPrevImg()} color="primary" disabled={!this.props.currentImage ? false : this.props.currentImage.isFirst}>
+                //     <FontAwesomeIcon icon={faArrowLeft} />
+                // </Button>
             )
         }
            
@@ -156,7 +200,25 @@ class ToolBar extends Component{
         // <Draggable handle=".handle">
         <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
                 {/* <div className="handle" style={{cursor: 'grab'}}>Drag</div> */}
-                <Card><CardBody>
+            <Menu icon inverted vertical>
+
+                <Menu.Item name='image' 
+                    active={this.props.imgBar.show} 
+                    onClick={() => this.toggleImgBar()}
+                >
+                    <Icon name='image' />
+                </Menu.Item>
+                {this.renderToolButtons()}
+                {this.renderNavigation()}
+                <Menu.Item name='expand arrows alternate' 
+                    active={this.props.fullscreenMode} 
+                    onClick={() => this.toggleFullscreen()}
+                >
+                    <Icon name='expand arrows alternate' />
+                </Menu.Item>
+
+            </Menu>
+                {/* <Card><CardBody>
             <div style={{width:this.state.position.width}}>
                 <Button outline onClick={() => this.toggleImgBar()} color="primary" active={this.props.imgBar.show}>
                     <FontAwesomeIcon icon={faImage} size='1x'/>
@@ -168,7 +230,7 @@ class ToolBar extends Component{
                     <FontAwesomeIcon icon={faExpandArrowsAlt} />
                 </Button>
             </div>
-            </CardBody></Card>
+            </CardBody></Card> */}
         </div>
         // </Draggable>
         )
