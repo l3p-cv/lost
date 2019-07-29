@@ -47,7 +47,7 @@ class ImgBar extends Component{
 
 
     render(){
-        // if (!this.props.imgBar.show) return null
+        if (!this.props.imgBar.show) return null
         if (!this.props.annos.image) return null
         return(
         // <Draggable handle=".handle">
