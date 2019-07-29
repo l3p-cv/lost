@@ -16,6 +16,15 @@ export const siaUpdateAnnos = (data) => async dispatch => {
     } catch (e) {console.error(e)}
 }
 
+/**
+ * Set annotation task in backend to finished
+ */
+export const siaSendFinishToBackend = () => async dispatch => {
+    try {
+        const response = await axios.get(API_URL + '/sia/finish')
+    } catch (e) {console.error(e)}
+}
+
 export const getSiaLabels = () => async dispatch => {
     try {
         const response = await axios.get(API_URL + '/sia/label')
@@ -160,5 +169,14 @@ export const siaSetSVG = (svg) => {
     return {
         type: TYPES.SIA_SET_SVG,
         payload: svg
+    }
+}
+
+/**
+ * Finish current sia task
+ */
+export const siaSetTaskFinished = () => {
+    return {
+        type: TYPES.SIA_TASK_FINISHED,
     }
 }

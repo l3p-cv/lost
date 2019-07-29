@@ -44,7 +44,8 @@ const INITIAL_STATE = {
                 delete: true
             }
         }
-    }
+    },
+    taskFinished: 0
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -167,6 +168,11 @@ export default function (state = INITIAL_STATE, action) {
                 svg: {
                     ...action.payload
                 }
+            }
+        case TYPES.SIA_TASK_FINISHED:
+            return {
+                ...state,
+                taskFinished: state.taskFinished + 1
             }
         default:
             return state

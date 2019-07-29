@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
     faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle, 
-    faArrowRight, faArrowLeft , faExpandArrowsAlt
+    faArrowRight, faArrowLeft , faExpandArrowsAlt, faCheck, faPaperPlane
 } from '@fortawesome/free-solid-svg-icons'
 import { 
     faImage
@@ -15,7 +15,7 @@ import * as TOOLS from './types/tools'
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 
     siaSetFullscreen, siaSetImageLoaded, siaRequestAnnoUpdate,
-    selectAnnotation, siaShowImgBar
+    selectAnnotation, siaShowImgBar, siaSetTaskFinished
 } = actions
 
 class ToolBar extends Component{
@@ -68,6 +68,10 @@ class ToolBar extends Component{
         this.props.siaGetPrevImage(this.props.currentImage.id)
     }
 
+    setFinished(){
+        this.props.siaSetTaskFinished()
+    }
+
     toggleFullscreen(){
         this.props.siaRequestAnnoUpdate()
         this.props.selectAnnotation(undefined)
@@ -114,8 +118,40 @@ class ToolBar extends Component{
         }
         return btns
     }
+
+    /**
+     * Render next and prev image buttons 
+     *
+     */
+    renderNavigation(){
+        let btns = []
+        if (this.props.currentImage){
+            if (this.props.currentImage.isLast){
+                btns.push(
+                    <Button key='finish' outline onClick={() => this.setFinished()} color="primary" >
+                        <FontAwesomeIcon icon={faPaperPlane} />
+                    </Button>
+                )
+            } else {
+                btns.push(
+                    <Button key='next' outline onClick={() => this.getNextImg()} color="primary">
+                        <FontAwesomeIcon icon={faArrowRight} />
+                    </Button>
+                )
+            }
+            btns.push(
+                <Button key='prev' outline onClick={() => this.getPrevImg()} color="primary" disabled={!this.props.currentImage ? false : this.props.currentImage.isFirst}>
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                </Button>
+            )
+        }
+           
+            
+        return btns
+    }
+
     render(){
-        console.log('Toobar state', this.state)
+        console.log('Toobar state', this.state, this.props.currentImage)
         return(
         // <Draggable handle=".handle">
         <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
@@ -126,12 +162,7 @@ class ToolBar extends Component{
                     <FontAwesomeIcon icon={faImage} size='1x'/>
                 </Button>
                 {this.renderToolButtons()}
-                <Button outline onClick={() => this.getNextImg()} color="primary">
-                    <FontAwesomeIcon icon={faArrowRight} />
-                </Button>
-                <Button outline onClick={() => this.getPrevImg()} color="primary">
-                    <FontAwesomeIcon icon={faArrowLeft} />
-                </Button>
+                {this.renderNavigation()}
                 <Button outline onClick={() => this.toggleFullscreen()} color="secondary"
                     active={this.props.fullscreenMode}>
                     <FontAwesomeIcon icon={faExpandArrowsAlt} />
@@ -159,5 +190,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, 
     {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
         siaSetFullscreen, siaSetImageLoaded, siaRequestAnnoUpdate, 
-        selectAnnotation, siaShowImgBar}
+        selectAnnotation, siaShowImgBar, siaSetTaskFinished}
 )(ToolBar)

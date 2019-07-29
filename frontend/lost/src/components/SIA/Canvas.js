@@ -14,7 +14,7 @@ const {
     getSiaImage, getSiaAnnos, siaKeyDown, 
     siaKeyUp, selectAnnotation, getSiaLabels,
     siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
-    siaSetSVG, getSiaConfig
+    siaSetSVG, getSiaConfig, siaSendFinishToBackend
 } = actions
 
 class Canvas extends Component{
@@ -78,6 +78,11 @@ class Canvas extends Component{
             }
         }
         
+        if (prevProps.taskFinished !== this.props.taskFinished){
+            this.updateBackendAnnos()
+            this.props.siaSendFinishToBackend()
+        }
+
         if (this.props.imageLoaded){
             // Selected annotation should be on top
             this.putSelectedOnTop(prevProps)
@@ -566,7 +571,8 @@ function mapStateToProps(state) {
         appliedFullscreen: state.sia.appliedFullscreen,
         requestAnnoUpdate: state.sia.requestAnnoUpdate,
         uiConfig: state.sia.uiConfig,
-        layoutUpdate: state.sia.layoutUpdate
+        layoutUpdate: state.sia.layoutUpdate,
+        taskFinished: state.sia.taskFinished
         // workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
     })
 }
@@ -576,6 +582,6 @@ export default connect(mapStateToProps,
         getSiaAnnos, getSiaImage, siaKeyDown, 
         siaKeyUp, selectAnnotation, getSiaLabels,
         siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
-        siaSetSVG, getSiaConfig
+        siaSetSVG, getSiaConfig, siaSendFinishToBackend
     }
 )(Canvas)
