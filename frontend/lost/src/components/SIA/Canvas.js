@@ -217,6 +217,7 @@ class Canvas extends Component{
         // }
         this.props.siaKeyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+        this.traverseAnnos(e.key)
     }
 
     onKeyUp(e: Event){
@@ -238,6 +239,32 @@ class Canvas extends Component{
     /*************
      * LOGIC     *
     **************/
+
+    /**
+     * Traverse annotations by key hit
+     * 
+     * @param key A key code
+     */
+    traverseAnnos(key){
+        console.log('Traverse annos', key, this.state.annos, this.props.selectedAnno)
+        if (key === 'Tab'){
+            if (this.state.annos.length > 0){
+                if (!this.props.selectedAnno.id){
+                    this.props.selectAnnotation(this.state.annos[0])
+                } else {
+                    let currentIdx = this.state.annos.findIndex( e => {
+                        return e.id === this.props.selectedAnno.id
+                    })
+                    if (currentIdx+1 < this.state.annos.length){
+                        this.props.selectAnnotation(this.state.annos[currentIdx+1])
+                    } else {
+                        this.props.selectAnnotation(this.state.annos[0])
+                    }
+                }
+
+            }
+        }
+    } 
     // Collect the current data of all annotations and update state
     collectAnnos(){
         // console.log('Canvas collectAnnos this.annoRefs', this.annoRefs)
