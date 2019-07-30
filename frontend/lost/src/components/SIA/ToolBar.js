@@ -108,7 +108,8 @@ class ToolBar extends Component{
                     active={false} 
                     onClick={e => this.onClick(e, TOOLS.LINE)}
                 >
-                    <Icon name='paint brush' />
+                    {/* <Icon name='paint brush' /> */}
+                    <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
                 </Menu.Item>
                 // <Button key={TOOLS.LINE} outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
                 //     <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
@@ -134,7 +135,8 @@ class ToolBar extends Component{
                     active={false} 
                     onClick={e => this.onClick(e, TOOLS.POLYGON)}
                 >
-                    <Icon name='pencil alternate' />
+                    {/* <Icon name='pencil alternate' /> */}
+                    <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
                 </Menu.Item>
                 // <Button key={TOOLS.POLYGON} outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
                 //     <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
