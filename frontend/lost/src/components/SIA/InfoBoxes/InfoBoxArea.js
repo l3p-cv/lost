@@ -14,7 +14,7 @@ import {
     faImage
 } from '@fortawesome/free-regular-svg-icons'
 import Draggable from 'react-draggable';
-import AnnoSummary from './AnnoSummary'
+import AnnoDetails from './AnnoDetails'
 import actions from '../../../actions'
 import * as TOOLS from '../types/tools'
 const { siaShowImgBar } = actions
@@ -58,9 +58,10 @@ class InfoBoxes extends Component{
             position:'fixed', 
             top: this.state.position.top + 5, 
             left:this.state.position.left + 5,
+            width: 250
             }}>
-        <AnnoSummary></AnnoSummary> 
-        <AnnoSummary></AnnoSummary>
+        <AnnoDetails anno={this.props.selectedAnno}></AnnoDetails> 
+        {/* <InfoBox></InfoBox> */}
             
         </div>
         // </Draggable>
@@ -71,6 +72,7 @@ class InfoBoxes extends Component{
 function mapStateToProps(state) {
     return ({
         annos: state.sia.annos,
+        selectedAnno: state.sia.selectedAnno,
         layoutUpdate: state.sia.layoutUpdate,
         uiConfig: state.sia.uiConfig,
         imgBar: state.sia.imgBar

@@ -260,6 +260,7 @@ class Annotation extends Component{
                 stroke: color,
                 fill: color,
                 strokeWidth: this.props.uiConfig.strokeWidth/this.props.svg.scale,
+                // strokeDasharray:"5,5",
                 r:this.props.uiConfig.nodeRadius/this.props.svg.scale
 
             }

@@ -12,7 +12,7 @@ import {
 import Canvas from './Canvas'
 import ToolBar from './ToolBar'
 import ImgBar from './ImgBar'
-import InfoBoxes from './InfoBoxes/InfoBoxes'
+import InfoBoxArea from './InfoBoxes/InfoBoxArea'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate
@@ -82,7 +82,7 @@ class SIA extends Component {
                     <Canvas container={this.container}></Canvas>
                     <ToolBar container={this.container}></ToolBar>
                     <ImgBar container={this.container}></ImgBar>
-                    <InfoBoxes container={this.container}></InfoBoxes>
+                    <InfoBoxArea container={this.container}></InfoBoxArea>
                 
              </div>
         )
