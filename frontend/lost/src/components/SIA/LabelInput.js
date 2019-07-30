@@ -8,6 +8,7 @@ import { InputGroup,
     PopoverHeader, 
     PopoverBody
 } from 'reactstrap'
+import { Dropdown, Ref } from 'semantic-ui-react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
@@ -27,16 +28,14 @@ class LabelInput extends Component{
     constructor(props){
         super(props)
         this.state = {
-            value: '',
             top: 400,
             left: 100,
-            // deleteColor: '#505050',
             label: undefined,
             visibility: 'hidden',
             possibleLabels: []
         }
         this.inputGroupRef = React.createRef()
-        // this.inputRef = React.createRef()
+        this.inputRef = React.createRef()
     }
 
     componentWillMount(){
@@ -48,7 +47,13 @@ class LabelInput extends Component{
         if (this.props.showLabelInput){
             console.log('ShowLabelInput')
             this.setPosition()
-            this.inputRef.focus()
+            if (this.inputRef.current){
+                console.log('LabelInput', this.inputRef.current)
+                this.inputRef.current.click()
+            }
+            // if (this.inputGroupRef.current){
+            //     this.inputGroupRef.current.click()
+            // }
         } 
         // }
         if (prevProps.canvasKeyDown !== this.props.canvasKeyDown){
@@ -68,58 +73,46 @@ class LabelInput extends Component{
         
     }
 
-    // mouseOverDelete(e){
-    //     console.log('Mouse over delete :-)')
-    //     this.setState({deleteColor:'#A9A9A9'})
+    // onClickDelete(e){
+    //     console.log('Clicked on delete')
+    //     this.props.siaShowLabelInput(false)
+    //     this.props.siaShowSingleAnno(undefined)
+    //     this.props.selectAnnotation(undefined)
+    //     //Reset keyDown on delete
+    //     this.props.siaKeyDown(undefined) 
+    //     if (this.props.onDeleteClick){
+    //         this.props.onDeleteClick(this.props.selectedAnno.id)
+    //     }
     // }
-    
-    // mouseOutDelete(e){
-    //     console.log('Mouse over delete :-)')
-    //     this.setState({deleteColor:'#505050'})
+
+    // onAutocompleteClick(e){
+    //     console.log('Clicked on Autocomplete :-) ')
     // }
 
-    onClickDelete(e){
-        console.log('Clicked on delete')
-        this.props.siaShowLabelInput(false)
-        this.props.siaShowSingleAnno(undefined)
-        this.props.selectAnnotation(undefined)
-        //Reset keyDown on delete
-        this.props.siaKeyDown(undefined) 
-        if (this.props.onDeleteClick){
-            this.props.onDeleteClick(this.props.selectedAnno.id)
-        }
+    // onCheckClick(e){
+    //     //this.closeLabelInput()
+    //     //Reset keyDown after leaving with a click instead of keyDown
+    //     //this.props.siaKeyDown(undefined) 
+    //     this.confirmLabel()
+    // }
+
+    // onLabelSelect(value, item){
+    //     console.log('LabelInput selected item', item)
+    //     this.setState({ value, label: {...item} })
+    // }
+
+    onChange(e, item ){
+        console.log('LabelInput onChange', e, item)
+        this.setState({ label: item })
+        // this.confirmLabel()
     }
 
-    onAutocompleteClick(e){
-        console.log('Clicked on Autocomplete :-) ')
-    }
-
-    onCheckClick(e){
-        //this.closeLabelInput()
-        //Reset keyDown after leaving with a click instead of keyDown
-        //this.props.siaKeyDown(undefined) 
-        this.confirmLabel()
-    }
-
-    onLabelSelect(value, item){
-        console.log('LabelInput selected item', item)
-        this.setState({ value, label: {...item} })
-    }
-
-    onChange(e){
-        // const label = this.props.possibleLabels.find( el => {
-        //     return el.label.toLowerCase().includes(e.target.value.toLowerCase())
-        // })
-        // console.log('LabelInput label search', label)
-        this.setState({ value: e.target.value })
-    }
-
-    onDropDownSelect(item){
-        console.log('LabelInput selected Dropdown entry', item)
-        if (this.state.label !== item ){
-            this.setState({ label: item})
-        }
-    }
+    // onDropDownSelect(item){
+    //     console.log('LabelInput selected Dropdown entry', item)
+    //     if (this.state.label !== item ){
+    //         this.setState({ label: item})
+    //     }
+    // }
 
     // onKeyUp(e:Event){
     //     e.stopPropagation()
@@ -129,7 +122,13 @@ class LabelInput extends Component{
      * LOGIC     *
      *************/
     updatePossibleLabels(){
-        const possibleLabels = [{id: -1, label:"no label"},...this.props.possibleLabels]
+        let possibleLabels = []
+        if (this.props.possibleLabels.length > 0){
+            possibleLabels = this.props.possibleLabels.map(e => {
+                return {key: e.id, value: e.id, text: e.label}
+            })
+        }
+        possibleLabels = [{key: -1, text:"no label", value:-1}, ...possibleLabels]
         this.setState({possibleLabels})
 
     }
@@ -151,11 +150,12 @@ class LabelInput extends Component{
 
     performKeyAction(key){
         switch(key){
-            // case 'Enter':
+            case 'Enter':
+                if (this.props.showLabelInput) this.confirmLabel()
+                break
             case 'Escape':
                 // console.log('LabelInput Escape current label', this.state.label.id)
-                this.confirmLabel()
-                
+                this.closeLabelInput()
                 break
             default:
                 break
@@ -168,10 +168,10 @@ class LabelInput extends Component{
             this.props.allowedActions, this.props.selectedAnno)) return
         console.log('LabelInput confirmLabel label', this.state.label)
         if (this.state.label){
-            if (this.state.label.id !== -1){
+            if (this.state.label.value !== -1){
                 this.props.selectAnnotation({
                     ...this.props.selectedAnno,
-                    labelIds: [this.state.label.id],
+                    labelIds: [this.state.label.value],
                     status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 })
             } else {
@@ -206,11 +206,23 @@ class LabelInput extends Component{
         // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
         return (
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
-                <InputGroup >
-                    {/* <Input onKeyDown={e => this.onKeyDown(e)}/> */}
-                    {/* <InputGroupAddon addonType="prepend">
-                    <Button><FontAwesomeIcon icon={faCheck}/></Button>
-                    </InputGroupAddon> */}
+                <Ref innerRef={this.inputRef}>
+                    <Dropdown
+                        multiple={false}
+                        search
+                        selection
+                        closeOnChange
+                        options={this.state.possibleLabels}
+                        placeholder='Enter label'
+                        tabIndex={0}
+                        onKeyDown= {e => this.onKeyDown(e)}
+                        defaultValue={[-1]}
+                        onChange={(e, item) => this.onChange(e, item)}
+                        // searchInput={<Dropdown.SearchInput />}
+                    />
+                </Ref>
+                {/* <InputGroup >
+                   
                     <Autocomplete
                         ref = {el => this.inputRef = el}
                         items={this.state.possibleLabels}
@@ -247,7 +259,6 @@ class LabelInput extends Component{
                 <UncontrolledPopover placement="top" target="LabelInputPopover">
                     <PopoverHeader >
                         {!this.state.label ? 'No label': this.state.label.label}
-                        {/* <Button style={{right:'0', position:'absolute'}}> */}
                             
                             <Button close
                                 // style={{float:'right'}} 
@@ -255,13 +266,12 @@ class LabelInput extends Component{
                                 // onMouseOver={e => this.mouseOverDelete(e)}
                                 onClick={e => this.onClickDelete(e)}
                                 />
-                        {/* </Button> */}
                     </PopoverHeader>
                     <PopoverBody>
                         {!this.state.label ? 'no label selected': this.state.label.description}
                         
                     </PopoverBody>
-                </UncontrolledPopover>
+                </UncontrolledPopover> */}
             </div>
         )
     }
