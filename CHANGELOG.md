@@ -23,6 +23,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - 
 
+## [0.0.5] - 2019-06-26
+### Added
+-
+
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+-
+
+### Fixed
+- Fixed import of script ENV variables that have been commented out (see commit 72fddfa)
+- Fixed offline availability since frontend was loading fonts from web
+
+### Security
+- 
+
 ## [0.0.4] - 2019-05-24
 ### Added
 -
