@@ -62,6 +62,18 @@ class LabelInput extends Component{
         if (prevProps.possibleLabels !== this.props.possibleLabels){
             this.updatePossibleLabels()
         }
+        if (this.props.selectedAnno.labelIds){
+            if (prevProps.selectedAnno !== this.props.selectedAnno){
+                if(this.props.selectedAnno.labelIds.length > 0){
+                    const lbl = this.state.possibleLabels.find(e => {
+                        return e.value === this.props.selectedAnno.labelIds[0]
+                    })
+                    if (lbl){
+                        this.setState({label:lbl})
+                    }
+                }
+            }
+        }
     }
     /*************
      * EVENTS    *
@@ -104,6 +116,7 @@ class LabelInput extends Component{
     onChange(e, item ){
         console.log('LabelInput onChange', e, item)
         this.setState({ label: item })
+        this.updateSelectedAnnoLabel(item)
         // this.confirmLabel()
     }
 
@@ -168,16 +181,15 @@ class LabelInput extends Component{
         }
     }
 
-    confirmLabel(){
-        //If not allowed to label -> return
+    updateSelectedAnnoLabel(label){
         if (!constraints.allowedToLabel(
             this.props.allowedActions, this.props.selectedAnno)) return
-        console.log('LabelInput confirmLabel label', this.state.label)
-        if (this.state.label){
-            if (this.state.label.value !== -1){
+        console.log('LabelInput confirmLabel label', label)
+        if (label){
+            if (label.value !== -1){
                 this.props.selectAnnotation({
                     ...this.props.selectedAnno,
-                    labelIds: [this.state.label.value],
+                    labelIds: [label.value],
                     status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 })
             } else {
@@ -194,6 +206,10 @@ class LabelInput extends Component{
                 status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
             })
         }
+    }
+    confirmLabel(){
+        //If not allowed to label -> return
+        this.updateSelectedAnnoLabel(this.state.label)
         this.closeLabelInput()
     }
 
@@ -222,7 +238,11 @@ class LabelInput extends Component{
                         placeholder='Enter label'
                         tabIndex={0}
                         onKeyDown= {e => this.onKeyDown(e)}
-                        defaultValue={[-1]}
+                        defaultValue={
+                            this.state.label ?
+                            this.state.label.value :
+                            -1
+                        }
                         onChange={(e, item) => this.onChange(e, item)}
                         // searchInput={<Dropdown.SearchInput />}
                     />

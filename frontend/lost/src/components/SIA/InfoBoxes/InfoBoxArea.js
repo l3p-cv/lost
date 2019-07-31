@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import AnnoDetails from './AnnoDetails'
+import LabelInfo from './LabelInfo'
 import actions from '../../../actions'
 const { siaShowImgBar, siaSetUIConfig } = actions
 
@@ -46,6 +47,16 @@ class InfoBoxes extends Component{
                     }
                 )
                 break
+            case 'LabelInfo':
+                this.props.siaSetUIConfig(
+                    {...this.props.uiConfig,
+                        labelInfo: {
+                            ...this.props.uiConfig.labelInfo,
+                            visible: false
+                        }
+                    }
+                )
+                break
             default:
                 break
         }
@@ -61,6 +72,12 @@ class InfoBoxes extends Component{
             onDismiss={() => this.onDismiss('AnnoDetails')}
             visible={this.props.uiConfig.annoDetails.visible}
         />
+        <LabelInfo selectedLabelIds={this.props.selectedAnno.labelIds}
+            possibleLabels={this.props.possibleLabels}
+            defaultPos={this.state.position}
+            onDismiss={() => this.onDismiss('LabelInfo')}
+            visible={this.props.uiConfig.labelInfo.visible}
+        />
         </div>
         )
     }
@@ -73,7 +90,8 @@ function mapStateToProps(state) {
         layoutUpdate: state.sia.layoutUpdate,
         uiConfig: state.sia.uiConfig,
         imgBar: state.sia.imgBar,
-        svg: state.sia.svg
+        svg: state.sia.svg,
+        possibleLabels: state.sia.possibleLabels
     })
 }
 export default connect(mapStateToProps, 

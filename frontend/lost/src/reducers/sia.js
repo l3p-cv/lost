@@ -14,6 +14,9 @@ const INITIAL_STATE = {
         toolBarWidth: 60,
         annoDetails:{
             visible: true
+        },
+        labelInfo:{
+            visible: true
         }
     },
     showSingleAnno: undefined,
