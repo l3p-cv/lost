@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
-import { Button, CardHeader, Card, CardBody, Toast, ToastBody } from 'reactstrap';
-import { Icon, Menu } from 'semantic-ui-react'
+import { Icon, Menu, Popup, Checkbox, Divider} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -12,6 +11,7 @@ import {
 } from '@fortawesome/free-regular-svg-icons'
 import Draggable from 'react-draggable';
 // import SIASettingModal from './SIASettingModal'
+import SIASettingButton from './SIASettingButton'
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
 const { 
@@ -31,7 +31,6 @@ class ToolBar extends Component{
                 top: 0,
                 width: 40
             },
-            settingsOpen: false
         }
     }
 
@@ -148,14 +147,6 @@ class ToolBar extends Component{
         return btns
     }
 
-    openSettings(){
-        this.setState({settingsOpen: true})
-    }
-
-    closeSettings(){
-        this.setState({settingsOpen: false})
-    }
-
     /**
      * Render next and prev image buttons 
      *
@@ -229,11 +220,8 @@ class ToolBar extends Component{
                 >
                     <Icon name='expand arrows alternate' />
                 </Menu.Item>
-                <Menu.Item name='setting' 
-                    onClick={() => this.openSettings()}
-                >
-                    <Icon name='setting' />
-                </Menu.Item>
+                <SIASettingButton></SIASettingButton>
+               
                
             </Menu>
                 {/* <Card><CardBody>
