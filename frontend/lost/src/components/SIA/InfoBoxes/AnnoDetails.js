@@ -1,23 +1,9 @@
 import React, {Component} from 'react'
-// import { 
-//     Button, CardHeader, 
-//     CardBody, Input, Container, 
-//     Row, Col, Fade, Toast, ToastBody, ToastHeader
-//     } from 'reactstrap';
 import {connect} from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-    faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle, 
-    faArrowRight, faArrowLeft , faExpandArrowsAlt
-} from '@fortawesome/free-solid-svg-icons'
-import { 
-    faImage
-} from '@fortawesome/free-regular-svg-icons'
 import { Card, Icon, Segment, Menu, Input, Message, Statistic, Divider, Button, List, Label } from 'semantic-ui-react'
-import Draggable from 'react-draggable';
+import InfoBox from './InfoBox'
 import actions from '../../../actions'
-import * as TOOLS from '../types/tools'
-import * as utils from '../utils/transform'
+import * as transform from '../utils/transform'
 const { siaShowImgBar } = actions
 
 class AnnoDetails extends Component{
@@ -42,111 +28,71 @@ class AnnoDetails extends Component{
             )
         }
     }
+
+    onDismiss(){
+        if (this.props.onDismiss){
+            this.props.onDismiss()
+        }
+    }
     renderDescription(){
         if (this.props.anno.id){
-            const box = utils.getBox(this.props.anno.data, this.props.anno.type)
+            let box = transform.getBox(this.props.anno.data, this.props.anno.type)
+            if (!box[1]) return "No annotation selected!"
+            box = transform.toBackend(box, this.props.svg, 'bBox')
             console.log('AnnoDetails box', box)
             return (
-                <Card.Description>
-                    <Statistic.Group widths='one' size='mini'>
-                        <Statistic>
-                            <Statistic.Label> 
-                                x / y
+                <div>
+                <Statistic.Group widths='one' size='mini'>
+                    <Statistic>
+                        <Statistic.Label> 
+                            x / y
+                        {/* <Icon name="arrow right"/> */}
+                        </Statistic.Label>
+                        <Statistic.Value>
+                            {/* {"x / y"} */}
                             {/* <Icon name="arrow right"/> */}
-                            </Statistic.Label>
-                            <Statistic.Value>
-                                {/* {"x / y"} */}
-                                {/* <Icon name="arrow right"/> */}
 
-                                {"("+box[0].x.toFixed(0)+" , "+ box[0].y.toFixed(0)+")"}
-                            </Statistic.Value>
-                        </Statistic>
-                        {/* <Statistic>
-                            <Statistic.Value>{box[0].y.toFixed(0)}</Statistic.Value>
-                            <Statistic.Label>
-                                <Icon name="arrow down"/>
-                                y
-                            </Statistic.Label>
-                        </Statistic> */}
-                        
-                    </Statistic.Group>
-                    <Divider horizontal> Size </Divider>
-                    <Statistic.Group widths='two' size='mini'>
-                        <Statistic >
-                            <Statistic.Value>
-                                {(box[1].x-box[0].x).toFixed(0)}
-                            </Statistic.Value>
-                            <Statistic.Label>
-                                <Icon name="arrows alternate horizontal"/>
-                                width
-                            </Statistic.Label>
-                        </Statistic>
-                        <Statistic>
-                            <Statistic.Value>
-                                {(box[2].y-box[1].y).toFixed(0)}
-                            </Statistic.Value>
-                            <Statistic.Label>
-                                <Icon name="arrows alternate vertical"/>
-                                height
-                            </Statistic.Label>
-                        </Statistic>
-                    </Statistic.Group>
-                    
-                </Card.Description>
+                            {"("+box.x.toFixed(2)+" , "+ box.y.toFixed(2)+")"}
+                        </Statistic.Value>
+                    </Statistic>
+                </Statistic.Group>
+                <Divider horizontal> Size </Divider>
+                <Statistic.Group widths='two' size='mini'>
+                    <Statistic >
+                        <Statistic.Value>
+                            {Math.abs(box.w).toFixed(2)}
+                        </Statistic.Value>
+                        <Statistic.Label>
+                            <Icon name="arrows alternate horizontal"/>
+                            width
+                        </Statistic.Label>
+                    </Statistic>
+                    <Statistic>
+                        <Statistic.Value>
+                            {Math.abs(box.h).toFixed(2)}
+                        </Statistic.Value>
+                        <Statistic.Label>
+                            <Icon name="arrows alternate vertical"/>
+                            height
+                        </Statistic.Label>
+                    </Statistic>
+                </Statistic.Group>
+                </div>
             )
         } else {
-            return <Card.Description>No annotation selected!</Card.Description>
+            return "No annotation selected!"
         }
     }
 
     
     render(){
-        if (!this.props.annos.image) return null
-        console.log('Annotation Details', this.props.anno)
-        return(
-        <Draggable handle=".handle">
-            <div className="handle" style={{cursor: 'grab'}}>
-        
-
-            <Card
-                // onDismiss={(e) => {console.log('Dissmissed Card', e)}}
-                style={{opacity:0.8}}
-                raised
-            >
-            <Card.Content>
-            <Card.Header>
-            Annotation Details
-            <Button basic floated='right' icon='close'/>
-            {/* {/* <Icon name="close" size="small"></Icon> */}
-            {/* <Menu secondary>
-                <Menu.Menu position='right'>
-                <Menu.Item icon="close" onClick={e => {console.log('Clicked on dissmiss')}}>
-                </Menu.Item>
-                </Menu.Menu>
-            </Menu> */}
-            </Card.Header>
-            {this.renderMeta()}
-            {this.renderDescription()}
-            </Card.Content>
-
-            </Card>
-            {/* <Segment raised> */}
-            <Message 
-                style={{opacity:0.8}}
-                onDismiss={e => {console.log('Clicked on dissmiss')}}
-                size="small"
-            >
-                <Message.Header>Annotation Details</Message.Header>
-                <Divider></Divider>
-                {/* {this.renderMeta()} */}
-                {this.renderDescription()}
-            </Message>
-            {/* </Segment> */}
-            </div> 
-        
-        
-        </Draggable>
-        )
+        return <InfoBox
+            header="Annotation Details"
+            content={this.renderDescription()}
+            visible={this.props.visible}
+            defaultPos={this.props.defaultPos}
+            onDismiss={e => this.onDismiss()}
+        />
     }
 }
 

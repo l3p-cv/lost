@@ -11,7 +11,10 @@ const INITIAL_STATE = {
     uiConfig: {
         nodeRadius: 4,
         strokeWidth: 4,
-        toolBarWidth: 60
+        toolBarWidth: 60,
+        annoDetails:{
+            visible: true
+        }
     },
     showSingleAnno: undefined,
     selectedTool: undefined,

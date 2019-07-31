@@ -4,15 +4,12 @@ import actions from '../../actions'
 import './SIA.scss';
 import 'semantic-ui-css/semantic.min.css'
 
-import {
-    Col,
-    Row
-} from 'reactstrap'
-
 import Canvas from './Canvas'
 import ToolBar from './ToolBar'
 import ImgBar from './ImgBar'
+import SIASettingModal from './SIASettingModal'
 import InfoBoxArea from './InfoBoxes/InfoBoxArea'
+import InfoBox from './InfoBoxes/InfoBox'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate
@@ -61,6 +58,10 @@ class SIA extends Component {
             }
         }
     }
+
+    closeSettings(){
+
+    }
     render() {
         console.log('Sia renders')
         return (
@@ -78,11 +79,16 @@ class SIA extends Component {
                     
                 </div>
                 <div> */}
-                
-                    <Canvas container={this.container}></Canvas>
-                    <ToolBar container={this.container}></ToolBar>
-                    <ImgBar container={this.container}></ImgBar>
-                    <InfoBoxArea container={this.container}></InfoBoxArea>
+                {/* <SIASettingModal open={true}
+                        onClose={() => this.closeSettings()}
+                    /> */}
+                <Canvas container={this.container}></Canvas>
+                <ToolBar container={this.container}></ToolBar>
+                <ImgBar container={this.container}></ImgBar>
+                <InfoBoxArea container={this.container}></InfoBoxArea>
+                    {/* <InfoBox header={<div>Test</div>} content={"Hello"} visible={true}></InfoBox> */}
+                    
+                    
                 
              </div>
         )
@@ -91,7 +97,9 @@ class SIA extends Component {
 
 function mapStateToProps(state) {
     return ({
-        fullscreenMode: state.sia.fullscreenMode
+        fullscreenMode: state.sia.fullscreenMode,
+        selectedAnno: state.sia.selectedAnno,
+        svg: state.sia.svg
     })
 }
 

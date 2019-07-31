@@ -44,6 +44,14 @@ export function toSia(data, image, type){
     }
 }
 
+/**
+ * Transform a sia annotation to backend format.
+ * 
+ * @param {Array} data Annotation data
+ * @param {*} image Image object {width, height}
+ * @param {String} type Type of the annotation bBox, point, line, polygon
+ * @returns Annotation data in backend style (relative, centered)
+ */
 export function toBackend(data, image, type){
     console.log('toBackend image', image)
     switch(type) {
@@ -75,7 +83,7 @@ export function toBackend(data, image, type){
                 }
             })
         default:
-            console.log("Wrong annotation type!")
+            console.warn("Wrong annotation type!")
         
     }
 }

@@ -11,6 +11,7 @@ import {
     faImage
 } from '@fortawesome/free-regular-svg-icons'
 import Draggable from 'react-draggable';
+// import SIASettingModal from './SIASettingModal'
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
 const { 
@@ -29,7 +30,8 @@ class ToolBar extends Component{
                 left: 0,
                 top: 0,
                 width: 40
-            }
+            },
+            settingsOpen: false
         }
     }
 
@@ -146,6 +148,14 @@ class ToolBar extends Component{
         return btns
     }
 
+    openSettings(){
+        this.setState({settingsOpen: true})
+    }
+
+    closeSettings(){
+        this.setState({settingsOpen: false})
+    }
+
     /**
      * Render next and prev image buttons 
      *
@@ -196,6 +206,7 @@ class ToolBar extends Component{
         return btns
     }
 
+
     render(){
         console.log('Toobar state', this.state, this.props.currentImage)
         return(
@@ -218,7 +229,12 @@ class ToolBar extends Component{
                 >
                     <Icon name='expand arrows alternate' />
                 </Menu.Item>
-
+                <Menu.Item name='setting' 
+                    onClick={() => this.openSettings()}
+                >
+                    <Icon name='setting' />
+                </Menu.Item>
+               
             </Menu>
                 {/* <Card><CardBody>
             <div style={{width:this.state.position.width}}>
