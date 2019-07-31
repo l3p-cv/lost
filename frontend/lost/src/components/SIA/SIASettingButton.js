@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import { Popup, Icon, Menu, Divider, Checkbox, Card } from 'semantic-ui-react'
 import actions from '../../actions'
-const { siaShowImgBar, siaSetUIConfig } = actions
+const { siaSetUIConfig } = actions
 
 class SIASettingButton extends Component{
 
@@ -51,14 +51,10 @@ class SIASettingButton extends Component{
 
 function mapStateToProps(state) {
     return ({
-        annos: state.sia.annos,
-        selectedAnno: state.sia.selectedAnno,
-        layoutUpdate: state.sia.layoutUpdate,
         uiConfig: state.sia.uiConfig,
-        imgBar: state.sia.imgBar,
-        svg: state.sia.svg
+        annos: state.sia.annos
     })
 }
 export default connect(mapStateToProps, 
-    {siaShowImgBar, siaSetUIConfig}
+    {siaSetUIConfig}
 )(SIASettingButton)
