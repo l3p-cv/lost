@@ -1,22 +1,7 @@
 import React, {Component} from 'react'
-import { 
-    Button, CardHeader, Card, 
-    CardBody, Input, Container, 
-    Row, Col, Fade, Toast, ToastBody, ToastHeader
-    } from 'reactstrap';
 import {connect} from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-    faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle, 
-    faArrowRight, faArrowLeft , faExpandArrowsAlt
-} from '@fortawesome/free-solid-svg-icons'
-import { 
-    faImage
-} from '@fortawesome/free-regular-svg-icons'
-import Draggable from 'react-draggable';
 import AnnoDetails from './AnnoDetails'
 import actions from '../../../actions'
-import * as TOOLS from '../types/tools'
 const { siaShowImgBar, siaSetUIConfig } = actions
 
 class InfoBoxes extends Component{
@@ -69,7 +54,6 @@ class InfoBoxes extends Component{
     render(){
         if (!this.props.annos.image) return null
         return(
-        // <Draggable handle=".handle">
         <div>
         <AnnoDetails anno={this.props.selectedAnno} 
             svg={this.props.svg}
@@ -77,9 +61,7 @@ class InfoBoxes extends Component{
             onDismiss={() => this.onDismiss('AnnoDetails')}
             visible={this.props.uiConfig.annoDetails.visible}
         />
-            
         </div>
-        // </Draggable>
         )
     }
 }
