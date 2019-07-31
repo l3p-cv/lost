@@ -49,6 +49,7 @@ class WorkingOnSIA extends Component {
             this.props.siaLayoutUpdate()
             this.setState({height: checkHeight})
         }
+        this.props.refreshToken()
     }
     openModal() {
         this.setState({modalIsOpen: true});
@@ -62,9 +63,7 @@ class WorkingOnSIA extends Component {
     closeModal() {
         this.setState({modalIsOpen: false});
     }
-    componentDidUpdate(){
-        this.props.refreshToken()
-    }
+
     render() {
         if(this.props.annoTask !== null){
         let progress = Math.floor((this.props.annoTask.finished / this.props.annoTask.size) * 100)
