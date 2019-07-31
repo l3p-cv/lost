@@ -48,21 +48,26 @@ class AnnoDetails extends Component{
             console.log('AnnoDetails box', box)
             return (
                 <Card.Description>
-                    <Statistic.Group widths='two' size='mini'>
+                    <Statistic.Group widths='one' size='mini'>
                         <Statistic>
-                            <Statistic.Value>{box[0].x.toFixed(0)}</Statistic.Value>
-                            <Statistic.Label>
-                            <Icon name="arrow right"/>
-                                x
+                            <Statistic.Label> 
+                                x / y
+                            {/* <Icon name="arrow right"/> */}
                             </Statistic.Label>
+                            <Statistic.Value>
+                                {/* {"x / y"} */}
+                                {/* <Icon name="arrow right"/> */}
+
+                                {"("+box[0].x.toFixed(0)+" , "+ box[0].y.toFixed(0)+")"}
+                            </Statistic.Value>
                         </Statistic>
-                        <Statistic>
+                        {/* <Statistic>
                             <Statistic.Value>{box[0].y.toFixed(0)}</Statistic.Value>
                             <Statistic.Label>
                                 <Icon name="arrow down"/>
                                 y
                             </Statistic.Label>
-                        </Statistic>
+                        </Statistic> */}
                         
                     </Statistic.Group>
                     <Divider horizontal> Size </Divider>
@@ -125,15 +130,18 @@ class AnnoDetails extends Component{
             </Card.Content>
 
             </Card>
+            {/* <Segment raised> */}
             <Message 
                 style={{opacity:0.8}}
                 onDismiss={e => {console.log('Clicked on dissmiss')}}
+                size="small"
             >
                 <Message.Header>Annotation Details</Message.Header>
                 <Divider></Divider>
                 {/* {this.renderMeta()} */}
                 {this.renderDescription()}
             </Message>
+            {/* </Segment> */}
             </div> 
         
         
