@@ -257,13 +257,16 @@ class Canvas extends Component{
                 if (!this.props.selectedAnno.id){
                     this.props.selectAnnotation(this.state.annos[0])
                 } else {
-                    let currentIdx = this.state.annos.findIndex( e => {
+                    const myAnnos = this.state.annos.filter(e => {
+                        return e.status !== annoStatus.DELETED
+                    })
+                    let currentIdx = myAnnos.findIndex( e => {
                         return e.id === this.props.selectedAnno.id
                     })
-                    if (currentIdx+1 < this.state.annos.length){
-                        this.props.selectAnnotation(this.state.annos[currentIdx+1])
+                    if (currentIdx+1 < myAnnos.length){
+                        this.props.selectAnnotation(myAnnos[currentIdx+1])
                     } else {
-                        this.props.selectAnnotation(this.state.annos[0])
+                        this.props.selectAnnotation(myAnnos[0])
                     }
                 }
 
