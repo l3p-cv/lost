@@ -62,7 +62,7 @@
   },
   "scripts": {
     "install:tools": "npm install --prefix src/tools/sia -d && npm install --prefix src/components/pipeline -d",
-    "start": "cp src/devSettings.js src/settings.js npm run install:tools && react-app-rewired start",
+    "start": "cp src/devSettings.js src/settings.js && npm run install:tools && react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
     "test:debug": "react-app-rewired --inspect-brk test --runInBand",
