@@ -127,7 +127,7 @@ $(propertiesView.html.refs["btn-latest"]).on("click", ($event) => {
     }
     $event.preventDefault()
     propertiesView.disableLastButton()
-    updateData("latest")
+    updateData("last_edited")
 })
 
 
@@ -278,6 +278,9 @@ function updateData(action: String){
             break
         case "latest":
             requestData = data.requestLatestData
+            break
+        case "last_edited":
+            requestData = data.requestLastEdited
             break
         default: 
             throw new Error(`The action string is invalid.`)

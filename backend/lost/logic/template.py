@@ -82,7 +82,7 @@ def get_template(db_man, template_id ,user):
             return error_msg
     file_man = FileMan(db_man.lostconfig)
     available_raw_files = file_man.get_media_rel_path_tree()
-    available_groups = user.groups
+    available_groups = db_man.get_groups()
     available_label_trees = db_man.get_all_label_trees()
     available_scripts = db_man.get_all_scripts()
     try:
@@ -143,7 +143,12 @@ class TemplateSerialize(object):
         for group in self.available_groups:
             group_json = dict()
             group_json['id'] = group.idx
-            group_json['groupName'] = group.name
+            group_name = group.name
+            if group.is_user_default:
+                group_name += " (user)"
+            else:
+                group_name += " (group)"
+            group_json['groupName'] = group_name
             group_json['isUserDefault'] = group.is_user_default
             groups_json.append(group_json)
         return groups_json

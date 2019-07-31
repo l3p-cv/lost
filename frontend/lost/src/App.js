@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import './App.scss'
 
@@ -8,7 +9,13 @@ import Login  from './views/Pages/Login/Login'
 import Logout  from './views/Pages/Logout/Logout'
 import Page404  from './views/Pages/Page404/Page404'
 
+import actions from './actions/index'
+const { checkExpireDateCron } = actions
 class App extends Component {
+  
+  componentDidMount(){
+      this.timer = setInterval(()=>  this.props.checkExpireDateCron(), 4000)
+  }
   render() {
     return (
       <HashRouter>
@@ -24,4 +31,5 @@ class App extends Component {
   }
 }
 
-export default App
+
+export default connect(null, { checkExpireDateCron })(App)

@@ -10,7 +10,8 @@ const REQUEST_STRINGS = {
     GET_CATEGORIES: `${BASE_URL}/label`,
     GET_FIRST: `${BASE_URL}/first`,
     GET_NEXT_QUERY: lastImageId => `${BASE_URL}/next/${lastImageId}`,
-    GET_PREV_QUERY: lastImageId => `${BASE_URL}/prev/${lastImageId}`,
+	GET_PREV_QUERY: lastImageId => `${BASE_URL}/prev/${lastImageId}`,
+	GET_LAST_EDITED: `${BASE_URL}/lastedited`,
     POST_FINISH : `${BASE_URL}/finish`,
     POST_UPDATE : `${BASE_URL}/update`,
     DELETE_ANNO : imageId => `${BASE_URL}/junk/${imageId}`,
@@ -59,6 +60,12 @@ export function requestLatestData(){
     return requestNextUserLockedData().then((annoData) => {
 		return Promise.resolve(annoData)
     })
+}
+export function requestLastEdited() {
+    return http.get({
+		url: REQUEST_STRINGS.GET_LAST_EDITED,
+		token: appModel.reactComponent.token,
+	})
 }
 export function requestNextData(imgId: Number){
     return http.get({

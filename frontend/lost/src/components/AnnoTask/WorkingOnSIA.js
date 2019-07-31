@@ -1,14 +1,12 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-
 import {Progress} from 'reactstrap'
 import {getColor} from './utils'
 import {Alert, Button, Card, CardBody, CardHeader, Col ,Row} from 'reactstrap'
 import Modal from 'react-modal';
 import actions from '../../actions'
-const { 
-    siaLayoutUpdate} = actions
 
+const {refreshToken, siaLayoutUpdate} = actions
 const customStyles = {
     content : {
       top                   : '50%',
@@ -64,7 +62,9 @@ class WorkingOnSIA extends Component {
     closeModal() {
         this.setState({modalIsOpen: false});
     }
-    
+    componentDidUpdate(){
+        this.props.refreshToken()
+    }
     render() {
         if(this.props.annoTask !== null){
         let progress = Math.floor((this.props.annoTask.finished / this.props.annoTask.size) * 100)
@@ -137,6 +137,4 @@ class WorkingOnSIA extends Component {
     }
 }
 
-export default connect(null, 
-    {siaLayoutUpdate}
-)(WorkingOnSIA)
+export default connect(null, {refreshToken, siaLayoutUpdate})(WorkingOnSIA)

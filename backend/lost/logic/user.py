@@ -56,6 +56,8 @@ def release_user_annos(dbm, user_id):
         print(locked_user_annos)
         for anno in locked_user_annos:
             anno.state = state.Anno.UNLOCKED
+            anno.timestamp_lock = None
+            anno.user_id = None
             dbm.add(anno)
                 
         locked_annos = dbm.get_locked_two_d_annos(anno_task.idx)
@@ -67,5 +69,7 @@ def release_user_annos(dbm, user_id):
         print(locked_user_annos)
         for anno in locked_user_annos:
             anno.state = state.Anno.UNLOCKED
+            anno.timestamp_lock = None
+            anno.user_id = None
             dbm.add(anno)
         dbm.commit()

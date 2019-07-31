@@ -454,7 +454,7 @@ class DBMan(object):
         '''
         return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
                                                        model.ImageAnno.state==state.Anno.UNLOCKED, \
-                                                       model.ImageAnno.iteration==iteration).first()
+                                                       model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.asc()).first()
 
     def get_next_locked_sia_anno(self, anno_task_id, user_id, iteration):
         ''' Get next sia annotation of an anno_task
@@ -531,6 +531,14 @@ class DBMan(object):
         sql = "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
          FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d)"\
          %(iteration, anno_task_id, user_id)
+        return self.session.execute(sql).first()
+
+    def get_last_edited_sia_anno(self, anno_task_id , iteration, user_id):
+        ''' Get last locked sia annotation
+        '''
+        sql = "SELECT * FROM image_anno WHERE idx=(SELECT max(idx)\
+         FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND user_id=%d AND state=%d)"\
+         %(iteration, anno_task_id, user_id, state.Anno.LABELED)
         return self.session.execute(sql).first()
 
     def get_first_sia_anno(self, anno_task_id, iteration, user_id ):
@@ -653,6 +661,9 @@ class DBMan(object):
 
     def get_users(self):
         return self.session.query(model.User).all()
+
+    def get_groups(self):
+        return self.session.query(model.Group).all()
         
     def get_user_groups(self, user_defaults=False):
         return self.session.query(model.Group).filter(model.Group.is_user_default==user_defaults).all()
