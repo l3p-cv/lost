@@ -1,3 +1,4 @@
 .vscode/
+frontend/lost/src/settings.js
 node_modules
 __pycache__
