@@ -83,8 +83,6 @@ class AnnoLabelInput extends Component{
 
 
     render(){
-        if (!this.props.showLabelInput) return null
-        // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
         return (
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
                 <LabelInput svg={this.props.svg}
