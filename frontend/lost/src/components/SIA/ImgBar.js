@@ -61,7 +61,6 @@ class ImgBar extends Component{
             <Menu inverted>
                 <Menu.Item  
                 active={activeItem === 'bla'} 
-                icon="arrow right"
                 >
                 {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
                 </Menu.Item>
