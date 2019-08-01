@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-import { 
-    Button, CardHeader, Card, 
-    CardBody, Input, Container, 
-    Row, Col, Fade, Toast, ToastBody, ToastHeader
-    } from 'reactstrap';
+// import { 
+//     Button, CardHeader, Card, 
+//     CardBody, Input, Container, 
+//     Row, Col, Fade, Toast, ToastBody, ToastHeader
+//     } from 'reactstrap';
 import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -13,6 +13,7 @@ import {
 import { 
     faImage
 } from '@fortawesome/free-regular-svg-icons'
+import { Icon, Dropdown, Menu, Input, Message, Statistic, Divider, Button, List, Label, Header } from 'semantic-ui-react'
 import Draggable from 'react-draggable';
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
@@ -49,18 +50,41 @@ class ImgBar extends Component{
     render(){
         if (!this.props.imgBar.show) return null
         if (!this.props.annos.image) return null
+        const activeItem='home'
         return(
-        // <Draggable handle=".handle">
         <div style={{
             position:'fixed', 
-            top: this.state.position.top + 5, 
-            left:this.state.position.left + 5,
+            top: this.state.position.top, 
+            left:this.state.position.left,
             }}>
                 {/* <div className="handle" style={{cursor: 'grab'}}>Drag</div> */}
-            <Fade in={this.props.imgBar.show}> 
+            <Menu inverted>
+                <Menu.Item  
+                active={activeItem === 'bla'} 
+                icon="arrow right"
+                >
+                {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
+                </Menu.Item>
+                <Menu.Item
+                active={activeItem === 'messages'}
+                >
+                {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
+                </Menu.Item>
+                <Menu.Menu position='right'>
+                <Menu.Item>
+                    <Input icon='search' placeholder='Search...' />
+                </Menu.Item>
+                <Menu.Item
+                    active={activeItem === 'logout'}
+                    onClick={() => this.props.siaShowImgBar(false)}
+                >
+                <Icon inverted size="small" name="close"></Icon>
+                </Menu.Item>
+                </Menu.Menu>
+            </Menu>
+            {/* <Fade in={this.props.imgBar.show}> 
             <Card style={{minWidth:"600px"}} >
             <CardBody>
-            {/* <ToastHeader><Button close /></ToastHeader> */}
                 <Row>
                     <Col xs='5' sm='5' lg='5'>
                         <Input></Input>
@@ -77,9 +101,8 @@ class ImgBar extends Component{
                 </Row>
                 </CardBody>
             </Card>
-            </Fade>
+            </Fade> */}
         </div>
-        // </Draggable>
         )
     }
 }
