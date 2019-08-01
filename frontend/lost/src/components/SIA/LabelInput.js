@@ -16,10 +16,7 @@ class LabelInput extends Component{
     constructor(props){
         super(props)
         this.state = {
-            top: 400,
-            left: 100,
             label: undefined,
-            visibility: 'hidden',
             possibleLabels: []
         }
         this.inputGroupRef = React.createRef()
@@ -28,22 +25,18 @@ class LabelInput extends Component{
 
     componentWillMount(){
         this.updatePossibleLabels()
-        this.setPosition()
     }
     
     componentDidUpdate(prevProps){
         if (this.props.showLabelInput){
-            console.log('ShowLabelInput')
-            this.setPosition()
+
             if (this.inputRef.current){
                 console.log('LabelInput', this.inputRef.current)
                 this.inputRef.current.click()
             }
-            // if (this.inputGroupRef.current){
-            //     this.inputGroupRef.current.click()
-            // }
+
         } 
-        // }
+
         if (prevProps.canvasKeyDown !== this.props.canvasKeyDown){
             this.performKeyAction(this.props.canvasKeyDown)
         }
@@ -132,27 +125,6 @@ class LabelInput extends Component{
         possibleLabels = [{key: -1, text:"no label", value:-1}, ...possibleLabels]
         this.setState({possibleLabels})
 
-    }
-    setPosition(){
-        if (this.props.selectedAnno.id){
-            const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
-            // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
-            const inputRect = this.inputGroupRef.current.getBoundingClientRect()
-            const top = this.props.svg.top + center.y - 20
-            let left = this.props.svg.left + center.x - inputRect.width /2.0
-            if (left < this.props.svg.left) left = this.props.svg.left
-            if (left+inputRect.width > this.props.svg.left+this.props.svg.width){
-                console.log('labelinput right, svg right', left+inputRect.width, this.props.svg.left+this.props.svg.width)
-                left = this.props.svg.left+this.props.svg.width - inputRect.width
-                console.log('labelinput new left', left)
-            }
-            if (this.state.top !== top || this.state.left !== left){  
-                this.setState({
-                    top,
-                    left
-                })
-            }
-        }
     }
 
     performKeyAction(key){
@@ -310,65 +282,12 @@ class LabelInput extends Component{
         if (!this.props.showLabelInput) return null
         // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
         return (
-            <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
-                <Popup trigger={this.renderLabelInput()}
-                content={this.renderPopupContent()}
-                open
-                position="right center"
-                style={{opacity:0.9}}
-                />
-                {/* <InputGroup >
-                   
-                    <Autocomplete
-                        ref = {el => this.inputRef = el}
-                        items={this.state.possibleLabels}
-                        shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
-                        getItemValue={item => item.label}
-                        renderItem={(item, highlighted) => {
-                        if (highlighted){
-                            this.onDropDownSelect(item)
-                        }
-                        return (
-                        <div
-                            key={item.id}
-                            style={{ backgroundColor: highlighted ? 'orange' : 'transparent'}}
-                            // onMouseOver={e => this.onDropDownSelect(e, item)}
-                        >
-                            {item.label}
-                        </div>
-                        )
-                        }}
-                        inputProps={{
-                            className:"form-control", //Added bootstrap class for input styling -.-
-                            onKeyDown: e => this.onKeyDown(e),
-                        }} 
-                        value={this.state.value}
-                        onChange={e => this.onChange(e)}
-                        onSelect={(value, item) => this.onLabelSelect(value, item)}
-                    />
-                    <InputGroupAddon addonType="append">
-                        <Button id="LabelInputPopover"><FontAwesomeIcon icon={faQuestionCircle}/></Button>
-                        <Button onClick={e => this.onCheckClick(e)}><FontAwesomeIcon icon={faCheck} />
-                        </Button>
-                    </InputGroupAddon>
-                </InputGroup>
-                <UncontrolledPopover placement="top" target="LabelInputPopover">
-                    <PopoverHeader >
-                        {!this.state.label ? 'No label': this.state.label.label}
-                            
-                            <Button close
-                                // style={{float:'right'}} 
-                                // onMouseOut={e => this.mouseOutDelete(e)} 
-                                // onMouseOver={e => this.mouseOverDelete(e)}
-                                onClick={e => this.onClickDelete(e)}
-                                />
-                    </PopoverHeader>
-                    <PopoverBody>
-                        {!this.state.label ? 'no label selected': this.state.label.description}
-                        
-                    </PopoverBody>
-                </UncontrolledPopover> */}
-            </div>
+            <Popup trigger={this.renderLabelInput()}
+            content={this.renderPopupContent()}
+            open
+            position="right center"
+            style={{opacity:0.9}}
+            />
         )
     }
     
