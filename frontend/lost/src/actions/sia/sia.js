@@ -40,9 +40,9 @@ export const getSiaConfig = () => async dispatch => {
 }
 
 export const getSiaImage = (path) => async dispatch =>{
-  
+    console.log(path)
     const config = {
-        url: API_URL +'/'+ path,
+        url: API_URL + path,
         type: 'image',
         token: localStorage.getItem('token')
     }
