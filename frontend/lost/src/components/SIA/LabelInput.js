@@ -1,20 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import { InputGroup,
-    InputGroupAddon,
-    Input,
-    Button,
-    UncontrolledPopover, 
-    PopoverHeader, 
-    PopoverBody
-} from 'reactstrap'
-import { Dropdown, Ref } from 'semantic-ui-react'
+import { Dropdown, Ref, Popup, Header} from 'semantic-ui-react'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuestionCircle } from '@fortawesome/free-regular-svg-icons'
-import { faTrashAlt, faCheck } from '@fortawesome/free-solid-svg-icons'
 import actions from '../../actions'
-import Autocomplete from 'react-autocomplete'
 import * as transform from './utils/transform'
 import * as annoStatus from './types/annoStatus'
 import * as constraints from './utils/constraints'
@@ -222,13 +210,9 @@ class LabelInput extends Component{
     /*************
      * RENDERING *
     **************/
-
-    render(){
-        if (!this.props.showLabelInput) return null
-        // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
+    renderLabelInput(){
         return (
-            <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
-                <Ref innerRef={this.inputRef}>
+            <Ref innerRef={this.inputRef}>
                     <Dropdown
                         multiple={false}
                         search
@@ -247,6 +231,92 @@ class LabelInput extends Component{
                         // searchInput={<Dropdown.SearchInput />}
                     />
                 </Ref>
+        )
+    }
+    renderLabelInfo(){
+        if (!this.state.label) return null
+        const lbl = this.props.possibleLabels.find(e => {
+            return this.state.label.value === e.id
+        })
+        if (!lbl) return "No label"
+        return <div>
+            <Header>{
+                lbl.label
+            }</Header>
+            {lbl.description}
+        </div>
+    }
+    // renderAnnoDetails(){
+    //     if (this.props.selectedAnno.id){
+    //         let box = transform.getBox(this.props.selectedAnno.data, this.props.selectedAnno.type)
+    //         if (!box[1]) return "No annotation selected!"
+    //         box = transform.toBackend(box, this.props.svg, 'bBox')
+    //         console.log('AnnoDetails box', box)
+    //         return (
+    //             <div>
+    //             <Divider horizontal> Position </Divider>
+
+    //             <Statistic.Group widths='one' size='mini'>
+    //                 <Statistic>
+    //                     <Statistic.Label> 
+    //                         x / y
+    //                     {/* <Icon name="arrow right"/> */}
+    //                     </Statistic.Label>
+    //                     <Statistic.Value>
+    //                         {/* {"x / y"} */}
+    //                         {/* <Icon name="arrow right"/> */}
+
+    //                         {"("+box.x.toFixed(2)+" , "+ box.y.toFixed(2)+")"}
+    //                     </Statistic.Value>
+    //                 </Statistic>
+    //             </Statistic.Group>
+    //             <Divider horizontal> Size </Divider>
+
+    //             <Statistic.Group widths='two' size='mini'>
+    //                 <Statistic >
+    //                     <Statistic.Value>
+    //                         {Math.abs(box.w).toFixed(2)}
+    //                     </Statistic.Value>
+    //                     <Statistic.Label>
+    //                         <Icon name="arrows alternate horizontal"/>
+    //                         width
+    //                     </Statistic.Label>
+    //                 </Statistic>
+    //                 <Statistic>
+    //                     <Statistic.Value>
+    //                         {Math.abs(box.h).toFixed(2)}
+    //                     </Statistic.Value>
+    //                     <Statistic.Label>
+    //                         <Icon name="arrows alternate vertical"/>
+    //                         height
+    //                     </Statistic.Label>
+    //                 </Statistic>
+    //             </Statistic.Group>
+    //             </div>
+    //         )
+    //     } else {
+    //         return "No annotation selected!"
+    //     }
+    // }
+    renderPopupContent(){
+        return <div>
+            {this.renderLabelInfo()}
+            {/* {this.renderAnnoDetails()} */}
+        </div>
+    }
+
+
+    render(){
+        if (!this.props.showLabelInput) return null
+        // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
+        return (
+            <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
+                <Popup trigger={this.renderLabelInput()}
+                content={this.renderPopupContent()}
+                open
+                position="right center"
+                style={{opacity:0.9}}
+                />
                 {/* <InputGroup >
                    
                     <Autocomplete
@@ -310,7 +380,8 @@ function mapStateToProps(state) {
         showLabelInput: state.sia.showLabelInput,
         canvasKeyDown: state.sia.keyDown,
         possibleLabels: state.sia.possibleLabels,
-        allowedActions: state.sia.config.actions
+        allowedActions: state.sia.config.actions,
+        svg: state.sia.svg
     })
 }
 
