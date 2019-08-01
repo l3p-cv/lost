@@ -19,7 +19,6 @@ class LabelInput extends Component{
             label: undefined,
             possibleLabels: []
         }
-        this.inputGroupRef = React.createRef()
         this.inputRef = React.createRef()
     }
 
@@ -174,7 +173,9 @@ class LabelInput extends Component{
     }
 
     closeLabelInput(){
-        this.props.svgRef.current.focus()
+        if (this.props.onClose){
+            this.props.onClose()
+        }
         this.props.siaShowLabelInput(false)
         this.props.siaShowSingleAnno(undefined)
     }

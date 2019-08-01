@@ -25,7 +25,6 @@ class AnnoLabelInput extends Component{
             possibleLabels: []
         }
         this.inputGroupRef = React.createRef()
-        this.inputRef = React.createRef()
     }
 
     componentWillMount(){
@@ -69,6 +68,11 @@ class AnnoLabelInput extends Component{
 
 
 
+    onClose(){
+        if (this.props.onClose){
+            this.props.onClose()
+        }
+    }
 
 
     /*************
@@ -84,7 +88,8 @@ class AnnoLabelInput extends Component{
         return (
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
                 <LabelInput svg={this.props.svg}
-                    svgRef={this.props.svgRef}
+                    // svgRef={this.props.svgRef}
+                    onClose={() => this.onClose()}
                     />
             </div>
         )

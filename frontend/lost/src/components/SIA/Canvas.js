@@ -241,6 +241,9 @@ class Canvas extends Component{
         this.removeSelectedAnno()
     }
     
+    onAnnoLabelInputClose(){
+        this.svg.current.focus()
+    }
     /*************
      * LOGIC     *
     **************/
@@ -525,7 +528,9 @@ class Canvas extends Component{
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
-                <AnnoLabelInput svg={this.state.svg} svgRef={this.svg} 
+                <AnnoLabelInput svg={this.state.svg} 
+                    // svgRef={this.svg}
+                    onClose={() => this.onAnnoLabelInputClose()}
                     onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}/>
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
