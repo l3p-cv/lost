@@ -66,17 +66,20 @@ class InfoBoxes extends Component{
         if (!this.props.annos.image) return null
         return(
         <div>
-        <AnnoDetails anno={this.props.selectedAnno} 
-            svg={this.props.svg}
-            defaultPos={this.state.position}
-            onDismiss={() => this.onDismiss('AnnoDetails')}
-            visible={this.props.uiConfig.annoDetails.visible}
-        />
         <LabelInfo selectedLabelIds={this.props.selectedAnno.labelIds}
             possibleLabels={this.props.possibleLabels}
             defaultPos={this.state.position}
             onDismiss={() => this.onDismiss('LabelInfo')}
             visible={this.props.uiConfig.labelInfo.visible}
+        />
+        <AnnoDetails anno={this.props.selectedAnno} 
+            svg={this.props.svg}
+            defaultPos={{
+                left: this.state.position.left - 255,
+                top: this.state.position.top
+            }}
+            onDismiss={() => this.onDismiss('AnnoDetails')}
+            visible={this.props.uiConfig.annoDetails.visible}
         />
         </div>
         )
