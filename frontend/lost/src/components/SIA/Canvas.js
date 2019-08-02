@@ -554,6 +554,8 @@ class Canvas extends Component{
                         selectedAnno={this.state.selectedAnno}
                         onModeChange={(anno, mode) => this.onAnnoModeChange(anno, mode)}
                         showSingleAnno={this.state.showSingleAnno}
+                        uiConfig={this.props.uiConfig}
+                        allowedActions={this.props.allowedActions}
                     />
             })
             return <g>{annos}</g>
@@ -626,7 +628,9 @@ function mapStateToProps(state) {
         requestAnnoUpdate: state.sia.requestAnnoUpdate,
         uiConfig: state.sia.uiConfig,
         layoutUpdate: state.sia.layoutUpdate,
-        taskFinished: state.sia.taskFinished
+        taskFinished: state.sia.taskFinished,
+        allowedActions: state.sia.config.actions
+
         // workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
     })
 }

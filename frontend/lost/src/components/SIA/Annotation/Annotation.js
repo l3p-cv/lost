@@ -380,9 +380,7 @@ function mapStateToProps(state) {
     return ({
         keyDown: state.sia.keyDown,
         keyUp: state.sia.keyUp,
-        uiConfig: state.sia.uiConfig,
         showLabelInput: state.sia.showLabelInput,
-        allowedActions: state.sia.config.actions
     })
 }
 
