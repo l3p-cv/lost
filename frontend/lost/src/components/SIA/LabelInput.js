@@ -296,7 +296,6 @@ class LabelInput extends Component{
 
 function mapStateToProps(state) {
     return ({
-        selectedAnno: state.sia.selectedAnno,
         showLabelInput: state.sia.showLabelInput,
         canvasKeyDown: state.sia.keyDown,
         possibleLabels: state.sia.possibleLabels,

@@ -9,6 +9,7 @@ import actions from '../../actions'
 import * as transform from './utils/transform'
 import * as modes from './types/modes'
 import * as annoStatus from './types/annoStatus'
+import * as annoActions from './types/annoActions'
 
 const { 
     getSiaImage, getSiaAnnos, siaKeyDown, 
@@ -34,7 +35,9 @@ class Canvas extends Component{
                 translateY:0
             },
             annos: [],
-            mode: modes.VIEW
+            mode: modes.VIEW,
+            selectedAnno: {id:undefined},
+            showSingleAnno: undefined
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -49,7 +52,7 @@ class Canvas extends Component{
         // console.warn('No sia config will be loaded')
     }
 
-    componentDidUpdate(prevProps){
+    componentDidUpdate(prevProps, prevState){
         console.log('didupdate')
 		if(this.props.annos.image){
             if(this.props.annos.image.id !== this.state.image.id){
@@ -85,7 +88,7 @@ class Canvas extends Component{
 
         if (this.props.imageLoaded){
             // Selected annotation should be on top
-            this.putSelectedOnTop(prevProps)
+            this.putSelectedOnTop(prevState)
             if (prevProps.imageLoaded !== this.props.imageLoaded){
                 this.updateCanvasView(this.props.annos.drawables)
             } 
@@ -244,6 +247,46 @@ class Canvas extends Component{
     onAnnoLabelInputClose(){
         this.svg.current.focus()
     }
+
+    /**
+     * Handle actions that have been performed by an annotation 
+     * @param {Number} anno Id of the annotation
+     * @param {String} pAction Action that was performed
+     */
+    onAnnoPerformedAction(anno, pAction){
+        console.log('onAnnoPerformedAction', anno, pAction)
+        switch(pAction){
+            case annoActions.SELECTED:
+                this.setState({selectedAnno: anno})
+                break
+        }
+    }
+
+    /**
+     * Handle change of internal mode of an annotation.
+     * 
+     * @param {*} anno 
+     * @param {String} mode 
+     */
+    onAnnoModeChange(anno, mode){
+        switch (mode){
+            case modes.ADD:
+            case modes.EDIT:
+            case modes.MOVE:
+            case modes.CREATE:
+                this.showSingleAnno(anno.id)
+                break
+            case modes.EDIT_LABEL:
+                this.showSingleAnno(anno.id)
+
+                break
+            case modes.VIEW:
+                this.showSingleAnno(undefined)
+                break
+            default:
+                break
+        }
+    }
     /*************
      * LOGIC     *
     **************/
@@ -254,17 +297,17 @@ class Canvas extends Component{
      * @param key A key code
      */
     traverseAnnos(key){
-        console.log('Traverse annos', key, this.state.annos, this.props.selectedAnno)
+        console.log('Traverse annos', key, this.state.annos, this.state.selectedAnno)
         if (key === 'Tab'){
             if (this.state.annos.length > 0){
-                if (!this.props.selectedAnno.id){
+                if (!this.state.selectedAnno.id){
                     this.props.selectAnnotation(this.state.annos[0])
                 } else {
                     const myAnnos = this.state.annos.filter(e => {
                         return e.status !== annoStatus.DELETED
                     })
                     let currentIdx = myAnnos.findIndex( e => {
-                        return e.id === this.props.selectedAnno.id
+                        return e.id === this.state.selectedAnno.id
                     })
                     if (currentIdx+1 < myAnnos.length){
                         this.props.selectAnnotation(myAnnos[currentIdx+1])
@@ -363,7 +406,7 @@ class Canvas extends Component{
 
     // removeSelectedAnno(){
     //     const annos = this.state.annos.filter( (el) => {
-    //         return el.id !== this.props.selectedAnno.id
+    //         return el.id !== this.state.selectedAnno.id
     //     })
     //     this.setState({annos: annos})
     // }
@@ -389,16 +432,16 @@ class Canvas extends Component{
         }
     }
 
-    putSelectedOnTop(prevProps){
+    putSelectedOnTop(prevState){
         // The selected annotation need to be rendered as last one in 
         // oder to be above all other annotations.
-        if (this.props.selectedAnno.id){
-            if (prevProps.selectedAnno.id !== this.props.selectedAnno.id){
+        if (this.state.selectedAnno.id){
+            if (prevState.selectedAnno.id !== this.state.selectedAnno.id){
                 const annos = this.state.annos.filter( (el) => {
-                    return el.id !== this.props.selectedAnno.id
+                    return el.id !== this.state.selectedAnno.id
                 })
                 const lastAnno = this.state.annos.find( el => {
-                    return el.id === this.props.selectedAnno.id
+                    return el.id === this.state.selectedAnno.id
                 })
                 annos.push(lastAnno)
                 this.setState({annos: [
@@ -406,6 +449,12 @@ class Canvas extends Component{
                 ]})
             }
         }
+    }
+
+    showSingleAnno(annoId){
+        if (this.state.showSingleAnno !== annoId){
+            this.setState({showSingleAnno: annoId})
+        } 
     }
 
     updateImageSize(){
@@ -493,15 +542,7 @@ class Canvas extends Component{
     renderAnnotations(){
         // Do not render annotations while moving the camera!
         if (this.state.mode !== modes.CAMERA_MOVE){
-            // if (this.props.showSingleAnno){
-            //     let idx = this.state.annos.findIndex( e => {
-            //         return e.id === this.props.showSingleAnno
-            //     })
-            //     return <Annotation type={this.state.annos[idx].type}
-            //             data={this.state.annos[idx]} key={this.state.annos[idx].id}
-            //             svg={this.state.svg} ref={this.annoRefs[idx]}/>
-            // } else {
-            console.log('Canvas render annotations', this.state.annos)
+            console.log('Canvas render annotations', this.state)
             this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
                 this.annoRefs.push(React.createRef())
@@ -509,6 +550,10 @@ class Canvas extends Component{
                         data={el} key={el.id} svg={{...this.state.svg}}
                         ref={this.annoRefs[this.annoRefs.length - 1]}
                         onMouseDown={e => this.onAnnoMouseDown(e)}
+                        onAction={(anno, pAction) => this.onAnnoPerformedAction(anno, pAction)}
+                        selectedAnno={this.state.selectedAnno}
+                        onModeChange={(anno, mode) => this.onAnnoModeChange(anno, mode)}
+                        showSingleAnno={this.state.showSingleAnno}
                     />
             })
             return <g>{annos}</g>
@@ -531,7 +576,9 @@ class Canvas extends Component{
                 <AnnoLabelInput svg={this.state.svg} 
                     // svgRef={this.svg}
                     onClose={() => this.onAnnoLabelInputClose()}
-                    onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}/>
+                    onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}
+                    selectedAnno={this.state.selectedAnno}
+                    />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}
@@ -571,7 +618,6 @@ class Canvas extends Component{
 function mapStateToProps(state) {
     return ({
         annos: state.sia.annos,
-        selectedAnno: state.sia.selectedAnno,
         selectedTool: state.sia.selectedTool,
         getNextImage: state.sia.getNextImage,
         getPrevImage: state.sia.getPrevImage,

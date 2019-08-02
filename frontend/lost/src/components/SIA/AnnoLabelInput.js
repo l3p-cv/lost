@@ -88,6 +88,7 @@ class AnnoLabelInput extends Component{
                 <LabelInput svg={this.props.svg}
                     // svgRef={this.props.svgRef}
                     onClose={() => this.onClose()}
+                    selectedAnno={this.props.selectedAnno}
                     />
             </div>
         )
@@ -97,7 +98,6 @@ class AnnoLabelInput extends Component{
 
 function mapStateToProps(state) {
     return ({
-        selectedAnno: state.sia.selectedAnno,
         showLabelInput: state.sia.showLabelInput,
         canvasKeyDown: state.sia.keyDown,
         possibleLabels: state.sia.possibleLabels,

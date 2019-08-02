@@ -9,12 +9,13 @@ import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
 import * as modes from '../types/modes'
+import * as annoActions from '../types/annoActions'
 import * as annoStatus from '../types/annoStatus'
 import * as colorlut from '../utils/colorlut'
 import * as constraints from '../utils/constraints'
 
 
-const {selectAnnotation, siaShowSingleAnno, siaShowLabelInput} = actions
+const {siaShowLabelInput} = actions
 
 
 class Annotation extends Component{
@@ -28,7 +29,6 @@ class Annotation extends Component{
             anno: undefined
         }
         this.myAnno = React.createRef()
-        // this.myKey = _.uniqueId('annokey')
         
     }
 
@@ -36,7 +36,8 @@ class Annotation extends Component{
     componentWillMount(){
         console.log('Annotation did mount ', this.props.data.id, this.props.data)
         if (this.props.data.createMode){
-            this.props.selectAnnotation(this.props.data)
+            // this.props.selectAnnotation(this.props.data)
+            this.performedAction(this.props.data, annoActions.SELECTED)
             this.setMode(modes.CREATE)
         } 
         this.setState({anno: {...this.props.data}})
@@ -110,10 +111,8 @@ class Annotation extends Component{
     onClick(e: Event){
         e.stopPropagation()
         console.log('Annotation select annotation on click: ', this.state.anno)
-        this.props.selectAnnotation(this.state.anno)
-        //Create a new key in order to create a completely new compontent
-        //this.myKey = _.uniqueId('annokey')
-
+        // this.props.selectAnnotation(this.state.anno)
+        this.performedAction(this.state.anno, annoActions.SELECTED)
     }
 
     onMouseDown(e: Event){
@@ -135,12 +134,12 @@ class Annotation extends Component{
             case modes.EDIT:
             case modes.MOVE:
             case modes.CREATE:
-                this.props.siaShowSingleAnno(this.props.data.id)
+                // this.props.siaShowSingleAnno(this.props.data.id)
                 break
             case modes.EDIT_LABEL:
                 break
             case modes.VIEW:
-                this.props.siaShowSingleAnno(undefined)
+                // this.props.siaShowSingleAnno(undefined)
                 break
             default:
                 break
@@ -156,7 +155,8 @@ class Annotation extends Component{
                     status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 }
                 this.setState({anno: newAnno})
-                this.props.selectAnnotation(newAnno)
+                // this.props.selectAnnotation(newAnno)
+                this.performedAction(newAnno, annoActions.SELECTED)
                 break
             case modes.CREATE:
                 newAnno = {
@@ -165,23 +165,33 @@ class Annotation extends Component{
                     status: annoStatus.NEW
                 }
                 this.setState({anno: newAnno})
-                this.props.selectAnnotation(newAnno)
+                // this.props.selectAnnotation(newAnno)
+                this.performedAction(newAnno, annoActions.SELECTED)
+
                 break
-            // case modes.CREATE:
-            //     console.log('oldMode Create anno', this.myAnno.current.state.anno)
-            //     this.setState({anno: {...this.myAnno.current.state.anno}})
-            //     this.props.selectAnnotation(this.myAnno.current.state.anno)
-            //     break
             default:
                 break
                 
         }
         this.setMode(newMode)
+
     }
 
     /*************
      * LOGIC     *
      *************/
+    
+     /**
+     * Trigger callback when this annotation performed an action
+     * 
+     * @param {String} pAction 
+     */
+    performedAction(anno, pAction){
+        if (this.props.onAction){
+            this.props.onAction(anno, pAction)
+        }
+    }
+
     setMode(mode){
         if (this.state.mode !== mode){
             switch (mode){
@@ -192,7 +202,7 @@ class Annotation extends Component{
                     )){
                         this.setState({mode: mode})
                         this.props.siaShowLabelInput(true)
-                        this.props.siaShowSingleAnno(this.props.data.id)
+                        // this.props.siaShowSingleAnno(this.props.data.id)
                     }
                     break
                 case modes.DELETED:
@@ -201,8 +211,10 @@ class Annotation extends Component{
                         this.state.anno
                     )){
                         this.setState({mode: mode})
-                        this.props.siaShowSingleAnno(undefined)
-                        this.props.selectAnnotation(undefined)
+                        // this.props.siaShowSingleAnno(undefined)
+                        // this.props.selectAnnotation(undefined)
+                        this.performedAction(this.state.anno, annoActions.SELECTED)
+                        
                         this.setVisible(false)
                         this.setState({
                             anno: {
@@ -210,12 +222,16 @@ class Annotation extends Component{
                                 status: annoStatus.DELETED
                             }
                         })
+                        this.performedAction(annoActions.DELETED)
                         console.log('Annotation in deleted state')
                     }
                     break
                 default:
                     this.setState({mode: mode})
                     break
+            }
+            if (this.props.onModeChange){
+                this.props.onModeChange(this.state.anno, mode)
             }
         }
     }
@@ -237,9 +253,6 @@ class Annotation extends Component{
     }
 
     getResult(){
-        // console.log('Hi there i am a ', this.props.type, 
-        //     this.props.data.id, this.props.data)
-        // console.log('My annos are: ', this.myAnno.current.state.anno)
         return {
             ...this.state.anno,
             data: this.myAnno.current.state.anno,
@@ -343,18 +356,6 @@ class Annotation extends Component{
     }
     
     renderAnnoBar(){
-        // console.log('Inputfile gerändert')
-        // return (
-        //     <foreignObject x="10" y="10" width="100" height="150"> 
-        //         <div xmlns="http://www.w3.org/1999/xhtml">
-        //             <input placeholder='JUnge' onKeyDown={e => this.onFocus(e)} onKeyUp={e => this.onFocus(e)}></input>
-        //         </div>
-        //     </foreignObject>
-        // )
-        // if (!this.myAnno.current) return null
-        //return <g style={{position:'absolute', color:'orange', left:this.props.svg.left}}>Text</g>
-
-
         return <AnnoBar anno={this.state.anno} mode={this.state.mode}/>
     }
     render(){
@@ -373,27 +374,13 @@ class Annotation extends Component{
             </g>
         )
     }
-    
-    // render(){
-    //     if (this.props.showSingleAnno === undefined){
-    //         return this.renderStuff()
-    //     } else if (this.props.showSingleAnno === this.props.data.id) {
-    //         return this.renderStuff()
-    //     } else {
-    //         return null
-    //     }
-        
-        
-    // }
 }
 
 function mapStateToProps(state) {
     return ({
-        selectedAnno: state.sia.selectedAnno,
         keyDown: state.sia.keyDown,
         keyUp: state.sia.keyUp,
         uiConfig: state.sia.uiConfig,
-        showSingleAnno: state.sia.showSingleAnno,
         showLabelInput: state.sia.showLabelInput,
         allowedActions: state.sia.config.actions
     })
@@ -401,6 +388,6 @@ function mapStateToProps(state) {
 
 export default connect(
     mapStateToProps, 
-    {selectAnnotation, siaShowSingleAnno, siaShowLabelInput}
+    {siaShowLabelInput}
     ,null,
     {forwardRef:true})(Annotation)
