@@ -36,8 +36,8 @@ class LabelInput extends Component{
 
         } 
 
-        if (prevProps.canvasKeyDown !== this.props.canvasKeyDown){
-            this.performKeyAction(this.props.canvasKeyDown)
+        if (prevProps.keyDown !== this.props.keyDown){
+            this.performKeyAction(this.props.keyDown)
         }
         if (prevProps.possibleLabels !== this.props.possibleLabels){
             this.updatePossibleLabels()
@@ -297,7 +297,6 @@ class LabelInput extends Component{
 function mapStateToProps(state) {
     return ({
         showLabelInput: state.sia.showLabelInput,
-        canvasKeyDown: state.sia.keyDown,
         possibleLabels: state.sia.possibleLabels,
         allowedActions: state.sia.config.actions,
         svg: state.sia.svg

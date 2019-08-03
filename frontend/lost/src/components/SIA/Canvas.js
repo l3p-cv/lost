@@ -37,7 +37,9 @@ class Canvas extends Component{
             annos: [],
             mode: modes.VIEW,
             selectedAnno: {id:undefined},
-            showSingleAnno: undefined
+            showSingleAnno: undefined,
+            keyDown: undefined,
+            keyUp: undefined
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -226,12 +228,15 @@ class Canvas extends Component{
         this.props.siaKeyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.traverseAnnos(e.key)
+        this.canvasKeyPress(e.key, true)
+
     }
 
     onKeyUp(e: Event){
         e.preventDefault()
         this.props.siaKeyUp(e.key)
         console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+        this.canvasKeyPress(e.key, false)
     }
 
     onMouseMove(e: Event){
@@ -258,6 +263,9 @@ class Canvas extends Component{
         switch(pAction){
             case annoActions.SELECTED:
                 this.setState({selectedAnno: anno})
+                break
+            case annoActions.CREATED:
+                this.updateSingleAnno(anno)
                 break
         }
     }
@@ -290,6 +298,20 @@ class Canvas extends Component{
     /*************
      * LOGIC     *
     **************/
+
+    canvasKeyPress(key, down=true){
+        if (down){
+            this.setState({
+                keyDown: key,
+                keyUp: undefined
+            })
+        } else {
+            this.setState({
+                keyDown: undefined,
+                keyUp: key
+            })
+        }
+    }
 
     /**
      * Traverse annotations by key hit
@@ -422,7 +444,7 @@ class Canvas extends Component{
                         x: mousePos.x, 
                         y: mousePos.y
                     }],
-                    createMode: true,
+                    initMode: modes.CREATE,
                     status: annoStatus.NEW,
                     labelIds: []
                 }]
@@ -449,6 +471,17 @@ class Canvas extends Component{
                 ]})
             }
         }
+    }
+
+    updateSingleAnno(anno){
+        const filtered = this.state.annos.filter( (el) => {
+            return el.id !== anno.id
+        }) 
+        filtered.push(anno)
+        this.setState({annos: [
+            ...filtered
+        ]})
+
     }
 
     showSingleAnno(annoId){
@@ -513,19 +546,19 @@ class Canvas extends Component{
             const imgSize = this.updateImageSize()
             annos = [
                 ...drawables.bBoxes.map((element) => {
-                    return {...element, type:'bBox', createMode:false, 
+                    return {...element, type:'bBox', initMode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...drawables.lines.map((element) => {
-                    return {...element, type:'line', createMode:false, 
+                    return {...element, type:'line', initMode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...drawables.polygons.map((element) => {
-                    return {...element, type:'polygon', createMode:false, 
+                    return {...element, type:'polygon', initMode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...drawables.points.map((element) => {
-                    return {...element, type:'point', createMode:false, 
+                    return {...element, type:'point', initMode: modes.VIEW, 
                         status: element.status ? element.status : annoStatus.DATABASE
                     }
                 })
@@ -556,6 +589,8 @@ class Canvas extends Component{
                         showSingleAnno={this.state.showSingleAnno}
                         uiConfig={this.props.uiConfig}
                         allowedActions={this.props.allowedActions}
+                        keyDown={this.state.keyDown}
+                        keyUp={this.state.keyUp}
                     />
             })
             return <g>{annos}</g>
@@ -580,6 +615,7 @@ class Canvas extends Component{
                     onClose={() => this.onAnnoLabelInputClose()}
                     onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}
                     selectedAnno={this.state.selectedAnno}
+                    keyDown={this.state.keyDown}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}

@@ -66,8 +66,6 @@ class AnnoLabelInput extends Component{
         }
     }
 
-
-
     onClose(){
         if (this.props.onClose){
             this.props.onClose()
@@ -78,10 +76,6 @@ class AnnoLabelInput extends Component{
     /*************
      * RENDERING *
     **************/
-
-
-
-
     render(){
         return (
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
@@ -89,6 +83,7 @@ class AnnoLabelInput extends Component{
                     // svgRef={this.props.svgRef}
                     onClose={() => this.onClose()}
                     selectedAnno={this.props.selectedAnno}
+                    keyDown={this.props.keyDown}
                     />
             </div>
         )
@@ -99,7 +94,6 @@ class AnnoLabelInput extends Component{
 function mapStateToProps(state) {
     return ({
         showLabelInput: state.sia.showLabelInput,
-        canvasKeyDown: state.sia.keyDown,
         possibleLabels: state.sia.possibleLabels,
         allowedActions: state.sia.config.actions,
         svg: state.sia.svg

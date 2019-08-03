@@ -35,7 +35,7 @@ class AnnoBar extends Component{
      * LOGIC     *
      *************/
     setPosition(){
-        console.log('AnnoBar set Position', this.props.anno)
+        console.log('AnnoBar set Position', this.props.anno, this.props.mode)
         const center = transform.getCenter(this.props.anno.data, this.props.anno.type)
         // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
         const top = center.y

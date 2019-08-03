@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
-import {connect} from 'react-redux'
 import _ from 'lodash'
-import actions from '../../../actions'
 
 import AnnoBar from './AnnoBar'
 import Point from './Point'
@@ -13,10 +11,6 @@ import * as annoActions from '../types/annoActions'
 import * as annoStatus from '../types/annoStatus'
 import * as colorlut from '../utils/colorlut'
 import * as constraints from '../utils/constraints'
-
-
-const {siaShowLabelInput} = actions
-
 
 class Annotation extends Component{
 
@@ -32,10 +26,9 @@ class Annotation extends Component{
         
     }
 
-    
     componentWillMount(){
         console.log('Annotation did mount ', this.props.data.id, this.props.data)
-        if (this.props.data.createMode){
+        if (this.props.data.initMode === modes.CREATE){
             // this.props.selectAnnotation(this.props.data)
             this.performedAction(this.props.data, annoActions.SELECTED)
             this.setMode(modes.CREATE)
@@ -54,6 +47,7 @@ class Annotation extends Component{
         }
         if (prevProps.keyDown !== this.props.keyDown){
             if (this.isSelected()){
+                console.log('Annotation keyDown', this.props.keyDown)
                 switch (this.props.keyDown){
                     case 'Control':
                         this.setMode(modes.ADD)
@@ -91,9 +85,9 @@ class Annotation extends Component{
                 }
             }
         }
-        if (prevProps.showLabelInput !== this.props.showLabelInput){
-            if (!this.props.showLabelInput) this.setMode(modes.VIEW)
-        }
+        // if (prevProps.showLabelInput !== this.props.showLabelInput){
+        //     if (!this.props.showLabelInput) this.setMode(modes.VIEW)
+        // }
         if (this.isSelected()){
             if(this.state.anno !== this.props.selectedAnno){
                 this.setState({anno: this.props.selectedAnno})
@@ -193,32 +187,38 @@ class Annotation extends Component{
     }
 
     setMode(mode){
+        let anno
+        if (this.state.anno){
+            anno = this.state.anno
+        } else {
+            anno = this.props.data
+        }
         if (this.state.mode !== mode){
             switch (mode){
                 case modes.EDIT_LABEL:
                     if (constraints.allowedToLabel(
                         this.props.allowedActions,
-                        this.state.anno
+                        anno
                     )){
                         this.setState({mode: mode})
-                        this.props.siaShowLabelInput(true)
+                        // this.props.siaShowLabelInput(true)
                         // this.props.siaShowSingleAnno(this.props.data.id)
                     }
                     break
                 case modes.DELETED:
                     if(constraints.allowedToDelete(
                         this.props.allowedActions,
-                        this.state.anno
+                        anno
                     )){
                         this.setState({mode: mode})
                         // this.props.siaShowSingleAnno(undefined)
                         // this.props.selectAnnotation(undefined)
-                        this.performedAction(this.state.anno, annoActions.SELECTED)
+                        this.performedAction(anno, annoActions.SELECTED)
                         
                         this.setVisible(false)
                         this.setState({
                             anno: {
-                                ...this.state.anno, 
+                                ...anno, 
                                 status: annoStatus.DELETED
                             }
                         })
@@ -231,7 +231,7 @@ class Annotation extends Component{
                     break
             }
             if (this.props.onModeChange){
-                this.props.onModeChange(this.state.anno, mode)
+                this.props.onModeChange(anno, mode)
             }
         }
     }
@@ -376,16 +376,4 @@ class Annotation extends Component{
     }
 }
 
-function mapStateToProps(state) {
-    return ({
-        keyDown: state.sia.keyDown,
-        keyUp: state.sia.keyUp,
-        showLabelInput: state.sia.showLabelInput,
-    })
-}
-
-export default connect(
-    mapStateToProps, 
-    {siaShowLabelInput}
-    ,null,
-    {forwardRef:true})(Annotation)
+export default Annotation
