@@ -299,7 +299,23 @@ class Canvas extends Component{
                 this.selectAnnotation(anno)
                 break
             case annoActions.CREATED:
+                this.updateSelectedAnno(anno, modes.VIEW)
+                break
+            case annoActions.MOVED:
+                this.updateSelectedAnno(anno, modes.VIEW)
+                break
+            case annoActions.ADDED:
                 this.updateSelectedAnno(anno)
+                break
+            case annoActions.EDITED:
+                this.updateSelectedAnno(anno, modes.VIEW)
+                break
+            case annoActions.DELETED:
+                this.updateSelectedAnno(anno, modes.DELETED)
+                this.selectAnnotation(undefined)
+                break
+            default:
+                console.warn('Action not handeled', pAction)
                 break
         }
     }

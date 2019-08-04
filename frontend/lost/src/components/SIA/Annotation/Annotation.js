@@ -50,35 +50,6 @@ class Annotation extends Component{
         if(prevProps.data.initMode !== this.props.data.initMode){
             this.setMode(this.props.data.initMode)
         }
-        // if (prevProps.keyDown !== this.props.keyDown){
-        //     if (this.isSelected()){
-        //         console.log('Annotation keyDown', this.props.keyDown)
-        //         switch (this.props.keyDown){
-        //             case 'Control':
-        //                 this.setMode(modes.ADD)
-        //                 break
-        //             case 'Enter':
-        //                 this.setMode(modes.EDIT_LABEL)
-        //                 break
-        //             case 'Delete':
-        //                 this.setMode(modes.DELETED)
-        //                 break
-        //             default:
-        //                 break
-        //         }
-        //     }
-        // }
-        // if (prevProps.keyUp !== this.props.keyUp){
-        //     if (this.isSelected()){
-        //         switch (this.props.keyUp){
-        //             case 'Control':
-        //                 this.setMode(modes.VIEW)
-        //                 break
-        //             default:
-        //                 break
-        //         }
-        //     }
-        // }
         if (prevProps.showSingleAnno !== this.props.showSingleAnno){
             if (this.props.showSingleAnno === undefined){
                 this.setVisible(true)
@@ -90,9 +61,6 @@ class Annotation extends Component{
                 }
             }
         }
-        // if (prevProps.showLabelInput !== this.props.showLabelInput){
-        //     if (!this.props.showLabelInput) this.setMode(modes.VIEW)
-        // }
         if (this.isSelected()){
             if(this.state.anno !== this.props.selectedAnno){
                 this.setState({anno: this.props.selectedAnno})
@@ -126,6 +94,15 @@ class Annotation extends Component{
         e.preventDefault()
     }
 
+    _annoUpdateHelper(){
+        const newAnno = {
+            ...this.state.anno,
+            data: [...this.myAnno.current.state.anno],
+            status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
+        }
+        this.setState({anno: newAnno})
+        return newAnno
+    }
     onModeChange(newMode, oldMode){
         console.log('MODE CHANGED (id, old, new): ',this.props.data.id, oldMode, '->', newMode)
         switch (newMode){
@@ -143,19 +120,19 @@ class Annotation extends Component{
             default:
                 break
         }
-        let newAnno
+        let newAnno 
         switch (oldMode){
             case modes.ADD:
+                newAnno = this._annoUpdateHelper()
+                this.performedAction(newAnno, annoActions.ADDED)
+                break
             case modes.EDIT:
+                newAnno = this._annoUpdateHelper()
+                this.performedAction(newAnno, annoActions.ADDED)
+                break
             case modes.MOVE:
-                newAnno = {
-                    ...this.state.anno,
-                    data: [...this.myAnno.current.state.anno],
-                    status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
-                }
-                this.setState({anno: newAnno})
-                // this.props.selectAnnotation(newAnno)
-                this.performedAction(newAnno, annoActions.SELECTED)
+                newAnno = this._annoUpdateHelper()
+                this.performedAction(newAnno, annoActions.MOVED)
                 break
             case modes.CREATE:
                 newAnno = {
@@ -165,7 +142,7 @@ class Annotation extends Component{
                 }
                 this.setState({anno: newAnno})
                 // this.props.selectAnnotation(newAnno)
-                this.performedAction(newAnno, annoActions.SELECTED)
+                this.performedAction(newAnno, annoActions.CREATED)
 
                 break
             default:
@@ -218,16 +195,17 @@ class Annotation extends Component{
                         this.setState({mode: mode})
                         // this.props.siaShowSingleAnno(undefined)
                         // this.props.selectAnnotation(undefined)
-                        this.performedAction(anno, annoActions.SELECTED)
+                        // this.performedAction(anno, annoActions.SELECTED)
                         
                         this.setVisible(false)
+                        const newAnno = {
+                            ...anno, 
+                            status: annoStatus.DELETED
+                        }
                         this.setState({
-                            anno: {
-                                ...anno, 
-                                status: annoStatus.DELETED
-                            }
+                            anno: newAnno
                         })
-                        this.performedAction(annoActions.DELETED)
+                        this.performedAction(newAnno, annoActions.DELETED)
                         console.log('Annotation in deleted state')
                     }
                     break
