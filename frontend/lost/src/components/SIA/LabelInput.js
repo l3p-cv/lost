@@ -27,7 +27,7 @@ class LabelInput extends Component{
     }
     
     componentDidUpdate(prevProps){
-        if (this.props.showLabelInput){
+        if (this.props.visible){
 
             if (this.inputRef.current){
                 console.log('LabelInput', this.inputRef.current)
@@ -36,9 +36,9 @@ class LabelInput extends Component{
 
         } 
 
-        if (prevProps.keyDown !== this.props.keyDown){
-            this.performKeyAction(this.props.keyDown)
-        }
+        // if (prevProps.keyDown !== this.props.keyDown){
+        //     this.performKeyAction(this.props.keyDown)
+        // }
         if (prevProps.possibleLabels !== this.props.possibleLabels){
             this.updatePossibleLabels()
         }
@@ -96,7 +96,7 @@ class LabelInput extends Component{
     onChange(e, item ){
         console.log('LabelInput onChange', e, item)
         this.setState({ label: item })
-        this.updateSelectedAnnoLabel(item)
+        // this.updateSelectedAnnoLabel(item)
         // this.confirmLabel()
     }
 
@@ -129,7 +129,7 @@ class LabelInput extends Component{
     performKeyAction(key){
         switch(key){
             case 'Enter':
-                if (this.props.showLabelInput) this.confirmLabel()
+                if (this.props.visible) this.confirmLabel()
                 break
             case 'Escape':
                 // console.log('LabelInput Escape current label', this.state.label.id)
@@ -140,26 +140,32 @@ class LabelInput extends Component{
         }
     }
 
+    annoLabelUpdate(anno){
+        if (this.props.onLabelUpdate){
+            this.props.onLabelUpdate(anno)
+        }
+    }
+
     updateSelectedAnnoLabel(label){
         if (!constraints.allowedToLabel(
             this.props.allowedActions, this.props.selectedAnno)) return
         console.log('LabelInput confirmLabel label', label)
         if (label){
             if (label.value !== -1){
-                this.props.selectAnnotation({
+                this.annoLabelUpdate({
                     ...this.props.selectedAnno,
                     labelIds: [label.value],
                     status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 })
             } else {
-                this.props.selectAnnotation({
+                this.annoLabelUpdate({
                     ...this.props.selectedAnno,
                     labelIds: [],
                     status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 })
             }
         } else {
-            this.props.selectAnnotation({
+            this.annoLabelUpdate({
                 ...this.props.selectedAnno,
                 labelIds: [],
                 status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
@@ -280,7 +286,7 @@ class LabelInput extends Component{
 
 
     render(){
-        if (!this.props.showLabelInput) return null
+        if (!this.props.visible) return null
         // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
         return (
             <Popup trigger={this.renderLabelInput()}
@@ -296,7 +302,7 @@ class LabelInput extends Component{
 
 function mapStateToProps(state) {
     return ({
-        showLabelInput: state.sia.showLabelInput,
+        // showLabelInput: state.sia.showLabelInput,
         possibleLabels: state.sia.possibleLabels,
         allowedActions: state.sia.config.actions,
         svg: state.sia.svg

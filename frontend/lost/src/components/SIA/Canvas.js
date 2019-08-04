@@ -37,9 +37,11 @@ class Canvas extends Component{
             annos: [],
             mode: modes.VIEW,
             selectedAnno: {id:undefined},
+            // selectedAnnoIdx: undefined,
             showSingleAnno: undefined,
             keyDown: undefined,
-            keyUp: undefined
+            keyUp: undefined,
+            showLabelInput: false
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -173,7 +175,7 @@ class Canvas extends Component{
 
     onMouseDown(e){
         if (e.button === 0){
-            this.props.selectAnnotation(undefined)
+            this.selectAnnotation(undefined)
         }
         else if (e.button === 1){
             this.collectAnnos()
@@ -229,6 +231,26 @@ class Canvas extends Component{
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.traverseAnnos(e.key)
         this.canvasKeyPress(e.key, true)
+        switch (e.key){
+            case 'Enter':
+                if (this.state.selectedAnno){
+                    this.showLabelInput()
+                    this.updateSelectedAnno(this.state.selectedAnno, modes.EDIT_LABEL)
+                }
+                break
+            case 'Delete':
+                this.updateSelectedAnno(
+                    this.state.selectedAnno, modes.DELETED
+                )
+                break
+            case 'Control':
+                this.updateSelectedAnno(
+                    this.state.selectedAnno, modes.ADD
+                )
+                break
+            default:
+                    break
+        }
 
     }
 
@@ -237,6 +259,15 @@ class Canvas extends Component{
         this.props.siaKeyUp(e.key)
         console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.canvasKeyPress(e.key, false)
+        switch (e.key){
+            case 'Control':
+                this.updateSelectedAnno(
+                    this.state.selectedAnno, modes.VIEW
+                )
+                break
+            default:
+                    break
+        }
     }
 
     onMouseMove(e: Event){
@@ -250,7 +281,10 @@ class Canvas extends Component{
     }
     
     onAnnoLabelInputClose(){
+        console.log('onAnnoLabelInputClose')
         this.svg.current.focus()
+        this.showLabelInput(false)
+        this.showSingleAnno(undefined)
     }
 
     /**
@@ -262,10 +296,10 @@ class Canvas extends Component{
         console.log('onAnnoPerformedAction', anno, pAction)
         switch(pAction){
             case annoActions.SELECTED:
-                this.setState({selectedAnno: anno})
+                this.selectAnnotation(anno)
                 break
             case annoActions.CREATED:
-                this.updateSingleAnno(anno)
+                this.updateSelectedAnno(anno)
                 break
         }
     }
@@ -295,10 +329,34 @@ class Canvas extends Component{
                 break
         }
     }
+
+    onAnnoLabelInputUpdate(anno){
+        this.updateSelectedAnno(anno, modes.VIEW)
+        console.log('onAnnoLabelInputUpdate ', anno)
+    }
+
     /*************
      * LOGIC     *
     **************/
 
+    selectAnnotation(anno){
+        let annoIdx = undefined
+        // if (anno){
+        //     annoIdx = this.state.annos.findIndex( e => {
+        //         return e.id === anno.id
+        //     })
+        // } 
+        if (anno){
+            this.setState({
+                selectedAnno: anno
+                // selectedAnnoIdx: annoIdx
+            })
+        } else {
+            this.setState({
+                selectedAnno: {id: undefined}
+            })
+        }
+    }
     canvasKeyPress(key, down=true){
         if (down){
             this.setState({
@@ -426,6 +484,11 @@ class Canvas extends Component{
         }
     }
 
+    showLabelInput(visible=true){
+        this.setState({
+            showLabelInput: visible
+        })
+    }
     // removeSelectedAnno(){
     //     const annos = this.state.annos.filter( (el) => {
     //         return el.id !== this.state.selectedAnno.id
@@ -473,14 +536,19 @@ class Canvas extends Component{
         }
     }
 
-    updateSingleAnno(anno){
+    updateSelectedAnno(anno, initMode=undefined){
+        if (!anno) return
         const filtered = this.state.annos.filter( (el) => {
             return el.id !== anno.id
         }) 
-        filtered.push(anno)
-        this.setState({annos: [
+        const newAnno = {...anno, initMode:initMode}
+        filtered.push(newAnno)
+        this.setState({
+            annos: [
             ...filtered
-        ]})
+            ],
+            selectedAnno: newAnno
+        })
 
     }
 
@@ -589,8 +657,8 @@ class Canvas extends Component{
                         showSingleAnno={this.state.showSingleAnno}
                         uiConfig={this.props.uiConfig}
                         allowedActions={this.props.allowedActions}
-                        keyDown={this.state.keyDown}
-                        keyUp={this.state.keyUp}
+                        // keyDown={this.state.keyDown}
+                        // keyUp={this.state.keyUp}
                     />
             })
             return <g>{annos}</g>
@@ -616,6 +684,8 @@ class Canvas extends Component{
                     onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}
                     selectedAnno={this.state.selectedAnno}
                     keyDown={this.state.keyDown}
+                    visible={this.state.showLabelInput}
+                    onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}

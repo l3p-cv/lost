@@ -32,7 +32,7 @@ class AnnoLabelInput extends Component{
     }
     
     componentDidUpdate(prevProps){
-        if (this.props.showLabelInput){
+        if (this.props.visible){
             console.log('ShowLabelInput')
             this.setPosition()
         } 
@@ -71,6 +71,12 @@ class AnnoLabelInput extends Component{
             this.props.onClose()
         }
     }
+    
+    onLabelUpdate(anno){
+        if (this.props.onLabelUpdate){
+            this.props.onLabelUpdate(anno)
+        }
+    }
 
 
     /*************
@@ -84,6 +90,8 @@ class AnnoLabelInput extends Component{
                     onClose={() => this.onClose()}
                     selectedAnno={this.props.selectedAnno}
                     keyDown={this.props.keyDown}
+                    visible={this.props.visible}
+                    onLabelUpdate={anno => this.onLabelUpdate(anno)}
                     />
             </div>
         )

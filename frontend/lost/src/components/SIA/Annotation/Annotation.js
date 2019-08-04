@@ -40,40 +40,45 @@ class Annotation extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Annotation Update', this.state, this.props.type, this.props.data.id)
+        if (this.isSelected()){
+            console.log('Annotation Update', this.state, this.props.type, this.props.data.id)
+        }
         if (prevProps.data !== this.props.data){
             console.log('Annotation got new annotation data from props', this.props.data)
             this.setState({anno: {...this.props.data}})
         }
-        if (prevProps.keyDown !== this.props.keyDown){
-            if (this.isSelected()){
-                console.log('Annotation keyDown', this.props.keyDown)
-                switch (this.props.keyDown){
-                    case 'Control':
-                        this.setMode(modes.ADD)
-                        break
-                    case 'Enter':
-                        this.setMode(modes.EDIT_LABEL)
-                        break
-                    case 'Delete':
-                        this.setMode(modes.DELETED)
-                        break
-                    default:
-                        break
-                }
-            }
+        if(prevProps.data.initMode !== this.props.data.initMode){
+            this.setMode(this.props.data.initMode)
         }
-        if (prevProps.keyUp !== this.props.keyUp){
-            if (this.isSelected()){
-                switch (this.props.keyUp){
-                    case 'Control':
-                        this.setMode(modes.VIEW)
-                        break
-                    default:
-                        break
-                }
-            }
-        }
+        // if (prevProps.keyDown !== this.props.keyDown){
+        //     if (this.isSelected()){
+        //         console.log('Annotation keyDown', this.props.keyDown)
+        //         switch (this.props.keyDown){
+        //             case 'Control':
+        //                 this.setMode(modes.ADD)
+        //                 break
+        //             case 'Enter':
+        //                 this.setMode(modes.EDIT_LABEL)
+        //                 break
+        //             case 'Delete':
+        //                 this.setMode(modes.DELETED)
+        //                 break
+        //             default:
+        //                 break
+        //         }
+        //     }
+        // }
+        // if (prevProps.keyUp !== this.props.keyUp){
+        //     if (this.isSelected()){
+        //         switch (this.props.keyUp){
+        //             case 'Control':
+        //                 this.setMode(modes.VIEW)
+        //                 break
+        //             default:
+        //                 break
+        //         }
+        //     }
+        // }
         if (prevProps.showSingleAnno !== this.props.showSingleAnno){
             if (this.props.showSingleAnno === undefined){
                 this.setVisible(true)
