@@ -12,7 +12,7 @@ import * as annoStatus from './types/annoStatus'
 import * as annoActions from './types/annoActions'
 
 const { 
-    getSiaImage, getSiaAnnos, siaKeyDown, 
+    getSiaImage, siaKeyDown, 
     siaKeyUp, selectAnnotation, getSiaLabels,
     siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
     siaSetSVG, getSiaConfig, siaSendFinishToBackend
@@ -50,9 +50,7 @@ class Canvas extends Component{
     }
 
     componentDidMount(){
-        this.props.getSiaAnnos(-1)
-        this.props.getSiaLabels()
-        this.props.getSiaConfig()
+        
         // console.warn('No sia config will be loaded')
     }
 
@@ -75,13 +73,13 @@ class Canvas extends Component{
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
                 this.updateBackendAnnos()
-                this.props.getSiaAnnos(this.props.getNextImage)
+                // this.props.getSiaAnnos(this.props.getNextImage)
             }
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
             if (this.props.getPrevImage){
                 this.updateBackendAnnos()
-                this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
+                // this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
             }
         }
         
@@ -741,17 +739,11 @@ class Canvas extends Component{
 
 function mapStateToProps(state) {
     return ({
-        annos: state.sia.annos,
-        selectedTool: state.sia.selectedTool,
-        getNextImage: state.sia.getNextImage,
-        getPrevImage: state.sia.getPrevImage,
-        imageLoaded: state.sia.imageLoaded,
-        appliedFullscreen: state.sia.appliedFullscreen,
-        requestAnnoUpdate: state.sia.requestAnnoUpdate,
-        uiConfig: state.sia.uiConfig,
-        layoutUpdate: state.sia.layoutUpdate,
-        taskFinished: state.sia.taskFinished,
-        allowedActions: state.sia.config.actions
+        // annos: state.sia.annos,
+        // getNextImage: state.sia.getNextImage,
+        // getPrevImage: state.sia.getPrevImage,
+        
+        
 
         // workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
     })
@@ -759,7 +751,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, 
     {
-        getSiaAnnos, getSiaImage, siaKeyDown, 
+        getSiaImage, siaKeyDown, 
         siaKeyUp, selectAnnotation, getSiaLabels,
         siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
         siaSetSVG, getSiaConfig, siaSendFinishToBackend
