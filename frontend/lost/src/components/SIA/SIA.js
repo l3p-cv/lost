@@ -13,7 +13,7 @@ import InfoBox from './InfoBoxes/InfoBox'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
-    getSiaLabels, getSiaConfig
+    getSiaLabels, getSiaConfig, siaSetSVG
 } = actions
 
 class SIA extends Component {
@@ -90,6 +90,7 @@ class SIA extends Component {
                     imageLoaded={this.props.imageLoaded}
                     requestAnnoUpdate={this.props.requestAnnoUpdate}
                     taskFinished={this.props.taskFinished}
+                    onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <ImgBar container={this.container}></ImgBar>
@@ -122,7 +123,7 @@ export default connect(
     mapStateToProps,
     {
         siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
-        getSiaConfig, getSiaLabels
+        getSiaConfig, getSiaLabels, siaSetSVG
     }
     , null,
     {})(SIA)

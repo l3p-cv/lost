@@ -12,10 +12,10 @@ import * as annoStatus from './types/annoStatus'
 import * as annoActions from './types/annoActions'
 
 const { 
-    getSiaImage, siaKeyDown, 
-    siaKeyUp, selectAnnotation, getSiaLabels,
+    getSiaImage, 
+    selectAnnotation, getSiaLabels,
     siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
-    siaSetSVG, getSiaConfig, siaSendFinishToBackend
+    getSiaConfig, siaSendFinishToBackend
 } = actions
 
 class Canvas extends Component{
@@ -225,7 +225,7 @@ class Canvas extends Component{
         // if (e.key === 'Delete'){
         //     this.removeSelectedAnno()
         // }
-        this.props.siaKeyDown(e.key)
+        // this.props.siaKeyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.traverseAnnos(e.key)
         this.canvasKeyPress(e.key, true)
@@ -254,7 +254,7 @@ class Canvas extends Component{
 
     onKeyUp(e: Event){
         e.preventDefault()
-        this.props.siaKeyUp(e.key)
+        // this.props.siaKeyUp(e.key)
         console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.canvasKeyPress(e.key, false)
         switch (e.key){
@@ -613,10 +613,15 @@ class Canvas extends Component{
             left: canvasLeft, top: container.top
         }
         this.setState({svg})
-        this.props.siaSetSVG(svg)
+        this.svgUpdate(svg)
         return {imgWidth, imgHeight}
     }
 
+    svgUpdate(svg){
+        if(this.props.onSVGUpdate){
+            this.props.onSVGUpdate(svg)
+        }
+    }
     updateCanvasView(drawables){
         
 
@@ -751,9 +756,9 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, 
     {
-        getSiaImage, siaKeyDown, 
-        siaKeyUp, selectAnnotation, getSiaLabels,
+        getSiaImage, 
+        selectAnnotation,
         siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
-        siaSetSVG, getSiaConfig, siaSendFinishToBackend
+        siaSendFinishToBackend
     }
 )(Canvas)
