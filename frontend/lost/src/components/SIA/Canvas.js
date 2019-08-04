@@ -381,7 +381,7 @@ class Canvas extends Component{
         if (key === 'Tab'){
             if (this.state.annos.length > 0){
                 if (!this.state.selectedAnno.id){
-                    this.props.selectAnnotation(this.state.annos[0])
+                    this.selectAnnotation(this.state.annos[0])
                 } else {
                     const myAnnos = this.state.annos.filter(e => {
                         return e.status !== annoStatus.DELETED
@@ -390,9 +390,9 @@ class Canvas extends Component{
                         return e.id === this.state.selectedAnno.id
                     })
                     if (currentIdx+1 < myAnnos.length){
-                        this.props.selectAnnotation(myAnnos[currentIdx+1])
+                        this.selectAnnotation(myAnnos[currentIdx+1])
                     } else {
-                        this.props.selectAnnotation(myAnnos[0])
+                        this.selectAnnotation(myAnnos[0])
                     }
                 }
 
