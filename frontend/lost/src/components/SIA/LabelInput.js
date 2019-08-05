@@ -9,7 +9,8 @@ class LabelInput extends Component{
         super(props)
         this.state = {
             label: undefined,
-            possibleLabels: []
+            possibleLabels: [],
+            // popupOpen: false
         }
         this.inputRef = React.createRef()
     }
@@ -20,10 +21,11 @@ class LabelInput extends Component{
     
     componentDidUpdate(prevProps){
         if (this.props.visible){
-
-            if (this.inputRef.current){
-                console.log('LabelInput', this.inputRef.current)
-                this.inputRef.current.click()
+            if (this.props.focusOnRender){
+                if (this.inputRef.current){
+                    console.log('LabelInput', this.inputRef.current)
+                    this.inputRef.current.click()
+                }
             }
 
         } 
@@ -61,9 +63,15 @@ class LabelInput extends Component{
         console.log('LabelInput onChange', e, item)
         this.setState({ label: item })
         // this.updateSelectedAnnoLabel(item)
+        // this.annoLabelUpdate(item)
         // this.confirmLabel()
     }
 
+    // handleLabelClick(e, item){
+    //     console.log('handleLabelClick', item)
+    //     // this.setState({ label: item })
+    //     this.confirmLabel()
+    // }
     // handleClick(){
     //     this.annoLabelUpdate(this.state.label)
     //     this.closeLabelInput()
@@ -98,9 +106,9 @@ class LabelInput extends Component{
         }
     }
 
-    annoLabelUpdate(anno){
+    annoLabelUpdate(label){
         if (this.props.onLabelUpdate){
-            this.props.onLabelUpdate(anno)
+            this.props.onLabelUpdate(label)
         }
     }
 
@@ -115,9 +123,13 @@ class LabelInput extends Component{
         if (this.props.onClose){
             this.props.onClose()
         }
-        // this.props.siaShowLabelInput(false)
-        // this.props.siaShowSingleAnno(undefined)
     }
+
+    // triggerPopup(visible=true){
+    //     this.setState({
+    //         popupOpen: visible
+    //     })
+    // }
 
     /*************
      * RENDERING *
@@ -141,6 +153,10 @@ class LabelInput extends Component{
                             -1
                         }
                         onChange={(e, item) => this.onChange(e, item)}
+                        style={{opacity:0.8}}
+                        // onMouseDown={() => this.confirmLabel()}
+                        // onFocus={() => this.triggerPopup()}
+                        // onBlur={() => this.confirmLabel()}
                         // onClick={() => this.handleClick()}
                         // searchInput={<Dropdown.SearchInput />}
                     />
@@ -172,14 +188,19 @@ class LabelInput extends Component{
     render(){
         if (!this.props.visible) return null
         // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
-        return (
-            <Popup trigger={this.renderLabelInput()}
-            content={this.renderPopupContent()}
-            open
-            position="right center"
-            style={{opacity:0.9}}
-            />
-        )
+        if (this.props.renderPopup){
+            return (
+                <Popup trigger={this.renderLabelInput()}
+                content={this.renderPopupContent()}
+                open
+                position="right center"
+                style={{opacity:0.9}}
+                />
+            )
+        } else {
+            return this.renderLabelInput()
+        }
+        
     }
     
 }

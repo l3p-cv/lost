@@ -233,7 +233,7 @@ class Canvas extends Component{
         this.traverseAnnos(e.key)
         switch (e.key){
             case 'Enter':
-                if (this.state.selectedAnno){
+                if (this.state.selectedAnno.id){
                     this.showLabelInput()
                     this.updateSelectedAnno(this.state.selectedAnno, modes.EDIT_LABEL)
                 }

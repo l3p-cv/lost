@@ -103,14 +103,14 @@ class AnnoLabelInput extends Component{
         return (
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
                 <LabelInput svg={this.props.svg}
-                    // svgRef={this.props.svgRef}
                     onClose={() => this.onClose()}
                     initLabelIds={this.props.selectedAnno.labelIds}
                     relatedId={this.props.selectedAnno.id}
                     visible={this.props.visible}
                     onLabelUpdate={anno => this.updateAnnoLabel(anno)}
                     possibleLabels={this.props.possibleLabels}
-                    allowedActions={this.props.allowedActions}
+                    renderPopup
+                    focusOnRender
                     />
             </div>
         )

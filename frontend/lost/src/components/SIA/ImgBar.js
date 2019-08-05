@@ -14,9 +14,8 @@ import {
     faImage
 } from '@fortawesome/free-regular-svg-icons'
 import { Icon, Dropdown, Menu, Input, Message, Statistic, Divider, Button, List, Label, Header } from 'semantic-ui-react'
-import Draggable from 'react-draggable';
+import LabelInput from './LabelInput'
 import actions from '../../actions'
-import * as TOOLS from './types/tools'
 const { siaShowImgBar } = actions
 
 class ImgBar extends Component{
@@ -46,6 +45,9 @@ class ImgBar extends Component{
         }
     }
 
+    handleLabelUpdate(label){
+        console.log('ImgBar label update', label)
+    }
 
     render(){
         if (!this.props.imgBar.show) return null
@@ -71,7 +73,12 @@ class ImgBar extends Component{
                 </Menu.Item>
                 <Menu.Menu position='right'>
                 <Menu.Item>
-                    <Input icon='search' placeholder='Search...' />
+                    <LabelInput
+                        relatedId={this.props.annos.image.id}
+                        visible={true}
+                        onLabelUpdate={label => this.handleLabelUpdate(label)}
+                        possibleLabels={this.props.possibleLabels}
+                        />
                 </Menu.Item>
                 <Menu.Item
                     active={activeItem === 'logout'}
@@ -112,7 +119,8 @@ function mapStateToProps(state) {
         layoutUpdate: state.sia.layoutUpdate,
         uiConfig: state.sia.uiConfig,
         imgBar: state.sia.imgBar,
-        svg: state.sia.svg
+        svg: state.sia.svg,
+        possibleLabels: state.sia.possibleLabels,
     })
 }
 export default connect(mapStateToProps, 
