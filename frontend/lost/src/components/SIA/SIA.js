@@ -62,6 +62,10 @@ class SIA extends Component {
                 const newAnnos = this.canvas.current.getAnnos()
                 this.props.siaUpdateAnnos(newAnnos)
                 this.props.getSiaAnnos(this.props.getNextImage)
+                this.setState({image: {
+                    id: undefined, 
+                    data:undefined
+                }})
             }
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
@@ -69,6 +73,10 @@ class SIA extends Component {
                 const newAnnos = this.canvas.current.getAnnos()
                 this.props.siaUpdateAnnos(newAnnos)
                 this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
+                this.setState({image: {
+                    id: undefined, 
+                    data:undefined
+                }})
             }
         }
         if (prevProps.taskFinished !== this.props.taskFinished){
@@ -78,26 +86,31 @@ class SIA extends Component {
             // this.triggerAnnoUpdate()
         }
         if(this.props.annos.image){
-            if(this.props.annos.image.id !== this.state.image.id){
-                this.props.getSiaImage(this.props.annos.image.url).then(response=>
-                    {
-                        this.setState({image: {
-                            ...this.state.image, 
-                            id: this.props.annos.image.id, 
-                            data:window.URL.createObjectURL(response)
-                        }})
-                    }
-                )       
-
+            if (prevProps.annos.image){
+                if(this.props.annos.image.id !== prevProps.annos.image.id){
+                    this.requestImageFromBackend()
+                }
+            } else {
+                this.requestImageFromBackend()
             }
         }
     }
 
     handleCanvasImageLoaded(){
-        this.props.siaSetImageLoaded(true)
+        // this.props.siaSetImageLoaded(true)
     }
 
-
+    requestImageFromBackend(){
+        this.props.getSiaImage(this.props.annos.image.url).then(response=>
+            {
+                this.setState({image: {
+                    // ...this.state.image, 
+                    id: this.props.annos.image.id, 
+                    data:window.URL.createObjectURL(response)
+                }})
+            }
+        )       
+    }
     // handleAnnoUpdate(annos){
     //     this.props.siaUpdateAnnos(annos)
     //     // if (this.props.taskFinished){
@@ -128,7 +141,7 @@ class SIA extends Component {
     }
 
     render() {
-        console.log('Sia renders')
+        console.log('Sia renders', this.state.image)
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas
@@ -177,7 +190,8 @@ export default connect(
         // siaAppliedFullscreen, 
         siaLayoutUpdate, getSiaAnnos,
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
-        siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
+        // siaSetImageLoaded, 
+        siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation
     }
     , null,

@@ -59,13 +59,13 @@ class ToolBar extends Component{
     }
 
     getNextImg(){
-        this.props.siaSetImageLoaded(false)
+        // this.props.siaSetImageLoaded(false)
         this.props.selectAnnotation(undefined)
         this.props.siaGetNextImage(this.props.currentImage.id)
     }
 
     getPrevImg(){
-        this.props.siaSetImageLoaded(false)
+        // this.props.siaSetImageLoaded(false)
         this.props.selectAnnotation(undefined)
         this.props.siaGetPrevImage(this.props.currentImage.id)
     }
@@ -256,6 +256,7 @@ function mapStateToProps(state) {
 }
 export default connect(mapStateToProps, 
     {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
-        siaSetFullscreen, siaSetImageLoaded, 
+        siaSetFullscreen, 
+        // siaSetImageLoaded, 
         selectAnnotation, siaShowImgBar, siaSetTaskFinished, siaLayoutUpdate}
 )(ToolBar)

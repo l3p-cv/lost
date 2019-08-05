@@ -7,6 +7,7 @@ import * as transform from './utils/transform'
 import * as modes from './types/modes'
 import * as annoStatus from './types/annoStatus'
 import * as annoActions from './types/annoActions'
+import { Loader, Dimmer } from 'semantic-ui-react';
 
 
 /**
@@ -14,7 +15,29 @@ import * as annoActions from './types/annoActions'
  * 
  * @param {React.Ref} container - A react ref to a div that defines the
  *      space where this Canvas lives in.
- * @param {object} annos -  
+ * @param {object} annos -  A json object containing all annotation 
+ *      information for an image
+ *      {
+ *          image : {
+ *              id: int, 
+ *              url: string, 
+ *              number: int, 
+ *              amount: int, 
+ *              isFirst: bool, 
+ *              isLast: bool
+ *          },
+ *          annotations: {
+ *              bBoxes: [{
+ *                  id: int,
+ *                  labelIds: list of int,
+ *                  data: {}
+ *              },...],
+ *              points: []
+ *              lines: []
+ *              polygons: []
+ *          }
+ *      }
+ * @param {object} image - 
  * 
  */
 class Canvas extends Component{
@@ -642,7 +665,6 @@ class Canvas extends Component{
     renderAnnotations(){
         // Do not render annotations while moving the camera!
         if (this.state.mode !== modes.CAMERA_MOVE){
-            console.log('Canvas render annotations', this.state)
             this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
                 this.annoRefs.push(React.createRef())
@@ -670,12 +692,14 @@ class Canvas extends Component{
     }
 
     render(){
-        // if (!this.props.container) return null
+        console.log('Canvas render', this.state, this.props.image)
         return(
             <div ref={this.container} >
             <div height={this.state.svg.height} 
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
+            <Dimmer active={!this.props.image.id}><Loader>Loading</Loader></Dimmer>
+
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 <AnnoLabelInput svg={this.state.svg} 
                     // svgRef={this.svg}
