@@ -37,7 +37,31 @@ import { Loader, Dimmer } from 'semantic-ui-react';
  *              polygons: []
  *          }
  *      }
- * @param {object} image - 
+ * @param {object} image - The actual image blob that will be displayed
+ *      {id: int, data: blob}
+ * @param {object} uiConfig - User interface configs 
+ *      {nodesRadius: int, strokeWidth: int}
+ * @param {int} layoutUpdate - A counter that triggers a layout update
+ *      everytime it is incremented.
+ * @param {string} selectedTool - The tool that is selected to draw an 
+ *      annotation. Possible choices are: 'bBox', 'point', 'line', 'polygon'
+ * @param {object} allowedActions - Configuration of actions that the 
+ *      annotator is allowed to do
+ *      {
+ *          drawing: bool,
+ *          labeling: bool,
+ *          edit: {
+ *              label: bool,
+ *              bounds: bool,
+ *              delete: bool
+ *          }
+ *      }
+ * @event onSVGUpdate - Fires when the svg in canvas changed.
+ *      args: {width: int, height: int, scale: float, translateX: float,
+ *      translateY:float}
+ * @event onImageLoaded - Fires when an image was loaded into the canvas
+ * @event onAnnoSelect - Fires when an annotation was selected or if the
+ *      selected annotation was updated.
  * 
  */
 class Canvas extends Component{
