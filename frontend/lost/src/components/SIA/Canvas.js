@@ -12,6 +12,9 @@ import * as annoActions from './types/annoActions'
 /**
  * SIA Canvas element that handles annotations within an image
  * 
+ * @param {React.Ref} container - A react ref to a div that defines the
+ *      space where this Canvas lives in.
+ * @param {object} annos -  
  * 
  */
 class Canvas extends Component{
@@ -58,7 +61,7 @@ class Canvas extends Component{
             // Selected annotation should be on top
             this.putSelectedOnTop(prevState)
             if (prevState.imageLoaded !== this.state.imageLoaded){
-                this.updateCanvasView(this.props.annos.drawables)
+                this.updateCanvasView(this.props.annos.annotations)
             } 
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
@@ -427,7 +430,7 @@ class Canvas extends Component{
     //     const backendFormat = this.getAnnoBackendFormat(true)
     //     const finalData = {
     //         imgId: this.props.annos.image.id,
-    //         drawables: backendFormat
+    //         annotations: backendFormat
     //     }
     //     console.log('Update Backend annos', finalData)
     //     if (this.props.onAnnoUpdate){
@@ -439,7 +442,7 @@ class Canvas extends Component{
         const backendFormat = this.getAnnoBackendFormat(true)
         const finalData = {
             imgId: this.props.annos.image.id,
-            drawables: backendFormat
+            annotations: backendFormat
         }
         return finalData
     }
@@ -599,29 +602,29 @@ class Canvas extends Component{
             this.props.onSVGUpdate(svg)
         }
     }
-    updateCanvasView(drawables){
+    updateCanvasView(annotations){
         
 
         var annos = []
         //Annotation data should be present and a pixel accurate value 
         //for svg should be calculated
-        if(drawables){
-            console.log('UpdateCanvasView drawables', drawables)
+        if(annotations){
+            console.log('UpdateCanvasView annotations', annotations)
             const imgSize = this.updateImageSize()
             annos = [
-                ...drawables.bBoxes.map((element) => {
+                ...annotations.bBoxes.map((element) => {
                     return {...element, type:'bBox', initMode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
-                ...drawables.lines.map((element) => {
+                ...annotations.lines.map((element) => {
                     return {...element, type:'line', initMode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
-                ...drawables.polygons.map((element) => {
+                ...annotations.polygons.map((element) => {
                     return {...element, type:'polygon', initMode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
-                ...drawables.points.map((element) => {
+                ...annotations.points.map((element) => {
                     return {...element, type:'point', initMode: modes.VIEW, 
                         status: element.status ? element.status : annoStatus.DATABASE
                     }

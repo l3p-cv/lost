@@ -51,7 +51,7 @@ polygon = api.model('Polygon',{
     'data': fields.List(fields.Nested(point_data, description='2-D data of that polygon.'))
 })
 
-drawables = api.model('Drawables',{
+annotations = api.model('Annotations',{
     'bBoxes': fields.List(fields.Nested(bbox)),
     'points': fields.List(fields.Nested(point)),
     'lines': fields.List(fields.Nested(line)),
@@ -61,7 +61,7 @@ drawables = api.model('Drawables',{
 
 sia_anno = api.model('SIA Annotation', {
     'image': fields.Nested(image),
-    'drawables': fields.Nested(drawables),
+    'annotations': fields.Nested(annotations),
 })
 
 sia_config_tools = api.model('SIA Config Tools', {
@@ -82,19 +82,19 @@ sia_config_actions = api.model('SIA Config Actions', {
     'edit': fields.Nested(sia_config_actions_edit)
 })
 
-sia_config_drawables_bbox = api.model('SIA Config BBox drawables.',{
+sia_config_annotations_bbox = api.model('SIA Config BBox annotations.',{
     'minArea': fields.Float(readOnly=True, description='Minimal area of a bbox.'),
     'minAreaType': fields.String(readOnly=True, description='Can be "rel" (relative) and "abs" (absolut)')
 })
 
-sia_config_drawables = api.model('SIA Config Drawables', {
-    'bbox': fields.Nested(sia_config_drawables_bbox)
+sia_config_annotations = api.model('SIA Config annotations', {
+    'bbox': fields.Nested(sia_config_annotations_bbox)
 })
 
 sia_config = api.model('SIA Configuration', {
     'tools': fields.Nested(sia_config_tools,description='Tools to work with in SIA.'),
     'actions': fields.Nested(sia_config_actions, description="Actions which are allowed."),
-    'drawables': fields.Nested(sia_config_drawables, description="Configuration options of certain Drawables.")
+    'annotations': fields.Nested(sia_config_annotations, description="Configuration options of certain annotations.")
 })
 
 sia_update_bbox = api.model('SIA update bbox', {
@@ -125,7 +125,7 @@ sia_update_polygon = api.model('SIA update polygon', {
     'data': fields.List(fields.Nested(point_data),required=True)
 })
 
-sia_update_drawables = api.model('SIA update drawables',{
+sia_update_annotations = api.model('SIA update annotations',{
     'bBoxes': fields.List(fields.Nested(sia_update_bbox), required=True),
     'points': fields.List(fields.Nested(sia_update_point), required=True),
     'lines': fields.List(fields.Nested(sia_update_line), required=True),
@@ -133,5 +133,5 @@ sia_update_drawables = api.model('SIA update drawables',{
 })
 sia_update = api.model('SIA Update',{
     'imgId': fields.Integer(required=True, description='Id of image annotation.'),
-    'drawables': fields.Nested(sia_update_drawables, required=True, description='All drawables which should be updated.'),
+    'annotations': fields.Nested(sia_update_annotations, required=True, description='All annotations which should be updated.'),
 })
