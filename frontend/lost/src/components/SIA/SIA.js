@@ -71,7 +71,7 @@ class SIA extends Component {
             }
         }
         if (prevProps.taskFinished !== this.props.taskFinished){
-            const newAnnos = this.canvas.getAnnos()
+            const newAnnos = this.canvas.current.getAnnos()
             this.props.siaUpdateAnnos(newAnnos)
             this.props.siaSendFinishToBackend()
             // this.triggerAnnoUpdate()
@@ -138,11 +138,8 @@ class SIA extends Component {
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
                     allowedActions={this.props.allowedActions}
-                    // imageLoaded={this.props.imageLoaded}
-                    taskFinished={this.props.taskFinished}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onImageLoaded={() => this.handleCanvasImageLoaded()}
-                    onAnnoUpdate={ (annos) => this.handleAnnoUpdate(annos)}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <ImgBar container={this.container}></ImgBar>
