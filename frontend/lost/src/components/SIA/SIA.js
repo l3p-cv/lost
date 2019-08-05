@@ -14,7 +14,8 @@ import InfoBox from './InfoBoxes/InfoBox'
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
-    siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend
+    siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
+    selectAnnotation
 } = actions
 
 class SIA extends Component {
@@ -96,6 +97,7 @@ class SIA extends Component {
         this.props.siaSetImageLoaded(true)
     }
 
+
     // handleAnnoUpdate(annos){
     //     this.props.siaUpdateAnnos(annos)
     //     // if (this.props.taskFinished){
@@ -140,6 +142,7 @@ class SIA extends Component {
                     allowedActions={this.props.allowedActions}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onImageLoaded={() => this.handleCanvasImageLoaded()}
+                    onAnnoSelect={anno => this.props.selectAnnotation(anno)}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <ImgBar container={this.container}></ImgBar>
@@ -174,7 +177,8 @@ export default connect(
         // siaAppliedFullscreen, 
         siaLayoutUpdate, getSiaAnnos,
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
-        siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend
+        siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
+        selectAnnotation
     }
     , null,
     {})(SIA)

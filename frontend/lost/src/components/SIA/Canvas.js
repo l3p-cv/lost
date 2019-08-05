@@ -330,6 +330,9 @@ class Canvas extends Component{
                 selectedAnno: {id: undefined}
             })
         }
+        if(this.props.onAnnoSelect){
+            this.props.onAnnoSelect(anno)
+        }
     }
     canvasKeyPress(key, down=true){
         if (down){
@@ -535,7 +538,9 @@ class Canvas extends Component{
             ],
             selectedAnno: newAnno
         })
-
+        if(this.props.onAnnoSelect){
+            this.props.onAnnoSelect(anno)
+        }
     }
 
     showSingleAnno(annoId){
