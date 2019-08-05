@@ -96,9 +96,9 @@ class SIA extends Component {
         }
     }
 
-    handleCanvasImageLoaded(){
-        // this.props.siaSetImageLoaded(true)
-    }
+    // handleCanvasImageLoaded(){
+    //     // this.props.siaSetImageLoaded(true)
+    // }
 
     requestImageFromBackend(){
         this.props.getSiaImage(this.props.annos.image.url).then(response=>
@@ -154,7 +154,7 @@ class SIA extends Component {
                     selectedTool={this.props.selectedTool}
                     allowedActions={this.props.allowedActions}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
-                    onImageLoaded={() => this.handleCanvasImageLoaded()}
+                    // onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoSelect={anno => this.props.selectAnnotation(anno)}
                 />
                 <ToolBar container={this.container}></ToolBar>
