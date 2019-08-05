@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import LabelInput from './LabelInput'
 import * as transform from './utils/transform'
+import * as constraints from './utils/constraints'
+import * as annoStatus from './types/annoStatus'
 
 class AnnoLabelInput extends Component{
 
@@ -60,9 +62,36 @@ class AnnoLabelInput extends Component{
         }
     }
     
-    onLabelUpdate(anno){
+    annoLabelUpdate(anno){
         if (this.props.onLabelUpdate){
             this.props.onLabelUpdate(anno)
+        }
+    }
+
+    updateAnnoLabel(label){
+        if (!constraints.allowedToLabel(
+            this.props.allowedActions, this.props.selectedAnno)) return
+        console.log('LabelInput confirmLabel label', label)
+        if (label){
+            if (label.value !== -1){
+                this.annoLabelUpdate({
+                    ...this.props.selectedAnno,
+                    labelIds: [label.value],
+                    status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
+                })
+            } else {
+                this.annoLabelUpdate({
+                    ...this.props.selectedAnno,
+                    labelIds: [],
+                    status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
+                })
+            }
+        } else {
+            this.annoLabelUpdate({
+                ...this.props.selectedAnno,
+                labelIds: [],
+                status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
+            })
         }
     }
 
@@ -76,9 +105,10 @@ class AnnoLabelInput extends Component{
                 <LabelInput svg={this.props.svg}
                     // svgRef={this.props.svgRef}
                     onClose={() => this.onClose()}
-                    selectedAnno={this.props.selectedAnno}
+                    initLabelIds={this.props.selectedAnno.labelIds}
+                    relatedId={this.props.selectedAnno.id}
                     visible={this.props.visible}
-                    onLabelUpdate={anno => this.onLabelUpdate(anno)}
+                    onLabelUpdate={anno => this.updateAnnoLabel(anno)}
                     possibleLabels={this.props.possibleLabels}
                     allowedActions={this.props.allowedActions}
                     />
