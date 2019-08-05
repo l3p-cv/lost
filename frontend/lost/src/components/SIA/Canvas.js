@@ -34,7 +34,8 @@ class Canvas extends Component{
             showSingleAnno: undefined,
             keyDown: undefined,
             keyUp: undefined,
-            showLabelInput: false
+            showLabelInput: false,
+            imageLoaded: false
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -48,19 +49,23 @@ class Canvas extends Component{
     }
 
     componentDidUpdate(prevProps, prevState){
-        console.log('didupdate')
-
-        if (this.props.imageLoaded){
+        if (this.props.image.id !== prevProps.image.id){
+            this.setState({
+                imageLoaded: false
+            })
+        }
+        if (this.state.imageLoaded){
             // Selected annotation should be on top
             this.putSelectedOnTop(prevState)
-            if (prevProps.imageLoaded !== this.props.imageLoaded){
+            if (prevState.imageLoaded !== this.state.imageLoaded){
                 this.updateCanvasView(this.props.annos.drawables)
             } 
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
                 this.updateCanvasView(this.getAnnoBackendFormat())
             }
-            console.log('Canvas this.state.annos',this.state.annos)
+            console.log('Canvas update this.state',this.state)
+            console.log('Canvas imageLoaded',this.state.imageLoaded)
             
         }
         // // Workaround to find out when workingOnAnnoTask component has rendered,
@@ -71,6 +76,10 @@ class Canvas extends Component{
     }
     
     onImageLoad(){
+        console.log('Canvas onImageLoade')
+        this.setState({
+            imageLoaded: true
+        })
         if (this.props.onImageLoaded){
             this.props.onImageLoaded()
         }

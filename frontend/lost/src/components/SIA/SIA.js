@@ -138,7 +138,7 @@ class SIA extends Component {
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
                     allowedActions={this.props.allowedActions}
-                    imageLoaded={this.props.imageLoaded}
+                    // imageLoaded={this.props.imageLoaded}
                     taskFinished={this.props.taskFinished}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onImageLoaded={() => this.handleCanvasImageLoaded()}
