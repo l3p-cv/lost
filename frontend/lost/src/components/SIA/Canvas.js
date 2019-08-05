@@ -56,26 +56,10 @@ class Canvas extends Component{
             if (prevProps.imageLoaded !== this.props.imageLoaded){
                 this.updateCanvasView(this.props.annos.drawables)
             } 
-            // if (prevProps.appliedFullscreen !== this.props.appliedFullscreen){
-            //     console.log('Canvas applied Fullscreen', this.props.appliedFullscreen)
-            //     // this.updateCanvasView(this.props.annos.drawables)
-            //     this.selectAnnotation(undefined)
-            //     this.updateCanvasView(this.getAnnoBackendFormat())
-            // } 
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
                 this.updateCanvasView(this.getAnnoBackendFormat())
             }
-            // else if (prevProps.annos !== this.props.annos){
-                // 
-            // }
-            // if (prevProps.requestAnnoUpdate !== this.props.requestAnnoUpdate){
-            //     console.log('Canvas siaUpdateReduxAnnos')
-            //     this.props.siaUpdateReduxAnnos(
-            //         {...this.props.annos,
-            //             drawables: this.getAnnoBackendFormat()
-            //         })
-            // }
             console.log('Canvas this.state.annos',this.state.annos)
             
         }

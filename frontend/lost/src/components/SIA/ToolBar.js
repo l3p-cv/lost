@@ -16,7 +16,7 @@ import actions from '../../actions'
 import * as TOOLS from './types/tools'
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 
-    siaSetFullscreen, siaSetImageLoaded, siaRequestAnnoUpdate,
+    siaSetFullscreen, siaSetImageLoaded,
     selectAnnotation, siaShowImgBar, siaSetTaskFinished,siaLayoutUpdate
 } = actions
 
@@ -75,7 +75,6 @@ class ToolBar extends Component{
     }
 
     toggleFullscreen(){
-        // this.props.siaRequestAnnoUpdate()
         // this.props.selectAnnotation(undefined)
         this.setState({
             fullscreenMode: !this.state.fullscreenMode
@@ -257,6 +256,6 @@ function mapStateToProps(state) {
 }
 export default connect(mapStateToProps, 
     {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
-        siaSetFullscreen, siaSetImageLoaded, siaRequestAnnoUpdate, 
+        siaSetFullscreen, siaSetImageLoaded, 
         selectAnnotation, siaShowImgBar, siaSetTaskFinished, siaLayoutUpdate}
 )(ToolBar)

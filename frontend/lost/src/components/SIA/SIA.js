@@ -134,17 +134,12 @@ class SIA extends Component {
                     container={this.container}
                     annos={this.props.annos}
                     image={this.state.image}
-                    // getNextImage={this.props.getNextImage}
-                    // getPrevImage={this.props.getPrevImage}
                     uiConfig={this.props.uiConfig}
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
                     allowedActions={this.props.allowedActions}
-                    // appliedFullscreen={this.props.appliedFullscreen}
                     imageLoaded={this.props.imageLoaded}
-                    requestAnnoUpdate={this.props.requestAnnoUpdate}
                     taskFinished={this.props.taskFinished}
-                    // triggerAnnoUpdate={this.state.annoUpdateTrigger}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoUpdate={ (annos) => this.handleAnnoUpdate(annos)}
