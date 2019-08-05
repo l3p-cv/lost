@@ -14,7 +14,7 @@ import InfoBox from './InfoBoxes/InfoBox'
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
-    siaSetImageLoaded
+    siaSetImageLoaded, siaUpdateAnnos
 } = actions
 
 class SIA extends Component {
@@ -50,7 +50,7 @@ class SIA extends Component {
         console.log('Sia did update', this.container.current.getBoundingClientRect())
         this.setFullscreen(this.props.fullscreenMode)
         if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
-            this.props.siaAppliedFullscreen(this.props.fullscreenMode)
+            // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
             this.props.siaLayoutUpdate()
         }
 
@@ -84,6 +84,11 @@ class SIA extends Component {
         this.props.siaSetImageLoaded(true)
     }
 
+    handleAnnoUpdate(annos){
+        this.props.siaUpdateAnnos(annos)
+
+    }
+
     setFullscreen(fullscreen = true) {
         if (fullscreen) {
             if (this.state.fullscreenCSS !== 'sia-fullscreen') {
@@ -111,12 +116,13 @@ class SIA extends Component {
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
                     allowedActions={this.props.allowedActions}
-                    appliedFullscreen={this.props.appliedFullscreen}
+                    // appliedFullscreen={this.props.appliedFullscreen}
                     imageLoaded={this.props.imageLoaded}
                     requestAnnoUpdate={this.props.requestAnnoUpdate}
                     taskFinished={this.props.taskFinished}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onImageLoaded={() => this.handleCanvasImageLoaded()}
+                    onAnnoUpdate={ (annos) => this.handleAnnoUpdate(annos)}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <ImgBar container={this.container}></ImgBar>
@@ -148,9 +154,10 @@ function mapStateToProps(state) {
 export default connect(
     mapStateToProps,
     {
-        siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
+        // siaAppliedFullscreen, 
+        siaLayoutUpdate, getSiaAnnos,
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
-        siaSetImageLoaded
+        siaSetImageLoaded, siaUpdateAnnos
     }
     , null,
     {})(SIA)

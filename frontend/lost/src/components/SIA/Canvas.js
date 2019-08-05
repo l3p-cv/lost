@@ -78,24 +78,26 @@ class Canvas extends Component{
             if (prevProps.imageLoaded !== this.props.imageLoaded){
                 this.updateCanvasView(this.props.annos.drawables)
             } 
-            if (prevProps.appliedFullscreen !== this.props.appliedFullscreen){
-                console.log('Canvas applied Fullscreen', this.props.appliedFullscreen)
-                this.updateCanvasView(this.props.annos.drawables)
-                this.selectAnnotation(undefined)
-            } else if(prevProps.layoutUpdate !== this.props.layoutUpdate){
+            // if (prevProps.appliedFullscreen !== this.props.appliedFullscreen){
+            //     console.log('Canvas applied Fullscreen', this.props.appliedFullscreen)
+            //     // this.updateCanvasView(this.props.annos.drawables)
+            //     this.selectAnnotation(undefined)
+            //     this.updateCanvasView(this.getAnnoBackendFormat())
+            // } 
+            if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
                 this.updateCanvasView(this.getAnnoBackendFormat())
             }
             // else if (prevProps.annos !== this.props.annos){
                 // 
             // }
-            if (prevProps.requestAnnoUpdate !== this.props.requestAnnoUpdate){
-                console.log('Canvas siaUpdateReduxAnnos')
-                this.props.siaUpdateReduxAnnos(
-                    {...this.props.annos,
-                        drawables: this.getAnnoBackendFormat()
-                    })
-            }
+            // if (prevProps.requestAnnoUpdate !== this.props.requestAnnoUpdate){
+            //     console.log('Canvas siaUpdateReduxAnnos')
+            //     this.props.siaUpdateReduxAnnos(
+            //         {...this.props.annos,
+            //             drawables: this.getAnnoBackendFormat()
+            //         })
+            // }
             console.log('Canvas this.state.annos',this.state.annos)
             
         }
@@ -453,7 +455,9 @@ class Canvas extends Component{
             drawables: backendFormat
         }
         console.log('Update Backend annos', finalData)
-        this.props.siaUpdateAnnos(finalData)
+        if (this.props.onAnnoUpdate){
+            this.props.onAnnoUpdate(finalData)
+        }
     }
 
     moveCamera(e){
@@ -574,7 +578,7 @@ class Canvas extends Component{
         var clientHeight = document.documentElement.clientHeight
         var maxImgWidth = container.right -canvasLeft
         var maxImgHeight = clientHeight - container.top - 10
-        if (this.props.appliedFullscreen) maxImgHeight = maxImgHeight + 10 
+        // if (this.props.appliedFullscreen) maxImgHeight = maxImgHeight + 10 
         var ratio = this.img.current.naturalWidth / this.img.current.naturalHeight
         var imgWidth = "100%"
         var imgHeight = "100%"
@@ -745,9 +749,9 @@ export default connect(mapStateToProps,
     {
         // getSiaImage, 
         // selectAnnotation,
-        siaUpdateAnnos, 
-        siaSetImageLoaded, 
-        siaUpdateReduxAnnos,
+        // siaUpdateAnnos, 
+        // siaSetImageLoaded, 
+        // siaUpdateReduxAnnos,
         siaSendFinishToBackend
     }
 )(Canvas)
