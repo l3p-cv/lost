@@ -13,7 +13,8 @@ import InfoBox from './InfoBoxes/InfoBox'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
-    getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage
+    getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
+    siaSetImageLoaded
 } = actions
 
 class SIA extends Component {
@@ -79,6 +80,10 @@ class SIA extends Component {
         }
     }
 
+    handleCanvasImageLoaded(){
+        this.props.siaSetImageLoaded(true)
+    }
+
     setFullscreen(fullscreen = true) {
         if (fullscreen) {
             if (this.state.fullscreenCSS !== 'sia-fullscreen') {
@@ -111,6 +116,7 @@ class SIA extends Component {
                     requestAnnoUpdate={this.props.requestAnnoUpdate}
                     taskFinished={this.props.taskFinished}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
+                    onImageLoaded={() => this.handleCanvasImageLoaded()}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <ImgBar container={this.container}></ImgBar>
@@ -143,7 +149,8 @@ export default connect(
     mapStateToProps,
     {
         siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
-        getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage
+        getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
+        siaSetImageLoaded
     }
     , null,
     {})(SIA)

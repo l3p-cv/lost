@@ -107,7 +107,9 @@ class Canvas extends Component{
     }
     
     onImageLoad(){
-        this.props.siaSetImageLoaded(true)
+        if (this.props.onImageLoaded){
+            this.props.onImageLoaded()
+        }
     }
 
     onMouseOver(){
