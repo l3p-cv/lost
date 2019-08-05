@@ -1,17 +1,6 @@
 import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import { Dropdown, Ref, Popup, Header} from 'semantic-ui-react'
-
 import LabelInput from './LabelInput'
-
-import actions from '../../actions'
 import * as transform from './utils/transform'
-import * as annoStatus from './types/annoStatus'
-import * as constraints from './utils/constraints'
-
-const {siaShowLabelInput, siaShowSingleAnno, selectAnnotation,
-siaKeyDown} = actions
-
 
 class AnnoLabelInput extends Component{
 
@@ -39,7 +28,6 @@ class AnnoLabelInput extends Component{
 
         
     }
-
 
     /*************
      * LOGIC     *
@@ -89,9 +77,10 @@ class AnnoLabelInput extends Component{
                     // svgRef={this.props.svgRef}
                     onClose={() => this.onClose()}
                     selectedAnno={this.props.selectedAnno}
-                    keyDown={this.props.keyDown}
                     visible={this.props.visible}
                     onLabelUpdate={anno => this.onLabelUpdate(anno)}
+                    possibleLabels={this.props.possibleLabels}
+                    allowedActions={this.props.allowedActions}
                     />
             </div>
         )
@@ -99,17 +88,4 @@ class AnnoLabelInput extends Component{
     
 }
 
-function mapStateToProps(state) {
-    return ({
-        showLabelInput: state.sia.showLabelInput,
-        possibleLabels: state.sia.possibleLabels,
-        allowedActions: state.sia.config.actions,
-        svg: state.sia.svg
-    })
-}
-
-export default connect(
-    mapStateToProps, 
-    {siaShowLabelInput, siaShowSingleAnno, selectAnnotation, siaKeyDown}
-    ,null,
-    {forwardRef:true})(AnnoLabelInput)
+export default AnnoLabelInput

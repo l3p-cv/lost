@@ -731,9 +731,11 @@ class Canvas extends Component{
                     onClose={() => this.onAnnoLabelInputClose()}
                     onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}
                     selectedAnno={this.state.selectedAnno}
-                    keyDown={this.state.keyDown}
+                    // keyDown={this.state.keyDown}
                     visible={this.state.showLabelInput}
                     onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
+                    possibleLabels={this.props.possibleLabels}
+                    allowedActions={this.props.allowedActions}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
