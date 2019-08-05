@@ -14,7 +14,7 @@ import InfoBox from './InfoBoxes/InfoBox'
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
-    siaSetImageLoaded, siaUpdateAnnos
+    siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend
 } = actions
 
 class SIA extends Component {
@@ -28,6 +28,7 @@ class SIA extends Component {
                 id: undefined,
                 data: undefined,
             },
+            annoUpdateTrigger: 0
         }
         
         this.container = React.createRef()
@@ -64,6 +65,9 @@ class SIA extends Component {
                 this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
             }
         }
+        if (prevProps.taskFinished !== this.props.taskFinished){
+            this.triggerAnnoUpdate()
+        }
         if(this.props.annos.image){
             if(this.props.annos.image.id !== this.state.image.id){
                 this.props.getSiaImage(this.props.annos.image.url).then(response=>
@@ -86,7 +90,17 @@ class SIA extends Component {
 
     handleAnnoUpdate(annos){
         this.props.siaUpdateAnnos(annos)
+        if (this.props.taskFinished){
+            console.log('SIA taskFinished')
+            this.props.siaSendFinishToBackend()
+        }
 
+    }
+
+    triggerAnnoUpdate(){
+        this.setState({
+            annoUpdateTrigger: this.state.annoUpdateTrigger + 1
+        })
     }
 
     setFullscreen(fullscreen = true) {
@@ -120,6 +134,7 @@ class SIA extends Component {
                     imageLoaded={this.props.imageLoaded}
                     requestAnnoUpdate={this.props.requestAnnoUpdate}
                     taskFinished={this.props.taskFinished}
+                    triggerAnnoUpdate={this.state.annoUpdateTrigger}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoUpdate={ (annos) => this.handleAnnoUpdate(annos)}
@@ -157,7 +172,7 @@ export default connect(
         // siaAppliedFullscreen, 
         siaLayoutUpdate, getSiaAnnos,
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
-        siaSetImageLoaded, siaUpdateAnnos
+        siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend
     }
     , null,
     {})(SIA)

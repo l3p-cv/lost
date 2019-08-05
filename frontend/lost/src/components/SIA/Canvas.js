@@ -18,6 +18,11 @@ const {
     getSiaConfig, siaSendFinishToBackend
 } = actions
 
+/**
+ * SIA Canvas element that handles annotations within an image
+ * 
+ * 
+ */
 class Canvas extends Component{
 
     constructor(props){
@@ -54,6 +59,10 @@ class Canvas extends Component{
     componentDidUpdate(prevProps, prevState){
         console.log('didupdate')
 
+        if (prevProps.triggerAnnoUpdate !== this.props.triggerAnnoUpdate){
+            this.updateBackendAnnos()
+        }
+        //Remove from here
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
                 this.updateBackendAnnos()
@@ -66,11 +75,12 @@ class Canvas extends Component{
                 // this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
             }
         }
-        
-        if (prevProps.taskFinished !== this.props.taskFinished){
-            this.updateBackendAnnos()
-            this.props.siaSendFinishToBackend()
-        }
+        // if (prevProps.taskFinished !== this.props.taskFinished){
+        //     this.updateBackendAnnos()
+        //     this.props.siaSendFinishToBackend()
+        // }
+
+
 
         if (this.props.imageLoaded){
             // Selected annotation should be on top
@@ -752,6 +762,6 @@ export default connect(mapStateToProps,
         // siaUpdateAnnos, 
         // siaSetImageLoaded, 
         // siaUpdateReduxAnnos,
-        siaSendFinishToBackend
+        // siaSendFinishToBackend
     }
 )(Canvas)
