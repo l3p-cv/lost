@@ -80,10 +80,7 @@ class Canvas extends Component{
             annos: [],
             mode: modes.VIEW,
             selectedAnno: {id:undefined},
-            // selectedAnnoIdx: undefined,
             showSingleAnno: undefined,
-            keyDown: undefined,
-            keyUp: undefined,
             showLabelInput: false,
             imageLoaded: false
         }
@@ -232,13 +229,8 @@ class Canvas extends Component{
 
     onKeyDown(e: Event){
         e.preventDefault()
-        // if (e.key === 'Delete'){
-        //     this.removeSelectedAnno()
-        // }
-        // this.props.siaKeyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.traverseAnnos(e.key)
-        this.canvasKeyPress(e.key, true)
         switch (e.key){
             case 'Enter':
                 if (this.state.selectedAnno){
@@ -264,9 +256,7 @@ class Canvas extends Component{
 
     onKeyUp(e: Event){
         e.preventDefault()
-        // this.props.siaKeyUp(e.key)
         console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
-        this.canvasKeyPress(e.key, false)
         switch (e.key){
             case 'Control':
                 this.updateSelectedAnno(
@@ -364,12 +354,6 @@ class Canvas extends Component{
     **************/
 
     selectAnnotation(anno){
-        let annoIdx = undefined
-        // if (anno){
-        //     annoIdx = this.state.annos.findIndex( e => {
-        //         return e.id === anno.id
-        //     })
-        // } 
         if (anno){
             this.setState({
                 selectedAnno: anno
@@ -384,19 +368,19 @@ class Canvas extends Component{
             this.props.onAnnoSelect(anno)
         }
     }
-    canvasKeyPress(key, down=true){
-        if (down){
-            this.setState({
-                keyDown: key,
-                keyUp: undefined
-            })
-        } else {
-            this.setState({
-                keyDown: undefined,
-                keyUp: key
-            })
-        }
-    }
+    // canvasKeyPress(key, down=true){
+    //     if (down){
+    //         this.setState({
+    //             keyDown: key,
+    //             keyUp: undefined
+    //         })
+    //     } else {
+    //         this.setState({
+    //             keyDown: undefined,
+    //             keyUp: key
+    //         })
+    //     }
+    // }
 
     /**
      * Traverse annotations by key hit
@@ -703,8 +687,6 @@ class Canvas extends Component{
                         uiConfig={this.props.uiConfig}
                         allowedActions={this.props.allowedActions}
                         possibleLabels={this.props.possibleLabels}
-                        // keyDown={this.state.keyDown}
-                        // keyUp={this.state.keyUp}
                     />
             })
             return <g>{annos}</g>
@@ -731,7 +713,6 @@ class Canvas extends Component{
                     onClose={() => this.onAnnoLabelInputClose()}
                     onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}
                     selectedAnno={this.state.selectedAnno}
-                    // keyDown={this.state.keyDown}
                     visible={this.state.showLabelInput}
                     onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
                     possibleLabels={this.props.possibleLabels}
