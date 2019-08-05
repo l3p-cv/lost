@@ -339,7 +339,11 @@ class Annotation extends Component{
     }
     
     renderAnnoBar(){
-        return <AnnoBar anno={this.state.anno} mode={this.state.mode}/>
+        return <AnnoBar 
+            anno={this.state.anno} 
+            mode={this.state.mode}
+            possibleLabels={this.props.possibleLabels}
+            />
     }
     render(){
         if(!this.state.anno.data) return null

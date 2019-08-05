@@ -702,6 +702,7 @@ class Canvas extends Component{
                         showSingleAnno={this.state.showSingleAnno}
                         uiConfig={this.props.uiConfig}
                         allowedActions={this.props.allowedActions}
+                        possibleLabels={this.props.possibleLabels}
                         // keyDown={this.state.keyDown}
                         // keyUp={this.state.keyUp}
                     />

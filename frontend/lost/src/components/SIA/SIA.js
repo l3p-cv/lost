@@ -153,6 +153,7 @@ class SIA extends Component {
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
                     allowedActions={this.props.allowedActions}
+                    possibleLabels={this.props.possibleLabels}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     // onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoSelect={anno => this.props.selectAnnotation(anno)}
@@ -181,6 +182,7 @@ function mapStateToProps(state) {
         imageLoaded: state.sia.imageLoaded,
         requestAnnoUpdate: state.sia.requestAnnoUpdate,
         taskFinished: state.sia.taskFinished,
+        possibleLabels: state.sia.possibleLabels
     })
 }
 

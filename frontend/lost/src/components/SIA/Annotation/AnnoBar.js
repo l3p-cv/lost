@@ -1,13 +1,6 @@
 import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import { Button, Popover, PopoverHeader, PopoverBody, Input } from 'reactstrap'
-import actions from '../../../actions'
-import Autocomplete from 'react-autocomplete'
 import * as transform from '../utils/transform'
 import * as modes from '../types/modes'
-
-const {selectAnnotation, siaShowSingleAnno} = actions
-
 
 class AnnoBar extends Component{
 
@@ -37,7 +30,6 @@ class AnnoBar extends Component{
     setPosition(){
         console.log('AnnoBar set Position', this.props.anno, this.props.mode)
         const center = transform.getCenter(this.props.anno.data, this.props.anno.type)
-        // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
         const top = center.y
         const left = center.x 
         if (this.state.top !== top || this.state.left !== left){  
@@ -77,16 +69,4 @@ class AnnoBar extends Component{
     
 }
 
-function mapStateToProps(state) {
-    console.log('AnnoBar selected anno', state.sia.selectedAnno)
-    return ({
-        selectedAnno: state.sia.selectedAnno,
-        possibleLabels: state.sia.possibleLabels
-    })
-}
-
-export default connect(
-    mapStateToProps, 
-    {}
-    ,null,
-    {}) (AnnoBar)
+export default AnnoBar
