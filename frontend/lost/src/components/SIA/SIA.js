@@ -13,7 +13,7 @@ import InfoBox from './InfoBoxes/InfoBox'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
-    getSiaLabels, getSiaConfig, siaSetSVG
+    getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage
 } = actions
 
 class SIA extends Component {
@@ -22,8 +22,13 @@ class SIA extends Component {
         super(props)
         this.state = {
             fullscreenCSS: '',
-            didMount: false
+            didMount: false,
+            image: {
+                id: undefined,
+                data: undefined,
+            },
         }
+        
         this.container = React.createRef()
     }
 
@@ -58,6 +63,20 @@ class SIA extends Component {
                 this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
             }
         }
+        if(this.props.annos.image){
+            if(this.props.annos.image.id !== this.state.image.id){
+                this.props.getSiaImage(this.props.annos.image.url).then(response=>
+                    {
+                        this.setState({image: {
+                            ...this.state.image, 
+                            id: this.props.annos.image.id, 
+                            data:window.URL.createObjectURL(response)
+                        }})
+                    }
+                )       
+
+            }
+        }
     }
 
     setFullscreen(fullscreen = true) {
@@ -80,6 +99,7 @@ class SIA extends Component {
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas container={this.container}
                     annos={this.props.annos}
+                    image={this.state.image}
                     getNextImage={this.props.getNextImage}
                     getPrevImage={this.props.getPrevImage}
                     uiConfig={this.props.uiConfig}
@@ -123,7 +143,7 @@ export default connect(
     mapStateToProps,
     {
         siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
-        getSiaConfig, getSiaLabels, siaSetSVG
+        getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage
     }
     , null,
     {})(SIA)

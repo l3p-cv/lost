@@ -23,10 +23,7 @@ class Canvas extends Component{
     constructor(props){
         super(props)
         this.state = {
-            image: {
-                id: undefined,
-                data: undefined,
-            },
+            
             svg: {
                 width: '100%',
                 height: '100%',
@@ -56,20 +53,7 @@ class Canvas extends Component{
 
     componentDidUpdate(prevProps, prevState){
         console.log('didupdate')
-		if(this.props.annos.image){
-            if(this.props.annos.image.id !== this.state.image.id){
-			this.props.getSiaImage(this.props.annos.image.url).then(response=>
-			{
-                this.setState({image: {
-                    ...this.state.image, 
-                    id: this.props.annos.image.id, 
-                    data:window.URL.createObjectURL(response)
-                }})
-            }
-            )       
 
-        }
-        }
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
                 this.updateBackendAnnos()
@@ -97,8 +81,9 @@ class Canvas extends Component{
             if (prevProps.appliedFullscreen !== this.props.appliedFullscreen){
                 console.log('Canvas applied Fullscreen', this.props.appliedFullscreen)
                 this.updateCanvasView(this.props.annos.drawables)
+                this.selectAnnotation(undefined)
             } else if(prevProps.layoutUpdate !== this.props.layoutUpdate){
-                this.props.selectAnnotation(undefined)
+                this.selectAnnotation(undefined)
                 this.updateCanvasView(this.getAnnoBackendFormat())
             }
             // else if (prevProps.annos !== this.props.annos){
@@ -723,14 +708,14 @@ class Canvas extends Component{
                         <image
                             onContextMenu={(e) => this.onRightClick(e)}
                             onMouseDown={(e) => this.onMouseDown(e)}
-                            href={this.state.image.data} 
+                            href={this.props.image.data} 
                             width={this.state.svg.width} 
                             height={this.state.svg.height}
                         />
                         {this.renderAnnotations()}
                     </g>
                 </svg>
-                <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.image.data} width="100%" height="100%"></img>
+                <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.props.image.data} width="100%" height="100%"></img>
                 {/* </div> */}
                 </div>
                 {/* Placeholder for Layout*/}
@@ -756,9 +741,11 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, 
     {
-        getSiaImage, 
-        selectAnnotation,
-        siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
+        // getSiaImage, 
+        // selectAnnotation,
+        siaUpdateAnnos, 
+        siaSetImageLoaded, 
+        siaUpdateReduxAnnos,
         siaSendFinishToBackend
     }
 )(Canvas)
