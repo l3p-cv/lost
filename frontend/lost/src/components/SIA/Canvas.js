@@ -1,22 +1,13 @@
 import React, {Component} from 'react'
-import {connect} from 'react-redux'
 import _ from 'lodash'
 import Annotation from './Annotation/Annotation'
 import AnnoLabelInput from './AnnoLabelInput'
-
-import actions from '../../actions'
 
 import * as transform from './utils/transform'
 import * as modes from './types/modes'
 import * as annoStatus from './types/annoStatus'
 import * as annoActions from './types/annoActions'
 
-const { 
-    getSiaImage, 
-    selectAnnotation, getSiaLabels,
-    siaUpdateAnnos, siaSetImageLoaded, siaUpdateReduxAnnos,
-    getSiaConfig, siaSendFinishToBackend
-} = actions
 
 /**
  * SIA Canvas element that handles annotations within an image
@@ -58,29 +49,6 @@ class Canvas extends Component{
 
     componentDidUpdate(prevProps, prevState){
         console.log('didupdate')
-
-        if (prevProps.triggerAnnoUpdate !== this.props.triggerAnnoUpdate){
-            this.updateBackendAnnos()
-        }
-        //Remove from here
-        if (prevProps.getNextImage !== this.props.getNextImage){
-            if (this.props.getNextImage){
-                this.updateBackendAnnos()
-                // this.props.getSiaAnnos(this.props.getNextImage)
-            }
-        }
-        if (prevProps.getPrevImage !== this.props.getPrevImage){
-            if (this.props.getPrevImage){
-                this.updateBackendAnnos()
-                // this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
-            }
-        }
-        // if (prevProps.taskFinished !== this.props.taskFinished){
-        //     this.updateBackendAnnos()
-        //     this.props.siaSendFinishToBackend()
-        // }
-
-
 
         if (this.props.imageLoaded){
             // Selected annotation should be on top
@@ -458,16 +426,26 @@ class Canvas extends Component{
         console.log('Annotation getAnnoBackendFormat', backendFormat)
         return backendFormat
     }
-    updateBackendAnnos(){
+    
+    // updateBackendAnnos(){
+    //     const backendFormat = this.getAnnoBackendFormat(true)
+    //     const finalData = {
+    //         imgId: this.props.annos.image.id,
+    //         drawables: backendFormat
+    //     }
+    //     console.log('Update Backend annos', finalData)
+    //     if (this.props.onAnnoUpdate){
+    //         this.props.onAnnoUpdate(finalData)
+    //     }
+    // }
+
+    getAnnos(){
         const backendFormat = this.getAnnoBackendFormat(true)
         const finalData = {
             imgId: this.props.annos.image.id,
             drawables: backendFormat
         }
-        console.log('Update Backend annos', finalData)
-        if (this.props.onAnnoUpdate){
-            this.props.onAnnoUpdate(finalData)
-        }
+        return finalData
     }
 
     moveCamera(e){
@@ -740,28 +718,4 @@ class Canvas extends Component{
     }
 }
 
-
-
-
-function mapStateToProps(state) {
-    return ({
-        // annos: state.sia.annos,
-        // getNextImage: state.sia.getNextImage,
-        // getPrevImage: state.sia.getPrevImage,
-        
-        
-
-        // workingOnAnnoTask: state.annoTask.workingOnAnnoTask,
-    })
-}
-
-export default connect(mapStateToProps, 
-    {
-        // getSiaImage, 
-        // selectAnnotation,
-        // siaUpdateAnnos, 
-        // siaSetImageLoaded, 
-        // siaUpdateReduxAnnos,
-        // siaSendFinishToBackend
-    }
-)(Canvas)
+export default Canvas

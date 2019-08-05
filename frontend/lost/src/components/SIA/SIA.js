@@ -28,10 +28,11 @@ class SIA extends Component {
                 id: undefined,
                 data: undefined,
             },
-            annoUpdateTrigger: 0
+            // annoUpdateTrigger: 0
         }
         
         this.container = React.createRef()
+        this.canvas = React.createRef()
     }
 
     componentDidMount() {
@@ -57,16 +58,23 @@ class SIA extends Component {
 
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
+                const newAnnos = this.canvas.current.getAnnos()
+                this.props.siaUpdateAnnos(newAnnos)
                 this.props.getSiaAnnos(this.props.getNextImage)
             }
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
             if (this.props.getPrevImage){
+                const newAnnos = this.canvas.current.getAnnos()
+                this.props.siaUpdateAnnos(newAnnos)
                 this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
             }
         }
         if (prevProps.taskFinished !== this.props.taskFinished){
-            this.triggerAnnoUpdate()
+            const newAnnos = this.canvas.getAnnos()
+            this.props.siaUpdateAnnos(newAnnos)
+            this.props.siaSendFinishToBackend()
+            // this.triggerAnnoUpdate()
         }
         if(this.props.annos.image){
             if(this.props.annos.image.id !== this.state.image.id){
@@ -88,20 +96,20 @@ class SIA extends Component {
         this.props.siaSetImageLoaded(true)
     }
 
-    handleAnnoUpdate(annos){
-        this.props.siaUpdateAnnos(annos)
-        if (this.props.taskFinished){
-            console.log('SIA taskFinished')
-            this.props.siaSendFinishToBackend()
-        }
+    // handleAnnoUpdate(annos){
+    //     this.props.siaUpdateAnnos(annos)
+    //     // if (this.props.taskFinished){
+    //     //     console.log('SIA taskFinished')
+    //     //     this.props.siaSendFinishToBackend()
+    //     // }
 
-    }
+    // }
 
-    triggerAnnoUpdate(){
-        this.setState({
-            annoUpdateTrigger: this.state.annoUpdateTrigger + 1
-        })
-    }
+    // triggerAnnoUpdate(){
+    //     this.setState({
+    //         annoUpdateTrigger: this.state.annoUpdateTrigger + 1
+    //     })
+    // }
 
     setFullscreen(fullscreen = true) {
         if (fullscreen) {
@@ -121,11 +129,13 @@ class SIA extends Component {
         console.log('Sia renders')
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
-                <Canvas container={this.container}
+                <Canvas
+                    ref={this.canvas} 
+                    container={this.container}
                     annos={this.props.annos}
                     image={this.state.image}
-                    getNextImage={this.props.getNextImage}
-                    getPrevImage={this.props.getPrevImage}
+                    // getNextImage={this.props.getNextImage}
+                    // getPrevImage={this.props.getPrevImage}
                     uiConfig={this.props.uiConfig}
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
@@ -134,7 +144,7 @@ class SIA extends Component {
                     imageLoaded={this.props.imageLoaded}
                     requestAnnoUpdate={this.props.requestAnnoUpdate}
                     taskFinished={this.props.taskFinished}
-                    triggerAnnoUpdate={this.state.annoUpdateTrigger}
+                    // triggerAnnoUpdate={this.state.annoUpdateTrigger}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoUpdate={ (annos) => this.handleAnnoUpdate(annos)}
