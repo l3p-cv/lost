@@ -6,6 +6,7 @@ import ImgBar from './ImgBar'
 
 import * as transform from './utils/transform'
 import * as modes from './types/modes'
+import History from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as annoActions from './types/annoActions'
 import { Loader, Dimmer } from 'semantic-ui-react';
@@ -92,11 +93,34 @@ class Canvas extends Component{
         this.svg = React.createRef()
         this.annoRefs = []
         this.container = React.createRef()
+        this.canvasHist = new History()
     }
 
     componentDidMount(){
         
         // console.warn('No sia config will be loaded')
+        this.canvasHist.push('Crated Box1')
+        this.canvasHist.push('Created Polygon1')
+        this.canvasHist.push('Edited Polygon1')
+
+        console.log('canvasHist', this.canvasHist.getHist())
+        console.log('canvasHist undo',this.canvasHist.undo())
+        this.canvasHist.push('Created Line1')
+        console.log('canvasHist', this.canvasHist.getHist())
+        console.log('canvasHist redo',this.canvasHist.redo())
+        console.log('canvasHist undo',this.canvasHist.undo())
+        console.log('canvasHist undo',this.canvasHist.undo())
+        console.log('canvasHist undo',this.canvasHist.undo())
+        console.log('canvasHist undo',this.canvasHist.undo())
+        console.log('canvasHist redo',this.canvasHist.redo())
+        console.log('canvasHist redo',this.canvasHist.redo())
+        console.log('canvasHist redo',this.canvasHist.redo())
+        console.log('canvasHist redo',this.canvasHist.redo())
+
+
+
+        // console.log('canvasHist.pop', this.canvasHist.pop())
+
     }
 
     componentDidUpdate(prevProps, prevState){
