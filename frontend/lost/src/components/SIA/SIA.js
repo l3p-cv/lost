@@ -15,7 +15,7 @@ const {
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
-    selectAnnotation
+    selectAnnotation, siaShowImgBar
 } = actions
 
 class SIA extends Component {
@@ -100,6 +100,10 @@ class SIA extends Component {
     //     // this.props.siaSetImageLoaded(true)
     // }
 
+    handleImgBarClose(){
+        this.props.siaShowImgBar(false)
+    }
+
     requestImageFromBackend(){
         this.props.getSiaImage(this.props.annos.image.url).then(response=>
             {
@@ -146,6 +150,7 @@ class SIA extends Component {
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas
                     ref={this.canvas} 
+                    imgBarVisible={this.props.imgBar.show}
                     container={this.container}
                     annos={this.props.annos}
                     image={this.state.image}
@@ -157,9 +162,9 @@ class SIA extends Component {
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     // onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoSelect={anno => this.props.selectAnnotation(anno)}
+                    onImgBarClose={() => this.handleImgBarClose()}
                 />
                 <ToolBar container={this.container}></ToolBar>
-                <ImgBar container={this.container}></ImgBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>
              </div>
         )
@@ -182,7 +187,8 @@ function mapStateToProps(state) {
         imageLoaded: state.sia.imageLoaded,
         requestAnnoUpdate: state.sia.requestAnnoUpdate,
         taskFinished: state.sia.taskFinished,
-        possibleLabels: state.sia.possibleLabels
+        possibleLabels: state.sia.possibleLabels,
+        imgBar: state.sia.imgBar
     })
 }
 
@@ -194,7 +200,8 @@ export default connect(
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
         // siaSetImageLoaded, 
         siaUpdateAnnos, siaSendFinishToBackend,
-        selectAnnotation
+        selectAnnotation,
+        siaShowImgBar
     }
     , null,
     {})(SIA)

@@ -1,22 +1,6 @@
 import React, {Component} from 'react'
-// import { 
-//     Button, CardHeader, Card, 
-//     CardBody, Input, Container, 
-//     Row, Col, Fade, Toast, ToastBody, ToastHeader
-//     } from 'reactstrap';
-import {connect} from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-    faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle, 
-    faArrowRight, faArrowLeft , faExpandArrowsAlt
-} from '@fortawesome/free-solid-svg-icons'
-import { 
-    faImage
-} from '@fortawesome/free-regular-svg-icons'
 import { Icon, Dropdown, Menu, Input, Message, Statistic, Divider, Button, List, Label, Header } from 'semantic-ui-react'
 import LabelInput from './LabelInput'
-import actions from '../../actions'
-const { siaShowImgBar } = actions
 
 class ImgBar extends Component{
 
@@ -48,9 +32,15 @@ class ImgBar extends Component{
     handleLabelUpdate(label){
         console.log('ImgBar label update', label)
     }
+    
+    handleClose(){
+        if (this.props.onClose){
+            this.props.onClose()
+        }
+    }
 
     render(){
-        if (!this.props.imgBar.show) return null
+        if (!this.props.visible) return null
         if (!this.props.annos.image) return null
         const activeItem='home'
         return(
@@ -82,7 +72,7 @@ class ImgBar extends Component{
                 </Menu.Item>
                 <Menu.Item
                     active={activeItem === 'logout'}
-                    onClick={() => this.props.siaShowImgBar(false)}
+                    onClick={() => this.handleClose()}
                 >
                 <Icon inverted size="small" name="close"></Icon>
                 </Menu.Item>
@@ -113,16 +103,4 @@ class ImgBar extends Component{
     }
 }
 
-function mapStateToProps(state) {
-    return ({
-        annos: state.sia.annos,
-        layoutUpdate: state.sia.layoutUpdate,
-        uiConfig: state.sia.uiConfig,
-        imgBar: state.sia.imgBar,
-        svg: state.sia.svg,
-        possibleLabels: state.sia.possibleLabels,
-    })
-}
-export default connect(mapStateToProps, 
-    {siaShowImgBar}
-)(ImgBar)
+export default ImgBar

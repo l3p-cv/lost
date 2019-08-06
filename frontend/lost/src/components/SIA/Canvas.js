@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import _ from 'lodash'
 import Annotation from './Annotation/Annotation'
 import AnnoLabelInput from './AnnoLabelInput'
+import ImgBar from './ImgBar'
 
 import * as transform from './utils/transform'
 import * as modes from './types/modes'
@@ -349,6 +350,12 @@ class Canvas extends Component{
         console.log('onAnnoLabelInputUpdate ', anno)
     }
 
+    handleImgBarClose(){
+        if (this.props.onImgBarClose){
+            this.props.onImgBarClose()
+        }
+    }
+
     /*************
      * LOGIC     *
     **************/
@@ -690,8 +697,6 @@ class Canvas extends Component{
                     />
             })
             return <g>{annos}</g>
-            // }
-
         } else {
             return null
         }
@@ -705,6 +710,13 @@ class Canvas extends Component{
             <div height={this.state.svg.height} 
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
+            <ImgBar container={this.container} 
+                visible={this.props.imgBarVisible}
+                possibleLabels={this.props.possibleLabels}
+                annos={this.props.annos}
+                svg={this.state.svg}
+                onClose={() => this.handleImgBarClose()}
+            />
             <Dimmer active={!this.props.image.id}><Loader>Loading</Loader></Dimmer>
 
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
