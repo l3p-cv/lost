@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Icon, Menu, Popup, Checkbox, Divider} from 'semantic-ui-react'
+import { Icon, Menu, Popup, Checkbox, Dimmer, Button, Header} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -12,6 +12,8 @@ import {
 import Draggable from 'react-draggable';
 // import SIASettingModal from './SIASettingModal'
 import SIASettingButton from './SIASettingButton'
+import { createHashHistory } from 'history'
+
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
 const { 
@@ -31,7 +33,10 @@ class ToolBar extends Component{
                 top: 0,
                 width: 40
             },
+            showFinishPrompt: false
         }
+        this.history = createHashHistory()
+
     }
 
     componentDidMount(){
@@ -72,6 +77,14 @@ class ToolBar extends Component{
 
     setFinished(){
         this.props.siaSetTaskFinished()
+        this.history.push('/dashboard')
+        
+    }
+
+    toggleFinishPrompt(){
+        this.setState({
+            showFinishPrompt: !this.state.showFinishPrompt
+        })
     }
 
     toggleFullscreen(){
@@ -146,6 +159,27 @@ class ToolBar extends Component{
         return btns
     }
 
+    renderFinishPrompt(){
+        return (
+            <Dimmer page active={this.state.showFinishPrompt}>
+                <Header as="h2" inverted>
+                    <Icon name='paper plane outline'></Icon>
+                    Do you wish to FINISH this SIA Task?
+                </Header>
+                <Button color="green" inverted
+                    onClick={() => this.setFinished()}
+                >
+                    <Icon name='check'></Icon>
+                    Yes
+                </Button>
+                <Button color="red" inverted
+                    onClick={() => this.toggleFinishPrompt()}
+                >
+                    <Icon name='ban'></Icon> No
+                </Button>
+            </Dimmer>
+        )
+    }
     /**
      * Render next and prev image buttons 
      *
@@ -157,9 +191,10 @@ class ToolBar extends Component{
                 btns.push(
                     <Menu.Item name='paper plane outline' key='finish'
                         active={false} 
-                        onClick={() => this.setFinished()}
+                        onClick={() => this.toggleFinishPrompt()}
                     >
                         <Icon name='paper plane outline' />
+                        {this.renderFinishPrompt()}
                     </Menu.Item>
                     // <Button key='finish' outline onClick={() => this.setFinished()} color="primary" >
                     //     <FontAwesomeIcon icon={faPaperPlane} />
