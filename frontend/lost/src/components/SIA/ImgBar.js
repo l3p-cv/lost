@@ -34,6 +34,9 @@ class ImgBar extends Component{
      *********/
     handleLabelUpdate(label){
         console.log('ImgBar label update', label)
+        if (this.props.onLabelUpdate){
+            this.props.onLabelUpdate(label)
+        }
     }
     
     handleClose(){
@@ -71,6 +74,7 @@ class ImgBar extends Component{
                         visible={true}
                         onLabelUpdate={label => this.handleLabelUpdate(label)}
                         possibleLabels={this.props.possibleLabels}
+                        initLabelIds={this.props.initLabelIds}
                         />
                 </Menu.Item>
                 <Menu.Item

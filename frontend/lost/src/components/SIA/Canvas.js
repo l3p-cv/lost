@@ -85,7 +85,8 @@ class Canvas extends Component{
             selectedAnno: {id:undefined},
             showSingleAnno: undefined,
             showLabelInput: false,
-            imageLoaded: false
+            imageLoaded: false,
+            imgLabelIds: []
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -361,6 +362,14 @@ class Canvas extends Component{
         }
     }
 
+    handleImgLabelUpdate(label){
+        if (label !== -1){
+            this.setState({imgLabelIds: [label]})
+        } else {
+            this.setState({imgLabelIds: []})
+        }
+    }
+
     /*************
      * LOGIC     *
     **************/
@@ -485,6 +494,7 @@ class Canvas extends Component{
         const backendFormat = this.getAnnoBackendFormat(true)
         const finalData = {
             imgId: this.props.annos.image.id,
+            imgLabelIds: this.state.imgLabelIds,
             annotations: backendFormat
         }
         return finalData
@@ -721,6 +731,8 @@ class Canvas extends Component{
                 annos={this.props.annos}
                 svg={this.state.svg}
                 onClose={() => this.handleImgBarClose()}
+                onLabelUpdate={label => this.handleImgLabelUpdate(label)}
+                initLabelIds={this.state.imgLabelIds}
             />
             <Dimmer active={!this.props.image.id}><Loader>Loading</Loader></Dimmer>
 

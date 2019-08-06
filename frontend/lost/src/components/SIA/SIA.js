@@ -60,6 +60,7 @@ class SIA extends Component {
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
                 const newAnnos = this.canvas.current.getAnnos()
+                console.log('getNextImage newAnnos', newAnnos)
                 this.props.siaUpdateAnnos(newAnnos)
                 this.props.getSiaAnnos(this.props.getNextImage)
                 this.setState({image: {
