@@ -29,6 +29,9 @@ class ImgBar extends Component{
         }
     }
 
+    /*********
+     * Events
+     *********/
     handleLabelUpdate(label){
         console.log('ImgBar label update', label)
     }
@@ -62,7 +65,7 @@ class ImgBar extends Component{
                 {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
                 </Menu.Item>
                 <Menu.Menu position='right'>
-                <Menu.Item>
+                <Menu.Item style={{padding: "5px"}}>
                     <LabelInput
                         relatedId={this.props.annos.image.id}
                         visible={true}

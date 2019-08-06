@@ -57,12 +57,14 @@ import { Loader, Dimmer } from 'semantic-ui-react';
  *              delete: bool
  *          }
  *      }
+ * @param {bool} imgBarVisible - Controls visibility of the ImgBar
  * @event onSVGUpdate - Fires when the svg in canvas changed.
  *      args: {width: int, height: int, scale: float, translateX: float,
  *      translateY:float}
  * @event onImageLoaded - Fires when an image was loaded into the canvas
  * @event onAnnoSelect - Fires when an annotation was selected or if the
  *      selected annotation was updated.
+ * @event onImgBarClose - Fires when close button on ImgBar was hit.
  * 
  */
 class Canvas extends Component{
@@ -279,12 +281,7 @@ class Canvas extends Component{
         this.removeSelectedAnno()
     }
     
-    onAnnoLabelInputClose(){
-        console.log('onAnnoLabelInputClose')
-        this.svg.current.focus()
-        this.showLabelInput(false)
-        this.showSingleAnno(undefined)
-    }
+    
 
     /**
      * Handle actions that have been performed by an annotation 
@@ -346,8 +343,16 @@ class Canvas extends Component{
     }
 
     onAnnoLabelInputUpdate(anno){
-        this.updateSelectedAnno(anno, modes.VIEW)
+        this.updateSelectedAnno(anno)
         console.log('onAnnoLabelInputUpdate ', anno)
+    }
+
+    onAnnoLabelInputClose(){
+        console.log('onAnnoLabelInputClose')
+        this.svg.current.focus()
+        this.showLabelInput(false)
+        this.showSingleAnno(undefined)
+        this.updateSelectedAnno(this.state.selectedAnno, modes.VIEW)
     }
 
     handleImgBarClose(){

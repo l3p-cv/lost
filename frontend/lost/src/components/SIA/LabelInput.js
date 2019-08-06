@@ -58,6 +58,7 @@ class LabelInput extends Component{
     onChange(e, item ){
         console.log('LabelInput onChange', e, item)
         this.setState({ label: item })
+        this.annoLabelUpdate(item)
         this.inputRef.current.click()
     }
 
@@ -92,7 +93,7 @@ class LabelInput extends Component{
 
     annoLabelUpdate(label){
         if (this.props.onLabelUpdate){
-            this.props.onLabelUpdate(label)
+            this.props.onLabelUpdate(label.value)
         }
     }
 

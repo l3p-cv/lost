@@ -73,10 +73,10 @@ class AnnoLabelInput extends Component{
             this.props.allowedActions, this.props.selectedAnno)) return
         console.log('LabelInput confirmLabel label', label)
         if (label){
-            if (label.value !== -1){
+            if (label !== -1){
                 this.annoLabelUpdate({
                     ...this.props.selectedAnno,
-                    labelIds: [label.value],
+                    labelIds: [label],
                     status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
                 })
             } else {
@@ -107,7 +107,7 @@ class AnnoLabelInput extends Component{
                     initLabelIds={this.props.selectedAnno.labelIds}
                     relatedId={this.props.selectedAnno.id}
                     visible={this.props.visible}
-                    onLabelUpdate={anno => this.updateAnnoLabel(anno)}
+                    onLabelUpdate={label => this.updateAnnoLabel(label)}
                     possibleLabels={this.props.possibleLabels}
                     renderPopup
                     focusOnRender
