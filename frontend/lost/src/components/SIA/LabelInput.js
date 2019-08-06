@@ -10,6 +10,8 @@ class LabelInput extends Component{
         this.state = {
             label: undefined,
             possibleLabels: [],
+            performInit: true,
+            defaultLabelValue: {key: -1, text:"no label", value:-1}
         }
         this.inputRef = React.createRef()
     }
@@ -17,8 +19,23 @@ class LabelInput extends Component{
     componentWillMount(){
         this.updatePossibleLabels()
     }
+
+    // componentDidMount(){
+    //     if (this.props.initLabelIds){
+    //         if(this.props.initLabelIds.length > 0){
+    //             const lbl = this.state.possibleLabels.find(e => {
+    //                 return e.value === this.props.initLabelIds[0]
+    //             })
+    //             if (lbl){
+    //                 this.setState({label:lbl})
+    //                 console.log('LabelInput set label to', lbl)
+    //             }
+    //         }
+    //     }
+    // }
     
     componentDidUpdate(prevProps){
+        console.log('LabelInput DidUpdate', this.state, this.props.initLabelIds, this.props.relatedId)
         if (this.props.visible){
             if (this.props.focusOnRender){
                 if (this.inputRef.current){
@@ -33,16 +50,24 @@ class LabelInput extends Component{
             this.updatePossibleLabels()
         }
         if (this.props.initLabelIds){
-            if (prevProps.relatedId !== this.props.relatedId){
+            if (this.state.performInit){
+                this.setState({performInit: false})
+                console.log('LabelInput InitLabels', this.props.initLabelIds, this.props.relatedId)
                 if(this.props.initLabelIds.length > 0){
                     const lbl = this.state.possibleLabels.find(e => {
                         return e.value === this.props.initLabelIds[0]
                     })
                     if (lbl){
                         this.setState({label:lbl})
+                        console.log('LabelInput set label to', lbl)
                     }
+                } else {
+                    this.setState({label:this.state.defaultLabelValue})
                 }
             }
+        }
+        if(prevProps.relatedId !== this.props.relatedId){
+            this.setState({performInit:true})
         }
     }
     /*************
@@ -72,7 +97,7 @@ class LabelInput extends Component{
                 return {key: e.id, value: e.id, text: e.label}
             })
         }
-        possibleLabels = [{key: -1, text:"no label", value:-1}, ...possibleLabels]
+        possibleLabels = [this.state.defaultLabelValue, ...possibleLabels]
         this.setState({possibleLabels})
 
     }
@@ -132,7 +157,12 @@ class LabelInput extends Component{
                         placeholder='Enter label'
                         tabIndex={0}
                         onKeyDown= {e => this.onKeyDown(e)}
-                        defaultValue={
+                        // defaultValue={
+                        //     this.state.label ?
+                        //     this.state.label.value :
+                        //     -1
+                        // }
+                        value={
                             this.state.label ?
                             this.state.label.value :
                             -1
@@ -183,6 +213,7 @@ class LabelInput extends Component{
                 />
             )
         } else {
+            console.log('LabelInput render', this.state)
             return this.renderLabelInput()
         }
         

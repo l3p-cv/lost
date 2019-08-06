@@ -110,6 +110,7 @@ class Canvas extends Component{
             this.putSelectedOnTop(prevState)
             if (prevState.imageLoaded !== this.state.imageLoaded){
                 this.updateCanvasView(this.props.annos.annotations)
+                this.intImageLabels(this.props.annos.image.labelIds)
             } 
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
@@ -655,6 +656,16 @@ class Canvas extends Component{
             this.props.onSVGUpdate(svg)
         }
     }
+
+    intImageLabels(labelIds){
+        console.log('initImageLabels', labelIds)
+        if (labelIds !== this.state.imgLabelIds){
+            this.setState({
+                imgLabelIds: labelIds
+            })
+        }
+    }
+
     updateCanvasView(annotations){
         
 
@@ -732,7 +743,6 @@ class Canvas extends Component{
                 svg={this.state.svg}
                 onClose={() => this.handleImgBarClose()}
                 onLabelUpdate={label => this.handleImgLabelUpdate(label)}
-                initLabelIds={this.state.imgLabelIds}
             />
             <Dimmer active={!this.props.image.id}><Loader>Loading</Loader></Dimmer>
 

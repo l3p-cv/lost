@@ -217,7 +217,10 @@ class SiaUpdate(object):
         self.history_json['annotations']['unchanged'] = list()
         self.history_json['annotations']['changed'] = list()
         self.history_json['annotations']['deleted'] = list()
+        self.img_label = None
 
+        if len(data['imgLabelIds']) > 0:
+            self.img_label = model.Label(label_leaf_id=data['imgLabelIds'][0])
         # store certain annotations    
         if 'bBoxes' in data['annotations']:
             self.b_boxes = data['annotations']['bBoxes']
@@ -247,6 +250,8 @@ class SiaUpdate(object):
         if self.polygons is not None:
             self.__update_annotations(self.polygons, dtype.TwoDAnno.POLYGON)
         self.image_anno.state = state.Anno.LABELED
+        # Update Image Label
+        self.image_anno.label = self.img_label
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         self.__update_history_json_file()
@@ -443,6 +448,10 @@ class SiaSerialize(object):
         self.sia_json['image']['isLast'] = self.is_last_image
         self.sia_json['image']['number'] = self.current_image_number
         self.sia_json['image']['amount'] = self.total_image_amount
+        if self.image_anno.label is None:
+            self.sia_json['image']['labelIds'] = []
+        else:
+            self.sia_json['image']['labelIds'] = [self.image_anno.label.label_leaf_id]
         self.sia_json['annotations'] = dict()
         self.sia_json['annotations']['bBoxes'] = list()
         self.sia_json['annotations']['points'] = list()

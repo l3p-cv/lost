@@ -9,6 +9,7 @@ image = api.model('Image', {
     'amount': fields.Integer(readOnly=True, description='Number of total images in that annotation task.'),
     'isFirst': fields.Boolean(readOnly=True, description='Weather the image is the first one of the annotation process.'),
     'isLast': fields.Boolean(readOnly=True, description='Weather the image is the last one of the annotation process.'),
+    'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to this image.'),
 })
 
 bbox_data = api.model('BBox Data',{
