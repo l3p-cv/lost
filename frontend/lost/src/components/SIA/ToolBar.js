@@ -162,17 +162,17 @@ class ToolBar extends Component{
     renderFinishPrompt(){
         return (
             <Dimmer page active={this.state.showFinishPrompt}>
-                <Header as="h2" inverted>
+                <Header as="h3" inverted>
                     <Icon name='paper plane outline'></Icon>
                     Do you wish to FINISH this SIA Task?
                 </Header>
-                <Button color="green" inverted
+                <Button basic color="green" inverted
                     onClick={() => this.setFinished()}
                 >
                     <Icon name='check'></Icon>
                     Yes
                 </Button>
-                <Button color="red" inverted
+                <Button basic color="red" inverted
                     onClick={() => this.toggleFinishPrompt()}
                 >
                     <Icon name='ban'></Icon> No
