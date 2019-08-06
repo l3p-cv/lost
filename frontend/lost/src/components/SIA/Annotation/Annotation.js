@@ -128,7 +128,7 @@ class Annotation extends Component{
                 break
             case modes.EDIT:
                 newAnno = this._annoUpdateHelper()
-                this.performedAction(newAnno, annoActions.ADDED)
+                this.performedAction(newAnno, annoActions.EDITED)
                 break
             case modes.MOVE:
                 newAnno = this._annoUpdateHelper()

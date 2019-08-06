@@ -303,7 +303,7 @@ class Canvas extends Component{
                 this.updateSelectedAnno(anno, modes.VIEW)
                 break
             case annoActions.ADDED:
-                this.updateSelectedAnno(anno)
+                this.updateSelectedAnno(anno, modes.VIEW)
                 break
             case annoActions.EDITED:
                 this.updateSelectedAnno(anno, modes.VIEW)
@@ -585,6 +585,13 @@ class Canvas extends Component{
         }
     }
 
+    /**
+     * Update selected anno and override initMode if desired
+     * 
+     * @param {object} anno - The new annotation the becomes the selected anno
+     * @param {string} initMode - The new initMode for the selected anno
+     * @returns The new anno that will set as selectedAnno
+     */
     updateSelectedAnno(anno, initMode=undefined){
         if (!anno) return
         const filtered = this.state.annos.filter( (el) => {
@@ -601,6 +608,7 @@ class Canvas extends Component{
         if(this.props.onAnnoSelect){
             this.props.onAnnoSelect(anno)
         }
+        return newAnno
     }
 
     showSingleAnno(annoId){
