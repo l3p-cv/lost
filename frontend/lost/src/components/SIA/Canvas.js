@@ -385,6 +385,9 @@ class Canvas extends Component{
             this.setState({
                 selectedAnno: {id: undefined}
             })
+            if (this.state.showLabelInput){
+                this.onAnnoLabelInputClose()
+            }
         }
         if(this.props.onAnnoSelect){
             this.props.onAnnoSelect(anno)
