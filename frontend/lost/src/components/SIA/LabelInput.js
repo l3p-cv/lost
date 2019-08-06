@@ -10,7 +10,6 @@ class LabelInput extends Component{
         this.state = {
             label: undefined,
             possibleLabels: [],
-            // popupOpen: false
         }
         this.inputRef = React.createRef()
     }
@@ -28,11 +27,8 @@ class LabelInput extends Component{
                 }
             }
 
-        } 
+        }
 
-        // if (prevProps.keyDown !== this.props.keyDown){
-        //     this.performKeyAction(this.props.keyDown)
-        // }
         if (prevProps.possibleLabels !== this.props.possibleLabels){
             this.updatePossibleLabels()
         }
@@ -62,20 +58,8 @@ class LabelInput extends Component{
     onChange(e, item ){
         console.log('LabelInput onChange', e, item)
         this.setState({ label: item })
-        // this.updateSelectedAnnoLabel(item)
-        // this.annoLabelUpdate(item)
-        // this.confirmLabel()
+        this.inputRef.current.click()
     }
-
-    // handleLabelClick(e, item){
-    //     console.log('handleLabelClick', item)
-    //     // this.setState({ label: item })
-    //     this.confirmLabel()
-    // }
-    // handleClick(){
-    //     this.annoLabelUpdate(this.state.label)
-    //     this.closeLabelInput()
-    // }
 
     /*************
      * LOGIC     *
