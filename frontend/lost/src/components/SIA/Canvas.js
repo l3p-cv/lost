@@ -87,7 +87,8 @@ class Canvas extends Component{
             showSingleAnno: undefined,
             showLabelInput: false,
             imageLoaded: false,
-            imgLabelIds: []
+            imgLabelIds: [],
+            performedImageInit: false,
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -129,12 +130,25 @@ class Canvas extends Component{
                 imageLoaded: false
             })
         }
+        if (this.state.performedImageInit){
+            console.log('canvasHist Performed image init', this.state)
+            // Initialize canvas history
+            this.setState({performedImageInit:false})
+            this.hist.clearHist()
+            this.hist.push({
+                ...this.getAnnos(),
+                selectedAnno: undefined
+            }, 'init')
+        }
         if (this.state.imageLoaded){
             // Selected annotation should be on top
             this.putSelectedOnTop(prevState)
             if (prevState.imageLoaded !== this.state.imageLoaded){
                 this.updateCanvasView(this.props.annos.annotations)
-                this.intImageLabels(this.props.annos.image.labelIds)
+                this.setImageLabels(this.props.annos.image.labelIds)
+                this.setState({
+                    performedImageInit:true
+                })
             } 
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
@@ -149,6 +163,7 @@ class Canvas extends Component{
         // if (prevProps.workingOnAnnoTask !== this.props.workingOnAnnoTask){
         //     this.updateCanvasView()
         // }
+        console.log('canvasHist canvas state', this.hist.getHist(), this.state)
     }
     
     onImageLoad(){
@@ -277,6 +292,11 @@ class Canvas extends Component{
                     this.state.selectedAnno, modes.ADD
                 )
                 break
+            case 'z':
+                this.undo()
+                break
+            case 'r':
+                this.redo()
             default:
                     break
         }
@@ -316,6 +336,7 @@ class Canvas extends Component{
      */
     onAnnoPerformedAction(anno, pAction){
         console.log('onAnnoPerformedAction', anno, pAction)
+        let updatedAnnos = undefined
         switch(pAction){
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno)
@@ -324,7 +345,11 @@ class Canvas extends Component{
                 this.updateSelectedAnno(anno, modes.VIEW)
                 break
             case canvasActions.ANNO_MOVED:
-                this.updateSelectedAnno(anno, modes.VIEW)
+                updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos),
+                    selectedAnno: updatedAnnos.selectedAnno
+                }, pAction)
                 break
             case canvasActions.ANNO_ADDED_NODE:
                 this.updateSelectedAnno(anno, modes.VIEW)
@@ -333,8 +358,12 @@ class Canvas extends Component{
                 this.updateSelectedAnno(anno, modes.VIEW)
                 break
             case canvasActions.ANNO_DELETED:
-                this.updateSelectedAnno(anno, modes.DELETED)
+                updatedAnnos = this.updateSelectedAnno(anno, modes.DELETED)
                 this.selectAnnotation(undefined)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos),
+                    selectedAnno: undefined
+                }, pAction)
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 this.updateSelectedAnno(anno)
@@ -400,6 +429,37 @@ class Canvas extends Component{
      * LOGIC     *
     **************/
 
+    undo(){
+        if (!this.hist.isEmpty()){
+            const cState = this.hist.undo()
+            console.log('hist UNDO: ',cState)
+            this.setCanvasState(cState.entry.annotations,
+                cState.entry.imgLabelIds, cState.selectedAnno)
+        }
+    }
+
+    redo(){
+        if (!this.hist.isEmpty()){
+            const cState = this.hist.redo()
+            console.log('hist REDO: ',cState)
+            this.setCanvasState(cState.entry.annotations,
+                cState.entry.imgLabelIds, cState.entry.selectedAnno)
+        }
+    }
+
+    /**
+     * Set state of Canvas annotations and imageLabels.
+     * 
+     * @param {list} annotations - Annotations in backend format
+     * @param {list} imgLabelIds - IDs of the image labels
+     */
+    setCanvasState(annotations, imgLabelIds, selectedAnno){
+        this.updateCanvasView({...annotations})
+        this.setImageLabels([...imgLabelIds])
+        // this.setState({selectedAnno: selectedAnno})
+        this.selectAnnotation(selectedAnno)
+    }
+
     selectAnnotation(anno){
         if (anno){
             this.setState({
@@ -417,6 +477,7 @@ class Canvas extends Component{
         if(this.props.onAnnoSelect){
             this.props.onAnnoSelect(anno)
         }
+        console.log('hist selectAnno', anno)
     }
     // canvasKeyPress(key, down=true){
     //     if (down){
@@ -473,7 +534,7 @@ class Canvas extends Component{
     //     this.setState({annos: [...annos]})
     // }
 
-    getAnnoBackendFormat(forBackendPost=false){
+    getAnnoBackendFormat(forBackendPost=false, annos=undefined){
         // let annos = []  
         // //Get newest anno data from components
         // this.annoRefs.forEach( ref => {
@@ -481,7 +542,8 @@ class Canvas extends Component{
         //         annos.push(ref.current.getResult())
         //     }
         // })
-        const bAnnos = this.state.annos.map( el => {
+        let myAnnos = annos ? annos : this.state.annos
+        const bAnnos = myAnnos.map( el => {
             var annoId 
             if (forBackendPost){
                 // If an annotation will be send to backend,
@@ -519,8 +581,9 @@ class Canvas extends Component{
     //     }
     // }
 
-    getAnnos(){
-        const backendFormat = this.getAnnoBackendFormat(true)
+    getAnnos(annos=undefined){
+        const myAnnos = annos ? annos : this.state.annos
+        const backendFormat = this.getAnnoBackendFormat(true, myAnnos)
         const finalData = {
             imgId: this.props.annos.image.id,
             imgLabelIds: this.state.imgLabelIds,
@@ -624,16 +687,18 @@ class Canvas extends Component{
         }) 
         const newAnno = {...anno, initMode:initMode}
         filtered.push(newAnno)
+        const newAnnos = [...filtered]
         this.setState({
-            annos: [
-            ...filtered
-            ],
+            annos: newAnnos,
             selectedAnno: newAnno
         })
         if(this.props.onAnnoSelect){
             this.props.onAnnoSelect(anno)
         }
-        return newAnno
+        return {
+            annos: newAnnos,
+            selectedAnno: newAnno
+        }
     }
 
     showSingleAnno(annoId){
@@ -693,7 +758,7 @@ class Canvas extends Component{
         }
     }
 
-    intImageLabels(labelIds){
+    setImageLabels(labelIds){
         console.log('initImageLabels', labelIds)
         if (labelIds !== this.state.imgLabelIds){
             this.setState({
@@ -743,6 +808,7 @@ class Canvas extends Component{
         // Do not render annotations while moving the camera!
         if (this.state.mode !== modes.CAMERA_MOVE){
             // this.annoRefs = []
+            console.log('hist Render annotations', this.state.annos)
             const annos =  this.state.annos.map((el) => {
                 // this.annoRefs.push(React.createRef())
                 return <Annotation type={el.type} 

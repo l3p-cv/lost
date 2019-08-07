@@ -34,9 +34,9 @@ class Annotation extends Component{
             this.setMode(modes.CREATE)
         } 
         this.setState({anno: {...this.props.data}})
-        if (this.props.data.status === annoStatus.DELETED){
-            this.setVisible(false)
-        }
+        // if (this.props.data.status === annoStatus.DELETED){
+        //     this.setVisible(false)
+        // }
     }
 
     componentDidUpdate(prevProps){
@@ -67,9 +67,17 @@ class Annotation extends Component{
                 console.log('Annotation update anno', this.props.selectedAnno)
             }
         }
-        if (this.state.anno.status === annoStatus.DELETED){
-            this.setVisible(false)
-        }
+        // if (this.state.anno.status === annoStatus.DELETED){
+        //     this.setVisible(false)
+        // } else {
+            
+        // }
+        // if (prevProps.anno){
+        //     if (this.props.anno.initMode!==prevProps.anno.initMode){
+        //         console.log('hist initMode Changed to', this.props.anno.initMode)
+        //         this.setMode(this.props.anno.initMode)
+        //     }
+        // }
     }
     
     /*************
@@ -197,7 +205,7 @@ class Annotation extends Component{
                         // this.props.selectAnnotation(undefined)
                         // this.performedAction(anno, canvasActions.SELECTED)
                         
-                        this.setVisible(false)
+                        // this.setVisible(false)
                         const newAnno = {
                             ...anno, 
                             status: annoStatus.DELETED
@@ -346,7 +354,9 @@ class Annotation extends Component{
             />
     }
     render(){
+        console.log('hist Render Single Anno', this.state, this.props.showSingleAnno)
         if(!this.state.anno.data) return null
+        if(this.state.anno.status === annoStatus.DELETED) return null
         return (
             <g>
             <g visibility={this.state.visibility}

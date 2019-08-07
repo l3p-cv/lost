@@ -5,9 +5,9 @@ class UndoRedo{
         this.maxElements = maxElements
     }
 
-    push(element, description='No description'){
+    push(entry, description='No description'){
         const histEl = {
-            element,
+            entry,
             description
         }
         if (this.pointer !== 0){

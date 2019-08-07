@@ -100,6 +100,7 @@ class AnnoLabelInput extends Component{
      * RENDERING *
     **************/
     render(){
+        if (!this.props.visible) return null
         return (
             <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
                 <LabelInput svg={this.props.svg}
