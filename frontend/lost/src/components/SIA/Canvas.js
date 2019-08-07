@@ -6,9 +6,9 @@ import ImgBar from './ImgBar'
 
 import * as transform from './utils/transform'
 import * as modes from './types/modes'
-import History from './utils/hist'
+import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
-import * as annoActions from './types/annoActions'
+import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer } from 'semantic-ui-react';
 
 
@@ -93,29 +93,29 @@ class Canvas extends Component{
         this.svg = React.createRef()
         this.annoRefs = []
         this.container = React.createRef()
-        this.canvasHist = new History()
+        this.hist = new UndoRedo()
     }
 
     componentDidMount(){
         
-        // console.warn('No sia config will be loaded')
-        this.canvasHist.push('Crated Box1')
-        this.canvasHist.push('Created Polygon1')
-        this.canvasHist.push('Edited Polygon1')
+        // this.hist.push('box1', 'Crated Box1')
+        // this.hist.push('polygon1','Created Polygon1')
+        // this.hist.push('polygon2,','Edited Polygon1')
 
-        console.log('canvasHist', this.canvasHist.getHist())
-        console.log('canvasHist undo',this.canvasHist.undo())
-        this.canvasHist.push('Created Line1')
-        console.log('canvasHist', this.canvasHist.getHist())
-        console.log('canvasHist redo',this.canvasHist.redo())
-        console.log('canvasHist undo',this.canvasHist.undo())
-        console.log('canvasHist undo',this.canvasHist.undo())
-        console.log('canvasHist undo',this.canvasHist.undo())
-        console.log('canvasHist undo',this.canvasHist.undo())
-        console.log('canvasHist redo',this.canvasHist.redo())
-        console.log('canvasHist redo',this.canvasHist.redo())
-        console.log('canvasHist redo',this.canvasHist.redo())
-        console.log('canvasHist redo',this.canvasHist.redo())
+        // console.log('hist', this.hist.getHist())
+        // console.log('hist undo',this.hist.undo())
+        // console.log('hist redo',this.hist.redo())
+        // this.hist.push('Created Line1')
+        // console.log('hist', this.hist.getHist())
+        // console.log('hist redo',this.hist.redo())
+        // console.log('hist undo',this.hist.undo())
+        // console.log('hist undo',this.hist.undo())
+        // console.log('hist undo',this.hist.undo())
+        // console.log('hist undo',this.hist.undo())
+        // console.log('hist redo',this.hist.redo())
+        // console.log('hist redo',this.hist.redo())
+        // console.log('hist redo',this.hist.redo())
+        // console.log('hist redo',this.hist.redo())
 
 
 
@@ -317,24 +317,27 @@ class Canvas extends Component{
     onAnnoPerformedAction(anno, pAction){
         console.log('onAnnoPerformedAction', anno, pAction)
         switch(pAction){
-            case annoActions.SELECTED:
+            case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno)
                 break
-            case annoActions.CREATED:
+            case canvasActions.ANNO_CREATED:
                 this.updateSelectedAnno(anno, modes.VIEW)
                 break
-            case annoActions.MOVED:
+            case canvasActions.ANNO_MOVED:
                 this.updateSelectedAnno(anno, modes.VIEW)
                 break
-            case annoActions.ADDED:
+            case canvasActions.ANNO_ADDED_NODE:
                 this.updateSelectedAnno(anno, modes.VIEW)
                 break
-            case annoActions.EDITED:
+            case canvasActions.ANNO_EDITED:
                 this.updateSelectedAnno(anno, modes.VIEW)
                 break
-            case annoActions.DELETED:
+            case canvasActions.ANNO_DELETED:
                 this.updateSelectedAnno(anno, modes.DELETED)
                 this.selectAnnotation(undefined)
+                break
+            case canvasActions.ANNO_LABEL_UPDATE:
+                this.updateSelectedAnno(anno)
                 break
             default:
                 console.warn('Action not handeled', pAction)
@@ -358,7 +361,6 @@ class Canvas extends Component{
                 break
             case modes.EDIT_LABEL:
                 this.showSingleAnno(anno.id)
-
                 break
             case modes.VIEW:
                 this.showSingleAnno(undefined)
@@ -369,8 +371,7 @@ class Canvas extends Component{
     }
 
     onAnnoLabelInputUpdate(anno){
-        this.updateSelectedAnno(anno)
-        console.log('onAnnoLabelInputUpdate ', anno)
+        this.onAnnoPerformedAction(anno, canvasActions.ANNO_LABEL_UPDATE)
     }
 
     onAnnoLabelInputClose(){

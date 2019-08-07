@@ -1,18 +1,22 @@
-class History{
+class UndoRedo{
     constructor(maxElements=100){
         this.hist = []
         this.pointer = 0
         this.maxElements = maxElements
     }
 
-    push(element){
+    push(element, description='No description'){
+        const histEl = {
+            element,
+            description
+        }
         if (this.pointer !== 0){
             while (this.pointer !== 0){
                 this.pointer--
                 this.hist.shift()
             }
         }
-        this.hist.unshift(element)
+        this.hist.unshift(histEl)
         if (this.hist.length > this.maxElements){
             this.hist.pop()
         }
@@ -41,6 +45,14 @@ class History{
         return this.hist
     }
 
+    clearHist(){
+        this.hist = []
+    }
+
+    isEmpty(){
+        return this.hist.length === 0
+    }
+
 }
 
-export default History
+export default UndoRedo

@@ -7,7 +7,7 @@ import BBox from './BBox'
 import Line from './Line'
 import Polygon from './Polygon'
 import * as modes from '../types/modes'
-import * as annoActions from '../types/annoActions'
+import * as canvasActions from '../types/canvasActions'
 import * as annoStatus from '../types/annoStatus'
 import * as colorlut from '../utils/colorlut'
 import * as constraints from '../utils/constraints'
@@ -30,7 +30,7 @@ class Annotation extends Component{
         console.log('Annotation did mount ', this.props.data.id, this.props.data)
         if (this.props.data.initMode === modes.CREATE){
             // this.props.selectAnnotation(this.props.data)
-            this.performedAction(this.props.data, annoActions.SELECTED)
+            this.performedAction(this.props.data, canvasActions.ANNO_SELECTED)
             this.setMode(modes.CREATE)
         } 
         this.setState({anno: {...this.props.data}})
@@ -79,7 +79,7 @@ class Annotation extends Component{
         e.stopPropagation()
         console.log('Annotation select annotation on click: ', this.state.anno)
         // this.props.selectAnnotation(this.state.anno)
-        this.performedAction(this.state.anno, annoActions.SELECTED)
+        this.performedAction(this.state.anno, canvasActions.ANNO_SELECTED)
     }
 
     onMouseDown(e: Event){
@@ -124,15 +124,15 @@ class Annotation extends Component{
         switch (oldMode){
             case modes.ADD:
                 newAnno = this._annoUpdateHelper()
-                this.performedAction(newAnno, annoActions.ADDED)
+                this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE)
                 break
             case modes.EDIT:
                 newAnno = this._annoUpdateHelper()
-                this.performedAction(newAnno, annoActions.EDITED)
+                this.performedAction(newAnno, canvasActions.ANNO_EDITED)
                 break
             case modes.MOVE:
                 newAnno = this._annoUpdateHelper()
-                this.performedAction(newAnno, annoActions.MOVED)
+                this.performedAction(newAnno, canvasActions.ANNO_MOVED)
                 break
             case modes.CREATE:
                 newAnno = {
@@ -142,7 +142,7 @@ class Annotation extends Component{
                 }
                 this.setState({anno: newAnno})
                 // this.props.selectAnnotation(newAnno)
-                this.performedAction(newAnno, annoActions.CREATED)
+                this.performedAction(newAnno, canvasActions.ANNO_CREATED)
 
                 break
             default:
@@ -195,7 +195,7 @@ class Annotation extends Component{
                         this.setState({mode: mode})
                         // this.props.siaShowSingleAnno(undefined)
                         // this.props.selectAnnotation(undefined)
-                        // this.performedAction(anno, annoActions.SELECTED)
+                        // this.performedAction(anno, canvasActions.SELECTED)
                         
                         this.setVisible(false)
                         const newAnno = {
@@ -205,7 +205,7 @@ class Annotation extends Component{
                         this.setState({
                             anno: newAnno
                         })
-                        this.performedAction(newAnno, annoActions.DELETED)
+                        this.performedAction(newAnno, canvasActions.ANNO_DELETED)
                         console.log('Annotation in deleted state')
                     }
                     break
