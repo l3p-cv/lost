@@ -5,6 +5,7 @@ import Node from './Node'
 import InfSelectionArea from './InfSelectionArea'
 
 import * as transform from '../utils/transform'
+import * as canvasActions from '../types/canvasActions'
 
 import './Annotation.scss'
 import * as modes from '../types/modes'
@@ -29,13 +30,15 @@ class Polygon extends Component{
         if (this.props.mode === modes.CREATE){
             console.log('in Create Pos')
             const data = this.props.anno[0]
+            const newAnno = [
+                {x: data.x, y: data.y},
+                {x: data.x+1, y: data.y}
+            ]
             this.setState({
-                anno: [
-                    {x: data.x, y: data.y},
-                    {x: data.x+1, y: data.y}
-                ]
+                anno: newAnno
             })
             this.setMode(modes.CREATE, 1)
+            this.performedAction(newAnno, canvasActions.ANNO_CREATED_NODE, 1)
         } else {
             this.setState({anno: [...this.props.anno]})
         }
@@ -48,6 +51,9 @@ class Polygon extends Component{
         }
         if (prevProps.anno !== this.props.anno){
             this.setState({anno: [...this.props.anno]})
+        }
+        if (prevProps.selectedNode !== this.props.selectedNode){
+            this.setState({selectedNode: this.props.selectedNode})
         }
     }
 
@@ -119,6 +125,9 @@ class Polygon extends Component{
                         anno: newAnno,
                         selectedNode: this.state.selectedNode + 1
                     })
+                    this.performedAction(newAnno, 
+                        canvasActions.ANNO_CREATED_NODE,
+                        this.state.selectedNode+1)
                 }
                 break
             case modes.VIEW:
@@ -172,6 +181,12 @@ class Polygon extends Component{
     /*************
     *  LOGIC     *
     *************/
+    performedAction(anno, pAction, selectedNode){
+        if (this.props.onAction){
+            this.props.onAction(anno, pAction, selectedNode)
+        }
+    }
+
     toPolygonStr(data){
         return data.map( (e => {
             return `${e.x},${e.y}`
@@ -322,6 +337,7 @@ class Polygon extends Component{
 
     render(){
         if (this.state.anno){
+            console.log('hist render Polygon -> state, props.mode', this.state, this.props.mode)
             return (
                 <g
                     onMouseMove={e => this.onMouseMove(e)}

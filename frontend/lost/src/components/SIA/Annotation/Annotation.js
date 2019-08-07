@@ -46,10 +46,11 @@ class Annotation extends Component{
         if (prevProps.data !== this.props.data){
             console.log('Annotation got new annotation data from props', this.props.data)
             this.setState({anno: {...this.props.data}})
-        }
-        if(prevProps.data.initMode !== this.props.data.initMode){
             this.setMode(this.props.data.initMode)
         }
+        // if(prevProps.data.initMode !== this.props.data.initMode){
+        //     this.setMode(this.props.data.initMode)
+        // }
         if (prevProps.showSingleAnno !== this.props.showSingleAnno){
             if (this.props.showSingleAnno === undefined){
                 this.setVisible(true)
@@ -171,9 +172,30 @@ class Annotation extends Component{
      * @param {String} pAction 
      */
     performedAction(anno, pAction){
+
         if (this.props.onAction){
             this.props.onAction(anno, pAction)
         }
+    }
+
+    /**
+     * Handle a performed action from a specific annotation
+     * 
+     * @param {list} annoData - Annotation data that define a box, line, 
+     *      polygon, point
+     * @param {string} pAction - The performed action
+     * @param {int} selectedNode - The node of the annotation that 
+     *      was selected
+     */
+    performedAnnoAction(annoData, pAction, selectedNode){
+        console.log('hist performedAnnoAction', annoData, pAction, selectedNode)
+        const newAnno = {
+            ...this.state.anno,
+            data: [...annoData],
+            status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW,
+            selectedNode
+        }
+        this.performedAction(newAnno, pAction)
     }
 
     setMode(mode){
@@ -219,6 +241,7 @@ class Annotation extends Component{
                     break
                 default:
                     this.setState({mode: mode})
+                    console.log('hist Annotation setMode', mode)
                     break
             }
             if (this.props.onModeChange){
@@ -296,6 +319,7 @@ class Annotation extends Component{
             this.props.allowedActions,
             this.state.anno
         )
+        const selectedNode = this.state.anno.selectedNode
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} anno={anno} 
@@ -329,6 +353,8 @@ class Annotation extends Component{
                     svg={this.props.svg}
                     mode={this.state.mode}
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
+                    onAction={(annoData, pAction, selectedAnno) => this.performedAnnoAction(annoData, pAction, selectedAnno)}
+                    selectedNode={selectedNode}
                     />
             case 'line':
                 return <Line ref={this.myAnno} anno={anno}

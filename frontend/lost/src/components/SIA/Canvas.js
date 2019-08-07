@@ -347,7 +347,7 @@ class Canvas extends Component{
             case canvasActions.ANNO_MOVED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos),
+                    ...this.getAnnos(updatedAnnos.annos, false),
                     selectedAnno: updatedAnnos.selectedAnno
                 }, pAction)
                 break
@@ -361,12 +361,19 @@ class Canvas extends Component{
                 updatedAnnos = this.updateSelectedAnno(anno, modes.DELETED)
                 this.selectAnnotation(undefined)
                 this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos),
+                    ...this.getAnnos(updatedAnnos.annos, false),
                     selectedAnno: undefined
                 }, pAction)
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 this.updateSelectedAnno(anno)
+                break
+            case canvasActions.ANNO_CREATED_NODE:
+                const mergedAnno = this.mergeSelectedAnno(anno, modes.CREATE)
+                this.hist.push({
+                    ...this.getAnnos(mergedAnno.annos, false),
+                    selectedAnno: mergedAnno.selectedAnno
+                }, pAction)
                 break
             default:
                 console.warn('Action not handeled', pAction)
@@ -434,7 +441,7 @@ class Canvas extends Component{
             const cState = this.hist.undo()
             console.log('hist UNDO: ',cState)
             this.setCanvasState(cState.entry.annotations,
-                cState.entry.imgLabelIds, cState.selectedAnno)
+                cState.entry.imgLabelIds, cState.entry.selectedAnno)
         }
     }
 
@@ -581,9 +588,9 @@ class Canvas extends Component{
     //     }
     // }
 
-    getAnnos(annos=undefined){
+    getAnnos(annos=undefined, removeFrontedIds=true){
         const myAnnos = annos ? annos : this.state.annos
-        const backendFormat = this.getAnnoBackendFormat(true, myAnnos)
+        const backendFormat = this.getAnnoBackendFormat(removeFrontedIds, myAnnos)
         const finalData = {
             imgId: this.props.annos.image.id,
             imgLabelIds: this.state.imgLabelIds,
@@ -636,18 +643,20 @@ class Canvas extends Component{
     createNewAnnotation(e){
         if (this.props.selectedTool){
             const mousePos = this.getMousePosition(e)
+            const newAnno = {
+                id: _.uniqueId('new'),
+                type: this.props.selectedTool,
+                data: [{
+                    x: mousePos.x, 
+                    y: mousePos.y
+                }],
+                initMode: modes.CREATE,
+                status: annoStatus.NEW,
+                labelIds: []
+            }
             this.setState({
-                annos: [...this.state.annos, {
-                    id: _.uniqueId('new'),
-                    type: this.props.selectedTool,
-                    data: [{
-                        x: mousePos.x, 
-                        y: mousePos.y
-                    }],
-                    initMode: modes.CREATE,
-                    status: annoStatus.NEW,
-                    labelIds: []
-                }]
+                annos: [...this.state.annos, newAnno],
+                selectedAnno: newAnno
             })
         } else {
             console.warn('No annotation tool selected!')
@@ -678,23 +687,29 @@ class Canvas extends Component{
      * 
      * @param {object} anno - The new annotation the becomes the selected anno
      * @param {string} initMode - The new initMode for the selected anno
-     * @returns The new anno that will set as selectedAnno
+     * @returns The new anno that was set as selectedAnno in state and 
+     *      the new annos list that was set in state
      */
     updateSelectedAnno(anno, initMode=undefined){
         if (!anno) return
+        const merged = this.mergeSelectedAnno(anno, initMode)
+        this.setState({
+            annos: merged.annos,
+            selectedAnno: merged.selectedAnno
+        })
+        if(this.props.onAnnoSelect){
+            this.props.onAnnoSelect(anno)
+        }
+        return merged
+    }
+
+    mergeSelectedAnno(anno, initMode=undefined){
         const filtered = this.state.annos.filter( (el) => {
             return el.id !== anno.id
         }) 
         const newAnno = {...anno, initMode:initMode}
         filtered.push(newAnno)
         const newAnnos = [...filtered]
-        this.setState({
-            annos: newAnnos,
-            selectedAnno: newAnno
-        })
-        if(this.props.onAnnoSelect){
-            this.props.onAnnoSelect(anno)
-        }
         return {
             annos: newAnnos,
             selectedAnno: newAnno

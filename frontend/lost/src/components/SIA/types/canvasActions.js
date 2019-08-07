@@ -4,5 +4,6 @@ export const ANNO_CREATED='annoCreated'
 export const ANNO_MOVED='annoMoved'
 export const ANNO_EDITED='annoEdited'
 export const ANNO_ADDED_NODE='annoAddedNode'
-export const ANNO_LABEL_UPDATE='labelUpdate'
+export const ANNO_LABEL_UPDATE='annoLabelUpdate'
+export const ANNO_CREATED_NODE='annoCreatedNode'
 
