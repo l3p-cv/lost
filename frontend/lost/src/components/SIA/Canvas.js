@@ -91,7 +91,7 @@ class Canvas extends Component{
         }
         this.img = React.createRef()
         this.svg = React.createRef()
-        this.annoRefs = []
+        // this.annoRefs = []
         this.container = React.createRef()
         this.hist = new UndoRedo()
     }
@@ -212,7 +212,7 @@ class Canvas extends Component{
             this.selectAnnotation(undefined)
         }
         else if (e.button === 1){
-            this.collectAnnos()
+            // this.collectAnnos()
             this.setMode(modes.CAMERA_MOVE)
             // this.setState({svg:
             //     {...this.state.svg, 
@@ -229,7 +229,7 @@ class Canvas extends Component{
 
     onAnnoMouseDown(e){
         if (e.button === 1){
-            this.collectAnnos()
+            // this.collectAnnos()
             this.setMode(modes.CAMERA_MOVE)
         }
         else if (e.button === 2){
@@ -460,28 +460,28 @@ class Canvas extends Component{
             }
         }
     } 
-    // Collect the current data of all annotations and update state
-    collectAnnos(){
-        // console.log('Canvas collectAnnos this.annoRefs', this.annoRefs)
-        let annos = []  
-        this.annoRefs.forEach( ref => {
-            if (ref) {
-                annos.push(ref.current.getResult())
-            }
-        })
-        console.log('collectAnnos Result annos', annos)
-        this.setState({annos: [...annos]})
-    }
+    // // Collect the current data of all annotations and update state
+    // collectAnnos(){
+    //     // console.log('Canvas collectAnnos this.annoRefs', this.annoRefs)
+    //     let annos = []  
+    //     this.annoRefs.forEach( ref => {
+    //         if (ref) {
+    //             annos.push(ref.current.getResult())
+    //         }
+    //     })
+    //     console.log('collectAnnos Result annos', annos)
+    //     this.setState({annos: [...annos]})
+    // }
 
     getAnnoBackendFormat(forBackendPost=false){
-        let annos = []  
-        //Get newest anno data from components
-        this.annoRefs.forEach( ref => {
-            if (ref) {
-                annos.push(ref.current.getResult())
-            }
-        })
-        const bAnnos = annos.map( el => {
+        // let annos = []  
+        // //Get newest anno data from components
+        // this.annoRefs.forEach( ref => {
+        //     if (ref) {
+        //         annos.push(ref.current.getResult())
+        //     }
+        // })
+        const bAnnos = this.state.annos.map( el => {
             var annoId 
             if (forBackendPost){
                 // If an annotation will be send to backend,
@@ -742,12 +742,12 @@ class Canvas extends Component{
     renderAnnotations(){
         // Do not render annotations while moving the camera!
         if (this.state.mode !== modes.CAMERA_MOVE){
-            this.annoRefs = []
+            // this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
-                this.annoRefs.push(React.createRef())
+                // this.annoRefs.push(React.createRef())
                 return <Annotation type={el.type} 
                         data={el} key={el.id} svg={{...this.state.svg}}
-                        ref={this.annoRefs[this.annoRefs.length - 1]}
+                        // ref={this.annoRefs[this.annoRefs.length - 1]}
                         onMouseDown={e => this.onAnnoMouseDown(e)}
                         onAction={(anno, pAction) => this.onAnnoPerformedAction(anno, pAction)}
                         selectedAnno={this.state.selectedAnno}
