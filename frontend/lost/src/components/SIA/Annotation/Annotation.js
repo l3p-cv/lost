@@ -191,9 +191,9 @@ class Annotation extends Component{
         //     status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW,
         //     selectedNode
         // }
-        this.setState({
-            anno: anno
-        })
+        // this.setState({
+        //     anno: anno
+        // })
         this.performedAction(anno, pAction)
     }
 
