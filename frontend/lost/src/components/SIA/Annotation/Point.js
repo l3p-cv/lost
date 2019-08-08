@@ -3,6 +3,7 @@ import InfSelectionArea from './InfSelectionArea'
 import Node from './Node'
 import * as modes from '../types/modes'
 import * as transform from '../utils/transform'
+import * as canvasActions from '../types/canvasActions'
 
 class Point extends Component{
 
@@ -13,29 +14,35 @@ class Point extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            mode: modes.VIEW
+            // mode: modes.VIEW
         }
     }
 
     componentDidMount(prevProps){
         // console.log('Component mounted', this.props.data.id)
-        if (this.props.mode === modes.CREATE){
-            console.log('in Create Pos')
-            const data = this.props.anno[0]
-            this.setState({
-                mode: modes.VIEW,
-                anno: [
+        if (this.props.anno.initMode === modes.CREATE){
+            const data = this.props.anno.data[0]
+            const newAnno = {
+                ...this.props.anno,
+                data: [
                     {x: data.x, y: data.y}
-                ]
+                ],
+                selectedNode: 0
+            }
+            this.setState({
+                // mode: modes.VIEW,
+                anno: newAnno
             })
         } else {
-            this.setState({anno: [...this.props.anno]})
+            this.setState({anno: {...this.props.anno}})
         }
     }
 
     componentDidUpdate(prevProps){
+        console.log('POINT: componentDidUpdate')
         if (prevProps.anno !== this.props.anno){
-            this.setState({anno: [...this.props.anno]})
+            console.log('POINT: updated', this.props.anno)
+            this.setState({anno: {...this.props.anno}})
         }
     }
     
@@ -43,7 +50,7 @@ class Point extends Component{
     * ANNO EVENTS *
     ***************/
     onMouseMove(e){
-        switch (this.state.mode){
+        switch (this.state.anno.initMode){
             case modes.MOVE:
                 this.move(
                     e.movementX/this.props.svg.scale, 
@@ -56,23 +63,29 @@ class Point extends Component{
     }
 
     onMouseUp(e){
-        switch (this.state.mode){
+        switch (this.state.anno.initMode){
             case modes.MOVE:
                 if (e.button === 0){
-                    this.setMode(modes.VIEW)
+                    // this.setMode(modes.VIEW)
+                    this.requestModeChange(this.state.anno, modes.VIEW)
+                    this.performedAction(this.state.anno, canvasActions.ANNO_MOVED)
                 }
                 break
+            case modes.CREATE:
+                this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
+                
             default:
                 break
         }
     }
 
     onNodeMouseDown(e, idx){
-        switch (this.state.mode){
+        switch (this.state.anno.initMode){
             case modes.VIEW:
                 if (e.button === 0){
                     if (this.props.isSelected){
-                        this.setMode(modes.MOVE)
+                        this.requestModeChange(this.state.anno, modes.MOVE)
+                        // this.setMode(modes.MOVE)
                     }
                 }
                 break
@@ -82,39 +95,51 @@ class Point extends Component{
     /*************
     *  LOGIC     *
     **************/
+    performedAction(anno, pAction){
+        if (this.props.onAction){
+            this.props.onAction(anno, pAction)
+        }
+    }
 
-   forceMode(mode, selectedNode){
-        if (this.props.onModeChange){
-            this.props.onModeChange(mode, this.state.mode)
-        }
-        this.setState({
-            mode,
-            selectedNode
-        })
+    requestModeChange(anno, mode){
+        this.props.onModeChangeRequest(anno, mode)
     }
-    setMode(mode, selectedNode=undefined){
-        if (this.state.mode !== mode){
-            switch(mode){
-                case modes.MOVE:
-                    if (this.props.allowedToEdit){
-                        this.forceMode(mode, selectedNode)
-                    }
-                    break
-                default:
-                    this.forceMode(mode, selectedNode)
-                    break
-            }
-        }
-    }
+
+//    forceMode(mode, selectedNode){
+//         if (this.props.onModeChange){
+//             this.props.onModeChange(mode, this.state.mode)
+//         }
+//         this.setState({
+//             mode,
+//             selectedNode
+//         })
+//     }
+//     setMode(mode, selectedNode=undefined){
+//         if (this.state.mode !== mode){
+//             switch(mode){
+//                 case modes.MOVE:
+//                     if (this.props.allowedToEdit){
+//                         this.forceMode(mode, selectedNode)
+//                     }
+//                     break
+//                 default:
+//                     this.forceMode(mode, selectedNode)
+//                     break
+//             }
+//         }
+//     }
 
     move(movementX, movementY){
         this.setState({
-            anno : transform.move(this.state.anno, movementX, movementY)
+            anno : {
+                ...this.state.anno,
+                data: transform.move(this.state.anno.data, movementX, movementY)
+            }
         })
     }
 
     renderInfSelectionArea(){
-        switch (this.state.mode){
+        switch (this.state.anno.initMode){
             case modes.MOVE:
                 return <InfSelectionArea enable={true} 
                         svg={this.props.svg}
@@ -126,30 +151,31 @@ class Point extends Component{
 
     renderNode(){
         if (!this.props.isSelected) return null 
-        switch(this.state.mode){
+        switch(this.state.anno.initMode){
+            case modes.EDIT_LABEL:
             case modes.MOVE:
                 return null
             case modes.EDIT:
             case modes.CREATE:
-                return <Node anno={this.state.anno}
+                return <Node anno={this.state.anno.data}
                             key={this.state.selectedNode}
-                            idx={this.state.selectedNode} 
+                            idx={this.state.anno.selectedNode} 
                             style={this.props.style}
                             className={this.props.className} 
                             isSelected={this.props.isSelected}
-                            mode={this.state.mode}
+                            mode={this.state.anno.initMode}
                             svg={this.props.svg}
                             onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                             // onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
                             // onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                         />
             default:
-                return this.state.anno.map((e, idx) => {
-                    return <Node anno={this.state.anno} idx={idx} 
+                return this.state.anno.data.map((e, idx) => {
+                    return <Node anno={this.state.anno.data} idx={idx} 
                         key={idx} style={this.props.style}
                         className={this.props.className} 
                         isSelected={this.props.isSelected}
-                        mode={this.state.mode}
+                        mode={this.state.anno.initMode}
                         svg={this.props.svg}
                         onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                         // onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
@@ -159,7 +185,7 @@ class Point extends Component{
     }
 
     renderPoint(){
-        return this.state.anno.map((e, idx) => {
+        return this.state.anno.data.map((e, idx) => {
             return (
                 <circle key={idx} 
                     cx={e.x} 
@@ -175,6 +201,7 @@ class Point extends Component{
 
     render(){
         if (this.state.anno){
+            console.log('POINT: render', this.state.anno)
             return(
                 <g
                     onMouseMove={e => this.onMouseMove(e)}
@@ -186,7 +213,7 @@ class Point extends Component{
                 </g>
                 )
         } else {
-            return <g></g>
+            return null
         }
     }
 }

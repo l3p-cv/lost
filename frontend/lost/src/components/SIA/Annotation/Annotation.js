@@ -328,7 +328,7 @@ class Annotation extends Component{
     **************/
     renderAnno(){
         const type = this.props.type
-        const anno = this.state.anno.data
+        // const anno = this.state.anno.data
         const allowedToEdit = constraints.allowedToEditBounds(
             this.props.allowedActions,
             this.state.anno
@@ -336,14 +336,16 @@ class Annotation extends Component{
         // const selectedNode = this.state.anno.selectedNode
         switch(type) {
             case 'point':
-                return <Point ref={this.myAnno} anno={anno} 
+                return <Point ref={this.myAnno} anno={this.state.anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
-                    allowedToEdit={allowedToEdit}
+                    // allowedToEdit={allowedToEdit}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    mode={this.state.anno.initMode}
-                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
+                    // mode={this.state.anno.initMode}
+                    // onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
+                    onModeChangeRequest={(anno, mode) => this.handleModeChangeRequest(anno, mode)}
+                    onAction={(anno, pAction) => this.performedAnnoAction(anno, pAction)}
                     />
             case 'bBox':
                 return <BBox ref={this.myAnno} anno={this.state.anno} 

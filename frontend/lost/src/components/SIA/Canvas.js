@@ -348,10 +348,12 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_CREATED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                console.log('ANNO_CREATED updatedAnnos', updatedAnnos)
                 this.hist.push({
                     ...this.getAnnos(updatedAnnos.annos, false),
                     selectedAnno: updatedAnnos.selectedAnno
                 }, pAction)
+                this.showSingleAnno(undefined)
                 break
             case canvasActions.ANNO_MOVED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
