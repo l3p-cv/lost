@@ -339,8 +339,19 @@ class Canvas extends Component{
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno)
                 break
+            case canvasActions.ANNO_START_CREATING:
+                updatedAnnos = this.updateSelectedAnno(anno)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos, false),
+                    selectedAnno: updatedAnnos.selectedAnno
+                }, pAction)
+                break
             case canvasActions.ANNO_CREATED:
-                this.updateSelectedAnno(anno, modes.VIEW)
+                updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos, false),
+                    selectedAnno: updatedAnnos.selectedAnno
+                }, pAction)
                 break
             case canvasActions.ANNO_MOVED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)

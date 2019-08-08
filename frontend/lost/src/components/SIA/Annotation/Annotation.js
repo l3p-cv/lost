@@ -346,22 +346,24 @@ class Annotation extends Component{
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'bBox':
-                return <BBox ref={this.myAnno} anno={anno} 
+                return <BBox ref={this.myAnno} anno={this.state.anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
-                    allowedToEdit={allowedToEdit}
+                    // allowedToEdit={allowedToEdit}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     onNodeMouseDown={(e, idx) => this.onNodeMouseDown(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    mode={this.state.anno.initMode}
-                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
+                    // mode={this.state.anno.initMode}
+                    // onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
+                    onModeChangeRequest={(anno, mode) => this.handleModeChangeRequest(anno, mode)}
+                    onAction={(anno, pAction) => this.performedAnnoAction(anno, pAction)}
                     />
             case 'polygon':
                 return <Polygon ref={this.myAnno} anno={this.state.anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
-                    allowedToEdit={allowedToEdit}
+                    // allowedToEdit={allowedToEdit}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
@@ -374,7 +376,7 @@ class Annotation extends Component{
                 return <Line ref={this.myAnno} anno={this.state.anno}
                     style={this.getStyle()}
                     className={this.getCssClass()}
-                    allowedToEdit={allowedToEdit}
+                    // allowedToEdit={allowedToEdit}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
                     // mode={this.state.anno.initMode}
