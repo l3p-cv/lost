@@ -21,52 +21,23 @@ class Polygon extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            // mode: modes.VIEW,
-            // selectedNode: undefined
         }
     }
 
     componentDidMount(){
         console.log('Polygon did mount', this.props, this.props.anno)
-        if (this.props.anno.initMode === modes.CREATE){
+        if (this.props.anno.mode === modes.CREATE){
             this.performedAction(this.props.anno, canvasActions.ANNO_CREATED_NODE)
         }
-        // if (this.props.anno.initMode === modes.CREATE){
-        //     console.log('in Create Pos')
-        //     const data = this.props.anno.data[0]
-        //     const newAnnoData = [
-        //         {x: data.x, y: data.y},
-        //         {x: data.x+1, y: data.y}
-        //     ]
-        //     const newAnno =  {
-        //         ...this.props.anno,
-        //         data: newAnnoData,
-        //         selectedNode: 1
-        //     }
-        //     this.setState({
-        //         anno: newAnno
-        //     })
-        //     // this.setMode(modes.CREATE, 1)
-        //     // this.selectNode(1)
-        //     // this.performedAction(newAnno, canvasActions.ANNO_CREATED_NODE)
-        // } else {
-        //     this.setState({anno: {...this.props.anno}})
-        // }
         this.setState({anno: {...this.props.anno}})
     }
 
     componentDidUpdate(prevProps){
         console.log('Update polygon-> state', this.state.anno)
-        // if (prevProps.mode !== this.props.mode){
-        //     this.setMode(this.props.mode)
-        // }
         if (prevProps.anno !== this.props.anno){
             console.log('POLYGON: annoChangeMode -> Update anno from props -> state', this.props.anno, this.state.anno)
             this.setState({anno: {...this.props.anno}})
         }
-        // if (prevProps.selectedNode !== this.props.selectedNode){
-        //     this.setState({selectedNode: this.props.selectedNode})
-        // }
     }
 
 
@@ -74,7 +45,7 @@ class Polygon extends Component{
     * ANNO EVENTS *
     ***************/
     onMouseMove(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 this.move(
                     e.movementX/this.props.svg.scale, 
@@ -87,7 +58,7 @@ class Polygon extends Component{
     }
 
     onMouseUp(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 if (e.button === 0){
                     this.performedAction(this.state.anno, canvasActions.ANNO_MOVED)
@@ -100,7 +71,7 @@ class Polygon extends Component{
     }
 
     onMouseDown(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.VIEW:
                 if (e.button === 0){
                     if (this.props.isSelected){
@@ -115,7 +86,7 @@ class Polygon extends Component{
     ***************/
 
     onNodeMouseUp(e, idx){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.EDIT:
                 this.performedAction(this.state.anno, canvasActions.ANNO_EDITED)
                 this.requestModeChange(this.state.anno, modes.VIEW)
@@ -126,7 +97,7 @@ class Polygon extends Component{
     }
 
     onNodeMouseDown(e,idx){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.CREATE:
                 if (e.button === 2){
                     console.log('onNodeMouseDown create')
@@ -153,13 +124,12 @@ class Polygon extends Component{
                         ...this.state.anno,
                         selectedNode: idx
                     }, modes.EDIT)
-                    // this.setMode(modes.EDIT, idx)
                 }
         }
     }
 
     onNodeMouseMove(e, idx){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.CREATE:
                 this.updateAnnoByMousePos(e, idx)
             case modes.EDIT:
@@ -172,10 +142,9 @@ class Polygon extends Component{
     }
 
     onNodeDoubleClick(e, idx){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.CREATE:
                 this.performedAction(this.state.anno, canvasActions.ANNO_CREATED_FINAL_NODE)
-                // this.setMode(modes.VIEW)
                 
             default:
                 break
@@ -187,13 +156,12 @@ class Polygon extends Component{
     ***************/
     onEdgeMouseDown(e, idx){
         console.log('Edge mouse down', idx)
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.ADD:
                 this.addNode(e, idx)
                 break
             case modes.VIEW:
                 if (e.button === 0){
-                    // this.setMode(modes.MOVE)
                     this.requestModeChange(this.state.anno, modes.MOVE)
                 }
                 break
@@ -217,43 +185,6 @@ class Polygon extends Component{
         })).join(' ')
         
     }
-
-    // forceMode(mode, selectedNode){
-    //     const newAnno = {
-    //         ...this.state.anno,
-    //         selectedNode,
-    //         initMode: mode
-    //     }
-    //     if (this.props.onModeChange){
-    //         this.props.onModeChange(
-    //             newAnno)
-    //     }
-    //     this.setState({
-    //         anno: newAnno
-    //     })
-    // }
-
-    // // selectNode(selectedNode){
-    // //     this.setState({
-    // //         selectedNode
-    // //     })
-    // // }
-    // setMode(mode, selectedNode=undefined){
-    //     if (this.state.anno.initMode !== mode){
-    //         switch(mode){
-    //             case modes.ADD:
-    //             case modes.MOVE:
-    //             case modes.EDIT:
-    //                 if (this.props.allowedToEdit){
-    //                     this.forceMode(mode, selectedNode)
-    //                 }
-    //                 break
-    //             default:
-    //                 this.forceMode(mode, selectedNode)
-    //                 break
-    //         }
-    //     }
-    // }
 
     requestModeChange(anno, mode){
         console.log('POLYGON: annoChangeMode - requestModeChange', anno, mode)
@@ -307,7 +238,7 @@ class Polygon extends Component{
 
     renderNodes(){
         if (!this.props.isSelected) return null
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 return null
             case modes.EDIT:
@@ -316,7 +247,7 @@ class Polygon extends Component{
                         key={this.state.anno.selectedNode} style={this.props.style}
                         className={this.props.className} 
                         isSelected={this.props.isSelected}
-                        mode={this.state.anno.initMode}
+                        mode={this.state.anno.mode}
                         svg={this.props.svg}
                         onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                         onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
@@ -329,7 +260,7 @@ class Polygon extends Component{
                         key={idx} style={this.props.style}
                         className={this.props.className} 
                         isSelected={this.props.isSelected}
-                        mode={this.state.anno.initMode}
+                        mode={this.state.anno.mode}
                         svg={this.props.svg}
                         onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                         onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
@@ -342,7 +273,7 @@ class Polygon extends Component{
 
     renderEdges(){
         if (!this.props.isSelected) return null
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.VIEW:
             case modes.ADD:
                 let edges = this.state.anno.data.map((e, idx) => {
@@ -376,7 +307,7 @@ class Polygon extends Component{
     }
 
     renderInfSelectionArea(){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 return <InfSelectionArea enable={true} 
                         svg={this.props.svg}

@@ -416,7 +416,7 @@ class Canvas extends Component{
     //  * @param {String} mode 
     //  */
     // onAnnoModeChange(anno){
-    //     switch (anno.initMode){
+    //     switch (anno.mode){
     //         case modes.ADD:
     //         case modes.EDIT:
     //         case modes.MOVE:
@@ -682,7 +682,7 @@ class Canvas extends Component{
                     x: mousePos.x+1, 
                     y: mousePos.y
                 }],
-                initMode: modes.CREATE,
+                mode: modes.CREATE,
                 status: annoStatus.NEW,
                 labelIds: [],
                 selectedNode: 1
@@ -717,16 +717,16 @@ class Canvas extends Component{
     }
 
     /**
-     * Update selected anno and override initMode if desired
+     * Update selected anno and override mode if desired
      * 
      * @param {object} anno - The new annotation the becomes the selected anno
-     * @param {string} initMode - The new initMode for the selected anno
+     * @param {string} mode - The new mode for the selected anno
      * @returns The new anno that was set as selectedAnno in state and 
      *      the new annos list that was set in state
      */
-    updateSelectedAnno(anno, initMode=undefined){
+    updateSelectedAnno(anno, mode=undefined){
         if (!anno) return
-        const merged = this.mergeSelectedAnno(anno, initMode)
+        const merged = this.mergeSelectedAnno(anno, mode)
         this.setState({
             annos: merged.annos,
             selectedAnno: merged.selectedAnno
@@ -737,14 +737,14 @@ class Canvas extends Component{
         return merged
     }
 
-    mergeSelectedAnno(anno, initMode=undefined){
+    mergeSelectedAnno(anno, mode=undefined){
         const filtered = this.state.annos.filter( (el) => {
             return el.id !== anno.id
         }) 
         let newAnno
-        if (initMode){
-            newAnno = {...anno, initMode:initMode}
-            if (initMode === modes.DELETED){
+        if (mode){
+            newAnno = {...anno, mode:mode}
+            if (mode === modes.DELETED){
                 newAnno = {
                     ...newAnno,
                     status: annoStatus.DELETED
@@ -838,19 +838,19 @@ class Canvas extends Component{
             const imgSize = this.updateImageSize()
             annos = [
                 ...annotations.bBoxes.map((element) => {
-                    return {...element, type:'bBox', initMode: modes.VIEW, 
+                    return {...element, type:'bBox', mode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...annotations.lines.map((element) => {
-                    return {...element, type:'line', initMode: modes.VIEW, 
+                    return {...element, type:'line', mode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...annotations.polygons.map((element) => {
-                    return {...element, type:'polygon', initMode: modes.VIEW, 
+                    return {...element, type:'polygon', mode: modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...annotations.points.map((element) => {
-                    return {...element, type:'point', initMode: modes.VIEW, 
+                    return {...element, type:'point', mode: modes.VIEW, 
                         status: element.status ? element.status : annoStatus.DATABASE
                     }
                 })

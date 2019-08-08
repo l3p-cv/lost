@@ -15,7 +15,7 @@ class Line extends Polygon{
 
     renderEdges(){
         if (!this.props.isSelected) return null
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.VIEW:
             case modes.ADD:
                 return this.state.anno.data.map((e, idx) => {

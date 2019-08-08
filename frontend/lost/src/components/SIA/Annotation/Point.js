@@ -14,13 +14,11 @@ class Point extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            // mode: modes.VIEW
         }
     }
 
     componentDidMount(prevProps){
-        // console.log('Component mounted', this.props.data.id)
-        if (this.props.anno.initMode === modes.CREATE){
+        if (this.props.anno.mode === modes.CREATE){
             const data = this.props.anno.data[0]
             const newAnno = {
                 ...this.props.anno,
@@ -30,7 +28,6 @@ class Point extends Component{
                 selectedNode: 0
             }
             this.setState({
-                // mode: modes.VIEW,
                 anno: newAnno
             })
         } else {
@@ -50,7 +47,7 @@ class Point extends Component{
     * ANNO EVENTS *
     ***************/
     onMouseMove(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 this.move(
                     e.movementX/this.props.svg.scale, 
@@ -63,10 +60,9 @@ class Point extends Component{
     }
 
     onMouseUp(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 if (e.button === 0){
-                    // this.setMode(modes.VIEW)
                     this.requestModeChange(this.state.anno, modes.VIEW)
                     this.performedAction(this.state.anno, canvasActions.ANNO_MOVED)
                 }
@@ -80,12 +76,11 @@ class Point extends Component{
     }
 
     onNodeMouseDown(e, idx){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.VIEW:
                 if (e.button === 0){
                     if (this.props.isSelected){
                         this.requestModeChange(this.state.anno, modes.MOVE)
-                        // this.setMode(modes.MOVE)
                     }
                 }
                 break
@@ -105,30 +100,6 @@ class Point extends Component{
         this.props.onModeChangeRequest(anno, mode)
     }
 
-//    forceMode(mode, selectedNode){
-//         if (this.props.onModeChange){
-//             this.props.onModeChange(mode, this.state.mode)
-//         }
-//         this.setState({
-//             mode,
-//             selectedNode
-//         })
-//     }
-//     setMode(mode, selectedNode=undefined){
-//         if (this.state.mode !== mode){
-//             switch(mode){
-//                 case modes.MOVE:
-//                     if (this.props.allowedToEdit){
-//                         this.forceMode(mode, selectedNode)
-//                     }
-//                     break
-//                 default:
-//                     this.forceMode(mode, selectedNode)
-//                     break
-//             }
-//         }
-//     }
-
     move(movementX, movementY){
         this.setState({
             anno : {
@@ -139,7 +110,7 @@ class Point extends Component{
     }
 
     renderInfSelectionArea(){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 return <InfSelectionArea enable={true} 
                         svg={this.props.svg}
@@ -151,7 +122,7 @@ class Point extends Component{
 
     renderNode(){
         if (!this.props.isSelected) return null 
-        switch(this.state.anno.initMode){
+        switch(this.state.anno.mode){
             case modes.EDIT_LABEL:
             case modes.MOVE:
                 return null
@@ -163,11 +134,9 @@ class Point extends Component{
                             style={this.props.style}
                             className={this.props.className} 
                             isSelected={this.props.isSelected}
-                            mode={this.state.anno.initMode}
+                            mode={this.state.anno.mode}
                             svg={this.props.svg}
                             onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
-                            // onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
-                            // onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
                         />
             default:
                 return this.state.anno.data.map((e, idx) => {
@@ -175,10 +144,9 @@ class Point extends Component{
                         key={idx} style={this.props.style}
                         className={this.props.className} 
                         isSelected={this.props.isSelected}
-                        mode={this.state.anno.initMode}
+                        mode={this.state.anno.mode}
                         svg={this.props.svg}
                         onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
-                        // onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
                         />
                 })
         }

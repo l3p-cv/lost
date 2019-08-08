@@ -16,14 +16,11 @@ class BBox extends Component{
         super(props)
         this.state = {
             anno: undefined,
-            // selectedNode: undefined,
-            // mode: modes.VIEW
         }
     }
 
     componentDidMount(prevProps){
-        // console.log('Component mounted', this.props.data.id)
-        if (this.props.anno.initMode === modes.CREATE){
+        if (this.props.anno.mode === modes.CREATE){
             console.log('in Create Pos')
             const data = this.props.anno.data[0]
             const newAnno = {
@@ -40,7 +37,6 @@ class BBox extends Component{
                 anno: newAnno
             })
             this.performedAction(newAnno, canvasActions.ANNO_START_CREATING)
-            // this.setMode(modes.CREATE, 2)
             
         } else {
             this.setState({anno: {...this.props.anno}})
@@ -57,15 +53,13 @@ class BBox extends Component{
     * EVENTS    *
     **************/
     onNodeMouseMove(e, idx){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.CREATE:
             case modes.EDIT:
                 const mousePos = mouse.getMousePosition(e, this.props.svg)
                 const idxMinus = idx - 1 < 0 ? 3 : idx -1
                 const idxPlus = idx + 1 > 3 ? 0 : idx +1
                 let newAnnoData = [...this.state.anno.data]
-                // const movementX = e.movementX / this.props.svg.scale
-                // const movementY = e.movementY / this.props.svg.scale
                 if (idx % 2 === 0){
                     newAnnoData[idxMinus].x = mousePos.x
                     newAnnoData[idx].x = mousePos.x
@@ -90,33 +84,29 @@ class BBox extends Component{
     }
 
     onNodeMouseDown(e,idx){
-        switch(this.state.anno.initMode){
+        switch(this.state.anno.mode){
             case modes.VIEW:
                 if (e.button === 0){
                     console.log('Node mouse Down', idx)
-                    // this.setMode(modes.EDIT, idx)
                     this.requestModeChange(
                         {...this.state.anno, selectedNode:idx}, 
                         modes.EDIT
                     )
-                    // this.setState({selectedNode: idx})
                 }
                 break
         }
     }
 
     onNodeMouseUp(e, idx){
-        switch(this.state.anno.initMode){
+        switch(this.state.anno.mode){
             case modes.EDIT:
                 if (e.button === 0){
-                    // this.setMode(modes.VIEW)
                     this.requestModeChange(this.state.anno, modes.VIEW)
                     this.performedAction(this.state.anno, canvasActions.ANNO_EDITED)
                 }
                 break
             case modes.CREATE:
                 if (e.button === 2){
-                    // this.setMode(modes.VIEW)
                     console.log('BBOX: hist Created', this.state.anno)
                     this.requestModeChange(this.state.anno, modes.VIEW)
                     this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
@@ -128,7 +118,7 @@ class BBox extends Component{
     * ANNO EVENTS *
     ***************/
     onMouseMove(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 this.move(
                     e.movementX/this.props.svg.scale, 
@@ -141,12 +131,11 @@ class BBox extends Component{
     }
 
     onMouseUp(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 if (e.button === 0){
                     this.requestModeChange(this.state.anno, modes.VIEW)
                     this.performedAction(this.state.anno, canvasActions.ANNO_MOVED)
-                    // this.setMode(modes.VIEW)
                 }
                 break
             default:
@@ -155,12 +144,11 @@ class BBox extends Component{
     }
 
     onMouseDown(e){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.VIEW:
                 if (e.button === 0){
                     if (this.props.isSelected){
                         this.requestModeChange(this.state.anno, modes.MOVE)
-                        // this.setMode(modes.MOVE)
                     }
                 }
                 break
@@ -178,33 +166,7 @@ class BBox extends Component{
             this.props.onAction(anno, pAction)
         }
     }
-    // setMode(mode, nodeIdx=undefined){
-    //     if (this.state.mode !== mode){
-    //         switch (mode){
-    //             case modes.MOVE:
-    //             case modes.EDIT:
-    //                 if (this.props.allowedToEdit){
-    //                     if (this.props.onModeChange){
-    //                         this.props.onModeChange(mode, this.state.mode)
-    //                     }
-    //                     this.setState({
-    //                         mode: mode,
-    //                         selectedNode: nodeIdx
-    //                     })
-    //                 }
-    //                 break
-    //             default:
-    //                 if (this.props.onModeChange){
-    //                     this.props.onModeChange(mode, this.state.mode)
-    //                 }
-    //                 this.setState({
-    //                     mode: mode,
-    //                     selectedNode: nodeIdx
-    //                 })
-    //                 break
-    //         }
-    //     }
-    // }
+
     toPolygonStr(data){
         return data.map( (e => {
             return `${e.x},${e.y}`
@@ -226,7 +188,7 @@ class BBox extends Component{
     **************/
 
     renderPolygon(){
-        switch(this.state.anno.initMode){
+        switch(this.state.anno.mode){
             case modes.MOVE:
             case modes.EDIT:
             case modes.VIEW:
@@ -247,7 +209,7 @@ class BBox extends Component{
 
     renderNodes(){
         if (!this.props.isSelected) return null 
-        switch(this.state.anno.initMode){
+        switch(this.state.anno.mode){
             case modes.MOVE:
             case modes.EDIT_LABEL:
                 return null
@@ -259,7 +221,7 @@ class BBox extends Component{
                             style={this.props.style}
                             className={this.props.className} 
                             isSelected={this.props.isSelected}
-                            mode={this.state.anno.initMode}
+                            mode={this.state.anno.mode}
                             svg={this.props.svg}
                             onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                             onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
@@ -272,7 +234,7 @@ class BBox extends Component{
                         key={idx} style={this.props.style}
                         className={this.props.className} 
                         isSelected={this.props.isSelected}
-                        mode={this.state.anno.initMode}
+                        mode={this.state.anno.mode}
                         svg={this.props.svg}
                         onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                         onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
@@ -282,7 +244,7 @@ class BBox extends Component{
     }
 
     renderInfSelectionArea(){
-        switch (this.state.anno.initMode){
+        switch (this.state.anno.mode){
             case modes.MOVE:
                 return <InfSelectionArea enable={true} 
                         svg={this.props.svg}
