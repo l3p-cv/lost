@@ -61,7 +61,7 @@ class Polygon extends Component{
         //     this.setMode(this.props.mode)
         // }
         if (prevProps.anno !== this.props.anno){
-            console.log('Update polygon anno from props -> state, props', this.state.anno, this.props.anno)
+            console.log('POLYGON: annoChangeMode -> Update anno from props -> state', this.props.anno, this.state.anno)
             this.setState({anno: {...this.props.anno}})
         }
         // if (prevProps.selectedNode !== this.props.selectedNode){
@@ -90,7 +90,7 @@ class Polygon extends Component{
         switch (this.state.anno.initMode){
             case modes.MOVE:
                 if (e.button === 0){
-                    this.setMode(modes.VIEW)
+                    this.requestModeChange(this.state.anno, modes.VIEW)
                 }
                 break
             default:
@@ -103,7 +103,7 @@ class Polygon extends Component{
             case modes.VIEW:
                 if (e.button === 0){
                     if (this.props.isSelected){
-                        this.setMode(modes.MOVE)
+                        this.requestModeChange(this.state.anno, modes.MOVE)
                     }
                 }
                 break
@@ -116,7 +116,7 @@ class Polygon extends Component{
     onNodeMouseUp(e, idx){
         switch (this.state.anno.initMode){
             case modes.EDIT:
-                this.setMode(modes.VIEW)
+                this.requestModeChange(this.state.anno, modes.VIEW)
                 break
             default:
                 break
@@ -147,7 +147,11 @@ class Polygon extends Component{
                 break
             case modes.VIEW:
                 if (e.button === 0){
-                    this.setMode(modes.EDIT, idx)
+                    this.requestModeChange({
+                        ...this.state.anno,
+                        selectedNode: idx
+                    }, modes.EDIT)
+                    // this.setMode(modes.EDIT, idx)
                 }
         }
     }
@@ -169,7 +173,8 @@ class Polygon extends Component{
         switch (this.state.anno.initMode){
             case modes.CREATE:
                 this.performedAction(this.state.anno, canvasActions.ANNO_CREATED_FINAL_NODE)
-                this.setMode(modes.VIEW)
+                // this.setMode(modes.VIEW)
+                
             default:
                 break
         }
@@ -186,7 +191,8 @@ class Polygon extends Component{
                 break
             case modes.VIEW:
                 if (e.button === 0){
-                    this.setMode(modes.MOVE)
+                    // this.setMode(modes.MOVE)
+                    this.requestModeChange(this.state.anno, modes.MOVE)
                 }
                 break
             default:
@@ -210,41 +216,46 @@ class Polygon extends Component{
         
     }
 
-    forceMode(mode, selectedNode){
-        const newAnno = {
-            ...this.state.anno,
-            selectedNode,
-            initMode: mode
-        }
-        if (this.props.onModeChange){
-            this.props.onModeChange(
-                newAnno)
-        }
-        this.setState({
-            anno: newAnno
-        })
-    }
-
-    // selectNode(selectedNode){
+    // forceMode(mode, selectedNode){
+    //     const newAnno = {
+    //         ...this.state.anno,
+    //         selectedNode,
+    //         initMode: mode
+    //     }
+    //     if (this.props.onModeChange){
+    //         this.props.onModeChange(
+    //             newAnno)
+    //     }
     //     this.setState({
-    //         selectedNode
+    //         anno: newAnno
     //     })
     // }
-    setMode(mode, selectedNode=undefined){
-        if (this.state.anno.initMode !== mode){
-            switch(mode){
-                case modes.ADD:
-                case modes.MOVE:
-                case modes.EDIT:
-                    if (this.props.allowedToEdit){
-                        this.forceMode(mode, selectedNode)
-                    }
-                    break
-                default:
-                    this.forceMode(mode, selectedNode)
-                    break
-            }
-        }
+
+    // // selectNode(selectedNode){
+    // //     this.setState({
+    // //         selectedNode
+    // //     })
+    // // }
+    // setMode(mode, selectedNode=undefined){
+    //     if (this.state.anno.initMode !== mode){
+    //         switch(mode){
+    //             case modes.ADD:
+    //             case modes.MOVE:
+    //             case modes.EDIT:
+    //                 if (this.props.allowedToEdit){
+    //                     this.forceMode(mode, selectedNode)
+    //                 }
+    //                 break
+    //             default:
+    //                 this.forceMode(mode, selectedNode)
+    //                 break
+    //         }
+    //     }
+    // }
+
+    requestModeChange(anno, mode){
+        console.log('POLYGON: annoChangeMode - requestModeChange', anno, mode)
+        this.props.onModeChangeRequest(anno, mode)
     }
 
     move(movementX, movementY){
@@ -373,7 +384,7 @@ class Polygon extends Component{
 
     render(){
         if (this.state.anno){
-            console.log('hist render Polygon -> state, props.anno', this.state, this.props.anno)
+            console.log('POLYGON: annoChangeMode - Render -> state, props.anno', this.state.anno)
             return (
                 <g
                     onMouseMove={e => this.onMouseMove(e)}

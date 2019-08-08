@@ -380,8 +380,9 @@ class Canvas extends Component{
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.hist.push({
                     ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno
+                    selectedAnno: updatedAnnos.selectedAnno,
                 }, pAction)
+                this.showSingleAnno(undefined)
                 break
             default:
                 console.warn('Action not handeled', pAction)
@@ -389,30 +390,31 @@ class Canvas extends Component{
         }
     }
 
-    /**
-     * Handle change of internal mode of an annotation.
-     * 
-     * @param {*} anno 
-     * @param {String} mode 
-     */
-    onAnnoModeChange(anno, mode){
-        switch (mode){
-            case modes.ADD:
-            case modes.EDIT:
-            case modes.MOVE:
-            case modes.CREATE:
-                this.showSingleAnno(anno.id)
-                break
-            case modes.EDIT_LABEL:
-                this.showSingleAnno(anno.id)
-                break
-            case modes.VIEW:
-                this.showSingleAnno(undefined)
-                break
-            default:
-                break
-        }
-    }
+    // /**
+    //  * Handle change of internal mode of an annotation.
+    //  * 
+    //  * @param {*} anno 
+    //  * @param {String} mode 
+    //  */
+    // onAnnoModeChange(anno){
+    //     switch (anno.initMode){
+    //         case modes.ADD:
+    //         case modes.EDIT:
+    //         case modes.MOVE:
+    //         case modes.CREATE:
+    //             this.showSingleAnno(anno.id)
+    //             this.updateSelectedAnno(anno)
+    //             break
+    //         case modes.EDIT_LABEL:
+    //             this.showSingleAnno(anno.id)
+    //             break
+    //         case modes.VIEW:
+    //             this.showSingleAnno(undefined)
+    //             break
+    //         default:
+    //             break
+    //     }
+    // }
 
     onAnnoLabelInputUpdate(anno){
         this.onAnnoPerformedAction(anno, canvasActions.ANNO_LABEL_UPDATE)
@@ -720,7 +722,12 @@ class Canvas extends Component{
         const filtered = this.state.annos.filter( (el) => {
             return el.id !== anno.id
         }) 
-        const newAnno = {...anno, initMode:initMode}
+        let newAnno
+        if (initMode){
+            newAnno = {...anno, initMode:initMode}
+        } else {
+            newAnno = {...anno}
+        }
         filtered.push(newAnno)
         const newAnnos = [...filtered]
         return {
@@ -845,7 +852,7 @@ class Canvas extends Component{
                         onMouseDown={e => this.onAnnoMouseDown(e)}
                         onAction={(anno, pAction) => this.onAnnoPerformedAction(anno, pAction)}
                         selectedAnno={this.state.selectedAnno}
-                        onModeChange={(anno, mode) => this.onAnnoModeChange(anno, mode)}
+                        // onModeChange={(anno) => this.onAnnoModeChange(anno)}
                         showSingleAnno={this.state.showSingleAnno}
                         uiConfig={this.props.uiConfig}
                         allowedActions={this.props.allowedActions}

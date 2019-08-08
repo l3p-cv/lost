@@ -17,7 +17,7 @@ class Annotation extends Component{
     constructor(props){
         super(props)
         this.state = {
-            mode: modes.VIEW,
+            // mode: modes.VIEW,
             selAreaCss: 'sel-area-off',
             visibility: 'visible',
             anno: undefined
@@ -43,9 +43,9 @@ class Annotation extends Component{
             console.log('Annotation Update', this.state, this.props.type, this.props.data.id)
         }
         if (prevProps.data !== this.props.data){
-            console.log('Annotation got new annotation data from props', this.props.data)
+            console.log('ANNOTATION annoChangeMode - Annotation got new annotation data from props -> state', this.props.data, this.state.anno)
             this.setState({anno: {...this.props.data}})
-            this.setMode(this.props.data.initMode)
+            // this.setMode(this.props.data.initMode)
         }
         // if(prevProps.data.initMode !== this.props.data.initMode){
         //     this.setMode(this.props.data.initMode)
@@ -61,12 +61,12 @@ class Annotation extends Component{
                 }
             }
         }
-        if (this.isSelected()){
-            if(this.state.anno !== this.props.selectedAnno){
-                this.setState({anno: this.props.selectedAnno})
-                console.log('Annotation update anno', this.props.selectedAnno)
-            }
-        }
+        // if (this.isSelected()){
+        //     if(this.state.anno !== this.props.selectedAnno){
+        //         this.setState({anno: this.props.selectedAnno})
+        //         console.log('ANNOTATION annoChangeMode - Update anno by props.selectedAnno', this.props.selectedAnno)
+        //     }
+        // }
         // if (this.state.anno.status === annoStatus.DELETED){
         //     this.setVisible(false)
         // } else {
@@ -159,6 +159,11 @@ class Annotation extends Component{
 
     }
 
+    handleModeChangeRequest(anno, mode){
+        console.log('ANNOTATION: annoChangeMode - handleModeChangeRequest', anno, mode)
+        this.setMode(anno, mode)
+    }
+
     /*************
      * LOGIC     *
      *************/
@@ -197,30 +202,31 @@ class Annotation extends Component{
         this.performedAction(anno, pAction)
     }
 
-    setAnnoMode(mode){
+    setAnnoMode(anno, mode){
+        console.log('ANNOTATION: annoChangeMode - setAnnoMode', anno, mode)
         this.setState({
             anno: {
-                ...this.state.anno,
+                ...anno,
                 initMode: mode
             }
         })
     }
 
-    setMode(mode){
-        let anno
-        if (this.state.anno){
-            anno = this.state.anno
-        } else {
-            anno = this.props.data
-        }
-        if (this.state.anno.initMode !== mode){
+    setMode(anno, mode){
+        // let anno
+        // if (this.state.anno){
+        //     anno = this.state.anno
+        // } else {
+        //     anno = this.props.data
+        // }
+        if (anno.initMode !== mode){
             switch (mode){
                 case modes.EDIT_LABEL:
                     if (constraints.allowedToLabel(
                         this.props.allowedActions,
                         anno
                     )){
-                        this.setAnnoMode(mode)
+                        this.setAnnoMode(anno, mode)
                         // this.props.siaShowLabelInput(true)
                         // this.props.siaShowSingleAnno(this.props.data.id)
                     }
@@ -230,7 +236,7 @@ class Annotation extends Component{
                         this.props.allowedActions,
                         anno
                     )){
-                        this.setAnnoMode(mode)
+                        this.setAnnoMode(anno, mode)
                         // this.props.siaShowSingleAnno(undefined)
                         // this.props.selectAnnotation(undefined)
                         // this.performedAction(anno, canvasActions.SELECTED)
@@ -248,13 +254,13 @@ class Annotation extends Component{
                     }
                     break
                 default:
-                    this.setAnnoMode(mode)
+                    this.setAnnoMode(anno, mode)
                     console.log('hist Annotation setMode', mode)
                     break
             }
-            if (this.props.onModeChange){
-                this.props.onModeChange(anno, mode)
-            }
+            // if (this.props.onModeChange){
+            //     this.props.onModeChange(anno)
+            // }
         }
     }
 
@@ -359,7 +365,8 @@ class Annotation extends Component{
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    onModeChange={(anno) => {this.onModeChange(anno)}}
+                    // onModeChange={(anno) => {this.onModeChange(anno)}}
+                    onModeChangeRequest={(anno, mode) => this.handleModeChangeRequest(anno, mode)}
                     onAction={(anno, pAction) => this.performedAnnoAction(anno, pAction)}
                     // selectedNode={selectedNode}
                     />
@@ -387,7 +394,7 @@ class Annotation extends Component{
             />
     }
     render(){
-        console.log('hist Render Single Anno', this.state, this.props.showSingleAnno)
+        console.log('ANNOTATION: annoChangeMode - Render Single Anno state', this.state)
         if(!this.state.anno.data) return null
         if(this.state.anno.status === annoStatus.DELETED) return null
         return (
