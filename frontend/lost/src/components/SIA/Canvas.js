@@ -753,6 +753,11 @@ class Canvas extends Component{
                     ...newAnno,
                     status: annoStatus.DELETED
                 }
+            } else {
+                newAnno = {
+                    ...newAnno,
+                    status: anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
+                }
             }
         } else {
             newAnno = {...anno}
