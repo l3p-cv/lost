@@ -1,5 +1,6 @@
 [![pipeline status](https://gitlab.com/l3p-cv/lost/badges/master/pipeline.svg)](https://gitlab.com/l3p-cv/lost/pipelines)
 [![Documentation Status](https://readthedocs.org/projects/lost/badge/?version=latest)](https://lost.readthedocs.io/en/latest/?badge=latest)
+[![Gitter](https://badges.gitter.im/l3p-cv/lost.svg)](https://gitter.im/l3p-cv/lost?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 # LOST - Label Objects and Save Time
 ![LOST Features](docs/sphinx/source/images/LOSTFeaturesIn40seconds.gif)
 ## Demo Videos
