@@ -90,6 +90,7 @@ class Polygon extends Component{
         switch (this.state.anno.initMode){
             case modes.MOVE:
                 if (e.button === 0){
+                    this.performedAction(this.state.anno, canvasActions.ANNO_MOVED)
                     this.requestModeChange(this.state.anno, modes.VIEW)
                 }
                 break
@@ -116,6 +117,7 @@ class Polygon extends Component{
     onNodeMouseUp(e, idx){
         switch (this.state.anno.initMode){
             case modes.EDIT:
+                this.performedAction(this.state.anno, canvasActions.ANNO_EDITED)
                 this.requestModeChange(this.state.anno, modes.VIEW)
                 break
             default:
@@ -269,14 +271,16 @@ class Polygon extends Component{
     addNode(e, idx){
         console.log('Add Node to Polygon', idx)
         const mPos = mouse.getMousePosition(e, this.props.svg)
-        let newAnno = this.state.anno.data.slice(0,idx)
-        newAnno.push(mPos)
+        let newAnnoData = this.state.anno.data.slice(0,idx)
+        newAnnoData.push(mPos)
         const oldRest = this.state.anno.data.slice(idx)
-        this.setState({anno: {
-                ...this.state.anno,
-                data: newAnno.concat(oldRest)
-            }
+        const newAnno = {
+            ...this.state.anno,
+            data: newAnnoData.concat(oldRest)
+        }
+        this.setState({anno: newAnno
         })
+        this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE)
     }
 
     updateAnnoByMousePos(e, idx){

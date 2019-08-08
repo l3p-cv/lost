@@ -283,9 +283,7 @@ class Canvas extends Component{
                 }
                 break
             case 'Delete':
-                this.updateSelectedAnno(
-                    this.state.selectedAnno, modes.DELETED
-                )
+                this.onAnnoPerformedAction(this.state.selectedAnno, canvasActions.ANNO_DELETED)
                 break
             case 'Control':
                 this.updateSelectedAnno(
@@ -352,10 +350,18 @@ class Canvas extends Component{
                 }, pAction)
                 break
             case canvasActions.ANNO_ADDED_NODE:
-                this.updateSelectedAnno(anno, modes.VIEW)
+                updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos, false),
+                    selectedAnno: updatedAnnos.selectedAnno
+                }, pAction)
                 break
             case canvasActions.ANNO_EDITED:
-                this.updateSelectedAnno(anno, modes.VIEW)
+                updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos, false),
+                    selectedAnno: updatedAnnos.selectedAnno
+                }, pAction)
                 break
             case canvasActions.ANNO_DELETED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.DELETED)
@@ -725,6 +731,12 @@ class Canvas extends Component{
         let newAnno
         if (initMode){
             newAnno = {...anno, initMode:initMode}
+            if (initMode === modes.DELETED){
+                newAnno = {
+                    ...newAnno,
+                    status: annoStatus.DELETED
+                }
+            }
         } else {
             newAnno = {...anno}
         }

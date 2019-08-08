@@ -28,10 +28,10 @@ class Annotation extends Component{
 
     componentWillMount(){
         console.log('Annotation did mount ', this.props.data.id, this.props.data)
-        if (this.props.data.initMode === modes.CREATE){
+        // if (this.props.data.initMode === modes.CREATE){
             // this.props.selectAnnotation(this.props.data)
-            this.performedAction(this.props.data, canvasActions.ANNO_SELECTED)
-        } 
+            // this.performedAction(this.props.data, canvasActions.ANNO_SELECTED)
+        // } 
         this.setState({anno: {...this.props.data}})
         // if (this.props.data.status === annoStatus.DELETED){
         //     this.setVisible(false)
@@ -111,53 +111,53 @@ class Annotation extends Component{
     //     this.setState({anno: newAnno})
     //     return newAnno
     // }
-    onModeChange(newAnno){
-        // console.log('MODE CHANGED (id, old, new): ',this.props.data.id, oldMode, '->', newMode)
-        // switch (newMode){
-        //     case modes.ADD:
-        //     case modes.EDIT:
-        //     case modes.MOVE:
-        //     case modes.CREATE:
-        //         // this.props.siaShowSingleAnno(this.props.data.id)
-        //         break
-        //     case modes.EDIT_LABEL:
-        //         break
-        //     case modes.VIEW:
-        //         // this.props.siaShowSingleAnno(undefined)
-        //         break
-        //     default:
-        //         break
-        // }
-        // switch (oldMode){
-        //     case modes.ADD:
-        //         // newAnno = this._annoUpdateHelper()
-        //         this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE)
-        //         break
-        //     case modes.EDIT:
-        //         // newAnno = this._annoUpdateHelper()
-        //         this.performedAction(newAnno, canvasActions.ANNO_EDITED)
-        //         break
-        //     case modes.MOVE:
-        //         // newAnno = this._annoUpdateHelper()
-        //         this.performedAction(newAnno, canvasActions.ANNO_MOVED)
-        //         break
-        //     case modes.CREATE:
-        //         newAnno = {
-        //             ...newAnno,
-        //             status: annoStatus.NEW
-        //         }
-        //         this.setState({anno: newAnno})
-        //         // this.props.selectAnnotation(newAnno)
-        //         this.performedAction(newAnno, canvasActions.ANNO_CREATED)
+    // onModeChange(newAnno){
+    //     // console.log('MODE CHANGED (id, old, new): ',this.props.data.id, oldMode, '->', newMode)
+    //     // switch (newMode){
+    //     //     case modes.ADD:
+    //     //     case modes.EDIT:
+    //     //     case modes.MOVE:
+    //     //     case modes.CREATE:
+    //     //         // this.props.siaShowSingleAnno(this.props.data.id)
+    //     //         break
+    //     //     case modes.EDIT_LABEL:
+    //     //         break
+    //     //     case modes.VIEW:
+    //     //         // this.props.siaShowSingleAnno(undefined)
+    //     //         break
+    //     //     default:
+    //     //         break
+    //     // }
+    //     // switch (oldMode){
+    //     //     case modes.ADD:
+    //     //         // newAnno = this._annoUpdateHelper()
+    //     //         this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE)
+    //     //         break
+    //     //     case modes.EDIT:
+    //     //         // newAnno = this._annoUpdateHelper()
+    //     //         this.performedAction(newAnno, canvasActions.ANNO_EDITED)
+    //     //         break
+    //     //     case modes.MOVE:
+    //     //         // newAnno = this._annoUpdateHelper()
+    //     //         this.performedAction(newAnno, canvasActions.ANNO_MOVED)
+    //     //         break
+    //     //     case modes.CREATE:
+    //     //         newAnno = {
+    //     //             ...newAnno,
+    //     //             status: annoStatus.NEW
+    //     //         }
+    //     //         this.setState({anno: newAnno})
+    //     //         // this.props.selectAnnotation(newAnno)
+    //     //         this.performedAction(newAnno, canvasActions.ANNO_CREATED)
 
-        //         break
-        //     default:
-        //         break
+    //     //         break
+    //     //     default:
+    //     //         break
                 
-        // }
-        this.setMode(newAnno.initMode)
+    //     // }
+    //     this.setMode(newAnno.initMode)
 
-    }
+    // }
 
     handleModeChangeRequest(anno, mode){
         console.log('ANNOTATION: annoChangeMode - handleModeChangeRequest', anno, mode)
