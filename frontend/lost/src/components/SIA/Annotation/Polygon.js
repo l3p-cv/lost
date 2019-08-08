@@ -28,6 +28,9 @@ class Polygon extends Component{
 
     componentDidMount(){
         console.log('Polygon did mount', this.props, this.props.anno)
+        if (this.props.anno.initMode === modes.CREATE){
+            this.performedAction(this.props.anno, canvasActions.ANNO_CREATED_NODE)
+        }
         // if (this.props.anno.initMode === modes.CREATE){
         //     console.log('in Create Pos')
         //     const data = this.props.anno.data[0]
@@ -138,8 +141,8 @@ class Polygon extends Component{
                     this.setState({
                         anno: newAnno
                     })
-                    // this.performedAction(newAnno, 
-                        // canvasActions.ANNO_CREATED_NODE)
+                    this.performedAction(newAnno, 
+                        canvasActions.ANNO_CREATED_NODE)
                 }
                 break
             case modes.VIEW:
