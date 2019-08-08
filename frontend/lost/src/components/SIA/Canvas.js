@@ -385,7 +385,11 @@ class Canvas extends Component{
                 }, pAction)
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
-                this.updateSelectedAnno(anno)
+                updatedAnnos = this.updateSelectedAnno(anno)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos, false),
+                    selectedAnno: updatedAnnos.selectedAnno
+                }, pAction)
                 break
             case canvasActions.ANNO_CREATED_NODE:
                 const mergedAnno = this.mergeSelectedAnno(anno, modes.CREATE)
