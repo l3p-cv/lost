@@ -15,11 +15,11 @@ class Line extends Polygon{
 
     renderEdges(){
         if (!this.props.isSelected) return null
-        switch (this.state.mode){
+        switch (this.state.anno.initMode){
             case modes.VIEW:
             case modes.ADD:
-                return this.state.anno.map((e, idx) => {
-                    return <Edge anno={this.state.anno} 
+                return this.state.anno.data.map((e, idx) => {
+                    return <Edge anno={this.state.anno.data} 
                         idx={idx} key={idx} style={this.props.style}
                         className={this.props.className}
                         isSelected={this.props.isSelected}
@@ -32,7 +32,7 @@ class Line extends Polygon{
     }
 
     renderPolyline(){
-        return <polyline points={this.toPolygonStr(this.state.anno)}
+        return <polyline points={this.toPolygonStr(this.state.anno.data)}
             fill='none' stroke="purple" 
             style={{...this.props.style, fill:'none'}}
             className={this.props.className}

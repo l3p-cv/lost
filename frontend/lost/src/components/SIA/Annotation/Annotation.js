@@ -371,14 +371,16 @@ class Annotation extends Component{
                     // selectedNode={selectedNode}
                     />
             case 'line':
-                return <Line ref={this.myAnno} anno={anno}
+                return <Line ref={this.myAnno} anno={this.state.anno}
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     allowedToEdit={allowedToEdit}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    mode={this.state.anno.initMode}
-                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
+                    // mode={this.state.anno.initMode}
+                    onAction={(anno, pAction) => this.performedAnnoAction(anno, pAction)}
+                    onModeChangeRequest={(anno, mode) => this.handleModeChangeRequest(anno, mode)}
+                    // onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             default:
                 console.error("Wrong annoType for annotations: ",

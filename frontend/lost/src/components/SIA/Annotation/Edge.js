@@ -58,6 +58,7 @@ class Edge extends Component{
             p1 = this.props.anno[this.props.anno.length-1]
             p2 = this.props.anno[0]
         }
+        console.log('EDGE: Render p1 p2 this.props', p1, p2, this.props)
         return(<g
             onMouseOver={(e) => {this.onMouseOver(e)}}
             onMouseLeave={e => {this.onMouseLeave(e)}}
