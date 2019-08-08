@@ -57,6 +57,9 @@ tested for Ubuntu):
     Follow instructions of the quick_setup script, 
     printed in the command line.
 
+## Contact
+We've created a chat room for you. Feel free to contact us directly:
+https://gitter.im/l3p-cv/lost
 
 # Creators
 ## People
