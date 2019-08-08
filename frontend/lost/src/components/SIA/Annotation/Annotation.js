@@ -31,7 +31,6 @@ class Annotation extends Component{
         if (this.props.data.initMode === modes.CREATE){
             // this.props.selectAnnotation(this.props.data)
             this.performedAction(this.props.data, canvasActions.ANNO_SELECTED)
-            this.setMode(modes.CREATE)
         } 
         this.setState({anno: {...this.props.data}})
         // if (this.props.data.status === annoStatus.DELETED){
@@ -103,62 +102,60 @@ class Annotation extends Component{
         e.preventDefault()
     }
 
-    _annoUpdateHelper(){
-        const newAnno = {
-            ...this.state.anno,
-            data: [...this.myAnno.current.state.anno],
-            status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
-        }
-        this.setState({anno: newAnno})
-        return newAnno
-    }
-    onModeChange(newMode, oldMode){
-        console.log('MODE CHANGED (id, old, new): ',this.props.data.id, oldMode, '->', newMode)
-        switch (newMode){
-            case modes.ADD:
-            case modes.EDIT:
-            case modes.MOVE:
-            case modes.CREATE:
-                // this.props.siaShowSingleAnno(this.props.data.id)
-                break
-            case modes.EDIT_LABEL:
-                break
-            case modes.VIEW:
-                // this.props.siaShowSingleAnno(undefined)
-                break
-            default:
-                break
-        }
-        let newAnno 
-        switch (oldMode){
-            case modes.ADD:
-                newAnno = this._annoUpdateHelper()
-                this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE)
-                break
-            case modes.EDIT:
-                newAnno = this._annoUpdateHelper()
-                this.performedAction(newAnno, canvasActions.ANNO_EDITED)
-                break
-            case modes.MOVE:
-                newAnno = this._annoUpdateHelper()
-                this.performedAction(newAnno, canvasActions.ANNO_MOVED)
-                break
-            case modes.CREATE:
-                newAnno = {
-                    ...this.state.anno,
-                    data: [...this.myAnno.current.state.anno],
-                    status: annoStatus.NEW
-                }
-                this.setState({anno: newAnno})
-                // this.props.selectAnnotation(newAnno)
-                this.performedAction(newAnno, canvasActions.ANNO_CREATED)
+    // _annoUpdateHelper(){
+    //     const newAnno = {
+    //         ...this.state.anno,
+    //         data: [...this.myAnno.current.state.anno],
+    //         status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
+    //     }
+    //     this.setState({anno: newAnno})
+    //     return newAnno
+    // }
+    onModeChange(newAnno){
+        // console.log('MODE CHANGED (id, old, new): ',this.props.data.id, oldMode, '->', newMode)
+        // switch (newMode){
+        //     case modes.ADD:
+        //     case modes.EDIT:
+        //     case modes.MOVE:
+        //     case modes.CREATE:
+        //         // this.props.siaShowSingleAnno(this.props.data.id)
+        //         break
+        //     case modes.EDIT_LABEL:
+        //         break
+        //     case modes.VIEW:
+        //         // this.props.siaShowSingleAnno(undefined)
+        //         break
+        //     default:
+        //         break
+        // }
+        // switch (oldMode){
+        //     case modes.ADD:
+        //         // newAnno = this._annoUpdateHelper()
+        //         this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE)
+        //         break
+        //     case modes.EDIT:
+        //         // newAnno = this._annoUpdateHelper()
+        //         this.performedAction(newAnno, canvasActions.ANNO_EDITED)
+        //         break
+        //     case modes.MOVE:
+        //         // newAnno = this._annoUpdateHelper()
+        //         this.performedAction(newAnno, canvasActions.ANNO_MOVED)
+        //         break
+        //     case modes.CREATE:
+        //         newAnno = {
+        //             ...newAnno,
+        //             status: annoStatus.NEW
+        //         }
+        //         this.setState({anno: newAnno})
+        //         // this.props.selectAnnotation(newAnno)
+        //         this.performedAction(newAnno, canvasActions.ANNO_CREATED)
 
-                break
-            default:
-                break
+        //         break
+        //     default:
+        //         break
                 
-        }
-        this.setMode(newMode)
+        // }
+        this.setMode(newAnno.initMode)
 
     }
 
@@ -187,15 +184,26 @@ class Annotation extends Component{
      * @param {int} selectedNode - The node of the annotation that 
      *      was selected
      */
-    performedAnnoAction(annoData, pAction, selectedNode){
-        console.log('hist performedAnnoAction', annoData, pAction, selectedNode)
-        const newAnno = {
-            ...this.state.anno,
-            data: [...annoData],
-            status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW,
-            selectedNode
-        }
-        this.performedAction(newAnno, pAction)
+    performedAnnoAction(anno, pAction){
+        console.log('hist performedAnnoAction', anno, pAction)
+        // const newAnno = {
+        //     anno,
+        //     status: this.state.anno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW,
+        //     selectedNode
+        // }
+        this.setState({
+            anno: anno
+        })
+        this.performedAction(anno, pAction)
+    }
+
+    setAnnoMode(mode){
+        this.setState({
+            anno: {
+                ...this.state.anno,
+                initMode: mode
+            }
+        })
     }
 
     setMode(mode){
@@ -205,14 +213,14 @@ class Annotation extends Component{
         } else {
             anno = this.props.data
         }
-        if (this.state.mode !== mode){
+        if (this.state.anno.initMode !== mode){
             switch (mode){
                 case modes.EDIT_LABEL:
                     if (constraints.allowedToLabel(
                         this.props.allowedActions,
                         anno
                     )){
-                        this.setState({mode: mode})
+                        this.setAnnoMode(mode)
                         // this.props.siaShowLabelInput(true)
                         // this.props.siaShowSingleAnno(this.props.data.id)
                     }
@@ -222,7 +230,7 @@ class Annotation extends Component{
                         this.props.allowedActions,
                         anno
                     )){
-                        this.setState({mode: mode})
+                        this.setAnnoMode(mode)
                         // this.props.siaShowSingleAnno(undefined)
                         // this.props.selectAnnotation(undefined)
                         // this.performedAction(anno, canvasActions.SELECTED)
@@ -240,7 +248,7 @@ class Annotation extends Component{
                     }
                     break
                 default:
-                    this.setState({mode: mode})
+                    this.setAnnoMode(mode)
                     console.log('hist Annotation setMode', mode)
                     break
             }
@@ -319,7 +327,7 @@ class Annotation extends Component{
             this.props.allowedActions,
             this.state.anno
         )
-        const selectedNode = this.state.anno.selectedNode
+        // const selectedNode = this.state.anno.selectedNode
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} anno={anno} 
@@ -328,7 +336,7 @@ class Annotation extends Component{
                     allowedToEdit={allowedToEdit}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    mode={this.state.mode}
+                    mode={this.state.anno.initMode}
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'bBox':
@@ -340,21 +348,20 @@ class Annotation extends Component{
                     onNodeMouseDown={(e, idx) => this.onNodeMouseDown(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    mode={this.state.mode}
+                    mode={this.state.anno.initMode}
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             case 'polygon':
-                return <Polygon ref={this.myAnno} anno={anno} 
+                return <Polygon ref={this.myAnno} anno={this.state.anno} 
                     style={this.getStyle()}
                     className={this.getCssClass()}
                     allowedToEdit={allowedToEdit}
                     onNodeClick={(e, idx) => this.onNodeClick(e, idx)}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    mode={this.state.mode}
-                    onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
-                    onAction={(annoData, pAction, selectedAnno) => this.performedAnnoAction(annoData, pAction, selectedAnno)}
-                    selectedNode={selectedNode}
+                    onModeChange={(anno) => {this.onModeChange(anno)}}
+                    onAction={(anno, pAction) => this.performedAnnoAction(anno, pAction)}
+                    // selectedNode={selectedNode}
                     />
             case 'line':
                 return <Line ref={this.myAnno} anno={anno}
@@ -363,7 +370,7 @@ class Annotation extends Component{
                     allowedToEdit={allowedToEdit}
                     isSelected={this.isSelected()}
                     svg={this.props.svg}
-                    mode={this.state.mode}
+                    mode={this.state.anno.initMode}
                     onModeChange={(newMode, oldMode) => {this.onModeChange(newMode, oldMode)}}
                     />
             default:
@@ -375,7 +382,7 @@ class Annotation extends Component{
     renderAnnoBar(){
         return <AnnoBar 
             anno={this.state.anno} 
-            mode={this.state.mode}
+            mode={this.state.anno.initMode}
             possibleLabels={this.props.possibleLabels}
             />
     }

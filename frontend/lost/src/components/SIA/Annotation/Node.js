@@ -14,7 +14,7 @@ class Node extends Component{
         this.state = {
             haloCss: 'node-halo-off',
             selAreaCss: 'sel-area-off',
-            anno: undefined,
+            // anno: undefined,
             nodeSelected: false,
             style: {}
         }
@@ -22,7 +22,7 @@ class Node extends Component{
 
     componentDidMount(){
         this.setState({
-            anno: this.props.anno,
+            // anno: this.props.anno,
             style: {
                 ...this.props.style,
                 cursor: this.getCursorStyle(this.props.mode)
@@ -254,6 +254,7 @@ class Node extends Component{
         )
     }
     render(){
+        console.log('Render Node', this.props.anno, this.props.idx)
             return(
                 <g>
                     {this.renderNodes()}

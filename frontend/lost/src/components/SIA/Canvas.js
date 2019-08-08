@@ -375,6 +375,14 @@ class Canvas extends Component{
                     selectedAnno: mergedAnno.selectedAnno
                 }, pAction)
                 break
+            case canvasActions.ANNO_CREATED_FINAL_NODE:
+                console.log('canvasActions.ANNO_CREATED_FINAL_NODE', anno)
+                updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                this.hist.push({
+                    ...this.getAnnos(updatedAnnos.annos, false),
+                    selectedAnno: updatedAnnos.selectedAnno
+                }, pAction)
+                break
             default:
                 console.warn('Action not handeled', pAction)
                 break
@@ -649,14 +657,19 @@ class Canvas extends Component{
                 data: [{
                     x: mousePos.x, 
                     y: mousePos.y
+                },{
+                    x: mousePos.x+1, 
+                    y: mousePos.y
                 }],
                 initMode: modes.CREATE,
                 status: annoStatus.NEW,
-                labelIds: []
+                labelIds: [],
+                selectedNode: 1
             }
             this.setState({
                 annos: [...this.state.annos, newAnno],
-                selectedAnno: newAnno
+                selectedAnno: newAnno,
+                showSingleAnno: newAnno.id
             })
         } else {
             console.warn('No annotation tool selected!')
