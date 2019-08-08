@@ -3,6 +3,7 @@ import './Annotation.scss';
 import * as modes from '../types/modes'
 import * as transform from '../utils/transform'
 import * as canvasActions from '../types/canvasActions'
+import * as mouse from '../utils/mouse'
 import InfSelectionArea from './InfSelectionArea'
 import Node from './Node'
 
@@ -59,21 +60,22 @@ class BBox extends Component{
         switch (this.state.anno.initMode){
             case modes.CREATE:
             case modes.EDIT:
+                const mousePos = mouse.getMousePosition(e, this.props.svg)
                 const idxMinus = idx - 1 < 0 ? 3 : idx -1
                 const idxPlus = idx + 1 > 3 ? 0 : idx +1
                 let newAnnoData = [...this.state.anno.data]
-                const movementX = e.movementX / this.props.svg.scale
-                const movementY = e.movementY / this.props.svg.scale
+                // const movementX = e.movementX / this.props.svg.scale
+                // const movementY = e.movementY / this.props.svg.scale
                 if (idx % 2 === 0){
-                    newAnnoData[idxMinus].x += movementX
-                    newAnnoData[idx].x += movementX
-                    newAnnoData[idx].y += movementY
-                    newAnnoData[idxPlus].y += movementY
+                    newAnnoData[idxMinus].x = mousePos.x
+                    newAnnoData[idx].x = mousePos.x
+                    newAnnoData[idx].y = mousePos.y
+                    newAnnoData[idxPlus].y = mousePos.y
                 } else {
-                    newAnnoData[idxMinus].y += movementY
-                    newAnnoData[idx].x += movementX
-                    newAnnoData[idx].y += movementY
-                    newAnnoData[idxPlus].x += movementX
+                    newAnnoData[idxMinus].y = mousePos.y
+                    newAnnoData[idx].x = mousePos.x
+                    newAnnoData[idx].y = mousePos.y
+                    newAnnoData[idxPlus].x = mousePos.x
                 }
                 this.setState({
                     anno: {
