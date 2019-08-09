@@ -338,73 +338,113 @@ class Canvas extends Component{
         switch(pAction){
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno)
+                this.pushHist(
+                    this.state.annos, anno,
+                    pAction
+                )
                 break
             case canvasActions.ANNO_START_CREATING:
                 updatedAnnos = this.updateSelectedAnno(anno)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno
-                }, pAction)
+                // this.hist.push({
+                //     ...this.getAnnos(updatedAnnos.annos, false),
+                //     selectedAnno: updatedAnnos.selectedAnno
+                // }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, updatedAnnos.selectedAnno,
+                    pAction
+                )
                 break
             case canvasActions.ANNO_CREATED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 console.log('ANNO_CREATED updatedAnnos', updatedAnnos)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno
-                }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, updatedAnnos.selectedAnno,
+                    pAction, undefined
+                )
+                // this.hist.push({
+                //     ...this.getAnnos(updatedAnnos.annos, false),
+                //     selectedAnno: updatedAnnos.selectedAnno
+                // }, pAction)
                 this.showSingleAnno(undefined)
                 break
             case canvasActions.ANNO_MOVED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno
-                }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, updatedAnnos.selectedAnno,
+                    pAction
+                )
+                // this.hist.push({
+                //     ...this.getAnnos(updatedAnnos.annos, false),
+                //     selectedAnno: updatedAnnos.selectedAnno
+                // }, pAction)
                 break
             case canvasActions.ANNO_ADDED_NODE:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno
-                }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, updatedAnnos.selectedAnno,
+                    pAction
+                )
+                // this.hist.push({
+                //     ...this.getAnnos(updatedAnnos.annos, false),
+                //     selectedAnno: updatedAnnos.selectedAnno
+                // }, pAction)
                 break
             case canvasActions.ANNO_EDITED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno
-                }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, updatedAnnos.selectedAnno,
+                    pAction
+                )
+                // this.hist.push({
+                //     ...this.getAnnos(updatedAnnos.annos, false),
+                //     selectedAnno: updatedAnnos.selectedAnno
+                // }, pAction)
                 break
             case canvasActions.ANNO_DELETED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.DELETED)
                 this.selectAnnotation(undefined)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: undefined
-                }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, undefined,
+                    pAction
+                )
+                // this.hist.push({
+                //     ...this.getAnnos(updatedAnnos.annos, false),
+                //     selectedAnno: undefined
+                // }, pAction)
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno
-                }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, updatedAnnos.selectedAnno,
+                    pAction
+                )
+                // this.hist.push({
+                    // ...this.getAnnos(updatedAnnos.annos, false),
+                    // selectedAnno: updatedAnnos.selectedAnno
+                // }, pAction)
                 break
             case canvasActions.ANNO_CREATED_NODE:
                 const mergedAnno = this.mergeSelectedAnno(anno, modes.CREATE)
-                this.hist.push({
-                    ...this.getAnnos(mergedAnno.annos, false),
-                    selectedAnno: mergedAnno.selectedAnno
-                }, pAction)
+                this.pushHist(
+                    mergedAnno.annos, mergedAnno.selectedAnno,
+                    pAction
+                )
+                // this.hist.push({
+                //     ...this.getAnnos(mergedAnno.annos, false),
+                //     selectedAnno: mergedAnno.selectedAnno
+                // }, pAction)
                 break
             case canvasActions.ANNO_CREATED_FINAL_NODE:
                 console.log('canvasActions.ANNO_CREATED_FINAL_NODE', anno)
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
-                this.hist.push({
-                    ...this.getAnnos(updatedAnnos.annos, false),
-                    selectedAnno: updatedAnnos.selectedAnno,
-                }, pAction)
+                this.pushHist(
+                    updatedAnnos.annos, updatedAnnos.selectedAnno,
+                    pAction, undefined
+                )
+                // this.hist.push({
+                //     ...this.getAnnos(updatedAnnos.annos, false),
+                //     selectedAnno: updatedAnnos.selectedAnno,
+                // }, pAction)
                 this.showSingleAnno(undefined)
                 break
             default:
@@ -469,15 +509,23 @@ class Canvas extends Component{
      * LOGIC     *
     **************/
 
-    pushHist(anno, selectedAnno, pAction){
-
+    pushHist(annos, selectedAnno, pAction, showSingleAnno=this.state.showSingleAnno){
+        this.hist.push({
+            ...this.getAnnos(annos, false),
+            selectedAnno: selectedAnno,
+            showSingleAnno: showSingleAnno
+        }, pAction)
     }
+
     undo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.undo()
             console.log('hist UNDO: ',cState)
-            this.setCanvasState(cState.entry.annotations,
-                cState.entry.imgLabelIds, cState.entry.selectedAnno)
+            this.setCanvasState(
+                cState.entry.annotations,
+                cState.entry.imgLabelIds, 
+                cState.entry.selectedAnno,
+                cState.entry.showSingleAnno)
         }
     }
 
@@ -485,8 +533,11 @@ class Canvas extends Component{
         if (!this.hist.isEmpty()){
             const cState = this.hist.redo()
             console.log('hist REDO: ',cState)
-            this.setCanvasState(cState.entry.annotations,
-                cState.entry.imgLabelIds, cState.entry.selectedAnno)
+            this.setCanvasState(
+                cState.entry.annotations,
+                cState.entry.imgLabelIds, 
+                cState.entry.selectedAnno,
+                cState.entry.showSingleAnno)
         }
     }
 
@@ -495,12 +546,16 @@ class Canvas extends Component{
      * 
      * @param {list} annotations - Annotations in backend format
      * @param {list} imgLabelIds - IDs of the image labels
+     * @param {object} selectedAnno - The selected annotation
+     * @param {int} showSingleAnno - The id of the single annotation
+     *      that should be visible
      */
-    setCanvasState(annotations, imgLabelIds, selectedAnno){
+    setCanvasState(annotations, imgLabelIds, selectedAnno, showSingleAnno){
         this.updateCanvasView({...annotations})
         this.setImageLabels([...imgLabelIds])
         // this.setState({selectedAnno: selectedAnno})
         this.selectAnnotation(selectedAnno)
+        this.setState({showSingleAnno: showSingleAnno})
     }
 
     selectAnnotation(anno){
