@@ -319,7 +319,7 @@ class Polygon extends Component{
 
     render(){
         if (this.state.anno){
-            console.log('POLYGON: annoChangeMode - Render -> state, props.anno', this.state.anno)
+            console.log('POLYGON: hist - Render -> state, props.anno', this.state.anno)
             return (
                 <g
                     onMouseMove={e => this.onMouseMove(e)}

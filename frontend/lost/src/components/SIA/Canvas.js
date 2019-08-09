@@ -385,7 +385,7 @@ class Canvas extends Component{
                 }, pAction)
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
-                updatedAnnos = this.updateSelectedAnno(anno)
+                updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.hist.push({
                     ...this.getAnnos(updatedAnnos.annos, false),
                     selectedAnno: updatedAnnos.selectedAnno
@@ -440,7 +440,7 @@ class Canvas extends Component{
     // }
 
     onAnnoLabelInputUpdate(anno){
-        this.onAnnoPerformedAction(anno, canvasActions.ANNO_LABEL_UPDATE)
+        this.updateSelectedAnno(anno)
     }
 
     onAnnoLabelInputClose(){
@@ -448,7 +448,7 @@ class Canvas extends Component{
         this.svg.current.focus()
         this.showLabelInput(false)
         this.showSingleAnno(undefined)
-        this.updateSelectedAnno(this.state.selectedAnno, modes.VIEW)
+        this.onAnnoPerformedAction(this.state.selectedAnno, canvasActions.ANNO_LABEL_UPDATE)
     }
 
     handleImgBarClose(){
@@ -469,6 +469,9 @@ class Canvas extends Component{
      * LOGIC     *
     **************/
 
+    pushHist(anno, selectedAnno, pAction){
+
+    }
     undo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.undo()
@@ -847,19 +850,23 @@ class Canvas extends Component{
             const imgSize = this.updateImageSize()
             annos = [
                 ...annotations.bBoxes.map((element) => {
-                    return {...element, type:'bBox', mode: modes.VIEW, 
+                    return {...element, type:'bBox', 
+                    mode: element.mode ? element.mode : modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...annotations.lines.map((element) => {
-                    return {...element, type:'line', mode: modes.VIEW, 
+                    return {...element, type:'line', 
+                    mode: element.mode ? element.mode : modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...annotations.polygons.map((element) => {
-                    return {...element, type:'polygon', mode: modes.VIEW, 
+                    return {...element, type:'polygon', 
+                    mode: element.mode ? element.mode : modes.VIEW, 
                     status: element.status ? element.status : annoStatus.DATABASE}
                 }),
                 ...annotations.points.map((element) => {
-                    return {...element, type:'point', mode: modes.VIEW, 
+                    return {...element, type:'point', 
+                    mode: element.mode ? element.mode : modes.VIEW, 
                         status: element.status ? element.status : annoStatus.DATABASE
                     }
                 })
