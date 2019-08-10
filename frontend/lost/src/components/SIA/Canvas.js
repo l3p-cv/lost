@@ -338,10 +338,10 @@ class Canvas extends Component{
         switch(pAction){
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno)
-                this.pushHist(
-                    this.state.annos, anno,
-                    pAction
-                )
+                // this.pushHist(
+                //     this.state.annos, anno,
+                //     pAction, this.state.showSingleAnno
+                // )
                 break
             case canvasActions.ANNO_START_CREATING:
                 updatedAnnos = this.updateSelectedAnno(anno)
@@ -351,7 +351,7 @@ class Canvas extends Component{
                 // }, pAction)
                 this.pushHist(
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
-                    pAction
+                    pAction, this.state.showSingleAnno
                 )
                 break
             case canvasActions.ANNO_CREATED:
@@ -371,7 +371,7 @@ class Canvas extends Component{
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
-                    pAction
+                    pAction, this.state.showSingleAnno
                 )
                 // this.hist.push({
                 //     ...this.getAnnos(updatedAnnos.annos, false),
@@ -382,7 +382,7 @@ class Canvas extends Component{
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
-                    pAction
+                    pAction, this.state.showSingleAnno
                 )
                 // this.hist.push({
                 //     ...this.getAnnos(updatedAnnos.annos, false),
@@ -393,7 +393,7 @@ class Canvas extends Component{
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
-                    pAction
+                    pAction, this.state.showSingleAnno
                 )
                 // this.hist.push({
                 //     ...this.getAnnos(updatedAnnos.annos, false),
@@ -405,7 +405,7 @@ class Canvas extends Component{
                 this.selectAnnotation(undefined)
                 this.pushHist(
                     updatedAnnos.annos, undefined,
-                    pAction
+                    pAction, this.state.showSingleAnno
                 )
                 // this.hist.push({
                 //     ...this.getAnnos(updatedAnnos.annos, false),
@@ -416,7 +416,7 @@ class Canvas extends Component{
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
-                    pAction
+                    pAction, this.state.showSingleAnno
                 )
                 // this.hist.push({
                     // ...this.getAnnos(updatedAnnos.annos, false),
@@ -427,7 +427,7 @@ class Canvas extends Component{
                 const mergedAnno = this.mergeSelectedAnno(anno, modes.CREATE)
                 this.pushHist(
                     mergedAnno.annos, mergedAnno.selectedAnno,
-                    pAction
+                    pAction, this.state.showSingleAnno
                 )
                 // this.hist.push({
                 //     ...this.getAnnos(mergedAnno.annos, false),
@@ -509,7 +509,7 @@ class Canvas extends Component{
      * LOGIC     *
     **************/
 
-    pushHist(annos, selectedAnno, pAction, showSingleAnno=this.state.showSingleAnno){
+    pushHist(annos, selectedAnno, pAction, showSingleAnno){
         this.hist.push({
             ...this.getAnnos(annos, false),
             selectedAnno: selectedAnno,
