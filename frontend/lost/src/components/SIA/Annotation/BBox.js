@@ -36,7 +36,7 @@ class BBox extends Component{
             this.setState({
                 anno: newAnno
             })
-            this.performedAction(newAnno, canvasActions.ANNO_START_CREATING)
+            // this.performedAction(newAnno, canvasActions.ANNO_START_CREATING)
             
         } else {
             this.setState({anno: {...this.props.anno}})

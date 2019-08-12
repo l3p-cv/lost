@@ -5,6 +5,7 @@ import AnnoLabelInput from './AnnoLabelInput'
 import ImgBar from './ImgBar'
 
 import * as transform from './utils/transform'
+import * as TOOLS from './types/tools'
 import * as modes from './types/modes'
 import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
@@ -166,7 +167,7 @@ class Canvas extends Component{
         // if (prevProps.workingOnAnnoTask !== this.props.workingOnAnnoTask){
         //     this.updateCanvasView()
         // }
-        console.log('canvasHist canvas state', this.hist.getHist(), this.state)
+        console.log('canvasHistory canvas state', this.hist.getHist(), this.state)
     }
     
     onImageLoad(){
@@ -533,7 +534,7 @@ class Canvas extends Component{
     undo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.undo()
-            console.log('hist UNDO: ',cState)
+            console.log('canvasHistory UNDO: ',cState)
             this.setCanvasState(
                 cState.entry.annotations,
                 cState.entry.imgLabelIds, 
@@ -545,7 +546,7 @@ class Canvas extends Component{
     redo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.redo()
-            console.log('hist REDO: ',cState)
+            console.log('canvasHistory REDO: ',cState)
             this.setCanvasState(
                 cState.entry.annotations,
                 cState.entry.imgLabelIds, 
@@ -755,20 +756,27 @@ class Canvas extends Component{
                 data: [{
                     x: mousePos.x, 
                     y: mousePos.y
-                },{
-                    x: mousePos.x+1, 
-                    y: mousePos.y
                 }],
                 mode: modes.CREATE,
                 status: annoStatus.NEW,
                 labelIds: [],
-                selectedNode: 1
+                selectedNode: 0
             }
             this.setState({
                 annos: [...this.state.annos, newAnno],
                 selectedAnno: newAnno,
                 showSingleAnno: newAnno.id
             })
+            if (this.props.selectedTool !== TOOLS.BBOX && 
+                this.props.selectedTool !== TOOLS.POINT){    
+                const merged = this.mergeSelectedAnno(newAnno)
+                this.pushHist(
+                    merged.annos,
+                    merged.selectedAnno, 
+                    canvasActions.ANNO_CREATED_NODE,
+                    newAnno.id
+                )
+            }
         } else {
             console.warn('No annotation tool selected!')
         }

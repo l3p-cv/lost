@@ -27,9 +27,22 @@ class Polygon extends Component{
     componentDidMount(){
         console.log('Polygon did mount', this.props, this.props.anno)
         if (this.props.anno.mode === modes.CREATE){
-            this.performedAction(this.props.anno, canvasActions.ANNO_CREATED_NODE)
+            // this.performedAction(this.props.anno, canvasActions.ANNO_CREATED_NODE)
+            const data = this.props.anno.data[0]
+            const newAnno = {
+                ...this.props.anno,
+                data: [
+                    {x: data.x, y: data.y},
+                    {x: data.x+1, y: data.y},
+                ],
+                selectedNode: 1
+            }
+            this.setState({
+                anno: newAnno
+            })
+        } else {
+            this.setState({anno: {...this.props.anno}})
         }
-        this.setState({anno: {...this.props.anno}})
     }
 
     componentDidUpdate(prevProps){
@@ -319,7 +332,7 @@ class Polygon extends Component{
 
     render(){
         if (this.state.anno){
-            console.log('POLYGON: hist - Render -> state, props.anno', this.state.anno)
+            console.log('POLYGON: - Render -> state, props.anno', this.state.anno)
             return (
                 <g
                     onMouseMove={e => this.onMouseMove(e)}
