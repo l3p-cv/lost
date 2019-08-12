@@ -605,11 +605,14 @@ class Canvas extends Component{
                 data: [{
                     x: mousePos.x, 
                     y: mousePos.y
+                },{
+                    x: mousePos.x,
+                    y: mousePos.y
                 }],
                 mode: modes.CREATE,
                 status: annoStatus.NEW,
                 labelIds: [],
-                selectedNode: 0
+                selectedNode: 1
             }
             this.setState({
                 annos: [...this.state.annos, newAnno],
