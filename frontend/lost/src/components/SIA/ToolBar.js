@@ -140,7 +140,7 @@ class ToolBar extends Component{
                 // enable-background="new 0 0 1190.549 841.891"
                 // xml:space="preserve"
                 >
-                <path fill="none" stroke="currentColor" stroke-width="120" stroke-miterlimit="10" d="M929.775,710.655
+                <path fill="none" stroke="currentColor" strokeWidth="120" strokeMiterlimit="10" d="M929.775,710.655
                     c0,23.386-19.134,42.52-42.52,42.52H278.991c-23.386,0-42.52-19.134-42.52-42.52V102.392c0-23.386,19.134-42.52,42.52-42.52
                     h608.264c23.386,0,42.52,19.134,42.52,42.52V710.655z"/>
             </svg>
@@ -156,7 +156,7 @@ class ToolBar extends Component{
                 // enable-background="new 0 0 1190.549 841.891"
                 // xml:space="preserve"
                 >
-                <path fill="none" stroke="currentColor" stroke-width="120" stroke-miterlimit="10" d="M342.327,769.938
+                <path fill="none" stroke="currentColor" strokeWidth="120" strokeMiterlimit="10" d="M342.327,769.938
                     c-23.379,0.548-52.922-15.056-65.65-34.674L65.479,409.738c-12.729-19.619-5.085-41.998,16.984-49.732L917.331,67.421
                     c22.07-7.734,26.86-0.275,10.645,16.576L691.761,329.475c-16.216,16.852-14.503,42.542,3.807,57.092l425.212,337.901
                     c18.31,14.549,14.16,26.901-9.219,27.449L342.327,769.938z"/>
