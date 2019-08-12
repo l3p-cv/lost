@@ -317,10 +317,14 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_MOVED:
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                this.showSingleAnno(undefined)
                 this.pushHist(
                     newAnnos, anno.id,
-                    pAction, this.state.showSingleAnno
+                    pAction, undefined
                 )
+                break
+            case canvasActions.ANNO_ENTER_MOVE_MODE:
+                this.showSingleAnno(anno.id)
                 break
             case canvasActions.ANNO_ADDED_NODE:
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
@@ -348,7 +352,7 @@ class Canvas extends Component{
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
-                    pAction, this.state.showSingleAnno
+                    pAction, undefined
                 )
                 break
             case canvasActions.ANNO_CREATED_NODE:
@@ -595,6 +599,9 @@ class Canvas extends Component{
         this.setState({
             showLabelInput: visible
         })
+        if (visible){
+            this.showSingleAnno(this.state.selectedAnnoId)
+        }
     }
 
     createNewAnnotation(e){

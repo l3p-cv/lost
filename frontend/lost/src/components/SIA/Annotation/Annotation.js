@@ -143,6 +143,10 @@ class Annotation extends Component{
                         this.performedAction(newAnno, canvasActions.ANNO_DELETED)
                     }
                     break
+                case modes.MOVE:
+                    this.setAnnoMode(anno, mode)
+                    this.performedAction(anno, canvasActions.ANNO_ENTER_MOVE_MODE)
+                    break
                 default:
                     this.setAnnoMode(anno, mode)
                     break
