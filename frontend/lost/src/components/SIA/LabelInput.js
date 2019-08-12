@@ -17,7 +17,14 @@ class LabelInput extends Component{
     }
 
     componentWillMount(){
+        console.log('LabelInput will mount', this.props)
         this.updatePossibleLabels()
+    }
+
+    componentDidMount(){
+        if(this.props.initLabelIds){
+            this.setState({performInit:true})
+        }
     }
 
     // componentDidMount(){
