@@ -91,6 +91,7 @@ class Canvas extends Component{
             imageLoaded: false,
             imgLabelIds: [],
             performedImageInit: false,
+            prevLabel: []
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -599,6 +600,7 @@ class Canvas extends Component{
     createNewAnnotation(e){
         if (this.props.selectedTool){
             const mousePos = this.getMousePosition(e)
+            // const selAnno = this.findAnno(this.state.selectedAnnoId)
             const newAnno = {
                 id: _.uniqueId('new'),
                 type: this.props.selectedTool,
@@ -611,7 +613,7 @@ class Canvas extends Component{
                 }],
                 mode: modes.CREATE,
                 status: annoStatus.NEW,
-                labelIds: [],
+                labelIds: this.state.prevLabel,
                 selectedNode: 1
             }
             this.setState({
@@ -666,7 +668,8 @@ class Canvas extends Component{
         const {newAnnos, newAnno} = this.mergeSelectedAnno(anno, mode)
         this.setState({
             annos: newAnnos,
-            selectedAnnoId: anno.id
+            selectedAnnoId: anno.id,
+            prevLabel: anno.labelIds, 
         })
         if(this.props.onAnnoSelect){
             this.props.onAnnoSelect(newAnno)
