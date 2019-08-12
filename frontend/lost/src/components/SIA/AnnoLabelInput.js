@@ -35,7 +35,7 @@ class AnnoLabelInput extends Component{
      * LOGIC     *
      *************/
     setPosition(){
-        if (this.props.selectedAnno.id){
+        if (this.props.selectedAnno){
             const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
             // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
             const inputRect = this.inputGroupRef.current.getBoundingClientRect()

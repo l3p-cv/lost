@@ -163,7 +163,7 @@ class Annotation extends Component{
     }
 
     isSelected(){
-        return this.props.selectedAnno.id === this.props.data.id
+        return this.props.selectedAnno === this.props.data.id
     }
 
     getResult(){
