@@ -1,3 +1,4 @@
+//Anno actions
 export const ANNO_DELETED='annoDeleted'
 export const ANNO_SELECTED='annoSselected'
 export const ANNO_CREATED='annoCreated'
@@ -9,3 +10,5 @@ export const ANNO_CREATED_NODE='annoCreatedNode'
 export const ANNO_CREATED_FINAL_NODE='annoCreatedFinalNode'
 export const ANNO_START_CREATING='annoStartCreating'
 
+//Image actions
+export const IMG_LABEL_UPDATE='imgLabelUpdate'

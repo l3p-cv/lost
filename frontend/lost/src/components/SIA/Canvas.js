@@ -130,6 +130,9 @@ class Canvas extends Component{
                 imageLoaded: false
             })
         }
+        if (prevProps.annos !== this.props.annos){
+            this.setState({imgLabelIds: this.props.annos.image.labelIds})
+        }
         if (this.state.performedImageInit){
             console.log('canvasHist Performed image init', this.state)
             // Initialize canvas history
@@ -498,22 +501,32 @@ class Canvas extends Component{
     }
 
     handleImgLabelUpdate(label){
+        let imgLabels = []
         if (label !== -1){
-            this.setState({imgLabelIds: [label]})
+            imgLabels = [label]
+            this.setState({imgLabelIds: imgLabels})
+            
         } else {
-            this.setState({imgLabelIds: []})
+            this.setState({imgLabelIds: imgLabels})
         }
+        this.pushHist(this.state.annos,
+            this.state.selectedAnno,
+            canvasActions.IMG_LABEL_UPDATE,
+            this.state.showSingleAnno,
+            imgLabels
+        )
     }
 
     /*************
      * LOGIC     *
     **************/
 
-    pushHist(annos, selectedAnno, pAction, showSingleAnno){
+    pushHist(annos, selectedAnno, pAction, showSingleAnno, imgLabelIds=this.state.imgLabelIds){
         this.hist.push({
             ...this.getAnnos(annos, false),
             selectedAnno: selectedAnno,
-            showSingleAnno: showSingleAnno
+            showSingleAnno: showSingleAnno,
+            imgLabelIds: imgLabelIds
         }, pAction)
     }
 
@@ -963,7 +976,7 @@ class Canvas extends Component{
     }
 
     render(){
-        console.log('Canvas render', this.state, this.props.image)
+        console.log('Canvas render', this.state)
         return(
             <div ref={this.container} >
             <div height={this.state.svg.height} 
@@ -976,6 +989,7 @@ class Canvas extends Component{
                 svg={this.state.svg}
                 onClose={() => this.handleImgBarClose()}
                 onLabelUpdate={label => this.handleImgLabelUpdate(label)}
+                imgLabelIds={this.state.imgLabelIds}
             />
             <Dimmer active={!this.props.image.id}><Loader>Loading</Loader></Dimmer>
 

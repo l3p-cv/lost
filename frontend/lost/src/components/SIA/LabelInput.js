@@ -65,6 +65,9 @@ class LabelInput extends Component{
                     this.setState({label:this.state.defaultLabelValue})
                 }
             }
+            if (prevProps.initLabelIds !== this.props.initLabelIds){
+                this.setState({performInit:true})
+            }
         }
         if(prevProps.relatedId !== this.props.relatedId){
             this.setState({performInit:true})

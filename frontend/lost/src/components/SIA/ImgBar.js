@@ -74,7 +74,7 @@ class ImgBar extends Component{
                         visible={true}
                         onLabelUpdate={label => this.handleLabelUpdate(label)}
                         possibleLabels={this.props.possibleLabels}
-                        initLabelIds={this.props.annos.image.labelIds}
+                        initLabelIds={this.props.imgLabelIds}
                         relatedId={this.props.annos.image.id}
                         />
                 </Menu.Item>
