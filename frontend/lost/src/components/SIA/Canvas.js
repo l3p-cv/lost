@@ -93,36 +93,11 @@ class Canvas extends Component{
         }
         this.img = React.createRef()
         this.svg = React.createRef()
-        // this.annoRefs = []
         this.container = React.createRef()
         this.hist = new UndoRedo()
     }
 
     componentDidMount(){
-        
-        // this.hist.push('box1', 'Crated Box1')
-        // this.hist.push('polygon1','Created Polygon1')
-        // this.hist.push('polygon2,','Edited Polygon1')
-
-        // console.log('hist', this.hist.getHist())
-        // console.log('hist undo',this.hist.undo())
-        // console.log('hist redo',this.hist.redo())
-        // this.hist.push('Created Line1')
-        // console.log('hist', this.hist.getHist())
-        // console.log('hist redo',this.hist.redo())
-        // console.log('hist undo',this.hist.undo())
-        // console.log('hist undo',this.hist.undo())
-        // console.log('hist undo',this.hist.undo())
-        // console.log('hist undo',this.hist.undo())
-        // console.log('hist redo',this.hist.redo())
-        // console.log('hist redo',this.hist.redo())
-        // console.log('hist redo',this.hist.redo())
-        // console.log('hist redo',this.hist.redo())
-
-
-
-        // console.log('canvasHist.pop', this.canvasHist.pop())
-
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -162,11 +137,6 @@ class Canvas extends Component{
             console.log('Canvas imageLoaded',this.state.imageLoaded)
             
         }
-        // // Workaround to find out when workingOnAnnoTask component has rendered,
-        // // in order to calculate correct position for canvas
-        // if (prevProps.workingOnAnnoTask !== this.props.workingOnAnnoTask){
-        //     this.updateCanvasView()
-        // }
         console.log('canvasHistory canvas state', this.hist.getHist(), this.state)
     }
     
@@ -182,21 +152,10 @@ class Canvas extends Component{
 
     onMouseOver(){
         //Prevent scrolling on svg
-        
-        // document.body.style.position = "fixed"
-        // document.body.style.overflowY = "scroll"
-        
-        // document.body.style.overflow = "hidden"
         this.svg.current.focus()
         console.log('Mouse Over Canvas')
     }
-    onMouseOut(){
-        //Enable scrolling after leaving svg
-        // document.body.style.overflow = "auto"
-        
-        // document.body.style.position = "static"
-        // document.body.style.overflowY = "auto"
-    }
+
     onWheel(e:Event){
         // Zoom implementation. Note that svg is first scaled and 
         // second translated!
@@ -231,14 +190,7 @@ class Canvas extends Component{
             this.selectAnnotation(undefined)
         }
         else if (e.button === 1){
-            // this.collectAnnos()
             this.setMode(modes.CAMERA_MOVE)
-            // this.setState({svg:
-            //     {...this.state.svg, 
-            //         scale: 1.0, 
-            //         translateX: 0, 
-            //         translateY: 0
-            //     }})
         }
         else if (e.button === 2){
             //Create annotation on right click
@@ -342,17 +294,9 @@ class Canvas extends Component{
         switch(pAction){
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno)
-                // this.pushHist(
-                //     this.state.annos, anno,
-                //     pAction, this.state.showSingleAnno
-                // )
                 break
             case canvasActions.ANNO_START_CREATING:
                 updatedAnnos = this.updateSelectedAnno(anno)
-                // this.hist.push({
-                //     ...this.getAnnos(updatedAnnos.annos, false),
-                //     selectedAnno: updatedAnnos.selectedAnno
-                // }, pAction)
                 this.pushHist(
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
                     pAction, this.state.showSingleAnno
@@ -365,10 +309,6 @@ class Canvas extends Component{
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
                     pAction, undefined
                 )
-                // this.hist.push({
-                //     ...this.getAnnos(updatedAnnos.annos, false),
-                //     selectedAnno: updatedAnnos.selectedAnno
-                // }, pAction)
                 this.showSingleAnno(undefined)
                 break
             case canvasActions.ANNO_MOVED:
@@ -377,10 +317,6 @@ class Canvas extends Component{
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
                     pAction, this.state.showSingleAnno
                 )
-                // this.hist.push({
-                //     ...this.getAnnos(updatedAnnos.annos, false),
-                //     selectedAnno: updatedAnnos.selectedAnno
-                // }, pAction)
                 break
             case canvasActions.ANNO_ADDED_NODE:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
@@ -388,10 +324,6 @@ class Canvas extends Component{
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
                     pAction, this.state.showSingleAnno
                 )
-                // this.hist.push({
-                //     ...this.getAnnos(updatedAnnos.annos, false),
-                //     selectedAnno: updatedAnnos.selectedAnno
-                // }, pAction)
                 break
             case canvasActions.ANNO_EDITED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
@@ -399,10 +331,6 @@ class Canvas extends Component{
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
                     pAction, this.state.showSingleAnno
                 )
-                // this.hist.push({
-                //     ...this.getAnnos(updatedAnnos.annos, false),
-                //     selectedAnno: updatedAnnos.selectedAnno
-                // }, pAction)
                 break
             case canvasActions.ANNO_DELETED:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.DELETED)
@@ -411,10 +339,6 @@ class Canvas extends Component{
                     updatedAnnos.annos, undefined,
                     pAction, this.state.showSingleAnno
                 )
-                // this.hist.push({
-                //     ...this.getAnnos(updatedAnnos.annos, false),
-                //     selectedAnno: undefined
-                // }, pAction)
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 updatedAnnos = this.updateSelectedAnno(anno, modes.VIEW)
@@ -422,10 +346,6 @@ class Canvas extends Component{
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
                     pAction, this.state.showSingleAnno
                 )
-                // this.hist.push({
-                    // ...this.getAnnos(updatedAnnos.annos, false),
-                    // selectedAnno: updatedAnnos.selectedAnno
-                // }, pAction)
                 break
             case canvasActions.ANNO_CREATED_NODE:
                 const mergedAnno = this.mergeSelectedAnno(anno, modes.CREATE)
@@ -433,10 +353,6 @@ class Canvas extends Component{
                     mergedAnno.annos, mergedAnno.selectedAnno,
                     pAction, this.state.showSingleAnno
                 )
-                // this.hist.push({
-                //     ...this.getAnnos(mergedAnno.annos, false),
-                //     selectedAnno: mergedAnno.selectedAnno
-                // }, pAction)
                 break
             case canvasActions.ANNO_CREATED_FINAL_NODE:
                 console.log('canvasActions.ANNO_CREATED_FINAL_NODE', anno)
@@ -445,10 +361,6 @@ class Canvas extends Component{
                     updatedAnnos.annos, updatedAnnos.selectedAnno,
                     pAction, undefined
                 )
-                // this.hist.push({
-                //     ...this.getAnnos(updatedAnnos.annos, false),
-                //     selectedAnno: updatedAnnos.selectedAnno,
-                // }, pAction)
                 this.showSingleAnno(undefined)
                 break
             default:
@@ -456,32 +368,6 @@ class Canvas extends Component{
                 break
         }
     }
-
-    // /**
-    //  * Handle change of internal mode of an annotation.
-    //  * 
-    //  * @param {*} anno 
-    //  * @param {String} mode 
-    //  */
-    // onAnnoModeChange(anno){
-    //     switch (anno.mode){
-    //         case modes.ADD:
-    //         case modes.EDIT:
-    //         case modes.MOVE:
-    //         case modes.CREATE:
-    //             this.showSingleAnno(anno.id)
-    //             this.updateSelectedAnno(anno)
-    //             break
-    //         case modes.EDIT_LABEL:
-    //             this.showSingleAnno(anno.id)
-    //             break
-    //         case modes.VIEW:
-    //             this.showSingleAnno(undefined)
-    //             break
-    //         default:
-    //             break
-    //     }
-    // }
 
     onAnnoLabelInputUpdate(anno){
         this.updateSelectedAnno(anno)
@@ -567,7 +453,6 @@ class Canvas extends Component{
     setCanvasState(annotations, imgLabelIds, selectedAnno, showSingleAnno){
         this.updateCanvasView({...annotations})
         this.setImageLabels([...imgLabelIds])
-        // this.setState({selectedAnno: selectedAnno})
         this.selectAnnotation(selectedAnno)
         this.setState({showSingleAnno: showSingleAnno})
     }
@@ -576,7 +461,6 @@ class Canvas extends Component{
         if (anno){
             this.setState({
                 selectedAnno: anno
-                // selectedAnnoIdx: annoIdx
             })
         } else {
             this.setState({
@@ -591,19 +475,6 @@ class Canvas extends Component{
         }
         console.log('hist selectAnno', anno)
     }
-    // canvasKeyPress(key, down=true){
-    //     if (down){
-    //         this.setState({
-    //             keyDown: key,
-    //             keyUp: undefined
-    //         })
-    //     } else {
-    //         this.setState({
-    //             keyDown: undefined,
-    //             keyUp: key
-    //         })
-    //     }
-    // }
 
     /**
      * Traverse annotations by key hit
@@ -635,27 +506,8 @@ class Canvas extends Component{
             }
         }
     } 
-    // // Collect the current data of all annotations and update state
-    // collectAnnos(){
-    //     // console.log('Canvas collectAnnos this.annoRefs', this.annoRefs)
-    //     let annos = []  
-    //     this.annoRefs.forEach( ref => {
-    //         if (ref) {
-    //             annos.push(ref.current.getResult())
-    //         }
-    //     })
-    //     console.log('collectAnnos Result annos', annos)
-    //     this.setState({annos: [...annos]})
-    // }
 
     getAnnoBackendFormat(forBackendPost=false, annos=undefined){
-        // let annos = []  
-        // //Get newest anno data from components
-        // this.annoRefs.forEach( ref => {
-        //     if (ref) {
-        //         annos.push(ref.current.getResult())
-        //     }
-        // })
         let myAnnos = annos ? annos : this.state.annos
         const bAnnos = myAnnos.map( el => {
             var annoId 
@@ -682,18 +534,6 @@ class Canvas extends Component{
         console.log('Annotation getAnnoBackendFormat', backendFormat)
         return backendFormat
     }
-    
-    // updateBackendAnnos(){
-    //     const backendFormat = this.getAnnoBackendFormat(true)
-    //     const finalData = {
-    //         imgId: this.props.annos.image.id,
-    //         annotations: backendFormat
-    //     }
-    //     console.log('Update Backend annos', finalData)
-    //     if (this.props.onAnnoUpdate){
-    //         this.props.onAnnoUpdate(finalData)
-    //     }
-    // }
 
     getAnnos(annos=undefined, removeFrontedIds=true){
         const myAnnos = annos ? annos : this.state.annos
@@ -740,12 +580,6 @@ class Canvas extends Component{
             showLabelInput: visible
         })
     }
-    // removeSelectedAnno(){
-    //     const annos = this.state.annos.filter( (el) => {
-    //         return el.id !== this.state.selectedAnno.id
-    //     })
-    //     this.setState({annos: annos})
-    // }
 
     createNewAnnotation(e){
         if (this.props.selectedTool){
@@ -1023,7 +857,6 @@ class Canvas extends Component{
                     <g 
                         transform={`scale(${this.state.svg.scale}) translate(${this.state.svg.translateX}, ${this.state.svg.translateY})`}
                         onMouseOver={() => {this.onMouseOver()}}
-                        onMouseOut={() => {this.onMouseOut()}}
                         onMouseUp={(e) => {this.onMouseUp(e)}}
                         onWheel={(e) => {this.onWheel(e)}}
                         onMouseMove={(e) => {this.onMouseMove(e)}}
