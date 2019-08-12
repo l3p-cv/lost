@@ -170,7 +170,7 @@ class ToolBar extends Component{
         if (this.props.allowedTools.point){
             btns.push(
                 <Menu.Item name='dot circle' key={TOOLS.POINT}
-                    active={false} 
+                    active={this.props.selectedTool===TOOLS.POINT} 
                     onClick={e => this.onClick(e, TOOLS.POINT)}
                 >
                     {/* <Icon name='dot circle' /> */}
@@ -184,7 +184,7 @@ class ToolBar extends Component{
         if (this.props.allowedTools.line){
             btns.push(
                 <Menu.Item name='paint brush' key={TOOLS.LINE}
-                    active={false} 
+                    active={this.props.selectedTool===TOOLS.LINE} 
                     onClick={e => this.onClick(e, TOOLS.LINE)}
                 >
                     {/* <Icon name='paint brush' /> */}
@@ -199,7 +199,7 @@ class ToolBar extends Component{
         if (this.props.allowedTools.bbox){
             btns.push(
                 <Menu.Item name='square outline' key={TOOLS.BBOX}
-                    active={false} 
+                    active={this.props.selectedTool===TOOLS.BBOX} 
                     onClick={e => this.onClick(e, TOOLS.BBOX)}
                 >
                     {/* <Icon name='square outline' /> */}
@@ -213,7 +213,7 @@ class ToolBar extends Component{
         if (this.props.allowedTools.polygon){
             btns.push(
                 <Menu.Item name='pencil alternate' key={TOOLS.POLYGON}
-                    active={false} 
+                    active={this.props.selectedTool===TOOLS.POLYGON} 
                     onClick={e => this.onClick(e, TOOLS.POLYGON)}
                 >
                     {/* <Icon name='pencil alternate' /> */}
@@ -355,7 +355,8 @@ function mapStateToProps(state) {
         layoutUpdate: state.sia.layoutUpdate,
         imgBar: state.sia.imgBar,
         allowedTools: state.sia.config.tools,
-        allowedActions: state.sia.config.actions
+        allowedActions: state.sia.config.actions,
+        selectedTool: state.sia.selectedTool
     })
 }
 export default connect(mapStateToProps, 
