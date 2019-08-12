@@ -613,22 +613,24 @@ class Canvas extends Component{
         console.log('Traverse annos', key, this.state.annos, this.state.selectedAnno)
         if (key === 'Tab'){
             if (this.state.annos.length > 0){
-                if (!this.state.selectedAnno.id){
-                    this.selectAnnotation(this.state.annos[0])
-                } else {
-                    const myAnnos = this.state.annos.filter(e => {
-                        return e.status !== annoStatus.DELETED
-                    })
-                    let currentIdx = myAnnos.findIndex( e => {
-                        return e.id === this.state.selectedAnno.id
-                    })
-                    if (currentIdx+1 < myAnnos.length){
-                        this.selectAnnotation(myAnnos[currentIdx+1])
-                    } else {
+                const myAnnos = this.state.annos.filter(e => {
+                    return e.status !== annoStatus.DELETED
+                })
+                console.log('Traverse annos: filteredAnnos', myAnnos)
+                if (myAnnos.length > 0){
+                    if (!this.state.selectedAnno.id){
                         this.selectAnnotation(myAnnos[0])
+                    } else {
+                        let currentIdx = myAnnos.findIndex( e => {
+                            return e.id === this.state.selectedAnno.id
+                        })
+                        if (currentIdx+1 < myAnnos.length){
+                            this.selectAnnotation(myAnnos[currentIdx+1])
+                        } else {
+                            this.selectAnnotation(myAnnos[0])
+                        }
                     }
                 }
-
             }
         }
     } 
