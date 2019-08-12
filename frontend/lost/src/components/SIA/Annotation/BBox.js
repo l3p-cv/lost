@@ -189,21 +189,15 @@ class BBox extends Component{
 
     renderPolygon(){
         switch(this.state.anno.mode){
-            case modes.MOVE:
-            case modes.EDIT:
-            case modes.VIEW:
-            case modes.CREATE:
-            case modes.EDIT_LABEL:
-                return <polygon 
-                            points={this.toPolygonStr(this.state.anno.data)}
-                            fill='none' stroke="purple" 
-                            style={this.props.style}
-                            className={this.props.className}
-                            onMouseDown={e => this.onMouseDown(e)}
-                            onMouseUp={e => this.onMouseUp(e)}
-                        />
             default:
-                return null 
+                return <polygon 
+                    points={this.toPolygonStr(this.state.anno.data)}
+                    fill='none' stroke="purple" 
+                    style={this.props.style}
+                    className={this.props.className}
+                    onMouseDown={e => this.onMouseDown(e)}
+                    onMouseUp={e => this.onMouseUp(e)}
+                /> 
         }
     }
 

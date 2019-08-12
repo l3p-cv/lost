@@ -5,6 +5,8 @@ import AnnoLabelInput from './AnnoLabelInput'
 import ImgBar from './ImgBar'
 
 import * as transform from './utils/transform'
+import * as keyActions from './utils/keyActions'
+import KeyMapper from './utils/keyActions'
 import * as TOOLS from './types/tools'
 import * as modes from './types/modes'
 import UndoRedo from './utils/hist'
@@ -97,6 +99,7 @@ class Canvas extends Component{
         this.svg = React.createRef()
         this.container = React.createRef()
         this.hist = new UndoRedo()
+        this.keyMapper = new KeyMapper((keyAction) => this.handleKeyAction(keyAction))
     }
 
     componentDidMount(){
@@ -141,7 +144,7 @@ class Canvas extends Component{
         }
         console.log('canvasHistory canvas state', this.hist.getHist(), this.state)
     }
-    
+
     onImageLoad(){
         console.log('Canvas onImageLoade')
         this.setState({
@@ -221,58 +224,62 @@ class Canvas extends Component{
         }
     }
 
-    // onKeyPress(e: Event){
-    //     e.preventDefault()
-    //     console.log(e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
-    //     if (e.key === 'Delete'){
-    //         this.removeSelectedAnno()
-    //     }
-    // }
-
-    onKeyDown(e: Event){
-        e.preventDefault()
-        console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
-        this.traverseAnnos(e.key)
+    handleKeyAction(action){
         const anno = this.findAnno(this.state.selectedAnnoId)
-        switch (e.key){
-            case 'Enter':
+        console.log('handleKeyAction: ', action)
+        switch(action){
+            case keyActions.EDIT_LABEL:
                 if (this.state.selectedAnnoId){
                     this.showLabelInput()
                     this.updateSelectedAnno(anno, modes.EDIT_LABEL)
                 }
                 break
-            case 'Delete':
+            case keyActions.DELETE_ANNO:
                 this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
                 break
-            case 'Control':
-                this.updateSelectedAnno(
-                    anno, modes.ADD
-                )
+            case keyActions.ENTER_ANNO_ADD_MODE:
+                if (anno){
+                    this.updateSelectedAnno(
+                        anno, modes.ADD
+                    )
+                    // this.showSingleAnno(anno.id)
+                }
                 break
-            case 'z':
+            case keyActions.LEAVE_ANNO_ADD_MODE:
+                console.log('handleKeyAction LEAVE_ANNO_EDIT_MODE')
+                if (anno){
+                    this.updateSelectedAnno(
+                        anno, modes.VIEW
+                    )
+                    // this.showSingleAnno(undefined)
+                }
+                break
+            case keyActions.UNDO:
                 this.undo()
                 break
-            case 'r':
+            case keyActions.REDO:
                 this.redo()
+                break
+            case keyActions.TRAVERSE_ANNOS:
+                this.traverseAnnos()
+                break
             default:
-                    break
+                console.warn('Unknown key action', action)
         }
 
     }
 
+    onKeyDown(e: Event){
+        e.preventDefault()
+        this.keyMapper.keyDown(e.key)
+        console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
+        const anno = this.findAnno(this.state.selectedAnnoId)
+    }
+
     onKeyUp(e: Event){
         e.preventDefault()
-        console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
-        switch (e.key){
-            case 'Control':
-                const anno = this.findAnno(this.state.selectedAnnoId)
-                this.updateSelectedAnno(
-                    anno, modes.VIEW
-                )
-                break
-            default:
-                    break
-        }
+        this.keyMapper.keyUp(e.key)
+        // console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
     onMouseMove(e: Event){
@@ -498,29 +505,24 @@ class Canvas extends Component{
 
     /**
      * Traverse annotations by key hit
-     * 
-     * @param key A key code
      */
-    traverseAnnos(key){
-        console.log('Traverse annos', key, this.state.annos, this.state.selectedAnnoId)
-        if (key === 'Tab'){
-            if (this.state.annos.length > 0){
-                const myAnnos = this.state.annos.filter(e => {
-                    return e.status !== annoStatus.DELETED
-                })
-                console.log('Traverse annos: filteredAnnos', myAnnos)
-                if (myAnnos.length > 0){
-                    if (!this.state.selectedAnnoId){
-                        this.selectAnnotation(myAnnos[0].id)
+    traverseAnnos(){
+        if (this.state.annos.length > 0){
+            const myAnnos = this.state.annos.filter(e => {
+                return e.status !== annoStatus.DELETED
+            })
+            console.log('Traverse annos: filteredAnnos', myAnnos)
+            if (myAnnos.length > 0){
+                if (!this.state.selectedAnnoId){
+                    this.selectAnnotation(myAnnos[0].id)
+                } else {
+                    let currentIdx = myAnnos.findIndex( e => {
+                        return e.id === this.state.selectedAnnoId
+                    })
+                    if (currentIdx+1 < myAnnos.length){
+                        this.selectAnnotation(myAnnos[currentIdx+1].id)
                     } else {
-                        let currentIdx = myAnnos.findIndex( e => {
-                            return e.id === this.state.selectedAnnoId
-                        })
-                        if (currentIdx+1 < myAnnos.length){
-                            this.selectAnnotation(myAnnos[currentIdx+1].id)
-                        } else {
-                            this.selectAnnotation(myAnnos[0].id)
-                        }
+                        this.selectAnnotation(myAnnos[0].id)
                     }
                 }
             }
