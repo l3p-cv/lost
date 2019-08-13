@@ -85,26 +85,6 @@ class ImgBar extends Component{
                 </Menu.Item>
                 </Menu.Menu>
             </Menu>
-            {/* <Fade in={this.props.imgBar.show}> 
-            <Card style={{minWidth:"600px"}} >
-            <CardBody>
-                <Row>
-                    <Col xs='5' sm='5' lg='5'>
-                        <Input></Input>
-                    </Col>
-                    <Col xs='2' sm='2' lg='2'>
-                    <FontAwesomeIcon icon={faArrowRight} /> {this.props.annos.image.number} / {this.props.annos.image.amount}
-                    </Col>
-                    <Col xs='4' sm='4' lg='4'>
-                         {this.props.annos.image.url.split('/').pop()} (ID: {this.props.annos.image.id})
-                    </Col>
-                    <Col xs='1' sm='1' lg='1'>
-                         <Button close onClick={() => this.props.siaShowImgBar(false)} />
-                    </Col>
-                </Row>
-                </CardBody>
-            </Card>
-            </Fade> */}
         </div>
         )
     }
