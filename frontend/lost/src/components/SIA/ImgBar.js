@@ -54,20 +54,10 @@ class ImgBar extends Component{
             position:'fixed', 
             top: this.state.position.top, 
             left:this.state.position.left,
+            width: this.props.svg.width,
+            minWidth: '500px'
             }}>
-                {/* <div className="handle" style={{cursor: 'grab'}}>Drag</div> */}
-            <Menu inverted>
-                <Menu.Item  
-                active={activeItem === 'bla'} 
-                >
-                {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
-                </Menu.Item>
-                <Menu.Item
-                active={activeItem === 'messages'}
-                >
-                {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
-                </Menu.Item>
-                <Menu.Menu position='right'>
+            <Menu inverted style={{opacity:0.9}}>
                 <Menu.Item style={{padding: "5px"}}>
                     <LabelInput
                         relatedId={this.props.annos.image.id}
@@ -78,8 +68,17 @@ class ImgBar extends Component{
                         relatedId={this.props.annos.image.id}
                         />
                 </Menu.Item>
+                
+                <Menu.Menu position='right'>
                 <Menu.Item
-                    active={activeItem === 'logout'}
+                >
+                {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
+                </Menu.Item>
+                <Menu.Item  
+                >
+                {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
+                </Menu.Item>
+                <Menu.Item
                     onClick={() => this.handleClose()}
                 >
                 <Icon inverted size="small" name="close"></Icon>
