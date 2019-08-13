@@ -51,7 +51,7 @@ class InfoBox extends Component{
                 style={this.state.style}>
         
             <Message 
-                style={{opacity:0.8}}
+                style={{opacity:0.98}}
                 onDismiss={e => {this.onDismiss(e)}}
                 size="small"
             >
