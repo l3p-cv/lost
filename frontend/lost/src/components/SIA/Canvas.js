@@ -62,6 +62,8 @@ import { Loader, Dimmer } from 'semantic-ui-react';
  *          }
  *      }
  * @param {bool} imgBarVisible - Controls visibility of the ImgBar
+ * @param {object} layoutOffset - Offset of the canvas inside the container:
+ *      {left:int, top:int, right:int, bottom:int} values in pixels.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
  *      args: {width: int, height: int, scale: float, translateX: float,
  *      translateY:float}
@@ -721,18 +723,31 @@ class Canvas extends Component{
     updateImageSize(){
         
         var container = this.props.container.current.getBoundingClientRect()
-        var canvasLeft
-        if (container.left < this.props.uiConfig.toolBarWidth){
-            canvasLeft = this.props.uiConfig.toolBarWidth + 10
-        } else {
-            canvasLeft = container.left
-        }
+        
+        // if (container.left < this.props.uiConfig.toolBarWidth){
+        //     canvasLeft = this.props.uiConfig.toolBarWidth + 10
+        // } else {
+        //     canvasLeft = container.left
+        // }
         console.log('Canvas container', container)
         console.log('CanvasLeft', canvasLeft, this.props.uiConfig.toolBarWidth)
-        var clientWidth = document.documentElement.clientWidth
+        // var clientWidth = document.documentElement.clientWidth
         var clientHeight = document.documentElement.clientHeight
-        var maxImgWidth = container.right -canvasLeft
-        var maxImgHeight = clientHeight - container.top - 10
+        var canvasTop
+        var canvasLeft
+        var maxImgHeight
+        var maxImgWidth 
+        if(this.props.layoutOffset){
+            canvasTop = container.top + this.props.layoutOffset.top
+            canvasLeft = container.left + this.props.layoutOffset.left
+            maxImgHeight = clientHeight - container.top - this.props.layoutOffset.bottom - this.props.layoutOffset.top
+            maxImgWidth = container.right -canvasLeft - this.props.layoutOffset.right
+        } else {
+            canvasTop = container.top
+            canvasLeft = container.left
+            maxImgHeight = clientHeight - container.top
+            maxImgWidth = container.right -canvasLeft
+        }
         // if (this.props.appliedFullscreen) maxImgHeight = maxImgHeight + 10 
         var ratio = this.img.current.naturalWidth / this.img.current.naturalHeight
         var imgWidth = "100%"
@@ -756,7 +771,7 @@ class Canvas extends Component{
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
         const svg = {
             ...this.state.svg, width : imgWidth, height: imgHeight,
-            left: canvasLeft, top: container.top
+            left: canvasLeft, top: canvasTop
         }
         this.setState({svg})
         this.svgUpdate(svg)

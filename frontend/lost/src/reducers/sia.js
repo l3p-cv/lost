@@ -11,12 +11,11 @@ const INITIAL_STATE = {
     uiConfig: {
         nodeRadius: 4,
         strokeWidth: 4,
-        toolBarWidth: 60,
         annoDetails:{
-            visible: true
+            visible: false
         },
         labelInfo:{
-            visible: true
+            visible: false
         }
     },
     showSingleAnno: undefined,

@@ -6,10 +6,7 @@ import 'semantic-ui-css/semantic.min.css'
 
 import Canvas from './Canvas'
 import ToolBar from './ToolBar'
-import ImgBar from './ImgBar'
-import SIASettingModal from './SIASettingModal'
 import InfoBoxArea from './InfoBoxes/InfoBoxArea'
-import InfoBox from './InfoBoxes/InfoBox'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
@@ -29,7 +26,12 @@ class SIA extends Component {
                 id: undefined,
                 data: undefined,
             },
-            // annoUpdateTrigger: 0
+            layoutOffset: {
+                left: 0,
+                top: 0,
+                bottom: 10,
+                right: 0
+            }
         }
         
         this.container = React.createRef()
@@ -39,7 +41,6 @@ class SIA extends Component {
     componentDidMount() {
         document.body.style.overflow = "hidden"
         this.setState({didMount:true})
-        //document.body.style.position = "fixed"
         window.addEventListener("resize", this.props.siaLayoutUpdate);
         this.props.getSiaAnnos(-1)
         this.props.getSiaLabels()
@@ -84,7 +85,6 @@ class SIA extends Component {
             const newAnnos = this.canvas.current.getAnnos()
             this.props.siaUpdateAnnos(newAnnos)
             this.props.siaSendFinishToBackend()
-            // this.triggerAnnoUpdate()
         }
         if(this.props.annos.image){
             if (prevProps.annos.image){
@@ -96,10 +96,6 @@ class SIA extends Component {
             }
         }
     }
-
-    // handleCanvasImageLoaded(){
-    //     // this.props.siaSetImageLoaded(true)
-    // }
 
     handleImgBarClose(){
         this.props.siaShowImgBar(false)
@@ -116,30 +112,26 @@ class SIA extends Component {
             }
         )       
     }
-    // handleAnnoUpdate(annos){
-    //     this.props.siaUpdateAnnos(annos)
-    //     // if (this.props.taskFinished){
-    //     //     console.log('SIA taskFinished')
-    //     //     this.props.siaSendFinishToBackend()
-    //     // }
-
-    // }
-
-    // triggerAnnoUpdate(){
-    //     this.setState({
-    //         annoUpdateTrigger: this.state.annoUpdateTrigger + 1
-    //     })
-    // }
 
     setFullscreen(fullscreen = true) {
         if (fullscreen) {
             if (this.state.fullscreenCSS !== 'sia-fullscreen') {
-                this.setState({ fullscreenCSS: 'sia-fullscreen' })
+                this.setState({ 
+                    fullscreenCSS: 'sia-fullscreen',
+                    layoutOffset: {
+                        ...this.state.layoutOffset,
+                        left: 50,
+                    } 
+                })
             }
         } else {
             if (this.state.fullscreenCSS !== '') {
                 this.setState({
-                    fullscreenCSS: ''
+                    fullscreenCSS: '',
+                    layoutOffset: {
+                        ...this.state.layoutOffset,
+                        left: 0,
+                    } 
                 })
             }
         }
@@ -164,6 +156,7 @@ class SIA extends Component {
                     // onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoSelect={anno => this.props.selectAnnotation(anno)}
                     onImgBarClose={() => this.handleImgBarClose()}
+                    layoutOffset={this.state.layoutOffset}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>
@@ -196,10 +189,8 @@ function mapStateToProps(state) {
 export default connect(
     mapStateToProps,
     {
-        // siaAppliedFullscreen, 
         siaLayoutUpdate, getSiaAnnos,
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
-        // siaSetImageLoaded, 
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
         siaShowImgBar
