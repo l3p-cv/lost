@@ -46,13 +46,19 @@ class AnnoBar extends Component{
 
 
     render(){
-        let label = 'no label'
+        let label = ''
         if (this.props.anno.labelIds && this.props.anno.labelIds.length > 0){
             console.log('AnnoBar',this.props.anno)
-            const labelObj = this.props.possibleLabels.find(el => {
-                return el.id === this.props.anno.labelIds[0]
+            let labelObject 
+            this.props.anno.labelIds.forEach((lbl, idx) => {
+                labelObject = this.props.possibleLabels.find(el => {
+                    return el.id === lbl
+                })
+                if (idx > 0) label += ', '
+                label += labelObject.label
             })
-            if (labelObj) label = labelObj.label
+        } else {
+            label = 'no label'
         }
         switch(this.props.mode){
             case modes.VIEW:

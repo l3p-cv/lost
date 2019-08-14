@@ -40,6 +40,7 @@ const INITIAL_STATE = {
             polygon: true,
             bbox: true
         },
+        multilabels: true,
         actions: {
             drawing: true,
             labeling: true,

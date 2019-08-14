@@ -8,10 +8,10 @@ class LabelInput extends Component{
     constructor(props){
         super(props)
         this.state = {
-            label: undefined,
+            label: [],
             possibleLabels: [],
             performInit: true,
-            defaultLabelValue: {key: -1, text:"no label", value:-1}
+            enterHits: 0,
         }
         this.inputRef = React.createRef()
     }
@@ -27,20 +27,6 @@ class LabelInput extends Component{
         }
     }
 
-    // componentDidMount(){
-    //     if (this.props.initLabelIds){
-    //         if(this.props.initLabelIds.length > 0){
-    //             const lbl = this.state.possibleLabels.find(e => {
-    //                 return e.value === this.props.initLabelIds[0]
-    //             })
-    //             if (lbl){
-    //                 this.setState({label:lbl})
-    //                 console.log('LabelInput set label to', lbl)
-    //             }
-    //         }
-    //     }
-    // }
-    
     componentDidUpdate(prevProps){
         console.log('LabelInput DidUpdate', this.state, this.props.initLabelIds, this.props.relatedId)
         if (this.props.visible){
@@ -61,15 +47,16 @@ class LabelInput extends Component{
                 this.setState({performInit: false})
                 console.log('LabelInput InitLabels', this.props.initLabelIds, this.props.relatedId)
                 if(this.props.initLabelIds.length > 0){
-                    const lbl = this.state.possibleLabels.find(e => {
-                        return e.value === this.props.initLabelIds[0]
-                    })
-                    if (lbl){
-                        this.setState({label:lbl})
-                        console.log('LabelInput set label to', lbl)
-                    }
+                    this.setState({label: this.props.initLabelIds})
+                    // const lbl = this.state.possibleLabels.find(e => {
+                    //     return e.value === this.props.initLabelIds[0]
+                    // })
+                    // if (lbl){
+                    //     this.setState({label:lbl.value})
+                    //     console.log('LabelInput set label to', lbl)
+                    // }
                 } else {
-                    this.setState({label:this.state.defaultLabelValue})
+                        this.setState({label:[]})
                 }
             }
             if (prevProps.initLabelIds !== this.props.initLabelIds){
@@ -91,9 +78,15 @@ class LabelInput extends Component{
     }
 
     onChange(e, item ){
-        console.log('LabelInput onChange', e, item)
-        this.setState({ label: item })
-        this.annoLabelUpdate(item)
+        console.log('LabelInput onChange', item)
+        let lbl 
+        if (this.props.multilabels){
+            lbl = item.value
+        } else {
+            lbl = [item.value]
+        }
+        this.setState({ label: lbl })
+        this.annoLabelUpdate(lbl)
         this.inputRef.current.click()
     }
 
@@ -107,7 +100,6 @@ class LabelInput extends Component{
                 return {key: e.id, value: e.id, text: e.label}
             })
         }
-        possibleLabels = [this.state.defaultLabelValue, ...possibleLabels]
         this.setState({possibleLabels})
 
     }
@@ -115,7 +107,9 @@ class LabelInput extends Component{
     performKeyAction(key){
         switch(key){
             case 'Enter':
-                if (this.props.visible) this.confirmLabel()
+                if (!this.props.multilabels){
+                    if (this.props.visible) this.confirmLabel()
+                }
                 break
             case 'Escape':
                 // console.log('LabelInput Escape current label', this.state.label.id)
@@ -128,7 +122,7 @@ class LabelInput extends Component{
 
     annoLabelUpdate(label){
         if (this.props.onLabelUpdate){
-            this.props.onLabelUpdate(label.value)
+            this.props.onLabelUpdate(label)
         }
     }
 
@@ -155,10 +149,22 @@ class LabelInput extends Component{
      * RENDERING *
     **************/
     renderLabelInput(){
+        let lbl 
+        if (this.props.multilabels){
+            lbl = this.state.label        
+        } else {
+            if (this.state.label.length > 0){
+                lbl = this.state.label[0]
+            } else {
+                lbl = undefined
+            }
+        }
+        console.log('Render LabelInput lbl', lbl)
+
         return (
             <Ref innerRef={this.inputRef}>
                     <Dropdown
-                        multiple={false}
+                        multiple={this.props.multilabels}
                         search
                         selection
                         closeOnChange
@@ -167,32 +173,21 @@ class LabelInput extends Component{
                         placeholder='Enter label'
                         tabIndex={0}
                         onKeyDown= {e => this.onKeyDown(e)}
-                        // defaultValue={
-                        //     this.state.label ?
-                        //     this.state.label.value :
-                        //     -1
-                        // }
-                        value={
-                            this.state.label ?
-                            this.state.label.value :
-                            -1
-                        }
+                        value={lbl}
                         onChange={(e, item) => this.onChange(e, item)}
                         style={{opacity:0.8}}
-                        // onMouseDown={() => this.confirmLabel()}
-                        // onFocus={() => this.triggerPopup()}
-                        // onBlur={() => this.confirmLabel()}
-                        // onClick={() => this.handleClick()}
-                        // searchInput={<Dropdown.SearchInput />}
                     />
                 </Ref>
         )
     }
     renderLabelInfo(){
         if (!this.state.label) return null
-        const lbl = this.props.possibleLabels.find(e => {
-            return this.state.label.value === e.id
-        })
+        let lbl = undefined
+        if (this.state.label.length > 0){
+            lbl = this.props.possibleLabels.find(e => {
+                return this.state.label[this.state.label.length-1] === e.id
+            })
+        }
         if (!lbl) return "No label"
         return <div>
             <Header>{
@@ -212,7 +207,7 @@ class LabelInput extends Component{
 
     render(){
         if (!this.props.visible) return null
-        // console.log('Render LabelInput with state', this.state, this.props.possibleLabels)
+        console.log('Render LabelInput with state', this.state)
         if (this.props.renderPopup){
             return (
                 <Popup trigger={this.renderLabelInput()}
@@ -223,7 +218,6 @@ class LabelInput extends Component{
                 />
             )
         } else {
-            console.log('LabelInput render', this.state)
             return this.renderLabelInput()
         }
         

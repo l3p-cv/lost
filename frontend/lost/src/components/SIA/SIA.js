@@ -150,7 +150,7 @@ class SIA extends Component {
                     uiConfig={this.props.uiConfig}
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
-                    allowedActions={this.props.allowedActions}
+                    canvasConfig={this.props.canvasConfig}
                     possibleLabels={this.props.possibleLabels}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     // onImageLoaded={() => this.handleCanvasImageLoaded()}
@@ -176,13 +176,13 @@ function mapStateToProps(state) {
         uiConfig: state.sia.uiConfig,
         layoutUpdate: state.sia.layoutUpdate,
         selectedTool: state.sia.selectedTool,
-        allowedActions: state.sia.config.actions,
         appliedFullscreen: state.sia.appliedFullscreen,
         imageLoaded: state.sia.imageLoaded,
         requestAnnoUpdate: state.sia.requestAnnoUpdate,
         taskFinished: state.sia.taskFinished,
         possibleLabels: state.sia.possibleLabels,
-        imgBar: state.sia.imgBar
+        imgBar: state.sia.imgBar,
+        canvasConfig: state.sia.config
     })
 }
 

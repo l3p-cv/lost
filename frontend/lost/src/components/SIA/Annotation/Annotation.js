@@ -217,10 +217,10 @@ class Annotation extends Component{
     **************/
     renderAnno(){
         const type = this.props.type
-        const allowedToEdit = constraints.allowedToEditBounds(
-            this.props.allowedActions,
-            this.state.anno
-        )
+        // const allowedToEdit = constraints.allowedToEditBounds(
+        //     this.props.allowedActions,
+        //     this.state.anno
+        // )
         switch(type) {
             case 'point':
                 return <Point ref={this.myAnno} anno={this.state.anno} 

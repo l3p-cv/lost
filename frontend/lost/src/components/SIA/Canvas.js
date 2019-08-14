@@ -50,9 +50,16 @@ import { Loader, Dimmer } from 'semantic-ui-react';
  *      everytime it is incremented.
  * @param {string} selectedTool - The tool that is selected to draw an 
  *      annotation. Possible choices are: 'bBox', 'point', 'line', 'polygon'
- * @param {object} allowedActions - Configuration of actions that the 
- *      annotator is allowed to do
- *      {
+ * @param {object} canvasConfig - Configuration for this canvas
+ *  {
+ *      tools: {
+ *           point: true,
+ *           line: true,
+ *           polygon: true,
+ *           bbox: true
+ *      },
+ *      multilabels: true,
+ *      actions: {
  *          drawing: bool,
  *          labeling: bool,
  *          edit: {
@@ -61,6 +68,7 @@ import { Loader, Dimmer } from 'semantic-ui-react';
  *              delete: bool
  *          }
  *      }
+ *  }
  * @param {bool} imgBarVisible - Controls visibility of the ImgBar
  * @param {object} layoutOffset - Offset of the canvas inside the container:
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
@@ -407,8 +415,8 @@ class Canvas extends Component{
 
     handleImgLabelUpdate(label){
         let imgLabels = []
-        if (label !== -1){
-            imgLabels = [label]
+        if (label[0] !== -1){
+            imgLabels = label
             this.setState({imgLabelIds: imgLabels})
             
         } else {
@@ -850,7 +858,7 @@ class Canvas extends Component{
                         // onModeChange={(anno) => this.onAnnoModeChange(anno)}
                         showSingleAnno={this.state.showSingleAnno}
                         uiConfig={this.props.uiConfig}
-                        allowedActions={this.props.allowedActions}
+                        allowedActions={this.props.canvasConfig.actions}
                         possibleLabels={this.props.possibleLabels}
                     />
             })
@@ -862,7 +870,7 @@ class Canvas extends Component{
     }
 
     render(){
-        console.log('Canvas render', this.state)
+        console.log('Canvas render state, props', this.state, this.props)
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
         return(
             <div ref={this.container} >
@@ -877,6 +885,7 @@ class Canvas extends Component{
                 onClose={() => this.handleImgBarClose()}
                 onLabelUpdate={label => this.handleImgLabelUpdate(label)}
                 imgLabelIds={this.state.imgLabelIds}
+                multilabels={this.props.canvasConfig.multilabels}
             />
             <Dimmer active={!this.props.image.id}><Loader>Loading</Loader></Dimmer>
 
@@ -889,7 +898,9 @@ class Canvas extends Component{
                     visible={this.state.showLabelInput}
                     onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
                     possibleLabels={this.props.possibleLabels}
-                    allowedActions={this.props.allowedActions}
+                    allowedActions={this.props.canvasConfig.actions}
+                    // multilabels={this.props.canvasConfig.multilabels}
+                    multilabels={true}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}

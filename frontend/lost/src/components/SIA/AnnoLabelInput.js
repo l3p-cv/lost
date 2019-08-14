@@ -72,27 +72,11 @@ class AnnoLabelInput extends Component{
         if (!constraints.allowedToLabel(
             this.props.allowedActions, this.props.selectedAnno)) return
         console.log('LabelInput confirmLabel label', label)
-        if (label){
-            if (label !== -1){
-                this.annoLabelUpdate({
-                    ...this.props.selectedAnno,
-                    labelIds: [label],
-                    status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
-                })
-            } else {
-                this.annoLabelUpdate({
-                    ...this.props.selectedAnno,
-                    labelIds: [],
-                    status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
-                })
-            }
-        } else {
-            this.annoLabelUpdate({
-                ...this.props.selectedAnno,
-                labelIds: [],
-                status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
-            })
-        }
+        this.annoLabelUpdate({
+            ...this.props.selectedAnno,
+            labelIds: label,
+            status: this.props.selectedAnno.status !== annoStatus.NEW ? annoStatus.CHANGED : annoStatus.NEW
+        })
     }
 
 
@@ -110,6 +94,7 @@ class AnnoLabelInput extends Component{
                     visible={this.props.visible}
                     onLabelUpdate={label => this.updateAnnoLabel(label)}
                     possibleLabels={this.props.possibleLabels}
+                    multilabels={this.props.multilabels}
                     renderPopup
                     focusOnRender
                     />
