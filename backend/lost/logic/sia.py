@@ -217,13 +217,8 @@ class SiaUpdate(object):
         self.history_json['annotations']['unchanged'] = list()
         self.history_json['annotations']['changed'] = list()
         self.history_json['annotations']['deleted'] = list()
-        self.img_labels = None
+        self._update_img_labels(data)     
 
-        if len(data['imgLabelIds']) > 0:
-            self.img_labels = [
-                model.Label(label_leaf_id=lbl)
-                for lbl in data['imgLabelIds'] 
-            ]
         # store certain annotations    
         if 'bBoxes' in data['annotations']:
             self.b_boxes = data['annotations']['bBoxes']
@@ -241,6 +236,21 @@ class SiaUpdate(object):
             self.polygons = data['annotations']['polygons']
         else:
             self.polygons = None
+
+    def _update_img_labels(self, data):
+        if len(data['imgLabelIds']) > 0:
+            if(data['imgLabelChanged']):
+                old = set([lbl.label_leaf_id for lbl in self.image_anno.labels])
+                new = set(data['imgLabelIds'])
+                to_delete = old - new
+                to_add = new - old
+                for lbl in self.image_anno.labels:
+                    if lbl.label_leaf_id in to_delete:
+                        self.image_anno.labels.remove(lbl)
+                        self.db_man.delete(lbl)
+                for ll_id in to_add:
+                    self.image_anno.labels.append(model.Label(label_leaf_id=ll_id))
+
     def update(self):
         if self.at.pipe_element.pipe.state == state.Pipe.PAUSED:
             return "pipe is paused"
@@ -254,7 +264,7 @@ class SiaUpdate(object):
             self.__update_annotations(self.polygons, dtype.TwoDAnno.POLYGON)
         self.image_anno.state = state.Anno.LABELED
         # Update Image Label
-        self.image_anno.labels = self.img_labels
+        # self.image_anno.labels = self.img_labels
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         self.__update_history_json_file()

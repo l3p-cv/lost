@@ -135,4 +135,6 @@ sia_update_annotations = api.model('SIA update annotations',{
 sia_update = api.model('SIA Update',{
     'imgId': fields.Integer(required=True, description='Id of image annotation.'),
     'annotations': fields.Nested(sia_update_annotations, required=True, description='All annotations which should be updated.'),
+    'imgLabelIds': fields.List(fields.Integer(description='A list of label ids for the image'), required=True),
+    'imgLabelChanged': fields.Boolean(description='Indicates of the labels for the image have been changed by the annotator', required=True)
 })

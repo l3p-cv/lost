@@ -87,7 +87,7 @@ class AnnoDetails extends Component{
     
     render(){
         return <InfoBox
-            header="Annotation Details"
+            header={"Annotation ID: "+this.props.anno.id}
             content={this.renderDescription()}
             visible={this.props.visible}
             defaultPos={this.props.defaultPos}

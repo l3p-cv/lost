@@ -102,6 +102,7 @@ class Canvas extends Component{
             showLabelInput: false,
             imageLoaded: false,
             imgLabelIds: [],
+            imgLabelChanged: false,
             performedImageInit: false,
             prevLabel: []
         }
@@ -414,19 +415,15 @@ class Canvas extends Component{
     }
 
     handleImgLabelUpdate(label){
-        let imgLabels = []
-        if (label[0] !== -1){
-            imgLabels = label
-            this.setState({imgLabelIds: imgLabels})
-            
-        } else {
-            this.setState({imgLabelIds: imgLabels})
-        }
+        this.setState({
+            imgLabelIds: label,
+            imgLabelChanged: true,
+        })
         this.pushHist(this.state.annos,
             this.state.selectedAnnoId,
             canvasActions.IMG_LABEL_UPDATE,
             this.state.showSingleAnno,
-            imgLabels
+            label
         )
     }
 
@@ -573,6 +570,7 @@ class Canvas extends Component{
         const finalData = {
             imgId: this.props.annos.image.id,
             imgLabelIds: this.state.imgLabelIds,
+            imgLabelChanged: this.state.imgLabelChanged,
             annotations: backendFormat
         }
         return finalData
