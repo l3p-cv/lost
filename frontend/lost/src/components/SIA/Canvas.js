@@ -897,8 +897,8 @@ class Canvas extends Component{
                     onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
                     possibleLabels={this.props.possibleLabels}
                     allowedActions={this.props.canvasConfig.actions}
-                    // multilabels={this.props.canvasConfig.multilabels}
-                    multilabels={true}
+                    multilabels={this.props.canvasConfig.multilabels}
+                    // multilabels={true}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}

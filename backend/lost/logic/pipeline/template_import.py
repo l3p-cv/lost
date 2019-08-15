@@ -136,7 +136,7 @@ class PipeImporter(object):
                             db_script.resources = json.dumps(script_resources)
                             self.dbm.save_obj(db_script)
                             logging.info('Updated script: {}'.format(db_script.name))
-                    self._fix_sia_config(pe_j)
+                    # self._fix_sia_config(pe_j)
                 db_pipe.json_template = json.dumps(pipe)
                 self.dbm.save_obj(db_pipe)
                 os.chdir(oldwd) # Change dir back to old working directory.                
@@ -209,7 +209,7 @@ class PipeImporter(object):
                     else:
                         logging.warning("Script is already present in database.\n")
                         logging.warning((str(db_script.idx), db_script.name, db_script.path))
-                self._fix_sia_config(pe_j)
+                # self._fix_sia_config(pe_j)
             pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
                                             timestamp=datetime.now())
             self.dbm.save_obj(pipe_temp)
@@ -270,23 +270,23 @@ class PipeImporter(object):
                 return True
         return True
     
-    def _fix_sia_config(self, pe):
-        '''A quick fix to clean up pipeline definition file and keep SIA running.
+    # def _fix_sia_config(self, pe):
+    #     '''A quick fix to clean up pipeline definition file and keep SIA running.
         
-        Due to changes in SIA constraints on drawables are not longer
-        supported but still need to be defined in SIA config to keep SIA
-        running.
-        ''' 
-        if 'annoTask' in pe:
-            if pe['annoTask']['type'].lower() == 'sia':
-                if 'drawables' not in pe['annoTask']['configuration']:
-                    pe['annoTask']['configuration']['drawables'] = {
-                        'bbox' : {
-                            "minArea": 25,
-                            "minAreaType": "abs"
-                        }
-                    }
-        return pe
+    #     Due to changes in SIA constraints on drawables are not longer
+    #     supported but still need to be defined in SIA config to keep SIA
+    #     running.
+    #     ''' 
+    #     if 'annoTask' in pe:
+    #         if pe['annoTask']['type'].lower() == 'sia':
+    #             if 'drawables' not in pe['annoTask']['configuration']:
+    #                 pe['annoTask']['configuration']['drawables'] = {
+    #                     'bbox' : {
+    #                         "minArea": 25,
+    #                         "minAreaType": "abs"
+    #                     }
+    #                 }
+    #     return pe
 
 class PipeDefChecker():
     '''Checks if a pipeline definition file is correct'''

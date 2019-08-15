@@ -1,7 +1,7 @@
 {
   "description": "This pipeline selects all images of a datasource and requests annotations.",
   "author": "Jonas Jaeger",
-  "pipe-schema-version" : 0.0,
+  "pipe-schema-version" : 0.1,
   "elements": [{
       "peN": 0,
       "peOut": [1],
@@ -31,6 +31,7 @@
             "polygon": true,
             "bbox": true
           },
+          "multilabels": true,
           "actions": {
             "drawing": true,
             "labeling": true,

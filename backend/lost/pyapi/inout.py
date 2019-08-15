@@ -473,7 +473,7 @@ class ScriptOutput(Output):
                                 sim_class=img_sim_class)
         self._script._dbm.add(img_anno)
         if img_labels is not None:
-            img_anno.labels = [model.Label(label_leaf_id=lbl_id) for lbl_id in img_labels]
+            self._update_labels(img_labels, img_anno)
         if len(annos) != len(anno_types):
             raise ValueError('*anno_types* and *annos* need to be of same size!')            
         for i, vec in enumerate(annos):
@@ -491,8 +491,7 @@ class ScriptOutput(Output):
                 if len(anno_labels) != len(annos):
                     raise ValueError('*anno_labels* and *annos* need to be of same size!')
                 label_leaf_ids = anno_labels[i]
-                if label_leaf_ids is not None:
-                    anno.labels = [model.Label(label_leaf_id=ll_id) for ll_id in label_leaf_ids]
+                self._update_labels(label_leaf_ids, anno)
             if anno_sim_classes:
                 if len(anno_sim_classes) != len(annos):
                     raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
@@ -501,6 +500,16 @@ class ScriptOutput(Output):
                 anno.sim_class = 1
             img_anno.twod_annos.append(anno)
     
+    def _update_labels(self, ll_ids, anno):
+        if isinstance(ll_ids, list):
+            if len(ll_ids) > 0:
+                for ll_id in ll_ids:
+                    if ll_id is not None:
+                        anno.labels.append(model.Label(label_leaf_id=ll_id))
+        else:
+            if ll_ids is not None:
+                anno.labels.append(model.Label(label_leaf_id=ll_ids))
+
     def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
         video_path=None):

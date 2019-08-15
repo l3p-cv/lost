@@ -60,8 +60,8 @@ class ImgBar extends Component{
             <Menu inverted style={{opacity:0.9}}>
                 <Menu.Item style={{padding: "5px"}}>
                     <LabelInput
-                        multilabels={true}
-                        // multilabels={this.props.multilabels}
+                        // multilabels={true}
+                        multilabels={this.props.multilabels}
                         relatedId={this.props.annos.image.id}
                         visible={this.props.visible}
                         onLabelUpdate={label => this.handleLabelUpdate(label)}

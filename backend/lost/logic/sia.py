@@ -124,6 +124,8 @@ def get_label_trees(db_man, user_id):
         
 def get_configuration(db_man, user_id):
     at = get_sia_anno_task(db_man,user_id)
+    print('anno task', at, at.idx)
+    print('anno task config', at.configuration)
     return json.loads(at.configuration)
 def get_sia_anno_task(db_man, user_id): 
     for cat in db_man.get_choosen_annotask(user_id):
@@ -247,7 +249,7 @@ class SiaUpdate(object):
                 for lbl in self.image_anno.labels:
                     if lbl.label_leaf_id in to_delete:
                         self.image_anno.labels.remove(lbl)
-                        self.db_man.delete(lbl)
+                        # self.db_man.delete(lbl)
                 for ll_id in to_add:
                     self.image_anno.labels.append(model.Label(label_leaf_id=ll_id))
 

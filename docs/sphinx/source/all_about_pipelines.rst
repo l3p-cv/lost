@@ -290,7 +290,8 @@ If **"type"** is **"sia"** the configuration will be the following:
           "bounds": "[boolean]",
           "delete": "[boolean]"
         }
-      }
+      },
+      "multilabels": "[boolean]"
     }
 
 SIA configuration:
@@ -313,6 +314,7 @@ SIA configuration:
             * **bounds**: The annotator may change location and size of 
               the proposed annotation.
             * **delete**: A user may or may not delete annotation proposals.
+    * **multilabels** allow to assign multiple labels per annotation or image.
   
 
 DataExport

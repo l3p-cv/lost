@@ -83,19 +83,19 @@ sia_config_actions = api.model('SIA Config Actions', {
     'edit': fields.Nested(sia_config_actions_edit)
 })
 
-sia_config_annotations_bbox = api.model('SIA Config BBox annotations.',{
-    'minArea': fields.Float(readOnly=True, description='Minimal area of a bbox.'),
-    'minAreaType': fields.String(readOnly=True, description='Can be "rel" (relative) and "abs" (absolut)')
-})
+# sia_config_annotations_bbox = api.model('SIA Config BBox annotations.',{
+#     'minArea': fields.Float(readOnly=True, description='Minimal area of a bbox.'),
+#     'minAreaType': fields.String(readOnly=True, description='Can be "rel" (relative) and "abs" (absolut)')
+# })
 
-sia_config_annotations = api.model('SIA Config annotations', {
-    'bbox': fields.Nested(sia_config_annotations_bbox)
-})
+# sia_config_annotations = api.model('SIA Config annotations', {
+#     'bbox': fields.Nested(sia_config_annotations_bbox)
+# })
 
 sia_config = api.model('SIA Configuration', {
     'tools': fields.Nested(sia_config_tools,description='Tools to work with in SIA.'),
     'actions': fields.Nested(sia_config_actions, description="Actions which are allowed."),
-    'annotations': fields.Nested(sia_config_annotations, description="Configuration options of certain annotations.")
+    'multilabels': fields.Boolean(description='Indicates wether multiple labels per annotation or image are allowed')
 })
 
 sia_update_bbox = api.model('SIA update bbox', {
