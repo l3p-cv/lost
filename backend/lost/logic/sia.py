@@ -217,10 +217,13 @@ class SiaUpdate(object):
         self.history_json['annotations']['unchanged'] = list()
         self.history_json['annotations']['changed'] = list()
         self.history_json['annotations']['deleted'] = list()
-        self.img_label = None
+        self.img_labels = None
 
         if len(data['imgLabelIds']) > 0:
-            self.img_label = model.Label(label_leaf_id=data['imgLabelIds'][0])
+            self.img_labels = [
+                model.Label(label_leaf_id=lbl)
+                for lbl in data['imgLabelIds'] 
+            ]
         # store certain annotations    
         if 'bBoxes' in data['annotations']:
             self.b_boxes = data['annotations']['bBoxes']
@@ -251,7 +254,7 @@ class SiaUpdate(object):
             self.__update_annotations(self.polygons, dtype.TwoDAnno.POLYGON)
         self.image_anno.state = state.Anno.LABELED
         # Update Image Label
-        self.image_anno.label = self.img_label
+        self.image_anno.labels = self.img_labels
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         self.__update_history_json_file()
@@ -397,11 +400,11 @@ class SiaUpdate(object):
         two_d_json['anno_time'] = two_d.anno_time
         two_d_json['data'] = two_d.data
         label_list_json = list()
-        if two_d.label:
+        if two_d.labels:
             label_json = dict()
-            label_json['id'] = two_d.label.idx
-            label_json['label_leaf_id'] = two_d.label.label_leaf.idx
-            label_json['label_leaf_name'] = two_d.label.label_leaf.name
+            label_json['id'] = [lbl.idx for lbl in two_d.labels]
+            label_json['label_leaf_id'] = [lbl.label_leaf.idx for lbl in two_d.labels]
+            label_json['label_leaf_name'] = [lbl.label_leaf.name for lbl in two_d.labels]
             label_list_json.append(label_json)
 
         two_d_json['labels'] = label_list_json
@@ -448,10 +451,10 @@ class SiaSerialize(object):
         self.sia_json['image']['isLast'] = self.is_last_image
         self.sia_json['image']['number'] = self.current_image_number
         self.sia_json['image']['amount'] = self.total_image_amount
-        if self.image_anno.label is None:
+        if self.image_anno.labels is None:
             self.sia_json['image']['labelIds'] = []
         else:
-            self.sia_json['image']['labelIds'] = [self.image_anno.label.label_leaf_id]
+            self.sia_json['image']['labelIds'] = [lbl.label_leaf_id for lbl in self.image_anno.labels]
         self.sia_json['annotations'] = dict()
         self.sia_json['annotations']['bBoxes'] = list()
         self.sia_json['annotations']['points'] = list()
@@ -462,32 +465,32 @@ class SiaSerialize(object):
                 bbox_json = dict()
                 bbox_json['id'] = two_d_anno.idx
                 bbox_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    bbox_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    bbox_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 bbox_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['annotations']['bBoxes'].append(bbox_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POINT:
                 point_json = dict()
                 point_json['id'] = two_d_anno.idx
                 point_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    point_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    point_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 point_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['annotations']['points'].append(point_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.LINE:
                 line_json = dict()
                 line_json['id'] = two_d_anno.idx
                 line_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    line_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    line_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 line_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['annotations']['lines'].append(line_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
                 polygon_json = dict()
                 polygon_json['id'] = two_d_anno.idx
                 polygon_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    polygon_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    polygon_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 polygon_json['data'] = json.loads(two_d_anno.data)
                 self.sia_json['annotations']['polygons'].append(polygon_json)
         return self.sia_json

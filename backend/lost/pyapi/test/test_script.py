@@ -45,16 +45,20 @@ class TestScriptApi(object):
         # pudb.set_trace()
         lbl_vec = tree.get_child_vec(tree.root.idx)
         s.outp.request_annos(IMG_PATH1,
-            img_label=lbl_vec[1],
+            img_labels=[lbl_vec[1]],
             annos=REF_BBOXES,
             anno_types=['bbox']*len(REF_BBOXES),
-            anno_labels=[lbl_vec[1]]*len(REF_BBOXES)
+            anno_labels=[[lbl_vec[1]]]*len(REF_BBOXES)
             )
         s.outp.request_annos(IMG_PATH2,
-            img_label=lbl_vec[2],
-            annos=[REF_BBOXES[0]],
+            img_labels=[lbl_vec[2]],
+            annos=[
+                REF_BBOXES[0]
+            ],
             anno_types=['bbox'],
-            anno_labels=[lbl_vec[2]]
+            anno_labels=[
+                [lbl_vec[2]]
+            ]
             )
         df = s.outp.to_df()
         df1 = df[df['img.img_path']==IMG_PATH1]
@@ -62,7 +66,7 @@ class TestScriptApi(object):
         df2 = df[df['img.img_path']==IMG_PATH2]
         assert len(df2) == 1
 
-        assert df2['img.lbl.idx'].values[0] == lbl_vec[2]
+        assert json.loads(df2['img.lbl.idx'].values[0])[0] == lbl_vec[2]
         for img_anno in s.outp.img_annos:
             if img_anno.img_path == IMG_PATH2:
                 bbox2 = img_anno.to_vec('anno.data')[0]

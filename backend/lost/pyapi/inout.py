@@ -346,14 +346,15 @@ class ScriptOutput(Output):
                 labels to be verified by a human annotator.
                 -> Set the img_path and the boxes argument. For boxes you
                 need to assign a list of box and a list of label_ids for labels.
-                E.g. boxes =[[0.1,0.1,0.2,0.3],...], labels =[1,5,...]
+                An annotation may have multiple labels.
+                E.g. boxes =[[0.1,0.1,0.2,0.3],...], labels =[[1,5],[5],...]
         
         Example:
             How to use this method in a Script::
 
                 >>> self.request_bbox_annos('path/to/img.png', 
                 ...     boxes=[[0.1,0.1,0.2,0.3],[0.2,0.2,0.4,0.4]], 
-                ...     labels=[0,1]
+                ...     labels=[[0],[1]]
                 ... )
         '''
         for pe in self._connected_pes:
@@ -366,40 +367,16 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx)
-                # rel_img_path = self._script.file_man.make_path_relative(img_path)
-                # img_anno = model.ImageAnno(anno_task_id=pe.anno_task.idx,
-                #                         img_path=rel_img_path,
-                #                         state=state.Anno.UNLOCKED,
-                #                         result_id=self._result_map[pe.idx],
-                #                         iteration=self._script._pipe_element.iteration,
-                #                         frame_n=frame_n,
-                #                         video_path=video_path)
-                # img_anno.add_to_context(self._script._dbm)
-                # for i, bb in enumerate(boxes):
-                #     bbox = model.TwoDAnno(anno_task_id=pe.anno_task.idx, 
-                #         iteration=self._script._pipe_element.iteration)
-                #     bbox.bbox = bb
-                #     if label_list:
-                #         if len(label_list) != len(boxes):
-                #             raise ValueError('*label_list* and *boxes* need to be of same size!')
-                #         labels = label_list[i]
-                #         for label_leaf_id in labels:
-                #             if label_leaf_id is not None:
-                #                 bbox.add_label(label_leaf_id)
-                #     if sim_classes:
-                #         if len(sim_classes) != len(boxes):
-                #             raise ValueError('*sim_classes* and *boxes* need to have same size!')
-                #         bbox.sim_class = sim_classes[i]
-                #     img_anno.add_bbox(bbox)
+                
 
-    def request_annos(self, img_path, img_label=None, img_sim_class=None, 
+    def request_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
         video_path=None):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
             img_path (str): Path to the image where annotations are added for.
-            img_label (int): Label that will be assigned to the image. The label should be
+            img_label (list of int): Labels that will be assigned to the image. The labels should be
                 represented by a label_leaf_id. An image may have multiple labels.
             img_sim_class (int): A culster id that will be used to cluster this image
                 in the MIA annotation tool.
@@ -421,14 +398,18 @@ class ScriptOutput(Output):
         Example:
             Request human annotations for an image with annotation proposals::
 
-                >>> self.outp.request_annos('path/to/img.jpg',
+                 >>> self.outp.add_annos('path/to/img.jpg',
                 ...     annos = [
                 ...         [0.1, 0.1, 0.2, 0.2], 
                 ...         [0.1, 0.2], 
                 ...         [[0.1, 0.3], [0.2, 0.3], [0.15, 0.1]]
                 ...     ],
                 ...     anno_types=['bbox', 'point', 'polygon'],
-                ...     anno_labels=[1, 1, 4],
+                ...     anno_labels=[
+                ...         [1], 
+                ...         [1], 
+                ...         [4]
+                ...     ],
                 ...     anno_sim_classes=[10, 10, 15]
                 ... )
 
@@ -439,7 +420,7 @@ class ScriptOutput(Output):
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 self._add_annos(pe, img_path,
-                    img_label=img_label,
+                    img_labels=img_labels,
                     img_sim_class=img_sim_class,
                     annos=annos,
                     anno_types=anno_types,
@@ -449,7 +430,7 @@ class ScriptOutput(Output):
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx)
 
-    def _add_annos(self, pe, img_path, img_label=None, img_sim_class=None, 
+    def _add_annos(self, pe, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
         video_path=None, anno_task_id=None):
         '''Add annos in list style to an image.
@@ -457,7 +438,7 @@ class ScriptOutput(Output):
         Args:
             pe (PipeElement): The connected PipeElement where annotation should be provided for.
             img_path (str): Path to the image where annotations are added for.
-            img_label (int): Labels that will be assigned to the image. The label should
+            img_labels (list of int): Labels that will be assigned to the image. The label should
                 represented by a label_leaf_id.
             img_sim_class (int): A culster id that will be used to cluster this image
                 in the MIA annotation tool.
@@ -491,8 +472,8 @@ class ScriptOutput(Output):
                                 video_path=video_path,
                                 sim_class=img_sim_class)
         self._script._dbm.add(img_anno)
-        if img_label is not None:
-            img_anno.label = model.Label(label_leaf_id=img_label)
+        if img_labels is not None:
+            img_anno.labels = [model.Label(label_leaf_id=lbl_id) for lbl_id in img_labels]
         if len(annos) != len(anno_types):
             raise ValueError('*anno_types* and *annos* need to be of same size!')            
         for i, vec in enumerate(annos):
@@ -509,9 +490,9 @@ class ScriptOutput(Output):
             if anno_labels:
                 if len(anno_labels) != len(annos):
                     raise ValueError('*anno_labels* and *annos* need to be of same size!')
-                label_leaf_id = anno_labels[i]
-                if label_leaf_id is not None:
-                    anno.label = model.Label(label_leaf_id=label_leaf_id)
+                label_leaf_ids = anno_labels[i]
+                if label_leaf_ids is not None:
+                    anno.labels = [model.Label(label_leaf_id=ll_id) for ll_id in label_leaf_ids]
             if anno_sim_classes:
                 if len(anno_sim_classes) != len(annos):
                     raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
@@ -520,14 +501,14 @@ class ScriptOutput(Output):
                 anno.sim_class = 1
             img_anno.twod_annos.append(anno)
     
-    def add_annos(self, img_path, img_label=None, img_sim_class=None, 
+    def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
         video_path=None):
         '''Add annos in list style to an image.
         
         Args:
             img_path (str): Path to the image where annotations are added for.
-            img_label (int): Labels that will be assigned to the image. Each label in the list is
+            img_labels (list of int): Labels that will be assigned to the image. Each label in the list is
                 represented by a label_leaf_id.
             img_sim_class (int): A culster id that will be used to cluster this image
                 in the MIA annotation tool.
@@ -556,7 +537,11 @@ class ScriptOutput(Output):
                 ...         [[0.1, 0.3], [0.2, 0.3], [0.15, 0.1]]
                 ...     ],
                 ...     anno_types=['bbox', 'point', 'polygon'],
-                ...     anno_labels=[1, 1, 4],
+                ...     anno_labels=[
+                ...         [1], 
+                ...         [1], 
+                ...         [4]
+                ...     ],
                 ...     anno_sim_classes=[10, 10, 15]
                 ... )
 
@@ -570,7 +555,7 @@ class ScriptOutput(Output):
             video_path = self._script.get_rel_path(video_path)
         for pe in self._connected_pes:
             self._add_annos(pe, img_path,
-                img_label=img_label,
+                img_labels=img_labels,
                 img_sim_class=img_sim_class,
                 annos=annos,
                 anno_types=anno_types,
@@ -580,7 +565,7 @@ class ScriptOutput(Output):
                 video_path=video_path,
                 anno_task_id=pe.anno_task.idx)
 
-    def request_image_anno(self, img_path, sim_class=None, label=None, frame_n=None, video_path=None):
+    def request_image_anno(self, img_path, sim_class=None, labels=None, frame_n=None, video_path=None):
         '''Request a class label annotation for an image.
 
         Args:
@@ -589,7 +574,7 @@ class ScriptOutput(Output):
                 will be used to cluster images for MultiObjectAnnoation ->
                 Images with the same sim_class will be presented to the
                 annotator in one step.
-            label (int): Labels that will be assigned to the image.
+            labels (list of int): Labels that will be assigned to the image.
                 Each label should represent a label_leaf_id.
             frame_n (int): If *img_path* belongs to a video *frame_n* indicates
                 the framenumber.
@@ -604,7 +589,7 @@ class ScriptOutput(Output):
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 self._add_annos(pe, img_path,
                     img_sim_class=sim_class,
-                    img_label=label,
+                    img_labels=labels,
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx)
