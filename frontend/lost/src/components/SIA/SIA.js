@@ -6,6 +6,7 @@ import 'semantic-ui-css/semantic.min.css'
 
 import Canvas from './Canvas'
 import ToolBar from './ToolBar'
+import { createHashHistory } from 'history'
 import InfoBoxArea from './InfoBoxes/InfoBoxArea'
 
 const { 
@@ -33,6 +34,7 @@ class SIA extends Component {
                 right: 0
             }
         }
+        this.siteHistory = createHashHistory()
         
         this.container = React.createRef()
         this.canvas = React.createRef()
@@ -91,8 +93,12 @@ class SIA extends Component {
         }
         if (prevProps.taskFinished !== this.props.taskFinished){
             const newAnnos = this.canvas.current.getAnnos()
-            this.props.siaUpdateAnnos(newAnnos)
-            this.props.siaSendFinishToBackend()
+            this.props.siaUpdateAnnos(newAnnos).then(()=>{
+                this.props.siaSendFinishToBackend().then(()=>{
+                    this.siteHistory.push('/dashboard')
+
+                })
+            })
         }
         if(this.props.annos.image){
             if (prevProps.annos.image){

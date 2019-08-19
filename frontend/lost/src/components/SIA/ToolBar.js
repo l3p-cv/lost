@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import { Icon, Menu, Popup, Checkbox, Dimmer, Button, Header} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import SIASettingButton from './SIASettingButton'
-import { createHashHistory } from 'history'
 
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
@@ -25,7 +24,6 @@ class ToolBar extends Component{
             },
             showFinishPrompt: false
         }
-        this.history = createHashHistory()
 
     }
 
@@ -69,7 +67,6 @@ class ToolBar extends Component{
 
     setFinished(){
         this.props.siaSetTaskFinished()
-        this.history.push('/dashboard')
         
     }
 
