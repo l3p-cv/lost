@@ -1,16 +1,6 @@
 import React, {Component} from 'react'
 import { Icon, Menu, Popup, Checkbox, Dimmer, Button, Header} from 'semantic-ui-react'
 import {connect} from 'react-redux'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { 
-    faDrawPolygon, faVectorSquare, faWaveSquare, faDotCircle, 
-    faArrowRight, faArrowLeft , faExpandArrowsAlt, faCheck, faPaperPlane
-} from '@fortawesome/free-solid-svg-icons'
-import { 
-    faImage
-} from '@fortawesome/free-regular-svg-icons'
-import Draggable from 'react-draggable';
-// import SIASettingModal from './SIASettingModal'
 import SIASettingButton from './SIASettingButton'
 import { createHashHistory } from 'history'
 
@@ -65,14 +55,16 @@ class ToolBar extends Component{
 
     getNextImg(){
         // this.props.siaSetImageLoaded(false)
-        this.props.selectAnnotation(undefined)
+        // this.props.selectAnnotation(undefined)
         this.props.siaGetNextImage(this.props.currentImage.id)
+        console.log("TOOLBAR - wrongLoad - getNextImg", this.props.currentImage.id)
     }
 
     getPrevImg(){
         // this.props.siaSetImageLoaded(false)
-        this.props.selectAnnotation(undefined)
+        // this.props.selectAnnotation(undefined)
         this.props.siaGetPrevImage(this.props.currentImage.id)
+        console.log("TOOLBAR - wrongLoad - getPrevImg", this.props.currentImage.id)
     }
 
     setFinished(){
@@ -287,6 +279,7 @@ class ToolBar extends Component{
                     <Menu.Item name='arrow left' key='prev'
                         active={false} 
                         onClick={() => this.getPrevImg()}
+                        // disabled={true}
                     >
                         <Icon name='arrow left' />
                     </Menu.Item>
