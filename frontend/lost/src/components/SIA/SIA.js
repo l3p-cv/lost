@@ -61,24 +61,32 @@ class SIA extends Component {
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
                 const newAnnos = this.canvas.current.getAnnos()
+                this.canvas.current.unloadImage()
                 console.log('getNextImage newAnnos', newAnnos)
-                this.props.siaUpdateAnnos(newAnnos)
-                this.props.getSiaAnnos(this.props.getNextImage)
                 this.setState({image: {
                     id: undefined, 
                     data:undefined
                 }})
+                this.props.siaUpdateAnnos(newAnnos).then((r) => {
+                    console.log('SIA REQUEST: Updated Annos', r)
+                    this.props.getSiaAnnos(this.props.getNextImage)
+                    
+                })
+                
             }
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
             if (this.props.getPrevImage){
                 const newAnnos = this.canvas.current.getAnnos()
-                this.props.siaUpdateAnnos(newAnnos)
-                this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
+                this.canvas.current.unloadImage()
                 this.setState({image: {
                     id: undefined, 
                     data:undefined
                 }})
+                this.props.siaUpdateAnnos(newAnnos).then(() => {
+                    this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
+                })
+                
             }
         }
         if (prevProps.taskFinished !== this.props.taskFinished){

@@ -7,12 +7,14 @@ export const getSiaAnnos = (imageId, type='next') => async dispatch => {
     try {
         const response = await axios.get(API_URL + '/sia/' + type + '/' + imageId)
         dispatch({type: TYPES.GET_SIA_ANNOS, payload: response.data})
-    } catch (e) {console.log(e)}
+        console.log('REQUEST: getSiaAnnos: wrongLoad ', response)
+    } catch (e) {console.error(e)}
 }
 
 export const siaUpdateAnnos = (data) => async dispatch => {
     try {
         const response = await axios.post(API_URL + '/sia/update', data)
+        console.log('REQUEST: siaUpdateAnnos: wrongLoad ', response)
     } catch (e) {console.error(e)}
 }
 
@@ -22,6 +24,7 @@ export const siaUpdateAnnos = (data) => async dispatch => {
 export const siaSendFinishToBackend = () => async dispatch => {
     try {
         const response = await axios.get(API_URL + '/sia/finish')
+        return response
     } catch (e) {console.error(e)}
 }
 

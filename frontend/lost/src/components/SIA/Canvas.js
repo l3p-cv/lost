@@ -104,7 +104,8 @@ class Canvas extends Component{
             imgLabelIds: [],
             imgLabelChanged: false,
             performedImageInit: false,
-            prevLabel: []
+            prevLabel: [],
+            imageData: undefined
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -117,14 +118,29 @@ class Canvas extends Component{
     }
 
     componentDidUpdate(prevProps, prevState){
-        if (this.props.image.id !== prevProps.image.id){
-            this.setState({
-                imageLoaded: false
-            })
-        }
+        // if (this.props.image.id !== prevProps.image.id){
+            
+        // }
         if (prevProps.annos !== this.props.annos){
             this.setState({imgLabelIds: this.props.annos.image.labelIds})
+            this.setState({
+                imageLoaded: false,
+                imageData: undefined
+            })
         }
+        if (this.state.imageData !== this.props.image.data){
+            this.setState({imageData: this.props.image.data})
+        }
+        // if (!this.state.imageLoaded){
+        //     if(this.props.annos.image.id === this.props.image.id){
+        //         this.setState({
+        //             imageLoaded: true
+        //         })
+        //         if (this.props.onImageLoaded){
+        //             this.props.onImageLoaded()
+        //         }
+        //     }
+        // }
         if (this.state.performedImageInit){
             console.log('canvasHist Performed image init', this.state)
             // Initialize canvas history
@@ -431,6 +447,11 @@ class Canvas extends Component{
      * LOGIC     *
     **************/
 
+    unloadImage(){
+        if(this.state.imageLoaded){
+            this.setState({imageLoaded:false})
+        }
+    }
     /**
      * Find a annotation by id in current state
      * 
@@ -885,7 +906,7 @@ class Canvas extends Component{
                 imgLabelIds={this.state.imgLabelIds}
                 multilabels={this.props.canvasConfig.multilabels}
             />
-            <Dimmer active={!this.props.image.id}><Loader>Loading</Loader></Dimmer>
+            <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>
 
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 <AnnoLabelInput svg={this.state.svg} 
@@ -923,7 +944,7 @@ class Canvas extends Component{
                         {this.renderAnnotations()}
                     </g>
                 </svg>
-                <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.props.image.data} width="100%" height="100%"></img>
+                <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.imageData} width="100%" height="100%"></img>
                 {/* </div> */}
                 </div>
                 {/* Placeholder for Layout*/}
