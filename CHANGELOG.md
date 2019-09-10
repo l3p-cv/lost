@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
--
+- GPU Worker lost-cv-gpu now contains the scikit-learn library
 
 ### Changed
 - 
@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -
 
 ### Fixed
-- 
+- Annotation context can now also be added to monochrome images  
+- Fixed typos in pipeline gui
 
 ### Security
 - 

@@ -4,6 +4,7 @@ RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install tensorflow-
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install keras"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install -c conda-forge opencv"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install https://github.com/OlafenwaMoses/ImageAI/releases/download/2.0.2/imageai-2.0.2-py3-none-any.whl"
+RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install scikit-learn"
 # Add Code  
 #ADD /docker/lost/pytest.sh /
 #ADD /docker/lost/nginx/ /code/docker/lost/nginx
