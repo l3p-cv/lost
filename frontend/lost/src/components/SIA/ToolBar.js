@@ -94,6 +94,7 @@ class ToolBar extends Component{
                 // x="0px" y="0px"
                 // width="1190.549px" height="841.891px" 
                 viewBox="0 0 1190.549 841.891" 
+                width="17px"
             >
                 <path fill="currentColor" d="M748.197,408.286c0,151.355-122.699,274.058-274.059,274.058c-151.357,0-274.057-122.703-274.057-274.058
                     c0-151.356,122.7-274.057,274.057-274.057C625.497,134.229,748.197,256.929,748.197,408.286z"/>
@@ -107,6 +108,7 @@ class ToolBar extends Component{
                 // xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                 // width="1190.549px" height="841.891px" 
                 viewBox="0 0 1190.549 841.891" 
+                width="17px"
                 // enable-background="new 0 0 1190.549 841.891"
                 // xml:space="preserve"
                 >
@@ -126,6 +128,7 @@ class ToolBar extends Component{
                 // xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                 // width="1190.549px" height="841.891px" 
                 viewBox="0 0 1190.549 841.891" 
+                width="17px"
                 // enable-background="new 0 0 1190.549 841.891"
                 // xml:space="preserve"
                 >
@@ -142,6 +145,7 @@ class ToolBar extends Component{
                 // xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                 // width="1190.549px" height="841.891px" 
                 viewBox="0 0 1190.549 841.891" 
+                width="17px"
                 // enable-background="new 0 0 1190.549 841.891"
                 // xml:space="preserve"
                 >
