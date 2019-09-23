@@ -223,7 +223,7 @@ class ToolBar extends Component{
 
     renderFinishPrompt(){
         return (
-            <Dimmer page active={this.state.showFinishPrompt}>
+            <Dimmer page active={this.state.showFinishPrompt} style={{zIndex:2000}}>
                 <Header as="h3" inverted>
                     <Icon name='paper plane outline'></Icon>
                     Do you wish to FINISH this SIA Task?
