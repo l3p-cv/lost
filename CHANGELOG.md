@@ -6,16 +6,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
--
+- SIA: New features 
+  * Fullscreen mode
+  * New GUI design in order to enlarge the image canvas
+  * Assignment of image labels for captioning
+  * Mulit label support -> Assignment of multiple labels per annotation or image
+  * Full redo/ undo support
+  * Introduced info boxes to show additional information
 
 ### Changed
-- 
+- SIA: Complete rewrite in react.
+  * Config of SIA in pipeline definition files.
 
 ### Deprecated
 - 
 
 ### Removed
--
+- SIA: In pipeline definition files config -> actions -> edit. It is not longer possible to allow/ deny actions when editing an annotation, since it was a feature that nobody used.
 
 ### Fixed
 - 
