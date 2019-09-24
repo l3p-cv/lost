@@ -240,18 +240,20 @@ class SiaUpdate(object):
             self.polygons = None
 
     def _update_img_labels(self, data):
-        if len(data['imgLabelIds']) > 0:
-            if(data['imgLabelChanged']):
-                old = set([lbl.label_leaf_id for lbl in self.image_anno.labels])
-                new = set(data['imgLabelIds'])
-                to_delete = old - new
-                to_add = new - old
-                for lbl in self.image_anno.labels:
-                    if lbl.label_leaf_id in to_delete:
-                        self.image_anno.labels.remove(lbl)
-                        # self.db_man.delete(lbl)
-                for ll_id in to_add:
-                    self.image_anno.labels.append(model.Label(label_leaf_id=ll_id))
+        if(data['imgLabelChanged']):
+            old = set([lbl.label_leaf_id for lbl in self.image_anno.labels])
+            new = set(data['imgLabelIds'])
+            to_delete = old - new
+            to_add = new - old
+            print('HERE***')
+            print('old, new', old, new) 
+            print('to_delete, to_add', to_delete, to_add)
+            for lbl in self.image_anno.labels:
+                if lbl.label_leaf_id in to_delete:
+                    self.image_anno.labels.remove(lbl)
+                    # self.db_man.delete(lbl)
+            for ll_id in to_add:
+                self.image_anno.labels.append(model.Label(label_leaf_id=ll_id))
 
     def update(self):
         if self.at.pipe_element.pipe.state == state.Pipe.PAUSED:

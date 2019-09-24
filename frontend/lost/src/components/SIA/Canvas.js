@@ -52,23 +52,27 @@ import { Loader, Dimmer } from 'semantic-ui-react';
  *      annotation. Possible choices are: 'bBox', 'point', 'line', 'polygon'
  * @param {object} canvasConfig - Configuration for this canvas
  *  {
- *      tools: {
- *           point: true,
- *           line: true,
- *           polygon: true,
- *           bbox: true
- *      },
- *      multilabels: true,
- *      actions: {
- *          drawing: bool,
- *          labeling: bool,
- *          edit: {
+ *      annos:{
+ *          tools: {
+ *              point: bool,
+ *              line: bool,
+ *              polygon: bool,
+ *              bbox: bool
+ *          },
+ *          multilabels: bool,
+ *          actions: {
+ *              draw: bool,
  *              label: bool,
- *              bounds: bool,
- *              delete: bool
+ *              edit: bool,
+ *          }
+ *      },
+ *      img: {
+ *          multilabels: bool,
+ *          actions: {
+ *              label: bool,
  *          }
  *      }
- *  }
+ *   }
  * @param {bool} imgBarVisible - Controls visibility of the ImgBar
  * @param {object} layoutOffset - Offset of the canvas inside the container:
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
@@ -877,7 +881,7 @@ class Canvas extends Component{
                         // onModeChange={(anno) => this.onAnnoModeChange(anno)}
                         showSingleAnno={this.state.showSingleAnno}
                         uiConfig={this.props.uiConfig}
-                        allowedActions={this.props.canvasConfig.actions}
+                        allowedActions={this.props.canvasConfig.annos.actions}
                         possibleLabels={this.props.possibleLabels}
                     />
             })
@@ -904,7 +908,8 @@ class Canvas extends Component{
                 onClose={() => this.handleImgBarClose()}
                 onLabelUpdate={label => this.handleImgLabelUpdate(label)}
                 imgLabelIds={this.state.imgLabelIds}
-                multilabels={this.props.canvasConfig.multilabels}
+                multilabels={this.props.canvasConfig.img.multilabels}
+                allowedActions={this.props.canvasConfig.img.actions}
             />
             <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>
 
@@ -917,8 +922,8 @@ class Canvas extends Component{
                     visible={this.state.showLabelInput}
                     onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
                     possibleLabels={this.props.possibleLabels}
-                    allowedActions={this.props.canvasConfig.actions}
-                    multilabels={this.props.canvasConfig.multilabels}
+                    allowedActions={this.props.canvasConfig.annos.actions}
+                    multilabels={this.props.canvasConfig.annos.multilabels}
                     // multilabels={true}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 

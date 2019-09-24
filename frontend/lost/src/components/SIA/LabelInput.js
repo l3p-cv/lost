@@ -81,9 +81,9 @@ class LabelInput extends Component{
         console.log('LabelInput onChange', item)
         let lbl 
         if (this.props.multilabels){
-            lbl = item.value
+            lbl = item.value !== -1 ? item.value : []
         } else {
-            lbl = [item.value]
+            lbl = item.value !== -1 ? [item.value] : []
         }
         this.setState({ label: lbl })
         this.annoLabelUpdate(lbl)
@@ -100,6 +100,7 @@ class LabelInput extends Component{
                 return {key: e.id, value: e.id, text: e.label}
             })
         }
+        possibleLabels.unshift({key: -1, value: -1, text: 'no label'})
         this.setState({possibleLabels})
 
     }
@@ -122,7 +123,9 @@ class LabelInput extends Component{
 
     annoLabelUpdate(label){
         if (this.props.onLabelUpdate){
-            this.props.onLabelUpdate(label)
+            this.props.onLabelUpdate(label.filter(val=>{
+                return val !== -1
+            }))
         }
     }
 
@@ -156,7 +159,7 @@ class LabelInput extends Component{
             if (this.state.label.length > 0){
                 lbl = this.state.label[0]
             } else {
-                lbl = undefined
+                lbl = -1
             }
         }
         console.log('Render LabelInput lbl', lbl)
@@ -176,6 +179,7 @@ class LabelInput extends Component{
                         value={lbl}
                         onChange={(e, item) => this.onChange(e, item)}
                         style={{opacity:0.8}}
+                        disabled={this.props.disabled}
                     />
                 </Ref>
         )

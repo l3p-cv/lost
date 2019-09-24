@@ -158,7 +158,7 @@ class ToolBar extends Component{
     }
 
     renderToolButtons(){
-        if (!this.props.allowedActions.drawing) return null
+        if (!this.props.allowedActions.draw) return null
         let btns = []
         if (this.props.allowedTools.point){
             btns.push(
@@ -348,8 +348,8 @@ function mapStateToProps(state) {
         appliedFullscreen: state.sia.appliedFullscreen,
         layoutUpdate: state.sia.layoutUpdate,
         imgBar: state.sia.imgBar,
-        allowedTools: state.sia.config.tools,
-        allowedActions: state.sia.config.actions,
+        allowedTools: state.sia.config.annos.tools,
+        allowedActions: state.sia.config.annos.actions,
         selectedTool: state.sia.selectedTool
     })
 }

@@ -128,10 +128,10 @@ class Annotation extends Component{
                     }
                     break
                 case modes.DELETED:
-                    if(constraints.allowedToDelete(
-                        this.props.allowedActions,
-                        anno
-                    )){
+                    // if(constraints.allowedToDelete(
+                    //     this.props.allowedActions,
+                    //     anno
+                    // )){
                         this.setAnnoMode(anno, mode)
                         const newAnno = {
                             ...anno, 
@@ -141,7 +141,7 @@ class Annotation extends Component{
                             anno: newAnno
                         })
                         this.performedAction(newAnno, canvasActions.ANNO_DELETED)
-                    }
+                    // }
                     break
                 case modes.MOVE:
                     this.setAnnoMode(anno, mode)
@@ -167,6 +167,7 @@ class Annotation extends Component{
     }
 
     isSelected(){
+        if (!this.props.allowedActions.edit) return false
         return this.props.selectedAnno === this.props.data.id
     }
 

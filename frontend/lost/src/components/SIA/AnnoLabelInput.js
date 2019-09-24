@@ -95,6 +95,7 @@ class AnnoLabelInput extends Component{
                     onLabelUpdate={label => this.updateAnnoLabel(label)}
                     possibleLabels={this.props.possibleLabels}
                     multilabels={this.props.multilabels}
+                    disabled={!this.props.allowedActions.label}
                     renderPopup
                     focusOnRender
                     />

@@ -34,20 +34,24 @@ const INITIAL_STATE = {
     },
     svg : undefined,
     config : {
-        tools: {
-            point: true,
-            line: true,
-            polygon: true,
-            bbox: true
-        },
-        multilabels: true,
-        actions: {
-            drawing: true,
-            labeling: true,
-            edit: {
+        annos:{
+            tools: {
+                point: false,
+                line: true,
+                polygon: true,
+                bbox: true
+            },
+            multilabels: false,
+            actions: {
+                draw: true,
                 label: true,
-                bounds: true,
-                delete: true
+                edit: true,
+            }
+        },
+        img: {
+            multilabels: true,
+            actions: {
+                label: true,
             }
         }
     },

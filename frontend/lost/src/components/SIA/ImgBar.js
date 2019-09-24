@@ -68,6 +68,7 @@ class ImgBar extends Component{
                         possibleLabels={this.props.possibleLabels}
                         initLabelIds={this.props.imgLabelIds}
                         relatedId={this.props.annos.image.id}
+                        disabled={!this.props.allowedActions.label}
                         />
                 </Menu.Item>
                 
