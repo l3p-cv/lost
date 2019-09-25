@@ -167,8 +167,11 @@ class Annotation extends Component{
     }
 
     isSelected(){
-        if (!this.props.allowedActions.edit) return false
-        return this.props.selectedAnno === this.props.data.id
+        if (constraints.allowedToEdit(this.props.allowedActions, this.state.anno)){
+            return this.props.selectedAnno === this.props.data.id
+        } else {
+            return false
+        }
     }
 
     getResult(){
