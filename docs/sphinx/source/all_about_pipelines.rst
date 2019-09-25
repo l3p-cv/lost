@@ -276,35 +276,36 @@ If **"type"** is **"sia"** the configuration will be the following:
    :linenos:
 
     {
-      "annos":{
-          "tools": {
+      "tools": {
               "point": "[boolean]",
-              "line": "[true]",
-              "polygon": "[true]",
-              "bbox": "[true]"
-          },
+              "line": "[boolean]",
+              "polygon": "[boolean]",
+              "bbox": "[boolean]",
+              "junk": "[boolean]"
+      },
+      "annos":{
           "multilabels": "[boolean]",
           "actions": {
-              "draw": "[true]",
-              "label": "[true]",
-              "edit": "[true]",
+              "draw": "[boolean]",
+              "label": "[boolean]",
+              "edit": "[boolean]",
           }
       },
       "img": {
-          "multilabels": "[true]",
+          "multilabels": "[boolean]",
           "actions": {
-              "label": "[true]",
+              "label": "[boolean]",
           }
       }
     }
 
 SIA configuration:
-    * **annos** configuration for annotations on the image
-        * **tools**
-            * Inside the **tools** object you can select which drawing tools
-              are available in the SIA gui.
-              You may choose either **true** or **false** for each of the 
-              tools (**point, line, polygon, bbox**).
+    * **tools**
+        * Inside the **tools** object you can select which drawing tools
+          are available and if the junk button is present in the SIA gui.
+          You may choose either **true** or **false** for each of the 
+          tools (**point, line, polygon, bbox, junk**).
+    * **annos** (configuration for annotations on the image)
         * **actions**
             * **draw** is set to **false** a user may not draw any new
               annotations.
@@ -317,7 +318,7 @@ SIA configuration:
             * **edit** inidcates wether an annotator may edit an annotation
               that is already present.
         * **multilabels** allows to assign multiple labels per annotation.
-    * **img** configuration for the image
+    * **img** (configuration for the image)
         * **actions**
             * **label** allows to disable the possibility to assign 
               labels to the image.

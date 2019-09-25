@@ -389,21 +389,29 @@ class PipeDefChecker():
                 ret = False
             if not self._check_key('bbox', pe['tools'], [bool]):
                 ret = False
-        if not self._check_key('actions', pe, [dict]):
+        if not self._check_key('annos', pe, [dict]):
             ret = False
         else:
-            if not self._check_key('drawing', pe['actions'], [bool]):
+            if not self._check_key('multilabels', pe['annos'], [bool]):
                 ret = False
-            if not self._check_key('labeling', pe['actions'], [bool]):
-                ret = False
-            if not self._check_key('edit', pe['actions'], [dict]):
+            if not self._check_key('actions', pe['annos'], [dict]):
                 ret = False
             else:
-                if not self._check_key('label', pe['actions']['edit'], [bool]):
+                if not self._check_key('label', pe['annos']['actions'], [bool]):
                     ret = False
-                if not self._check_key('bounds', pe['actions']['edit'], [bool]):
+                if not self._check_key('draw', pe['annos']['actions'], [bool]):
                     ret = False
-                if not self._check_key('delete', pe['actions']['edit'], [bool]):
+                if not self._check_key('edit', pe['annos']['actions'], [bool]):
+                    ret = False
+        if not self._check_key('img', pe, [dict]):
+            ret = False
+        else:
+            if not self._check_key('multilabels', pe['img'], [bool]):
+                ret = False
+            if not self._check_key('actions', pe['img'], [dict]):
+                ret = False
+            else:
+                if not self._check_key('label', pe['img']['actions'], [bool]):
                     ret = False
         return ret
         

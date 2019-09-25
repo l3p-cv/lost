@@ -348,7 +348,7 @@ function mapStateToProps(state) {
         appliedFullscreen: state.sia.appliedFullscreen,
         layoutUpdate: state.sia.layoutUpdate,
         imgBar: state.sia.imgBar,
-        allowedTools: state.sia.config.annos.tools,
+        allowedTools: state.sia.config.tools,
         allowedActions: state.sia.config.annos.actions,
         selectedTool: state.sia.selectedTool
     })

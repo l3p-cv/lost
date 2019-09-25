@@ -34,13 +34,14 @@ const INITIAL_STATE = {
     },
     svg : undefined,
     config : {
+        tools: {
+            point: true,
+            line: true,
+            polygon: true,
+            bbox: true,
+            junk: true
+        },
         annos:{
-            tools: {
-                point: false,
-                line: true,
-                polygon: true,
-                bbox: true
-            },
             multilabels: false,
             actions: {
                 draw: true,
