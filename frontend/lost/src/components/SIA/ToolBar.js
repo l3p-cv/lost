@@ -285,7 +285,7 @@ class ToolBar extends Component{
                     <Menu.Item name='arrow left' key='prev'
                         active={false} 
                         onClick={() => this.getPrevImg()}
-                        // disabled={true}
+                        disabled={this.props.currentImage.isFirst}
                     >
                         <Icon name='arrow left' />
                     </Menu.Item>
