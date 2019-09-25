@@ -13,7 +13,7 @@ const {
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
-    selectAnnotation, siaShowImgBar
+    selectAnnotation, siaShowImgBar, siaImgIsJunk
 } = actions
 
 class SIA extends Component {
@@ -70,6 +70,7 @@ class SIA extends Component {
                     id: undefined, 
                     data:undefined
                 }})
+                this.props.siaImgIsJunk(false)
                 this.props.siaUpdateAnnos(newAnnos).then((r) => {
                     console.log('SIA REQUEST: Updated Annos', r)
                     this.props.getSiaAnnos(this.props.getNextImage)
@@ -86,11 +87,14 @@ class SIA extends Component {
                     id: undefined, 
                     data:undefined
                 }})
+                this.props.siaImgIsJunk(false)
                 this.props.siaUpdateAnnos(newAnnos).then(() => {
                     this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
                 })
-                
             }
+        }
+        if (prevProps.annos !== this.props.annos){
+            this.props.siaImgIsJunk(this.props.annos.image.isJunk)
         }
         if (prevProps.taskFinished !== this.props.taskFinished){
             const newAnnos = this.canvas.current.getAnnos()
@@ -172,6 +176,7 @@ class SIA extends Component {
                     onAnnoSelect={anno => this.props.selectAnnotation(anno)}
                     onImgBarClose={() => this.handleImgBarClose()}
                     layoutOffset={this.state.layoutOffset}
+                    isJunk={this.props.isJunk}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>
@@ -197,7 +202,8 @@ function mapStateToProps(state) {
         taskFinished: state.sia.taskFinished,
         possibleLabels: state.sia.possibleLabels,
         imgBar: state.sia.imgBar,
-        canvasConfig: state.sia.config
+        canvasConfig: state.sia.config,
+        isJunk: state.sia.isJunk
     })
 }
 
@@ -208,7 +214,8 @@ export default connect(
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
-        siaShowImgBar
+        siaShowImgBar,
+        siaImgIsJunk
     }
     , null,
     {})(SIA)

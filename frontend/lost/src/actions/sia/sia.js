@@ -183,3 +183,15 @@ export const siaSetTaskFinished = () => {
         type: TYPES.SIA_TASK_FINISHED,
     }
 }
+
+/**
+ * Mark image as junk
+ * 
+ * @param {bool} junk - Junk or not.
+ */
+export const siaImgIsJunk = (junk) => {
+    return {
+        type: TYPES.SIA_IMG_JUNK,
+        payload: junk
+    }
+}

@@ -8,7 +8,8 @@ import * as TOOLS from './types/tools'
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 
     siaSetFullscreen, siaSetImageLoaded,
-    selectAnnotation, siaShowImgBar, siaSetTaskFinished,siaLayoutUpdate
+    selectAnnotation, siaShowImgBar, siaSetTaskFinished,siaLayoutUpdate,
+    siaImgIsJunk
 } = actions
 
 class ToolBar extends Component{
@@ -86,6 +87,10 @@ class ToolBar extends Component{
 
     toggleImgBar(){
         this.props.siaShowImgBar(!this.props.imgBar.show)
+    }
+
+    toggleJunk(){
+        this.props.siaImgIsJunk(!this.props.isJunk)
     }
 
     renderPointIcon(){
@@ -294,6 +299,14 @@ class ToolBar extends Component{
         return btns
     }
 
+    renderJunkButton(){
+        return <Menu.Item name='trash alternate outline' key='junk'
+            active={this.props.isJunk} 
+            onClick={() => this.toggleJunk()}
+        >
+            <Icon name='trash alternate outline' />
+        </Menu.Item>
+    }
 
     render(){
         console.log('Toobar state', this.state, this.props.currentImage)
@@ -317,6 +330,7 @@ class ToolBar extends Component{
                 >
                     <Icon name='expand arrows alternate' />
                 </Menu.Item>
+                {this.renderJunkButton()}
                 <SIASettingButton></SIASettingButton>
                
                
@@ -350,12 +364,15 @@ function mapStateToProps(state) {
         imgBar: state.sia.imgBar,
         allowedTools: state.sia.config.tools,
         allowedActions: state.sia.config.annos.actions,
-        selectedTool: state.sia.selectedTool
+        selectedTool: state.sia.selectedTool,
+        isJunk: state.sia.isJunk
     })
 }
 export default connect(mapStateToProps, 
     {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
         siaSetFullscreen, 
         // siaSetImageLoaded, 
-        selectAnnotation, siaShowImgBar, siaSetTaskFinished, siaLayoutUpdate}
+        selectAnnotation, siaShowImgBar, siaSetTaskFinished, siaLayoutUpdate,
+        siaImgIsJunk
+    }
 )(ToolBar)

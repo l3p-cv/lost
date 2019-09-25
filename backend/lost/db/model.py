@@ -576,6 +576,7 @@ class ImageAnno(Base):
         state (enum): See :class:`lost.db.state.Anno`
         result_id: Id of the related result.
         user_id (int): Id of the annotator.
+        is_junk (bool): This image was marked as Junk.
     """
     __tablename__ = "image_anno"
 
@@ -595,12 +596,13 @@ class ImageAnno(Base):
     twod_annos = relationship('TwoDAnno')
     annotator = relationship('User', uselist=False)
     anno_time = Column(Float)
+    is_junk = Column(Boolean)
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
                  sim_class=None, result_id=None, img_path=None,
                  frame_n=None,
                  video_path=None,
-                 iteration=0, anno_time=None):
+                 iteration=0, anno_time=None, is_junk=None):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
         self.timestamp = timestamp
@@ -612,6 +614,7 @@ class ImageAnno(Base):
         self.frame_n = frame_n
         self.iteration = iteration
         self.anno_time = anno_time
+        self.is_junk = is_junk
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -650,8 +653,8 @@ class ImageAnno(Base):
                     'img.frame_n', 'img.video_path', 'img.img_path', 
                     'img.result_id', 'img.iteration', 'img.user_id', 
                     'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                    'img.lbl.external_id', 'img.annotator', 'anno.idx', 
-                    'anno.anno_task_id', 'anno.timestamp', 
+                    'img.lbl.external_id', 'img.annotator', 'img.is_junk'
+                    'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                     'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                     'anno.dtype', 'anno.sim_class', 'anno.iteration', 
                     'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
@@ -709,6 +712,7 @@ class ImageAnno(Base):
             'img.lbl.name': None,
             'img.lbl.external_id': None,
             'img.annotator': None,
+            'img.is_junk': self.is_junk
         }
         try:
             img_dict['img.lbl.idx'] = [lbl.label_leaf.idx for lbl in self.labels]
@@ -754,8 +758,8 @@ class ImageAnno(Base):
                 'img.frame_n', 'img.video_path', 'img.img_path', 
                 'img.result_id', 'img.iteration', 'img.user_id', 
                 'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                'img.lbl.external_id', 'img.annotator', 'anno.idx', 
-                'anno.anno_task_id', 'anno.timestamp', 
+                'img.lbl.external_id', 'img.annotator', 'img.is_junk',
+                'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                 'anno.dtype', 'anno.sim_class', 'anno.iteration', 
                 'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
@@ -774,8 +778,8 @@ class ImageAnno(Base):
                 'img.frame_n', 'img.video_path', 'img.img_path', 
                 'img.result_id', 'img.iteration', 'img.user_id', 
                 'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                'img.lbl.external_id', 'img.annotator', 'anno.idx', 
-                'anno.anno_task_id', 'anno.timestamp', 
+                'img.lbl.external_id', 'img.annotator', 'img.is_junk',
+                'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
                 'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
                 'anno.dtype', 'anno.sim_class', 'anno.iteration', 
                 'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 

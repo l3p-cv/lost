@@ -56,7 +56,8 @@ const INITIAL_STATE = {
             }
         }
     },
-    taskFinished: 0
+    taskFinished: 0,
+    isJunk: false
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -184,6 +185,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 taskFinished: state.taskFinished + 1
+            }
+            case TYPES.SIA_IMG_JUNK:
+            return {
+                ...state,
+                isJunk: action.payload
             }
         default:
             return state

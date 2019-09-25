@@ -12,7 +12,7 @@ import * as modes from './types/modes'
 import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
-import { Loader, Dimmer } from 'semantic-ui-react';
+import { Loader, Dimmer, Icon, Header } from 'semantic-ui-react';
 
 
 /**
@@ -109,7 +109,8 @@ class Canvas extends Component{
             imgLabelChanged: false,
             performedImageInit: false,
             prevLabel: [],
-            imageData: undefined
+            imageData: undefined,
+            isJunk: false,
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -126,11 +127,21 @@ class Canvas extends Component{
             
         // }
         if (prevProps.annos !== this.props.annos){
-            this.setState({imgLabelIds: this.props.annos.image.labelIds})
+            this.setState({
+                imgLabelIds: this.props.annos.image.labelIds,
+                isJunk: this.props.annos.image.isJunk
+            })
             this.setState({
                 imageLoaded: false,
                 imageData: undefined
             })
+        }
+        if (prevProps.isJunk !== this.props.isJunk){
+            if (this.state.isJunk !== this.props.isJunk){
+                this.setState({
+                    isJunk: this.props.isJunk
+                })
+            }
         }
         if (this.state.imageData !== this.props.image.data){
             this.setState({imageData: this.props.image.data})
@@ -596,7 +607,8 @@ class Canvas extends Component{
             imgId: this.props.annos.image.id,
             imgLabelIds: this.state.imgLabelIds,
             imgLabelChanged: this.state.imgLabelChanged,
-            annotations: backendFormat
+            annotations: backendFormat,
+            isJunk: this.state.isJunk
         }
         return finalData
     }
@@ -912,6 +924,12 @@ class Canvas extends Component{
                 allowedActions={this.props.canvasConfig.img.actions}
             />
             <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>
+            <Dimmer active={this.state.isJunk}>
+                <Header as='h2' icon inverted>
+                    <Icon name='trash alternate outline' />
+                    Marked as Junk
+                </Header>
+            </Dimmer>
 
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 <AnnoLabelInput svg={this.state.svg} 

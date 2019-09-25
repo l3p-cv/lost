@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Mulit label support -> Assignment of multiple labels per annotation or image
   * Full redo/ undo support
   * Introduced info boxes to show additional information
+  * An annotator may mark an image as Junk if it should not be considered for annotation
 
 ### Changed
 - SIA: Complete rewrite in react.

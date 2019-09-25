@@ -9,7 +9,9 @@ image = api.model('Image', {
     'amount': fields.Integer(readOnly=True, description='Number of total images in that annotation task.'),
     'isFirst': fields.Boolean(readOnly=True, description='Weather the image is the first one of the annotation process.'),
     'isLast': fields.Boolean(readOnly=True, description='Weather the image is the last one of the annotation process.'),
+    'isLast': fields.Boolean(readOnly=True, description='Weather the image is the last one of the annotation process.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to this image.'),
+    'isJunk': fields.Boolean(readOnly=True, description='Indicates if the image was marked as Junk.'),
 })
 
 bbox_data = api.model('BBox Data',{
@@ -136,5 +138,6 @@ sia_update = api.model('SIA Update',{
     'imgId': fields.Integer(required=True, description='Id of image annotation.'),
     'annotations': fields.Nested(sia_update_annotations, required=True, description='All annotations which should be updated.'),
     'imgLabelIds': fields.List(fields.Integer(description='A list of label ids for the image'), required=True),
-    'imgLabelChanged': fields.Boolean(description='Indicates of the labels for the image have been changed by the annotator', required=True)
+    'imgLabelChanged': fields.Boolean(description='Indicates of the labels for the image have been changed by the annotator', required=True),
+    'isJunk': fields.Boolean(description='Indicates wether the image was marked as Junk by the annotator.', required=True)
 })
