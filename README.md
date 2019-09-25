@@ -30,6 +30,8 @@ Such a semi-automatic can be achieved by using AI generated annotation
 proposals that are presented to an annotator inside the annotation tool.
 
 # Getting Started
+
+## Documentation
 If you feel LOST, 
 please find our full documentation here: https://lost.readthedocs.io.
 
