@@ -129,7 +129,7 @@ class Canvas extends Component{
         if (prevProps.annos !== this.props.annos){
             this.setState({
                 imgLabelIds: this.props.annos.image.labelIds,
-                isJunk: this.props.annos.image.isJunk
+                // isJunk: this.props.annos.image.isJunk
             })
             this.setState({
                 imageLoaded: false,
