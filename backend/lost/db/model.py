@@ -14,22 +14,25 @@ import pandas as pd
 
 # Set conventions for foreign key name generation
 convention = {
-  "ix": 'ix_%(column_0_label)s',
-  "uq": "uq_%(table_name)s_%(column_0_name)s",
-  # "ck": "ck_%(table_name)s_%(constraint_name)s",
-  "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-  "pk": "pk_%(table_name)s"
+    "ix": 'ix_%(column_0_label)s',
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    # "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
 }
 metadata = MetaData(naming_convention=convention)
 Base = declarative_base(metadata=metadata)
 
 # Define the User data-model.
 # NB: Make sure to add flask_user UserMixin !!!
+
+
 class User(Base, UserMixin):
     __tablename__ = 'user'
 
     idx = Column(Integer, primary_key=True)
-    is_active = Column('is_active', Boolean(), nullable=False, server_default='1')
+    is_active = Column('is_active', Boolean(),
+                       nullable=False, server_default='1')
     user_name = Column(String(100), nullable=False, unique=True)
     email = Column(String(255), unique=True)
     email_confirmed_at = Column(DateTime())
@@ -44,8 +47,9 @@ class User(Base, UserMixin):
 
     roles = relationship('Role', secondary='user_roles', lazy='joined')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
-    choosen_anno_task = relationship('AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
-    
+    choosen_anno_task = relationship(
+        'AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
+
     def __init__(self, user_name, password, email=None, first_name=None, last_name=None, email_confirmed_at=None):
         self.user_name = user_name
         self.email = email
@@ -59,7 +63,7 @@ class User(Base, UserMixin):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-    
+
     def has_role(self, role):
         role_names = []
         for r in self.roles:
@@ -77,12 +81,15 @@ class Role(Base):
     name = Column(String(50), unique=True)
 
 # Define the UserRoles association table
+
+
 class UserRoles(Base):
     __tablename__ = 'user_roles'
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     role_id = Column(Integer(), ForeignKey('role.idx', ondelete='CASCADE'))
     role = relationship('Role', uselist=False)
+
 
 class Group(Base):
     __tablename__ = 'group'
@@ -92,12 +99,14 @@ class Group(Base):
     is_user_default = Column(Boolean(), nullable=False, server_default='0')
     users = relationship("User", secondary="user_groups")
 
+
 class UserGroups(Base):
     __tablename__ = 'user_groups'
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     group_id = Column(Integer(), ForeignKey('group.idx', ondelete='CASCADE'))
-    group =  relationship('Group', uselist=False)
+    group = relationship('Group', uselist=False)
+
 
 class TwoDAnno(Base):
     """A TwoDAnno represents a 2D annotation/ drawing for an image.
@@ -112,7 +121,7 @@ class TwoDAnno(Base):
         timestamp_lock (DateTime): Timestamp locked in view
         state (enum): can be unlocked, locked, locked_priority or labeled
             (see :class:`lost.db.state.Anno`)
-        track_n (int): The track number this TwoDAnno belongs to.
+        track_id (int): The track id this TwoDAnno belongs to.
         sim_class (int): The similarity class this anno belong to.
             It is used to cluster similar annos in MIA.
         iteration (int): The iteration of a loop when this anno was created.
@@ -124,6 +133,8 @@ class TwoDAnno(Base):
         labels (list): A list of :class:`Label` objects related to the TwoDAnno.
         confidence (float): Confidence of Annotation.
         anno_time: Overall Annotation Time in ms.
+        description (str): Description for this annotation. Assigned by an 
+            annotator or algorithm.
     """
     __tablename__ = "two_d_anno"
 
@@ -132,31 +143,33 @@ class TwoDAnno(Base):
     timestamp = Column(DATETIME(fsp=6))
     timestamp_lock = Column(DATETIME(fsp=6))
     state = Column(Integer)
-    track_n = Column(Integer)
+    track_id = Column(Integer, ForeignKey('track.idx'))
     data = Column(Text)
     dtype = Column(Integer)
     sim_class = Column(Integer)
     iteration = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.idx'))
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
-    labels = relationship('Label') #type: Label
-    annotator = relationship('User', uselist=False) #type: User
+    labels = relationship('Label')  # type: Label
+    annotator = relationship('User', uselist=False)  # type: User
     confidence = Column(Float)
     anno_time = Column(Float)
+    description = Column(Text)
 
     def __init__(self, anno_task_id=None,
                  user_id=None, timestamp=None, state=None,
-                 track_n=None, sim_class=None,
-                 img_anno_id=None, timestamp_lock=None, 
+                 track_id=None, sim_class=None,
+                 img_anno_id=None, timestamp_lock=None,
                  iteration=0, data=None, dtype=None,
                  confidence=None, anno_time=None,
+                 description=None
                  ):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
         self.timestamp = timestamp
         self.timestamp_lock = timestamp_lock
         self.state = state
-        self.track_n = track_n
+        self.track_id = track_id
         self.sim_class = sim_class
         self.img_anno_id = img_anno_id
         self.data = data
@@ -164,20 +177,21 @@ class TwoDAnno(Base):
         self.iteration = iteration
         self.confidence = confidence
         self.anno_time = anno_time
+        self.description = description
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
     def to_dict(self, style='flat'):
         '''Transform this object into a dict.
-        
+
         Args:
             style (str): 'flat' or 'hierarchical'
                 'flat': Return a dictionray in table style
                 'hierarchical': Return a nested dictionary
-        
+
         Retruns:
             dict: In flat or hierarchical style.
-        
+
         Example:
             Get a dict in flat style. Note that 'anno.data',
             'anno.lbl.idx', 'anno.lbl.name' and 'anno.lbl.external_id'
@@ -190,7 +204,7 @@ class TwoDAnno(Base):
                     'anno.timestamp': None, 
                     'anno.timestamp_lock': None, 
                     'anno.state': None, 
-                    'anno.track_n': None, 
+                    'anno.track_id': None, 
                     'anno.dtype': 'bbox', 
                     'anno.sim_class': None, 
                     'anno.iteration': 0, 
@@ -215,7 +229,7 @@ class TwoDAnno(Base):
                     'anno.timestamp': None, 
                     'anno.timestamp_lock': None, 
                     'anno.state': None, 
-                    'anno.track_n': None, 
+                    'anno.track_id': None, 
                     'anno.dtype': 'bbox', 
                     'anno.sim_class': None, 
                     'anno.iteration': 0, 
@@ -238,7 +252,7 @@ class TwoDAnno(Base):
             'anno.timestamp': self.timestamp,
             'anno.timestamp_lock': self.timestamp_lock,
             'anno.state': self.state,
-            'anno.track_n': self.track_n,
+            'anno.track_id': self.track_id,
             'anno.dtype': None,
             'anno.sim_class': self.sim_class,
             'anno.iteration': self.iteration,
@@ -256,13 +270,17 @@ class TwoDAnno(Base):
         except:
             pass
         try:
-            anno_dict['anno.lbl.idx'] = [lbl.label_leaf.idx for lbl in self.labels]
-            anno_dict['anno.lbl.name'] = [lbl.label_leaf.name for lbl in self.labels]
-            anno_dict['anno.lbl.external_id'] = [lbl.label_leaf.external_id for lbl in self.labels]
+            anno_dict['anno.lbl.idx'] = [
+                lbl.label_leaf.idx for lbl in self.labels]
+            anno_dict['anno.lbl.name'] = [
+                lbl.label_leaf.name for lbl in self.labels]
+            anno_dict['anno.lbl.external_id'] = [
+                lbl.label_leaf.external_id for lbl in self.labels]
         except:
             pass
         try:
-            anno_dict['anno.annotator'] = self.annotator.first_name + ' ' + self.annotator.last_name
+            anno_dict['anno.annotator'] = self.annotator.first_name + \
+                ' ' + self.annotator.last_name
         except:
             pass
 
@@ -270,27 +288,29 @@ class TwoDAnno(Base):
             anno_dict['anno.data'] = self.data
             anno_dict['anno.lbl.idx'] = json.dumps(anno_dict['anno.lbl.idx'])
             anno_dict['anno.lbl.name'] = json.dumps(anno_dict['anno.lbl.name'])
-            anno_dict['anno.lbl.external_id'] = json.dumps(anno_dict['anno.lbl.external_id'])
+            anno_dict['anno.lbl.external_id'] = json.dumps(
+                anno_dict['anno.lbl.external_id'])
             return anno_dict
         elif style == 'hierarchical':
             anno_dict['anno.data'] = json.loads(self.data)
             return anno_dict
         else:
-            raise ValueError('Unknow style argument! Needs to be "flat" or "hierarchical".')
-    
+            raise ValueError(
+                'Unknow style argument! Needs to be "flat" or "hierarchical".')
+
     def to_df(self):
         '''Transform this annotation into a pandas DataFrame
-        
+
         Returns:
             pandas.DataFrame: 
                 A DataFrame where column names correspond
                 to the keys of the dictionary returned from *to_dict()*
                 method.
-        
+
         Note:
             Column names are:
                 ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                'anno.timestamp_lock', 'anno.state', 'anno.track_id', 
                 'anno.dtype', 'anno.sim_class', 
                 'anno.iteration', 'anno.user_id', 'anno.img_anno_id', 
                 'anno.annotator', 'anno.confidence', 'anno.anno_time', 
@@ -306,7 +326,7 @@ class TwoDAnno(Base):
             columns (list of str OR str): Possible column names are:
                 'all' OR
                 ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
+                'anno.timestamp_lock', 'anno.state', 'anno.track_id', 
                 'anno.dtype', 'anno.sim_class', 
                 'anno.iteration', 'anno.user_id', 'anno.img_anno_id', 
                 'anno.annotator', 'anno.confidence', 'anno.anno_time', 
@@ -314,7 +334,7 @@ class TwoDAnno(Base):
                 'anno.data']
         Returns:
             list of objects: A list of the desired columns.
-        
+
         Example:
             If you want to get only the annotation in list style 
             e.g. [x, y, w, h] (if this TwoDAnnotation is a bbox).
@@ -331,13 +351,11 @@ class TwoDAnno(Base):
         '''
         df = self.to_df().drop(columns=['anno.data'])
         df_new = df.assign(data=[self.get_anno_vec()])
-        df_new = df_new.rename(index=str, columns={'data':'anno.data'})
+        df_new = df_new.rename(index=str, columns={'data': 'anno.data'})
         if columns == 'all':
             return df_new.values.tolist()[0]
         else:
             return df_new[columns].values.tolist()[0]
-        
-        
 
     def add_label(self, label_leaf_id):
         '''Add a label to this 2D annotation.
@@ -404,7 +422,7 @@ class TwoDAnno(Base):
             }
         )
         self.dtype = dtype.TwoDAnno.BBOX
-    
+
     @property
     def line(self):
         '''list of list: LINE annotation in list style [[x, y], [x, y], ...]
@@ -424,7 +442,7 @@ class TwoDAnno(Base):
 
     @line.setter
     def line(self, value):
-        val_list = [{'x':v[0],'y':v[1]} for v in value]
+        val_list = [{'x': v[0], 'y':v[1]} for v in value]
         self.data = json.dumps(val_list)
         self.dtype = dtype.TwoDAnno.LINE
 
@@ -447,7 +465,7 @@ class TwoDAnno(Base):
 
     @polygon.setter
     def polygon(self, value):
-        val_list = [{'x':v[0],'y':v[1]} for v in value]
+        val_list = [{'x': v[0], 'y':v[1]} for v in value]
         self.data = json.dumps(val_list)
         self.dtype = dtype.TwoDAnno.POLYGON
 
@@ -471,7 +489,7 @@ class TwoDAnno(Base):
                 >>> np.array(twod_anno.get_anno_vec())
                 array([0.1 , 0.2 , 0.3 , 0.18])
         '''
-        
+
         data = json.loads(self.data)
         if self.dtype == dtype.TwoDAnno.BBOX:
             return [data['x'], data['y'], data['w'], data['h']]
@@ -483,22 +501,22 @@ class TwoDAnno(Base):
             return [[e['x'], e['y']] for e in data]
         else:
             raise Exception('Unknown TwoDAnno type!')
-        
+
     # def get_lbl_vec(self, which='id'):
     #     '''Get labels for this annotations in list style.
 
-    #     A 2D annotation can contain multiple labels 
+    #     A 2D annotation can contain multiple labels
 
     #     Args:
     #         which (str):
 
     #             'id':
     #             An id in this list is related to :class:`LabelLeaf`
-    #             that is part of a LabelTree in the LOST framework.  
+    #             that is part of a LabelTree in the LOST framework.
     #             A 2D annotation can contain multiple labels.
 
     #             'external_id':
-    #             An external label id can be any str 
+    #             An external label id can be any str
     #             and is used to map LOST-LabelLeafs to label ids from
     #             external systems like ImageNet.
 
@@ -510,17 +528,17 @@ class TwoDAnno(Base):
 
     #     Example:
     #         Get vec of label ids
-            
+
     #         >>> twod_anno.get_lbl_vec()
     #         [2]
-            
+
     #         Get related external ids
-            
+
     #         >>> twod_anno.get_lbl_vec('external_id')
     #         [5]
 
     #         Get related label name
-            
+
     #         >>> twod_anno.get_lbl_vec('name')
     #         ['cow']
     #     '''
@@ -548,7 +566,7 @@ class TwoDAnno(Base):
     #                 [{"x": float, "y": float}, {"x": float, "y": float},...]
     #     '''
     #     return json.loads(self.data)
-    
+
 
 class ImageAnno(Base):
     """An ImageAnno represents an image annotation.
@@ -577,6 +595,8 @@ class ImageAnno(Base):
         result_id: Id of the related result.
         user_id (int): Id of the annotator.
         is_junk (bool): This image was marked as Junk.
+        description (str): Description for this annotation. Assigned by an 
+            annotator or algorithm.
     """
     __tablename__ = "image_anno"
 
@@ -597,12 +617,15 @@ class ImageAnno(Base):
     annotator = relationship('User', uselist=False)
     anno_time = Column(Float)
     is_junk = Column(Boolean)
+    description = Column(Text)
+
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
                  sim_class=None, result_id=None, img_path=None,
                  frame_n=None,
                  video_path=None,
-                 iteration=0, anno_time=None, is_junk=None):
+                 iteration=0, anno_time=None, is_junk=None,
+                 description=None):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
         self.timestamp = timestamp
@@ -615,6 +638,7 @@ class ImageAnno(Base):
         self.iteration = iteration
         self.anno_time = anno_time
         self.is_junk = is_junk
+        self.description = description
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -661,7 +685,7 @@ class ImageAnno(Base):
                     'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
                     'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
                 ])
-            
+
             HowTo iterate through all TwoDAnnotations of this ImageAnno 
             dictionary in *hierarchical* style:
 
@@ -695,9 +719,9 @@ class ImageAnno(Base):
         '''
 
         img_dict = {
-            'img.idx':self.idx,
-            'img.anno_task_id':self.anno_task_id,
-            'img.timestamp':self.timestamp,
+            'img.idx': self.idx,
+            'img.anno_task_id': self.anno_task_id,
+            'img.timestamp': self.timestamp,
             'img.timestamp_lock': self.timestamp_lock,
             'img.state': self.state,
             'img.sim_class': self.sim_class,
@@ -708,20 +732,24 @@ class ImageAnno(Base):
             'img.iteration': self.iteration,
             'img.user_id': self.user_id,
             'img.anno_time': self.anno_time,
-            'img.lbl.idx': None, 
+            'img.lbl.idx': None,
             'img.lbl.name': None,
             'img.lbl.external_id': None,
             'img.annotator': None,
             'img.is_junk': self.is_junk
         }
         try:
-            img_dict['img.lbl.idx'] = [lbl.label_leaf.idx for lbl in self.labels]
-            img_dict['img.lbl.name'] = [lbl.label_leaf.name for lbl in self.labels]
-            img_dict['img.lbl.external_id'] = [lbl.label_leaf.external_id for lbl in self.labels]
+            img_dict['img.lbl.idx'] = [
+                lbl.label_leaf.idx for lbl in self.labels]
+            img_dict['img.lbl.name'] = [
+                lbl.label_leaf.name for lbl in self.labels]
+            img_dict['img.lbl.external_id'] = [
+                lbl.label_leaf.external_id for lbl in self.labels]
         except:
             pass
         try:
-            img_dict['img.annotator'] = self.annotator.first_name + ' ' + self.annotator.last_name
+            img_dict['img.annotator'] = self.annotator.first_name + \
+                ' ' + self.annotator.last_name
         except:
             pass
         if style == 'hierarchical':
@@ -734,7 +762,8 @@ class ImageAnno(Base):
         elif style == 'flat':
             img_dict['img.lbl.idx'] = json.dumps(img_dict['img.lbl.idx'])
             img_dict['img.lbl.name'] = json.dumps(img_dict['img.lbl.name'])
-            img_dict['img.lbl.external_id'] = json.dumps(img_dict['img.lbl.external_id'])
+            img_dict['img.lbl.external_id'] = json.dumps(
+                img_dict['img.lbl.external_id'])
             d_list = []
             if len(self.twod_annos) > 0:
                 for anno in self.twod_annos:
@@ -746,7 +775,8 @@ class ImageAnno(Base):
                 empty_anno = TwoDAnno().to_dict()
                 return [dict(img_dict, **empty_anno)]
         else:
-            raise ValueError('Unknow style argument! Needs to be "flat" or "hierarchical".')
+            raise ValueError(
+                'Unknow style argument! Needs to be "flat" or "hierarchical".')
 
     def to_df(self):
         '''Tranform this ImageAnnotation and all related TwoDAnnotaitons into a pandas DataFrame.
@@ -785,7 +815,7 @@ class ImageAnno(Base):
                 'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
                 'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
                 'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
-        
+
         Retruns:
             list OR list of lists: Desired columns
 
@@ -807,7 +837,7 @@ class ImageAnno(Base):
         anno_vec = [vec.get_anno_vec() for vec in self.twod_annos]
         df = self.to_df()
         if anno_vec:
-            df.update(pd.DataFrame({'anno.data':anno_vec}))
+            df.update(pd.DataFrame({'anno.data': anno_vec}))
         if columns == 'all':
             return df.values.tolist()
         else:
@@ -821,7 +851,7 @@ class ImageAnno(Base):
 
         Args:
             anno_type (str): Can be bbox', 'point', 'line', 'polygon', 'all'
-        
+
         Retruns:
             iterator of :class:`TwoDAnno` objects
 
@@ -868,6 +898,7 @@ class ImageAnno(Base):
                 res.append(anno.get_anno_vec())
         return res
 
+
 class AnnoTask(Base):
     """A object that represents a anno task.
 
@@ -895,7 +926,7 @@ class AnnoTask(Base):
                            uselist=False)
     group_id = Column(Integer, ForeignKey('group.idx'))
     group = relationship("Group", foreign_keys='AnnoTask.group_id',
-                           uselist=False)
+                         uselist=False)
     state = Column(Integer)
     progress = Column(Float)
     name = Column(String(100))
@@ -906,9 +937,11 @@ class AnnoTask(Base):
     configuration = Column(Text)
     last_activity = Column(DATETIME(fsp=6))
     last_annotator_id = Column(Integer, ForeignKey('user.idx'))
-    last_annotator = relationship("User", foreign_keys='AnnoTask.last_annotator_id', uselist=False)
+    last_annotator = relationship(
+        "User", foreign_keys='AnnoTask.last_annotator_id', uselist=False)
     req_label_leaves = relationship('RequiredLabelLeaf')
-    pipe_element = relationship("PipeElement", foreign_keys='AnnoTask.pipe_element_id', uselist=False)
+    pipe_element = relationship(
+        "PipeElement", foreign_keys='AnnoTask.pipe_element_id', uselist=False)
 
     def __init__(self, idx=None, manager_id=None, group_id=None, state=None,
                  progress=None, dtype=None, pipe_element_id=None,
@@ -927,6 +960,7 @@ class AnnoTask(Base):
         self.configuration = configuration
         self.last_activity = last_activity
         self.last_annotator = last_annotator
+
 
 class Pipe(Base):
     """A general pipe (task) that defines how a video/dataset (Media) will be processed.
@@ -965,10 +999,9 @@ class Pipe(Base):
     pipe_template = relationship("PipeTemplate", uselist=False)
     logfile_path = Column(String(4096))
 
-
     def __init__(self, idx=None, name=None, manager_id=None, state=None,
                  pipe_template_id=None, timestamp=None,
-                 timestamp_finished=None, description=None, 
+                 timestamp_finished=None, description=None,
                  is_locked=None, group_id=None, is_debug_mode=None, start_definition=None, logfile_path=None):
         self.idx = idx
         self.name = name
@@ -983,6 +1016,7 @@ class Pipe(Base):
         self.is_debug_mode = is_debug_mode
         self.start_definition = start_definition
         self.logfile_path = logfile_path
+
 
 class PipeTemplate(Base):
     """A template of an pipeline that need to be copyed by Pipe.
@@ -1004,13 +1038,14 @@ class PipeTemplate(Base):
     timestamp = Column(DATETIME(fsp=6))
     is_debug_mode = Column(Boolean)
 
-    def __init__(self, idx=None, json_template=None, timestamp=None, 
+    def __init__(self, idx=None, json_template=None, timestamp=None,
                  is_debug_mode=None):
         self.idx = idx
         self.json_template = json_template
         self.timestamp = timestamp
         self.debug_mode = is_debug_mode
-       
+
+
 class Script(Base):
     """A script that can be executed in a pipeline.
 
@@ -1035,7 +1070,7 @@ class Script(Base):
     resources = Column(Text)
 
     def __init__(self, idx=None, name=None, path=None, description=None,
-        arguments=None, envs=None, resources=None):
+                 arguments=None, envs=None, resources=None):
         self.idx = idx
         self.name = name
         self.path = path
@@ -1043,6 +1078,7 @@ class Script(Base):
         self.arguments = arguments
         self.envs = envs
         self.resources = resources
+
 
 class ChoosenAnnoTask(Base):
     """Linking Table which connects Anno Tasks to Groups
@@ -1062,6 +1098,7 @@ class ChoosenAnnoTask(Base):
         self.idx = idx
         self.user_id = user_id
         self.anno_task_id = anno_task_id
+
 
 class PipeElement(Base):
     """One element in a workflow pipeline.
@@ -1115,21 +1152,22 @@ class PipeElement(Base):
                            primaryjoin="PipeElement.idx==result_link.c.pe_n",
                            secondaryjoin="PipeElement.idx==result_link.c.pe_out")
     result_in = relationship("Result", secondary="result_link",
-                           primaryjoin="PipeElement.idx==result_link.c.pe_out",
-                           secondaryjoin="Result.idx==result_link.c.result_id")
+                             primaryjoin="PipeElement.idx==result_link.c.pe_out",
+                             secondaryjoin="Result.idx==result_link.c.result_id")
     result_out = relationship("Result", secondary="result_link",
-                           primaryjoin="PipeElement.idx==result_link.c.pe_n",
-                           secondaryjoin="Result.idx==result_link.c.result_id")
+                              primaryjoin="PipeElement.idx==result_link.c.pe_n",
+                              secondaryjoin="Result.idx==result_link.c.result_id")
     anno_task = relationship("AnnoTask", uselist=False)
     script = relationship("Script", uselist=False)
     iteration = Column(Integer)
     pipe_context = Column(String(4096))
     progress = Column(Float)
     arguments = Column(Text)
-    loop = relationship("Loop",foreign_keys='Loop.pipe_element_id', uselist=False)
+    loop = relationship(
+        "Loop", foreign_keys='Loop.pipe_element_id', uselist=False)
     pipe = relationship("Pipe", uselist=False)
     datasource = relationship('Datasource', uselist=False)
-    
+
     def __init__(self, idx=None, state=None, dtype=None,
                  anno_task=None, pipe_id=None, is_debug_mode=None,
                  error_msg=None, error_reported=False, warning_msg=None,
@@ -1150,6 +1188,7 @@ class PipeElement(Base):
         self.pipe_context = pipe_context
         self.progress = progress
         self.arguments = arguments
+
 
 class Result(Base):
     """The Result of an Algorithm or AnnoTask
@@ -1189,7 +1228,6 @@ class Result(Base):
         '''
         return iter(self.img_annos)
 
-
     def iter_bbox_annos(self):
         '''Iterate over all :class:`TwoDAnno` objects in this Result.
 
@@ -1199,7 +1237,6 @@ class Result(Base):
         for img_anno in self.img_annos:
             for bb_anno in img_anno.bbox_annos:
                 yield bb_anno
-
 
     def iter_visual_outputs(self):
         '''Iterate over all :class:`VisualOutput` objects in this Result.
@@ -1231,6 +1268,7 @@ class Datasource(Base):
         self.dtype = dtype
         self.pipe_element_id = pipe_element_id
 
+
 class VisualOutput(Base):
     '''A VisualOutput will be used by a visulaise PipeElement to display
         statistics about data.
@@ -1256,6 +1294,7 @@ class VisualOutput(Base):
         self.result_id = result_id
         self.iteration = iteration
 
+
 class ResultLink(Base):
     '''Links :class:`Result` objects to :class:`PipelineElement` objects
 
@@ -1277,6 +1316,7 @@ class ResultLink(Base):
         self.pe_n = pe_n
         self.pe_out = pe_out
         self.result_id = result_id
+
 
 class DataExport(Base):
     '''A DatatExport represents an arbitrary file that is the result of a pipeline.
@@ -1329,6 +1369,7 @@ class Loop(Base):
         self.break_loop = break_loop
         self.pipe_element_id = pipe_element_id
 
+
 class LabelLeaf(Base):
     '''A LabelLeaf
 
@@ -1376,17 +1417,17 @@ class LabelLeaf(Base):
             dict:
         '''
         return {
-            'idx' : self.idx,
+            'idx': self.idx,
             'name': self.name,
-            'abbreviation' : self.abbreviation,
-            'description' : self.description,
-            'timestamp' : self.timestamp,
-            'external_id' : self.external_id,
-            'is_deleted' : self.is_deleted,
-            'parent_leaf_id' : self.parent_leaf_id,
-            'is_root' : self.is_root
+            'abbreviation': self.abbreviation,
+            'description': self.description,
+            'timestamp': self.timestamp,
+            'external_id': self.external_id,
+            'is_deleted': self.is_deleted,
+            'parent_leaf_id': self.parent_leaf_id,
+            'is_root': self.is_root
         }
-        
+
     def to_df(self):
         '''Transform this LabelLeaf to a pandas DataFrame.
 
@@ -1416,7 +1457,8 @@ class Label(Base):
     __tablename__ = "label"
     idx = Column(Integer, primary_key=True)
     dtype = Column(Integer)
-    label_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'), nullable=False)
+    label_leaf_id = Column(Integer, ForeignKey(
+        'label_leaf.idx'), nullable=False)
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     two_d_anno_id = Column(Integer, ForeignKey('two_d_anno.idx'))
     annotator_id = Column(Integer, ForeignKey('user.idx'))
@@ -1441,6 +1483,52 @@ class Label(Base):
         self.confidence = confidence
         self.anno_time = anno_time
 
+
+class Track(Base):
+    '''Represents a track. Multiple TwoDAnnos are assigned to one track.
+
+    Attributes:
+        idx (int): ID in database.
+        track_n (int): Track number that identifies this track inside of
+            an annotation session.
+        anno_task_id (int): ID of the related annotation task
+        name (str): A human readable name for this track.
+        timestamp (DateTime): Timestamp when this track was created.
+        user_id (int): Id of Annotator who has assigned this Label.
+        iteration (int): Iteration in which this track was annotated
+        confidence (float): A confidence value for the annotated track.
+        anno_time (float): Time of annotaiton duration.
+
+    '''
+    __tablename__ = "track"
+    idx = Column(Integer, primary_key=True)
+    track_n = Column(Integer)
+    anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))    
+    name = Column(String(100))
+    timestamp = Column(DATETIME(fsp=6))
+    user_id = Column(Integer, ForeignKey('user.idx'))
+    iteration = Column(Integer)
+    confidence = Column(Float)
+    anno_time = Column(Float)
+    twod_annos = relationship('TwoDAnno')
+    annotator = relationship('User', uselist=False)
+
+    def __init__(self, idx=None, track_n=None, 
+                anno_task_id=None, name=None, timestamp=None,
+                user_id=None, iteration=None,
+                confidence=None, anno_time=None
+                ):
+        self.idx = idx
+        self.track_n = track_n
+        self.anno_task_id = anno_task_id
+        self.name = name
+        self.timestamp = timestamp
+        self.user_id = user_id
+        self.iteration = iteration
+        self.confidence = confidence
+        self.anno_time = anno_time
+
+
 class RequiredLabelLeaf(Base):
     '''A RequiredLabelLeaf
 
@@ -1457,12 +1545,14 @@ class RequiredLabelLeaf(Base):
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
     label_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
     max_labels = Column(Integer)
-    label_leaf = relationship("LabelLeaf", uselist=False) #type: lost.db.model.LabelLeaf
+    # type: lost.db.model.LabelLeaf
+    label_leaf = relationship("LabelLeaf", uselist=False)
 
     def __init__(self, anno_task_id=None, label_leaf_id=None, max_labels=None):
         self.anno_task_id = anno_task_id
         self.label_leaf_id = label_leaf_id
         self.max_labels = max_labels
+
 
 class Worker(Base):
     '''Represents a container with related celery worker that executes scripts.
@@ -1490,9 +1580,9 @@ class Worker(Base):
     resources = Column(Text)
     in_progress = Column(Text)
 
-    def __init__(self, idx=None, env_name=None, 
-        worker_name=None, timestamp=None,
-        register_timestamp=None, resources=None, in_progress=None):
+    def __init__(self, idx=None, env_name=None,
+                 worker_name=None, timestamp=None,
+                 register_timestamp=None, resources=None, in_progress=None):
         self.idx = idx
         self.env_name = env_name
         self.worker_name = worker_name
@@ -1500,4 +1590,3 @@ class Worker(Base):
         self.register_timestamp = register_timestamp
         self.resources = resources
         self.in_progress = in_progress
-
