@@ -50,9 +50,9 @@ const INITIAL_STATE = {
             }
         },
         img: {
-            multilabels: false,
+            multilabels: true,
             actions: {
-                label: true,
+                label: false,
             }
         }
     },

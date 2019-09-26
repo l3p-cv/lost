@@ -45,34 +45,40 @@ class ImgBar extends Component{
         }
     }
 
+    renderImgLabelInput(){
+        if (this.props.allowedActions.label){
+            return <Menu.Item style={{padding: "5px"}}>
+                <LabelInput
+                    // multilabels={true}
+                    multilabels={this.props.multilabels}
+                    relatedId={this.props.annos.image.id}
+                    visible={this.props.visible}
+                    onLabelUpdate={label => this.handleLabelUpdate(label)}
+                    possibleLabels={this.props.possibleLabels}
+                    initLabelIds={this.props.imgLabelIds}
+                    relatedId={this.props.annos.image.id}
+                    disabled={!this.props.allowedActions.label}
+                    />
+            </Menu.Item>
+        } else {
+            return null
+        }
+    }
+
     render(){
         if (!this.props.visible) return null
         if (!this.props.annos.image) return null
-        const activeItem='home'
         return(
         <div style={{
             position:'fixed', 
             top: this.state.position.top, 
             left:this.state.position.left,
             width: this.props.svg.width,
-            minWidth: '500px'
+            minWidth: '600px'
             }}>
             <Menu inverted style={{opacity:0.9}}>
-                <Menu.Item style={{padding: "5px"}}>
-                    <LabelInput
-                        // multilabels={true}
-                        multilabels={this.props.multilabels}
-                        relatedId={this.props.annos.image.id}
-                        visible={this.props.visible}
-                        onLabelUpdate={label => this.handleLabelUpdate(label)}
-                        possibleLabels={this.props.possibleLabels}
-                        initLabelIds={this.props.imgLabelIds}
-                        relatedId={this.props.annos.image.id}
-                        disabled={!this.props.allowedActions.label}
-                        />
-                </Menu.Item>
                 
-                <Menu.Menu position='right'>
+                {this.renderImgLabelInput()}
                 <Menu.Item
                 >
                 {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
@@ -81,12 +87,14 @@ class ImgBar extends Component{
                 >
                 {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
                 </Menu.Item>
+                <Menu.Menu position='right'>
+            
                 <Menu.Item
                     onClick={() => this.handleClose()}
                 >
                 <Icon inverted size="small" name="close"></Icon>
                 </Menu.Item>
-                </Menu.Menu>
+            </Menu.Menu>
             </Menu>
         </div>
         )
