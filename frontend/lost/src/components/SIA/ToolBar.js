@@ -327,11 +327,11 @@ class ToolBar extends Component{
                     <Card.Group>
                     <Card>
                         <Card.Content header='How to draw?' />
-                        <Card.Content description='1.) Select a Tool in the toolbar 2.) Draw with right click on Canvas' />
+                        <Card.Content description='1.) Select a Tool in the toolbar 2.) Draw with RIGHT CLICK on Canvas' />
                     </Card>
                     <Card>
                         <Card.Content header='How to assign a label?' />
-                        <Card.Content description='1.) Select an annotation 2.) Hit ENTER 3.) Type into the input field 4.) Hit ENTER to confirm 5.) Hit ESCAPE to close the input field'/>
+                        <Card.Content description='1.) Select an annotation by LEFT CLICK 2.) Hit ENTER 3.) Type into the input field 4.) Hit ENTER to confirm 5.) Hit ESCAPE to close the input field'/>
                     </Card>
                     <Card>
                         <Card.Content header='Undo/ Redo' />
@@ -341,6 +341,11 @@ class ToolBar extends Component{
                     <Card>
                         <Card.Content header='Add a node to Line/Polygon' />
                         <Card.Content description='Hit STRG + Click left on the line'/>
+                    </Card>
+                    <Card>
+                        <Card.Content header='Zoom/ Move Canvas' />
+                        <Card.Content description='Zoom: Use MOUSE WHEEL to zoom in/out'/>
+                        <Card.Content description='Move: Hold MOUSE WHEEL and move mouse'/>
                     </Card>
                     </Card.Group>
                 </div>}
