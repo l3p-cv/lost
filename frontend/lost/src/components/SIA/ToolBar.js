@@ -347,6 +347,10 @@ class ToolBar extends Component{
                         <Card.Content description='Zoom: Use MOUSE WHEEL to zoom in/out'/>
                         <Card.Content description='Move: Hold MOUSE WHEEL and move mouse'/>
                     </Card>
+                    <Card>
+                        <Card.Content header='TAB navigation' />
+                        <Card.Content description='You can traverse all visible annotation by hitting TAB.'/>
+                    </Card>
                     </Card.Group>
                 </div>}
             />
