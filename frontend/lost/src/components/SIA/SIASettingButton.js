@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
 import {connect} from 'react-redux'
-import { Popup, Icon, Menu, Divider, Checkbox, Card, Header } from 'semantic-ui-react'
+import { Popup, Icon, Menu, Divider, Checkbox, Card, Header, Input } from 'semantic-ui-react'
 import actions from '../../actions'
 const { siaSetUIConfig } = actions
 
@@ -10,6 +10,7 @@ class SIASettingButton extends Component{
     constructor(props) {
         super(props)
         this.state = {
+
         }
     }
 
@@ -35,6 +36,20 @@ class SIASettingButton extends Component{
         )
     }
 
+    handleStrokeWidthChange(e){
+        this.props.siaSetUIConfig({
+            ...this.props.uiConfig,
+            strokeWidth: e.target.value
+        })
+    }
+
+    handleNodeRadiusChange(e){
+        this.props.siaSetUIConfig({
+            ...this.props.uiConfig,
+            nodeRadius: e.target.value
+        })
+    }
+
     render(){
         if (!this.props.annos.image) return null
         const popupContent = <div >
@@ -48,6 +63,23 @@ class SIASettingButton extends Component{
                 checked={this.props.uiConfig.labelInfo.visible} 
                 label="Label Info" toggle
                 onClick={() => this.toggleLabelInfo()}
+                />
+            <Divider horizontal>Anno Appearance</Divider>
+            <div>Stroke width: {this.props.uiConfig.strokeWidth}</div>
+            <input
+                type='range'
+                min={0}
+                max={10}
+                value={this.props.uiConfig.strokeWidth}
+                onChange={e => this.handleStrokeWidthChange(e)}
+                />
+            <div>Node radius: {this.props.uiConfig.nodeRadius}</div>
+            <input
+                type='range'
+                min={0}
+                max={10}
+                value={this.props.uiConfig.nodeRadius}
+                onChange={e => this.handleNodeRadiusChange(e)}
                 />
         </div>
         return(
