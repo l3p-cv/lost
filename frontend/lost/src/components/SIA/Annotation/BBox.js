@@ -114,6 +114,17 @@ class BBox extends Component{
         }
     }
 
+    handleNodeMouseLeave(e, idx){
+        switch(this.state.anno.mode){
+            //if mouse left Canvas in create mode, transit to VIEW mode
+            case modes.CREATE:
+                this.requestModeChange(this.state.anno, modes.VIEW)
+                this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
+            default:
+                break
+        }
+    }
+
     /**************
     * ANNO EVENTS *
     ***************/
@@ -220,6 +231,7 @@ class BBox extends Component{
                             onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                             onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
                             onMouseMove={(e, idx) => this.onNodeMouseMove(e, idx)}
+                            onMouseLeave={(e, idx) => this.handleNodeMouseLeave(e, idx)}
                         />
             default:
                 console.log('BBOX: renderNodes default', this.state.anno)
@@ -232,6 +244,7 @@ class BBox extends Component{
                         svg={this.props.svg}
                         onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
                         onMouseUp={(e, idx) => this.onNodeMouseUp(e, idx)}
+                        onMouseLeave={(e, idx) => this.handleNodeMouseLeave(e, idx)}
                         />
                 })
         }
