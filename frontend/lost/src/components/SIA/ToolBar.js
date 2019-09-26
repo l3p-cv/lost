@@ -364,8 +364,8 @@ class ToolBar extends Component{
                 >
                     <Icon name='image' />
                 </Menu.Item>
-                {this.renderToolButtons()}
                 {this.renderNavigation()}
+                {this.renderToolButtons()}
                 <Menu.Item name='expand arrows alternate' 
                     active={this.props.fullscreenMode} 
                     onClick={() => this.toggleFullscreen()}
