@@ -33,7 +33,7 @@
               "junk": true
           },
           "annos":{
-              "multilabels": false,
+              "multilabels": true,
               "actions": {
                   "draw": true,
                   "label": true,
@@ -41,7 +41,7 @@
               }
           },
           "img": {
-              "multilabels": false,
+              "multilabels": true,
               "actions": {
                   "label": true
               }
