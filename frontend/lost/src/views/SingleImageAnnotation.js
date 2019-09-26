@@ -33,9 +33,6 @@ class SingleImageAnnotation extends Component {
 			<Row >
 				<Col>
 					<Card>
-						<CardHeader>
-							Single Image Annotation - Rewrite !
-						</CardHeader>
 						<CardBody >
 							<Row>
 								<Col xs='12'>
@@ -43,6 +40,7 @@ class SingleImageAnnotation extends Component {
 									<SIA></SIA>
 								</Col>
 							</Row>
+							<Row> </Row>
 						</CardBody> 
 					</Card>
 				</Col>
