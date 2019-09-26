@@ -1,7 +1,8 @@
 import React, {Component} from 'react'
-import { Icon, Menu, Popup, Checkbox, Dimmer, Button, Header} from 'semantic-ui-react'
+import { Icon, Menu, Popup, Checkbox, Dimmer, Button, Card, Header, List, Segment} from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import SIASettingButton from './SIASettingButton'
+import Prompt from './Prompt'
 
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
@@ -23,7 +24,8 @@ class ToolBar extends Component{
                 top: 0,
                 width: 40
             },
-            showFinishPrompt: false
+            showFinishPrompt: false,
+            showHelp: false
         }
 
     }
@@ -93,6 +95,9 @@ class ToolBar extends Component{
         this.props.siaImgIsJunk(!this.props.isJunk)
     }
 
+    toggleHelp(){
+        this.setState({showHelp: !this.state.showHelp})
+    }
     renderPointIcon(){
         return (
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" 
@@ -228,23 +233,25 @@ class ToolBar extends Component{
 
     renderFinishPrompt(){
         return (
-            <Dimmer page active={this.state.showFinishPrompt} style={{zIndex:2000}}>
-                <Header as="h3" inverted>
+            <Prompt active={this.state.showFinishPrompt}
+                header={<div>
                     <Icon name='paper plane outline'></Icon>
                     Do you wish to FINISH this SIA Task?
-                </Header>
-                <Button basic color="green" inverted
-                    onClick={() => this.setFinished()}
-                >
-                    <Icon name='check'></Icon>
-                    Yes
-                </Button>
-                <Button basic color="red" inverted
-                    onClick={() => this.toggleFinishPrompt()}
-                >
-                    <Icon name='ban'></Icon> No
-                </Button>
-            </Dimmer>
+                </div>}
+                content={<div>
+                    <Button basic color="green" inverted
+                        onClick={() => this.setFinished()}
+                    >
+                        <Icon name='check'></Icon>
+                        Yes
+                    </Button>
+                    <Button basic color="red" inverted
+                        onClick={() => this.toggleFinishPrompt()}
+                    >
+                        <Icon name='ban'></Icon> No
+                    </Button>
+                </div>}
+            />
         )
     }
     /**
@@ -308,14 +315,44 @@ class ToolBar extends Component{
         </Menu.Item>
     }
 
+    renderHelpButton(){
+        return <Menu.Item name='help' key='help'
+            active={false} 
+            onClick={() => this.toggleHelp()}
+        >
+            <Icon name='help' />
+            <Prompt active={this.state.showHelp}
+                // header={<div><Icon name='help' /> Help</div>}
+                content={<div>
+                    <Card.Group>
+                    <Card>
+                        <Card.Content header='How to draw?' />
+                        <Card.Content description='1.) Select a Tool in the toolbar 2.) Draw with right click on Canvas' />
+                    </Card>
+                    <Card>
+                        <Card.Content header='How to assign a label?' />
+                        <Card.Content description='1.) Select an annotation 2.) Hit ENTER 3.) Type into the input field 4.) Hit ENTER to confirm 5.) Hit ESCAPE to close the input field'/>
+                    </Card>
+                    <Card>
+                        <Card.Content header='Undo/ Redo' />
+                        <Card.Content description='Undo: Hit STRG + Z'/>
+                        <Card.Content description='Redo: Hit STRG + R'/>
+                    </Card>
+                    <Card>
+                        <Card.Content header='Add a node to Line/Polygon' />
+                        <Card.Content description='Hit STRG + Click left on the line'/>
+                    </Card>
+                    </Card.Group>
+                </div>}
+            />
+        </Menu.Item>
+    }
+
     render(){
         console.log('Toobar state', this.state, this.props.currentImage)
         return(
-        // <Draggable handle=".handle">
         <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
-                {/* <div className="handle" style={{cursor: 'grab'}}>Drag</div> */}
             <Menu icon inverted vertical>
-
                 <Menu.Item name='image' 
                     active={this.props.imgBar.show} 
                     onClick={() => this.toggleImgBar()}
@@ -332,24 +369,9 @@ class ToolBar extends Component{
                 </Menu.Item>
                 {this.renderJunkButton()}
                 <SIASettingButton></SIASettingButton>
-               
-               
+                {this.renderHelpButton()}
             </Menu>
-                {/* <Card><CardBody>
-            <div style={{width:this.state.position.width}}>
-                <Button outline onClick={() => this.toggleImgBar()} color="primary" active={this.props.imgBar.show}>
-                    <FontAwesomeIcon icon={faImage} size='1x'/>
-                </Button>
-                {this.renderToolButtons()}
-                {this.renderNavigation()}
-                <Button outline onClick={() => this.toggleFullscreen()} color="secondary"
-                    active={this.props.fullscreenMode}>
-                    <FontAwesomeIcon icon={faExpandArrowsAlt} />
-                </Button>
-            </div>
-            </CardBody></Card> */}
         </div>
-        // </Draggable>
         )
     }
 }
