@@ -68,6 +68,8 @@ class Point extends Component{
                 }
                 break
             case modes.CREATE:
+                this.requestModeChange(this.state.anno, modes.VIEW)
+
                 this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
                 
             default:
@@ -137,6 +139,7 @@ class Point extends Component{
                             mode={this.state.anno.mode}
                             svg={this.props.svg}
                             onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
+                            isPoint={true}
                         />
             default:
                 return this.state.anno.data.map((e, idx) => {
@@ -147,6 +150,7 @@ class Point extends Component{
                         mode={this.state.anno.mode}
                         svg={this.props.svg}
                         onMouseDown={(e, idx) => this.onNodeMouseDown(e,idx)}
+                        isPoint={true}
                         />
                 })
         }

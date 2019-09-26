@@ -41,7 +41,7 @@ class Node extends Component{
     componentDidUpdate(prevProps){
         switch (this.props.mode){
             case modes.CREATE:
-                if (this.props.idx !== 0){
+                if (this.props.idx !== 0 || this.props.isPoint){
                     this.turnSelAreaOn()
                 }
                 break
