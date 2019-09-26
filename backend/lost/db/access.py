@@ -581,11 +581,15 @@ class DBMan(object):
         '''
         return self.session.query(model.Datasource).all()
 
-    def count_annos(self, anno_task_id):
+    def count_annos(self, anno_task_id, iteration=None):
         '''count all annos with specific anno_task_id
         '''
-        return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
-        .filter(model.ImageAnno.anno_task_id == anno_task_id).first()[0]
+        if iteration:
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+                .filter(model.ImageAnno.anno_task_id == anno_task_id, model.ImageAnno.iteration == iteration).first()[0]
+        else:    
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+                .filter(model.ImageAnno.anno_task_id == anno_task_id).first()[0]
     
 
     def get_two_d_annotations_by_state(self, anno_task_id, state, user_id, amount):
