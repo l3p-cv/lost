@@ -172,7 +172,6 @@ class Node extends Component{
     }
 
     handleMouseLeave(e){
-        console.warn('Node onMouseLeave ', this.props.idx, e)
         if (this.props.onMouseLeave){
             this.props.onMouseLeave(e, this.props.idx)
         }

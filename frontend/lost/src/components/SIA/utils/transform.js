@@ -149,3 +149,28 @@ export function getCenter(data, type){
         
     }
 }
+
+/**
+ * Check if all nodes of an annotation are within the image. If not,
+ * correct the annotation
+ * @param {object} data 
+ * @param {object} image 
+ */
+export function correctAnnotation(data, image){
+    const corrected = data.map(el => {
+            let x = el.x
+            let y = el.y
+            if (el.x <= 0){
+                x = 0
+            } else if (el.x > image.width){
+                x = image.width
+            }
+            if (el.y < 0){
+                y = 0
+            } else if (el.y > image.height){
+                y = image.height
+            }
+            return {x:x,y:y}
+        })
+    return corrected
+}

@@ -11,6 +11,7 @@ import * as canvasActions from '../types/canvasActions'
 import * as annoStatus from '../types/annoStatus'
 import * as colorlut from '../utils/colorlut'
 import * as constraints from '../utils/constraints'
+import * as transform from '../utils/transform'
 
 class Annotation extends Component{
 
@@ -104,7 +105,19 @@ class Annotation extends Component{
      *      was selected
      */
     performedAnnoAction(anno, pAction){
-        this.performedAction(anno, pAction)
+
+        switch(pAction){
+            case canvasActions.ANNO_CREATED_FINAL_NODE:
+            case canvasActions.ANNO_MOVED:
+            case canvasActions.ANNO_CREATED:
+                const corrected = transform.correctAnnotation(anno.data, this.props.svg)
+                const newAnno = {...anno, data: corrected}
+                this.performedAction(newAnno, pAction)
+                break
+            default:
+                this.performedAction(anno, pAction)
+                break
+        }
     }
 
     setAnnoMode(anno, mode){
