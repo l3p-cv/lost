@@ -209,6 +209,11 @@ def has_annotation(dbm, anno_task_id):
         return True
     else: return False
 
+def has_annotation_in_iteration(dbm, anno_task_id, iteration):
+    if dbm.count_annos(anno_task_id, iteration) > 0:
+        return True
+    else: return False
+        
 def __get_seconds_per_anno(dbm, pipeelement, anno_type, user_id=None):
     mean_time = dbm.mean_anno_time(pipeelement.anno_task.idx, user_id, anno_type)[0]
     if mean_time is not None:

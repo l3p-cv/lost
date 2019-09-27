@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SIA: In pipeline definition files config -> actions -> edit. It is not longer possible to allow/ deny actions when editing an annotation, since it was a feature that nobody used.
 
 ### Fixed
-- 
+- Cron: Set AnnoTask to finished if there no annotations in the current iteration
 
 ### Security
 - 

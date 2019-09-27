@@ -27,19 +27,25 @@
         "instructions": "Please draw bounding boxes for all objects in the image.",
         "configuration": {
           "tools": {
-            "point": false,
-            "line": false,
-            "polygon": false,
-            "bbox": true
+              "point": false,
+              "line": false,
+              "polygon": false,
+              "bbox": true,
+              "junk": false
           },
-          "actions": {
-            "drawing": true,
-            "labeling": false,
-            "edit": {
-              "label": false,
-              "bounds": true,
-              "delete": true
-            }
+          "annos":{
+              "multilabels": false,
+              "actions": {
+                  "draw": true,
+                  "label": true,
+                  "edit": true
+              }
+          },
+          "img": {
+              "multilabels": false,
+              "actions": {
+                  "label": true
+              }
           }
         }
       }

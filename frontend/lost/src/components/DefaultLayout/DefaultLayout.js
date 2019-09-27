@@ -93,7 +93,7 @@ class DefaultLayout extends Component {
                 </AppHeader>
                 <div className='app-body'>
                     <main className='main'>
-                        {/* <AppBreadcrumb appRoutes={annotatorRoutes}/> */}
+                    {this.renderAppBreadcrumb()}
                         <Container fluid>
                             <Switch>
                                 {annotatorRoutes.map((route, idx) => {
@@ -121,6 +121,12 @@ class DefaultLayout extends Component {
                 </AppFooter>
             </div>
         )
+    }
+
+    renderAppBreadcrumb(){
+        if(this.props.location.pathname != '/sia'){
+            return(<AppBreadcrumb appRoutes={annotatorRoutes}/>)
+        }
     }
 }
 function mapStateToPropse(state) {

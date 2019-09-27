@@ -43,7 +43,7 @@ class PipeEngine(pipe_model.PipeEngine):
         anno_task = self.dbm.get_anno_task(pipe_element_id=pipe_e.idx)
         if anno_task.state == state.AnnoTask.IN_PROGRESS or \
            anno_task.state == state.AnnoTask.PAUSED:
-           if not at_man.has_annotation(self.dbm, anno_task.idx):
+           if not at_man.has_annotation_in_iteration(self.dbm, anno_task.idx, pipe_e.iteration):
                 at_man.set_finished(self.dbm, anno_task.idx)
                 self.logger.warning('No Annotations have been requested for AnnoTask {}'\
                     .format(anno_task.idx))
