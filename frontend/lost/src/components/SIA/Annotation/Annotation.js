@@ -108,6 +108,7 @@ class Annotation extends Component{
 
         switch(pAction){
             case canvasActions.ANNO_CREATED_FINAL_NODE:
+            case canvasActions.ANNO_EDITED:
             case canvasActions.ANNO_MOVED:
             case canvasActions.ANNO_CREATED:
                 const corrected = transform.correctAnnotation(anno.data, this.props.svg)
