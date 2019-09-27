@@ -73,5 +73,5 @@ def send_new_user(user, password):
         send_email("LOST: User account '{}' has been created.".format(user.user_name),
             [user.email],
             render_template("email/new_user.html", 
-                            user = user, password=password))
+                            user = user, password=password, lost_url=LOST_CONFIG.mail_lost_url))
 
