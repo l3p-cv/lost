@@ -24,6 +24,13 @@ class AnnoBar extends Component{
            this.setPosition()
         }    
     }
+
+    handleClick(e: Event){
+        e.preventDefault()
+        if (this.props.onClick){
+            this.props.onClick(e)
+        }
+    }
     /*************
      * LOGIC     *
      *************/
@@ -63,7 +70,10 @@ class AnnoBar extends Component{
         switch(this.props.mode){
             case modes.VIEW:
                 return (
-                    <text x={this.state.left} y={this.state.top} fill="white"> 
+                    <text x={this.state.left} y={this.state.top} 
+                        fill="white"
+                        onClick={e => this.handleClick(e)}
+                    > 
                         {label}
                     </text>
                 )
