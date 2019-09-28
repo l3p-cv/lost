@@ -13,6 +13,7 @@ import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer, Icon, Header } from 'semantic-ui-react';
+import AnnoToolBar from './AnnoToolBar';
 
 
 /**
@@ -944,6 +945,10 @@ class Canvas extends Component{
                     Marked as Junk
                 </Header>
             </Dimmer>
+                <AnnoToolBar visible={!this.state.showLabelInput && selectedAnno} 
+                    selectedAnno={selectedAnno}
+                    svg={this.state.svg} 
+                />
 
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 <AnnoLabelInput svg={this.state.svg} 

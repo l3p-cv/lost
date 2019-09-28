@@ -151,6 +151,50 @@ export function getCenter(data, type){
 }
 
 /**
+ * Get point that is closest to the left browser side.
+ * 
+ * @param {object} data list of points {x,y} 
+ * @returns {object} A list of point [{x,y}...]. Multiple points are
+ *  returned when multiple points have the same distance to the left side.
+ */
+export function getMonstLeftPoint(data){
+    let minX = Infinity
+    let minXList = []    
+    data.forEach(el => {
+        if (el.x < minX){
+            minX = el.x
+            minXList = []
+            minXList.push(el)
+        } else if (el.x === minX) {
+            minXList.push(el)
+        }
+    })
+    return minXList
+}
+
+/**
+ * Get point that is closest to the top of the browser.
+ * 
+ * @param {object} data list of points {x,y} 
+ * @returns {object} A list of point [{x,y}...]. Multiple points are
+ *  returned when multiple points have the same distance to the top.
+ */
+export function getTopPoint(data){
+    let minY = Infinity
+    let minYList = []    
+    data.forEach(el => {
+        if (el.y < minY){
+            minY = el.y
+            minYList = []
+            minYList.push(el)
+        } else if (el.y === minY) {
+            minYList.push(el)
+        }
+    })
+    return minYList
+}
+
+/**
  * Check if all nodes of an annotation are within the image. If not,
  * correct the annotation
  * @param {object} data 
