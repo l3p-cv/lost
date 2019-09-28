@@ -3,6 +3,9 @@ import _ from 'lodash'
 import Annotation from './Annotation/Annotation'
 import AnnoLabelInput from './AnnoLabelInput'
 import ImgBar from './ImgBar'
+import Prompt from './Prompt'
+import LabelInput from './LabelInput'
+
 
 import * as transform from './utils/transform'
 import * as keyActions from './utils/keyActions'
@@ -12,7 +15,7 @@ import * as modes from './types/modes'
 import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
-import { Loader, Dimmer, Icon, Header } from 'semantic-ui-react';
+import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
 
 
 /**
@@ -74,6 +77,7 @@ import { Loader, Dimmer, Icon, Header } from 'semantic-ui-react';
  *      }
  *   }
  * @param {bool} imgBarVisible - Controls visibility of the ImgBar
+ * @param {bool} imgLabelInputVisible - Controls visibility of the ImgLabelInputPrompt
  * @param {object} layoutOffset - Offset of the canvas inside the container:
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
@@ -83,6 +87,7 @@ import { Loader, Dimmer, Icon, Header } from 'semantic-ui-react';
  * @event onAnnoSelect - Fires when an annotation was selected or if the
  *      selected annotation was updated.
  * @event onImgBarClose - Fires when close button on ImgBar was hit.
+ * @event onImgLabelInputClose - ImgLabelInput requests to be closed.
  * 
  */
 class Canvas extends Component{
@@ -471,6 +476,13 @@ class Canvas extends Component{
     handleImgBarMouseEnter(e){
         this.setState({imgBarVisible:false})
     }
+
+    handleImgLabelInputClose(){
+        if (this.props.onImgLabelInputClose){
+            this.props.onImgLabelInputClose()
+        }
+    }
+
     /*************
      * LOGIC     *
     **************/
@@ -917,6 +929,37 @@ class Canvas extends Component{
         
     }
 
+    renderImgLabelInput(){
+        if (!this.props.annos.image) return null
+        return <Prompt 
+            onClick={() => this.handleImgLabelInputClose()}
+            active={this.props.imgLabelInputVisible}
+            header={<div>
+                <Icon name="edit"/>Add label for the whole image
+            </div>}
+            content={<div>
+                <LabelInput
+                    // multilabels={true}
+                    multilabels={this.props.canvasConfig.img.multilabels}
+                    // relatedId={this.props.annos.image.id}
+                    visible={true}
+                    onLabelUpdate={label => this.handleImgLabelUpdate(label)}
+                    possibleLabels={this.props.possibleLabels}
+                    initLabelIds={this.state.imgLabelIds}
+                    relatedId={this.props.annos.image.id}
+                    // disabled={!this.props.allowedActions.label}
+                    // renderPopup
+                />
+                <Button basic color="green" inverted
+                    onClick={() => this.handleImgLabelInputClose()}
+                >
+                    <Icon name='check'></Icon>
+                    OK
+                </Button>
+            </div>}
+        />
+    }
+
     render(){
         console.log('Canvas render state, props', this.state, this.props)
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
@@ -925,16 +968,17 @@ class Canvas extends Component{
             <div height={this.state.svg.height} 
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
+            {this.renderImgLabelInput()}
             <ImgBar container={this.container} 
                 visible={this.state.imgBarVisible}
                 possibleLabels={this.props.possibleLabels}
                 annos={this.props.annos}
                 svg={this.state.svg}
                 onClose={() => this.handleImgBarClose()}
-                onLabelUpdate={label => this.handleImgLabelUpdate(label)}
-                imgLabelIds={this.state.imgLabelIds}
-                multilabels={this.props.canvasConfig.img.multilabels}
-                allowedActions={this.props.canvasConfig.img.actions}
+                // onLabelUpdate={label => this.handleImgLabelUpdate(label)}
+                // imgLabelIds={this.state.imgLabelIds}
+                // multilabels={this.props.canvasConfig.img.multilabels}
+                // allowedActions={this.props.canvasConfig.img.actions}
                 onMouseEnter={e => this.handleImgBarMouseEnter(e)}
             />
             <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>

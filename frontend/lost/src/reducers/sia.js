@@ -29,8 +29,8 @@ const INITIAL_STATE = {
     requestAnnoUpdate: 0,
     appliedFullscreen: false,
     layoutUpdate: 0,
-    imgBar : {
-        show: true
+    imgLabelInput : {
+        show: false
     },
     svg : undefined,
     config : {
@@ -166,11 +166,11 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 layoutUpdate: state.layoutUpdate + 1
             }
-        case TYPES.SIA_IMGBAR_SHOW:
+        case TYPES.SIA_IMGLABELINPUT_SHOW:
             return {
                 ...state,
-                imgBar: {
-                    ...state.imgBar,
+                imgLabelInput: {
+                    ...state.imgLabelInput,
                     show:action.payload
                 }
             }

@@ -161,9 +161,9 @@ export const siaLayoutUpdate = (annos) => {
     }
 }
 
-export const siaShowImgBar = (show) => {
+export const siaShowImgLabelInput = (show) => {
     return {
-        type: TYPES.SIA_IMGBAR_SHOW,
+        type: TYPES.SIA_IMGLABELINPUT_SHOW,
         payload: show
     }
 }

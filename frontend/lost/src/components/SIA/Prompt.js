@@ -10,6 +10,12 @@ class Prompt extends Component{
         }
     }
 
+    handleClick(e){
+        if (this.props.onClick){
+            this.props.onClick(e)
+        }
+    }
+    
     componentDidMount(){
         this.setState({active: this.props.active})
     }
@@ -23,7 +29,11 @@ class Prompt extends Component{
     
     render(){
         return (
-            <Dimmer page active={this.state.active} style={{zIndex:2000}}>
+            <Dimmer page 
+                active={this.state.active} 
+                style={{zIndex:2000}}
+                onClick={e => this.handleClick(e)}
+            >
                 <Header as="h3" inverted>
                     {this.props.header}
                 </Header>
