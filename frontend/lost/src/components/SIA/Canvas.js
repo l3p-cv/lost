@@ -111,6 +111,7 @@ class Canvas extends Component{
             prevLabel: [],
             imageData: undefined,
             isJunk: false,
+            imgBarVisible:false
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -160,6 +161,9 @@ class Canvas extends Component{
             console.log('canvasHist Performed image init', this.state)
             // Initialize canvas history
             this.setState({performedImageInit:false})
+            if (this.props.imgBarVisible){
+                this.setState({imgBarVisible:true})
+            }
             this.hist.clearHist()
             this.hist.push({
                 ...this.getAnnos(),
@@ -458,6 +462,15 @@ class Canvas extends Component{
         )
     }
 
+    handleCanvasClick(e){
+        if (this.props.imgBarVisible){
+            this.setState({imgBarVisible:true})
+        }
+    }
+
+    handleImgBarMouseEnter(e){
+        this.setState({imgBarVisible:false})
+    }
     /*************
      * LOGIC     *
     **************/
@@ -913,7 +926,7 @@ class Canvas extends Component{
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
             <ImgBar container={this.container} 
-                visible={this.props.imgBarVisible}
+                visible={this.state.imgBarVisible}
                 possibleLabels={this.props.possibleLabels}
                 annos={this.props.annos}
                 svg={this.state.svg}
@@ -922,6 +935,7 @@ class Canvas extends Component{
                 imgLabelIds={this.state.imgLabelIds}
                 multilabels={this.props.canvasConfig.img.multilabels}
                 allowedActions={this.props.canvasConfig.img.actions}
+                onMouseEnter={e => this.handleImgBarMouseEnter(e)}
             />
             <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>
             <Dimmer active={this.state.isJunk}>
@@ -948,6 +962,7 @@ class Canvas extends Component{
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}
                     onKeyUp={e => this.onKeyUp(e)}
+                    onClick={e => this.handleCanvasClick(e)}
                     tabIndex="0"
                     >
                     <g 

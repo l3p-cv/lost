@@ -10,7 +10,7 @@ class ImgBar extends Component{
             position: {
                 top: 0,
                 left: 0,
-            }
+            },
         }
     }
 
@@ -45,6 +45,12 @@ class ImgBar extends Component{
         }
     }
 
+    handleMouseEnter(e){
+        if (this.props.onMouseEnter){
+            this.props.onMouseEnter(e)
+        }
+    }
+
     renderImgLabelInput(){
         if (this.props.allowedActions.label){
             return <Menu.Item style={{padding: "5px"}}>
@@ -75,7 +81,9 @@ class ImgBar extends Component{
             left:this.state.position.left,
             width: this.props.svg.width,
             minWidth: '600px'
-            }}>
+            }}
+            onMouseEnter={e => {this.handleMouseEnter(e)}}    
+        >
             <Menu inverted style={{opacity:0.9}}>
                 
                 {this.renderImgLabelInput()}
