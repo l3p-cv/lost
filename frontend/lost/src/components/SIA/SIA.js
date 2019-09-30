@@ -13,7 +13,7 @@ const {
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
-    selectAnnotation, siaShowImgBar, siaImgIsJunk
+    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk
 } = actions
 
 class SIA extends Component {
@@ -116,8 +116,12 @@ class SIA extends Component {
         }
     }
 
-    handleImgBarClose(){
-        this.props.siaShowImgBar(false)
+    // handleImgBarClose(){
+    //     this.props.siaShowImgBar(false)
+    // }
+
+    handleImgLabelInputClose(){
+        this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
     }
 
     requestImageFromBackend(){
@@ -162,7 +166,8 @@ class SIA extends Component {
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas
                     ref={this.canvas} 
-                    imgBarVisible={this.props.imgBar.show}
+                    imgBarVisible={true}
+                    imgLabelInputVisible={this.props.imgLabelInput.show}
                     container={this.container}
                     annos={this.props.annos}
                     image={this.state.image}
@@ -172,11 +177,10 @@ class SIA extends Component {
                     canvasConfig={this.props.canvasConfig}
                     possibleLabels={this.props.possibleLabels}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
-                    // onImageLoaded={() => this.handleCanvasImageLoaded()}
                     onAnnoSelect={anno => this.props.selectAnnotation(anno)}
-                    onImgBarClose={() => this.handleImgBarClose()}
                     layoutOffset={this.state.layoutOffset}
                     isJunk={this.props.isJunk}
+                    onImgLabelInputClose={() => this.handleImgLabelInputClose()}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>
@@ -201,7 +205,7 @@ function mapStateToProps(state) {
         requestAnnoUpdate: state.sia.requestAnnoUpdate,
         taskFinished: state.sia.taskFinished,
         possibleLabels: state.sia.possibleLabels,
-        imgBar: state.sia.imgBar,
+        imgLabelInput: state.sia.imgLabelInput,
         canvasConfig: state.sia.config,
         isJunk: state.sia.isJunk
     })
@@ -214,7 +218,7 @@ export default connect(
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
-        siaShowImgBar,
+        siaShowImgLabelInput,
         siaImgIsJunk
     }
     , null,

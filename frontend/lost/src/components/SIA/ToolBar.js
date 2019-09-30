@@ -9,7 +9,7 @@ import * as TOOLS from './types/tools'
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 
     siaSetFullscreen, siaSetImageLoaded,
-    selectAnnotation, siaShowImgBar, siaSetTaskFinished,siaLayoutUpdate,
+    selectAnnotation, siaShowImgLabelInput, siaSetTaskFinished,siaLayoutUpdate,
     siaImgIsJunk
 } = actions
 
@@ -87,8 +87,8 @@ class ToolBar extends Component{
         // this.props.siaSetFullscreen(!this.props.fullscreenMode)
     }
 
-    toggleImgBar(){
-        this.props.siaShowImgBar(!this.props.imgBar.show)
+    toggleImgLabelInput(){
+        this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
     }
 
     toggleJunk(){
@@ -362,11 +362,11 @@ class ToolBar extends Component{
         return(
         <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
-                <Menu.Item name='image' 
-                    active={this.props.imgBar.show} 
-                    onClick={() => this.toggleImgBar()}
+                <Menu.Item name='img label input' 
+                    active={this.props.imgLabelInput.show} 
+                    onClick={() => this.toggleImgLabelInput()}
                 >
-                    <Icon name='image' />
+                    <Icon name='pencil' />
                 </Menu.Item>
                 {this.renderNavigation()}
                 {this.renderToolButtons()}
@@ -392,18 +392,19 @@ function mapStateToProps(state) {
         annos: state.sia.annos,
         appliedFullscreen: state.sia.appliedFullscreen,
         layoutUpdate: state.sia.layoutUpdate,
-        imgBar: state.sia.imgBar,
+        imgLabelInput: state.sia.imgLabelInput,
         allowedTools: state.sia.config.tools,
         allowedActions: state.sia.config.annos.actions,
         selectedTool: state.sia.selectedTool,
-        isJunk: state.sia.isJunk
+        isJunk: state.sia.isJunk,
+        canvasConfig: state.sia.config,
     })
 }
 export default connect(mapStateToProps, 
     {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
         siaSetFullscreen, 
         // siaSetImageLoaded, 
-        selectAnnotation, siaShowImgBar, siaSetTaskFinished, siaLayoutUpdate,
+        selectAnnotation, siaShowImgLabelInput, siaSetTaskFinished, siaLayoutUpdate,
         siaImgIsJunk
     }
 )(ToolBar)

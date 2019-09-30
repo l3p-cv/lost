@@ -3,6 +3,10 @@ import _ from 'lodash'
 import Annotation from './Annotation/Annotation'
 import AnnoLabelInput from './AnnoLabelInput'
 import ImgBar from './ImgBar'
+import Prompt from './Prompt'
+import LabelInput from './LabelInput'
+import AnnoToolBar from './AnnoToolBar'
+
 
 import * as transform from './utils/transform'
 import * as keyActions from './utils/keyActions'
@@ -12,9 +16,7 @@ import * as modes from './types/modes'
 import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
-import { Loader, Dimmer, Icon, Header } from 'semantic-ui-react';
-import AnnoToolBar from './AnnoToolBar';
-
+import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
 
 /**
  * SIA Canvas element that handles annotations within an image
@@ -75,6 +77,7 @@ import AnnoToolBar from './AnnoToolBar';
  *      }
  *   }
  * @param {bool} imgBarVisible - Controls visibility of the ImgBar
+ * @param {bool} imgLabelInputVisible - Controls visibility of the ImgLabelInputPrompt
  * @param {object} layoutOffset - Offset of the canvas inside the container:
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
@@ -84,6 +87,7 @@ import AnnoToolBar from './AnnoToolBar';
  * @event onAnnoSelect - Fires when an annotation was selected or if the
  *      selected annotation was updated.
  * @event onImgBarClose - Fires when close button on ImgBar was hit.
+ * @event onImgLabelInputClose - ImgLabelInput requests to be closed.
  * 
  */
 class Canvas extends Component{
@@ -112,7 +116,8 @@ class Canvas extends Component{
             prevLabel: [],
             imageData: undefined,
             isJunk: false,
-            imgBarVisible:false
+            imgBarVisible:false,
+            annoToolBarVisible: false
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -276,10 +281,7 @@ class Canvas extends Component{
         console.log('handleKeyAction: ', action)
         switch(action){
             case keyActions.EDIT_LABEL:
-                if (this.state.selectedAnnoId){
-                    this.showLabelInput()
-                    this.updateSelectedAnno(anno, modes.EDIT_LABEL)
-                }
+                this.editAnnoLabel()
                 break
             case keyActions.DELETE_ANNO:
                 this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
@@ -368,6 +370,7 @@ class Canvas extends Component{
                     pAction, undefined
                 )
                 this.showSingleAnno(undefined)
+                this.setState({annoToolBarVisible:true})
                 break
             case canvasActions.ANNO_MOVED:
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
@@ -376,9 +379,15 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, undefined
                 )
+                this.setState({annoToolBarVisible:true})
                 break
             case canvasActions.ANNO_ENTER_MOVE_MODE:
                 this.showSingleAnno(anno.id)
+                this.setState({annoToolBarVisible:false})
+                break
+            case canvasActions.ANNO_ENTER_EDIT_MODE:
+                // this.showSingleAnno(anno.id)
+                this.setState({annoToolBarVisible:false})
                 break
             case canvasActions.ANNO_ADDED_NODE:
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
@@ -393,6 +402,7 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
+                this.setState({annoToolBarVisible:true})
                 break
             case canvasActions.ANNO_DELETED:
                 newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
@@ -408,6 +418,7 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, undefined
                 )
+                this.setState({annoToolBarVisible:true})
                 break
             case canvasActions.ANNO_CREATED_NODE:
                 const merged = this.mergeSelectedAnno(anno, modes.CREATE)
@@ -424,6 +435,7 @@ class Canvas extends Component{
                     pAction, undefined
                 )
                 this.showSingleAnno(undefined)
+                this.setState({annoToolBarVisible:true})
                 break
             default:
                 console.warn('Action not handeled', pAction)
@@ -472,10 +484,23 @@ class Canvas extends Component{
     handleImgBarMouseEnter(e){
         this.setState({imgBarVisible:false})
     }
+
+    handleImgLabelInputClose(){
+        if (this.props.onImgLabelInputClose){
+            this.props.onImgLabelInputClose()
+        }
+    }
+
     /*************
      * LOGIC     *
     **************/
-
+    editAnnoLabel(){
+        if (this.state.selectedAnnoId){
+            const anno = this.findAnno(this.state.selectedAnnoId)
+            this.showLabelInput()
+            this.updateSelectedAnno(anno, modes.EDIT_LABEL)
+        }
+    }
     unloadImage(){
         if(this.state.imageLoaded){
             this.setState({imageLoaded:false})
@@ -543,12 +568,19 @@ class Canvas extends Component{
 
     selectAnnotation(annoId){
         if (annoId){
+            const anno = this.findAnno(annoId)
             this.setState({
                 selectedAnnoId: annoId
             })
+            if (anno.mode !== modes.CREATE){
+                this.setState({
+                    annoToolBarVisible: true
+                })
+            }
         } else {
             this.setState({
-                selectedAnnoId: undefined
+                selectedAnnoId: undefined,
+                annoToolBarVisible: false
             })
             if (this.state.showLabelInput){
                 this.onAnnoLabelInputClose()
@@ -918,6 +950,37 @@ class Canvas extends Component{
         
     }
 
+    renderImgLabelInput(){
+        if (!this.props.annos.image) return null
+        return <Prompt 
+            onClick={() => this.handleImgLabelInputClose()}
+            active={this.props.imgLabelInputVisible}
+            header={<div>
+                <Icon name="edit"/>Add label for the whole image
+            </div>}
+            content={<div>
+                <LabelInput
+                    // multilabels={true}
+                    multilabels={this.props.canvasConfig.img.multilabels}
+                    // relatedId={this.props.annos.image.id}
+                    visible={true}
+                    onLabelUpdate={label => this.handleImgLabelUpdate(label)}
+                    possibleLabels={this.props.possibleLabels}
+                    initLabelIds={this.state.imgLabelIds}
+                    relatedId={this.props.annos.image.id}
+                    // disabled={!this.props.allowedActions.label}
+                    // renderPopup
+                />
+                <Button basic color="green" inverted
+                    onClick={() => this.handleImgLabelInputClose()}
+                >
+                    <Icon name='check'></Icon>
+                    OK
+                </Button>
+            </div>}
+        />
+    }
+
     render(){
         console.log('Canvas render state, props', this.state, this.props)
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
@@ -926,16 +989,17 @@ class Canvas extends Component{
             <div height={this.state.svg.height} 
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
+            {this.renderImgLabelInput()}
             <ImgBar container={this.container} 
                 visible={this.state.imgBarVisible}
                 possibleLabels={this.props.possibleLabels}
                 annos={this.props.annos}
                 svg={this.state.svg}
                 onClose={() => this.handleImgBarClose()}
-                onLabelUpdate={label => this.handleImgLabelUpdate(label)}
-                imgLabelIds={this.state.imgLabelIds}
-                multilabels={this.props.canvasConfig.img.multilabels}
-                allowedActions={this.props.canvasConfig.img.actions}
+                // onLabelUpdate={label => this.handleImgLabelUpdate(label)}
+                // imgLabelIds={this.state.imgLabelIds}
+                // multilabels={this.props.canvasConfig.img.multilabels}
+                // allowedActions={this.props.canvasConfig.img.actions}
                 onMouseEnter={e => this.handleImgBarMouseEnter(e)}
             />
             <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>
@@ -945,9 +1009,10 @@ class Canvas extends Component{
                     Marked as Junk
                 </Header>
             </Dimmer>
-                <AnnoToolBar visible={!this.state.showLabelInput && selectedAnno} 
+                <AnnoToolBar visible={this.state.annoToolBarVisible} 
                     selectedAnno={selectedAnno}
-                    svg={this.state.svg} 
+                    svg={this.state.svg}
+                    onClick={() => this.editAnnoLabel()}
                 />
 
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}

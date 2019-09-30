@@ -69,6 +69,12 @@ class AnnoToolBar extends Component{
             this.props.onClose()
         }
     }
+
+    handleClick(e){
+        if (this.props.onClick){
+            this.props.onClick(e)
+        }
+    }
     
     /*************
      * RENDERING *
@@ -81,15 +87,15 @@ class AnnoToolBar extends Component{
                     position:'fixed', 
                     top:this.state.top, 
                     left:this.state.left,
-                    // width: this.state.width, 
-                    // borderColor:'black',
-                    // backgroundColor: 'grey'
                 }}
             >
-            <Button icon circular basic>
-                {/* <Icon name='world' /> */}
-                <Icon name="edit"/>
-            </Button>
+            {/* <Button icon circular basic
+                onClick={e => this.handleClick(e)}
+            > */}
+                <Icon name="pencil" 
+                    onClick={e => this.handleClick(e)}
+                />
+            {/* </Button> */}
             </div>
         )
     }

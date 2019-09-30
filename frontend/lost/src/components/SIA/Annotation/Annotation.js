@@ -161,6 +161,10 @@ class Annotation extends Component{
                     this.setAnnoMode(anno, mode)
                     this.performedAction(anno, canvasActions.ANNO_ENTER_MOVE_MODE)
                     break
+                case modes.EDIT:
+                    this.setAnnoMode(anno, mode)
+                    this.performedAction(anno, canvasActions.ANNO_ENTER_EDIT_MODE)
+                    break
                 default:
                     this.setAnnoMode(anno, mode)
                     break
