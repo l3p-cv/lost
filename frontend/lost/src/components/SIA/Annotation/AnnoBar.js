@@ -35,14 +35,27 @@ class AnnoBar extends Component{
      * LOGIC     *
      *************/
     setPosition(){
-        console.log('AnnoBar set Position', this.props.anno, this.props.mode)
-        const center = transform.getCenter(this.props.anno.data, this.props.anno.type)
-        const top = center.y
-        const left = center.x 
+        // console.log('AnnoBar set Position', this.props.anno, this.props.mode)
+        // const center = transform.getCenter(this.props.anno.data, this.props.anno.type)
+        // const top = center.y
+        // const left = center.x 
+        // if (this.state.top !== top || this.state.left !== left){  
+        //     this.setState({
+        //         top,
+        //         left
+        //     })
+        // }
+        let topPoint = transform.getTopPoint(this.props.anno.data)
+        topPoint = transform.getMonstLeftPoint(topPoint)[0]
+        // const inputRect = this.inputGroupRef.current.getBoundingClientRect()
+        let top = topPoint.y
+        let left = topPoint.x + 10
+        if (top < 0) top = topPoint.y + 10
         if (this.state.top !== top || this.state.left !== left){  
             this.setState({
                 top,
-                left
+                left,
+                // width: annoBox[1].x - annoBox[0].x
             })
         }
     }
@@ -69,13 +82,15 @@ class AnnoBar extends Component{
         }
         switch(this.props.mode){
             case modes.VIEW:
-                return (
+                return (<g>
+                    {/* <rect x={this.state.x} y={this.state.y} width="50" height="20"/> */}
                     <text x={this.state.left} y={this.state.top} 
                         fill="white"
                         onClick={e => this.handleClick(e)}
                     > 
                         {label}
                     </text>
+                    </g>
                 )
             default:
                 return null

@@ -92,7 +92,7 @@ class AnnoToolBar extends Component{
             {/* <Button icon circular basic
                 onClick={e => this.handleClick(e)}
             > */}
-                <Icon name="pencil" 
+                <Icon name="pencil"
                     onClick={e => this.handleClick(e)}
                 />
             {/* </Button> */}
