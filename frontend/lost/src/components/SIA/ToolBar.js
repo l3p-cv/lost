@@ -6,6 +6,8 @@ import Prompt from './Prompt'
 
 import actions from '../../actions'
 import * as TOOLS from './types/tools'
+import * as siaIcons from './utils/siaIcons'
+
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 
     siaSetFullscreen, siaSetImageLoaded,
@@ -369,13 +371,16 @@ class ToolBar extends Component{
         </Menu.Item>
     }
 
+    
     renderImgLabelInput(){
         if (this.props.canvasConfig.img.actions.label){
             return <Menu.Item name='img label input' 
                 active={this.props.imgLabelInput.show} 
                 onClick={() => this.toggleImgLabelInput()}
             >
-                <Icon name='pencil' />
+                {/* <Icon name='pencil' /> */}
+                {siaIcons.textIcon()}
+                
             </Menu.Item>
         }
     }

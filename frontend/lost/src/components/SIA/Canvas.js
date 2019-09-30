@@ -18,6 +18,8 @@ import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
 import * as mouse from './utils/mouse';
+import * as colorlut from './utils/colorlut'
+
 
 /**
  * SIA Canvas element that handles annotations within an image
@@ -773,6 +775,20 @@ class Canvas extends Component{
         }
     }
 
+    getAnnoColor(){
+        if (this.state.selectedAnnoId){
+            const anno = this.findAnno(this.state.selectedAnnoId)
+            if (anno.labelIds){
+                return colorlut.getColor(anno.labelIds[0])
+            } else {
+                return colorlut.getDefaultColor()
+            }
+        }
+        else {
+            return colorlut.getDefaultColor()
+        }
+    }
+
     /**
      * Update selected anno and override mode if desired
      * 
@@ -984,7 +1000,7 @@ class Canvas extends Component{
             onClick={() => this.handleImgLabelInputClose()}
             active={this.props.imgLabelInputVisible}
             header={<div>
-                <Icon name="edit"/>Add label for the whole image
+                Add label for the whole image
             </div>}
             content={<div>
                 <LabelInput
@@ -1041,6 +1057,7 @@ class Canvas extends Component{
                     selectedAnno={selectedAnno}
                     svg={this.state.svg}
                     onClick={() => this.editAnnoLabel()}
+                    color={this.getAnnoColor()}
                 />
 
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}

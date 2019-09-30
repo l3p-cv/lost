@@ -200,14 +200,17 @@ class Annotation extends Component{
         }
     }
     
-    getStyle(){
-        let color
+    getColor(){
         if (this.state.anno.labelIds){
-            color = colorlut.getColor(this.state.anno.labelIds[0])
+            return colorlut.getColor(this.state.anno.labelIds[0])
         }
         else {
-            color = colorlut.getDefaultColor()
+            return colorlut.getDefaultColor()
         }
+    }
+
+    getStyle(){
+        const color = this.getColor()
         if (this.isSelected()){
             return {
                 stroke: color,
