@@ -778,7 +778,7 @@ class Canvas extends Component{
     getAnnoColor(){
         if (this.state.selectedAnnoId){
             const anno = this.findAnno(this.state.selectedAnnoId)
-            if (anno.labelIds){
+            if (anno){
                 return colorlut.getColor(anno.labelIds[0])
             } else {
                 return colorlut.getDefaultColor()
