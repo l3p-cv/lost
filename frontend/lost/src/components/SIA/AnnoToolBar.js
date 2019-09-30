@@ -44,7 +44,7 @@ class AnnoToolBar extends Component{
             let topPoint = transform.getTopPoint(this.props.selectedAnno.data)
             topPoint = transform.getMonstLeftPoint(topPoint)[0]
             const inputRect = this.inputGroupRef.current.getBoundingClientRect()
-            let top = this.props.svg.top + (topPoint.y + this.props.svg.translateY) *this.props.svg.scale - 25
+            let top = this.props.svg.top + (topPoint.y + this.props.svg.translateY) *this.props.svg.scale - 30
             let left = this.props.svg.left + (topPoint.x + this.props.svg.translateX) *this.props.svg.scale - inputRect.width /2.0 + 5
             // console.log('AnnoToolBar top, left', top, left)
             // if (left < this.props.svg.left) left = this.props.svg.left

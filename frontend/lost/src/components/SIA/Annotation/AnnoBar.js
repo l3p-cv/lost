@@ -8,8 +8,11 @@ class AnnoBar extends Component{
         super(props)
         this.state = {
             top: 0,
-            left: 0
+            left: 0,
+            width: 50,
+            height: 15,
         }
+        this.textRef = React.createRef()
     }
     
     /*************
@@ -47,9 +50,18 @@ class AnnoBar extends Component{
         // }
         let topPoint = transform.getTopPoint(this.props.anno.data)
         topPoint = transform.getMonstLeftPoint(topPoint)[0]
-        // const inputRect = this.inputGroupRef.current.getBoundingClientRect()
-        let top = topPoint.y
-        let left = topPoint.x + 10
+        if (this.textRef.current){
+            const text = this.textRef.current.getBoundingClientRect()
+            console.log('AnnoBar text', text.width, text.height)
+            const textPadding = 2
+            if (text.width + textPadding !== this.state.width){
+                this.setState({
+                    width: text.width + textPadding,
+                })
+            }
+        }
+        let top = topPoint.y + 10 
+        let left = topPoint.x + 7
         if (top < 0) top = topPoint.y + 10
         if (this.state.top !== top || this.state.left !== left){  
             this.setState({
@@ -83,13 +95,28 @@ class AnnoBar extends Component{
         switch(this.props.mode){
             case modes.VIEW:
                 return (<g>
-                    {/* <rect x={this.state.x} y={this.state.y} width="50" height="20"/> */}
+                    <rect x={this.state.left} y={this.state.top - 6} 
+                        width={this.state.width} height={this.state.height} rx="5" 
+                        opacity='0.5'
+                        style={this.props.style}
+                        />
                     <text x={this.state.left} y={this.state.top} 
                         fill="white"
                         onClick={e => this.handleClick(e)}
+                        textAnchor="start"
+                        alignmentBaseline="central"
+                        ref={this.textRef} 
+                        // textLength="50"
+                        // style={{...this.props.style, strokeWidth:1}}
                     > 
                         {label}
                     </text>
+                    {/* This second rect is to prevent text from getting marked */}
+                    <rect x={this.state.left} y={this.state.top - 6} 
+                        width={this.state.width} height={this.state.height} rx="5" 
+                        opacity='0.01'
+                        style={this.props.style}
+                        />
                     </g>
                 )
             default:

@@ -295,6 +295,7 @@ class Annotation extends Component{
             mode={this.state.anno.mode}
             possibleLabels={this.props.possibleLabels}
             onClick={e => this.onClick(e)}
+            style={this.getStyle()}
             />
     }
     render(){
