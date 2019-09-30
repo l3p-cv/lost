@@ -31,7 +31,7 @@ export const store = createStore(reducers, {
         images: [],
         labels: [],
         selectedLabel: undefined
-    }
+    },
 }, composeEnhancers((applyMiddleware(reduxThunk))))
 
 ReactDOM.render(

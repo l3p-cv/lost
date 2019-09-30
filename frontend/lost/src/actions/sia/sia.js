@@ -78,6 +78,7 @@ export const siaKeyDown = (key) => {
 }
 
 export const siaSetUIConfig = (config) => {
+    localStorage.setItem('sia-ui-config', JSON.stringify(config))
     return {
         type: TYPES.SIA_SET_UICONFIG,
         payload: {

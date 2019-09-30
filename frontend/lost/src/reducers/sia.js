@@ -1,4 +1,7 @@
 import TYPES from '../types/index'
+
+import {uiConfig} from '../components/SIA/utils/uiConfig'
+
 const INITIAL_STATE = {
     annos: {},
     selectedAnno: {
@@ -8,16 +11,7 @@ const INITIAL_STATE = {
     },
     keyUp: undefined,
     keyDown: undefined,
-    uiConfig: {
-        nodeRadius: 4,
-        strokeWidth: 4,
-        annoDetails:{
-            visible: false
-        },
-        labelInfo:{
-            visible: false
-        }
-    },
+    uiConfig: uiConfig,
     showSingleAnno: undefined,
     selectedTool: undefined,
     showLabelInput: false,
