@@ -21,7 +21,7 @@ class ToolBar extends Component{
             fullscreenMode: false,
             position: {
                 left: 0,
-                top: 0,
+                top: 5,
                 width: 40
             },
             showFinishPrompt: false,
@@ -44,7 +44,7 @@ class ToolBar extends Component{
             this.setState({
                 position: {...this.state.position,
                 left: 0,
-                top: container.top,
+                top: container.top + 5,
                 }
             })
         }

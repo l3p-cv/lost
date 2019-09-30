@@ -30,8 +30,8 @@ class SIA extends Component {
             layoutOffset: {
                 left: 20,
                 top: 0,
-                bottom: 10,
-                right: 0
+                bottom: 5,
+                right: 5
             }
         }
         this.siteHistory = createHashHistory()
@@ -144,6 +144,7 @@ class SIA extends Component {
                     layoutOffset: {
                         ...this.state.layoutOffset,
                         left: 50,
+                        top: 5,
                     } 
                 })
             }
@@ -154,6 +155,7 @@ class SIA extends Component {
                     layoutOffset: {
                         ...this.state.layoutOffset,
                         left: 20,
+                        top: 0,
                     } 
                 })
             }
