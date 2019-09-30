@@ -41,7 +41,8 @@ const INITIAL_STATE = {
                 draw: true,
                 label: true,
                 edit: true,
-            }
+            },
+            minArea: 500
         },
         img: {
             multilabels: false,

@@ -108,6 +108,10 @@ class Canvas extends Component{
                 translateX:0,
                 translateY:0
             },
+            image: {
+                width: undefined,
+                height: undefined
+            },
             annos: [],
             mode: modes.VIEW,
             // selectedAnnoId: {id:undefined},
@@ -906,7 +910,13 @@ class Canvas extends Component{
             ...this.state.svg, width : imgWidth, height: imgHeight,
             left: canvasLeft, top: canvasTop
         }
-        this.setState({svg})
+        this.setState({
+            svg,
+            image:{
+                width: this.img.current.naturalWidth,
+                height: this.img.current.naturalHeight,
+            }
+        })
         this.svgUpdate(svg)
         return {imgWidth, imgHeight}
     }
@@ -985,6 +995,8 @@ class Canvas extends Component{
                         uiConfig={this.props.uiConfig}
                         allowedActions={this.props.canvasConfig.annos.actions}
                         possibleLabels={this.props.possibleLabels}
+                        image={this.state.image}
+                        canvasConfig={this.props.canvasConfig}
                     />
             })
             return <g>{annos}</g>

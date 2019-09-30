@@ -112,6 +112,17 @@ class Annotation extends Component{
             case canvasActions.ANNO_MOVED:
             case canvasActions.ANNO_CREATED:
                 const corrected = transform.correctAnnotation(anno.data, this.props.svg)
+                const area = transform.getArea(corrected, this.props.svg, anno.type, this.props.image)
+                    if (area){
+                        if(area < this.props.canvasConfig.annos.minArea){
+                            console.warn('AnnotationArea is smaller than allowed minArea of', this.props.canvasConfig.annos.minArea)
+                            break
+                        }
+                    }
+                console.log(
+                    'AnnotationArea', area
+                    , this.props.image
+                    )
                 const newAnno = {...anno, data: corrected}
                 this.performedAction(newAnno, pAction)
                 break
@@ -199,7 +210,7 @@ class Annotation extends Component{
             createMode: this.myAnno.current.state.mode === modes.CREATE
         }
     }
-    
+
     getColor(){
         if (this.state.anno.labelIds){
             return colorlut.getColor(this.state.anno.labelIds[0])

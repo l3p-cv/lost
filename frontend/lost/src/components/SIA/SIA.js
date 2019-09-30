@@ -46,7 +46,7 @@ class SIA extends Component {
         window.addEventListener("resize", this.props.siaLayoutUpdate);
         this.props.getSiaAnnos(-1)
         this.props.getSiaLabels()
-        this.props.getSiaConfig()
+        // this.props.getSiaConfig()
         // console.warn('We are not using real SIA config')
     }
     componentWillUnmount() {

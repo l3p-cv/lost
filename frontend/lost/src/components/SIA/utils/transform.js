@@ -88,6 +88,40 @@ export function toBackend(data, image, type){
     }
 }
 
+/**
+ * Get area relative to the image 
+ * 
+ * @param {Array} data Annotation data
+ * @param {*} scaledImg The scaled image object {width, height}
+ * @param {String} type Type of the annotation bBox, point, line, polygon
+ * @param {object} originalImg The original image
+ * @returns Area relative
+ */
+export function getArea(data, scaledImg, type, originalImg){
+    const relData = toBackend(data, scaledImg, type)
+    switch(type) {
+        case 'bBox':
+            return Math.abs(relData.w*relData.h)* originalImg.width*originalImg.height
+            // return relData.w*relData.h
+        case 'line':        
+        case 'point':
+            return undefined
+        case 'polygon':
+            let area = 0.0;         // Accumulates area in the loop
+            let j = relData.length-1;  // The last vertex is the 'previous' one to the first
+        
+            for (let i=0; i<relData.length; i++)
+            { 
+                area = area +  (relData[j].x+relData[i].x) * (relData[j].y-relData[i].y); 
+                j = i;  //j is previous vertex to i
+            }
+            return Math.abs(area/2) * originalImg.width*originalImg.height
+        default:
+            console.warn("Wrong annotation type!")
+            return undefined
+    }
+}
+
 export function move(data, movementX, movementY){
     return data.map(e => {
         return {
