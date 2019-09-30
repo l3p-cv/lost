@@ -30,12 +30,12 @@ class SingleImageAnnotation extends Component {
 	render(){
 		console.log(this.props.annos)
 		return (
-			<Row >
+			<Row>
 				<Col>
 					<Row>
 						<Col xs='12'>
 							<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
-							<SIA style={ {justifyContent:'center', alignItems:'center'}}></SIA>
+							<SIA></SIA>
 						</Col>
 					</Row>
 				</Col>

@@ -28,7 +28,7 @@ class SIA extends Component {
                 data: undefined,
             },
             layoutOffset: {
-                left: 0,
+                left: 20,
                 top: 0,
                 bottom: 10,
                 right: 0
@@ -153,7 +153,7 @@ class SIA extends Component {
                     fullscreenCSS: '',
                     layoutOffset: {
                         ...this.state.layoutOffset,
-                        left: 0,
+                        left: 20,
                     } 
                 })
             }
