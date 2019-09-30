@@ -32,17 +32,12 @@ class SingleImageAnnotation extends Component {
 		return (
 			<Row >
 				<Col>
-					<Card>
-						<CardBody >
-							<Row>
-								<Col xs='12'>
-									<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
-									<SIA></SIA>
-								</Col>
-							</Row>
-							<Row> </Row>
-						</CardBody> 
-					</Card>
+					<Row>
+						<Col xs='12'>
+							<WorkingOnSIA annoTask={this.props.workingOnAnnoTask}></WorkingOnSIA>
+							<SIA style={ {justifyContent:'center', alignItems:'center'}}></SIA>
+						</Col>
+					</Row>
 				</Col>
 			</Row>
 		)

@@ -230,6 +230,10 @@ class Canvas extends Component{
         if (nextScale < 1.0){
             nextScale = 1.0
         }
+        if (nextScale > 200.0){
+            nextScale = 200.0
+        }
+        console.log(nextScale)
         this.setState({svg: {
             ...this.state.svg,
             scale: nextScale,

@@ -84,25 +84,16 @@ class ImgBar extends Component{
             }}
             onMouseEnter={e => {this.handleMouseEnter(e)}}    
         >
-            <Menu inverted style={{opacity:0.9}}>
-                
-                {/* {this.renderImgLabelInput()} */}
-                <Menu.Item
-                >
-                {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
-                </Menu.Item>
-                <Menu.Item  
-                >
-                {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
-                </Menu.Item>
-                <Menu.Menu position='right'>
-            
-                <Menu.Item
-                    onClick={() => this.handleClose()}
-                >
-                <Icon inverted size="small" name="close"></Icon>
-                </Menu.Item>
-            </Menu.Menu>
+            <Menu inverted style={{opacity:0.9, justifyContent:'center', alignItems:'center'}}>
+                    {/* {this.renderImgLabelInput()} */}
+                    <Menu.Item
+                    >
+                    {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
+                    </Menu.Item>
+                    <Menu.Item  
+                    >
+                    {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
+                    </Menu.Item>
             </Menu>
         </div>
         )

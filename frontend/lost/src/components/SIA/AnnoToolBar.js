@@ -87,6 +87,7 @@ class AnnoToolBar extends Component{
                     position:'fixed', 
                     top:this.state.top, 
                     left:this.state.left,
+                    cursor: 'pointer',
                 }}
             >
             {/* <Button icon circular basic

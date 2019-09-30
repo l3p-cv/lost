@@ -39,14 +39,14 @@ class SIASettingButton extends Component{
     handleStrokeWidthChange(e){
         this.props.siaSetUIConfig({
             ...this.props.uiConfig,
-            strokeWidth: e.target.value
+            strokeWidth: parseInt(e.target.value)
         })
     }
 
     handleNodeRadiusChange(e){
         this.props.siaSetUIConfig({
             ...this.props.uiConfig,
-            nodeRadius: e.target.value
+            nodeRadius: parseInt(e.target.value)
         })
     }
 
@@ -68,7 +68,7 @@ class SIASettingButton extends Component{
             <div>Stroke width: {this.props.uiConfig.strokeWidth}</div>
             <input
                 type='range'
-                min={0}
+                min={1}
                 max={10}
                 value={this.props.uiConfig.strokeWidth}
                 onChange={e => this.handleStrokeWidthChange(e)}
@@ -76,7 +76,7 @@ class SIASettingButton extends Component{
             <div>Node radius: {this.props.uiConfig.nodeRadius}</div>
             <input
                 type='range'
-                min={0}
+                min={1}
                 max={10}
                 value={this.props.uiConfig.nodeRadius}
                 onChange={e => this.handleNodeRadiusChange(e)}
