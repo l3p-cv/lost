@@ -17,6 +17,7 @@ import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
+import * as mouse from './utils/mouse';
 
 /**
  * SIA Canvas element that handles annotations within an image
@@ -124,6 +125,7 @@ class Canvas extends Component{
         this.container = React.createRef()
         this.hist = new UndoRedo()
         this.keyMapper = new KeyMapper((keyAction) => this.handleKeyAction(keyAction))
+        this.mousePos = undefined
     }
 
     componentDidMount(){
@@ -166,7 +168,10 @@ class Canvas extends Component{
         if (this.state.performedImageInit){
             console.log('canvasHist Performed image init', this.state)
             // Initialize canvas history
-            this.setState({performedImageInit:false})
+            this.setState({
+                performedImageInit:false,
+                annoToolBarVisible:false
+            })
             if (this.props.imgBarVisible){
                 this.setState({imgBarVisible:true})
             }
@@ -493,6 +498,10 @@ class Canvas extends Component{
         if (this.props.onImgLabelInputClose){
             this.props.onImgLabelInputClose()
         }
+    }
+
+    handleSvgMouseMove(e:Event){
+        this.mousePos = mouse.getMousePosition(e, this.state.svg)
     }
 
     /*************
@@ -1030,6 +1039,7 @@ class Canvas extends Component{
                     possibleLabels={this.props.possibleLabels}
                     allowedActions={this.props.canvasConfig.annos.actions}
                     multilabels={this.props.canvasConfig.annos.multilabels}
+                    mousePos={this.mousePos}
                     // multilabels={true}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 
@@ -1037,6 +1047,7 @@ class Canvas extends Component{
                     onKeyDown={e => this.onKeyDown(e)}
                     onKeyUp={e => this.onKeyUp(e)}
                     onClick={e => this.handleCanvasClick(e)}
+                    onMouseMove={e => this.handleSvgMouseMove(e)}
                     tabIndex="0"
                     >
                     <g 

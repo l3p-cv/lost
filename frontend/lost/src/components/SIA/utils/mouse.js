@@ -1,5 +1,5 @@
 export function getMousePosition(e, svg){
-  console.log('getMousePosition svg', svg)
+  // console.log('getMousePosition svg', svg)
   const absPos = getMousePositionAbs(e, svg)
   return {
       x: (absPos.x )/svg.scale - svg.translateX,
