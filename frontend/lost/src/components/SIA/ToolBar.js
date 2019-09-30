@@ -357,17 +357,23 @@ class ToolBar extends Component{
         </Menu.Item>
     }
 
+    renderImgLabelInput(){
+        if (this.props.canvasConfig.img.actions.label){
+            return <Menu.Item name='img label input' 
+                active={this.props.imgLabelInput.show} 
+                onClick={() => this.toggleImgLabelInput()}
+            >
+                <Icon name='pencil' />
+            </Menu.Item>
+        }
+    }
+
     render(){
         console.log('Toobar state', this.state, this.props.currentImage)
         return(
         <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
-                <Menu.Item name='img label input' 
-                    active={this.props.imgLabelInput.show} 
-                    onClick={() => this.toggleImgLabelInput()}
-                >
-                    <Icon name='pencil' />
-                </Menu.Item>
+                {this.renderImgLabelInput()}
                 {this.renderNavigation()}
                 {this.renderToolButtons()}
                 <Menu.Item name='expand arrows alternate' 
