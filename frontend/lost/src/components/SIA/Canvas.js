@@ -416,6 +416,7 @@ class Canvas extends Component{
             case canvasActions.ANNO_DELETED:
                 newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
                 this.selectAnnotation(undefined)
+                this.showSingleAnno(undefined)
                 this.pushHist(
                     newAnnos, undefined,
                     pAction, this.state.showSingleAnno
