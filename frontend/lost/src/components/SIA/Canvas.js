@@ -877,9 +877,13 @@ class Canvas extends Component{
         console.log('img', this.img)
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
         if (this.props.centerCanvasInContainer){
-            const resSpace = maxImgWidth - imgWidth
-            if (resSpace > 2){
-                canvasLeft = canvasLeft + resSpace / 2
+            const resSpaceX = maxImgWidth - imgWidth
+            if (resSpaceX > 2){
+                canvasLeft = canvasLeft + resSpaceX / 2
+            }
+            const resSpaceY = maxImgHeight - imgHeight
+            if (resSpaceY > 2){
+                canvasTop = canvasTop + resSpaceY / 2
             }
         }
         const svg = {

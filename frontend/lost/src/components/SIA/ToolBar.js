@@ -27,7 +27,7 @@ class ToolBar extends Component{
             showFinishPrompt: false,
             showHelp: false
         }
-
+        this.toolBarGroup = React.createRef()
     }
 
     componentDidMount(){
@@ -39,21 +39,33 @@ class ToolBar extends Component{
         }
 
         if (this.props.layoutUpdate !== prevProps.layoutUpdate){
-            const container = this.props.container.current.getBoundingClientRect()
-            console.log('Toolbar container', container)
-            this.setState({
-                position: {...this.state.position,
-                left: 0,
-                top: container.top + 5,
-                }
-            })
+            this.calcPosition()
         }
+        if (this.props.svg !== prevProps.svg){
+            this.calcPosition()
+        }
+
     }
 
     onClick(e, tool){
         this.props.siaSelectTool(tool)
     }
 
+    calcPosition(){
+        const tb = this.toolBarGroup.current.getBoundingClientRect()
+        if (tb){
+            if (this.props.svg){
+                let toolBarTop = undefined
+                toolBarTop = this.props.svg.top + (this.props.svg.height - tb.height)/2
+                this.setState({
+                    position: {...this.state.position,
+                    left: this.props.svg.left - 50,
+                    top: toolBarTop,
+                    }
+                })
+            }
+        }
+    }
     getNextImg(){
         // this.props.siaSetImageLoaded(false)
         // this.props.selectAnnotation(undefined)
@@ -371,7 +383,9 @@ class ToolBar extends Component{
     render(){
         console.log('Toobar state', this.state, this.props.currentImage)
         return(
-        <div style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
+        <div
+            ref={this.toolBarGroup}
+            style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
                 {this.renderImgLabelInput()}
                 {this.renderNavigation()}
@@ -404,6 +418,7 @@ function mapStateToProps(state) {
         selectedTool: state.sia.selectedTool,
         isJunk: state.sia.isJunk,
         canvasConfig: state.sia.config,
+        svg: state.sia.svg,
     })
 }
 export default connect(mapStateToProps, 

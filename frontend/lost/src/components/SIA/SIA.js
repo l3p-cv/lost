@@ -185,7 +185,7 @@ class SIA extends Component {
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
                     centerCanvasInContainer={true}
                 />
-                <ToolBar container={this.container}></ToolBar>
+                <ToolBar></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>
              </div>
         )
