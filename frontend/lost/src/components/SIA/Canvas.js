@@ -260,7 +260,7 @@ class Canvas extends Component{
         }
         else if (e.button === 2){
             //Create annotation on right click
-           this.createNewAnnotation(e)
+            this.createNewAnnotation(e)
         }
     }
 
@@ -712,6 +712,8 @@ class Canvas extends Component{
     }
 
     createNewAnnotation(e){
+        //Do not create new Annotation if controlKey was pressed!
+        if (this.keyMapper.controlDown) return
         if (this.props.selectedTool){
             const mousePos = this.getMousePosition(e)
             // const selAnno = this.findAnno(this.state.selectedAnnoId)
