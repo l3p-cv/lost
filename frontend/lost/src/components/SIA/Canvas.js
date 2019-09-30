@@ -166,7 +166,10 @@ class Canvas extends Component{
         if (this.state.performedImageInit){
             console.log('canvasHist Performed image init', this.state)
             // Initialize canvas history
-            this.setState({performedImageInit:false})
+            this.setState({
+                performedImageInit:false,
+                annoToolBarVisible:false
+            })
             if (this.props.imgBarVisible){
                 this.setState({imgBarVisible:true})
             }
