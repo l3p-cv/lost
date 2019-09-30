@@ -35,22 +35,32 @@ class AnnoLabelInput extends Component{
      * LOGIC     *
      *************/
     setPosition(){
-        if (this.props.selectedAnno){
-            const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
-            // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
-            const inputRect = this.inputGroupRef.current.getBoundingClientRect()
-            const top = this.props.svg.top + center.y - 20
-            let left = this.props.svg.left + center.x - inputRect.width /2.0
-            if (left < this.props.svg.left) left = this.props.svg.left
-            if (left+inputRect.width > this.props.svg.left+this.props.svg.width){
-                console.log('labelinput right, svg right', left+inputRect.width, this.props.svg.left+this.props.svg.width)
-                left = this.props.svg.left+this.props.svg.width - inputRect.width
-                console.log('labelinput new left', left)
-            }
-            if (this.state.top !== top || this.state.left !== left){  
+        // if (this.props.selectedAnno){
+        //     const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
+        //     // const annoBox = transform.getBox(this.props.selectedAnno.anno, this.props.selectedAnno.type)
+        //     const inputRect = this.inputGroupRef.current.getBoundingClientRect()
+        //     const top = this.props.svg.top + center.y - 20
+        //     let left = this.props.svg.left + center.x - inputRect.width /2.0
+        //     if (left < this.props.svg.left) left = this.props.svg.left
+        //     if (left+inputRect.width > this.props.svg.left+this.props.svg.width){
+        //         console.log('labelinput right, svg right', left+inputRect.width, this.props.svg.left+this.props.svg.width)
+        //         left = this.props.svg.left+this.props.svg.width - inputRect.width
+        //         console.log('labelinput new left', left)
+        //     }
+        //     if (this.state.top !== top || this.state.left !== left){  
+        //         this.setState({
+        //             top,
+        //             left
+        //         })
+        //     }
+        // }
+        if (this.props.mousePos){
+            const top = this.props.mousePos.y + this.props.svg.top - 10
+            const left = this.props.mousePos.x + this.props.svg.left - 10
+            if (this.state.top !== top|| this.state.left !== left){  
                 this.setState({
-                    top,
-                    left
+                    top: top,
+                    left: left,
                 })
             }
         }
