@@ -80,7 +80,7 @@ class ImgBar extends Component{
             top: this.state.position.top, 
             left:this.state.position.left,
             width: this.props.svg.width,
-            minWidth: '600px'
+            minWidth: '300px'
             }}
             onMouseEnter={e => {this.handleMouseEnter(e)}}    
         >

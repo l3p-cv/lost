@@ -183,6 +183,7 @@ class SIA extends Component {
                     layoutOffset={this.state.layoutOffset}
                     isJunk={this.props.isJunk}
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
+                    centerCanvasInContainer={true}
                 />
                 <ToolBar container={this.container}></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>

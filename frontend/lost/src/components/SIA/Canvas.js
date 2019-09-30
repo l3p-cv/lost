@@ -81,6 +81,8 @@ import * as mouse from './utils/mouse';
  * @param {bool} imgLabelInputVisible - Controls visibility of the ImgLabelInputPrompt
  * @param {object} layoutOffset - Offset of the canvas inside the container:
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
+ * @param {bool} centerCanvasInContainer - Center the canvas in the 
+ *      middle of the container.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
  *      args: {width: int, height: int, scale: float, translateX: float,
  *      translateY:float}
@@ -874,6 +876,12 @@ class Canvas extends Component{
         // console.log('svg', this.svg)
         console.log('img', this.img)
         console.log('imgWidth, imgHeight', imgWidth, imgHeight)
+        if (this.props.centerCanvasInContainer){
+            const resSpace = maxImgWidth - imgWidth
+            if (resSpace > 2){
+                canvasLeft = canvasLeft + resSpace / 2
+            }
+        }
         const svg = {
             ...this.state.svg, width : imgWidth, height: imgHeight,
             left: canvasLeft, top: canvasTop
