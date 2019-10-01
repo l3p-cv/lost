@@ -131,3 +131,34 @@ LOST + GPU Worker
 6. Run LOST:
     Follow instructions of the quick_setup script, 
     printed in the command line.
+    
+Install LOST from backup
+========================
+
+0. Perform full backup with sudo
+   .. code-block:: bash
+
+        sudo zip -r backup.zip ~/lost
+1. Install docker on your machine or server:
+    https://docs.docker.com/install/
+2. Install docker-compose:
+    https://docs.docker.com/compose/install/
+3. Clone LOST:
+    .. code-block:: bash
+
+        git clone https://github.com/l3p-cv/lost.git
+4. Run quick_setup script:
+    .. code-block:: bash
+
+        cd lost/docker/quick_setup/
+        # python3 quick_setup.py path/to/install/lost
+        # If you want to install a specific release,
+        # you can use the --release argument to do so.
+        python3 quick_setup.py ~/lost
+        sudo rm -rf ~/lost
+        unzip backup.zip ~/lost
+5. Make sure that ~/lost/docker/.env file contains proper absolute path to ~/lost in LOST_DATA
+and proper LOST_DB_PASSWORD
+6. Run LOST:
+    Follow instructions of the quick_setup script, 
+    printed in the command line.
