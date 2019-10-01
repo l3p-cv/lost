@@ -108,12 +108,14 @@ export function getArea(data, scaledImg, type, originalImg){
             return undefined
         case 'polygon':
             let area = 0.0;         // Accumulates area in the loop
-            let j = relData.length-1;  // The last vertex is the 'previous' one to the first
-        
-            for (let i=0; i<relData.length; i++)
-            { 
-                area = area +  (relData[j].x+relData[i].x) * (relData[j].y-relData[i].y); 
-                j = i;  //j is previous vertex to i
+            if (relData.length >2){
+                let j = relData.length-1;  // The last vertex is the 'previous' one to the first
+            
+                for (let i=0; i<relData.length; i++)
+                { 
+                    area = area +  (relData[j].x+relData[i].x) * (relData[j].y-relData[i].y); 
+                    j = i;  //j is previous vertex to i
+                }
             }
             return Math.abs(area/2) * originalImg.width*originalImg.height
         default:

@@ -6,8 +6,12 @@ import 'semantic-ui-css/semantic.min.css'
 
 import Canvas from './Canvas'
 import ToolBar from './ToolBar'
+import {NotificationManager, NotificationContainer } from 'react-notifications'
 import { createHashHistory } from 'history'
 import InfoBoxArea from './InfoBoxes/InfoBoxArea'
+import 'react-notifications/lib/notifications.css';
+
+import * as notificationType from './types/notificationType'
 
 const { 
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
@@ -32,7 +36,8 @@ class SIA extends Component {
                 top: 0,
                 bottom: 5,
                 right: 5
-            }
+            },
+            notification: undefined
         }
         this.siteHistory = createHashHistory()
         
@@ -46,7 +51,7 @@ class SIA extends Component {
         window.addEventListener("resize", this.props.siaLayoutUpdate);
         this.props.getSiaAnnos(-1)
         this.props.getSiaLabels()
-        // this.props.getSiaConfig()
+        this.props.getSiaConfig()
         // console.warn('We are not using real SIA config')
     }
     componentWillUnmount() {
@@ -60,7 +65,41 @@ class SIA extends Component {
             // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
             this.props.siaLayoutUpdate()
         }
-
+        if (prevState.notification !== this.state.notification){
+            const notifyTimeOut = 5000
+            if (this.state.notification){
+                switch(this.state.notification.type){
+                    case notificationType.WARNING:
+                        NotificationManager.warning(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                    case notificationType.INFO:
+                        NotificationManager.info(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                    case notificationType.ERROR:
+                        NotificationManager.error(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                    case notificationType.SUCCESS:
+                        NotificationManager.success(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                }
+            }
+        }
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
                 const newAnnos = this.canvas.current.getAnnos()
@@ -124,6 +163,13 @@ class SIA extends Component {
         this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
     }
 
+    handleNotification(messageObj){
+        console.log('SIANotification', messageObj)
+        this.setState({
+            notification: messageObj
+        })
+    }
+
     requestImageFromBackend(){
         this.props.getSiaImage(this.props.annos.image.url).then(response=>
             {
@@ -184,9 +230,11 @@ class SIA extends Component {
                     isJunk={this.props.isJunk}
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
                     centerCanvasInContainer={true}
+                    onNotification={(messageObj) => this.handleNotification(messageObj)}
                 />
                 <ToolBar></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>
+                <NotificationContainer/>
              </div>
         )
     }

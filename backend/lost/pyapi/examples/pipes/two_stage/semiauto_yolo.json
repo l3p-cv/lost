@@ -39,7 +39,8 @@
                   "draw": true,
                   "label": true,
                   "edit": true
-              }
+              },
+              "minArea": 250
           },
           "img": {
               "multilabels": false,

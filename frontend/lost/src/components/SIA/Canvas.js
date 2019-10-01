@@ -19,6 +19,7 @@ import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
 import * as mouse from './utils/mouse';
 import * as colorlut from './utils/colorlut'
+import * as notificationType from './types/notificationType'
 
 
 /**
@@ -93,7 +94,8 @@ import * as colorlut from './utils/colorlut'
  *      selected annotation was updated.
  * @event onImgBarClose - Fires when close button on ImgBar was hit.
  * @event onImgLabelInputClose - ImgLabelInput requests to be closed.
- * 
+ * @event onNotification - Callback for Notification messages
+ *      args: {title: str, message: str, type: str}
  */
 class Canvas extends Component{
 
@@ -513,6 +515,12 @@ class Canvas extends Component{
         this.mousePos = mouse.getMousePosition(e, this.state.svg)
     }
 
+    handleNotification(messageObj){
+        if (this.props.onNotification){
+            this.props.onNotification(messageObj)
+        }
+    }
+
     /*************
      * LOGIC     *
     **************/
@@ -758,6 +766,11 @@ class Canvas extends Component{
             }
         } else {
             console.warn('No annotation tool selected!')
+            this.handleNotification({
+                title: 'No tool selected!',
+                message: 'Please select an annotation tool in the toolbar.',
+                type: notificationType.INFO
+            })
         }
     }
 
@@ -998,6 +1011,7 @@ class Canvas extends Component{
                         possibleLabels={this.props.possibleLabels}
                         image={this.state.image}
                         canvasConfig={this.props.canvasConfig}
+                        onNotification={(messageObj) => this.handleNotification(messageObj) }
                     />
             })
             return <g>{annos}</g>
