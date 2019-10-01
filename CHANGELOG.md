@@ -4,8 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2019-09-19
+### Added
+- GPU Worker lost-cv-gpu now contains the scikit-learn library
 
-## [Unreleased]
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+-
+
+### Fixed
+- Annotation context can now also be added to monochrome images  
+- Fixed typos in pipeline gui
+
+### Security
+- 
+
+## [0.0.5] - 2019-06-26
 ### Added
 -
 
@@ -19,7 +38,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -
 
 ### Fixed
+- Fixed import of script ENV variables that have been commented out (see commit 72fddfa)
+- Fixed offline availability since frontend was loading fonts from web
+
+### Security
+- 
+
+## [0.0.4] - 2019-05-24
+### Added
 -
+
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+-
+
+### Fixed
+- allow pipelines to be started by users other than admin (groups/user id mix-up)
+
+### Security
+- 
+
+## [0.0.3] - 2019-05-17
+### Added
+- 
+
+### Changed
+- allow arbitrary ports for api access through lost frontend
+
+### Deprecated
+- 
+
+### Removed
+-
+
+### Fixed
+- 
 
 ### Security
 - 

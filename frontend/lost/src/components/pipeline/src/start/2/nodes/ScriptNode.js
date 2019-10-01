@@ -7,7 +7,7 @@ function renderArgumentsLabel(props) {
     if (props.exportData.script.arguments) {
         return (
             <div className='graph-node-body-row'>
-                <span className='arguments-lable graph-node-body-left-text'>Arguments Avaiable</span>
+                <span className='arguments-lable graph-node-body-left-text'>Arguments available</span>
             </div>
         )
     }
