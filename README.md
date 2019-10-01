@@ -66,7 +66,7 @@ https://gitter.im/l3p-cv/lost
 ## People
 |   | Github | 
 |---|--------|
-|**Jonas Jäger**| [@code-for-fish](https://github.com/code-for-fish) | 
+|**Jonas Jäger**| [@code-for-fish](https://github.com/jaeger-j) | 
 |**Gereon Reus**| [@gereonreus](https://github.com/gereonreus) | 
 |**Dennis Weiershäuser** | [@cartok](https://github.com/cartok) | 
 |**Tobias Kwant** | [@tkwant](https://github.com/tkwant) | 
