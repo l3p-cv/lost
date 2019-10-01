@@ -394,6 +394,8 @@ class PipeDefChecker():
         else:
             if not self._check_key('multilabels', pe['annos'], [bool]):
                 ret = False
+            if not self._check_key('minArea', pe['annos'], [int]):
+                ret = False
             if not self._check_key('actions', pe['annos'], [dict]):
                 ret = False
             else:

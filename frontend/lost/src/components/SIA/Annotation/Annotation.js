@@ -12,6 +12,7 @@ import * as annoStatus from '../types/annoStatus'
 import * as colorlut from '../utils/colorlut'
 import * as constraints from '../utils/constraints'
 import * as transform from '../utils/transform'
+import * as notificationType from '../types/notificationType'
 
 class Annotation extends Component{
 
@@ -95,6 +96,13 @@ class Annotation extends Component{
         }
     }
 
+
+    notify(messageObj){
+        if (this.props.onNotification){
+            this.props.onNotification(messageObj)
+        }
+    }
+
     /**
      * Handle a performed action from a specific annotation
      * 
@@ -111,9 +119,29 @@ class Annotation extends Component{
             case canvasActions.ANNO_EDITED:
             case canvasActions.ANNO_MOVED:
             case canvasActions.ANNO_CREATED:
+                // Check if annoation is within image bounds
                 const corrected = transform.correctAnnotation(anno.data, this.props.svg)
-                const newAnno = {...anno, data: corrected}
-                this.performedAction(newAnno, pAction)
+                let newAnno = {...anno, data: corrected}
+                const area = transform.getArea(corrected, this.props.svg, anno.type, this.props.image)
+                if (area!==undefined){
+                    if(area < this.props.canvasConfig.annos.minArea){
+                        this.notify({
+                            title: "Annotation to small",
+                            message: 'Annotation area was '+Math.round(area)+'px but needs to be bigger than '+ this.props.canvasConfig.annos.minArea+' px',
+                            type: notificationType.WARNING
+                        })
+                        // newAnno = {...newAnno, mode: modes.DELETED}
+                        this.setMode(newAnno, modes.DELETED)
+                    } else {
+                        this.performedAction(newAnno, pAction)
+                    }
+                } else {
+                    this.performedAction(newAnno, pAction)
+                }
+                console.log(
+                    'AnnotationArea', area
+                    , this.props.image
+                    )
                 break
             default:
                 this.performedAction(anno, pAction)
@@ -199,7 +227,7 @@ class Annotation extends Component{
             createMode: this.myAnno.current.state.mode === modes.CREATE
         }
     }
-    
+
     getColor(){
         if (this.state.anno.labelIds){
             return colorlut.getColor(this.state.anno.labelIds[0])

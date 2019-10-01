@@ -81,6 +81,7 @@ sia_config_annos_actions = api.model('SIA Config Anno Actions', {
     'edit': fields.Boolean(readOnly=True, description='An annotator may edit a 2d annotation in size or shape.'),
 })
 sia_config_annos = api.model('SIA Config Annos', {
+    'minArea': fields.Integer(readOnly=True, description='Minimum area that is allowed for a 2d annotation.'),
     'multilabels': fields.Boolean(readOnly=True, description='Multiple labels may be assigned per 2d annotation.'),
     'actions': fields.Nested(sia_config_annos_actions)
 })

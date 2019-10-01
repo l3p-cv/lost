@@ -289,7 +289,8 @@ If **"type"** is **"sia"** the configuration will be the following:
               "draw": "[boolean]",
               "label": "[boolean]",
               "edit": "[boolean]",
-          }
+          },
+          "minArea": "[int]"
       },
       "img": {
           "multilabels": "[boolean]",
@@ -318,6 +319,7 @@ SIA configuration:
             * **edit** inidcates wether an annotator may edit an annotation
               that is already present.
         * **multilabels** allows to assign multiple labels per annotation.
+        * **minArea** The minimum area in pixels that an annotation may have. This constraint is only applied to annotations where an area can be defined (e.g. BBoxs, Polygons).
     * **img** (configuration for the image)
         * **actions**
             * **label** allows to disable the possibility to assign 

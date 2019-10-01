@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Full redo/ undo support
   * Introduced info boxes to show additional information
   * An annotator may mark an image as Junk if it should not be considered for annotation
+  * A minimum area for annotations can be defined.
 - Database: 
   * Added description field to ImageAnno and TwoDAnno. This can be a description that can be added by an annotator or algorithm und was added for future features.
   * Added new table(track) for track annotation, to prepare the database for the ISA (Image Sequence Annoation) tool.
