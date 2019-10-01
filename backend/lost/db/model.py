@@ -140,7 +140,7 @@ class TwoDAnno(Base):
     user_id = Column(Integer, ForeignKey('user.idx'))
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     label = relationship('Label', uselist=False) #type: Label
-    annotator = relationship('User', uselist=False) #type: Group
+    annotator = relationship('User', uselist=False) #type: User
     confidence = Column(Float)
     anno_time = Column(Float)
 

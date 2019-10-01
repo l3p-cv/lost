@@ -8,6 +8,7 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import reduxThunk from 'redux-thunk'
 
 import reducers from './reducers'
+import axios from 'axios'
 
 import App from './App'
 import * as serviceWorker from './serviceWorker'
@@ -16,8 +17,9 @@ import * as serviceWorker from './serviceWorker'
 // Redux Dev Tool
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
+axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
 
-const store = createStore(reducers, {
+export const store = createStore(reducers, {
     auth: {
         token: localStorage.getItem('token'),
         refreshToken: localStorage.getItem('refreshToken'),

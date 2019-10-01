@@ -54,6 +54,10 @@ def get_next(db_man, user_id, img_id, media_url):
         else:
             image_anno = db_man.get_next_sia_anno_by_last_anno(at.idx, user_id, img_id, iteration)
             if image_anno is None:
+                tmp_annos =  db_man.get_next_locked_sia_anno(at.idx, user_id, iteration)
+                if len(tmp_annos) > 0:
+                    image_anno = tmp_annos[0]
+            if image_anno is None:
                 image_anno = db_man.get_next_unlocked_sia_anno(at.idx, iteration)
         if image_anno:
             is_first_image = True
@@ -194,7 +198,7 @@ class SiaUpdate(object):
         """
         self.timestamp = datetime.now()
         self.db_man = db_man
-        self.user_id = user_id
+        self.user_id = user_id 
         self.at = get_sia_anno_task(db_man, user_id) #type: lost.db.model.AnnoTask
         self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
@@ -292,12 +296,20 @@ class SiaUpdate(object):
                     self.db_man.delete(label)
                 self.db_man.delete(two_d)
             elif drawable['status'] == "new":
+                drawable_data = drawable['data']
+                try:
+                    drawable_data.pop('left')
+                    drawable_data.pop('right')
+                    drawable_data.pop('top')
+                    drawable_data.pop('bottom')
+                except:
+                    pass
                 two_d = model.TwoDAnno(anno_task_id=self.at.idx,
                                     img_anno_id=self.image_anno.idx,
                                     timestamp=self.timestamp,
                                     timestamp_lock=self.image_anno.timestamp_lock,
                                     anno_time=average_anno_time,
-                                    data=json.dumps(drawable['data']),
+                                    data=json.dumps(drawable_data),
                                     user_id=self.user_id,
                                     iteration=self.iteration,
                                     dtype=two_d_type,
@@ -315,10 +327,18 @@ class SiaUpdate(object):
                 two_d_json = self.__serialize_two_d_json(two_d)
                 drawable_json['new'].append(two_d_json)
             elif drawable['status'] == "changed":
+                drawable_data = drawable['data']
+                try:
+                    drawable_data.pop('left')
+                    drawable_data.pop('right')
+                    drawable_data.pop('top')
+                    drawable_data.pop('bottom')
+                except:
+                    pass
                 two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
                 two_d.timestamp = self.timestamp
                 two_d.timestamp_lock = self.image_anno.timestamp_lock
-                two_d.data = json.dumps(drawable['data'])
+                two_d.data = json.dumps(drawable_data)
                 two_d.user_id = self.user_id
                 if two_d.anno_time is None:
                     two_d.anno_time = 0.0
@@ -466,3 +486,12 @@ class SiaStatusNotFoundError(Exception):
     """ Base class for SiaStatusNotFoundError
     """
     pass
+
+def get_last_image_id(dbm, user_id):
+    at = get_sia_anno_task(dbm, user_id)
+    if at:
+        iteration = dbm.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
+        tmp_anno = dbm.get_last_edited_sia_anno(at.idx, iteration, user_id)
+        if tmp_anno:
+            return tmp_anno.idx -1 
+    return None

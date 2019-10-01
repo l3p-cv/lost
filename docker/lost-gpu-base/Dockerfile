@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget bzip2 pyth
 RUN apt-get update && apt-get install -y --no-install-recommends wget curl bzip2 python3.5 \
     python3-pip python3-setuptools python3-dev build-essential libigraph0-dev netcat nano \
     htop libsm6 libxext6 libssl-dev
-RUN apt-get update && apt-get install -y --no-install-recommends gnupg gnupg2
+RUN apt-get update && apt-get install -y --no-install-recommends gnupg gnupg2 libgl1-mesa-glx
 
 
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh -O ~/miniconda.sh && \

@@ -1,6 +1,7 @@
 from lost.db import model
 import numpy as np
 from skimage.draw import polygon_perimeter, circle, line
+from skimage.color import gray2rgb
 
 def trans_boxes_to(boxes, convert_to='minmax'):
     '''Transform a box from standard lost format into a different format
@@ -128,6 +129,8 @@ def draw_annos(annos, types, img, color=(255,0,0), point_r=2):
         numpy.array: Image with drawn annotations
     '''
     if annos:
+        if len(img.shape) < 3: 
+            img = gray2rgb(img)
         img_h, img_w, _ = img.shape
         for anno, t in zip(annos, types):
             if t == 'bbox':
@@ -180,6 +183,8 @@ def crop_boxes(annos, types, img, context=0.0, draw_annotations=False):
         new_img = img
         anno_boxes = calc_box_for_anno(annos, types)
         boxes = trans_boxes_to(anno_boxes)
+        if len(img.shape) < 3:
+            img = gray2rgb(img)
         img_h, img_w, _ = img.shape
         boxes = to_abs(boxes, ['bbox']*len(boxes), (img_w,img_h))
         if context != 0.0:

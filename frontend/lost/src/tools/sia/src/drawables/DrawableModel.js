@@ -112,6 +112,9 @@ export default class DrawableModel {
     }
 
     setLabel(label: any){
+        if(label.id !== this.label.id){
+            this.setChanged()
+        }
         this.label = label
         this.labelIds = [label.id]
     }

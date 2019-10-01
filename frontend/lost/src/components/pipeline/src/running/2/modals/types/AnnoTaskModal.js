@@ -18,7 +18,7 @@ export default (props)=>{
                             value: props.annoTask.instructions
                         },
                         {
-                            key: 'User Name',
+                            key: 'User/Group Name',
                             value: props.annoTask.userName
                         }
                     ]}
