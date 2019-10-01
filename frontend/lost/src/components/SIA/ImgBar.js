@@ -71,6 +71,25 @@ class ImgBar extends Component{
     //     }
     // }
 
+    renderImgLabels(){
+        let label = ''
+        if (this.props.imgLabelIds && this.props.imgLabelIds.length > 0){
+            // console.log('AnnoBar',this.props.anno)
+            let labelObject 
+            this.props.imgLabelIds.forEach((lbl, idx) => {
+                labelObject = this.props.possibleLabels.find(el => {
+                    return el.id === lbl
+                })
+                if (idx > 0) label += ', '
+                label += labelObject.label
+            })
+            return <Menu.Item >
+                    {label}
+                </Menu.Item>
+        } else {
+            return null
+        }
+    }
     render(){
         if (!this.props.visible) return null
         if (!this.props.annos.image) return null
@@ -94,6 +113,7 @@ class ImgBar extends Component{
                     >
                     {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
                     </Menu.Item>
+                    {this.renderImgLabels()}
             </Menu>
         </div>
         )

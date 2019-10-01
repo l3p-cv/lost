@@ -1067,6 +1067,7 @@ class Canvas extends Component{
                 annos={this.props.annos}
                 svg={this.state.svg}
                 onClose={() => this.handleImgBarClose()}
+                imgLabelIds={this.state.imgLabelIds}
                 // onLabelUpdate={label => this.handleImgLabelUpdate(label)}
                 // imgLabelIds={this.state.imgLabelIds}
                 // multilabels={this.props.canvasConfig.img.multilabels}
