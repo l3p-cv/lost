@@ -95,6 +95,13 @@ class Annotation extends Component{
         }
     }
 
+
+    // notify(message, type){
+    //     if (this.props.onNotification){
+    //         this.props.onNotification(message, type)
+    //     }
+    // }
+
     /**
      * Handle a performed action from a specific annotation
      * 
@@ -111,20 +118,25 @@ class Annotation extends Component{
             case canvasActions.ANNO_EDITED:
             case canvasActions.ANNO_MOVED:
             case canvasActions.ANNO_CREATED:
+                // Check if annoation is within image bounds
                 const corrected = transform.correctAnnotation(anno.data, this.props.svg)
+                let newAnno = {...anno, data: corrected}
                 const area = transform.getArea(corrected, this.props.svg, anno.type, this.props.image)
                     if (area){
                         if(area < this.props.canvasConfig.annos.minArea){
                             console.warn('AnnotationArea is smaller than allowed minArea of', this.props.canvasConfig.annos.minArea)
-                            break
+                            // newAnno = {...newAnno, mode: modes.DELETED}
+                            this.setMode(newAnno, modes.DELETED)
+                        } else {
+                            this.performedAction(newAnno, pAction)
                         }
+                    } else {
+                        this.performedAction(newAnno, pAction)
                     }
                 console.log(
                     'AnnotationArea', area
                     , this.props.image
                     )
-                const newAnno = {...anno, data: corrected}
-                this.performedAction(newAnno, pAction)
                 break
             default:
                 this.performedAction(anno, pAction)
