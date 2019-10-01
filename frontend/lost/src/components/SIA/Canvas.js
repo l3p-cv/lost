@@ -743,7 +743,8 @@ class Canvas extends Component{
             this.setState({
                 annos: [...this.state.annos, newAnno],
                 selectedAnnoId: newAnno.id,
-                showSingleAnno: newAnno.id
+                showSingleAnno: newAnno.id,
+                annoToolBarVisible: false
             })
             if (this.props.selectedTool !== TOOLS.BBOX && 
                 this.props.selectedTool !== TOOLS.POINT){    
