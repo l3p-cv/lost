@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.7] - 2019-10-01
+### Added
+- Docs: Added description of @KonradAdamczyk on how to install LOST from a backup
+
+### Fixed
+- LOST notification system: @KonradAdamczyk fixed missing lost_url
+
 ## [0.0.6] - 2019-09-19
 ### Added
 - GPU Worker lost-cv-gpu now contains the scikit-learn library

@@ -132,8 +132,8 @@ LOST + GPU Worker
     Follow instructions of the quick_setup script, 
     printed in the command line.
     
-LOST form backup
-=================
+Install LOST from backup
+========================
 
 0. Perform full backup with sudo
    .. code-block:: bash
