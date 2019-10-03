@@ -29,6 +29,11 @@ class ImgBlacklist(object):
         True
         >>> blacklist.contains('path/to/img1.jpg')
         False
+
+        Get list of images that are not part of the blacklist
+
+        >>> blacklist.get_whitelist(['path/to/img0.jpg', 'path/to/img1.jpg', 'path/to/img2.jpg'])
+        ['path/to/img1.jpg', 'path/to/img2.jpg']
     '''
     def __init__(self, my_script, name='img-blacklist.json', context='pipe'):
         self.my_script = my_script #type: lost.pyapi.script.Script
@@ -70,6 +75,42 @@ class ImgBlacklist(object):
         '''
         return img in self.blacklist
 
-    def remove(self):
+    def delete_blacklist(self):
         '''Remove blacklist from filesystem'''
         os.remove(self.path)
+
+    def remove_item(self, item):
+        '''Remove item from blacklist
+        
+        Args:
+            item (str): The item/ image to remove from blacklist.
+        '''
+        try:
+            self.blacklist.remove(item)
+        except KeyError:
+            self.my_script.logger.warning('Tried to remove item from blacklist, but {} is not present in blacklist'.format(item))
+    
+    def get_whitelist(self, img_list, n='all'):
+        '''Get a list of images that are not part of the blacklist.
+
+        Args:
+            img_list (list of str): A list of images where should be 
+                checked if they are in the blacklist 
+            n ('all' or 'int'): The maximum number of images that should
+                be returned and be added to the blacklist.
+        
+        Returns:
+            list of str: A list of images that are not on the blacklist.
+
+        Note:
+            Images that will be returned from this method will 
+            automatically be added to the blacklist.
+        '''
+        new = set(img_list) - self.blacklist
+        if n == 'all':
+            return new
+        else:
+            if len(new) < n:
+                return new
+            else:
+                return new[:n]
