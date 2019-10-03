@@ -1,3 +1,7 @@
+'''A module with helper methods to tranform annotations into different 
+formats and to crop annotations from an image.
+'''
+
 from lost.db import model
 import numpy as np
 from skimage.draw import polygon_perimeter, circle, line
