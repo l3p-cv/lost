@@ -115,5 +115,6 @@ class ImgBlacklist(object):
                 self.blacklist.update(new)
                 return new
             else:
-                self.blacklist.update(new[:n])
-                return new[:n]
+                new_list = list(new)[:n]
+                self.blacklist.update(new_list)
+                return new_list
