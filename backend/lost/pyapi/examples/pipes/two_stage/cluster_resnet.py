@@ -1,4 +1,5 @@
-from lost.pyapi import script, anno_helper
+from lost.pyapi import script
+from lost.pyapi.utils import anno_helper
 import os
 import numpy as np
 from keras.applications.resnet50 import ResNet50

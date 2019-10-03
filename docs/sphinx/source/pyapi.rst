@@ -136,10 +136,10 @@ util methods
 
 anno_helper
 -----------------
-.. automodule:: lost.pyapi.anno_helper
+.. automodule:: lost.pyapi.utils.anno_helper
     :members:
     
 vis
 -----------------
-.. automodule:: lost.pyapi.vis
+.. automodule:: lost.pyapi.utils.vis
     :members:

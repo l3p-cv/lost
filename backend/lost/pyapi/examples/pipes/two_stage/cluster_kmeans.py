@@ -1,4 +1,5 @@
-from lost.pyapi import script, anno_helper
+from lost.pyapi import script
+from lost.pyapi.utils import anno_helper
 import os
 from sklearn.cluster import KMeans
 import numpy as np
