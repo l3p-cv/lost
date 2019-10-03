@@ -108,9 +108,12 @@ class ImgBlacklist(object):
         '''
         new = set(img_list) - self.blacklist
         if n == 'all':
+            self.blacklist.update(new)
             return new
         else:
             if len(new) < n:
+                self.blacklist.update(new)
                 return new
             else:
+                self.blacklist.update(new[:n])
                 return new[:n]
