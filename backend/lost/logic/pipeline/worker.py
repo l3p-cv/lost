@@ -47,7 +47,7 @@ def send_life_sign():
         worker.timestamp = datetime.utcnow()
         dbm.add(worker)
         dbm.commit()
-        logger.info('Sent lifesign: {}'.format(worker.worker_name))
+        #logger.info('Sent lifesign: {}'.format(worker.worker_name))
     dbm.close_session()
     
 
