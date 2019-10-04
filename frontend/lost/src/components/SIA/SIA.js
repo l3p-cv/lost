@@ -17,7 +17,7 @@ const {
     siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
-    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk
+    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask
 } = actions
 
 class SIA extends Component {
@@ -179,7 +179,8 @@ class SIA extends Component {
                     data:window.URL.createObjectURL(response)
                 }})
             }
-        )       
+        )
+        this.props.getWorkingOnAnnoTask()       
     }
 
     setFullscreen(fullscreen = true) {
@@ -270,7 +271,8 @@ export default connect(
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
         siaShowImgLabelInput,
-        siaImgIsJunk
+        siaImgIsJunk,
+        getWorkingOnAnnoTask,
     }
     , null,
     {})(SIA)
