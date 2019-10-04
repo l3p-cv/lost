@@ -207,7 +207,7 @@ class Script(pe_base.Element):
 
         Args:
             file_name (str): Name or relative path for a file.
-            context (str): Options: *instance*, *pipe*, *static*:
+            context (str): Options: *instance*, *pipe*, *static*
             ptype (str): Type of this path. Can be relative or absolute
                 Options: *abs*, *rel*
 

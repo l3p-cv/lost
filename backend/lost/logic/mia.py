@@ -6,7 +6,7 @@ from lost.logic.anno_task import set_finished, update_anno_task
 from lost.logic.file_man import FileMan
 from datetime import datetime
 import skimage.io
-from lost.pyapi import anno_helper
+from lost.pyapi.utils import anno_helper
 
 __author__ = "Gereon Reus"
 

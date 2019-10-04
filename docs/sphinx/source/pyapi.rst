@@ -131,3 +131,20 @@ TwoDAnno
 .. autoclass:: lost.db.dtype.TwoDAnno
     :members:
 
+util methods
+================
+
+anno_helper
+-----------------
+.. automodule:: lost.pyapi.utils.anno_helper
+    :members:
+
+blacklist
+-----------------
+.. automodule:: lost.pyapi.utils.blacklist
+    :members:
+    
+vis
+-----------------
+.. automodule:: lost.pyapi.utils.vis
+    :members:

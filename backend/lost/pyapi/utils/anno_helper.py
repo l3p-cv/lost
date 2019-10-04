@@ -1,3 +1,7 @@
+'''A module with helper methods to tranform annotations into different 
+formats and to crop annotations from an image.
+'''
+
 from lost.db import model
 import numpy as np
 from skimage.draw import polygon_perimeter, circle, line
@@ -199,3 +203,42 @@ def crop_boxes(annos, types, img, context=0.0, draw_annotations=False):
         return crops, anno_boxes
     else:
         return [], []
+
+def divide_into_patches(img, x_splits=2, y_splits=2,):
+    '''Divide image into x_splits*y_splits patches.
+
+    Args:
+        img (array): RGB image (skimage.io.imread).
+        x_splits (int): Number of elements on x axis.
+        y_splits (int): Number of elements on y axis.
+    
+    Returns:
+        list, list: img_patches, box_coordinates
+            img batches and box coordinates of these patches in the 
+            image.
+    Note:
+        img_patches are in following order:
+            [[x0,y0], [x0,y1],...[x0,yn],...,[xn,y0], [xn, y1]...[xn,yn]]
+    '''
+    img_h, img_w, _ = img.shape
+    patch_h = int(img_h/y_splits)
+    patch_w = int(img_w/x_splits)
+    # Divide image into patches
+    x_range = list(range(x_splits))
+    y_range = list(range(y_splits))
+    patch_list = []
+    box_coordinates = []
+    for x_i in x_range:
+        x_start = x_i * patch_w
+        for y_i in y_range:
+            y_start = y_i * patch_h
+            img_patch = img[y_start:y_start+patch_h, x_start:x_start+patch_w]
+            patch_list.append(img_patch)
+            box_coordinates.append([
+                (x_start-patch_w/2.0)/img_w, 
+                (y_start-patch_h/2.0)/img_h,
+                patch_w/img_w,
+                patch_h/img_h
+            ]) 
+    
+    return patch_list, box_coordinates
