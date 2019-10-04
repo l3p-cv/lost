@@ -15,7 +15,7 @@ class DefaultFooter extends Component {
 
     return (
       <React.Fragment>
-        <span><a href='https://l3p-cv.com'>LOST</a> &copy; 2019 L3P UG (haftungsbeschränkt).</span>
+        <span><a href='https://lost.training'>LOST</a></span>
         <span className='ml-auto'>Powered by <a href='https://l3p-cv.com'>L3P</a></span>
       </React.Fragment>
     )

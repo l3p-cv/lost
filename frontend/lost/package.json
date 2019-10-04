@@ -2,14 +2,14 @@
   "name": "lost",
   "version": "0.0.1",
   "description": "LOST Label Objects and Save Time",
-  "author": "L3P UG (haftungsbeschränkt)",
-  "homepage": "https://l3p-lost.de",
-  "copyright": "Copyright 2018 L3P UG (haftungsbeschränkt)",
+  "author": "Jonas Jäger, Gereon Reus",
+  "homepage": "https://lost.training",
+  "copyright": "Copyright Jonas Jäger & Gereon Reus",
   "license": "MIT",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "no-git-yet"
+    "url": "https://github.com/l3p-cv/lost/"
   },
   "dependencies": {
     "@cartok/object-assign-deep": "^0.4.3",
