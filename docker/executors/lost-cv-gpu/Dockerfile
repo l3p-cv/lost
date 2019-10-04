@@ -1,5 +1,6 @@
 ARG base_image=l3pcv/lost-gpu-base:latest
 FROM $base_image
+RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda update -n base conda"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install tensorflow-gpu"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install keras"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install -c conda-forge opencv"
