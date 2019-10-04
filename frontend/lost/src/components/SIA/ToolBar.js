@@ -112,6 +112,13 @@ class ToolBar extends Component{
     toggleHelp(){
         this.setState({showHelp: !this.state.showHelp})
     }
+
+    handleOnDeleteAllAnnos(){
+        if(this.props.onDeleteAllAnnos){
+            this.props.onDeleteAllAnnos()
+        }
+    }
+
     renderPointIcon(){
         return (
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" 
@@ -321,9 +328,17 @@ class ToolBar extends Component{
     }
 
     renderJunkButton(){
-        return <Menu.Item name='trash alternate outline' key='junk'
+        return <Menu.Item name='ban' key='junk'
             active={this.props.isJunk} 
             onClick={() => this.toggleJunk()}
+        >
+            <Icon name='ban' />
+        </Menu.Item>
+    }
+
+    renderDeleteAllAnnosButton(){
+        return <Menu.Item name='trash alternate outline' key='deleteAllAnnos'
+            onClick={() => this.handleOnDeleteAllAnnos()}
         >
             <Icon name='trash alternate outline' />
         </Menu.Item>
@@ -402,6 +417,7 @@ class ToolBar extends Component{
                     <Icon name='expand arrows alternate' />
                 </Menu.Item>
                 {this.renderJunkButton()}
+                {this.renderDeleteAllAnnosButton()}
                 <SIASettingButton></SIASettingButton>
                 {this.renderHelpButton()}
             </Menu>

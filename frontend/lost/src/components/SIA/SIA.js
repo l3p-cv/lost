@@ -233,7 +233,7 @@ class SIA extends Component {
                     centerCanvasInContainer={true}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                 />
-                <ToolBar></ToolBar>
+                <ToolBar onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>
                 <NotificationContainer/>
              </div>

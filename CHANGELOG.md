@@ -4,21 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-alpha.2] - 2019-10-04
+### Added
+- SIA: Added button to delete all 2D annos
+### Fixed
+- Update AnnoTask progress bar on sia update events
+- adapted imageai package installation for gpu container
+
+
 ## [1.0.0-alpha.1] - 2019-10-04
 ### Added
 - Blacklist class for image blacklisting
 - Added anno helper & vis to docs
 ### Changed
 - Removed LifeSign from Logger
-### Deprecated
-- 
 ### Removed
 - LifeSign from logging
 - frontend cleanup: removed old tools (sia/pipeline)
 ### Fixed
 - fixed destroyed conda env in lost-cv-gpu container
-### Security
-- 
 
 ## [1.0.0-alpha.0] - 2019-10-01
 ### Added
@@ -26,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Fullscreen mode
   * New GUI design in order to enlarge the image canvas
   * Assignment of image labels for captioning
-  * Mulit label support -> Assignment of multiple labels per annotation or image
+  * Multi label support -> Assignment of multiple labels per annotation or image
   * Full redo/ undo support
   * Introduced info boxes to show additional information
   * An annotator may mark an image as Junk if it should not be considered for annotation

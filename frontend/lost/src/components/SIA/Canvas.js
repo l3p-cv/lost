@@ -580,6 +580,21 @@ class Canvas extends Component{
         }
     }
 
+    deleteAllAnnos(){
+        let newAnnos = []
+        this.state.annos.forEach( e => {
+            if ((typeof e.id) !== "string"){
+                newAnnos.push(
+                    {...e, status: annoStatus.DELETED}
+                )
+            }
+        })
+        this.pushHist(newAnnos, undefined, 'deletedAllAnnos', this.state.showSingleAnno, this.state.imgLabelIds)
+        this.setState({annos: newAnnos})
+        this.selectAnnotation(undefined)
+        this.showSingleAnno(undefined)
+    }
+
     /**
      * Set state of Canvas annotations and imageLabels.
      * 
@@ -602,10 +617,12 @@ class Canvas extends Component{
             this.setState({
                 selectedAnnoId: annoId
             })
-            if (anno.mode !== modes.CREATE){
-                this.setState({
-                    annoToolBarVisible: true
-                })
+            if (anno){
+                if (anno.mode !== modes.CREATE){
+                    this.setState({
+                        annoToolBarVisible: true
+                    })
+                }
             }
         } else {
             this.setState({
@@ -666,6 +683,7 @@ class Canvas extends Component{
                 data: transform.toBackend(el.data, this.state.svg, el.type)
             }
         })
+
         const backendFormat = {
                 bBoxes: bAnnos.filter((el) => {return el.type == 'bBox'}),
                 lines: bAnnos.filter((el) => {return el.type == 'line'}),
@@ -686,6 +704,7 @@ class Canvas extends Component{
             annotations: backendFormat,
             isJunk: this.state.isJunk
         }
+        console.log('FinalData', finalData)
         return finalData
     }
 
@@ -1077,7 +1096,7 @@ class Canvas extends Component{
             <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>
             <Dimmer active={this.state.isJunk}>
                 <Header as='h2' icon inverted>
-                    <Icon name='trash alternate outline' />
+                    <Icon name='ban' />
                     Marked as Junk
                 </Header>
             </Dimmer>
