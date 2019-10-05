@@ -235,8 +235,8 @@ def divide_into_patches(img, x_splits=2, y_splits=2,):
             img_patch = img[y_start:y_start+patch_h, x_start:x_start+patch_w]
             patch_list.append(img_patch)
             box_coordinates.append([
-                (x_start-patch_w/2.0)/img_w, 
-                (y_start-patch_h/2.0)/img_h,
+                (x_start+patch_w/2.0)/img_w, 
+                (y_start+patch_h/2.0)/img_h,
                 patch_w/img_w,
                 patch_h/img_h
             ]) 

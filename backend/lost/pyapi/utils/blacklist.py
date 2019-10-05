@@ -34,6 +34,10 @@ class ImgBlacklist(object):
 
         >>> blacklist.get_whitelist(['path/to/img0.jpg', 'path/to/img1.jpg', 'path/to/img2.jpg'])
         ['path/to/img1.jpg', 'path/to/img2.jpg']
+
+        Add images to the blacklist
+
+        >>> blacklist.add(['path/to/img1.jpg', 'path/to/img2.jpg'])
     '''
     def __init__(self, my_script, name='img-blacklist.json', context='pipe'):
         self.my_script = my_script #type: lost.pyapi.script.Script
@@ -55,14 +59,14 @@ class ImgBlacklist(object):
         with open(self.path, 'w') as outfile:
             json.dump(list(self.blacklist), outfile)
 
-    def add(self, img):
+    def add(self, imgs):
         '''Add an image to the blacklist.
 
         Args:
-            img (str): The image identifier of the image to add. 
-                E.g. the path to the image.
+            imgs (list): A list of image identifiers that should be added
+                to the blacklist.
         '''
-        self.blacklist.add(img)
+        self.blacklist.update(imgs)
 
     def contains(self, img):
         '''Check if blacklist contains a spcific image
@@ -97,24 +101,18 @@ class ImgBlacklist(object):
             img_list (list of str): A list of images where should be 
                 checked if they are in the blacklist 
             n ('all' or 'int'): The maximum number of images that should
-                be returned and be added to the blacklist.
+                be returned.
         
         Returns:
-            list of str: A list of images that are not on the blacklist.
+            list of str: A list of images that are not in the blacklist.
 
-        Note:
-            Images that will be returned from this method will 
-            automatically be added to the blacklist.
         '''
         new = set(img_list) - self.blacklist
         if n == 'all':
-            self.blacklist.update(new)
             return new
         else:
             if len(new) < n:
-                self.blacklist.update(new)
                 return new
             else:
                 new_list = list(new)[:n]
-                self.blacklist.update(new_list)
                 return new_list
