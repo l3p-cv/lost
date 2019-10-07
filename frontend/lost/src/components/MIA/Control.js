@@ -106,7 +106,7 @@ class Control extends Component {
                 padding: '0 0 25px 0'
             }}>
                 <Col xs='7' sm='7' lg='7'>
-                    <InputGroup>
+                    <InputGroup style={{zIndex:5}}>
                         <Autocomplete
                             items={this.props.labels}
                             shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
