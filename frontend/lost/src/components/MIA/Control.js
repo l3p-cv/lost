@@ -19,7 +19,7 @@ import 'semantic-ui-css/semantic.min.css'
 import './Tag.scss';
 import UndoRedo from '../../utils/hist'
 
-const {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
+const {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getSpecialMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
 
 class Control extends Component {
 
@@ -55,6 +55,7 @@ class Control extends Component {
         this.handleUndo = this.handleUndo.bind(this)
 
         this.hist = new UndoRedo()
+
     }
     toggle(){
         this.setState({dropdownOpen:!this.state.dropdownOpen})
@@ -70,11 +71,12 @@ class Control extends Component {
 
     handleSubmit(){
         const updateData = {
-            images: this.props.images,
-            labels: [this.props.selectedLabel]
+            images: [...this.props.images],
+            labels: [{...this.props.selectedLabel}]
         }
-        this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
         this.hist.push(updateData, 'next')
+        console.log("Update to History: ", this.hist.hist)
+        this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
         this.props.refreshToken()
         this.props.setMiaSelectedLabel(undefined)
         this.setState({value:''})
@@ -97,8 +99,18 @@ class Control extends Component {
 
     handleUndo(){
         if (!this.hist.isEmpty()){
-            const cState = this.hist.undo()
-            console.log('canvasHistory UNDO: ',cState)
+            const cState = this.hist.undoMia()
+            console.log('Mia hist undo returned', cState)
+            console.log("Mia hist after undo", this.hist.hist)
+            
+            const miaIds = {
+                miaIds: cState.entry.images.map(image => {
+                return image.id
+            })}
+
+            console.log('MiaIds', miaIds)
+            
+            this.props.getSpecialMiaAnnos(miaIds, this.props.getWorkingOnAnnoTask)
             
         }
     }
@@ -146,7 +158,7 @@ class Control extends Component {
                 </Col>
                 <Col xs='3' sm='3' lg='3'>
                     <ButtonGroup className="float-left"> 
-                        <Button className='btn-info' onClick={this.handleUndo}><Icon name='arrow left' /></Button>
+                        <Button disabled={this.hist.isEmpty()} className='btn-info' onClick={this.handleUndo}><Icon name='arrow left' /></Button>
                         <Button disabled={this.props.selectedLabel ? false:true} className='btn-info' onClick={this.handleSubmit}><Icon name='arrow right' /></Button>
                     </ButtonGroup>
                 </Col>
@@ -181,4 +193,4 @@ function mapStateToProps(state) {
     return ({zoom: state.mia.zoom, maxAmount: state.mia.maxAmount, labels: state.mia.labels, selectedLabel: state.mia.selectedLabel, images: state.mia.images})
 }
 
-export default connect(mapStateToProps, {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)
+export default connect(mapStateToProps, {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getSpecialMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)

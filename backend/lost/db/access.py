@@ -262,6 +262,12 @@ class DBMan(object):
         return self.session.query(model.ImageAnno)\
             .filter(model.ImageAnno.anno_task_id==anno_task_id).all()
 
+    def get_image_annotations_by_ids(self, anno_task_id, user_id, ids):
+        ''' Get list of image annotation by it's ids
+        '''
+        return self.session.query(model.ImageAnno)\
+            .filter(model.ImageAnno.anno_task_id==anno_task_id, model.ImageAnno.user_id==user_id, model.ImageAnno.idx.in_(ids)).all()
+
     def get_image_annotations_by_state(self, anno_task_id, state, user_id, amount):
         ''' Get all Image Anno by annotask, state and user_id
         '''
@@ -645,6 +651,12 @@ class DBMan(object):
         else:
             raise Exception('Need to specify one of the method parameters')
     
+    def get_two_d_annotations_by_ids(self, anno_task_id, user_id, ids):
+        ''' Get list of two_d annotation by it's ids
+        '''
+        return self.session.query(model.TwoDAnno)\
+            .filter(model.TwoDAnno.anno_task_id==anno_task_id, model.TwoDAnno.user_id==user_id, model.TwoDAnno.idx.in_(ids)).all()
+
     def find_user_by_email(self, email):
         return self.session.query(model.User).filter(model.User.email==email).first()
     
