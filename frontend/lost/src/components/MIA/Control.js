@@ -13,8 +13,11 @@ import {
     DropdownMenu,
     DropdownItem
 } from 'reactstrap'
+import { Icon } from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css'
 
 import './Tag.scss';
+import UndoRedo from '../../utils/hist'
 
 const {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
 
@@ -49,6 +52,9 @@ class Control extends Component {
         this.handleReverse = this
             .handleReverse
             .bind(this)
+        this.handleUndo = this.handleUndo.bind(this)
+
+        this.hist = new UndoRedo()
     }
     toggle(){
         this.setState({dropdownOpen:!this.state.dropdownOpen})
@@ -68,6 +74,7 @@ class Control extends Component {
             labels: [this.props.selectedLabel]
         }
         this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
+        this.hist.push(updateData, 'next')
         this.props.refreshToken()
         this.props.setMiaSelectedLabel(undefined)
         this.setState({value:''})
@@ -87,6 +94,15 @@ class Control extends Component {
         this.props.getMiaAnnos(e.target.innerText)
         this.props.setMiaSelectedLabel(undefined)
     }
+
+    handleUndo(){
+        if (!this.hist.isEmpty()){
+            const cState = this.hist.undo()
+            console.log('canvasHistory UNDO: ',cState)
+            
+        }
+    }
+
     componentDidMount(){
         this.props.getMiaLabel()
         this.props.setMiaSelectedLabel(undefined)
@@ -105,7 +121,7 @@ class Control extends Component {
             <Row style={{
                 padding: '0 0 25px 0'
             }}>
-                <Col xs='7' sm='7' lg='7'>
+                <Col xs='6' sm='6' lg='6'>
                     <InputGroup style={{zIndex:5}}>
                         <Autocomplete
                             items={this.props.labels}
@@ -128,8 +144,11 @@ class Control extends Component {
                     {this.renderSelectedLabel()}
                     </InputGroup>
                 </Col>
-                <Col xs='2' sm='2' lg='2'>
-                <Button disabled={this.props.selectedLabel ? false:true} className='btn-info' onClick={this.handleSubmit}><i className="fa fa-check"></i> Submit</Button>
+                <Col xs='3' sm='3' lg='3'>
+                    <ButtonGroup className="float-left"> 
+                        <Button className='btn-info' onClick={this.handleUndo}><Icon name='arrow left' /></Button>
+                        <Button disabled={this.props.selectedLabel ? false:true} className='btn-info' onClick={this.handleSubmit}><Icon name='arrow right' /></Button>
+                    </ButtonGroup>
                 </Col>
                 <Col xs='3' sm='3' lg='3'>
                     <ButtonGroup className="float-right"> 

@@ -13,7 +13,7 @@ import * as keyActions from './utils/keyActions'
 import KeyMapper from './utils/keyActions'
 import * as TOOLS from './types/tools'
 import * as modes from './types/modes'
-import UndoRedo from './utils/hist'
+import UndoRedo from '../../utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';

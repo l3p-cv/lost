@@ -116,7 +116,9 @@ class DefaultLayout extends Component {
     }
 
     renderAppBreadcrumb(){
-        if(this.props.location.pathname != '/sia'){
+        if(this.props.location.pathname == '/sia' || this.props.location.pathname == '/mia'){
+        }
+        else {
             return(<AppBreadcrumb appRoutes={annotatorRoutes}/>)
         }
     }

@@ -24,22 +24,15 @@ class MultiImageAnnotation extends Component {
 	render(){
 		return (
 			<Row>
-			<Col>
-				<Card>
-				<CardHeader>
-					Multi Image Annotation
-				</CardHeader>
-					<CardBody>
+				<Col>
 					<Row>
 						<Col  xs='12' sm='12' lg='12'>
 							<WorkingOnMIA annoTask={this.props.workingOnAnnoTask}></WorkingOnMIA>
 							<MIA></MIA>
-					</Col>
+						</Col>
 					</Row>
-					  </CardBody> 
-				</Card>
-			</Col>
-		</Row>
+				</Col>
+			</Row>
 			
 		)
 	}
