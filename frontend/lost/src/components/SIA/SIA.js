@@ -14,9 +14,9 @@ import 'react-notifications/lib/notifications.css';
 import * as notificationType from './types/notificationType'
 
 const { 
-    siaAppliedFullscreen, siaLayoutUpdate, getSiaAnnos,
+    siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
-    siaSetImageLoaded, siaUpdateAnnos, siaSendFinishToBackend,
+    siaUpdateAnnos, siaSendFinishToBackend,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask
 } = actions
 
@@ -96,6 +96,8 @@ class SIA extends Component {
                             this.state.notification.title,
                             notifyTimeOut
                         )
+                        break
+                    default:
                         break
                 }
             }

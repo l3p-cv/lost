@@ -30,6 +30,7 @@ class UserRolesDropdown extends Component {
             const roles = state.roles
             this.props.initRoles.map((r) => {
                 roles[r.name] = true
+                return undefined
             })
             return { roles }
         })

@@ -10,10 +10,6 @@ import {
 import StartPipeline from 'pipRoot/start/StartPipeline'
 
 class StartPipe extends Component {
-	constructor(props){
-		super(props)
-	}
-
 	render(){
 		return (
 			<Row>

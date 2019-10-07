@@ -21,6 +21,8 @@ class RunningPipeline extends Component{
         switch (this.props.pipelineRunning.currentStep) {
           case 0: return (<SelectPipeline />)
           case 1: return (<ShowRunningPipeline />)
+          default:
+            break
         }
       }
     

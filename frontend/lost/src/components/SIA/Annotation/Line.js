@@ -1,8 +1,7 @@
-import React, {Component} from 'react'
+import React from 'react'
 import Polygon from './Polygon'
 import Edge from './Edge'
 
-import * as transform from '../utils/transform'
 import * as modes from '../types/modes'
 
 

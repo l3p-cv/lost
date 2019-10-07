@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import jwt_decode from 'jwt-decode'
 import {Card, CardBody, CardHeader, Col, Row} from 'reactstrap'
 // import Facts from '../../../components/Dashboard/Annotator/Facts'
 // import ImagesPerDay from '../../../components/Dashboard/Annotator/ImagesPerDay'

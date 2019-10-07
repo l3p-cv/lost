@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import LabelInput from './LabelInput'
-import * as transform from './utils/transform'
 import * as constraints from './utils/constraints'
 import * as annoStatus from './types/annoStatus'
 

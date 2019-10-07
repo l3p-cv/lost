@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import * as transform from '../utils/transform'
 import './Annotation.scss'
 
 

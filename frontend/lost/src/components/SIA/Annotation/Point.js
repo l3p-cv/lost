@@ -71,7 +71,7 @@ class Point extends Component{
                 this.requestModeChange(this.state.anno, modes.VIEW)
 
                 this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
-                
+                break
             default:
                 break
         }
@@ -85,6 +85,8 @@ class Point extends Component{
                         this.requestModeChange(this.state.anno, modes.MOVE)
                     }
                 }
+                break
+            default:
                 break
         }
     }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Dimmer, Header, Card, Icon, Segment, Menu, Input, Message, Statistic, Divider, Button, List, Label } from 'semantic-ui-react'
+import { Dimmer, Header } from 'semantic-ui-react'
 
 class Prompt extends Component{
 

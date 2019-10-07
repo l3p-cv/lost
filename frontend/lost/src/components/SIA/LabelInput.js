@@ -1,7 +1,5 @@
 import React, {Component} from 'react'
 import { Dropdown, Ref, Popup, Header} from 'semantic-ui-react'
-import * as annoStatus from './types/annoStatus'
-import * as constraints from './utils/constraints'
 
 class LabelInput extends Component{
 

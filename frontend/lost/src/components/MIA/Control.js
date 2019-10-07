@@ -63,6 +63,7 @@ class Control extends Component {
     handleReverse(){
         this.props.images.map((image) => {
             this.props.miaToggleActive({image: {...image, is_active:!image.is_active }})
+            return undefined
         })
     }
     handleAddLabel(label){

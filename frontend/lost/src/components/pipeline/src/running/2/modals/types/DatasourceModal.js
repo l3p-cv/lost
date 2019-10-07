@@ -31,7 +31,6 @@ export default (props) =>{
                   key: 'Datasource ID',
                   value: props.datasource.id
                 },
-                ,
                 {
                   key: 'Status',
                   value: props.state

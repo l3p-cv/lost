@@ -45,7 +45,7 @@ class WorkingOnSIA extends Component {
 
     componentDidUpdate(){
         const checkHeight = this.myref.current.getBoundingClientRect().height 
-        if (checkHeight != this.state.height){
+        if (checkHeight !== this.state.height){
             this.props.siaLayoutUpdate()
             this.setState({height: checkHeight})
         }

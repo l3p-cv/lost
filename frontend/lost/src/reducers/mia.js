@@ -12,6 +12,7 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.GET_MIA_ANNOS:
             action.payload.images.map((image)=>{
                 image.is_active = true
+                return undefined
             })
             return {
                 ...state,
@@ -49,7 +50,7 @@ export default function (state = INITIAL_STATE, action) {
             }
         case TYPES.MIA_UPDATE:
             return {
-                ... state
+                ...state
             }
         default:
             return state

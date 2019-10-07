@@ -94,6 +94,8 @@ class BBox extends Component{
                     )
                 }
                 break
+            default:
+                break
         }
     }
 
@@ -111,6 +113,9 @@ class BBox extends Component{
                     this.requestModeChange(this.state.anno, modes.VIEW)
                     this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
                 }
+                break
+            default:
+                break
         }
     }
 
@@ -120,6 +125,7 @@ class BBox extends Component{
             case modes.CREATE:
                 this.requestModeChange(this.state.anno, modes.VIEW)
                 this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
+                break
             default:
                 break
         }
@@ -162,6 +168,8 @@ class BBox extends Component{
                         this.requestModeChange(this.state.anno, modes.MOVE)
                     }
                 }
+                break
+            default:
                 break
         }
     }

@@ -9,8 +9,6 @@ import ShowStartPipeline from './2/ShowStartPipeline'
 import StartPipelineForm from './3/StartPipelineForm'
 import StartRunPipeline from './4/StartPipeline'
 
-import GrayLine from '../globalComponents/GrayLine'
-
 const { selectTab } = actions
 
 class StartPipeline extends Component {
@@ -30,6 +28,8 @@ class StartPipeline extends Component {
             case 1: return (<ShowStartPipeline />)
             case 2: return (<StartPipelineForm />)
             case 3: return (<StartRunPipeline />)
+            default:
+                break
         }
     }
 

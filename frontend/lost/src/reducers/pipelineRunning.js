@@ -147,6 +147,7 @@ export default (state = INITITAL_STATE, action) => {
                                     }
 
                                 }
+                            return undefined
                             })
                     }
             }
@@ -189,7 +190,7 @@ export default (state = INITITAL_STATE, action) => {
                 ...state,
                 steps: state.steps.map((el, i) => {
                     // Graph Data
-                    if (i == 1) {
+                    if (i === 1) {
                         return {
                             ...el,
                             modalOpened: !state.steps[1].modalOpened,

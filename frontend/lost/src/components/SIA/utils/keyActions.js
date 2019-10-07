@@ -37,6 +37,8 @@ class KeyMapper{
             case 'Tab':
                 this.triggerKeyAction(TRAVERSE_ANNOS)
                 break
+            default:
+                break
         }
     }
 
@@ -46,6 +48,8 @@ class KeyMapper{
                 console.log('KeyMapper Control up')
                 this.controlDown = false
                 this.triggerKeyAction(LEAVE_ANNO_ADD_MODE)
+                break
+            default:
                 break
         }
     }

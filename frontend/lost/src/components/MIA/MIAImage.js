@@ -39,9 +39,8 @@ componentWillReceiveProps(props){
 }
   imageClick = () => {
     let newClicks = this.state.clicks + 1
-    let timer = undefined
     this.setState({clicks: newClicks})
-    if (newClicks == 1){
+    if (newClicks === 1){
         this.setState({timer:setTimeout(() => {
             // reset.
             this.setState({clicks: 0})
@@ -69,7 +68,7 @@ componentWillReceiveProps(props){
   }   
 
     render(){
-        return(<img id={this.props.key} onClick={this.imageClick}  src={this.state.image.data} className={`mia-image ${this.state.classes}`} height={this.props.height}/>)
+        return(<img alt={this.props.key} id={this.props.key} onClick={this.imageClick}  src={this.state.image.data} className={`mia-image ${this.state.classes}`} height={this.props.height}/>)
     }
 
 }

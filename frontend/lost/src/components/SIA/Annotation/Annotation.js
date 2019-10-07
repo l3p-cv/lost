@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import _ from 'lodash'
 
 import AnnoBar from './AnnoBar'
 import Point from './Point'

@@ -7,7 +7,6 @@ import actions from "actions/pipeline/pipelineStart";
 import {
   alertLoading,
   alertClose,
-  alertSuccess,
   alertError
 } from "pipelineGlobalComponents/Sweetalert";
 

@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Card, Icon, Segment, Menu, Input, Message, Statistic, Divider, Button, List, Label } from 'semantic-ui-react'
+import { Message, Divider } from 'semantic-ui-react'
 import Draggable from 'react-draggable';
 
 class InfoBox extends Component{

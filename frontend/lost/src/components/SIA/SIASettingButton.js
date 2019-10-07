@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
 import {connect} from 'react-redux'
-import { Popup, Icon, Menu, Divider, Checkbox, Card, Header, Input } from 'semantic-ui-react'
+import { Popup, Icon, Menu, Divider, Checkbox } from 'semantic-ui-react'
 import actions from '../../actions'
 const { siaSetUIConfig } = actions
 

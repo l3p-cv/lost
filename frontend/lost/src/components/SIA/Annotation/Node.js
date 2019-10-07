@@ -114,6 +114,7 @@ class Node extends Component{
                     default:
                         break
                 }
+                break
             default:
                 break
         }
@@ -147,7 +148,7 @@ class Node extends Component{
             //         default:
             //             break
             //     }
-
+                break
             default:
                 break
         }

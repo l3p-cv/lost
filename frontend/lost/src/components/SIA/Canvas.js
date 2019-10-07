@@ -341,7 +341,7 @@ class Canvas extends Component{
         e.preventDefault()
         this.keyMapper.keyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
-        const anno = this.findAnno(this.state.selectedAnnoId)
+        this.findAnno(this.state.selectedAnnoId)
     }
 
     onKeyUp(e: Event){
@@ -685,10 +685,10 @@ class Canvas extends Component{
         })
 
         const backendFormat = {
-                bBoxes: bAnnos.filter((el) => {return el.type == 'bBox'}),
-                lines: bAnnos.filter((el) => {return el.type == 'line'}),
-                points: bAnnos.filter((el) => {return el.type == 'point'}),
-                polygons: bAnnos.filter((el) => {return el.type == 'polygon'}),
+                bBoxes: bAnnos.filter((el) => {return el.type === 'bBox'}),
+                lines: bAnnos.filter((el) => {return el.type === 'line'}),
+                points: bAnnos.filter((el) => {return el.type === 'point'}),
+                polygons: bAnnos.filter((el) => {return el.type === 'polygon'}),
         }
         console.log('Annotation getAnnoBackendFormat', backendFormat)
         return backendFormat
@@ -889,14 +889,14 @@ class Canvas extends Component{
         // } else {
         //     canvasLeft = container.left
         // }
-        console.log('Canvas container', container)
-        console.log('CanvasLeft', canvasLeft, this.props.uiConfig.toolBarWidth)
         // var clientWidth = document.documentElement.clientWidth
         var clientHeight = document.documentElement.clientHeight
         var canvasTop
         var canvasLeft
         var maxImgHeight
         var maxImgWidth 
+        console.log('Canvas container', container)
+        console.log('CanvasLeft', canvasLeft, this.props.uiConfig.toolBarWidth)
         if(this.props.layoutOffset){
             canvasTop = container.top + this.props.layoutOffset.top
             canvasLeft = container.left + this.props.layoutOffset.left
@@ -1146,7 +1146,7 @@ class Canvas extends Component{
                         {this.renderAnnotations()}
                     </g>
                 </svg>
-                <img style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.imageData} width="100%" height="100%"></img>
+                <img alt='sia' style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.imageData} width="100%" height="100%"></img>
                 {/* </div> */}
                 </div>
                 {/* Placeholder for Layout*/}

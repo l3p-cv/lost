@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Icon, Menu, Popup, Checkbox, Dimmer, Button, Card, Header, List, Segment} from 'semantic-ui-react'
+import { Icon, Menu, Button, Card } from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import SIASettingButton from './SIASettingButton'
 import Prompt from './Prompt'
@@ -10,9 +10,8 @@ import * as siaIcons from './utils/siaIcons'
 
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 
-    siaSetFullscreen, siaSetImageLoaded,
-    selectAnnotation, siaShowImgLabelInput, siaSetTaskFinished,siaLayoutUpdate,
-    siaImgIsJunk
+    siaSetFullscreen, selectAnnotation, siaShowImgLabelInput, 
+    siaSetTaskFinished, siaLayoutUpdate, siaImgIsJunk
 } = actions
 
 class ToolBar extends Component{

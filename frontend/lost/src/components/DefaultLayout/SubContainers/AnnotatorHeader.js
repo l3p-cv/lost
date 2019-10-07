@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Nav, NavItem, NavLink } from 'reactstrap'
+import { Nav } from 'reactstrap'
 import PropTypes from 'prop-types'
 
 import { AppNavbarBrand } from '@coreui/react'

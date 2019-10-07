@@ -140,8 +140,7 @@ export function getBox(data, type){
         case 'bBox':
             return data
         case 'point':
-            // console.error("There is no box definition for a point!")
-        case 'line':
+        case 'line': 
         case 'polygon':
             let maxX = 0
             let maxY = 0
@@ -157,9 +156,9 @@ export function getBox(data, type){
                 {x:minX, y:minY}, {x:maxX, y:minY},
                 {x:minX, y:maxY}, {x:maxX, y:maxY}
             ]
-            
         default:
             console.log("Wrong annotation type!")
+            break
         
     }
 }

@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import { Card, Icon, Segment, Menu, Input, Message, Statistic, Divider, Button, List, Label } from 'semantic-ui-react'
+import { Card, Icon, Statistic, Divider } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import actions from '../../../actions'
 import * as transform from '../utils/transform'

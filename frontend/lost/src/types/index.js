@@ -8,4 +8,4 @@ import * as sia from './sia'
 import * as worker from './worker'
 import * as pipeline from './pipeline'
 
-export default { ...auth, ...label, ...group, ...user, ...annoTask, ...mia, ...sia, ...worker, ... pipeline}
+export default { ...auth, ...label, ...group, ...user, ...annoTask, ...mia, ...sia, ...worker, ...pipeline}

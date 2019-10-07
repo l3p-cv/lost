@@ -23,7 +23,6 @@ class LabelTreeTable extends Component {
     
     render() {
         const data = this.props.labelTrees
-        console.log(data)
         return (
             <React.Fragment>
                 <ReactTable
@@ -62,7 +61,7 @@ function getAmountOfLabels(n) {
     n
         .children
         .forEach(function (c) {
-            var r = getAmountOfLabels(c)
+            getAmountOfLabels(c)
         })
     return amountOfLabels
 }

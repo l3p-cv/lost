@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
-import { Icon, Dropdown, Menu, Input, Message, Statistic, Divider, Button, List, Label, Header } from 'semantic-ui-react'
-import LabelInput from './LabelInput'
+import { Menu } from 'semantic-ui-react'
 
 class ImgBar extends Component{
 

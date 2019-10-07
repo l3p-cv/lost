@@ -161,7 +161,7 @@ class SelectLabel extends Component {
 }
 
 const mapStateToProps = (state, test) => {
-    const element = state.pipelineStart.step1Data.elements.filter(el => el.peN == test.peN)[0]
+    const element = state.pipelineStart.step1Data.elements.filter(el => el.peN === test.peN)[0]
 
     return {
         selectedLabelTree: element.exportData.annoTask.selectedLabelTree,

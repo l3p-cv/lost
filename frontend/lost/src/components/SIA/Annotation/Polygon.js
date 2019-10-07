@@ -92,6 +92,8 @@ class Polygon extends Component{
                     }
                 }
                 break
+            default:
+                break
         }
     }
     /**************
@@ -138,6 +140,9 @@ class Polygon extends Component{
                         selectedNode: idx
                     }, modes.EDIT)
                 }
+                break
+            default:
+                break
         }
     }
 
@@ -145,6 +150,7 @@ class Polygon extends Component{
         switch (this.state.anno.mode){
             case modes.CREATE:
                 this.updateAnnoByMousePos(e, idx)
+                break
             case modes.EDIT:
                 e.stopPropagation()
                 this.updateAnnoByMousePos(e, idx)
@@ -158,7 +164,7 @@ class Polygon extends Component{
         switch (this.state.anno.mode){
             case modes.CREATE:
                 this.performedAction(this.state.anno, canvasActions.ANNO_CREATED_FINAL_NODE)
-                
+                break
             default:
                 break
         }
