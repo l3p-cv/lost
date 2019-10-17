@@ -75,7 +75,7 @@ the image bar and the tool bar
     assigned.
 
 .. warning:: 
-    Pleas note that there may be also tasks where no new annotations can
+    Please note that there may be also tasks where no new annotations can
     be drawn and where you only can delete or adjust annotations.
 
 .. note::
