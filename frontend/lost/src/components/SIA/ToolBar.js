@@ -358,8 +358,12 @@ class ToolBar extends Component{
                         <Card.Content description='1.) Select a Tool in the toolbar 2.) Draw with RIGHT CLICK on Canvas' />
                     </Card>
                     <Card>
+                        <Card.Content header='How to delete an annotation?' />
+                        <Card.Content description='1.) Select an annotation with LEFT CLICK 2.) Press DELETE or BACKSPACE' />
+                    </Card>
+                    <Card>
                         <Card.Content header='How to assign a label?' />
-                        <Card.Content description='1.) Select an annotation by LEFT CLICK 2.) Hit ENTER 3.) Type into the input field 4.) Hit ENTER to confirm 5.) Hit ESCAPE to close the input field'/>
+                        <Card.Content description='1.) Select an annotation with LEFT CLICK 2.) Hit ENTER 3.) Type into the input field 4.) Hit ENTER to confirm 5.) Hit ESCAPE to close the input field'/>
                     </Card>
                     <Card>
                         <Card.Content header='Undo/ Redo' />

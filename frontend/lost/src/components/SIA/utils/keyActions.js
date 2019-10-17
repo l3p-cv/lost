@@ -20,6 +20,9 @@ class KeyMapper{
             case 'Delete':
                 this.triggerKeyAction(DELETE_ANNO)
                 break
+            case 'Backspace':
+                this.triggerKeyAction(DELETE_ANNO)
+                break
             case 'Control':
                 this.controlDown = true
                 this.triggerKeyAction(ENTER_ANNO_ADD_MODE)
