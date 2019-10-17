@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2019-10-17
+### Added
+- SIA: Delete annotation by hitting Backspace
+- Example pipeline for multi label support in SIA
+### Fixed 
+- SIA: 
+  * Close label input field also when clicking on a annotation
+  * Autoscale font size in AnnoBar
+
 ## [1.0.0-alpha.4] - 2019-10-07
 ### Added
 - MIA: Frontend undo button
