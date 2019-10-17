@@ -283,6 +283,13 @@ class Canvas extends Component{
             //Create annotation on right click
            this.createNewAnnotation(e)
         }
+        else if (e.button === 0){
+            if (this.state.showLabelInput){
+                const anno = this.findAnno(this.state.selectedAnnoId)
+                this.updateSelectedAnno(anno, modes.VIEW)
+                this.showLabelInput(false)
+            }
+        }
     }
 
     onMouseUp(e){
