@@ -326,6 +326,7 @@ class Annotation extends Component{
             possibleLabels={this.props.possibleLabels}
             onClick={e => this.onClick(e)}
             style={this.getStyle()}
+            svg={this.props.svg}
             />
     }
     render(){

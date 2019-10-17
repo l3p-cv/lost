@@ -2,6 +2,9 @@ import React, {Component} from 'react'
 import * as transform from '../utils/transform'
 import * as modes from '../types/modes'
 
+const defaultFontSize = 10
+const defaultRectHeight = 15
+
 class AnnoBar extends Component{
 
     constructor(props){
@@ -10,7 +13,8 @@ class AnnoBar extends Component{
             top: 0,
             left: 0,
             width: 50,
-            height: 15,
+            height: defaultRectHeight,
+            fontSize:defaultFontSize,
         }
         this.textRef = React.createRef()
     }
@@ -54,9 +58,12 @@ class AnnoBar extends Component{
             const text = this.textRef.current.getBoundingClientRect()
             console.log('AnnoBar text', text.width, text.height)
             const textPadding = 2
-            if (text.width + textPadding !== this.state.width){
+            let rectWidth = (text.width + textPadding)/this.props.svg.scale
+            if (rectWidth !== this.state.width){
                 this.setState({
-                    width: text.width + textPadding,
+                    width: rectWidth,
+                    fontSize: Math.ceil(defaultFontSize/this.props.svg.scale),
+                    // height: Math.ceil(defaultFontSize/this.props.svg.scale)
                 })
             }
         }
@@ -106,6 +113,7 @@ class AnnoBar extends Component{
                         textAnchor="start"
                         alignmentBaseline="central"
                         ref={this.textRef} 
+                        fontSize={this.state.fontSize+"pt"}
                         // textLength="50"
                         // style={{...this.props.style, strokeWidth:1}}
                     > 
@@ -113,7 +121,8 @@ class AnnoBar extends Component{
                     </text>
                     {/* This second rect is to prevent text from getting marked */}
                     <rect x={this.state.left} y={this.state.top - 6} 
-                        width={this.state.width} height={this.state.height} rx="5" 
+                        width={this.state.width} 
+                        height={this.state.height} rx="5" 
                         opacity='0.01'
                         style={this.props.style}
                         />
