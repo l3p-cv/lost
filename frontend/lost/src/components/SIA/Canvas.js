@@ -287,6 +287,7 @@ class Canvas extends Component{
             if (this.state.showLabelInput){
                 const anno = this.findAnno(this.state.selectedAnnoId)
                 this.updateSelectedAnno(anno, modes.VIEW)
+                this.showSingleAnno(undefined)
                 this.showLabelInput(false)
             }
         }
