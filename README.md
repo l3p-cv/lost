@@ -58,6 +58,20 @@ tested for Ubuntu):
     Follow instructions of the quick_setup script, 
     printed in the command line.
 
+
+## Citing LOST
+```
+@article{jaeger2019lost,
+    title={{LOST}: A flexible framework for semi-automatic image annotation},
+    author={Jonas J\"ager and Gereon Reus and Joachim Denzler and Viviane Wolff and Klaus Fricke-Neuderth},
+    year={2019},
+    Journal = {arXiv preprint arXiv:1910.07486},
+    eprint={1910.07486},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+```
+
 ## Contact
 We've created a chat room for you. Feel free to contact us directly:
 https://gitter.im/l3p-cv/lost
