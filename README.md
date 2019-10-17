@@ -73,6 +73,8 @@ tested for Ubuntu):
     primaryClass={cs.CV}
 }
 ```
+Find our paper on [arXiv](https://arxiv.org/abs/1910.07486)
+
 
 ## Contact
 We've created a chat room for you. Feel free to contact us directly:
