@@ -1,7 +1,7 @@
 {
   "description": "This pipe represents a two stage annotation process. In a first stage bbox annotations are created and in the second stage this bboxes will be labeled by MIA",
   "author": "Jonas Jaeger",
-  "pipe-schema-version" : 0.0,
+  "pipe-schema-version" : 1.0,
   "elements": [{
       "peN": 0,
       "peOut": [1],
