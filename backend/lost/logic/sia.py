@@ -124,6 +124,8 @@ def get_label_trees(db_man, user_id):
         
 def get_configuration(db_man, user_id):
     at = get_sia_anno_task(db_man,user_id)
+    print('anno task', at, at.idx)
+    print('anno task config', at.configuration)
     return json.loads(at.configuration)
 def get_sia_anno_task(db_man, user_id): 
     for cat in db_man.get_choosen_annotask(user_id):
@@ -212,72 +214,93 @@ class SiaUpdate(object):
         self.lines = list()
         self.polygons = list()
         self.history_json = dict()
-        self.history_json['drawables'] = dict()
-        self.history_json['drawables']['new'] = list()
-        self.history_json['drawables']['unchanged'] = list()
-        self.history_json['drawables']['changed'] = list()
-        self.history_json['drawables']['deleted'] = list()
+        self.history_json['annotations'] = dict()
+        self.history_json['annotations']['new'] = list()
+        self.history_json['annotations']['unchanged'] = list()
+        self.history_json['annotations']['changed'] = list()
+        self.history_json['annotations']['deleted'] = list()
+        self._update_img_labels(data)  
+        self.image_anno.is_junk = data['isJunk']   
 
-        # store certain drawables    
-        if 'bBoxes' in data['drawables']:
-            self.b_boxes = data['drawables']['bBoxes']
+        # store certain annotations    
+        if 'bBoxes' in data['annotations']:
+            self.b_boxes = data['annotations']['bBoxes']
         else:
             self.b_boxes = None
-        if 'points' in data['drawables']:
-            self.points = data['drawables']['points']
+        if 'points' in data['annotations']:
+            self.points = data['annotations']['points']
         else:
             self.points = None
-        if  'lines' in data['drawables']:
-            self.lines = data['drawables']['lines']
+        if  'lines' in data['annotations']:
+            self.lines = data['annotations']['lines']
         else:
             self.lines = None
-        if  'polygons' in data['drawables']:
-            self.polygons = data['drawables']['polygons']
+        if  'polygons' in data['annotations']:
+            self.polygons = data['annotations']['polygons']
         else:
             self.polygons = None
+
+    def _update_img_labels(self, data):
+        if(data['imgLabelChanged']):
+            old = set([lbl.label_leaf_id for lbl in self.image_anno.labels])
+            new = set(data['imgLabelIds'])
+            to_delete = old - new
+            to_add = new - old
+            print('HERE***')
+            print('old, new', old, new) 
+            print('to_delete, to_add', to_delete, to_add)
+            for lbl in self.image_anno.labels:
+                if lbl.label_leaf_id in to_delete:
+                    self.image_anno.labels.remove(lbl)
+                    # self.db_man.delete(lbl)
+            for ll_id in to_add:
+                self.image_anno.labels.append(model.Label(label_leaf_id=ll_id))
+
     def update(self):
         if self.at.pipe_element.pipe.state == state.Pipe.PAUSED:
             return "pipe is paused"
         if self.b_boxes is not None:
-            self.__update_drawables(self.b_boxes, dtype.TwoDAnno.BBOX)
+            self.__update_annotations(self.b_boxes, dtype.TwoDAnno.BBOX)
         if self.points is not None:
-            self.__update_drawables(self.points, dtype.TwoDAnno.POINT)
+            self.__update_annotations(self.points, dtype.TwoDAnno.POINT)
         if self.lines is not None:
-            self.__update_drawables(self.lines, dtype.TwoDAnno.LINE)
+            self.__update_annotations(self.lines, dtype.TwoDAnno.LINE)
         if self.polygons is not None:
-            self.__update_drawables(self.polygons, dtype.TwoDAnno.POLYGON)
+            self.__update_annotations(self.polygons, dtype.TwoDAnno.POLYGON)
         self.image_anno.state = state.Anno.LABELED
+        # Update Image Label
+        # self.image_anno.labels = self.img_labels
         self.db_man.add(self.image_anno)
         self.db_man.commit()
         self.__update_history_json_file()
         update_anno_task(self.db_man, self.at.idx, self.user_id)
         return "success"
-    def __update_drawables(self, drawables, two_d_type):
-        drawable_json = dict()
-        drawable_json['unchanged'] = list()
-        drawable_json['deleted'] = list()
-        drawable_json['new'] = list()
-        drawable_json['changed'] = list()
+    def __update_annotations(self, annotations, two_d_type):
+        annotation_json = dict()
+        annotation_json['unchanged'] = list()
+        annotation_json['deleted'] = list()
+        annotation_json['new'] = list()
+        annotation_json['changed'] = list()
    
         # calculate average_anno_time:
-        # average anno time = anno_time of image_annotation divided by number of drawables (also deleted ones !)
-        # the average anno_time will be added to the certain drawables anno time 
+        # average anno time = anno_time of image_annotation divided by number of annotations (also deleted ones !)
+        # the average anno_time will be added to the certain annotations anno time 
         # caution: anno_time will be added to *every* two_d anno - 
         # we assume that the attention of every box is equally valid
         average_anno_time = 0
-        if len(drawables) > 0:
-            average_anno_time = self.image_anno.anno_time/len(drawables)
-        for drawable in drawables:
-            if drawable['status'] != "database" \
-            and drawable['status'] != "deleted" \
-            and drawable['status'] != "new" \
-            and drawable['status'] != "changed":
-                error_msg = "Status: '" + str(drawable['status']) + "' is not valid."
+        if len(annotations) > 0:
+            average_anno_time = self.image_anno.anno_time/len(annotations)
+        for annotation in annotations:
+            if annotation['status'] != "database" \
+            and annotation['status'] != "deleted" \
+            and annotation['status'] != "new" \
+            and annotation['status'] != "changed":
+                error_msg = "Status: '" + str(annotation['status']) + "' is not valid."
                 raise SiaStatusNotFoundError(error_msg)
 
-        for drawable in drawables: 
-            if drawable['status'] == "database":
-                two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
+        for annotation in annotations: 
+            if annotation['status'] == "database":
+                two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
                 two_d.user_id = self.user_id
                 two_d.state = state.Anno.LABELED
                 two_d.timestamp = self.timestamp
@@ -286,22 +309,22 @@ class SiaUpdate(object):
                     two_d.anno_time = 0.0
                 two_d.anno_time += average_anno_time
                 two_d_json = self.__serialize_two_d_json(two_d)
-                drawable_json['unchanged'].append(two_d_json)
+                annotation_json['unchanged'].append(two_d_json)
                 self.db_man.save_obj(two_d)
-            elif drawable['status'] == "deleted":
-                two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
+            elif annotation['status'] == "deleted":
+                two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
                 two_d_json = self.__serialize_two_d_json(two_d)
-                drawable_json['deleted'].append(two_d_json)
+                annotation_json['deleted'].append(two_d_json)
                 for label in self.db_man.get_all_two_d_label(two_d.idx):
                     self.db_man.delete(label)
                 self.db_man.delete(two_d)
-            elif drawable['status'] == "new":
-                drawable_data = drawable['data']
+            elif annotation['status'] == "new":
+                annotation_data = annotation['data']
                 try:
-                    drawable_data.pop('left')
-                    drawable_data.pop('right')
-                    drawable_data.pop('top')
-                    drawable_data.pop('bottom')
+                    annotation_data.pop('left')
+                    annotation_data.pop('right')
+                    annotation_data.pop('top')
+                    annotation_data.pop('bottom')
                 except:
                     pass
                 two_d = model.TwoDAnno(anno_task_id=self.at.idx,
@@ -309,13 +332,13 @@ class SiaUpdate(object):
                                     timestamp=self.timestamp,
                                     timestamp_lock=self.image_anno.timestamp_lock,
                                     anno_time=average_anno_time,
-                                    data=json.dumps(drawable_data),
+                                    data=json.dumps(annotation_data),
                                     user_id=self.user_id,
                                     iteration=self.iteration,
                                     dtype=two_d_type,
                                     state=state.Anno.LABELED)
                 self.db_man.save_obj(two_d)
-                for l_id in drawable['labelIds']:
+                for l_id in annotation['labelIds']:
                     label = model.Label(two_d_anno_id=two_d.idx,
                                      label_leaf_id=l_id,
                                      dtype=dtype.Label.TWO_D_ANNO,
@@ -325,20 +348,20 @@ class SiaUpdate(object):
                                      anno_time=average_anno_time)
                     self.db_man.save_obj(label)
                 two_d_json = self.__serialize_two_d_json(two_d)
-                drawable_json['new'].append(two_d_json)
-            elif drawable['status'] == "changed":
-                drawable_data = drawable['data']
+                annotation_json['new'].append(two_d_json)
+            elif annotation['status'] == "changed":
+                annotation_data = annotation['data']
                 try:
-                    drawable_data.pop('left')
-                    drawable_data.pop('right')
-                    drawable_data.pop('top')
-                    drawable_data.pop('bottom')
+                    annotation_data.pop('left')
+                    annotation_data.pop('right')
+                    annotation_data.pop('top')
+                    annotation_data.pop('bottom')
                 except:
                     pass
-                two_d = self.db_man.get_two_d_anno(drawable['id']) #type: lost.db.model.TwoDAnno
+                two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
                 two_d.timestamp = self.timestamp
                 two_d.timestamp_lock = self.image_anno.timestamp_lock
-                two_d.data = json.dumps(drawable_data)
+                two_d.data = json.dumps(annotation_data)
                 two_d.user_id = self.user_id
                 if two_d.anno_time is None:
                     two_d.anno_time = 0.0
@@ -351,7 +374,7 @@ class SiaUpdate(object):
                     # save id.
                     l_id_list.append(label.idx)
                     # delete labels, that are not in user labels list.
-                    if label.idx not in drawable['labelIds']:
+                    if label.idx not in annotation['labelIds']:
                         self.db_man.delete(label)
                     # labels that are in the list get a new anno_time
                     else:   
@@ -363,7 +386,7 @@ class SiaUpdate(object):
                         label.timestamp_lock = self.image_anno.timestamp_lock
                         self.db_man.save_obj(label)
                 # new labels 
-                for l_id in drawable['labelIds']:
+                for l_id in annotation['labelIds']:
                     if l_id not in l_id_list:
                         label = model.Label(two_d_anno_id=two_d.idx,
                                         label_leaf_id=l_id,
@@ -375,10 +398,10 @@ class SiaUpdate(object):
                         self.db_man.save_obj(label) 
                 self.db_man.save_obj(two_d)
                 two_d_json = self.__serialize_two_d_json(two_d)
-                drawable_json['changed'].append(two_d_json)
+                annotation_json['changed'].append(two_d_json)
             else:
                 continue
-        self.history_json['drawables'] = drawable_json
+        self.history_json['annotations'] = annotation_json
         return "success"
 
     def __serialize_two_d_json(self, two_d):
@@ -392,11 +415,11 @@ class SiaUpdate(object):
         two_d_json['anno_time'] = two_d.anno_time
         two_d_json['data'] = two_d.data
         label_list_json = list()
-        if two_d.label:
+        if two_d.labels:
             label_json = dict()
-            label_json['id'] = two_d.label.idx
-            label_json['label_leaf_id'] = two_d.label.label_leaf.idx
-            label_json['label_leaf_name'] = two_d.label.label_leaf.name
+            label_json['id'] = [lbl.idx for lbl in two_d.labels]
+            label_json['label_leaf_id'] = [lbl.label_leaf.idx for lbl in two_d.labels]
+            label_json['label_leaf_name'] = [lbl.label_leaf.name for lbl in two_d.labels]
             label_list_json.append(label_json)
 
         two_d_json['labels'] = label_list_json
@@ -443,44 +466,49 @@ class SiaSerialize(object):
         self.sia_json['image']['isLast'] = self.is_last_image
         self.sia_json['image']['number'] = self.current_image_number
         self.sia_json['image']['amount'] = self.total_image_amount
-        self.sia_json['drawables'] = dict()
-        self.sia_json['drawables']['bBoxes'] = list()
-        self.sia_json['drawables']['points'] = list()
-        self.sia_json['drawables']['lines'] = list()
-        self.sia_json['drawables']['polygons'] = list()
+        self.sia_json['image']['isJunk'] = self.image_anno.is_junk
+        if self.image_anno.labels is None:
+            self.sia_json['image']['labelIds'] = []
+        else:
+            self.sia_json['image']['labelIds'] = [lbl.label_leaf_id for lbl in self.image_anno.labels]
+        self.sia_json['annotations'] = dict()
+        self.sia_json['annotations']['bBoxes'] = list()
+        self.sia_json['annotations']['points'] = list()
+        self.sia_json['annotations']['lines'] = list()
+        self.sia_json['annotations']['polygons'] = list()
         for two_d_anno in self.image_anno.twod_annos: #type: lost.db.model.TwoDAnno
             if two_d_anno.dtype == dtype.TwoDAnno.BBOX:
                 bbox_json = dict()
                 bbox_json['id'] = two_d_anno.idx
                 bbox_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    bbox_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    bbox_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 bbox_json['data'] = json.loads(two_d_anno.data)
-                self.sia_json['drawables']['bBoxes'].append(bbox_json)
+                self.sia_json['annotations']['bBoxes'].append(bbox_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POINT:
                 point_json = dict()
                 point_json['id'] = two_d_anno.idx
                 point_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    point_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    point_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 point_json['data'] = json.loads(two_d_anno.data)
-                self.sia_json['drawables']['points'].append(point_json)
+                self.sia_json['annotations']['points'].append(point_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.LINE:
                 line_json = dict()
                 line_json['id'] = two_d_anno.idx
                 line_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    line_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    line_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 line_json['data'] = json.loads(two_d_anno.data)
-                self.sia_json['drawables']['lines'].append(line_json)
+                self.sia_json['annotations']['lines'].append(line_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
                 polygon_json = dict()
                 polygon_json['id'] = two_d_anno.idx
                 polygon_json['labelIds'] = list()
-                if two_d_anno.label: #type: lost.db.model.Label
-                    polygon_json['labelIds'].append(two_d_anno.label.label_leaf_id)
+                if two_d_anno.labels: #type: lost.db.model.Label
+                    polygon_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 polygon_json['data'] = json.loads(two_d_anno.data)
-                self.sia_json['drawables']['polygons'].append(polygon_json)
+                self.sia_json['annotations']['polygons'].append(polygon_json)
         return self.sia_json
 class SiaStatusNotFoundError(Exception):
     """ Base class for SiaStatusNotFoundError

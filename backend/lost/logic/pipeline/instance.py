@@ -35,7 +35,7 @@ class PipeInstance(object):
                 #Delete annotations
                 for img_anno in res.img_annos:
                     for twod_anno in img_anno.twod_annos:
-                        self.dbm.delete(twod_anno.label)
+                        self.dbm.delete(twod_anno.labels)
                         self.dbm.delete(twod_anno)
                     self.dbm.delete(img_anno)
                 #Delete visual outputs

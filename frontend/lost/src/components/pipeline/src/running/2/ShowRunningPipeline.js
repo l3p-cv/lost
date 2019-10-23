@@ -79,6 +79,7 @@ class ShowRunningPipeline extends Component {
                     {...el}
                 />
             }
+        return undefined
         }
         )
 

@@ -1,7 +1,7 @@
 {
   "description": "This pipeline selects all images of a datasource and requests annotations.",
   "author": "Jonas Jaeger",
-  "pipe-schema-version" : 0.0,
+  "pipe-schema-version" : 1.0,
   "elements": [{
       "peN": 0,
       "peOut": [1],
@@ -26,19 +26,26 @@
         "instructions": "Please draw bounding boxes for all objects in image.",
         "configuration": {
           "tools": {
-            "point": true,
-            "line": true,
-            "polygon": true,
-            "bbox": true
+              "point": true,
+              "line": true,
+              "polygon": true,
+              "bbox": true,
+              "junk": true
           },
-          "actions": {
-            "drawing": true,
-            "labeling": true,
-            "edit": {
-              "label": true,
-              "bounds": true,
-              "delete": true
-            }
+          "annos":{
+              "multilabels": false,
+              "actions": {
+                  "draw": true,
+                  "label": true,
+                  "edit": true
+              },
+              "minArea": 250
+          },
+          "img": {
+              "multilabels": false,
+              "actions": {
+                  "label": true
+              }
           }
         }
       }

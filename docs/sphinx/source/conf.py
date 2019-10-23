@@ -33,7 +33,7 @@ author = 'Jonas Jäger, Gereon Reus'
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '0.0.x'
+release = '1.0.x'
 
 
 # -- General configuration ---------------------------------------------------

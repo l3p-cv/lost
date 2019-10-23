@@ -25,6 +25,8 @@ class AnnoTaskModal extends Component {
             case 1: return (<SelectUser {...this.props} />)
             case 2: return (<SelectTree {...this.props} />)
             case 3: return (<SelectLabel {...this.props} />)
+            default:
+                break
         }
     }
 

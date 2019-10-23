@@ -2,7 +2,7 @@ import { API_URL } from '../../settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
-import { alertLoading, alertClose, alertError } from 'pipelineGlobalComponents/Sweetalert'
+import { alertLoading, alertClose } from 'pipelineGlobalComponents/Sweetalert'
 
 const verifyTab = (tabId, verified) => {
     return {

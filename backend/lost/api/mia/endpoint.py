@@ -75,3 +75,20 @@ class Finish(Resource):
             re = mia.finish(dbm, identity)
             dbm.close_session()
             return re
+
+
+@namespace.route('/special')
+class Special(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)     
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+        else:
+            data = json.loads(request.data)
+            re = mia.get_special(dbm, identity, data['miaIds'])
+            dbm.close_session()
+            return re

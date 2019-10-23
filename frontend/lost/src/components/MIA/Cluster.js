@@ -6,8 +6,7 @@ import actions from '../../actions'
 import './Cluster.scss';
 import {
     Alert,
-    Button,
-    Spinner
+    Button
 } from 'reactstrap'
 import { createHashHistory } from 'history'
 
@@ -15,10 +14,7 @@ const {getMiaAnnos,getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia} = 
 const history = createHashHistory()
 
 class Cluster extends Component{
-    constructor(props){
-        super(props)
 
-    }
     componentDidMount(){
         this.props.getMiaAnnos(this.props.maxAmount)
     }
@@ -86,13 +82,3 @@ function mapStateToProps(state){
     return({images: state.mia.images, maxAmount: state.mia.maxAmount, zoom: state.mia.zoom, workingOnAnnoTask: state.annoTask.workingOnAnnoTask,})
 }
 export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia})(Cluster)
-
-
-function sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds){
-        break;
-      }
-    }
-  }

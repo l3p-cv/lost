@@ -12,6 +12,14 @@ export const getMiaAnnos = (maxAmount) => async dispatch => {
     } catch (e) {console.log(e)}
 }
 
+export const getSpecialMiaAnnos = (miaIds, getWorkingAnnoTask) => async dispatch => {
+    try {
+        const response = await axios.post(API_URL + '/mia/special', miaIds)
+        dispatch({type: TYPES.GET_MIA_ANNOS, payload: response.data})
+        getWorkingAnnoTask()
+    } catch (e) {console.log(e)}
+}
+
 export const getMiaImage = (path) => async dispatch =>{
   
         const config = {
@@ -62,7 +70,7 @@ export const setMiaSelectedLabel = (label) => dispatch => {
 
 export const updateMia = (data, getMiaAnnos, getWorkingAnnoTask, maxAmount) => async dispatch => {
     try {
-        const response = await axios.post(API_URL + '/mia/update', data)
+        await axios.post(API_URL + '/mia/update', data)
         getMiaAnnos(maxAmount)
         getWorkingAnnoTask()
     } catch (e) {console.log(e)}
@@ -70,8 +78,7 @@ export const updateMia = (data, getMiaAnnos, getWorkingAnnoTask, maxAmount) => a
 
 export const finishMia = (callback, getWorkingAnnoTask) => async dispatch => {
     try {
-        const response = await axios.get(API_URL + '/mia/finish')
-        
+        await axios.get(API_URL + '/mia/finish')
         if(callback){
             callback()
         }

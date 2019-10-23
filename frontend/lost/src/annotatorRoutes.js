@@ -25,11 +25,17 @@ const Profile = Loadable({
   loading: Loading,
 })
 
+const SiaReview = Loadable({
+  loader: () => import('./views/SiaReview.js'),
+  loading: Loading,
+});
+
 const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/sia', name: 'Single Image Annotation', component: SingleImageAnnotation },
   { path: '/mia', name: 'Multi Image Annotation', component: MultiImageAnnotation },
   { path: '/profile', name: 'My Profile', component: Profile },
+  { path: '/siareview', name: 'SIA Review', component: SiaReview },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]
 

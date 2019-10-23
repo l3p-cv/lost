@@ -38,6 +38,8 @@ class BaseModal extends Component {
                     {...this.modalData}
                 />
             )
+            default:
+                break
 
         }
     }
@@ -75,6 +77,9 @@ class BaseModal extends Component {
                 break
             case 'loop':
                 verified = true
+                break
+            default:
+                break
         }
 
         this.props.verifyNode(this.modalData.peN, verified)

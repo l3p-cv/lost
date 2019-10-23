@@ -155,7 +155,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('datasource' in el && (el.peN == action.payload.elementId)){
+                    if('datasource' in el && (el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             exportData: {
@@ -179,7 +179,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('loop' in el && (el.peN == action.payload.elementId)){
+                    if('loop' in el && (el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             exportData: {
@@ -203,7 +203,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('script' in el && (el.peN == action.payload.elementId)){
+                    if('script' in el && (el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             exportData: {
@@ -228,7 +228,7 @@ export default (state = INITITAL_STATE, action)=>{
                 step1Data:{
                     ...state.step1Data,
                     elements: state.step1Data.elements.map((el)=>{
-                        if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        if('annoTask' in el && (el.peN === action.payload.elementId)){
                             return {
                                 ...el,
                                 stepper: {
@@ -247,7 +247,7 @@ export default (state = INITITAL_STATE, action)=>{
                 step1Data: {
                     ...state.step1Data,
                     elements: state.step1Data.elements.map((el)=> {
-                        if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        if('annoTask' in el && (el.peN === action.payload.elementId)){
                             return {
                                 ...el,
                                 stepper: {
@@ -274,7 +274,7 @@ export default (state = INITITAL_STATE, action)=>{
                 step1Data:{
                     ...state.step1Data,
                     elements: state.step1Data.elements.map((el)=>{
-                        if('annoTask' in el && (el.peN == action.payload.elementId)){
+                        if('annoTask' in el && (el.peN === action.payload.elementId)){
                             return {
                                 ...el,
                                 exportData: {
@@ -296,7 +296,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                    if('annoTask' in el && (el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             exportData: {
@@ -318,7 +318,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                    if('annoTask' in el && (el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             exportData: {
@@ -341,7 +341,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                    if('annoTask' in el && (el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             exportData: {
@@ -363,7 +363,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN == action.payload.elementId)){
+                    if('annoTask' in el && (el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             exportData: {
@@ -388,7 +388,7 @@ export default (state = INITITAL_STATE, action)=>{
             step1Data:{
                 ...state.step1Data,
                 elements: state.step1Data.elements.map((el)=>{
-                    if((el.peN == action.payload.elementId)){
+                    if((el.peN === action.payload.elementId)){
                         return {
                             ...el,
                             verified: action.payload.verified
@@ -552,10 +552,10 @@ export default (state = INITITAL_STATE, action)=>{
             return {
                 ...state,
                 stepper: {
-                    ... state.stepper,
+                    ...state.stepper,
                     steps: state.stepper.steps.map((el,i)=>{
                         // Graph Data
-                        if(i == 1){
+                        if(i === 1){
                             return {
                                 ...el,
                                 modalOpened : !state.stepper.steps[1].modalOpened,

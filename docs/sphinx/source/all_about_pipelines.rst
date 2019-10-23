@@ -277,42 +277,54 @@ If **"type"** is **"sia"** the configuration will be the following:
 
     {
       "tools": {
-        "point": "[boolean]",
-        "line": "[boolean]",
-        "polygon": "[boolean]",
-        "bbox": "[boolean]"
+              "point": "[boolean]",
+              "line": "[boolean]",
+              "polygon": "[boolean]",
+              "bbox": "[boolean]",
+              "junk": "[boolean]"
       },
-      "actions": {
-        "drawing": "[boolean]",
-        "labeling": "[boolean]",
-        "edit": {
-          "label": "[boolean]",
-          "bounds": "[boolean]",
-          "delete": "[boolean]"
-        }
+      "annos":{
+          "multilabels": "[boolean]",
+          "actions": {
+              "draw": "[boolean]",
+              "label": "[boolean]",
+              "edit": "[boolean]",
+          },
+          "minArea": "[int]"
+      },
+      "img": {
+          "multilabels": "[boolean]",
+          "actions": {
+              "label": "[boolean]",
+          }
       }
     }
 
 SIA configuration:
     * **tools**
         * Inside the **tools** object you can select which drawing tools
-          are available in the SIA gui.
+          are available and if the junk button is present in the SIA gui.
           You may choose either **true** or **false** for each of the 
-          tools (**point, line, polygon, bbox**).
-    * **actions**
-        * **drawing** is set to **false** a user may not draw any new
-          annotations.
-          This is useful if a script sent annotation proposals to SIA
-          and the user should only correct the proposed annotations.
-        * **labeling** allows to disable the possibility to assign 
-          labels to annotations.
-          This option is useful if you wish that your annotator will only
-          draw annotations.
-        * **edit**
-            * **label**: The user may edit the label of an annotation proposal
-            * **bounds**: The annotator may change location and size of 
-              the proposed annotation.
-            * **delete**: A user may or may not delete annotation proposals.
+          tools (**point, line, polygon, bbox, junk**).
+    * **annos** (configuration for annotations on the image)
+        * **actions**
+            * **draw** is set to **false** a user may not draw any new
+              annotations.
+              This is useful if a script sent annotation proposals to SIA
+              and the user should only correct the proposed annotations.
+            * **label** allows to disable the possibility to assign 
+              labels to annotations.
+              This option is useful if you wish that your annotator will only
+              draw annotations.
+            * **edit** inidcates wether an annotator may edit an annotation
+              that is already present.
+        * **multilabels** allows to assign multiple labels per annotation.
+        * **minArea** The minimum area in pixels that an annotation may have. This constraint is only applied to annotations where an area can be defined (e.g. BBoxs, Polygons).
+    * **img** (configuration for the image)
+        * **actions**
+            * **label** allows to disable the possibility to assign 
+              labels to the image.
+        * **multilabels** allows to assign multiple labels to the image.
   
 
 DataExport

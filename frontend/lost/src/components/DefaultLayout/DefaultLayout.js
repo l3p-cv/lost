@@ -6,7 +6,6 @@ import {
 import {compose} from 'redux'
 import {connect} from 'react-redux'
 import {
-    AppAside,
     AppBreadcrumb,
     AppFooter,
     AppHeader,
@@ -22,7 +21,6 @@ import desginerNavigation from '../../designerNavigation'
 // routes config
 import designerRoutes from '../../designerRoutes'
 import annotatorRoutes from '../../annotatorRoutes'
-import DefaultAside from './SubContainers/DefaultAside'
 import DefaultFooter from './SubContainers/DefaultFooter'
 import DesignerHeader from './SubContainers/DesignerHeader'
 import AnnotatorHeader from './SubContainers/AnnotatorHeader'
@@ -74,9 +72,6 @@ class DefaultLayout extends Component {
 							</Switch>
                         </Container>
                     </main>
-                    <AppAside fixed>
-                        <DefaultAside/>
-                    </AppAside>
                 </div>
                 <AppFooter>
                     <DefaultFooter/>
@@ -93,7 +88,7 @@ class DefaultLayout extends Component {
                 </AppHeader>
                 <div className='app-body'>
                     <main className='main'>
-                        <AppBreadcrumb appRoutes={annotatorRoutes}/>
+                    {this.renderAppBreadcrumb()}
                         <Container fluid>
                             <Switch>
                                 {annotatorRoutes.map((route, idx) => {
@@ -112,15 +107,20 @@ class DefaultLayout extends Component {
                             </Switch>
                         </Container>
                     </main>
-                    <AppAside fixed>
-                        <DefaultAside/>
-                    </AppAside>
                 </div>
                 <AppFooter>
                     <DefaultFooter/>
                 </AppFooter>
             </div>
         )
+    }
+
+    renderAppBreadcrumb(){
+        if(this.props.location.pathname === '/sia' || this.props.location.pathname === '/mia'){
+        }
+        else {
+            return(<AppBreadcrumb appRoutes={annotatorRoutes}/>)
+        }
     }
 }
 function mapStateToPropse(state) {

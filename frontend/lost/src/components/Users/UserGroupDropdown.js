@@ -34,6 +34,7 @@ class UserGroupDropdown extends Component {
                     .initGroups
                     .map((g) => {
                         groups[g.name] = true
+                        return undefined
                     })
                 return {groups}
             })

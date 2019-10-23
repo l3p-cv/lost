@@ -31,6 +31,8 @@ Such a semi-automatic can be achieved by using AI generated annotation
 proposals that are presented to an annotator inside the annotation tool.
 
 # Getting Started
+
+## Documentation
 If you feel LOST, 
 please find our full documentation here: https://lost.readthedocs.io.
 
@@ -57,6 +59,22 @@ tested for Ubuntu):
 
     Follow instructions of the quick_setup script, 
     printed in the command line.
+
+
+## Citing LOST
+```
+@article{jaeger2019lost,
+    title={{LOST}: A flexible framework for semi-automatic image annotation},
+    author={Jonas J\"ager and Gereon Reus and Joachim Denzler and Viviane Wolff and Klaus Fricke-Neuderth},
+    year={2019},
+    Journal = {arXiv preprint arXiv:1910.07486},
+    eprint={1910.07486},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
+```
+Find our paper on [arXiv](https://arxiv.org/abs/1910.07486)
+
 
 ## Contact
 We've created a chat room for you. Feel free to contact us directly:

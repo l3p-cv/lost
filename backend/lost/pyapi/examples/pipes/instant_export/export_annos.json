@@ -1,7 +1,7 @@
 {
   "description" : "This will read an AnnoTask element and export all annotations at its output.",
   "author" : "Jonas Jaeger",
-  "pipe-schema-version" : 0.0,
+  "pipe-schema-version" : 1.0,
   "elements" : [
     {
       "peN" : 0,

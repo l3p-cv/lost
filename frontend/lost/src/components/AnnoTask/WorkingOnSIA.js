@@ -5,7 +5,8 @@ import {getColor} from './utils'
 import {Alert, Button, Card, CardBody, CardHeader, Col ,Row} from 'reactstrap'
 import Modal from 'react-modal';
 import actions from '../../actions'
-const {refreshToken} = actions
+
+const {refreshToken, siaLayoutUpdate} = actions
 const customStyles = {
     content : {
       top                   : '50%',
@@ -27,14 +28,29 @@ class WorkingOnSIA extends Component {
         super();
     
         this.state = {
-          modalIsOpen: true
+          modalIsOpen: true,
+          height: undefined
         };
     
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.myref = React.createRef()
       }
 
+    componentDidMount(){
+        // console.log('WorkingOnSIA did mount', this.myref.current.getBoundingClientRect())
+
+    }
+
+    componentDidUpdate(){
+        const checkHeight = this.myref.current.getBoundingClientRect().height 
+        if (checkHeight !== this.state.height){
+            this.props.siaLayoutUpdate()
+            this.setState({height: checkHeight})
+        }
+        this.props.refreshToken()
+    }
     openModal() {
         this.setState({modalIsOpen: true});
     }
@@ -47,14 +63,12 @@ class WorkingOnSIA extends Component {
     closeModal() {
         this.setState({modalIsOpen: false});
     }
-    componentDidUpdate(){
-        this.props.refreshToken()
-    }
+
     render() {
         if(this.props.annoTask !== null){
         let progress = Math.floor((this.props.annoTask.finished / this.props.annoTask.size) * 100)
         return (
-            <div>
+            <div ref={this.myref}>
                 <Row>
                 <Col xs='2' md='2' xl='2'>
                 <div className='callout callout-danger'>
@@ -122,4 +136,4 @@ class WorkingOnSIA extends Component {
     }
 }
 
-export default connect(null, {refreshToken})(WorkingOnSIA)
+export default connect(null, {refreshToken, siaLayoutUpdate})(WorkingOnSIA)

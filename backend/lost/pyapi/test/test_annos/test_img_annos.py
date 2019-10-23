@@ -34,9 +34,11 @@ def full_img_anno():
                 'h':REF_BBOX[3]
             }
         ),
-        dtype=dtype.TwoDAnno.BBOX,
-        label_leaf_id=label_vec[0]
+        dtype=dtype.TwoDAnno.BBOX
     )
+    lbl = model.Label(label_leaf_id=label_vec[0])
+    dbm.add(lbl)
+    twod_anno.labels.append(lbl)
     twod_anno.annotator = test_user
     twod_anno2 = model.TwoDAnno(
         data=json.dumps(
@@ -45,29 +47,36 @@ def full_img_anno():
                 'y':REF_POINT[1]
             }
         ),
-        dtype=dtype.TwoDAnno.POINT,
-        label_leaf_id=label_vec[1]
+        dtype=dtype.TwoDAnno.POINT
     )
+    lbl = model.Label(label_leaf_id=label_vec[1])
+    dbm.add(lbl)
+    twod_anno2.labels.append(lbl)
     twod_anno2.annotator = test_user
-    line = model.TwoDAnno(
-        label_leaf_id=label_vec[4]
-    )
+    line = model.TwoDAnno()
+    lbl = model.Label(label_leaf_id=label_vec[4])
+    line.labels.append(lbl)
+    dbm.add(lbl)
     line.annotator = test_user
     line.line = REF_LINE
-    img_anno = model.ImageAnno(label_leaf_id=label_vec[3],
-        img_path='path/to/img1.jpg')
+    img_anno = model.ImageAnno(img_path='path/to/img1.jpg')
+    lbl = model.Label(label_leaf_id=label_vec[3])
+    dbm.add(lbl)
+    img_anno.labels.append(lbl)
+    dbm.commit()
     img_anno.twod_annos.append(twod_anno)
     img_anno.twod_annos.append(twod_anno2)
     img_anno.twod_annos.append(line)
+    # dbm.add(img_anno.labels)
     dbm.add(img_anno)
-    dbm.add(twod_anno)
+    # dbm.add(twod_anno)
     dbm.commit()
     yield img_anno
-    dbm.delete(twod_anno.label)
+    # dbm.delete(twod_anno.labels)
     dbm.delete(twod_anno)
-    dbm.delete(twod_anno2.label)
+    # dbm.delete(twod_anno2.labels)
     dbm.delete(twod_anno2)
-    dbm.delete(img_anno.label)
+    # dbm.delete(img_anno.labels)
     dbm.delete(img_anno)
     dbm.commit()
 
@@ -89,12 +98,14 @@ class TestImageAnnos(object):
     def test_to_dict_flat(self, full_img_anno):
         my_dict = full_img_anno.to_dict()[0]
         bbox = full_img_anno.twod_annos[0]
+        print('bbox.data', type(bbox.data))
+        print('flat_dict', type(my_dict['anno.data']))
         assert my_dict['anno.data'] == bbox.data
-        assert my_dict['anno.lbl.name'] == bbox.label.label_leaf.name
-        assert my_dict['anno.lbl.idx'] == bbox.label.label_leaf.idx
-        assert my_dict['anno.lbl.external_id'] == bbox.label.label_leaf.external_id
+        assert json.loads(my_dict['anno.lbl.name'])[0] == bbox.labels[0].label_leaf.name
+        assert json.loads(my_dict['anno.lbl.idx'])[0] == bbox.labels[0].label_leaf.idx
+        assert json.loads(my_dict['anno.lbl.external_id'])[0] == bbox.labels[0].label_leaf.external_id
         assert my_dict['img.img_path'] == full_img_anno.img_path
-        assert my_dict['img.lbl.idx'] == full_img_anno.label.label_leaf.idx
+        assert json.loads(my_dict['img.lbl.idx'])[0] == full_img_anno.labels[0].label_leaf.idx
         # print(full_img_anno.to_dict()[0].keys())
         # for d in full_img_anno.to_dict():
         #      print(d['img.img_path'], d['anno.lbl.name'], d['anno.dtype'])
@@ -105,15 +116,15 @@ class TestImageAnnos(object):
         bbox = full_img_anno.twod_annos[0]
         bbox_dict = img_dict['img.twod_annos'][0]
         print(img_dict)
-        assert bbox_dict['anno.lbl.name'] == bbox.label.label_leaf.name
-        assert bbox_dict['anno.lbl.idx'] == bbox.label.label_leaf.idx
-        assert bbox_dict['anno.lbl.external_id'] == bbox.label.label_leaf.external_id
+        assert bbox_dict['anno.lbl.name'][0] == bbox.labels[0].label_leaf.name
+        assert bbox_dict['anno.lbl.idx'][0] == bbox.labels[0].label_leaf.idx
+        assert bbox_dict['anno.lbl.external_id'][0] == bbox.labels[0].label_leaf.external_id
         assert bbox_dict['anno.data']['x'] == REF_BBOX[0]
         assert bbox_dict['anno.data']['y'] == REF_BBOX[1]
         assert bbox_dict['anno.data']['w'] == REF_BBOX[2]
         assert bbox_dict['anno.data']['h'] == REF_BBOX[3]
         assert img_dict['img.img_path'] == full_img_anno.img_path
-        assert img_dict['img.lbl.idx'] == full_img_anno.label.label_leaf.idx
+        assert img_dict['img.lbl.idx'][0] == full_img_anno.labels[0].label_leaf.idx
         
         # h_dict = full_img_anno.to_dict(style='hierarchical')
         # print(h_dict.keys())
@@ -125,18 +136,24 @@ class TestImageAnnos(object):
     def test_to_vec(self, full_img_anno):
         img_anno = full_img_anno
         bbox = full_img_anno.twod_annos[0]
+        print('img_anno.to_vec()', img_anno.to_vec())
         assert check_bbox(REF_BBOX, img_anno.to_vec('anno.data')[0])
-        assert img_anno.to_vec('anno.lbl.idx')[0] == bbox.label.label_leaf_id
+        # print(img_anno.to_vec(['img.lbl.name','img.lbl.idx']))
+        # print(img_anno.to_df()[['img.lbl.name','img.lbl.idx']])
+        # print(img_anno.to_df().info())
+        print(img_anno.to_vec())
+        assert json.loads(img_anno.to_vec('anno.lbl.idx')[0])[0] == bbox.labels[0].label_leaf_id
         vec = img_anno.to_vec(['anno.lbl.name','anno.lbl.idx', 'anno.lbl.external_id'])[0]
-        assert vec[0] == bbox.label.label_leaf.name
-        assert vec[1] == bbox.label.label_leaf.idx
-        assert vec[2] == bbox.label.label_leaf.external_id
+        print(vec)
+        assert json.loads(vec[0])[0] == bbox.labels[0].label_leaf.name
+        assert json.loads(vec[1])[0] == bbox.labels[0].label_leaf.idx
+        # assert vec[2][0] == bbox.labels[0].label_leaf.external_id
 
         vec = img_anno.to_vec(['img.lbl.name','img.lbl.idx', 
             'img.lbl.external_id', 'img.img_path'])[0]
-        assert vec[0] == img_anno.label.label_leaf.name
-        assert vec[1] == img_anno.label.label_leaf.idx
-        assert vec[2] == img_anno.label.label_leaf.external_id
+        assert json.loads(vec[0])[0] == img_anno.labels[0].label_leaf.name
+        assert json.loads(vec[1])[0] == img_anno.labels[0].label_leaf.idx
+        assert json.loads(vec[2])[0] == img_anno.labels[0].label_leaf.external_id
         assert vec[3] == img_anno.img_path
 
         # print(img_anno.to_vec('anno.lbl.name'))
@@ -148,14 +165,14 @@ class TestImageAnnos(object):
 
         vec = img_anno.to_vec(['anno.lbl.name','anno.lbl.idx', 'anno.lbl.external_id'])[0]
         print(vec)
-        assert vec[0] == None
-        assert vec[1] == None
-        assert vec[2] == None
+        assert len(json.loads(vec[0])) == 0
+        assert len(json.loads(vec[1])) == 0
+        assert len(json.loads(vec[2])) == 0
 
         vec2 = img_anno.to_vec(['img.lbl.name','img.lbl.idx', 
             'img.lbl.external_id', 'img.img_path'])[0]
         print(vec2)
-        assert vec2[0] == None
-        assert vec2[1] == None
-        assert vec2[2] == None
+        assert len(json.loads(vec2[0])) == 0
+        assert len(json.loads(vec2[1])) == 0
+        assert len(json.loads(vec2[2])) == 0
         assert vec2[3] == img_anno.img_path

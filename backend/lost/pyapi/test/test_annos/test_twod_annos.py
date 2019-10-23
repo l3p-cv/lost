@@ -73,14 +73,14 @@ def full_bbox_anno():
                 'h':REF_BBOX[3]
             }
         ),
-        dtype=dtype.TwoDAnno.BBOX,
-        label_leaf_id=label_leaf_id
+        dtype=dtype.TwoDAnno.BBOX
     )
+    lbl = model.Label(label_leaf_id=label_leaf_id)
+    twod_anno.labels.append(lbl)
     twod_anno.annotator = test_user
     dbm.add(twod_anno)
     dbm.commit()
     yield twod_anno
-    dbm.delete(twod_anno.label)
     dbm.delete(twod_anno)
     dbm.commit()
     # testils.delete_user(dbm, test_user)
@@ -156,16 +156,16 @@ class TestTwoDAnnos(object):
         bbox = full_bbox_anno
         my_dict = bbox.to_dict()
         assert my_dict['anno.data'] == bbox.data
-        assert my_dict['anno.lbl.name'] == bbox.label.label_leaf.name
-        assert my_dict['anno.lbl.idx'] == bbox.label.label_leaf.idx
-        assert my_dict['anno.lbl.external_id'] == bbox.label.label_leaf.external_id
+        assert json.loads(my_dict['anno.lbl.name'])[0] == bbox.labels[0].label_leaf.name
+        assert json.loads(my_dict['anno.lbl.idx'])[0] == bbox.labels[0].label_leaf.idx
+        assert json.loads(my_dict['anno.lbl.external_id'])[0] == bbox.labels[0].label_leaf.external_id
 
     def test_to_dict_hierarchical(self, full_bbox_anno):
         bbox = full_bbox_anno
         my_dict = bbox.to_dict(style='hierarchical')
-        assert my_dict['anno.lbl.name'] == bbox.label.label_leaf.name
-        assert my_dict['anno.lbl.idx'] == bbox.label.label_leaf.idx
-        assert my_dict['anno.lbl.external_id'] == bbox.label.label_leaf.external_id
+        assert my_dict['anno.lbl.name'][0] == bbox.labels[0].label_leaf.name
+        assert my_dict['anno.lbl.idx'][0] == bbox.labels[0].label_leaf.idx
+        assert my_dict['anno.lbl.external_id'][0] == bbox.labels[0].label_leaf.external_id
         assert my_dict['anno.data']['x'] == REF_BBOX[0]
         assert my_dict['anno.data']['y'] == REF_BBOX[1]
         assert my_dict['anno.data']['w'] == REF_BBOX[2]
@@ -175,15 +175,15 @@ class TestTwoDAnnos(object):
         bbox = full_bbox_anno
         df = bbox.to_df()
         assert df['anno.data'].values[0] == bbox.data
-        assert df['anno.lbl.name'].values[0] == bbox.label.label_leaf.name
-        assert df['anno.lbl.idx'].values[0] == bbox.label.label_leaf.idx
-        assert df['anno.lbl.external_id'].values[0] == bbox.label.label_leaf.external_id
+        assert json.loads(df['anno.lbl.name'].values[0])[0] == bbox.labels[0].label_leaf.name
+        assert json.loads(df['anno.lbl.idx'].values[0])[0] == bbox.labels[0].label_leaf.idx
+        assert json.loads(df['anno.lbl.external_id'].values[0])[0] == bbox.labels[0].label_leaf.external_id
 
     def test_to_vec(self, full_bbox_anno):
         bbox = full_bbox_anno
         assert check_bbox(REF_BBOX, bbox.to_vec('anno.data'))
-        assert bbox.to_vec('anno.lbl.idx') == full_bbox_anno.label.label_leaf_id
+        assert json.loads(bbox.to_vec('anno.lbl.idx'))[0] == full_bbox_anno.labels[0].label_leaf_id
         vec = bbox.to_vec(['anno.lbl.name','anno.lbl.idx', 'anno.lbl.external_id'])
-        assert vec[0] == bbox.label.label_leaf.name
-        assert vec[1] == bbox.label.label_leaf.idx
-        assert vec[2] == bbox.label.label_leaf.external_id
+        assert json.loads(vec[0])[0] == bbox.labels[0].label_leaf.name
+        assert json.loads(vec[1])[0] == bbox.labels[0].label_leaf.idx
+        assert json.loads(vec[2])[0] == bbox.labels[0].label_leaf.external_id

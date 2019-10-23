@@ -60,7 +60,10 @@ class ShowStartPipeline extends Component {
                             {...el}
                         />
                     )
+                default:
+                    break
             }
+        return undefined
         })
 
     }

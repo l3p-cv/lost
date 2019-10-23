@@ -13,10 +13,13 @@ import {
     DropdownMenu,
     DropdownItem
 } from 'reactstrap'
+import { Icon } from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css'
 
 import './Tag.scss';
+import UndoRedo from '../../utils/hist'
 
-const {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
+const {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getSpecialMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia} = actions
 
 class Control extends Component {
 
@@ -49,6 +52,10 @@ class Control extends Component {
         this.handleReverse = this
             .handleReverse
             .bind(this)
+        this.handleUndo = this.handleUndo.bind(this)
+
+        this.hist = new UndoRedo()
+
     }
     toggle(){
         this.setState({dropdownOpen:!this.state.dropdownOpen})
@@ -56,6 +63,7 @@ class Control extends Component {
     handleReverse(){
         this.props.images.map((image) => {
             this.props.miaToggleActive({image: {...image, is_active:!image.is_active }})
+            return undefined
         })
     }
     handleAddLabel(label){
@@ -64,9 +72,11 @@ class Control extends Component {
 
     handleSubmit(){
         const updateData = {
-            images: this.props.images,
-            labels: [this.props.selectedLabel]
+            images: [...this.props.images],
+            labels: [{...this.props.selectedLabel}]
         }
+        this.hist.push(updateData, 'next')
+        console.log("Update to History: ", this.hist.hist)
         this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
         this.props.refreshToken()
         this.props.setMiaSelectedLabel(undefined)
@@ -87,6 +97,25 @@ class Control extends Component {
         this.props.getMiaAnnos(e.target.innerText)
         this.props.setMiaSelectedLabel(undefined)
     }
+
+    handleUndo(){
+        if (!this.hist.isEmpty()){
+            const cState = this.hist.undoMia()
+            console.log('Mia hist undo returned', cState)
+            console.log("Mia hist after undo", this.hist.hist)
+            
+            const miaIds = {
+                miaIds: cState.entry.images.map(image => {
+                return image.id
+            })}
+
+            console.log('MiaIds', miaIds)
+            
+            this.props.getSpecialMiaAnnos(miaIds, this.props.getWorkingOnAnnoTask)
+            
+        }
+    }
+
     componentDidMount(){
         this.props.getMiaLabel()
         this.props.setMiaSelectedLabel(undefined)
@@ -105,8 +134,8 @@ class Control extends Component {
             <Row style={{
                 padding: '0 0 25px 0'
             }}>
-                <Col xs='7' sm='7' lg='7'>
-                    <InputGroup>
+                <Col xs='6' sm='6' lg='6'>
+                    <InputGroup style={{zIndex:5}}>
                         <Autocomplete
                             items={this.props.labels}
                             shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
@@ -128,8 +157,11 @@ class Control extends Component {
                     {this.renderSelectedLabel()}
                     </InputGroup>
                 </Col>
-                <Col xs='2' sm='2' lg='2'>
-                <Button disabled={this.props.selectedLabel ? false:true} className='btn-info' onClick={this.handleSubmit}><i className="fa fa-check"></i> Submit</Button>
+                <Col xs='3' sm='3' lg='3'>
+                    <ButtonGroup className="float-left"> 
+                        <Button disabled={this.hist.isEmpty()} className='btn-info' onClick={this.handleUndo}><Icon name='arrow left' /></Button>
+                        <Button disabled={this.props.selectedLabel ? false:true} className='btn-info' onClick={this.handleSubmit}><Icon name='arrow right' /></Button>
+                    </ButtonGroup>
                 </Col>
                 <Col xs='3' sm='3' lg='3'>
                     <ButtonGroup className="float-right"> 
@@ -162,4 +194,4 @@ function mapStateToProps(state) {
     return ({zoom: state.mia.zoom, maxAmount: state.mia.maxAmount, labels: state.mia.labels, selectedLabel: state.mia.selectedLabel, images: state.mia.images})
 }
 
-export default connect(mapStateToProps, {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)
+export default connect(mapStateToProps, {refreshToken, miaZoomIn, miaZoomOut, miaAmount, getMiaAnnos, getSpecialMiaAnnos, getMiaLabel, miaToggleActive, getWorkingOnAnnoTask, setMiaSelectedLabel, updateMia})(Control)

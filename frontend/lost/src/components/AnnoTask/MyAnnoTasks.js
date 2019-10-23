@@ -133,7 +133,7 @@ class MyAnnoTasks extends Component {
                         twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
                         const lastActivityDate = new Date(annoTask.lastActivity)
                         if(annoTask.status === 'finished' && lastActivityDate < twoWeeksAgo){
-                            return
+                            return undefined
                         }
                     }
                     return (

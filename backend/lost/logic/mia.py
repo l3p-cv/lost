@@ -6,7 +6,7 @@ from lost.logic.anno_task import set_finished, update_anno_task
 from lost.logic.file_man import FileMan
 from datetime import datetime
 import skimage.io
-from lost.pyapi import anno_helper
+from lost.pyapi.utils import anno_helper
 
 __author__ = "Gereon Reus"
 
@@ -298,6 +298,7 @@ def __update_image_annotation(db_man, user_id, data):
             image.anno_time = anno_time
             db_man.add(image)
             for label in data['labels']:
+                
                 lab = model.Label(dtype=dtype.Label.IMG_ANNO,
                                 label_leaf_id=label['id'],
                                 annotator_id=user_id,
@@ -367,3 +368,45 @@ def get_config(db_man, user_id):
     at = __get_mia_anno_task(db_man, user_id)
     config = json.loads(at.configuration)
     return config
+
+def get_special(db_man, user_id, mia_ids):
+    at = __get_mia_anno_task(db_man, user_id)
+    if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
+        config = json.loads(at.configuration)
+        if config['type'] == 'annoBased':
+            return __get_special_two_d_annos(db_man, user_id, at, mia_ids)
+        elif config['type'] == 'imageBased':    
+            return __get_special_image_annos(db_man, user_id, at, mia_ids)
+    images = dict()
+    images['images'] = list()
+    return images
+
+def __get_special_two_d_annos(db_man, user_id, at, mia_ids):
+    annos = db_man.get_two_d_annotations_by_ids(at.idx, user_id, mia_ids)
+    if len(annos) > 0:
+        for anno in annos:
+            anno.timestamp_lock = datetime.now()
+            anno.state = state.Anno.LOCKED
+            for label in anno.labels:
+                if label.annotator_id == user_id:
+                    db_man.delete(label)
+            db_man.save_obj(anno)
+            db_man.commit()
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, proposedLabel=False)
+        image_serialize.serialize()
+        return image_serialize.mia_json
+
+def __get_special_image_annos(db_man, user_id, at, mia_ids):
+    annos = db_man.get_image_annotations_by_ids(at.idx, user_id, mia_ids)
+    if len(annos) > 0:
+        for anno in annos:
+            anno.timestamp_lock = datetime.now()
+            anno.state = state.Anno.LOCKED
+            for label in anno.labels:
+                if label.annotator_id == user_id:
+                    db_man.delete(label)
+            db_man.save_obj(anno)
+            db_man.commit()
+        image_serialize = ImageSerialize(db_man, annos, user_id)
+        image_serialize.serialize()
+        return image_serialize.mia_json

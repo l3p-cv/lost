@@ -2,7 +2,7 @@
 {
   "description": "This pipe represents a two stage annotation process. In a first stage bbox annotations are created and in the second stage this bboxes will be labeled by MIA. Semi Automatic support is achieved using yolo box proposals in first stage and class label for clustering in second stage.",
   "author": "Jonas Jaeger",
-  "pipe-schema-version" : 0.0,
+  "pipe-schema-version" : 1.0,
   "elements": [{
       "peN": 0,
       "peOut": [1],
@@ -27,19 +27,26 @@
         "instructions": "Please draw bounding boxes for all objects in the image.",
         "configuration": {
           "tools": {
-            "point": false,
-            "line": false,
-            "polygon": false,
-            "bbox": true
+              "point": false,
+              "line": false,
+              "polygon": false,
+              "bbox": true,
+              "junk": false
           },
-          "actions": {
-            "drawing": true,
-            "labeling": false,
-            "edit": {
-              "label": false,
-              "bounds": true,
-              "delete": true
-            }
+          "annos":{
+              "multilabels": false,
+              "actions": {
+                  "draw": true,
+                  "label": true,
+                  "edit": true
+              },
+              "minArea": 250
+          },
+          "img": {
+              "multilabels": false,
+              "actions": {
+                  "label": true
+              }
           }
         }
       }

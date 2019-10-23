@@ -6,6 +6,7 @@ import group from './group'
 import user from './user'
 import annoTask from './annoTask'
 import mia from './mia'
+import sia from './sia'
 import worker from './worker'
 import pipelineRunning from './pipelineRunning'
 import pipelineStart from './pipelineStart'
@@ -17,6 +18,7 @@ const appReducer = combineReducers({
     user,
     annoTask,
     mia,
+    sia,
     worker,
     form: formReducer,
     pipelineRunning,

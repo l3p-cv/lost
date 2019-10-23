@@ -1,10 +1,11 @@
 ARG base_image=l3pcv/lost-gpu-base:latest
 FROM $base_image
+RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda update -n base conda"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install tensorflow-gpu"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install keras"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install -c conda-forge opencv"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip3 install https://github.com/OlafenwaMoses/ImageAI/releases/download/2.0.2/imageai-2.0.2-py3-none-any.whl"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install scikit-learn"
+RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install https://github.com/OlafenwaMoses/ImageAI/releases/download/2.0.2/imageai-2.0.2-py3-none-any.whl"
+RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install -U scikit-learn"
 # Add Code  
 #ADD /docker/lost/pytest.sh /
 #ADD /docker/lost/nginx/ /code/docker/lost/nginx

@@ -119,22 +119,22 @@ class Finish(Resource):
             dbm.close_session()
             return re
 
-@namespace.route('/junk/<int:img_id>')
-@namespace.param('img_id', 'The id of the image which should be junked.')
-class Junk(Resource):
-    @jwt_required 
-    def post(self,img_id):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATOR):
-            dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+# @namespace.route('/junk/<int:img_id>')
+# @namespace.param('img_id', 'The id of the image which should be junked.')
+# class Junk(Resource):
+#     @jwt_required 
+#     def post(self,img_id):
+#         dbm = access.DBMan(LOST_CONFIG)
+#         identity = get_jwt_identity()
+#         user = dbm.get_user_by_id(identity)
+#         if not user.has_role(roles.ANNOTATOR):
+#             dbm.close_session()
+#             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
-        else:
-            re = sia.get_prev(dbm, identity,img_id)
-            dbm.close_session()
-            return re
+#         else:
+#             re = sia.get_prev(dbm, identity,img_id)
+#             dbm.close_session()
+#             return re
 
 @namespace.route('/label')
 class Label(Resource):
@@ -165,5 +165,6 @@ class Configuration(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
         else:
             re = sia.get_configuration(dbm, identity)
+            print ('Anno task config in endpoint', re)
             dbm.close_session()
             return re
