@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import actions from '../../actions'
+import actions from '../../../actions'
 import {Col, Row, Input, InputGroup,InputGroupAddon, Button} from 'reactstrap'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import UserGroupDropdown from './UserGroupDropdown'

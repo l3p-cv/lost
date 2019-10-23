@@ -1,18 +1,18 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import actions from '../../actions'
+import actions from '../../../actions'
 import {Menu, Item, contextMenu} from 'react-contexify'
 import 'react-contexify/dist/ReactContexify.min.css'
 
-const {deleteUser} = actions
-class UserContextMenu extends Component {
+const {deleteGroup, getUsers} = actions
+class GroupContextMenu extends Component {
     constructor(props) {
         super(props)
         this.handleContextMenu = this
             .handleContextMenu
             .bind(this);
         this.state = {
-            menuId: 'user_menu_' + this.props.userId
+            menuId: 'group_menu_' + this.props.groupId
         }
 
     }
@@ -32,13 +32,12 @@ class UserContextMenu extends Component {
                 cursor: 'pointer'
             }}>
                 <center>
-                    <i className='icon-options-vertical icons font-xl'></i>
+                    <i className='icon-options-vertical icons font-1xl '></i>
                 </center>
                 <Menu id={this.state.menuId}>
-                    <Item onClick={() => this.props.deleteUser(this.props.userId)}>
+                    <Item onClick={() => this.props.deleteGroup(this.props.getUsers, this.props.groupId)}>
                         <span>
-                            <i className='fa fa-trash fa-lg'></i>
-                            Delete User
+                            <i className='fa fa-trash fa-lg'></i> Delete Group
                         </span>
                     </Item>
                 </Menu>
@@ -46,7 +45,5 @@ class UserContextMenu extends Component {
         )
     }
 }
-function mapStateToProps(state){
-    return {deleteMessage: state.user.deleteMessage}
-}
-export default connect(mapStateToProps, {deleteUser})(UserContextMenu)
+
+export default connect(null, {deleteGroup, getUsers})(GroupContextMenu)

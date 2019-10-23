@@ -4,7 +4,7 @@ import GroupContextMenu from './GroupContextMenu'
 import {Row, Col} from 'reactstrap'
 import {NotificationManager, NotificationContainer} from 'react-notifications'
 import 'react-notifications/lib/notifications.css';
-import actions from '../../actions'
+import actions from '../../../actions'
 
 const {cleanGroupDeleteMessage} = actions
 

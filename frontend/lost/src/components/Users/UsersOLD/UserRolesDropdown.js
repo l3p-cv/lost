@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap'
-import {roles } from '../../settings'
-import actions from '../../actions'
+import {roles } from '../../../settings'
+import actions from '../../../actions'
 
 const {checkCreateUserRoles} = actions
 class UserRolesDropdown extends Component {

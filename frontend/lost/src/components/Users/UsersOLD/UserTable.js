@@ -7,7 +7,7 @@ import 'react-table/react-table.css'
 import UserGroupDropdown from './UserGroupDropdown'
 import UserRolesDropdown from './UserRolesDropdown'
 import UserContextMenu from './UserContextMenu'
-import actions from '../../actions'
+import actions from '../../../actions'
 import {NotificationManager, NotificationContainer} from 'react-notifications'
 import 'react-notifications/lib/notifications.css';
 

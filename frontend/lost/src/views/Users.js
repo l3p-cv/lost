@@ -1,52 +1,23 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import {Card, CardBody, Col, Row} from 'reactstrap'
+import React from 'react'
+import { Grid, Image } from 'semantic-ui-react'
+import GroupTable from '../components/Users/Groups'
+import UserTable from '../components/Users/Users'
+function Users() {
 
-import CreateUser from '../components/Users/CreateUser'
-import CreateGroup from '../components/Users/CreateGroup'
-import UserTable from '../components/Users/UserTable'
-import GroupList from '../components/Users/GroupList'
-import actions from '../actions'
-
-const {getGroups, getUsers} = actions
-
-class Users extends Component {
-    componentDidMount() {
-        this
-            .props
-            .getUsers()
-        this
-            .props
-            .getGroups()
-    }
-
-    render() {
-        return (
-            <Row>
-                <Col xs='4' sm='4' lg='3'>
-                    <Card className='text-black'>
-                        <CardBody className='pb-0'>
-                            <CreateGroup groups={this.props.groups}></CreateGroup>
-                            <GroupList></GroupList>
-                        </CardBody>
-                    </Card>
-                </Col>
-                <Col xs='8' sm='8' lg='9'>
-                    <Card className='text-black'>
-                        <CardBody className='pb-0'>
-                            <CreateUser groups={this.props.groups}></CreateUser>
-                            <div></div>
-                            <UserTable users={this.props.users} groups={this.props.groups}></UserTable>
-                        </CardBody>
-                    </Card>
-                </Col>
-            </Row>
-
-        )
-    }
-}
-function mapStateToProps(state) {
-    return ({users: state.user.users, groups: state.group.groups})
+    return (
+        <Grid columns={2} divided>
+            <Grid.Row>
+                <Grid.Column>
+                    <GroupTable />
+                </Grid.Column>
+                <Grid.Column>
+                    <UserTable />
+                </Grid.Column>
+            </Grid.Row>
+        </Grid>
+    )
 }
 
-export default connect(mapStateToProps, {getUsers, getGroups})(Users)
+
+export default Users
+

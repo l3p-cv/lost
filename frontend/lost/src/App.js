@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import './App.scss'
+import 'semantic-ui-css/semantic.min.css'
 
 import DefaultLayout  from './components/DefaultLayout/DefaultLayout'
 import TimeOut  from './views/Pages/TimeOut/TimeOut'
