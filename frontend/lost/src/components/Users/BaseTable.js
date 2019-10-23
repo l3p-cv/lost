@@ -2,16 +2,13 @@ import _ from 'lodash'
 import React, { useState } from 'react'
 import {Table} from 'semantic-ui-react'
 
-const tableData = [
-    { name: 'John', age: 15, gender: 'Male' },
-    { name: 'Amber', age: 40, gender: 'Female' },
-    { name: 'Leslie', age: 25, gender: 'Other' },
-    { name: 'Ben', age: 70, gender: 'Male' },
-  ]
 
-export default function BaseTable (){
+
+export default function BaseTable (props){
+    const tableKeysHeader = props.tableData.header
+    console.log(tableKeysHeader)
 	const [column, setColumn] = useState("");
-    const [data, setData] = useState(tableData);
+    const [data, setData] = useState(props.tableData.data);
     const [direction, setDirection] = useState("");
 
     const handleSort = clickedColumn =>{
@@ -30,34 +27,28 @@ export default function BaseTable (){
         <Table sortable celled fixed>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell
-              sorted={column === 'name' ? direction : null}
-              onClick={()=>handleSort('name')}
-            >
-              Name
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === 'age' ? direction : null}
-              onClick={()=>handleSort('age')}
-            >
-              Age
-            </Table.HeaderCell>
-            <Table.HeaderCell
-              sorted={column === 'gender' ? direction : null}
-              onClick={()=>handleSort('gender')}
-            >
-              Gender
-            </Table.HeaderCell>
+              {tableKeysHeader.map(header=>{
+                  return (
+                    <Table.HeaderCell
+                    sorted={column === header.key ? direction : null}
+                    onClick={()=>handleSort(header.key)}
+                  >
+                    {header.title}
+                  </Table.HeaderCell>
+                  )
+              })}
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {_.map(data, ({ age, gender, name }) => (
-            <Table.Row key={name}>
-              <Table.Cell>{name}</Table.Cell>
-              <Table.Cell>{age}</Table.Cell>
-              <Table.Cell>{gender}</Table.Cell>
-            </Table.Row>
-          ))}
+            {data.map(row=>{
+                return(
+                <Table.Row>
+                    {Object.keys(row).map(cell=>{
+                        return(<Table.Cell>{row[cell]}</Table.Cell>)
+                    })}
+                </Table.Row>
+                )
+            })}
         </Table.Body>
       </Table>
     )
