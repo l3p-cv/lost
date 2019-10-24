@@ -21,7 +21,7 @@ const tableData2 = {
         }
     ],
     data: [
-        { name: 'John', age: 15, gender: 'Male' , city: "asd"},
+        { name: "Name", age: 15, gender: 'Male' , city: "asd"},
         {  age: 40, name: 'Amber',gender: 'Female' , city: "asd"},
         { name: 'Leslie', age: 25, gender: 'Other' , city: "asd"},
         { name: 'Ben', age: 70, gender: 'Male' , city: "asd"},
@@ -49,6 +49,14 @@ function UserTable() {
             {
                 title: 'Email',
                 key: 'email'
+            },
+            {
+                title: 'Designer',
+                key: 'designer'
+            },
+            {
+                title: 'Annotator',
+                key: 'annotator'
             },
         ],
         data: users

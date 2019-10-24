@@ -5,12 +5,15 @@ import {Table} from 'semantic-ui-react'
 
 
 export default function BaseTable (props){
-  console.log(props)
     const tableKeysHeader = props.tableData.header
-  const [column, setColumn] = useState("");
+    const [column, setColumn] = useState("");
     const allowedKeys = props.tableData.header.map(el=>el.key);
     const filteredData = props.tableData.data.map(data=>{
-      return allowedKeys.map(key=>data[key]);
+      let myobj = {}
+      allowedKeys.forEach(key=>{
+        myobj = {...myobj, ...{[key]: data[key]}}
+      })
+      return myobj
     })
     const [data, setData] = useState(filteredData);
     const [direction, setDirection] = useState("");
@@ -30,6 +33,15 @@ export default function BaseTable (props){
       setData(filteredData)
     }, [props.tableData.data]); // 
 
+    const myCustomCell = (key,cell) => {
+      switch (key){
+        case 'designer': 
+        case 'email': 
+          return(<h1>{cell}</h1>)
+        default:
+          return cell
+      }
+    }
     return(
         <Table sortable celled fixed>
         <Table.Header>
@@ -50,8 +62,8 @@ export default function BaseTable (props){
             {data.map(row=>{
                 return(
                 <Table.Row>
-                    {row.map(cell=>{
-                        return(<Table.Cell>{cell}</Table.Cell>)
+                    {Object.keys(row).map(key=>{
+                        return(<Table.Cell>{myCustomCell(key,row[key])}</Table.Cell>)
                     })}
                 </Table.Row>
                 )
