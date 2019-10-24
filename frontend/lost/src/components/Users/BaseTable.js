@@ -1,14 +1,18 @@
 import _ from 'lodash'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {Table} from 'semantic-ui-react'
 
 
 
 export default function BaseTable (props){
+  console.log(props)
     const tableKeysHeader = props.tableData.header
-    console.log(tableKeysHeader)
-	const [column, setColumn] = useState("");
-    const [data, setData] = useState(props.tableData.data);
+  const [column, setColumn] = useState("");
+    const allowedKeys = props.tableData.header.map(el=>el.key);
+    const filteredData = props.tableData.data.map(data=>{
+      return allowedKeys.map(key=>data[key]);
+    })
+    const [data, setData] = useState(filteredData);
     const [direction, setDirection] = useState("");
 
     const handleSort = clickedColumn =>{
@@ -22,6 +26,9 @@ export default function BaseTable (props){
         setDirection(direction === 'ascending' ? 'descending' : 'ascending')
     }
 
+    useEffect(() => {
+      setData(filteredData)
+    }, [props.tableData.data]); // 
 
     return(
         <Table sortable celled fixed>
@@ -43,8 +50,8 @@ export default function BaseTable (props){
             {data.map(row=>{
                 return(
                 <Table.Row>
-                    {Object.keys(row).map(cell=>{
-                        return(<Table.Cell>{row[cell]}</Table.Cell>)
+                    {row.map(cell=>{
+                        return(<Table.Cell>{cell}</Table.Cell>)
                     })}
                 </Table.Row>
                 )
