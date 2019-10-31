@@ -1,7 +1,16 @@
 import _ from 'lodash'
 import React, { useState, useEffect } from 'react'
 import { Table, Icon, Button } from 'semantic-ui-react'
-import TableComponents from './TableComponents'
+import * as TableComponents from './TableComponents'
+
+
+ /**
+ * tableData: {header: [{title: Age, key: age}, ...], data:[{age: 12,...}, ...]}
+ * @param {{tableData : object, callback: function }} props 
+ */
+
+
+
 
 export default function BaseTable(props) {
   const tableKeysHeader = props.tableData.header
@@ -48,8 +57,8 @@ export default function BaseTable(props) {
         } else {
           return TableComponents.timesIcon()
         }
-      case 'changeable':
-        return (<Button>Click Here</Button>)
+      case 'edit':
+        return (TableComponents.editIcon(props.callback))
       default:
         return cell
     }
@@ -61,6 +70,7 @@ export default function BaseTable(props) {
           {tableKeysHeader.map(header => {
             return (
               <Table.HeaderCell
+                key={header.key}
                 sorted={column === header.key ? direction : null}
                 onClick={() => handleSort(header.key)}
               >
@@ -73,9 +83,11 @@ export default function BaseTable(props) {
       <Table.Body>
         {data.map(row => {
           return (
-            <Table.Row>
+            <Table.Row
+            key={row.user_name}
+            >
               {Object.keys(row).map(key => {
-                return (<Table.Cell>{myCustomCell(key, row[key])}</Table.Cell>)
+                return (<Table.Cell key={key}>{myCustomCell(key, row[key])}</Table.Cell>)
               })}
             </Table.Row>
           )

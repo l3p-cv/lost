@@ -1,11 +1,22 @@
 import React from 'react'
-import {Icon} from 'semantic-ui-react'
- function timesIcon(){
+import {Icon, Button} from 'semantic-ui-react'
+export function timesIcon(){
     return <Icon size='big' name='times circle outline' color="red" />
 }
 
-function checkIcon(){
+export function checkIcon(){
     return <Icon size='big' name='check circle outline' color="green" />
 }
 
-export default {timesIcon, checkIcon}
+export function editIcon(onClick){
+    return (
+        <Button basic color='blue' onClick={()=>{onClick()}}>
+        Edit
+      </Button>
+    )
+    
+    
+    
+    
+}
+

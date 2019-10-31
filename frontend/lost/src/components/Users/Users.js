@@ -1,34 +1,14 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import BaseTable from './BaseTable'
 import actions from 'actions/user'
-
+import {Button} from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux';
+import UserModal from './UserModal'
 
 
-const tableData2 = {
-    header: [
-        {
-            title: "Name",
-            key: "name"
-        },
-        {
-            title: "Age",
-            key: "age"
-        },
-        {
-            title: "Gender",
-            key: "gender"
-        }
-    ],
-    data: [
-        { name: "Name", age: 15, gender: 'Male' , city: "asd"},
-        {  age: 40, name: 'Amber',gender: 'Female' , city: "asd"},
-        { name: 'Leslie', age: 25, gender: 'Other' , city: "asd"},
-        { name: 'Ben', age: 70, gender: 'Male' , city: "asd"},
-    ]
-}
 function UserTable() {
     let users = useSelector((state) => state.user.users);
+    console.log(users)
     const dispatch = useDispatch();
     const getUsers = () => dispatch(actions.getUsersAction());
     useEffect  (()=>{
@@ -53,6 +33,8 @@ function UserTable() {
         )
     })
 
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
     console.log(users)
 
     const tableData = {
@@ -75,17 +57,23 @@ function UserTable() {
             },
             {
                 title: '',
-                key: 'changeable'
+                key: 'edit'
             },
         ],
         data: users
     }
 
-    const dataTableCallback = ()=>{
-        console.log(dataTableCallback)
+    const dataTableCallback = (arg)=>{
+        console.log(arg)
     }
+    console.log(modalIsOpen)
     return (
         <div>
+
+            <UserModal title="Add User" modalIsOpen={modalIsOpen} toggle={()=> {setModalIsOpen(!modalIsOpen)}}/>
+    <Button basic color='blue' onClick={()=>{setModalIsOpen(true)}}> 
+      Add User
+    </Button>
             <BaseTable tableData={tableData} callback={dataTableCallback} />
 
         </div>
