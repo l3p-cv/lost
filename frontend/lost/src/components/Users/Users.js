@@ -28,7 +28,7 @@ const tableData2 = {
     ]
 }
 function UserTable() {
-    const users = useSelector((state) => state.user.users);
+    let users = useSelector((state) => state.user.users);
     const dispatch = useDispatch();
     const getUsers = () => dispatch(actions.getUsersAction());
     useEffect  (()=>{
@@ -39,7 +39,22 @@ function UserTable() {
             fetchUsers();
           }
     })
+    users = users.map(user=> {
+        const isDesigner = user.roles.filter(el=>el.name === 'Designer')[0] != undefined
+        const isAnnotator = user.roles.filter(el=>el.name === 'Annotator')[0] != undefined
+        return(
+            {
+                ...user,
+                isDesigner,
+                isAnnotator,
+                deletable: true,
+                changeable: true
+            }
+        )
+    })
+
     console.log(users)
+
     const tableData = {
         header: [
             {
@@ -52,18 +67,26 @@ function UserTable() {
             },
             {
                 title: 'Designer',
-                key: 'designer'
+                key: 'isDesigner'
             },
             {
                 title: 'Annotator',
-                key: 'annotator'
+                key: 'isAnnotator'
+            },
+            {
+                title: '',
+                key: 'changeable'
             },
         ],
         data: users
     }
+
+    const dataTableCallback = ()=>{
+        console.log(dataTableCallback)
+    }
     return (
         <div>
-            <BaseTable tableData={tableData} />
+            <BaseTable tableData={tableData} callback={dataTableCallback} />
 
         </div>
     )
