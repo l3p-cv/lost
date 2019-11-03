@@ -40,6 +40,9 @@ export default function BaseTable(props) {
 
   const myCustomCell = (row, key) => {
     const cell = row[key]
+    // console.log(row)
+    // console.log(key)
+    // console.log(cell)
     switch (key) {
       case 'isDesigner':
         // :TODO
@@ -57,19 +60,18 @@ export default function BaseTable(props) {
         }
       case 'edit':
         return (TableComponents.editButton(props.callback, row))
+      case 'deleteUser':
+        return (TableComponents.deleteButton(props.callback, row))
       case 'edit_user_name':
-        return TableComponents.textInput("edit_user_name", cell, props.callback)
       case 'edit_email':
-      return TableComponents.textInput("edit_email", cell, props.callback)
       case 'edit_password':
-      return TableComponents.textInput("edit_password", cell, props.callback)
       case 'edit_confirm_password':
-      return TableComponents.textInput("edit_confirm_password", cell, props.callback)
+        return TableComponents.textInput(key, cell, props.callback)
       case 'edit_isDesigner':
       if (cell) {
-        return TableComponents.checkIcon()
+        return TableComponents.checkIcon(props.callback)
       } else {
-        return TableComponents.timesIcon()
+        return TableComponents.timesIcon(props.callback)
       }
       default:
         return cell
@@ -99,7 +101,7 @@ export default function BaseTable(props) {
               key={row.user_name}
             >
               {Object.keys(row).map((key,i) => {
-                return (<Table.Cell key={key}>{myCustomCell(row,key)}</Table.Cell>)
+                return (<Table.Cell  key={key}>{myCustomCell(row,key)}</Table.Cell>)
               })}
             </Table.Row>
           )

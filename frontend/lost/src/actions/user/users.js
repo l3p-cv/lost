@@ -12,6 +12,8 @@ export const getUsersAction = () => async dispatch => {
 }
 
 export const createUser = (payload) => async dispatch => {
+    console.log("create user")
+    console.log(payload)
     try {
         await axios.post(API_URL + '/user', payload)
         dispatch({type: TYPES.CREATE_USER_SUCCESS})
