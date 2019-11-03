@@ -8,7 +8,6 @@ import UserModal from './UserModal'
 
 function UserTable() {
     let users = useSelector((state) => state.user.users);
-    console.log(users)
     const dispatch = useDispatch();
     const getUsers = () => dispatch(actions.getUsersAction());
     useEffect  (()=>{
@@ -24,6 +23,7 @@ function UserTable() {
         const isAnnotator = user.roles.filter(el=>el.name === 'Annotator')[0] != undefined
         return(
             {
+                key: user.user_name,
                 ...user,
                 isDesigner,
                 isAnnotator,
@@ -34,8 +34,8 @@ function UserTable() {
     })
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [editUserdata, setEditUserdata] = useState();
 
-    console.log(users)
 
     const tableData = {
         header: [
@@ -51,10 +51,10 @@ function UserTable() {
                 title: 'Designer',
                 key: 'isDesigner'
             },
-            {
-                title: 'Annotator',
-                key: 'isAnnotator'
-            },
+            // {
+            //     title: 'Annotator',
+            //     key: 'isAnnotator'
+            // },
             {
                 title: '',
                 key: 'edit'
@@ -63,15 +63,19 @@ function UserTable() {
         data: users
     }
 
-    const dataTableCallback = (arg)=>{
-        console.log(arg)
+    const dataTableCallback = (editUserData)=>{
+        setModalIsOpen(true);
+        setEditUserdata(users.filter(user=>user.user_name === editUserData.user_name)[0])
     }
-    console.log(modalIsOpen)
     return (
         <div>
 
-            <UserModal title="Add User" modalIsOpen={modalIsOpen} toggle={()=> {setModalIsOpen(!modalIsOpen)}}/>
-    <Button basic color='blue' onClick={()=>{setModalIsOpen(true)}}> 
+            <UserModal  editUserData={editUserdata} modalIsOpen={modalIsOpen} toggle={()=> {setModalIsOpen(!modalIsOpen)}}/>
+    <Button basic color='blue' 
+    onClick={()=>{
+        setEditUserdata()
+        setModalIsOpen(true)
+        }}> 
       Add User
     </Button>
             <BaseTable tableData={tableData} callback={dataTableCallback} />

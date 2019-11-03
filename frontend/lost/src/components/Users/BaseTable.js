@@ -3,15 +3,12 @@ import React, { useState, useEffect } from 'react'
 import { Table, Icon, Button } from 'semantic-ui-react'
 import * as TableComponents from './TableComponents'
 
+// ToDo: key in array.map()
 
- /**
- * tableData: {header: [{title: Age, key: age}, ...], data:[{age: 12,...}, ...]}
- * @param {{tableData : object, callback: function }} props 
- */
-
-
-
-
+/**
+* tableData: {header: [{title: Age, key: age}, ...], data:[{age: 12,...}, ...]}
+* @param {{tableData : object, callback: function }} props 
+*/
 export default function BaseTable(props) {
   const tableKeysHeader = props.tableData.header
   const [column, setColumn] = useState("");
@@ -41,7 +38,8 @@ export default function BaseTable(props) {
     setData(filteredData)
   }, [props.tableData.data]); // 
 
-  const myCustomCell = (key, cell) => {
+  const myCustomCell = (row, key) => {
+    const cell = row[key]
     switch (key) {
       case 'isDesigner':
         // :TODO
@@ -58,7 +56,21 @@ export default function BaseTable(props) {
           return TableComponents.timesIcon()
         }
       case 'edit':
-        return (TableComponents.editIcon(props.callback))
+        return (TableComponents.editButton(props.callback, row))
+      case 'edit_user_name':
+        return TableComponents.textInput("edit_user_name", cell, props.callback)
+      case 'edit_email':
+      return TableComponents.textInput("edit_email", cell, props.callback)
+      case 'edit_password':
+      return TableComponents.textInput("edit_password", cell, props.callback)
+      case 'edit_confirm_password':
+      return TableComponents.textInput("edit_confirm_password", cell, props.callback)
+      case 'edit_isDesigner':
+      if (cell) {
+        return TableComponents.checkIcon()
+      } else {
+        return TableComponents.timesIcon()
+      }
       default:
         return cell
     }
@@ -84,10 +96,10 @@ export default function BaseTable(props) {
         {data.map(row => {
           return (
             <Table.Row
-            key={row.user_name}
+              key={row.user_name}
             >
-              {Object.keys(row).map(key => {
-                return (<Table.Cell key={key}>{myCustomCell(key, row[key])}</Table.Cell>)
+              {Object.keys(row).map((key,i) => {
+                return (<Table.Cell key={key}>{myCustomCell(row,key)}</Table.Cell>)
               })}
             </Table.Row>
           )
