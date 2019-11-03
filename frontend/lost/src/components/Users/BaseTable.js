@@ -66,6 +66,7 @@ export default function BaseTable(props) {
       case 'edit_email':
       case 'edit_password':
       case 'edit_confirm_password':
+
         return TableComponents.textInput(key, cell, props.callback)
       case 'edit_isDesigner':
       if (cell) {
@@ -77,6 +78,7 @@ export default function BaseTable(props) {
         return cell
     }
   }
+
   return (
     <Table sortable celled >
       <Table.Header>
@@ -95,13 +97,13 @@ export default function BaseTable(props) {
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {data.map(row => {
+        {data.map((row,i)  => {
           return (
             <Table.Row
-              key={row.user_name}
+              key={row.user_name+  i}
             >
               {Object.keys(row).map((key,i) => {
-                return (<Table.Cell  key={key}>{myCustomCell(row,key)}</Table.Cell>)
+                return (<Table.Cell  key={i}>{myCustomCell(row,key)}</Table.Cell>)
               })}
             </Table.Row>
           )

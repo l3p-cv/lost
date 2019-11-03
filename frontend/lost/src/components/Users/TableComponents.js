@@ -30,6 +30,11 @@ export function deleteButton(onClick, row) {
 
 
 function textInputInner(key, value, callback) {
+    console.log("KKKKKKKKkk")
+    console.log(key)
+    console.log(value)
+
+
     if(!value)value={}
     return (
         <Form.Input

@@ -6,23 +6,53 @@ import { useDispatch } from 'react-redux';
 import actions from 'actions/user'
 
 export default (props) => {
-    let data = [
-        { edit_username: "", edit_email: "", edit_isDesigner: "", edit_password: "", edit_confirm_password: "" }
-    ]
-    const [userData, setUserData] = useState();
+
+    const ERRORS = {
+        EDIT_USER_NAME: 'min 4 char',
+        EDIT_EMAIL: 'no valid email',
+        EDIT_PASSWORD: 'min 6 char',
+        EDIT_CONFIRM_PASSWORD: 'passwords do not match'
+    }
+
+    const [userData, setUserData] = useState(
+        {
+            edit_user_name: {
+                value: "",
+                error: ERRORS.EDIT_USER_NAME
+            },
+            edit_email: {
+                value: "",
+                error: ERRORS.EDIT_EMAIL
+            },
+            edit_isDesigner: false,
+            edit_password: {
+                value: "",
+                error: ERRORS.EDIT_PASSWORD
+            },
+
+            edit_confirm_password: {
+                value: "",
+                error: ERRORS.EDIT_CONFIRM_PASSWORD
+            },
+        }
+    );
     const dispatch = useDispatch();
     const createUser = (payload) => dispatch(actions.createUserAction(payload));
+    let data
     if (userData) {
         data = [
             {
-                edit_user_name: userData.user_name,
-                edit_email: userData.email,
-                edit_isDesigner: userData.isDesigner,
-                edit_password: userData.password,
-                edit_confirm_password: userData.confirm_password
+                edit_user_name: userData.edit_user_name,
+                edit_email: userData.edit_email,
+                edit_isDesigner: userData.edit_isDesigner,
+                edit_password: userData.edit_password,
+                edit_confirm_password: userData.edit_confirm_password
             }
         ]
+
     }
+    // console.log("OOOOOO")
+    // console.log(userData)
     const tableData = {
         header: [
             {
@@ -50,50 +80,55 @@ export default (props) => {
     }
 
     useEffect(() => {
-        setUserData(props.editUserData)
+        //setUserData(props.editUserData)
     }, [props.editUserData]); // empty-array means don't watch for any updates
 
     const dataTableCallback = (key, value) => {
+
         switch (key) {
             case 'edit_user_name':
                 setUserData({
                     ...userData,
-                    user_name: {
+                    edit_user_name: {
                         value,
-                        error: value.length > 3 ? undefined : 'min 4 char'
+                        error: value.length > 3 ? undefined : ERRORS.EDIT_USER_NAME
                     }
                 })
                 break
             case 'edit_email':
                 setUserData({
-                    ...userData, email: {
+                    ...userData,
+                    edit_email: {
                         value,
-                        error: value.includes('@') ? undefined : 'no valid email'
+                        error: value.includes('@') ? undefined : ERRORS.EDIT_EMAIL
                     }
                 })
                 break
             case 'edit_isDesigner':
-                setUserData({ ...userData, isDesigner: !userData.isDesigner })
+                setUserData({ ...userData, edit_isDesigner: !userData.edit_isDesigner })
                 break
             case 'edit_password':
                 setUserData({
-                    ...userData, password: {
+                    ...userData,
+                    edit_password: {
                         value,
-                        error: value.length > 5 ? undefined : 'min 6 char'
+                        error: value.length > 5 ? undefined : ERRORS.EDIT_PASSWORD
 
                     }
                 })
                 break
             case 'edit_confirm_password':
                 setUserData({
-                    ...userData, confirm_password: {
+                    ...userData,
+                    edit_confirm_password: {
                         value,
-                        error: userData['password'].value === value ? undefined : 'passwords do not match'
+                        error: userData['edit_password'].value === value ? undefined : ERRORS.EDIT_CONFIRM_PASSWORD
                     }
                 })
                 break
         }
     }
+    console.log("userData")
     console.log(userData)
     return (
         <>
@@ -110,30 +145,28 @@ export default (props) => {
                         Abort
       </Button>
                     <Button basic color='green' onClick={() => {
-                        if (Object.keys(userData).length === 5) {
-                            let validated = true
-                            let postData = {}
-                            Object.keys(userData).forEach(key => {
-                                const value = userData[key]
-                                if (value.error) {
-                                    validated = false;
-                                }
-                                if (key === 'isDesigner') {
-                                    const roles = ["Annotater"]
-                                    if (value) {
-                                        roles.push("Designer")
-                                    }
-                                    postData = { ...postData, roles }
-                                }
-                                postData = { ...postData, [key]: value.value }
-                            })
-                            if (validated) {
-                                createUser(postData)
+                        let validated = true
+                        Object.keys(userData).forEach(key => {
+                            const value = userData[key]
+                            if (value.error) {
+                                validated = false;
                             }
-                        } else {
-                            alert("Something wrong")
+                        })
+                        if (validated) {
+                            const roles = ['Annotater']
+                            if (userData.edit_isDesigner) {
+                                roles.push('Designer')
+                            }
+                            let postData = {
+                                user_name: userData.edit_user_name.value,
+                                password: userData.edit_password.value,
+                                email: userData.edit_email.value,
+                                groups: [],
+                                roles
+                            }
+                            createUser(postData)
+                            props.toggle()
                         }
-                        props.toggle()
                     }} >
                         Save
       </Button>
@@ -146,7 +179,7 @@ export default (props) => {
 
 
 
-
+// {"user_name":"cccc","password":"djangotestd","email":"cccc","groups":[],"roles":["Designer","Annotater"]}
 
 
 
