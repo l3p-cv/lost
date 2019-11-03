@@ -78,7 +78,7 @@ function UserTable() {
             <UserModal editUserData={editUserdata} modalIsOpen={modalIsOpen}
                 toggle={() => {
                     if (modalIsOpen) {
-                        setEditUserdata()
+                        setEditUserdata({isDesigner: false})
                     }
                     setModalIsOpen(!modalIsOpen)
                 }

@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react'
 import { ModalHeader, ModalBody, Modal, ModalFooter } from 'reactstrap';
 import BaseTable from './BaseTable'
 import { Button } from 'semantic-ui-react'
+import { useDispatch } from 'react-redux';
+import actions from 'actions/user'
 
 export default (props) => {
     let data = [
         { edit_username: "", edit_email: "", edit_isDesigner: "", edit_password: "", edit_confirm_password: "" }
     ]
-    const [userData, setUserData] = useState({isDesigner: false});
-    const [validatedArr, setValidatedArr] = useState([false,false,false,false]);
-
+    const [userData, setUserData] = useState();
+    const dispatch = useDispatch();
+    const createUser = (payload) => dispatch(actions.createUserAction(payload));
     if (userData) {
         data = [
             {
@@ -55,30 +57,40 @@ export default (props) => {
         switch (key) {
             case 'edit_user_name':
                 setUserData({
-                     ...userData, 
-                     user_name: {value, 
-                        error:value.length > 4 ? undefined : 'min 4 char'
-                    } 
-                    })
+                    ...userData,
+                    user_name: {
+                        value,
+                        error: value.length > 3 ? undefined : 'min 4 char'
+                    }
+                })
                 break
             case 'edit_email':
-                setUserData({ ...userData, email: {value,
-                    error:value.includes('@') ? undefined : 'no valid email'
-                } })
+                setUserData({
+                    ...userData, email: {
+                        value,
+                        error: value.includes('@') ? undefined : 'no valid email'
+                    }
+                })
                 break
             case 'edit_isDesigner':
                 setUserData({ ...userData, isDesigner: !userData.isDesigner })
                 break
             case 'edit_password':
-                setUserData({ ...userData, password: {value,
-                    error:value.length > 6 ? undefined : 'min 6 char'
+                setUserData({
+                    ...userData, password: {
+                        value,
+                        error: value.length > 5 ? undefined : 'min 6 char'
 
-                } })
+                    }
+                })
                 break
             case 'edit_confirm_password':
-                setUserData({ ...userData, confirm_password: {value,
-                    error:"ASD"
-                } })
+                setUserData({
+                    ...userData, confirm_password: {
+                        value,
+                        error: userData['password'].value === value ? undefined : 'passwords do not match'
+                    }
+                })
                 break
         }
     }
@@ -97,7 +109,32 @@ export default (props) => {
                     <Button basic color='red' onClick={() => { props.toggle() }} >
                         Abort
       </Button>
-                    <Button basic color='green' >
+                    <Button basic color='green' onClick={() => {
+                        if (Object.keys(userData).length === 5) {
+                            let validated = true
+                            let postData = {}
+                            Object.keys(userData).forEach(key => {
+                                const value = userData[key]
+                                if (value.error) {
+                                    validated = false;
+                                }
+                                if (key === 'isDesigner') {
+                                    const roles = ["Annotater"]
+                                    if (value) {
+                                        roles.push("Designer")
+                                    }
+                                    postData = { ...postData, roles }
+                                }
+                                postData = { ...postData, [key]: value.value }
+                            })
+                            if (validated) {
+                                createUser(postData)
+                            }
+                        } else {
+                            alert("Something wrong")
+                        }
+                        props.toggle()
+                    }} >
                         Save
       </Button>
                 </ModalFooter>
