@@ -4,7 +4,6 @@ import actions from 'actions/user'
 import { Button } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux';
 import UserModal from './UserModal'
-import { getDiffieHellman } from 'crypto';
 
 
 function UserTable() {
@@ -14,13 +13,11 @@ function UserTable() {
     const deleteUser = (payload) => dispatch(actions.deleteUserAction(payload));
 
     useEffect(() => {
-        async function fetchUsers() {
-            await getUsers();
+         function fetchUsers() {
+             getUsers();
         }
-        if (!users.length) {
-            fetchUsers();
-        }
-    })
+        fetchUsers();
+    }, [])
     users = users.map(user => {
         const isDesigner = user.roles.filter(el => el.name === 'Designer')[0] != undefined
         const isAnnotator = user.roles.filter(el => el.name === 'Annotator')[0] != undefined

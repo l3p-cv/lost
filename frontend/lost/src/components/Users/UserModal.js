@@ -85,8 +85,7 @@ export default (props) => {
     }
 
     useEffect(() => {
-        console.log("props")
-        console.log(props)
+
         if (props.editUserData) {
             setUserData(
                 {
