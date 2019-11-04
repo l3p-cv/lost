@@ -4,12 +4,15 @@ import actions from 'actions/user'
 import { Button } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux';
 import UserModal from './UserModal'
+import { getDiffieHellman } from 'crypto';
 
 
 function UserTable() {
     let users = useSelector((state) => state.user.users);
     const dispatch = useDispatch();
     const getUsers = () => dispatch(actions.getUsersAction());
+    const deleteUser = (payload) => dispatch(actions.deleteUserAction(payload));
+
     useEffect(() => {
         async function fetchUsers() {
             await getUsers();
@@ -34,7 +37,7 @@ function UserTable() {
     })
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [editUserdata, setEditUserdata] = useState({isDesigner: false});
+    const [editUserdata, setEditUserdata] = useState();
 
 
     const tableData = {
@@ -67,18 +70,23 @@ function UserTable() {
         data: users
     }
 
-    const dataTableCallback = (editUserData) => {
-        console.log(users.filter(user => user.user_name === editUserData.user_name)[0])
-        setModalIsOpen(true);
-        setEditUserdata(users.filter(user => user.user_name === editUserData.user_name)[0])
+    const dataTableCallback = (type, row) => {
+        const user = users.filter(user => user.user_name === row.user_name)[0]
+        if(type === "edit"){
+            setModalIsOpen(true);
+            setEditUserdata(user)
+        }else if (type === "delete"){
+            deleteUser(user.idx)
+        }
+
     }
     return (
         <div>
 
-            <UserModal  modalIsOpen={modalIsOpen}
+            <UserModal  editUserData={editUserdata} modalIsOpen={modalIsOpen}
                 toggle={() => {
                     if (modalIsOpen) {
-                        setEditUserdata({isDesigner: false})
+                        setEditUserdata()
                     }
                     setModalIsOpen(!modalIsOpen)
                 }

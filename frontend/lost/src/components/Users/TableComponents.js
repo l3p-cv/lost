@@ -2,7 +2,7 @@ import React from 'react'
 import { Icon, Button, Input, Label, Form } from 'semantic-ui-react'
 import * as Alert from '../BasicComponents/Alert'
 export function timesIcon(callback) {
-    return <Icon size='big' name='times circle outline' color="red" onClick={() => { callback("edit_isDesigner") }} />
+    return <Icon size='big' name='times circle outline' color="red" onClick={() => { callback("edit_isDesigner") }}/>
 }
 
 export function checkIcon(callback) {
@@ -11,15 +11,19 @@ export function checkIcon(callback) {
 
 export function editButton(onClick, row) {
     return (
-        <Button basic color='blue' onClick={() => { onClick(row) }}>
+        <Button basic color='blue' onClick={() => { onClick("edit", row) }}>
             Edit
       </Button>
     )
 }
+
 export function deleteButton(onClick, row) {
     return (
-        <Button basic color='red' onClick={() => {
-            Alert.alertDelete()
+        <Button basic color='red'  onClick={ async () => {
+            const reallyDelete = await Alert.alertDelete()
+            if(reallyDelete.value){
+                onClick("delete", row) 
+            }
         }
 
         }>
@@ -30,17 +34,17 @@ export function deleteButton(onClick, row) {
 
 
 function textInputInner(key, value, callback) {
-    console.log("KKKKKKKKkk")
-    console.log(key)
-    console.log(value)
+
 
 
     if(!value)value={}
     return (
         <Form.Input
             style={{ width: 130 }}
+            disabled={value.disabled}
             value={value.value}
             error= {value.error}
+            type= {(key==="edit_password" || key=== "edit_confirm_password")?"password": "text"}
             fluid
             onChange={(e) => { 
                 callback(

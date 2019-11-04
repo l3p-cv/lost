@@ -4,40 +4,45 @@ import BaseTable from './BaseTable'
 import { Button } from 'semantic-ui-react'
 import { useDispatch } from 'react-redux';
 import actions from 'actions/user'
+const ERRORS = {
+    EDIT_USER_NAME: 'min 4 char',
+    EDIT_EMAIL: 'no valid email',
+    EDIT_PASSWORD: 'min 6 char',
+    EDIT_CONFIRM_PASSWORD: 'passwords do not match'
+}
+const INIT_USERDATA =         {
+    edit_user_name: {
+        value: "",
+        error: ERRORS.EDIT_USER_NAME,
+        disabled: false
+    },
+    edit_email: {
+        value: "",
+        error: ERRORS.EDIT_EMAIL
+    },
+    edit_isDesigner: false,
+    edit_password: {
+        value: "",
+        error: ERRORS.EDIT_PASSWORD
+    },
+
+    edit_confirm_password: {
+        value: "",
+        error: ERRORS.EDIT_CONFIRM_PASSWORD
+    },
+}
 
 export default (props) => {
 
-    const ERRORS = {
-        EDIT_USER_NAME: 'min 4 char',
-        EDIT_EMAIL: 'no valid email',
-        EDIT_PASSWORD: 'min 6 char',
-        EDIT_CONFIRM_PASSWORD: 'passwords do not match'
-    }
+
 
     const [userData, setUserData] = useState(
-        {
-            edit_user_name: {
-                value: "",
-                error: ERRORS.EDIT_USER_NAME
-            },
-            edit_email: {
-                value: "",
-                error: ERRORS.EDIT_EMAIL
-            },
-            edit_isDesigner: false,
-            edit_password: {
-                value: "",
-                error: ERRORS.EDIT_PASSWORD
-            },
-
-            edit_confirm_password: {
-                value: "",
-                error: ERRORS.EDIT_CONFIRM_PASSWORD
-            },
-        }
+        INIT_USERDATA
     );
     const dispatch = useDispatch();
     const createUser = (payload) => dispatch(actions.createUserAction(payload));
+    const updateUser = (payload) => dispatch(actions.updateUserAction(payload));
+
     let data
     if (userData) {
         data = [
@@ -80,8 +85,40 @@ export default (props) => {
     }
 
     useEffect(() => {
-        //setUserData(props.editUserData)
+        console.log("props")
+        console.log(props)
+        if (props.editUserData) {
+            setUserData(
+                {
+                    idx: props.editUserData.idx,
+                    edit_user_name: {
+                        value: props.editUserData.user_name,
+                        error: undefined,
+                        disabled: true
+                    },
+                    edit_email: {
+                        value: props.editUserData.email,
+                        error: undefined
+                    },
+                    edit_isDesigner: props.editUserData.isDesigner,
+                    edit_password: {
+                        value: "",
+                        error: ERRORS.EDIT_PASSWORD
+                    },
+
+                    edit_confirm_password: {
+                        value: "",
+                        error: ERRORS.EDIT_CONFIRM_PASSWORD
+                    },
+                }
+            )
+        }else{
+            setUserData(INIT_USERDATA)
+        }
+
     }, [props.editUserData]); // empty-array means don't watch for any updates
+
+    //{"idx":4,"email":"hehes","first_name":"","last_name":"","groups":[],"roles":["Annotator"],"password":null}
 
     const dataTableCallback = (key, value) => {
 
@@ -128,8 +165,7 @@ export default (props) => {
                 break
         }
     }
-    console.log("userData")
-    console.log(userData)
+
     return (
         <>
             <Modal size='lg' isOpen={props.modalIsOpen} toggle={props.toggle}>
@@ -157,14 +193,29 @@ export default (props) => {
                             if (userData.edit_isDesigner) {
                                 roles.push('Designer')
                             }
-                            let postData = {
-                                user_name: userData.edit_user_name.value,
-                                password: userData.edit_password.value,
+
+                            const baseData = {
                                 email: userData.edit_email.value,
-                                groups: [],
-                                roles
+                                password: userData.edit_password.value,
+                                roles,
+                                groups: []
                             }
-                            createUser(postData)
+                            if(userData.idx){
+                                const patchData= {
+                                    ...baseData,
+                                    idx: userData.idx,
+                                    first_name: "",
+                                    last_name: ""
+                                }
+                                updateUser(patchData)
+                            }else{
+                                const postData = {
+                                    ...baseData,
+                                    user_name: userData.edit_user_name.value,
+                                }
+                                createUser(postData)
+    
+                            }
                             props.toggle()
                         }
                     }} >
@@ -176,6 +227,7 @@ export default (props) => {
     )
 }
 
+//{"idx":4,"email":"hehes","first_name":"","last_name":"","groups":[],"roles":["Annotator"],"password":null}
 
 
 

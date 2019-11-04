@@ -23,7 +23,7 @@ export const createUserAction = (payload) => async dispatch => {
 
 }
 
-export const deleteUser = (payload) => async dispatch => {
+export const deleteUserAction = (payload) => async dispatch => {
     try {
         await axios.delete(API_URL + `/user/${payload}`)
         dispatch({type: TYPES.DELETE_USER_SUCCESS})
@@ -33,6 +33,20 @@ export const deleteUser = (payload) => async dispatch => {
         dispatch({type: TYPES.DELETE_USER_FAILED, payload: e.response.data.message})
     }
 }
+
+export const updateUserAction = (payload) => async dispatch => {
+    try {
+        await axios.patch(API_URL + `/user/${payload.idx}`, payload)
+        dispatch({type: TYPES.UPDATE_USER_SUCCESS})
+        const newUserList = await axios.get(API_URL + '/user')
+        dispatch({type: TYPES.GET_USERS, payload: newUserList.data})
+    } catch (e) {
+        dispatch({type: TYPES.UPDATE_USER_FAILED, payload: e.response.data})
+    }
+}
+
+
+
 export const cleanCreateUserMessage = () => dispatch => {
     dispatch({type: TYPES.CLEAN_CREATE_USER_MESSAGE})
 }
@@ -49,16 +63,7 @@ export const cleanUpdateOwnUserMessage = () => dispatch => {
     dispatch({type: TYPES.CLEAN_UPDATE_OWN_USER_MESSAGE})
 }
 
-export const updateUser = (payload) => async dispatch => {
-    try {
-        await axios.patch(API_URL + `/user/${payload.idx}`, payload)
-        dispatch({type: TYPES.UPDATE_USER_SUCCESS})
-        const newUserList = await axios.get(API_URL + '/user')
-        dispatch({type: TYPES.GET_USERS, payload: newUserList.data})
-    } catch (e) {
-        dispatch({type: TYPES.UPDATE_USER_FAILED, payload: e.response.data})
-    }
-}
+
 
 export const getOwnUser = (callback) => async dispatch => {
     try{
