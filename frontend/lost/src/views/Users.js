@@ -9,10 +9,10 @@ function Users() {
     return (
         <Grid columns={2} divided>
             <Grid.Row>
-                <Grid.Column>
+                <Grid.Column width={6}>
                     <GroupTable />
                 </Grid.Column>
-                <Grid.Column>
+                <Grid.Column width={10}>
                     <UserTable />
                 </Grid.Column>
             </Grid.Row>

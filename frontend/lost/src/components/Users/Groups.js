@@ -14,7 +14,7 @@ function GroupTable() {
     const getGroups = () => dispatch(actions.getGroupsAction());
     const createGroup = (payload)=> dispatch(actions.createGroupAction(payload));
     const deleteGroup = (payload)=> dispatch(actions.deleteGroupAction(payload));
-    const data = groups.map(group => { return { 'groupName': group.name } })
+    const data = groups.map(group => ({ 'groupName': group.name } ))
     const [groupName, setGroupName] = useState("")
     const tableData = {
         header: [

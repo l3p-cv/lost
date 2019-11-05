@@ -56,6 +56,10 @@ function UserTable() {
             //     key: 'isAnnotator'
             // },
             {
+                title: 'Groups',
+                key: 'groups'
+            },
+            {
                 title: '',
                 key: 'edit'
             },
@@ -63,6 +67,7 @@ function UserTable() {
                 title: '',
                 key: 'deleteUser'
             },
+
         ],
         data: users
     }

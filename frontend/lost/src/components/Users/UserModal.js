@@ -7,7 +7,7 @@ import actions from 'actions/user'
 const ERRORS = {
     EDIT_USER_NAME: 'min 4 char',
     EDIT_EMAIL: 'no valid email',
-    EDIT_PASSWORD: 'min 6 char',
+    EDIT_PASSWORD: 'min 5 char',
     EDIT_CONFIRM_PASSWORD: 'passwords do not match'
 }
 const INIT_USERDATA =         {
@@ -30,6 +30,8 @@ const INIT_USERDATA =         {
         value: "",
         error: ERRORS.EDIT_CONFIRM_PASSWORD
     },
+    edit_groups: []
+
 }
 
 export default (props) => {
@@ -51,7 +53,8 @@ export default (props) => {
                 edit_email: userData.edit_email,
                 edit_isDesigner: userData.edit_isDesigner,
                 edit_password: userData.edit_password,
-                edit_confirm_password: userData.edit_confirm_password
+                edit_confirm_password: userData.edit_confirm_password,
+                edit_groups: userData.edit_groups
             }
         ]
 
@@ -80,6 +83,10 @@ export default (props) => {
                 title: 'Confirm Password',
                 key: 'edit_confirm_password'
             },
+            {
+                title: 'Groups',
+                key: 'edit_groups'
+            },
         ],
         data: data
     }
@@ -102,13 +109,14 @@ export default (props) => {
                     edit_isDesigner: props.editUserData.isDesigner,
                     edit_password: {
                         value: "",
-                        error: ERRORS.EDIT_PASSWORD
+                        error: undefined
                     },
 
                     edit_confirm_password: {
                         value: "",
-                        error: ERRORS.EDIT_CONFIRM_PASSWORD
+                        error: undefined
                     },
+                    edit_groups: props.editUserData.groups
                 }
             )
         }else{
@@ -148,28 +156,41 @@ export default (props) => {
                     ...userData,
                     edit_password: {
                         value,
-                        error: value.length > 5 ? undefined : ERRORS.EDIT_PASSWORD
-
+                        error: value.length > 4 ? undefined : ERRORS.EDIT_PASSWORD
+                    },
+                    edit_confirm_password: {
+                        ...userData.edit_confirm_password,
+                        error: userData['edit_password'].value === value ? undefined : ERRORS.EDIT_CONFIRM_PASSWORD
                     }
                 })
                 break
             case 'edit_confirm_password':
                 setUserData({
                     ...userData,
+                    edit_password: {
+                        ...userData.edit_password,
+                        error: userData['edit_password'].length > 4 ? undefined : ERRORS.EDIT_PASSWORD
+                    },
                     edit_confirm_password: {
                         value,
                         error: userData['edit_password'].value === value ? undefined : ERRORS.EDIT_CONFIRM_PASSWORD
                     }
                 })
                 break
+            case 'edit_groups':
+                setUserData({
+                    ...userData,
+                    edit_groups: value
+                })    
+            break
         }
     }
 
     return (
         <>
-            <Modal size='lg' isOpen={props.modalIsOpen} toggle={props.toggle}>
-                <ModalHeader>{props.editUserData ? "Edit User" : "Add User"}</ModalHeader>
-                <ModalBody>
+            <Modal style={{minWidth: 900}} isOpen={props.modalIsOpen} toggle={props.toggle}>
+                <ModalHeader >{props.editUserData ? "Edit User" : "Add User"}</ModalHeader>
+                <ModalBody >
                     <BaseTable
                         tableData={tableData}
                         callback={dataTableCallback}
@@ -197,7 +218,7 @@ export default (props) => {
                                 email: userData.edit_email.value,
                                 password: userData.edit_password.value,
                                 roles,
-                                groups: []
+                                groups: userData.edit_groups.map(el=>el.name)
                             }
                             if(userData.idx){
                                 const patchData= {

@@ -40,9 +40,6 @@ export default function BaseTable(props) {
 
   const myCustomCell = (row, key) => {
     const cell = row[key]
-    // console.log(row)
-    // console.log(key)
-    // console.log(cell)
     switch (key) {
       case 'isDesigner':
         // :TODO
@@ -62,6 +59,8 @@ export default function BaseTable(props) {
         return (TableComponents.editButton(props.callback, row))
       case 'deleteUser':
         return (TableComponents.deleteButton(props.callback, row))
+      case 'groups':
+        return <TableComponents.GroupLabels row={row}/>
       case 'edit_user_name':
       case 'edit_email':
       case 'edit_password':
@@ -74,6 +73,8 @@ export default function BaseTable(props) {
       } else {
         return TableComponents.timesIcon(props.callback)
       }
+      case 'edit_groups':
+        return <TableComponents.GroupLabelsEditable row={row} callback={props.callback}/>
       default:
         return cell
     }
