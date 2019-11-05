@@ -160,16 +160,18 @@ export default (props) => {
                     },
                     edit_confirm_password: {
                         ...userData.edit_confirm_password,
-                        error: userData['edit_password'].value === value ? undefined : ERRORS.EDIT_CONFIRM_PASSWORD
+                        error: userData['edit_confirm_password'].value === value ? undefined : ERRORS.EDIT_CONFIRM_PASSWORD
                     }
                 })
                 break
             case 'edit_confirm_password':
+            console.log("userData")    
+            console.log(userData)
                 setUserData({
                     ...userData,
                     edit_password: {
                         ...userData.edit_password,
-                        error: userData['edit_password'].length > 4 ? undefined : ERRORS.EDIT_PASSWORD
+                        error: userData['edit_password'].value.length > 4 ? undefined : ERRORS.EDIT_PASSWORD
                     },
                     edit_confirm_password: {
                         value,
