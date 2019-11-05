@@ -51,10 +51,7 @@ function UserTable() {
                 title: 'Designer',
                 key: 'isDesigner'
             },
-            // {
-            //     title: 'Annotator',
-            //     key: 'isAnnotator'
-            // },
+
             {
                 title: 'Groups',
                 key: 'groups'
