@@ -234,6 +234,7 @@ export default (props) => {
                                 createUser(postData)
     
                             }
+                            setUserData(INIT_USERDATA)
                             props.toggle()
                         }
                     }} >
