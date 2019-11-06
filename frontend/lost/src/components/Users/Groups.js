@@ -38,11 +38,10 @@ function GroupTable() {
     }, [])
     const dataTableCallback = (type, row) => {
         const group = groups.filter(el=>el.name == row.groupName)[0]
-        console.log(group)
         deleteGroup(group.idx)
 
     }
-
+    console.log(groupName)
     return (
         <div>
             <Input
@@ -61,8 +60,8 @@ function GroupTable() {
                 iconPosition='left'
                 placeholder='Groupname'
             />
-
-            <BaseTable tableData={tableData} callback={dataTableCallback} />
+{groups.length > 0 && <BaseTable tableData={tableData} callback={dataTableCallback} />}
+            
         </div>
     )
 }

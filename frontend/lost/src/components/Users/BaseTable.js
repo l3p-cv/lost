@@ -104,7 +104,7 @@ export default function BaseTable(props) {
               key={row.user_name+  i}
             >
               {Object.keys(row).map((key,i) => {
-                return (<Table.Cell  key={i}>{myCustomCell(row,key)}</Table.Cell>)
+                return (<Table.Cell style={{textAlign:'center'}} key={i}>{myCustomCell(row,key)}</Table.Cell>)
               })}
             </Table.Row>
           )

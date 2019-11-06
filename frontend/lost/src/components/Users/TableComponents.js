@@ -8,11 +8,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 export function timesIcon(callback) {
-    return <Icon size='big' name='times circle outline' color="red" onClick={() => { callback("edit_isDesigner") }} />
+    console.log(callback)
+    return <Icon size='big' name='times circle outline' color="red" onClick={() => { if(callback)callback("edit_isDesigner") }} />
 }
 
 export function checkIcon(callback) {
-    return <Icon size='big' name='check circle outline' color="green" onClick={() => { callback("edit_isDesigner") }} />
+    return <Icon size='big' name='check circle outline' color="green" onClick={() => { if(callback)callback("edit_isDesigner") }} />
 }
 
 export function editButton(onClick, row) {

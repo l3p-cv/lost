@@ -59,8 +59,6 @@ export default (props) => {
         ]
 
     }
-    // console.log("OOOOOO")
-    // console.log(userData)
     const tableData = {
         header: [
             {
@@ -165,8 +163,6 @@ export default (props) => {
                 })
                 break
             case 'edit_confirm_password':
-            console.log("userData")    
-            console.log(userData)
                 setUserData({
                     ...userData,
                     edit_password: {
