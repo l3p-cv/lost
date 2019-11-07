@@ -23,9 +23,9 @@ export const alertSuccess = (title) => {
     })
 }
 
-export const alertError = (error) => {
+export const error = (error) => {
     Swal.fire({
-        position: 'top-end',
+        position: 'center',
         type: 'error',
         title: error,
         showConfirmButton: false,

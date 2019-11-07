@@ -28,9 +28,7 @@ export const deleteGroupAction = (payload) => async dispatch => {
     try{
         await axios.delete(API_URL + `/group/${payload}`)
         dispatch({type: TYPES.DELETE_GROUP_SUCCESS})
-        const newGroupList = await axios.get(API_URL + '/group')
-        dispatch({type: TYPES.GET_GROUPS, payload: newGroupList.data})
-        //callback()
+
         }    
      catch (e) {
        dispatch({type: TYPES.DELETE_GROUP_FAILED, payload: e.response.data.message})

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { ModalHeader, ModalBody, Modal, ModalFooter } from 'reactstrap';
 import BaseTable from './BaseTable'
-import { Button } from 'semantic-ui-react'
-import { useDispatch } from 'react-redux';
+import { Button, RefFindNode } from 'semantic-ui-react'
+import { useDispatch, useSelector } from 'react-redux';
 import actions from 'actions/user'
+import * as Alert from '../BasicComponents/Alert' 
+
 const ERRORS = {
     EDIT_USER_NAME: 'min 4 char',
     EDIT_EMAIL: 'no valid email',
@@ -35,7 +37,11 @@ const INIT_USERDATA =         {
 }
 
 export default (props) => {
+    const groups = useSelector((state) => {
 
+        return state.group.groups
+    });
+    const users = useSelector((state) => state.user.users);
 
 
     const [userData, setUserData] = useState(
@@ -231,7 +237,15 @@ export default (props) => {
                                     ...baseData,
                                     user_name: userData.edit_user_name.value,
                                 }
-                                createUser(postData)
+                                if(groups.filter(group=>group.name === postData.user_name).length){
+                                    Alert.error("username and groupname can not be the same")
+                                    return
+                                }
+                                if(users.filter(user=>(user.user_name===postData.user_name) || (user.email === postData.email)).length){
+                                    Alert.error("username/email already taken")
+                                    return
+                                }
+                               createUser(postData)
     
                             }
                             setUserData(INIT_USERDATA)

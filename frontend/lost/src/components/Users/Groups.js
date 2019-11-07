@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import actions from 'actions/group'
+import groupActions from 'actions/group'
+import userActions from 'actions/user'
+import * as Alert from '../BasicComponents/Alert' 
 import { useDispatch, useSelector } from 'react-redux';
 import BaseTable from './BaseTable'
 // * tableData: {header: [{title: Age, key: age}, ...], data:[{age: 12,...}, ...]}
@@ -10,10 +12,14 @@ function GroupTable() {
 
         return state.group.groups
     });
+
+    const users = useSelector((state) => state.user.users);
+
     const dispatch = useDispatch();
-    const getGroups = () => dispatch(actions.getGroupsAction());
-    const createGroup = (payload)=> dispatch(actions.createGroupAction(payload));
-    const deleteGroup = (payload)=> dispatch(actions.deleteGroupAction(payload));
+    const getGroups = () => dispatch(groupActions.getGroupsAction());
+    const createGroup = (payload)=> dispatch(groupActions.createGroupAction(payload));
+    const deleteGroup = (payload)=> dispatch(groupActions.deleteGroupAction(payload));
+
     const data = groups.map(group => ({ 'groupName': group.name } ))
     const [groupName, setGroupName] = useState("")
     const tableData = {
@@ -36,12 +42,13 @@ function GroupTable() {
         fetchGroups();
 
     }, [])
-    const dataTableCallback = (type, row) => {
+    const dataTableCallback =  async (type, row) => {
         const group = groups.filter(el=>el.name == row.groupName)[0]
-        deleteGroup(group.idx)
+        await deleteGroup(group.idx)
+        getGroups()
 
     }
-    console.log(groupName)
+
     return (
         <div>
             <Input
@@ -49,9 +56,20 @@ function GroupTable() {
                 action={
                     <Button basic color='blue'
                         onClick={() => {
-                            createGroup({'group_name': groupName})
-                            setGroupName("")
-                            getGroups()
+                            if(users.filter(user=>user.user_name === groupName).length){
+                                Alert.error("groupname and username can not be the same")
+                                return
+                            }
+                            if(groups.filter(group=>group.name===groupName).length){
+                                Alert.error("groupname already taken")
+                                return
+                            }
+                            
+                                createGroup({'group_name': groupName})
+                                setGroupName("")
+                                getGroups()
+                            
+
                         }}>
                         Add Group
                     </Button>
