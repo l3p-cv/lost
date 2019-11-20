@@ -7,7 +7,7 @@ import UserTable from '../components/Users/Users'
 
 function Users() {
     return (
-        <Grid columns={2} divided>
+        <Grid columns={2} divided style={{backgroundColor: 'white', padding: 15}}>
             <Grid.Row>
                 <Grid.Column width={5}>
                     <GroupTable />

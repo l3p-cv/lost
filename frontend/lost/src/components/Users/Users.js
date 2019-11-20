@@ -96,7 +96,7 @@ function UserTable() {
                 }}>
                 Add User
     </Button>
-            <BaseTable tableData={tableData} callback={dataTableCallback} />
+            <BaseTable tableData={tableData} callback={dataTableCallback}   />
 
         </div>
     )
