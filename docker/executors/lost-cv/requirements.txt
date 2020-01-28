@@ -63,7 +63,7 @@ six==1.12.0
 sk-video==1.1.10
 SQLAlchemy==1.2.17
 tensorboard==1.10.0
-tensorflow==1.10.0
+tensorflow==1.15.2
 termcolor==1.1.0
 Theano==1.0.4
 toolz==0.9.0
