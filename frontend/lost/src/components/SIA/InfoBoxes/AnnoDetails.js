@@ -3,7 +3,7 @@ import {connect} from 'react-redux'
 import { Card, Icon, Statistic, Divider } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import actions from '../../../actions'
-import * as transform from '../utils/transform'
+import * as transform from '../lost-sia/src/utils/transform'
 const { siaShowImgBar } = actions
 
 class AnnoDetails extends Component{

@@ -1,17 +1,23 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
-import './SIA.scss';
 import 'semantic-ui-css/semantic.min.css'
 
-import Canvas from './Canvas'
+// import from npm package
+//import Canvas from 'lost-sia'
+//import 'lost-sia/dist/index.css'
+
+// import from source code
+import Canvas from './lost-sia/src/Canvas'
+import './lost-sia/src/SIA.scss';
+
 import ToolBar from './ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import { createHashHistory } from 'history'
 import InfoBoxArea from './InfoBoxes/InfoBoxArea'
 import 'react-notifications/lib/notifications.css';
 
-import * as notificationType from './types/notificationType'
+import * as notificationType from './lost-sia/src/types/notificationType'
 
 const { 
     siaLayoutUpdate, getSiaAnnos,
