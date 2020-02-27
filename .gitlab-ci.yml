@@ -22,7 +22,7 @@ variables:
 
   
 before_script:
-  - apk add --update nodejs=10.14.2-r0 npm
+  - apk add --update nodejs=12.15.0-r1 npm
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 build-lost-base:
