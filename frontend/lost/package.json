@@ -33,7 +33,7 @@
     "jwt-decode": "^2.2.0",
     "l3p-frontend": "^3.2.12",
     "lodash": "^4.17.15",
-    "node-sass": "^4.9.3",
+    "node-sass": "^4.12.0",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
     "react-app-polyfill": "^0.1.3",
