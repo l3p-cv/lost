@@ -3,7 +3,7 @@ asn1crypto==0.24.0
 astor==0.7.1
 backports.weakref==1.0rc1
 bcrypt==3.1.6
-bleach==1.5.0
+bleach==3.1.4
 blinker==1.4
 certifi==2018.11.29
 cffi==1.11.5
