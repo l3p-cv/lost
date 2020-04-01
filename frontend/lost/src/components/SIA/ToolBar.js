@@ -2,11 +2,11 @@ import React, {Component} from 'react'
 import { Icon, Menu, Button, Card } from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import SIASettingButton from './SIASettingButton'
-import Prompt from './Prompt'
+import Prompt from './lost-sia/src/Prompt'
 
 import actions from '../../actions'
-import * as TOOLS from './types/tools'
-import * as siaIcons from './utils/siaIcons'
+import * as TOOLS from './lost-sia/src/types/tools'
+import * as siaIcons from './lost-sia/src/utils/siaIcons'
 
 const { 
     siaSelectTool, siaGetNextImage, siaGetPrevImage, 

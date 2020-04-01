@@ -13,13 +13,15 @@ import * as keyActions from './utils/keyActions'
 import KeyMapper from './utils/keyActions'
 import * as TOOLS from './types/tools'
 import * as modes from './types/modes'
-import UndoRedo from '../../utils/hist'
+import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
 import * as mouse from './utils/mouse';
 import * as colorlut from './utils/colorlut'
 import * as notificationType from './types/notificationType'
+
+import './SIA.scss'
 
 
 /**
@@ -228,7 +230,7 @@ class Canvas extends Component{
         console.log('Mouse Over Canvas')
     }
 
-    onWheel(e:Event){
+    onWheel(e){
         // Zoom implementation. Note that svg is first scaled and 
         // second translated!
         const up = e.deltaY < 0
@@ -345,20 +347,20 @@ class Canvas extends Component{
 
     }
 
-    onKeyDown(e: Event){
+    onKeyDown(e){
         e.preventDefault()
         this.keyMapper.keyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
         this.findAnno(this.state.selectedAnnoId)
     }
 
-    onKeyUp(e: Event){
+    onKeyUp(e){
         e.preventDefault()
         this.keyMapper.keyUp(e.key)
         // console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
-    onMouseMove(e: Event){
+    onMouseMove(e){
         if (this.state.mode === modes.CAMERA_MOVE){
             this.moveCamera(e)
         }
@@ -519,7 +521,7 @@ class Canvas extends Component{
         }
     }
 
-    handleSvgMouseMove(e:Event){
+    handleSvgMouseMove(e){
         this.mousePos = mouse.getMousePosition(e, this.state.svg)
     }
 
@@ -851,7 +853,9 @@ class Canvas extends Component{
             prevLabel: anno.labelIds, 
         })
         if(this.props.onAnnoSelect){
-            this.props.onAnnoSelect(newAnno)
+            if (newAnno !== null){
+                this.props.onAnnoSelect(newAnno)
+            }
         }
         return newAnnos
     }
@@ -864,9 +868,13 @@ class Canvas extends Component{
         if (mode){
             newAnno = {...anno, mode:mode}
             if (mode === modes.DELETED){
-                newAnno = {
-                    ...newAnno,
-                    status: annoStatus.DELETED
+                if (anno.status !== annoStatus.NEW){
+                    newAnno = {
+                        ...newAnno,
+                        status: annoStatus.DELETED
+                    }
+                } else {
+                    newAnno = null
                 }
             } else {
                 newAnno = {
@@ -877,7 +885,10 @@ class Canvas extends Component{
         } else {
             newAnno = {...anno}
         }
-        filtered.push(newAnno)
+        if (newAnno !== null){
+            filtered.push(newAnno)
+        }
+        console.log('merge anno newAnno, anno, mode', newAnno, anno, mode)
         const newAnnos = [...filtered]
         return {newAnnos, newAnno}
     }
