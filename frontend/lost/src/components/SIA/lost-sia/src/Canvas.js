@@ -853,7 +853,9 @@ class Canvas extends Component{
             prevLabel: anno.labelIds, 
         })
         if(this.props.onAnnoSelect){
-            this.props.onAnnoSelect(newAnno)
+            if (newAnno !== null){
+                this.props.onAnnoSelect(newAnno)
+            }
         }
         return newAnnos
     }
@@ -866,9 +868,13 @@ class Canvas extends Component{
         if (mode){
             newAnno = {...anno, mode:mode}
             if (mode === modes.DELETED){
-                newAnno = {
-                    ...newAnno,
-                    status: annoStatus.DELETED
+                if (anno.status !== annoStatus.NEW){
+                    newAnno = {
+                        ...newAnno,
+                        status: annoStatus.DELETED
+                    }
+                } else {
+                    newAnno = null
                 }
             } else {
                 newAnno = {
@@ -879,7 +885,10 @@ class Canvas extends Component{
         } else {
             newAnno = {...anno}
         }
-        filtered.push(newAnno)
+        if (newAnno !== null){
+            filtered.push(newAnno)
+        }
+        console.log('merge anno newAnno, anno, mode', newAnno, anno, mode)
         const newAnnos = [...filtered]
         return {newAnnos, newAnno}
     }
