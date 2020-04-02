@@ -217,7 +217,10 @@ class Canvas extends Component{
     onImageLoad(){
         console.log('Canvas onImageLoade')
         this.setState({
-            imageLoaded: true
+            imageLoaded: true,
+            showLabelInput: false,
+            showSingleAnno: undefined,
+            selectedAnnoId: undefined
         })
         if (this.props.onImageLoaded){
             this.props.onImageLoaded()

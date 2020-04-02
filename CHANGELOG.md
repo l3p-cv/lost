@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.1.0]
-### Added
+### Changed
 - Usermanagement: Integrated usermanagement refactoring (see also https://github.com/l3p-cv/lost/pull/47)
 
 ### Fixed
@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * When a new annotation was created and deleted before a backend update was performed, SIA sent this annotation to backend for an db update
   * The backend then tried to update a db record that did not exists which caused an exception.
   * The result was that all annotation where lost 
+- SIA: Fixed crash on changing image when label input is active.
 
 ## [1.0.0] - 2019-10-17
 ### Added
