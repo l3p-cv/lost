@@ -1123,6 +1123,17 @@ class Canvas extends Component{
         />
     }
 
+    renderAnnoToolBar(selectedAnno){
+        let visible = this.state.annoToolBarVisible
+        if (this.state.mode === modes.CAMERA_MOVE) visible = false
+        return <AnnoToolBar visible={visible} 
+            selectedAnno={selectedAnno}
+            svg={this.state.svg}
+            onClick={() => this.editAnnoLabel()}
+            color={this.getAnnoColor()}
+        />
+    }
+
     render(){
         console.log('Canvas render state, props', this.state, this.props)
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
@@ -1152,13 +1163,7 @@ class Canvas extends Component{
                     Marked as Junk
                 </Header>
             </Dimmer>
-                <AnnoToolBar visible={this.state.annoToolBarVisible} 
-                    selectedAnno={selectedAnno}
-                    svg={this.state.svg}
-                    onClick={() => this.editAnnoLabel()}
-                    color={this.getAnnoColor()}
-                />
-
+                {this.renderAnnoToolBar(selectedAnno)}
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 <AnnoLabelInput svg={this.state.svg} 
                     // svgRef={this.svg}
