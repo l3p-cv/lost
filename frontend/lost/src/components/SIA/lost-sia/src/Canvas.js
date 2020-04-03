@@ -247,19 +247,25 @@ class Canvas extends Component{
         } else {
             nextScale = this.state.svg.scale / zoomFactor
         }
+        let newTranslation
         //Constrain zoom
         if (nextScale < 1.0){
             nextScale = 1.0
-        }
-        if (nextScale > 200.0){
+            newTranslation = {x:0, y:0}
+        } else if (nextScale > 200.0){
             nextScale = 200.0
+            newTranslation = wv.getZoomTranslation(mousePos, this.state.svg, nextScale)
+        } else {
+            newTranslation = wv.getZoomTranslation(mousePos, this.state.svg, nextScale)
         }
         console.log(nextScale)
         this.setState({svg: {
             ...this.state.svg,
             scale: nextScale,
-            translateX: -1*(mousePos.x * nextScale - mousePos.x)/nextScale,
-            translateY: -1*(mousePos.y * nextScale - mousePos.y)/nextScale
+            // translateX: -1*(mousePos.x * nextScale - mousePos.x)/nextScale,
+            // translateY: -1*(mousePos.y * nextScale - mousePos.y)/nextScale
+            translateX: newTranslation.x,
+            translateY: newTranslation.y
         }})
     }
 
@@ -270,6 +276,7 @@ class Canvas extends Component{
     onMouseDown(e){
         if (e.button === 0){
             this.selectAnnotation(undefined)
+            console.log('mouse position onMouseDown', this.getMousePosition(e), this.getMousePositionAbs(e))
         }
         else if (e.button === 1){
             this.setMode(modes.CAMERA_MOVE)
@@ -730,8 +737,8 @@ class Canvas extends Component{
         const vXMax = this.state.svg.width * 0.75
         const yXMin = this.state.svg.height * 0.25
         const yXMax = this.state.svg.height * 0.75
-        const vLeft = wv.getViewportCoordinates(0, 0, this.state.svg)
-        const vRight = wv.getViewportCoordinates(this.state.svg.width, this.state.svg.height, this.state.svg)
+        const vLeft = wv.getViewportCoordinates({x:0, y:0}, this.state.svg)
+        const vRight = wv.getViewportCoordinates({x:this.state.svg.width, y:this.state.svg.height}, this.state.svg)
         // console.log('getViewportCoordinates', 
         //     vLeft, vRight, vXMin, vXMax            
         // )

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Always reset annotation mode to *view* when getAnnoBackendFormat is called
 - Delete annotation in sia canvas correctly, when they are moved out of the image.
 - Prevent user from moving image out of canvas
+- Fixed jumping camera when zooming into the image
 
 ## [0.0.2] - 2020-04-02
 ### Fixed
