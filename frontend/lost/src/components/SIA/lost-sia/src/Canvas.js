@@ -20,6 +20,7 @@ import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
 import * as mouse from './utils/mouse';
 import * as colorlut from './utils/colorlut'
 import * as notificationType from './types/notificationType'
+import * as wv from './utils/windowViewport'
 
 import './SIA.scss'
 
@@ -723,10 +724,31 @@ class Canvas extends Component{
     }
 
     moveCamera(e){
+        let trans_x = this.state.svg.translateX + e.movementX / this.state.svg.scale
+        let trans_y = this.state.svg.translateY + e.movementY / this.state.svg.scale
+        const vXMin = this.state.svg.width * 0.25
+        const vXMax = this.state.svg.width * 0.75
+        const yXMin = this.state.svg.height * 0.25
+        const yXMax = this.state.svg.height * 0.75
+        const vLeft = wv.getViewportCoordinates(0, 0, this.state.svg)
+        const vRight = wv.getViewportCoordinates(this.state.svg.width, this.state.svg.height, this.state.svg)
+        // console.log('getViewportCoordinates', 
+        //     vLeft, vRight, vXMin, vXMax            
+        // )
+        if (vLeft.vX >= vXMin){
+            trans_x = this.state.svg.translateX - 5
+        } else if (vRight.vX <= vXMax){
+            trans_x = this.state.svg.translateX +5
+        } 
+        if (vLeft.vY >= yXMin){
+            trans_y = this.state.svg.translateY - 5
+        } else if (vRight.vY <= yXMax){
+            trans_y= this.state.svg.translateY +5
+        }             
         this.setState({svg: {
             ...this.state.svg,
-            translateX: this.state.svg.translateX + e.movementX / this.state.svg.scale,
-            translateY: this.state.svg.translateY + e.movementY / this.state.svg.scale
+            translateX: trans_x,
+            translateY: trans_y
         }})
     }
 
