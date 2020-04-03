@@ -1134,6 +1134,23 @@ class Canvas extends Component{
         />
     }
 
+    renderAnnoLabelInpput(selectedAnno){
+        let visible = this.state.showLabelInput
+        if (this.state.mode === modes.CAMERA_MOVE) visible = false
+        return <AnnoLabelInput svg={this.state.svg} 
+            // svgRef={this.svg}
+            onClose={() => this.onAnnoLabelInputClose()}
+            onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}
+            selectedAnno={selectedAnno}
+            visible={visible}
+            onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
+            possibleLabels={this.props.possibleLabels}
+            allowedActions={this.props.canvasConfig.annos.actions}
+            multilabels={this.props.canvasConfig.annos.multilabels}
+            mousePos={this.mousePosAbs}
+            // multilabels={true}
+        />
+    }
     render(){
         console.log('Canvas render state, props', this.state, this.props)
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
@@ -1165,19 +1182,7 @@ class Canvas extends Component{
             </Dimmer>
                 {this.renderAnnoToolBar(selectedAnno)}
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
-                <AnnoLabelInput svg={this.state.svg} 
-                    // svgRef={this.svg}
-                    onClose={() => this.onAnnoLabelInputClose()}
-                    onDeleteClick={annoId => this.onLabelInputDeleteClick(annoId)}
-                    selectedAnno={selectedAnno}
-                    visible={this.state.showLabelInput}
-                    onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
-                    possibleLabels={this.props.possibleLabels}
-                    allowedActions={this.props.canvasConfig.annos.actions}
-                    multilabels={this.props.canvasConfig.annos.multilabels}
-                    mousePos={this.mousePosAbs}
-                    // multilabels={true}
-                    />
+                {this.renderAnnoLabelInpput(selectedAnno)}
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}
