@@ -176,11 +176,12 @@ class Annotation extends Component{
                         this.setAnnoMode(anno, mode)
                         const newAnno = {
                             ...anno, 
-                            status: annoStatus.DELETED
+                            // status: annoStatus.DELETED
+                            mode: mode.DELETED
                         }
-                        this.setState({
-                            anno: newAnno
-                        })
+                        // this.setState({
+                        //     anno: newAnno
+                        // })
                         this.performedAction(newAnno, canvasActions.ANNO_DELETED)
                     // }
                     break

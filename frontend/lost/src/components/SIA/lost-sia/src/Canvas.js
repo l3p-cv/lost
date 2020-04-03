@@ -693,6 +693,7 @@ class Canvas extends Component{
             return {
                 ...el,
                 id: annoId,
+                mode: modes.VIEW,
                 data: transform.toBackend(el.data, this.state.svg, el.type)
             }
         })
