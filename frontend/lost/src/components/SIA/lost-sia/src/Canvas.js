@@ -138,7 +138,7 @@ class Canvas extends Component{
         this.container = React.createRef()
         this.hist = new UndoRedo()
         this.keyMapper = new KeyMapper((keyAction) => this.handleKeyAction(keyAction))
-        this.mousePos = undefined
+        this.mousePosAbs = undefined
     }
 
     componentDidMount(){
@@ -533,7 +533,7 @@ class Canvas extends Component{
     }
 
     handleSvgMouseMove(e){
-        this.mousePos = mouse.getMousePosition(e, this.state.svg)
+        this.mousePosAbs = mouse.getMousePositionAbs(e, this.state.svg)
     }
 
     handleNotification(messageObj){
@@ -1170,7 +1170,7 @@ class Canvas extends Component{
                     possibleLabels={this.props.possibleLabels}
                     allowedActions={this.props.canvasConfig.annos.actions}
                     multilabels={this.props.canvasConfig.annos.multilabels}
-                    mousePos={this.mousePos}
+                    mousePos={this.mousePosAbs}
                     // multilabels={true}
                     />
                 <svg ref={this.svg} width={this.state.svg.width} 
