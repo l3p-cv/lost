@@ -141,7 +141,8 @@ class Canvas extends Component{
             imageData: undefined,
             isJunk: false,
             imgBarVisible:false,
-            annoToolBarVisible: false
+            annoToolBarVisible: false,
+            possibleLabels: undefined
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -152,6 +153,7 @@ class Canvas extends Component{
     }
 
     componentDidMount(){
+        this.updatePossibleLabels()
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -559,6 +561,8 @@ class Canvas extends Component{
      * LOGIC     *
     **************/
     updatePossibleLabels(){
+        console.log('Update possible labels', this.props.possibleLabels)
+        if (!this.props.possibleLabels) return
         if (this.props.possibleLabels.length <= 0) return
         let lbls = this.props.possibleLabels
         if (!('color' in lbls[0])){
