@@ -240,6 +240,7 @@ class SIA extends Component {
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
                     centerCanvasInContainer={true}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
+                    defaultLabel='no label'
                 />
                 <ToolBar onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}></ToolBar>
                 <InfoBoxArea container={this.container}></InfoBoxArea>

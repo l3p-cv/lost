@@ -107,6 +107,8 @@ class AnnoLabelInput extends Component{
                     disabled={!this.props.allowedActions.label}
                     renderPopup
                     focusOnRender
+                    open={true}
+                    defaultLabel={this.props.defaultLabel}
                     />
             </div>
         )

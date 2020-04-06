@@ -89,6 +89,8 @@ import './SIA.scss'
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
  * @param {bool} centerCanvasInContainer - Center the canvas in the 
  *      middle of the container.
+ * @param {str} defaultLabel (optional) - Name of the default label that is used
+ *      when no label was selected for a annotation. If not set "no label" will be used.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
  *      args: {width: int, height: int, scale: float, translateX: float,
  *      translateY:float}
@@ -1083,6 +1085,7 @@ class Canvas extends Component{
                         image={this.state.image}
                         canvasConfig={this.props.canvasConfig}
                         onNotification={(messageObj) => this.handleNotification(messageObj) }
+                        defaultLabel={this.props.defaultLabel}
                     />
             })
             return <g>{annos}</g>
@@ -1110,6 +1113,7 @@ class Canvas extends Component{
                     possibleLabels={this.props.possibleLabels}
                     initLabelIds={this.state.imgLabelIds}
                     relatedId={this.props.annos.image.id}
+                    defaultLabel={this.props.defaultLabel}
                     // disabled={!this.props.allowedActions.label}
                     // renderPopup
                 />
@@ -1148,7 +1152,8 @@ class Canvas extends Component{
             allowedActions={this.props.canvasConfig.annos.actions}
             multilabels={this.props.canvasConfig.annos.multilabels}
             mousePos={this.mousePosAbs}
-            // multilabels={true}
+            defaultLabel={this.props.defaultLabel}
+                    // multilabels={true}
         />
     }
     render(){

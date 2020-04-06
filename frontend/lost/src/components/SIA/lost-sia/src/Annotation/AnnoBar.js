@@ -97,7 +97,7 @@ class AnnoBar extends Component{
                 label += labelObject.label
             })
         } else {
-            label = 'no label'
+            label = this.props.defaultLabel ? this.props.defaultLabel : 'no label'
         }
         switch(this.props.mode){
             case modes.VIEW:
