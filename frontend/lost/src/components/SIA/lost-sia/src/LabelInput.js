@@ -10,6 +10,7 @@ class LabelInput extends Component{
             possibleLabels: [],
             performInit: true,
             enterHits: 0,
+            confirmLabel: 0
         }
         this.inputRef = React.createRef()
     }
@@ -25,7 +26,7 @@ class LabelInput extends Component{
         }
     }
 
-    componentDidUpdate(prevProps){
+    componentDidUpdate(prevProps, prevState){
         console.log('LabelInput DidUpdate', this.state, this.props.initLabelIds, this.props.relatedId)
         if (this.props.visible){
             if (this.props.focusOnRender){
@@ -34,9 +35,12 @@ class LabelInput extends Component{
                     this.inputRef.current.click()
                 }
             }
-
+            
         }
-
+        if (prevState.confirmLabel !== this.state.confirmLabel){
+            this.annoLabelUpdate(this.state.label)
+            this.closeLabelInput()
+        }
         if (prevProps.possibleLabels !== this.props.possibleLabels){
             this.updatePossibleLabels()
         }
@@ -70,35 +74,50 @@ class LabelInput extends Component{
     **************/
     onKeyDown(e: Event){
         e.stopPropagation()
-        console.log('LabelInput KeyDown on Input field: ', e.key)
+        console.log('LabelInputEvent KeyDown on Input field: ', e.key)
         this.performKeyAction(e.key)
         
     }
 
     onChange(e, item ){
-        console.log('LabelInput onChange', item)
+        console.log('LabelInputEvent onChange', item)
         let lbl 
         if (this.props.multilabels){
             lbl = item.value !== -1 ? item.value : []
         } else {
             lbl = item.value !== -1 ? [item.value] : []
         }
-        this.setState({ label: lbl })
+        this.setState({ label: lbl})
         this.annoLabelUpdate(lbl)
-        this.inputRef.current.click()
+        // this.inputRef.current.click()
     }
+
+    onItemClick(e, item){
+        console.log('LabelInputEvent onClick on item', item)
+        this.confirmLabel()
+    }
+
 
     /*************
      * LOGIC     *
      *************/
     updatePossibleLabels(){
         let possibleLabels = []
+        const defaultLabel = this.props.defaultLabel ? this.props.defaultLabel : 'no label'
         if (this.props.possibleLabels.length > 0){
             possibleLabels = this.props.possibleLabels.map(e => {
-                return {key: e.id, value: e.id, text: e.label}
+                return {
+                    key: e.id, value: e.id, text: e.label,
+                    content: (<div onClick={(event) => this.onItemClick(event, e.id)}>
+                        {e.label}</div>)
+                }
             })
         }
-        possibleLabels.unshift({key: -1, value: -1, text: 'no label'})
+        possibleLabels.unshift({
+            key: -1, value: -1, text: defaultLabel,
+            content: (<div onClick={(event) => this.onItemClick(event, -1)}>
+            {defaultLabel}</div>)
+        })
         this.setState({possibleLabels})
 
     }
@@ -130,8 +149,7 @@ class LabelInput extends Component{
     
     confirmLabel(){
         //If not allowed to label -> return
-        this.annoLabelUpdate(this.state.label)
-        this.closeLabelInput()
+        this.setState({confirmLabel: this.state.confirmLabel+1})
     }
 
     closeLabelInput(){
@@ -178,6 +196,7 @@ class LabelInput extends Component{
                         onChange={(e, item) => this.onChange(e, item)}
                         style={{opacity:0.8}}
                         disabled={this.props.disabled}
+                        open={this.props.open}
                     />
                 </Ref>
         )

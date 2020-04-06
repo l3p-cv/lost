@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Always reset annotation mode to *view* when getAnnoBackendFormat is called
 - Delete annotation in sia canvas correctly, when they are moved out of the image.
 - Prevent user from moving image out of canvas
+- Confirm label in LabelInput by click on the respective label
+- Configure name of the default Label by a prop 
 
 ### Fixed
 - Fixed jumping camera when zooming into the image
