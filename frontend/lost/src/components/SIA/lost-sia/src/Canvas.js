@@ -732,6 +732,18 @@ class Canvas extends Component{
         return finalData
     }
 
+    /**
+     * Reset zoom level on Canvas
+     */
+    resetZoom(){
+        this.setState({svg: {
+            ...this.state.svg,
+            translateX: 0,
+            translateY: 0,
+            scale: 1.0
+        }})
+    }
+
     moveCamera(e){
         let trans_x = this.state.svg.translateX + e.movementX / this.state.svg.scale
         let trans_y = this.state.svg.translateY + e.movementY / this.state.svg.scale
