@@ -69,5 +69,5 @@ Theano==1.0.4
 toolz==0.9.0
 urwid==2.0.1
 webencodings==0.5.1
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 WTForms==2.2.1
