@@ -32,7 +32,7 @@ six==1.11.0
 sk-video
 sqlalchemy==1.2.13
 urwid==2.0.1
-werkzeug==0.14.1
+werkzeug==0.15.3
 wtforms==2.2.1
 python-igraph==0.7.1.post6
 pandas
