@@ -377,7 +377,7 @@ class ToolBar extends Component{
                     <Card>
                         <Card.Content header='Zoom/ Move Canvas' />
                         <Card.Content description='Zoom: Use MOUSE WHEEL to zoom in/out'/>
-                        <Card.Content description='Move: Hold MOUSE WHEEL and move mouse'/>
+                        <Card.Content description='Move: Hold MOUSE WHEEL and move mouse. Or Use W/A/S/D keys to move camera up/left/down/right'/>
                     </Card>
                     <Card>
                         <Card.Content header='TAB navigation' />
