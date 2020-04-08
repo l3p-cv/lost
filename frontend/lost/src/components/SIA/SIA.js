@@ -18,12 +18,14 @@ import InfoBoxArea from './InfoBoxes/InfoBoxArea'
 import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
+import { toSia } from './lost-sia/src/utils/transform'
 
 const { 
     siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
-    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask
+    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
+    siaGetNextImage, siaGetPrevImage
 } = actions
 
 class SIA extends Component {
@@ -178,6 +180,40 @@ class SIA extends Component {
         })
     }
 
+    handleCanvasKeyDown(e){
+        console.log('Canvas keyDown: ', e.key)
+        switch(e.key){
+            case 'ArrowLeft':
+                if (!this.props.currentImage.isFirst){
+                    this.props.siaGetPrevImage(this.props.currentImage.id)
+                } else {
+                    this.setState({notification:
+                        {
+                            title: "No previous image",
+                            message: 'This is the first image!',
+                            type: notificationType.WARNING
+                        }
+                    })
+                }
+                break
+            case 'ArrowRight':
+                if (!this.props.currentImage.isLast){
+                    this.props.siaGetNextImage(this.props.currentImage.id)
+                } else {
+                    this.setState({notification:
+                        {
+                            title: "No next image",
+                            message: 'This is the last image!',
+                            type: notificationType.WARNING
+                        }
+                    })
+                }
+                break
+            default:
+                break
+        }
+    }
+
     requestImageFromBackend(){
         this.props.getSiaImage(this.props.annos.image.url).then(response=>
             {
@@ -240,9 +276,13 @@ class SIA extends Component {
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
                     centerCanvasInContainer={true}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
+                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     // defaultLabel='no label'
                 />
-                <ToolBar onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}></ToolBar>
+                <ToolBar 
+                    ref={this.toolbar} 
+                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+                />
                 <InfoBoxArea container={this.container}></InfoBoxArea>
                 <NotificationContainer/>
              </div>
@@ -268,7 +308,8 @@ function mapStateToProps(state) {
         possibleLabels: state.sia.possibleLabels,
         imgLabelInput: state.sia.imgLabelInput,
         canvasConfig: state.sia.config,
-        isJunk: state.sia.isJunk
+        isJunk: state.sia.isJunk,
+        currentImage: state.sia.annos.image
     })
 }
 
@@ -282,6 +323,7 @@ export default connect(
         siaShowImgLabelInput,
         siaImgIsJunk,
         getWorkingOnAnnoTask,
+        siaGetNextImage, siaGetPrevImage
     }
     , null,
     {})(SIA)

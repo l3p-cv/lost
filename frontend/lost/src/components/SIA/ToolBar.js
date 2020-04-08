@@ -383,6 +383,10 @@ class ToolBar extends Component{
                         <Card.Content header='TAB navigation' />
                         <Card.Content description='You can traverse all visible annotation by hitting TAB.'/>
                     </Card>
+                    <Card>
+                        <Card.Content header='Next/Prev image navigation' />
+                        <Card.Content description='Get next image by hitting ARROW_RIGHT key. Get previous image by hitting ARROW_LEFT key.'/>
+                    </Card>
                     </Card.Group>
                 </div>}
             />

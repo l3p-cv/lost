@@ -109,6 +109,8 @@ import './SIA.scss'
  * @event onImgLabelInputClose - ImgLabelInput requests to be closed.
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
+ * @event onKeyDown - Fires for keyDown on canvas 
+ * @event onKeyUp - Fires for keyUp on canvas 
  */
 class Canvas extends Component{
 
@@ -394,12 +396,18 @@ class Canvas extends Component{
         e.preventDefault()
         this.keyMapper.keyDown(e.key)
         console.log('KEY down on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
-        this.findAnno(this.state.selectedAnnoId)
+        // this.findAnno(this.state.selectedAnnoId)
+        if (this.props.onKeyDown){
+            this.props.onKeyDown(e)
+        }
     }
 
     onKeyUp(e){
         e.preventDefault()
         this.keyMapper.keyUp(e.key)
+        if (this.props.onKeyUp){
+            this.props.onKeyUp(e)
+        }
         // console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
