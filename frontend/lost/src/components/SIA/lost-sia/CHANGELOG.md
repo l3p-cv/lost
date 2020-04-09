@@ -4,13 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.3]
+## [0.1.1] - 2020-04-06
+### Fixed
+- Fixed undefined possible labels in canvas
+   
+## [0.1.0] - 2020-04-06
 ### Added
 - Always reset annotation mode to *view* when getAnnoBackendFormat is called
 - Delete annotation in sia canvas correctly, when they are moved out of the image.
 - Prevent user from moving image out of canvas
 - Confirm label in LabelInput by click on the respective label
 - Configure name of the default Label by a prop 
+- Provide method to reset canvas zoom
+- It is now possible to define custom label colors via canvas *possibleLabels* props 
 
 ### Fixed
 - Fixed jumping camera when zooming into the image

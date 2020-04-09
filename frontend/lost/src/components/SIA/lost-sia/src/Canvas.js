@@ -52,6 +52,14 @@ import './SIA.scss'
  *              polygons: []
  *          }
  *      }
+ * @param {object} possibleLabels - Possible labels that can be assigned to 
+ *      an annotation.
+ *      {   
+ *          id: int, 
+ *          description: str, 
+ *          label: str, (name of the label) 
+ *          color: str (color is optional)
+ *      }
  * @param {object} image - The actual image blob that will be displayed
  *      {id: int, data: blob}
  * @param {object} uiConfig - User interface configs 
@@ -133,7 +141,8 @@ class Canvas extends Component{
             imageData: undefined,
             isJunk: false,
             imgBarVisible:false,
-            annoToolBarVisible: false
+            annoToolBarVisible: false,
+            possibleLabels: undefined
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -144,6 +153,7 @@ class Canvas extends Component{
     }
 
     componentDidMount(){
+        this.updatePossibleLabels()
     }
 
     componentDidUpdate(prevProps, prevState){
@@ -180,6 +190,9 @@ class Canvas extends Component{
         //         }
         //     }
         // }
+        if (this.props.possibleLabels !== prevProps.possibleLabels){
+            this.updatePossibleLabels()
+        }
         if (this.state.performedImageInit){
             console.log('canvasHist Performed image init', this.state)
             // Initialize canvas history
@@ -547,6 +560,22 @@ class Canvas extends Component{
     /*************
      * LOGIC     *
     **************/
+    updatePossibleLabels(){
+        console.log('Update possible labels', this.props.possibleLabels)
+        if (!this.props.possibleLabels) return
+        if (this.props.possibleLabels.length <= 0) return
+        let lbls = this.props.possibleLabels
+        if (!('color' in lbls[0])){
+            lbls = lbls.map(e => {
+                return {
+                    ...e, color: colorlut.getColor(e.id)}
+            })
+        }
+        this.setState({
+            possibleLabels: [...lbls]
+        })
+    }
+
     editAnnoLabel(){
         if (this.state.selectedAnnoId){
             const anno = this.findAnno(this.state.selectedAnnoId)
@@ -732,6 +761,18 @@ class Canvas extends Component{
         return finalData
     }
 
+    /**
+     * Reset zoom level on Canvas
+     */
+    resetZoom(){
+        this.setState({svg: {
+            ...this.state.svg,
+            translateX: 0,
+            translateY: 0,
+            scale: 1.0
+        }})
+    }
+
     moveCamera(e){
         let trans_x = this.state.svg.translateX + e.movementX / this.state.svg.scale
         let trans_y = this.state.svg.translateY + e.movementY / this.state.svg.scale
@@ -857,18 +898,22 @@ class Canvas extends Component{
         }
     }
 
+    getLabel(lblId){
+        return this.state.possibleLabels.find( e => {
+            return e.id === lblId
+        })
+    }
+
     getAnnoColor(){
         if (this.state.selectedAnnoId){
             const anno = this.findAnno(this.state.selectedAnnoId)
             if (anno){
-                return colorlut.getColor(anno.labelIds[0])
-            } else {
-                return colorlut.getDefaultColor()
-            }
+                if (anno.labelIds.length > 0){
+                    return this.getLabel(anno.labelIds[0]).color
+                }
+            } 
         }
-        else {
-            return colorlut.getDefaultColor()
-        }
+        return colorlut.getDefaultColor()
     }
 
     /**
@@ -1081,7 +1126,7 @@ class Canvas extends Component{
                         showSingleAnno={this.state.showSingleAnno}
                         uiConfig={this.props.uiConfig}
                         allowedActions={this.props.canvasConfig.annos.actions}
-                        possibleLabels={this.props.possibleLabels}
+                        possibleLabels={this.state.possibleLabels}
                         image={this.state.image}
                         canvasConfig={this.props.canvasConfig}
                         onNotification={(messageObj) => this.handleNotification(messageObj) }
@@ -1110,7 +1155,7 @@ class Canvas extends Component{
                     // relatedId={this.props.annos.image.id}
                     visible={true}
                     onLabelUpdate={label => this.handleImgLabelUpdate(label)}
-                    possibleLabels={this.props.possibleLabels}
+                    possibleLabels={this.state.possibleLabels}
                     initLabelIds={this.state.imgLabelIds}
                     relatedId={this.props.annos.image.id}
                     defaultLabel={this.props.defaultLabel}
@@ -1148,7 +1193,7 @@ class Canvas extends Component{
             selectedAnno={selectedAnno}
             visible={visible}
             onLabelUpdate={anno => this.onAnnoLabelInputUpdate(anno)}
-            possibleLabels={this.props.possibleLabels}
+            possibleLabels={this.state.possibleLabels}
             allowedActions={this.props.canvasConfig.annos.actions}
             multilabels={this.props.canvasConfig.annos.multilabels}
             mousePos={this.mousePosAbs}
@@ -1167,7 +1212,7 @@ class Canvas extends Component{
             {this.renderImgLabelInput()}
             <ImgBar container={this.container} 
                 visible={this.state.imgBarVisible}
-                possibleLabels={this.props.possibleLabels}
+                possibleLabels={this.state.possibleLabels}
                 annos={this.props.annos}
                 svg={this.state.svg}
                 onClose={() => this.handleImgBarClose()}

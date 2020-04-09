@@ -228,9 +228,16 @@ class Annotation extends Component{
         }
     }
 
+    getLabel(lblId){
+        return this.props.possibleLabels.find( e => {
+            return e.id === lblId
+        })
+    }
+    
     getColor(){
-        if (this.state.anno.labelIds){
-            return colorlut.getColor(this.state.anno.labelIds[0])
+        if (this.state.anno.labelIds.length > 0){
+            console.log('Annotation getLabel before', this.state.anno.labelIds)
+            return this.getLabel(this.state.anno.labelIds[0]).color
         }
         else {
             return colorlut.getDefaultColor()
@@ -334,6 +341,7 @@ class Annotation extends Component{
     render(){
         console.log('ANNOTATION: annoChangeMode - Render Single Anno state', this.state)
         if(!this.state.anno.data) return null
+        if(!this.props.possibleLabels) return null
         if(this.state.anno.status === annoStatus.DELETED) return null
         return (
             <g>
