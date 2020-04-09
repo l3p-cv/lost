@@ -19,7 +19,7 @@ class DockerComposeBuilder(object):
 
     def get_header(self):
         return (
-            "version: '2'\n"
+            "version: '2.3'\n"
             "services:\n"
         )
 
@@ -82,7 +82,30 @@ class DockerComposeBuilder(object):
             '          - db-lost\n'
             '          - rabbitmqlost\n\n'
         )
-    
+
+    def get_lostcv_gpu(self):
+        return (
+            '    lost-cv-gpu:\n'
+            '      image: l3pcv/lost-cv-gpu:${LOST_VERSION}\n'
+            '      container_name: lost-cv-gpu\n'
+            '      runtime: nvidia\n'
+            '      command: bash /entrypoint.sh\n'
+            '      env_file:\n'
+            '          - .env\n'
+            '      volumes:\n'
+            '          - ${LOST_DATA}:/home/lost\n'
+            '      restart: always\n'
+            '      environment:\n'
+            '          PYTHONPATH: "/code/backend"\n'
+            '          ENV_NAME: "lost-cv-gpu"\n'
+            '          WORKER_NAME: "lost-cv-gpu-0"\n'
+            '          PY3_INIT: "source /opt/conda/bin/activate lost"\n'
+            '          TF_FORCE_GPU_ALLOW_GROWTH: "true"\n'
+            '      links:\n'
+            '          - db-lost\n'
+            '          - rabbitmqlost\n\n'
+        )
+
     def get_rabbitmq(self):
         return (
             '    rabbitmqlost:\n'
@@ -96,13 +119,16 @@ class DockerComposeBuilder(object):
         with open(sotre_path, 'w') as f:
             f.write(content)
 
-    def write_production_file(self, store_path, add_lostcv=True):
+    def write_production_file(self, store_path, add_lostcv=True, use_gpu=False):
         content = self.get_header()
         content += self.get_lost()
         content += self.get_lostdb()
         content += self.get_rabbitmq()
         if add_lostcv:
-            content += self.get_lostcv()
+            if use_gpu:
+                content += self.get_lostcv_gpu()
+            else:
+                content += self.get_lostcv()
         self._write_file(store_path, content)
 
 class QuickSetup(object):
@@ -119,10 +145,10 @@ class QuickSetup(object):
     
     def write_docker_compose(self, store_path):
         builder = DockerComposeBuilder()
-        if self.args.no_ai or self.args.add_gpu_worker:
+        if self.args.no_ai:
             builder.write_production_file(store_path, add_lostcv=False)
         else:
-            builder.write_production_file(store_path, add_lostcv=True)
+            builder.write_production_file(store_path, add_lostcv=True, use_gpu=self.args.add_gpu_worker)
         logging.info('Wrote docker-compose config to: {}'.format(store_path))
         
 
@@ -180,37 +206,10 @@ class QuickSetup(object):
             ['#MAIL_DEFAULT_SENDER','LOST Notification System <email@email.com>'],
             ['#MAIL_LOST_URL','http://mylostinstance.url/']
         ]
-        if args.add_gpu_worker:
-            config.append(['#===============================',' #'])
-            config.append(['#= Additional GPU worker config ',' #'])
-            config.append(['#===============================',' #'])
-            config.append(['PYTHONPATH','/code/backend'])
-            config.append(['ENV_NAME','lost-cv-gpu'])
-            config.append(['WORKER_NAME','lost-cv-gpu-0'])
-            config.append(['PY3_INIT','source /opt/conda/bin/activate/ lost'])
-            config.append(['#LOST_DB_IP','db-lost'])
-            config.append(['#LOST_DB_PORT','3306'])
-            config.append(['#RABBITMQ_IP','rabbitmqlost'])
-            config.append(['#RABBITMQ_PORT','5672'])
-
         with open(env_path, 'w') as f:
             for key, val in config:
                 f.write('{}={}\n'.format(key, val))
         return
-
-    def create_gpu_worker_config(self, gpu_env_file_name, run_script_name):
-        gpu_env_path = os.path.join(self.dst_docker_dir, gpu_env_file_name)
-        self.write_env_config(gpu_env_path)
-        logging.info('Created {}'.format(gpu_env_path))    
-        docker_run_script = os.path.join(self.dst_docker_dir, run_script_name)
-        with open(docker_run_script, 'w') as f:
-            f.write(('docker run --runtime=nvidia '
-                '--name lost-cv-gpu --network "docker_default" '
-                '--env-file {} --restart=always '
-                '-v {}:/home/lost '
-                'l3pcv/lost-cv-gpu:{} bash /entrypoint.sh'
-                ).format(gpu_env_file_name, self.dst_data_dir, self.release))
-        logging.info('Created {}'.format(docker_run_script))
         
     def main(self):
         try:
@@ -230,18 +229,12 @@ class QuickSetup(object):
         env_path = os.path.join(self.dst_docker_dir,'.env')
         self.write_env_config(env_path)
         logging.info('Created {}'.format(env_path))
-        if args.add_gpu_worker:
-            self.create_gpu_worker_config('.gpu_env', 'run_gpu_worker.sh')
         logging.info('')
         logging.info('Finished setup! To test LOST run:')
         logging.info('======================================================')
         logging.info('1) Type the command below into your command line:')
         logging.info('   cd {}; docker-compose up'.format(self.dst_docker_dir))
         n = 2
-        if args.add_gpu_worker:
-            logging.info('{}) Start gpu-worker with command below:'.format(n))
-            logging.info('   cd {}; bash run_gpu_worker.sh'.format(self.dst_docker_dir))
-            n += 1
         logging.info('{}) Open your browser and navigate to: http://localhost'.format(n))
         logging.info('    Login user:     admin')
         logging.info('    Login password: admin')
