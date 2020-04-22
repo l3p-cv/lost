@@ -157,8 +157,19 @@ Install LOST from backup
         python3 quick_setup.py ~/lost
         sudo rm -rf ~/lost
         unzip backup.zip ~/lost
+        
 5. Make sure that ~/lost/docker/.env file contains proper absolute path to ~/lost in LOST_DATA
 and proper LOST_DB_PASSWORD
+
 6. Run LOST:
     Follow instructions of the quick_setup script, 
     printed in the command line.
+    
+Migration Guide from 0.0.6 to 1.1.0
+=================
+Make these changes to the database:
+.. figure:: images/DB changes.*
+
+    |fig-db-changes|: The the changes required to be made manually
+Also you need to change your custom pipeline configuration files:
+backend/lost/pyapi/examples/pipes/<your_pipeline>/<config_file>.json
