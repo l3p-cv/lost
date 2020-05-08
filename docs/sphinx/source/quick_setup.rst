@@ -168,7 +168,8 @@ and proper LOST_DB_PASSWORD
 Migration Guide from 0.0.6 to 1.1.0
 =================
 1. Make these changes to the database:
-.. figure:: images/DB changes.*
+
+.. figure:: images/db-changes.*
 
     |fig-db-changes|: The the changes required to be made manually
     
@@ -178,3 +179,6 @@ backend/lost/pyapi/examples/pipes/<your_pipeline>/<config_file>.json
 3. Old unfinished tasks can become unfinishable so I recommend creating special user called 'trash' and for all unfinished tasks change lost.anno_task#group_id to 'trash' user group id from lost.user_groups.
 
 4. I recommend clearing lost.choosen_anno_task table.
+
+
+.. |fig-db-changes| replace:: Figure 1
