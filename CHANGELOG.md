@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1]
+### Added 
+- Docs: Migration guide -> How to migrate from 0.0.6 to 1.1.0 (see https://github.com/l3p-cv/lost/pull/71)
+- Reduction of docker images size (see https://github.com/l3p-cv/lost/pull/68)
+- Use docker-compose for gpu worker (see https://github.com/l3p-cv/lost/pull/65)
+
 ## [1.1.0] - 2020-04-06
 ### Changed
 - Usermanagement: Integrated usermanagement refactoring (see also https://github.com/l3p-cv/lost/pull/47)
