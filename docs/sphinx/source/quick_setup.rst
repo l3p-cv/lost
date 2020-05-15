@@ -115,11 +115,17 @@ LOST + GPU Worker
     https://docs.docker.com/compose/install/
 3. Install nvidia docker:
     https://github.com/NVIDIA/nvidia-docker#quickstart
-4. Clone LOST:
+4. Install nvidia-docker2:
+    .. code-block:: bash
+
+        sudo apt-get update
+        sudo apt-get install docker-ce nvidia-docker2
+        sudo systemctl restart docker
+5. Clone LOST:
     .. code-block:: bash
 
         git clone https://github.com/l3p-cv/lost.git
-5. Run quick_setup script:
+6. Run quick_setup script:
     .. code-block:: bash
 
         cd lost/docker/quick_setup/
@@ -128,7 +134,7 @@ LOST + GPU Worker
         # you can use the --release argument to do so.
         python3 quick_setup.py ~/lost -gpu
 
-6. Run LOST:
+7. Run LOST:
     Follow instructions of the quick_setup script, 
     printed in the command line.
     
