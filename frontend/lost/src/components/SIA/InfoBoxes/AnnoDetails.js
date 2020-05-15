@@ -39,7 +39,6 @@ class AnnoDetails extends Component{
             let box = transform.getBox(this.props.anno.data, this.props.anno.type)
             if (!box[1]) return "No annotation selected!"
             box = transform.toBackend(box, this.props.svg, 'bBox')
-            console.log('AnnoDetails box', box)
             return (
                 <div>
                 <Statistic.Group widths='one' size='mini'>

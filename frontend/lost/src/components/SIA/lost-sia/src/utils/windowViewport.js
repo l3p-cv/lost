@@ -17,8 +17,6 @@ export function getViewportCoordinates(w, svg){
 
     const vX = viewport.xMin + (w.x - window.xMin) * scaleX
     const vY = viewport.yMin + (w.y - window.yMin) * scaleY
-    // console.log('window_viewport: window, viewport', window, viewport)
-
     return {window, viewport, vX, vY, scaleX, scaleY}
 }
 

@@ -262,7 +262,6 @@ class Node extends Component{
         )
     }
     render(){
-        console.log('Render Node', this.props.anno, this.props.idx)
             return(
                 <g>
                     {this.renderNodes()}

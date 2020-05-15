@@ -65,7 +65,6 @@ class SIA extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log('Sia did update', this.container.current.getBoundingClientRect())
         this.setFullscreen(this.props.fullscreenMode)
         if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
             // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
@@ -112,14 +111,12 @@ class SIA extends Component {
             if (this.props.getNextImage){
                 const newAnnos = this.canvas.current.getAnnos()
                 this.canvas.current.unloadImage()
-                console.log('getNextImage newAnnos', newAnnos)
                 this.setState({image: {
                     id: undefined, 
                     data:undefined
                 }})
                 this.props.siaImgIsJunk(false)
                 this.props.siaUpdateAnnos(newAnnos).then((r) => {
-                    console.log('SIA REQUEST: Updated Annos', r)
                     this.props.getSiaAnnos(this.props.getNextImage)
                     
                 })
@@ -172,7 +169,6 @@ class SIA extends Component {
     }
 
     handleNotification(messageObj){
-        console.log('SIANotification', messageObj)
         this.setState({
             notification: messageObj
         })
@@ -218,7 +214,6 @@ class SIA extends Component {
     }
 
     render() {
-        console.log('Sia renders', this.state.image)
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas

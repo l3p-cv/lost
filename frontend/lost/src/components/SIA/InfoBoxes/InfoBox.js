@@ -28,7 +28,6 @@ class InfoBox extends Component{
     }
 
     handleOnStop(e){
-        console.log('InfoBox onStop', e)
         if (this.props.onStop){
             this.props.onStop(e)
         }
@@ -50,7 +49,6 @@ class InfoBox extends Component{
     
     render(){
         if (!this.props.visible) return null
-        console.log('InfoBox', this.state)
         return(
         <Draggable handle=".handle" onStop={e => this.handleOnStop(e)}
         >
