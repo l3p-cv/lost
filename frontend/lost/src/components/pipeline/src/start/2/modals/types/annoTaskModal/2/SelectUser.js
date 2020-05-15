@@ -22,14 +22,6 @@ class SelectUser extends Component{
 
 
     renderTable(){
-        console.log('----------2--------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
-        // return this.props.availableGroups.map((el)=>{
-        //     // return(
-        //     //     <div key={el.id} id={el.id} name={el.groupName} onClick={this.selectRow}>{el.groupName}</div>
-        //     // )
-        // })
         return (
         <ReactTable
         columns={[

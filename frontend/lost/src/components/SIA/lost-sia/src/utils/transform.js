@@ -39,7 +39,6 @@ export function toSia(data, image, type){
                 }
             })
         default:
-            console.log("Wrong annotation type!")
         
     }
 }
@@ -53,7 +52,6 @@ export function toSia(data, image, type){
  * @returns Annotation data in backend style (relative, centered)
  */
 export function toBackend(data, image, type){
-    console.log('toBackend image', image)
     switch(type) {
         case 'bBox':
             // const w = image.width * data.w
@@ -157,7 +155,6 @@ export function getBox(data, type){
                 {x:minX, y:maxY}, {x:maxX, y:maxY}
             ]
         default:
-            console.log("Wrong annotation type!")
             break
         
     }
@@ -171,7 +168,6 @@ export function getCenter(data, type){
         case 'line':
         case 'polygon':
         case 'bBox':
-            console.log('getCenter ', data)
             box = getBox(data, type)
             const w = box[1].x - box[0].x
             const h = box[3].y - box[0].y
@@ -180,7 +176,6 @@ export function getCenter(data, type){
                 y: box[0].y + h/2.0
             }  
         default:
-            console.log("Wrong annotation type!")
         
     }
 }

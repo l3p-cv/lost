@@ -38,10 +38,6 @@ class WorkingOnSIA extends Component {
         this.myref = React.createRef()
       }
 
-    componentDidMount(){
-        // console.log('WorkingOnSIA did mount', this.myref.current.getBoundingClientRect())
-
-    }
 
     componentDidUpdate(){
         const checkHeight = this.myref.current.getBoundingClientRect().height 

@@ -11,9 +11,6 @@ class SelectTree extends Component{
     }
 
     selectRow(row){
-        console.log('------rrrrrrrr------------------------------');
-        console.log(row);
-        console.log('------------------------------------');
         this.props.selectLabelTree(
             this.props.peN, 
             row.idx)
@@ -24,9 +21,6 @@ class SelectTree extends Component{
 
 
     renderTable(){
-        console.log('------------3------------------------');
-        console.log(this.props);
-        console.log('------------------------------------');
         // return this.props.availableLabelTrees.map((el)=>{
         //     return(
         //         <div key={el.idx} id={el.idx} onClick={this.selectRow}>{el.name}</div>
