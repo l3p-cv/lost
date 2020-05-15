@@ -25,7 +25,6 @@ class Polygon extends Component{
     }
 
     componentDidMount(){
-        console.log('Polygon did mount', this.props, this.props.anno)
         if (this.props.anno.mode === modes.CREATE){
             // this.performedAction(this.props.anno, canvasActions.ANNO_CREATED_NODE)
             const data = this.props.anno.data[0]
@@ -46,9 +45,7 @@ class Polygon extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('Update polygon-> state', this.state.anno)
         if (prevProps.anno !== this.props.anno){
-            console.log('POLYGON: annoChangeMode -> Update anno from props -> state', this.props.anno, this.state.anno)
             this.setState({anno: {...this.props.anno}})
         }
     }
@@ -115,7 +112,6 @@ class Polygon extends Component{
         switch (this.state.anno.mode){
             case modes.CREATE:
                 if (e.button === 2){
-                    console.log('onNodeMouseDown create')
                     let newAnnoData = [...this.state.anno.data]
                     newAnnoData.push({
                         x: newAnnoData[idx].x,
@@ -174,7 +170,6 @@ class Polygon extends Component{
     * EDGE EVENTS *
     ***************/
     onEdgeMouseDown(e, idx){
-        console.log('Edge mouse down', idx)
         switch (this.state.anno.mode){
             case modes.ADD:
                 this.addNode(e, idx)
@@ -206,7 +201,6 @@ class Polygon extends Component{
     }
 
     requestModeChange(anno, mode){
-        console.log('POLYGON: annoChangeMode - requestModeChange', anno, mode)
         this.props.onModeChangeRequest(anno, mode)
     }
 
@@ -219,7 +213,6 @@ class Polygon extends Component{
     }
 
     addNode(e, idx){
-        console.log('Add Node to Polygon', idx)
         const mPos = mouse.getMousePosition(e, this.props.svg)
         let newAnnoData = this.state.anno.data.slice(0,idx)
         newAnnoData.push(mPos)
@@ -238,7 +231,6 @@ class Polygon extends Component{
         let newAnnoData = [...this.state.anno.data]
         newAnnoData[idx].x = mousePos.x
         newAnnoData[idx].y = mousePos.y
-        console.log('Polygon updateAnnoByMousePos newData', newAnnoData)
         this.setState({
             anno: {
                 ...this.state.anno,
@@ -338,7 +330,6 @@ class Polygon extends Component{
 
     render(){
         if (this.state.anno){
-            console.log('POLYGON: - Render -> state, props.anno', this.state.anno)
             return (
                 <g
                     onMouseMove={e => this.onMouseMove(e)}

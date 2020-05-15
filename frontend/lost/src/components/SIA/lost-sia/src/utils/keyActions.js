@@ -48,7 +48,6 @@ class KeyMapper{
     keyUp(key){
         switch (key){
             case 'Control':
-                console.log('KeyMapper Control up')
                 this.controlDown = false
                 this.triggerKeyAction(LEAVE_ANNO_ADD_MODE)
                 break

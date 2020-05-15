@@ -21,7 +21,6 @@ class BBox extends Component{
 
     componentDidMount(prevProps){
         if (this.props.anno.mode === modes.CREATE){
-            console.log('in Create Pos')
             const data = this.props.anno.data[0]
             const newAnno = {
                 ...this.props.anno,
@@ -87,7 +86,6 @@ class BBox extends Component{
         switch(this.state.anno.mode){
             case modes.VIEW:
                 if (e.button === 0){
-                    console.log('Node mouse Down', idx)
                     this.requestModeChange(
                         {...this.state.anno, selectedNode:idx}, 
                         modes.EDIT
@@ -109,7 +107,6 @@ class BBox extends Component{
                 break
             case modes.CREATE:
                 if (e.button === 2){
-                    console.log('BBOX: hist Created', this.state.anno)
                     this.requestModeChange(this.state.anno, modes.VIEW)
                     this.performedAction(this.state.anno, canvasActions.ANNO_CREATED)
                 }
@@ -242,7 +239,6 @@ class BBox extends Component{
                             onMouseLeave={(e, idx) => this.handleNodeMouseLeave(e, idx)}
                         />
             default:
-                console.log('BBOX: renderNodes default', this.state.anno)
                 return this.state.anno.data.map((e, idx) => {
                     return <Node anno={this.state.anno.data} idx={idx} 
                         key={idx} style={this.props.style}
@@ -271,7 +267,6 @@ class BBox extends Component{
 
     render(){
         if (this.state.anno){
-            console.log('BBOX: annoChangeMode Render', this.state.anno)
             return (
             <g
                 onMouseMove={e => this.onMouseMove(e)}

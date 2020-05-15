@@ -176,7 +176,6 @@ export function requestPipeline(id: Number, token: String){
 	})
 }
 export function deletePipe(id: Number, token: String){
-	console.log(id, token)
 	return http.del({
 		url: URLS.DELETE_PIPELINE(id),
 		token,
