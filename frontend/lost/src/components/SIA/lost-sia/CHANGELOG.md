@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added camera move on wasd keys
 - Provide canvas key events via prop callback
 
+## [0.1.2] - 2020-04-06
+### Removed
+- Removed most sia logs that clutter the console
+  
 ## [0.1.1] - 2020-04-06
 ### Fixed
 - Fixed undefined possible labels in canvas

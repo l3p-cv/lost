@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SIA: 
   * Added next/ prev image shortcut via ArrowLeft/ArrowRight keys (see https://github.com/l3p-cv/lost/issues/67)
   * Added camera move on wasd keys
+## [1.1.1] - 2020-05-15
+### Added 
+- Docs: Migration guide -> How to migrate from 0.0.6 to 1.1.0 (see https://github.com/l3p-cv/lost/pull/71)
+- Reduction of docker images size (see https://github.com/l3p-cv/lost/pull/68)
+- Use docker-compose for gpu worker (see https://github.com/l3p-cv/lost/pull/65)
 
 ## [1.1.0] - 2020-04-06
 ### Changed

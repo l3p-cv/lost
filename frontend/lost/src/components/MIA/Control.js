@@ -76,7 +76,6 @@ class Control extends Component {
             labels: [{...this.props.selectedLabel}]
         }
         this.hist.push(updateData, 'next')
-        console.log("Update to History: ", this.hist.hist)
         this.props.updateMia(updateData, this.props.getMiaAnnos, this.props.getWorkingOnAnnoTask, this.props.maxAmount)
         this.props.refreshToken()
         this.props.setMiaSelectedLabel(undefined)
@@ -101,16 +100,11 @@ class Control extends Component {
     handleUndo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.undoMia()
-            console.log('Mia hist undo returned', cState)
-            console.log("Mia hist after undo", this.hist.hist)
             
             const miaIds = {
                 miaIds: cState.entry.images.map(image => {
                 return image.id
-            })}
-
-            console.log('MiaIds', miaIds)
-            
+            })}            
             this.props.getSpecialMiaAnnos(miaIds, this.props.getWorkingOnAnnoTask)
             
         }

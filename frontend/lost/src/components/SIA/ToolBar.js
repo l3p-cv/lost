@@ -71,14 +71,12 @@ class ToolBar extends Component{
         // this.props.siaSetImageLoaded(false)
         // this.props.selectAnnotation(undefined)
         this.props.siaGetNextImage(this.props.currentImage.id)
-        console.log("TOOLBAR - wrongLoad - getNextImg", this.props.currentImage.id)
     }
 
     getPrevImg(){
         // this.props.siaSetImageLoaded(false)
         // this.props.selectAnnotation(undefined)
         this.props.siaGetPrevImage(this.props.currentImage.id)
-        console.log("TOOLBAR - wrongLoad - getPrevImg", this.props.currentImage.id)
     }
 
     setFinished(){
@@ -408,7 +406,6 @@ class ToolBar extends Component{
     }
 
     render(){
-        console.log('Toobar state', this.state, this.props.currentImage)
         return(
         <div
             ref={this.toolBarGroup}
