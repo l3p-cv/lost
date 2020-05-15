@@ -111,6 +111,7 @@ class SIA extends Component {
         }
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
+                this.canvas.current.resetZoom()
                 const newAnnos = this.canvas.current.getAnnos()
                 this.canvas.current.unloadImage()
                 this.setState({image: {
@@ -127,6 +128,7 @@ class SIA extends Component {
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
             if (this.props.getPrevImage){
+                this.canvas.current.resetZoom()
                 const newAnnos = this.canvas.current.getAnnos()
                 this.canvas.current.unloadImage()
                 this.setState({image: {
