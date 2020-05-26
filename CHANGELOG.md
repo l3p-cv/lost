@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SIA: 
   * Added next/ prev image shortcut via ArrowLeft/ArrowRight keys (see https://github.com/l3p-cv/lost/issues/67)
   * Added camera move on wasd keys
+### Fixed
+-  PyAPI: get_label_tree method did not return any label tree 
+
+
+## [1.1.2] - 2020-05-26
+### Fixed
+-  PyAPI: get_label_tree method did not return any label tree 
+
+
+## [1.0.1] - 2020-05-26
+### Fixed
+-  PyAPI: get_label_tree method did not return any label tree 
+
+
 ## [1.1.1] - 2020-05-15
 ### Added 
 - Docs: Migration guide -> How to migrate from 0.0.6 to 1.1.0 (see https://github.com/l3p-cv/lost/pull/71)
