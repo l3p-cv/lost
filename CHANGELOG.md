@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2020-05-26
+### Fixed
+-  PyAPI: get_label_tree method did not return any label tree 
+
+## [1.0.1] - 2020-05-26
+### Fixed
+-  PyAPI: get_label_tree method did not return any label tree 
+
 ## [1.1.1] - 2020-05-15
 ### Added 
 - Docs: Migration guide -> How to migrate from 0.0.6 to 1.1.0 (see https://github.com/l3p-cv/lost/pull/71)
