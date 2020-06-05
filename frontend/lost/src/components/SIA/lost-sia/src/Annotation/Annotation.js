@@ -336,8 +336,8 @@ class Annotation extends Component{
                 onMouseDown={e => this.onMouseDown(e)}
                 onContextMenu={e => this.onContextMenu(e)}
             >
-                {this.renderAnno()}
                 {this.renderAnnoBar()}
+                {this.renderAnno()}
 
             </g>
             </g>

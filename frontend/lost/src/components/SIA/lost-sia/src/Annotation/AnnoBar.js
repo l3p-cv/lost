@@ -65,7 +65,7 @@ class AnnoBar extends Component{
                 })
             }
         }
-        let top = topPoint.y + 10 
+        let top = topPoint.y - 10 
         let left = topPoint.x + 7
         if (top < 0) top = topPoint.y + 10
         if (this.state.top !== top || this.state.left !== left){  
