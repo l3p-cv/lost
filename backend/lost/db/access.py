@@ -428,6 +428,12 @@ class DBMan(object):
         '''
         return self.session.query(model.ImageAnno)\
         .filter(model.ImageAnno.iteration==iteration, model.ImageAnno.anno_task_id==anno_task_id).all()
+    
+    def get_all_image_annos(self, anno_task_id):
+        ''' Get all image annotation of an annotation task
+        '''
+        return self.session.query(model.ImageAnno)\
+        .filter(model.ImageAnno.anno_task_id==anno_task_id).all()
 
     def get_user(self, user_id):
         ''' Get User by its id
@@ -748,3 +754,40 @@ class DBMan(object):
                                                             model.PipeElement.dtype==dtype.PipeElement.SCRIPT,\
                                                             model.PipeElement.state==state.PipeElement.SCRIPT_ERROR,\
                                                             model.PipeElement.error_reported==False)
+    
+    def get_sia_review_first(self, anno_task_id, iteration=None):
+        ''' Get next sia annotation of an anno_task
+        '''
+        if iteration:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                           model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.asc()).first()
+        else:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id).order_by(model.ImageAnno.idx.asc()).first()
+
+
+    def get_sia_review_next(self, anno_task_id, img_anno_id, iteration=None):
+        ''' Get next sia annotation of an anno_task
+        '''
+        if iteration:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                        model.ImageAnno.idx > img_anno_id, \
+                                                        model.ImageAnno.iteration==iteration).first()
+        else:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                        model.ImageAnno.idx > img_anno_id).first()
+
+    def get_sia_review_prev(self, anno_task_id, img_anno_id, iteration=None):
+        ''' Get a previous image annotation by current annotation id
+        '''
+        if iteration:
+            sql = "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
+            FROM image_anno WHERE idx<%d)"\
+            %(iteration, anno_task_id, img_anno_id)
+        else:
+            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx=(SELECT max(idx) FROM image_anno WHERE idx<%d)"\
+            %(anno_task_id, img_anno_id)
+        img_anno = self.session.execute(sql).first()
+        if img_anno:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()
+        else:
+            return None

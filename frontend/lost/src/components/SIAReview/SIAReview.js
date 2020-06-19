@@ -12,7 +12,7 @@ const {
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
-    siaGetNextImage, siaGetPrevImage
+    siaGetNextImage, siaGetPrevImage, getSiaReviewAnnos, getSiaReviewOptions
 } = actions
 
 class SIAReview extends Component {
@@ -27,6 +27,12 @@ class SIAReview extends Component {
     }
 
    
+    componentDidMount() {
+        const pipeElementId = 3
+        const test_data = {direction: 'previous', image_anno_id: 9, iteration: 0, pe_id: pipeElementId}
+        this.props.getSiaReviewOptions(pipeElementId)
+        this.props.getSiaReviewAnnos(test_data)
+    }
 
     onDashboarClick(e){
         console.log('Dasboard clicked')
@@ -77,7 +83,8 @@ export default connect(
         siaShowImgLabelInput,
         siaImgIsJunk,
         getWorkingOnAnnoTask,
-        siaGetNextImage, siaGetPrevImage
+        siaGetNextImage, siaGetPrevImage,
+        getSiaReviewAnnos, getSiaReviewOptions
     }
     , null,
     {})(SIAReview)
