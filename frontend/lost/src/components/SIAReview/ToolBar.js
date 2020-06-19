@@ -60,7 +60,7 @@ class ToolBar extends Component{
         if (tb){
             if (this.props.svg){
                 let toolBarTop = undefined
-                toolBarTop = this.props.svg.top + (this.props.svg.height - tb.height)/2
+                toolBarTop = this.props.svg.top //+ (this.props.svg.height - tb.height)/2
                 this.setState({
                     position: {...this.state.position,
                     left: this.props.svg.left - 50,
@@ -73,13 +73,19 @@ class ToolBar extends Component{
     getNextImg(){
         // this.props.siaSetImageLoaded(false)
         // this.props.selectAnnotation(undefined)
-        this.props.siaGetNextImage(this.props.currentImage.id)
+        // this.props.siaGetNextImage(this.props.currentImage.id)
+        if (this.props.onNextImage){
+            this.props.onNextImage(this.props.currentImage.id)
+        }
     }
 
     getPrevImg(){
         // this.props.siaSetImageLoaded(false)
         // this.props.selectAnnotation(undefined)
-        this.props.siaGetPrevImage(this.props.currentImage.id)
+        // this.props.siaGetPrevImage(this.props.currentImage.id)
+        if (this.props.onPrevImage){
+            this.props.onPrevImage(this.props.currentImage.id)
+        }
     }
 
     setFinished(){
@@ -353,7 +359,7 @@ class ToolBar extends Component{
 
 function mapStateToProps(state) {
     return ({
-        currentImage: state.sia.annos.image,
+        // currentImage: state.sia.annos.image,
         fullscreenMode: state.sia.fullscreenMode,
         annos: state.sia.annos,
         appliedFullscreen: state.sia.appliedFullscreen,

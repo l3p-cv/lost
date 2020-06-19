@@ -92,15 +92,25 @@ class SIAReview extends Component {
         )
     }
 
+    handleNextPrevImage(imgId, direction){
+        const data = {direction: direction, image_anno_id: imgId, iteration: null, pe_id: this.props.pipeElementId}
+        this.props.getSiaReviewOptions(this.props.pipeElementId)
+        this.props.getSiaReviewAnnos(data)
+    }
+
     render() {
         if (!this.props.annos) return "No Review Data!"
+        if (!this.props.filterOptions) return "No Review Data!"
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <ToolBar 
                     svg={this.state.svg}
+                    currentImage={this.props.annos.image}
                     onToolSelected={tool => this.handleToolSelected(tool)}
                     onToggleImgLabelInput={() => this.handleToggleImgLabelInput()}
                     onToggleJunk={() => this.handleToggleJunk()}
+                    onNextImage={imgId => this.handleNextPrevImage(imgId, 'next')}
+                    onPrevImage={imgId => this.handleNextPrevImage(imgId, 'previous')}
                 />
                 <Canvas
                     ref={this.canvas} 
@@ -113,7 +123,7 @@ class SIAReview extends Component {
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.state.tool}
                     canvasConfig={canvasConfig}
-                    possibleLabels={possibleLabels.labels}
+                    possibleLabels={this.props.filterOptions.possible_labels}
                     onSVGUpdate={svg => this.handleSetSVG(svg)}
                     // onAnnoSelect={anno => this.props.selectAnnotation(anno)}
                     layoutOffset={this.state.layoutOffset}
@@ -149,6 +159,7 @@ function mapStateToProps(state) {
         currentImage: state.sia.annos.image,
         pipeElementId: state.siaReview.elementId,
         annos: state.siaReview.annos,
+        filterOptions: state.siaReview.options
     })
 }
 
