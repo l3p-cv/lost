@@ -15,7 +15,7 @@ const {
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
-    siaGetNextImage, siaGetPrevImage
+    siaGetNextImage, siaGetPrevImage, getSiaReviewAnnos, getSiaReviewOptions
 } = actions
 
 class SIAReview extends Component {
@@ -32,7 +32,8 @@ class SIAReview extends Component {
             svg: undefined,
             tool: 'bBox',
             imgLabelInputVisible: false,
-            isJunk: false
+            isJunk: false,
+            image:{id:null, data:null}
         }
         this.siteHistory = createHashHistory()
         this.container = React.createRef()
@@ -57,7 +58,42 @@ class SIAReview extends Component {
     handleToggleJunk(){
         this.setState({isJunk: !this.state.isJunk})
     }
+   
+    componentDidMount() {
+        // const pipeElementId = 3
+        //direction: 'next', 'previous', 'first'
+
+        const test_data = {direction: 'first', image_anno_id: null, iteration: null, pe_id: this.props.pipeElementId}
+        this.props.getSiaReviewOptions(this.props.pipeElementId)
+        this.props.getSiaReviewAnnos(test_data)
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.annos){
+            if (prevProps.annos){
+                if(this.props.annos.image.id !== prevProps.annos.image.id){
+                    this.requestImageFromBackend()
+                }
+            } else {
+                this.requestImageFromBackend()
+            }
+        }
+    }
+
+    requestImageFromBackend(){
+        this.props.getSiaImage(this.props.annos.image.url).then(response=>
+            {
+                this.setState({image: {
+                    // ...this.state.image, 
+                    id: this.props.annos.image.id, 
+                    data:window.URL.createObjectURL(response)
+                }})
+            }
+        )
+    }
+
     render() {
+        if (!this.props.annos) return "No Review Data!"
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <ToolBar 
@@ -71,8 +107,8 @@ class SIAReview extends Component {
                     imgBarVisible={true}
                     imgLabelInputVisible={this.state.imgLabelInputVisible}
                     container={this.container}
-                    annos={dummyAnnos}
-                    image={imageBlob}
+                    annos={this.props.annos}
+                    image={this.state.image}
                     uiConfig={this.props.uiConfig}
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.state.tool}
@@ -110,7 +146,9 @@ function mapStateToProps(state) {
         imgLabelInput: state.sia.imgLabelInput,
         canvasConfig: state.sia.config,
         isJunk: state.sia.isJunk,
-        currentImage: state.sia.annos.image
+        currentImage: state.sia.annos.image,
+        pipeElementId: state.siaReview.elementId,
+        annos: state.siaReview.annos,
     })
 }
 
@@ -122,7 +160,8 @@ export default connect(
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
         getWorkingOnAnnoTask,
-        siaGetNextImage, siaGetPrevImage
+        siaGetNextImage, siaGetPrevImage,
+        getSiaReviewAnnos, getSiaReviewOptions
     }
     , null,
     {})(SIAReview)

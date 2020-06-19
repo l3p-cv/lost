@@ -132,11 +132,15 @@ def get_sia_anno_task(db_man, user_id):
         if cat.anno_task.dtype == dtype.AnnoTask.SIA:
             return cat.anno_task
     return None
-def get_image_progress(db_man, anno_task, img_id):
+def get_image_progress(db_man, anno_task, img_id, all_iterations=False):
     pipe_element=db_man.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
     anno_ids = list()
-    for anno in db_man.get_all_image_annos_by_iteration(anno_task.idx, pipe_element.iteration):
-        anno_ids.append(anno.idx)
+    if all_iterations:
+        for anno in db_man.get_all_image_annos(anno_task.idx):
+            anno_ids.append(anno.idx)
+    else:
+        for anno in db_man.get_all_image_annos_by_iteration(anno_task.idx, pipe_element.iteration):
+            anno_ids.append(anno.idx)
     total_image_amount = len(anno_ids)
     current_image_number = anno_ids.index(img_id) + 1 
 
@@ -526,3 +530,44 @@ def get_last_image_id(dbm, user_id):
         if tmp_anno:
             return tmp_anno.idx -1 
     return None
+
+def review(dbm, data, user_id, media_url):
+    direction = data['direction']
+    current_idx = data['image_anno_id']
+    iteration = data['iteration']
+    pe_id = data['pe_id']
+
+    at = dbm.get_pipe_element(pipe_e_id=pe_id).anno_task
+    first_anno = dbm.get_sia_review_first(at.idx, iteration)
+    if direction == 'first':
+        image_anno = first_anno
+    elif direction == 'next':
+        image_anno = dbm.get_sia_review_next(at.idx, current_idx, iteration)
+    elif direction == 'previous':
+        image_anno = dbm.get_sia_review_prev(at.idx, current_idx, iteration)
+
+    if image_anno:
+        all_iterations = True
+        if iteration:
+            all_iterations = False
+
+        current_image_number, total_image_amount = get_image_progress(dbm, at, image_anno.idx, all_iterations)
+
+        is_first_image = False
+        if first_anno.idx == image_anno.idx:
+            is_first_image = True
+
+        is_last_image = False
+        if current_image_number == total_image_amount:
+            is_last_image = True
+
+        sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
+        return sia_serialize.serialize()
+    else:
+        return 'no annotation found'
+
+def reviewoptions(dbm, pe_id, user_id):
+    options = {}
+    pipe_element = dbm.get_pipe_element(pipe_e_id=pe_id)
+    options['max_iteration'] = pipe_element.iteration
+    return options
