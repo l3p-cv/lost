@@ -100,11 +100,12 @@ def get_previous(db_man, user_id, img_id, media_url):
         return sia_serialize.serialize()
     else:
         return "nothing available"
-def get_label_trees(db_man, user_id):
+def get_label_trees(db_man, user_id, at=None):
     """
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, user_id)
+    if at is None:
+        at = get_sia_anno_task(db_man, user_id)
     label_trees_json = dict()
     label_trees_json['labels'] = list()
     if at:
@@ -570,4 +571,5 @@ def reviewoptions(dbm, pe_id, user_id):
     options = {}
     pipe_element = dbm.get_pipe_element(pipe_e_id=pe_id)
     options['max_iteration'] = pipe_element.iteration
+    options['possible_labels'] = get_label_trees(dbm, user_id, pipe_element.anno_task)['labels']
     return options
