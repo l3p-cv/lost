@@ -1,7 +1,14 @@
 import React from 'react'
-import { ModalHeader, ModalBody } from 'reactstrap';
+import { ModalHeader, ModalBody, Button } from 'reactstrap';
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
+import { createHashHistory } from 'history'
+
+function handleSiaRewiewClick(siaReviewSetElement, elementId){
+    siaReviewSetElement(elementId)
+    createHashHistory().push('/sia-review')
+}
+
 export default (props)=>{
     return (
         <>
@@ -45,6 +52,9 @@ export default (props)=>{
                         ]}
                     />
                 </CollapseCard>
+                <Button color="info" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
+                    onClick={e => handleSiaRewiewClick(props.siaReviewSetElement, props.id)}>Review Annotations</Button>
+
             </ModalBody>
         </>
     )

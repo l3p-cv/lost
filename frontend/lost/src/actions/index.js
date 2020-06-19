@@ -6,5 +6,6 @@ import annoTask from './annoTask'
 import mia from './mia'
 import sia from './sia'
 import workers from './worker/index';
+import siaReview from './siaReview'
 
-export default { ...auth, ...label, ...group, ...user, ...annoTask, ...mia, ...sia, ...workers}
+export default { ...auth, ...label, ...group, ...user, ...annoTask, ...mia, ...sia, ...workers, ...siaReview}

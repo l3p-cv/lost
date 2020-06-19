@@ -7,7 +7,7 @@ import {
     Row
 } from 'reactstrap'
 
-
+import SIAReview from '../components/SIAReview/SIAReview.js'
 
 class SiaReview extends Component {
 	render(){
@@ -21,7 +21,7 @@ class SiaReview extends Component {
 						<CardBody >
 							<Row>
 								<Col xs='12'>
-								Review here ...
+								<SIAReview></SIAReview>
 								</Col>
 							</Row>
 						</CardBody> 
