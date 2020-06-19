@@ -830,8 +830,8 @@ class ImageAnno(Base):
                 >>> img_anno.to_vec(['img.img_path', 'anno.lbl.name', 
                 ...     'anno.lbl.idx', 'anno.dtype'])
                 [
-                    ['path/to/img1.jpg', "['Aeroplane']", 14, 'bbox'], 
-                    ['path/to/img1.jpg', "['Bicycle']", 15, 'point']
+                    ['path/to/img1.jpg', "['Aeroplane']", "[14]", 'bbox'], 
+                    ['path/to/img1.jpg', "['Bicycle']", "[15]", 'point']
                 ]
         '''
         anno_vec = [vec.get_anno_vec() for vec in self.twod_annos]
