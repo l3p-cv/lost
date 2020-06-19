@@ -52,7 +52,7 @@ export default (props)=>{
                         ]}
                     />
                 </CollapseCard>
-                <Button color="info" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
+                <Button color="warning" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
                     onClick={e => handleSiaRewiewClick(props.siaReviewSetElement, props.id)}>Review Annotations</Button>
 
             </ModalBody>
