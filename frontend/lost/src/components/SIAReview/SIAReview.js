@@ -4,6 +4,9 @@ import actions from '../../actions'
 import 'semantic-ui-css/semantic.min.css'
 import { Button } from 'reactstrap'
 import { createHashHistory } from 'history'
+import Canvas from '../SIA/lost-sia/src/Canvas'
+import {dummyAnnos, uiConfig, possibleLabels, imageBlob, canvasConfig} from './dummyData'
+import ToolBar from './ToolBar'
 
 
 
@@ -20,25 +23,71 @@ class SIAReview extends Component {
     constructor(props) {
         super(props)
         this.state = {
-        
+            layoutOffset: {
+                left: 20,
+                top: 0,
+                bottom: 5,
+                right: 5
+            },
+            svg: undefined,
+            tool: 'bBox',
+            imgLabelInputVisible: false,
+            isJunk: false
         }
         this.siteHistory = createHashHistory()
+        this.container = React.createRef()
+        this.canvas = React.createRef()
 
     }
 
-   
-
-    onDashboarClick(e){
-        console.log('Dasboard clicked')
-        this.siteHistory.push('/dashboard')
-
+    resetCanvas(){
+        this.setState({
+            imgLabelInputVisible: false
+        })
     }
-
+    handleSetSVG(svg){
+        this.setState({svg: {...svg}})
+    }
+    handleToolSelected(tool){
+        this.setState({tool: tool})
+    }
+    handleToggleImgLabelInput(){
+        this.setState({imgLabelInputVisible: !this.state.imgLabelInputVisible})
+    }
+    handleToggleJunk(){
+        this.setState({isJunk: !this.state.isJunk})
+    }
     render() {
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
-                "SIAReview"
-                <Button onClick={e => this.onDashboarClick(e)}>Dashboard</Button>
+                <ToolBar 
+                    svg={this.state.svg}
+                    onToolSelected={tool => this.handleToolSelected(tool)}
+                    onToggleImgLabelInput={() => this.handleToggleImgLabelInput()}
+                    onToggleJunk={() => this.handleToggleJunk()}
+                />
+                <Canvas
+                    ref={this.canvas} 
+                    imgBarVisible={true}
+                    imgLabelInputVisible={this.state.imgLabelInputVisible}
+                    container={this.container}
+                    annos={dummyAnnos}
+                    image={imageBlob}
+                    uiConfig={this.props.uiConfig}
+                    layoutUpdate={this.props.layoutUpdate}
+                    selectedTool={this.state.tool}
+                    canvasConfig={canvasConfig}
+                    possibleLabels={possibleLabels.labels}
+                    onSVGUpdate={svg => this.handleSetSVG(svg)}
+                    // onAnnoSelect={anno => this.props.selectAnnotation(anno)}
+                    layoutOffset={this.state.layoutOffset}
+                    isJunk={false}
+                    onImgLabelInputClose={() => this.handleToggleImgLabelInput()}
+                    centerCanvasInContainer={false}
+                    // onNotification={(messageObj) => this.handleNotification(messageObj)}
+                    // onKeyDown={ e => this.handleCanvasKeyDown(e)}
+                    // defaultLabel='no label'
+                />
              </div>
         )
     }
@@ -48,8 +97,6 @@ function mapStateToProps(state) {
     return ({
         fullscreenMode: state.sia.fullscreenMode,
         selectedAnno: state.sia.selectedAnno,
-        svg: state.sia.svg,
-        annos: state.sia.annos,
         getNextImage: state.sia.getNextImage,
         getPrevImage: state.sia.getPrevImage,
         uiConfig: state.sia.uiConfig,
@@ -74,8 +121,6 @@ export default connect(
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
-        siaShowImgLabelInput,
-        siaImgIsJunk,
         getWorkingOnAnnoTask,
         siaGetNextImage, siaGetPrevImage
     }
