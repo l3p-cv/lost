@@ -136,6 +136,7 @@ class Canvas extends Component{
             showSingleAnno: undefined,
             showLabelInput: false,
             imageLoaded: false,
+            imgLoadCount: 0,
             imgLabelIds: [],
             imgLabelChanged: false,
             performedImageInit: false,
@@ -169,7 +170,7 @@ class Canvas extends Component{
             })
             this.setState({
                 imageLoaded: false,
-                imageData: undefined
+                // imageData: undefined
             })
         }
         if (prevProps.isJunk !== this.props.isJunk){
@@ -213,7 +214,7 @@ class Canvas extends Component{
         if (this.state.imageLoaded){
             // Selected annotation should be on top
             this.putSelectedOnTop(prevState)
-            if (prevState.imageLoaded !== this.state.imageLoaded){
+            if (prevState.imgLoadCount !== this.state.imgLoadCount){
                 this.updateCanvasView(this.props.annos.annotations)
                 this.setImageLabels(this.props.annos.image.labelIds)
                 this.setState({
@@ -231,6 +232,7 @@ class Canvas extends Component{
     onImageLoad(){
         this.setState({
             imageLoaded: true,
+            imgLoadCount: this.state.imgLoadCount + 1,
             showLabelInput: false,
             showSingleAnno: undefined,
             selectedAnnoId: undefined
@@ -1242,7 +1244,11 @@ class Canvas extends Component{
                         {this.renderAnnotations()}
                     </g>
                 </svg>
-                <img alt='sia' style={{display:'none'}} ref={this.img} onLoad={() => {this.onImageLoad()}} src={this.state.imageData} width="100%" height="100%"></img>
+                <img 
+                    alt='sia' style={{display:'none'}} ref={this.img} 
+                    onLoad={() => {this.onImageLoad()}} src={this.state.imageData}
+                    width="100%" height="100%"
+                />
                 {/* </div> */}
                 </div>
                 {/* Placeholder for Layout*/}
