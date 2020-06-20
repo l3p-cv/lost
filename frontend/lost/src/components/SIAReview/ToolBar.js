@@ -101,10 +101,13 @@ class ToolBar extends Component{
 
     toggleFullscreen(){
         // this.props.selectAnnotation(undefined)
-        this.setState({
-            fullscreenMode: !this.state.fullscreenMode
-        })
+        // this.setState({
+        //     fullscreenMode: !this.state.fullscreenMode
+        // })
         // this.props.siaSetFullscreen(!this.props.fullscreenMode)
+        if (this.props.onToggleFullscreen){
+            this.props.onToggleFullscreen()
+        }
     }
 
     toggleImgLabelInput(){
@@ -206,24 +209,22 @@ class ToolBar extends Component{
     renderNavigation(){
         let btns = []
         if (this.props.currentImage){
-            if (this.props.currentImage.isLast){
-                btns.push(
-                    <Menu.Item name='paper plane outline' key='finish'
-                        active={false} 
-                        onClick={() => this.toggleFinishPrompt()}
-                    >
-                        <Icon name='paper plane outline' />
-                        {this.renderFinishPrompt()}
-                    </Menu.Item>
-                    // <Button key='finish' outline onClick={() => this.setFinished()} color="primary" >
-                    //     <FontAwesomeIcon icon={faPaperPlane} />
-                    // </Button>
-                )
-            } else {
+            // if (this.props.currentImage.isLast){
+            //     // btns.push(
+            //     //     <Menu.Item name='paper plane outline' key='finish'
+            //     //         active={false} 
+            //     //         onClick={() => this.toggleFinishPrompt()}
+            //     //     >
+            //     //         <Icon name='paper plane outline' />
+            //     //         {this.renderFinishPrompt()}
+            //     //     </Menu.Item>
+            //     // )
+            // } else {
                 btns.push(
                     <Menu.Item name='arrow right'  key='next'
                         active={false} 
                         onClick={() => this.getNextImg()}
+                        disabled={this.props.currentImage.isLast}
                     >
                         <Icon name='arrow right' />
 
@@ -232,7 +233,7 @@ class ToolBar extends Component{
                     //     <FontAwesomeIcon icon={faArrowRight} />
                     // </Button>
                 )
-            }
+            // }
             btns.push(
                     <Menu.Item name='arrow left' key='prev'
                         active={false} 
