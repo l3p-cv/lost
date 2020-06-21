@@ -68,7 +68,7 @@ class SIAReview extends Component {
    
     componentDidMount() {
         window.addEventListener("resize", this.props.siaLayoutUpdate);
-        document.body.style.overflow = "hidden"
+        // document.body.style.overflow = "hidden"
 
         //direction: 'next', 'previous', 'first'
         const data = {
@@ -111,7 +111,9 @@ class SIAReview extends Component {
                     id: this.props.annos.image.id, 
                     data:window.URL.createObjectURL(response)
                 }})
-                this.canvas.current.resetZoom()
+                if (this.canvas.current){
+                    this.canvas.current.resetZoom()
+                }
             }
         )
     }
