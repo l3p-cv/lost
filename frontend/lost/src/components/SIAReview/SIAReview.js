@@ -79,6 +79,8 @@ class SIAReview extends Component {
         }
         this.props.getSiaReviewOptions(this.props.pipeElementId)
         this.props.getSiaReviewAnnos(data)
+        // this.props.getSiaConfig()
+
     }
 
     componentWillUnmount() {
@@ -122,6 +124,18 @@ class SIAReview extends Component {
         const data = {direction: direction, image_anno_id: imgId, iteration: null, pe_id: this.props.pipeElementId}
         this.props.getSiaReviewOptions(this.props.pipeElementId)
         this.props.getSiaReviewAnnos(data)
+    }
+
+    handleSaveAnnos(){
+        const newAnnos = this.canvas.current.getAnnos()
+        this.props.siaUpdateAnnos(newAnnos).then(
+            this.handleNotification(
+                {
+                    title: "Saved",
+                    message: 'Annotations have been saved!',
+                    type: notificationType.INFO
+                })
+            )
     }
 
     handleNotification(notification){
@@ -236,6 +250,7 @@ class SIAReview extends Component {
                     onPrevImage={imgId => this.handleNextPrevImage(imgId, 'previous')}
                     onToggleFullscreen={() => this.toggleFullscreen()}
                     onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+                    onSaveAnnos={() => this.handleSaveAnnos()}
                 />
                 <Canvas
                     ref={this.canvas} 
@@ -317,13 +332,15 @@ export default connect(
     {
         siaLayoutUpdate, 
         // getSiaAnnos,
-        // getSiaConfig, getSiaLabels, siaSetSVG, 
+        // getSiaConfig, 
+        // getSiaLabels, siaSetSVG, 
         getSiaImage,
         // siaUpdateAnnos, siaSendFinishToBackend,
         // selectAnnotation,
         // getWorkingOnAnnoTask,
         // siaGetNextImage, siaGetPrevImage,
-        getSiaReviewAnnos, getSiaReviewOptions,siaImgIsJunk
+        getSiaReviewAnnos, getSiaReviewOptions,siaImgIsJunk,
+        siaUpdateAnnos
     }
     , null,
     {})(SIAReview)
