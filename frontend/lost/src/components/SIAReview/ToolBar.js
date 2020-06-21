@@ -49,7 +49,6 @@ class ToolBar extends Component{
     }
 
     onClick(e, tool){
-        // this.props.siaSelectTool(tool)
         if (this.props.onToolSelected){
             this.props.onToolSelected(tool)
         }
@@ -71,18 +70,12 @@ class ToolBar extends Component{
         }
     }
     getNextImg(){
-        // this.props.siaSetImageLoaded(false)
-        // this.props.selectAnnotation(undefined)
-        // this.props.siaGetNextImage(this.props.currentImage.id)
         if (this.props.onNextImage){
             this.props.onNextImage(this.props.currentImage.id)
         }
     }
 
     getPrevImg(){
-        // this.props.siaSetImageLoaded(false)
-        // this.props.selectAnnotation(undefined)
-        // this.props.siaGetPrevImage(this.props.currentImage.id)
         if (this.props.onPrevImage){
             this.props.onPrevImage(this.props.currentImage.id)
         }
@@ -100,18 +93,12 @@ class ToolBar extends Component{
     }
 
     toggleFullscreen(){
-        // this.props.selectAnnotation(undefined)
-        // this.setState({
-        //     fullscreenMode: !this.state.fullscreenMode
-        // })
-        // this.props.siaSetFullscreen(!this.props.fullscreenMode)
         if (this.props.onToggleFullscreen){
             this.props.onToggleFullscreen()
         }
     }
 
     toggleImgLabelInput(){
-        // this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
         if (this.props.onToggleImgLabelInput){
             this.props.onToggleImgLabelInput()
         }
@@ -229,11 +216,7 @@ class ToolBar extends Component{
                         <Icon name='arrow right' />
 
                     </Menu.Item>
-                    // <Button key='next' outline onClick={() => this.getNextImg()} color="primary">
-                    //     <FontAwesomeIcon icon={faArrowRight} />
-                    // </Button>
                 )
-            // }
             btns.push(
                     <Menu.Item name='arrow left' key='prev'
                         active={false} 
@@ -242,9 +225,6 @@ class ToolBar extends Component{
                     >
                         <Icon name='arrow left' />
                     </Menu.Item>
-                // <Button key='prev' outline onClick={() => this.getPrevImg()} color="primary" disabled={!this.props.currentImage ? false : this.props.currentImage.isFirst}>
-                //     <FontAwesomeIcon icon={faArrowLeft} />
-                // </Button>
             )
         }
            
@@ -276,7 +256,6 @@ class ToolBar extends Component{
         >
             <Icon name='help' />
             <Prompt active={this.state.showHelp}
-                // header={<div><Icon name='help' /> Help</div>}
                 content={<div>
                     <Card.Group>
                     <Card>
@@ -326,7 +305,6 @@ class ToolBar extends Component{
                 active={this.props.imgLabelInput.show} 
                 onClick={() => this.toggleImgLabelInput()}
             >
-                {/* <Icon name='pencil' /> */}
                 {siaIcons.textIcon()}
                 
             </Menu.Item>
@@ -339,9 +317,9 @@ class ToolBar extends Component{
             ref={this.toolBarGroup}
             style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
-                {this.renderImgLabelInput()}
+                {/* {this.renderImgLabelInput()} */}
                 {this.renderNavigation()}
-                {this.renderToolButtons()}
+                {/* {this.renderToolButtons()}
                 <Menu.Item name='expand arrows alternate' 
                     active={this.props.fullscreenMode} 
                     onClick={() => this.toggleFullscreen()}
@@ -351,7 +329,7 @@ class ToolBar extends Component{
                 {this.renderJunkButton()}
                 {this.renderDeleteAllAnnosButton()}
                 <SIASettingButton></SIASettingButton>
-                {this.renderHelpButton()}
+                {this.renderHelpButton()} */}
             </Menu>
         </div>
         )
