@@ -6,14 +6,13 @@ import { Button } from 'reactstrap'
 import { createHashHistory } from 'history'
 import Canvas from '../SIA/lost-sia/src/Canvas'
 import '../SIA/lost-sia/src/SIA.scss';
+import FilterBar from './FilterBar'
 
 import {dummyAnnos, uiConfig, possibleLabels, imageBlob, canvasConfig} from './dummyData'
 import ToolBar from './ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css';
 import * as notificationType from '../SIA/lost-sia/src/types/notificationType'
-
-
 
 const { 
     siaLayoutUpdate, getSiaAnnos,
@@ -39,7 +38,8 @@ class SIAReview extends Component {
             tool: 'bBox',
             imgLabelInputVisible: false,
             isJunk: false,
-            image:{id:null, data:null}
+            image:{id:null, data:null},
+            iteration: null
         }
         this.siteHistory = createHashHistory()
         this.container = React.createRef()
@@ -119,7 +119,7 @@ class SIAReview extends Component {
     }
 
     handleNextPrevImage(imgId, direction){
-        const data = {direction: direction, image_anno_id: imgId, iteration: null, pe_id: this.props.pipeElementId}
+        const data = {direction: direction, image_anno_id: imgId, iteration: this.state.iteration, pe_id: this.props.pipeElementId}
         this.props.getSiaReviewOptions(this.props.pipeElementId)
         this.props.getSiaReviewAnnos(data)
     }
@@ -221,6 +221,19 @@ class SIAReview extends Component {
         }
     }
 
+    handleIterationChange(iteration){
+        this.setState({iteration: iteration})
+        console.log('iteration', iteration)
+        const data = {
+            direction: 'first', 
+            image_anno_id: null, 
+            iteration: iteration, 
+            pe_id: this.props.pipeElementId
+        }
+        this.props.getSiaReviewAnnos(data)
+
+    }
+
     render() {
         if (!this.props.annos) return "No Review Data!"
         if (!this.props.filterOptions) return "No Review Data!"
@@ -281,6 +294,12 @@ class SIAReview extends Component {
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     // defaultLabel='no label'
+                />
+                <FilterBar
+                    svg={this.state.svg}
+                    visible
+                    options={this.props.filterOptions}
+                    onIterationChange={iter => this.handleIterationChange(iter)}
                 />
                 <NotificationContainer/>
              </div>
