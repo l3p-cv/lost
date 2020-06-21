@@ -259,15 +259,15 @@ class SIAReview extends Component {
                             "minArea": 20,
                             "multilabels": true,
                             "actions": {
-                                "draw": true,
-                                "label": true,
-                                "edit": true
+                                "draw": false,
+                                "label": false,
+                                "edit": false
                             }
                         },
                         "img": {
                             "multilabels": true,
                             "actions": {
-                                "label": true
+                                "label": false
                             }
                         }
                     }}
