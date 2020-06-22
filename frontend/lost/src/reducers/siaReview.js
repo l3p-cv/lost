@@ -11,7 +11,8 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.SIA_REVIEW_SET_ELEMENT:
             return {
                 ...state,
-                elementId: action.payload
+                elementId: action.payload,
+                annos: null
             }
         case TYPES.SIA_REVIEW_SET_OPTIONS:
             return {
@@ -22,6 +23,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 annos: {...action.payload}
+            }
+        case TYPES.SIA_REVIEW_RESET_ANNOS:
+            return {
+                ...state,
+                annos: null
             }
         default:
             return state

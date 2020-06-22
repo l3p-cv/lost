@@ -35,3 +35,10 @@ export const siaReviewSetElement = (elementID) => {
     }
 }
 
+
+export const siaReviewResetAnnos = () => {
+    return {
+        type: TYPES.SIA_REVIEW_RESET_ANNOS
+    }
+}
+

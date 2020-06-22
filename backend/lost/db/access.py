@@ -758,7 +758,7 @@ class DBMan(object):
     def get_sia_review_first(self, anno_task_id, iteration=None):
         ''' Get next sia annotation of an anno_task
         '''
-        if iteration:
+        if iteration is not None:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
                                                            model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.asc()).first()
         else:
@@ -768,7 +768,7 @@ class DBMan(object):
     def get_sia_review_next(self, anno_task_id, img_anno_id, iteration=None):
         ''' Get next sia annotation of an anno_task
         '''
-        if iteration:
+        if iteration is not None:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
                                                         model.ImageAnno.idx > img_anno_id, \
                                                         model.ImageAnno.iteration==iteration).first()
@@ -779,7 +779,7 @@ class DBMan(object):
     def get_sia_review_prev(self, anno_task_id, img_anno_id, iteration=None):
         ''' Get a previous image annotation by current annotation id
         '''
-        if iteration:
+        if iteration is not None:
             sql = "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
             FROM image_anno WHERE idx<%d)"\
             %(iteration, anno_task_id, img_anno_id)

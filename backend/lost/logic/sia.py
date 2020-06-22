@@ -24,7 +24,7 @@ def get_first(db_man, user_id, media_url):
             elif image_anno.state == state.Anno.LABELED:
                 image_anno.state = state.Anno.LABELED_LOCKED
             is_last_image = __is_last_image__(db_man, user_id, at.idx, iteration, image_anno.idx)
-            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
+            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx, at.pipe_element.iteration)
             sia_serialize = SiaSerialize(image_anno, user_id, media_url, True, is_last_image, current_image_number, total_image_amount)
             db_man.save_obj(image_anno)
             return sia_serialize.serialize()
@@ -72,7 +72,7 @@ def get_next(db_man, user_id, img_id, media_url):
             if first_image_anno is not None and first_image_anno.idx != image_anno.idx:
                 is_first_image = False
             is_last_image = __is_last_image__(db_man, user_id, at.idx, iteration, image_anno.idx) 
-            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
+            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx, at.pipe_element.iteration)
             sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
             db_man.save_obj(image_anno)
             return sia_serialize.serialize()
@@ -95,7 +95,7 @@ def get_previous(db_man, user_id, img_id, media_url):
             is_first_image = True
         image_anno.timestamp_lock = datetime.now()
         db_man.save_obj(image_anno)
-        current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
+        current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx, at.pipe_element.iteration)
         sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
         return sia_serialize.serialize()
     else:
@@ -133,14 +133,22 @@ def get_sia_anno_task(db_man, user_id):
         if cat.anno_task.dtype == dtype.AnnoTask.SIA:
             return cat.anno_task
     return None
-def get_image_progress(db_man, anno_task, img_id, all_iterations=False):
-    pipe_element=db_man.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
+def get_image_progress(db_man, anno_task, img_id, iteration=None):
+    '''Get image progress for current request
+    
+    Args:
+        db_man (access.DBMan): Database manager
+        anno_task (model.AnnoTask): Annotation task
+        img_id (int): Id of the current image
+        iteration (int): int or None. If None all annotations will be considered
+
+    '''
     anno_ids = list()
-    if all_iterations:
+    if iteration is None:
         for anno in db_man.get_all_image_annos(anno_task.idx):
             anno_ids.append(anno.idx)
     else:
-        for anno in db_man.get_all_image_annos_by_iteration(anno_task.idx, pipe_element.iteration):
+        for anno in db_man.get_all_image_annos_by_iteration(anno_task.idx, iteration):
             anno_ids.append(anno.idx)
     total_image_amount = len(anno_ids)
     current_image_number = anno_ids.index(img_id) + 1 
@@ -548,11 +556,11 @@ def review(dbm, data, user_id, media_url):
         image_anno = dbm.get_sia_review_prev(at.idx, current_idx, iteration)
 
     if image_anno:
-        all_iterations = True
-        if iteration:
-            all_iterations = False
+        # all_iterations = True
+        # if iteration:
+        #     all_iterations = False
 
-        current_image_number, total_image_amount = get_image_progress(dbm, at, image_anno.idx, all_iterations)
+        current_image_number, total_image_amount = get_image_progress(dbm, at, image_anno.idx, iteration)
 
         is_first_image = False
         if first_anno.idx == image_anno.idx:

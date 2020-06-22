@@ -6,7 +6,7 @@ import { Button } from 'reactstrap'
 import { createHashHistory } from 'history'
 import Canvas from '../SIA/lost-sia/src/Canvas'
 import '../SIA/lost-sia/src/SIA.scss';
-import FilterBar from './FilterBar'
+import FilterInfoBox from './FilterInfoBox'
 
 import {dummyAnnos, uiConfig, possibleLabels, imageBlob, canvasConfig} from './dummyData'
 import ToolBar from './ToolBar'
@@ -19,7 +19,8 @@ const {
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
-    siaGetNextImage, siaGetPrevImage, getSiaReviewAnnos, getSiaReviewOptions
+    siaGetNextImage, siaGetPrevImage, getSiaReviewAnnos, getSiaReviewOptions,
+    siaReviewResetAnnos
 } = actions
 
 class SIAReview extends Component {
@@ -87,6 +88,7 @@ class SIAReview extends Component {
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.annos){
+            if (!this.props.annos.image) return
             if (prevProps.annos){
                 if(this.props.annos.image.id !== prevProps.annos.image.id){
                     this.requestImageFromBackend()
@@ -99,7 +101,9 @@ class SIAReview extends Component {
             this.props.siaLayoutUpdate()
         }
         if (prevProps.annos !== this.props.annos){
-            this.props.siaImgIsJunk(this.props.annos.image.isJunk)
+            if (this.props.annos){
+                this.props.siaImgIsJunk(this.props.annos.image.isJunk)
+            }
         }
     }
 
@@ -190,6 +194,7 @@ class SIAReview extends Component {
     handleCanvasKeyDown(e){
         console.log('Canvas keyDown: ', e.key)
         if (!this.props.annos) return
+        if (!this.props.annos.image) return
         switch(e.key){
             case 'ArrowLeft':
                 if (!this.props.annos.image.isFirst){
@@ -230,77 +235,85 @@ class SIAReview extends Component {
             iteration: iteration, 
             pe_id: this.props.pipeElementId
         }
+        this.props.siaReviewResetAnnos()
         this.props.getSiaReviewAnnos(data)
 
     }
 
-    render() {
+    renderFilter(){
+        if (!this.props.filterOptions) return null
+        return <FilterInfoBox visible={true} 
+                    options={this.props.filterOptions}
+                    onIterationChange={iter => this.handleIterationChange(iter)}/>
+    }
+    renderCanvas(){
         if (!this.props.annos) return "No Review Data!"
         if (!this.props.filterOptions) return "No Review Data!"
+        return <div>
+            <ToolBar 
+                svg={this.state.svg}
+                currentImage={this.props.annos.image}
+                onToolSelected={tool => this.handleToolSelected(tool)}
+                onToggleImgLabelInput={() => this.handleToggleImgLabelInput()}
+                onToggleJunk={() => this.handleToggleJunk()}
+                onNextImage={imgId => this.handleNextPrevImage(imgId, 'next')}
+                onPrevImage={imgId => this.handleNextPrevImage(imgId, 'previous')}
+                onToggleFullscreen={() => this.toggleFullscreen()}
+                onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+            />
+            <Canvas
+                ref={this.canvas} 
+                imgBarVisible={true}
+                imgLabelInputVisible={this.state.imgLabelInputVisible}
+                container={this.container}
+                annos={this.props.annos}
+                image={this.state.image}
+                uiConfig={this.props.uiConfig}
+                layoutUpdate={this.props.layoutUpdate}
+                selectedTool={this.state.tool}
+                canvasConfig={{
+                    "tools": {
+                        "point": true,
+                        "line": true,
+                        "polygon": true,
+                        "bbox": true,
+                        "junk": true
+                    },
+                    "annos": {
+                        "minArea": 20,
+                        "multilabels": true,
+                        "actions": {
+                            "draw": false,
+                            "label": false,
+                            "edit": false
+                        }
+                    },
+                    "img": {
+                        "multilabels": true,
+                        "actions": {
+                            "label": false
+                        }
+                    }
+                }}
+                possibleLabels={this.props.filterOptions.possible_labels}
+                onSVGUpdate={svg => this.handleSetSVG(svg)}
+                // onAnnoSelect={anno => this.props.selectAnnotation(anno)}
+                layoutOffset={this.state.layoutOffset}
+                isJunk={this.props.isJunk}
+                onImgLabelInputClose={() => this.handleToggleImgLabelInput()}
+                centerCanvasInContainer={false}
+                onNotification={(messageObj) => this.handleNotification(messageObj)}
+                onKeyDown={ e => this.handleCanvasKeyDown(e)}
+                // defaultLabel='no label'
+            />
+        </div>
+    }
+
+    render() {
         return (
             <div class={this.state.fullscreenCSS} ref={this.container}>
-                <ToolBar 
-                    svg={this.state.svg}
-                    currentImage={this.props.annos.image}
-                    onToolSelected={tool => this.handleToolSelected(tool)}
-                    onToggleImgLabelInput={() => this.handleToggleImgLabelInput()}
-                    onToggleJunk={() => this.handleToggleJunk()}
-                    onNextImage={imgId => this.handleNextPrevImage(imgId, 'next')}
-                    onPrevImage={imgId => this.handleNextPrevImage(imgId, 'previous')}
-                    onToggleFullscreen={() => this.toggleFullscreen()}
-                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
-                />
-                <Canvas
-                    ref={this.canvas} 
-                    imgBarVisible={true}
-                    imgLabelInputVisible={this.state.imgLabelInputVisible}
-                    container={this.container}
-                    annos={this.props.annos}
-                    image={this.state.image}
-                    uiConfig={this.props.uiConfig}
-                    layoutUpdate={this.props.layoutUpdate}
-                    selectedTool={this.state.tool}
-                    canvasConfig={{
-                        "tools": {
-                            "point": true,
-                            "line": true,
-                            "polygon": true,
-                            "bbox": true,
-                            "junk": true
-                        },
-                        "annos": {
-                            "minArea": 20,
-                            "multilabels": true,
-                            "actions": {
-                                "draw": false,
-                                "label": false,
-                                "edit": false
-                            }
-                        },
-                        "img": {
-                            "multilabels": true,
-                            "actions": {
-                                "label": false
-                            }
-                        }
-                    }}
-                    possibleLabels={this.props.filterOptions.possible_labels}
-                    onSVGUpdate={svg => this.handleSetSVG(svg)}
-                    // onAnnoSelect={anno => this.props.selectAnnotation(anno)}
-                    layoutOffset={this.state.layoutOffset}
-                    isJunk={this.props.isJunk}
-                    onImgLabelInputClose={() => this.handleToggleImgLabelInput()}
-                    centerCanvasInContainer={false}
-                    onNotification={(messageObj) => this.handleNotification(messageObj)}
-                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
-                    // defaultLabel='no label'
-                />
-                <FilterBar
-                    svg={this.state.svg}
-                    visible
-                    options={this.props.filterOptions}
-                    onIterationChange={iter => this.handleIterationChange(iter)}
-                />
+                {this.renderCanvas()}
+                {this.renderFilter()}
                 <NotificationContainer/>
              </div>
         )
@@ -342,7 +355,8 @@ export default connect(
         // selectAnnotation,
         // getWorkingOnAnnoTask,
         // siaGetNextImage, siaGetPrevImage,
-        getSiaReviewAnnos, getSiaReviewOptions,siaImgIsJunk
+        getSiaReviewAnnos, getSiaReviewOptions,siaImgIsJunk,
+        siaReviewResetAnnos
     }
     , null,
     {})(SIAReview)

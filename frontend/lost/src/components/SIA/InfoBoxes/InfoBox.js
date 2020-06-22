@@ -8,7 +8,6 @@ class InfoBox extends Component{
         super(props)
         this.state = {
             style: {
-                cursor: 'grab', 
                 position:'fixed', 
                 top: 200, 
                 left: 200, 
@@ -52,7 +51,7 @@ class InfoBox extends Component{
         return(
         <Draggable handle=".handle" onStop={e => this.handleOnStop(e)}
         >
-            <div className="handle" 
+            <div  
                 style={this.state.style}>
         
             <Message 
@@ -60,7 +59,7 @@ class InfoBox extends Component{
                 onDismiss={e => {this.onDismiss(e)}}
                 size="small"
             >
-                <Message.Header>{this.props.header}</Message.Header>
+                <Message.Header className="handle" style={{cursor: 'grab'}}>{this.props.header}</Message.Header>
                 <Divider></Divider>
                 <Message.Content>
                     {this.props.content}
