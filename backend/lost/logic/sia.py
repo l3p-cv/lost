@@ -186,8 +186,19 @@ def update(db_man, data, user_id):
     """ Update Image and TwoDAnnotation from SIA
     :type db_man: lost.db.access.DBMan
     """
-    sia_update = SiaUpdate(db_man, data, user_id)
+    anno_task = get_sia_anno_task(db_man, user_id)
+    sia_update = SiaUpdate(db_man, data, user_id, anno_task)
     return sia_update.update()
+
+def review_update(db_man, data, user_id, pe_id):
+    """ Update Image and TwoDAnnotation from SIA
+    :type db_man: lost.db.access.DBMan
+    """
+    pe = db_man.get_pipe_element(pipe_e_id=pe_id)
+    at = pe.anno_task
+    sia_update = SiaUpdate(db_man, data, user_id, at, sia_type='review')
+    return sia_update.update()
+
 def finish(db_man, user_id):
     at = get_sia_anno_task(db_man, user_id)
     if at.idx: 
@@ -207,21 +218,23 @@ def junk(db_man, user_id, img_id):
         return "error: image_anno not found"
 
 class SiaUpdate(object):
-    def __init__(self, db_man, data, user_id):
+    def __init__(self, db_man, data, user_id, anno_task, sia_type='sia'):
         """
         :type db_man: lost.db.access.DBMan
         """
+        self.sia_type = sia_type
         self.timestamp = datetime.now()
         self.db_man = db_man
         self.user_id = user_id 
-        self.at = get_sia_anno_task(db_man, user_id) #type: lost.db.model.AnnoTask
+        self.at = anno_task #type: lost.db.model.AnnoTask
         self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
         self.image_anno = self.db_man.get_image_annotation(data['imgId'])
         self.image_anno.timestamp = self.timestamp
         if self.image_anno.anno_time is None:
             self.image_anno.anno_time = 0.0
-        self.image_anno.anno_time += (self.image_anno.timestamp-self.image_anno.timestamp_lock).total_seconds()
+        if self.sia_type == 'sia':
+            self.image_anno.anno_time += (self.image_anno.timestamp-self.image_anno.timestamp_lock).total_seconds()
         self.b_boxes = list()
         self.points = list()
         self.lines = list()
@@ -301,8 +314,10 @@ class SiaUpdate(object):
         # caution: anno_time will be added to *every* two_d anno - 
         # we assume that the attention of every box is equally valid
         average_anno_time = 0
-        if len(annotations) > 0:
-            average_anno_time = self.image_anno.anno_time/len(annotations)
+        #sia review updates should have no influence on anno time!
+        if self.sia_type == 'sia':
+            if len(annotations) > 0:
+                average_anno_time = self.image_anno.anno_time/len(annotations)
         for annotation in annotations:
             if annotation['status'] != "database" \
             and annotation['status'] != "deleted" \

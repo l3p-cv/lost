@@ -203,3 +203,21 @@ class ReviewOptions(Resource):
             re = sia.reviewoptions(dbm, pe_id, user.idx)
             dbm.close_session()
             return re
+
+@namespace.route('/reviewupdate/<int:pe_id>')
+@namespace.param('pe_id', 'The id of reviewed pipe element.')
+class ReviewUpdate(Resource):
+    @jwt_required 
+    def post(self, pe_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            data = json.loads(request.data)
+            re = sia.review_update(dbm, data, user.idx, pe_id)
+            dbm.close_session()
+            return re

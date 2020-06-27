@@ -1,3 +1,5 @@
+import axios from 'axios'
+import {API_URL} from '../../settings'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
@@ -130,16 +132,28 @@ class SIAReview extends Component {
         this.props.getSiaReviewAnnos(data)
     }
 
-    handleSaveAnnos(){
-        const newAnnos = this.canvas.current.getAnnos()
-        this.props.siaUpdateAnnos(newAnnos).then(
+    async handleSaveAnnos(){
+        try {
+            const newAnnos = this.canvas.current.getAnnos()
+            const response = await axios.post(API_URL + '/sia/reviewupdate/'+this.props.pipeElementId, newAnnos)
+            console.log('REQUEST: siaReviewUpdate ', response)
+            // this.props.siaUpdateAnnos(newAnnos).then(
+                this.handleNotification(
+                    {
+                        title: "Saved",
+                        message: 'Annotations have been saved!',
+                        type: notificationType.INFO
+                    })
+                // )
+        } catch (e) {
+            console.error(e)
             this.handleNotification(
                 {
-                    title: "Saved",
-                    message: 'Annotations have been saved!',
-                    type: notificationType.INFO
+                    title: "Could not save!!!",
+                    message: 'Server Error',
+                    type: notificationType.ERROR
                 })
-            )
+        }
     }
 
     handleNotification(notification){
@@ -274,6 +288,7 @@ class SIAReview extends Component {
                 onPrevImage={imgId => this.handleNextPrevImage(imgId, 'previous')}
                 onToggleFullscreen={() => this.toggleFullscreen()}
                 onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+                onSaveAnnos={() => this.handleSaveAnnos()}
             />
             <Canvas
                 ref={this.canvas} 
@@ -325,7 +340,7 @@ class SIAReview extends Component {
 
     render() {
         return (
-            <div class={this.state.fullscreenCSS} ref={this.container}>
+            <div className={this.state.fullscreenCSS} ref={this.container}>
                 {this.renderCanvas()}
                 {this.renderFilter()}
                 {/* <ToolBar 
