@@ -80,6 +80,8 @@ class SIAReview extends Component {
         }
         this.props.getSiaReviewOptions(this.props.pipeElementId)
         this.props.getSiaReviewAnnos(data)
+        // this.props.getSiaConfig()
+
     }
 
     componentWillUnmount() {
@@ -126,6 +128,18 @@ class SIAReview extends Component {
         const data = {direction: direction, image_anno_id: imgId, iteration: this.state.iteration, pe_id: this.props.pipeElementId}
         this.props.getSiaReviewOptions(this.props.pipeElementId)
         this.props.getSiaReviewAnnos(data)
+    }
+
+    handleSaveAnnos(){
+        const newAnnos = this.canvas.current.getAnnos()
+        this.props.siaUpdateAnnos(newAnnos).then(
+            this.handleNotification(
+                {
+                    title: "Saved",
+                    message: 'Annotations have been saved!',
+                    type: notificationType.INFO
+                })
+            )
     }
 
     handleNotification(notification){
@@ -283,15 +297,15 @@ class SIAReview extends Component {
                         "minArea": 20,
                         "multilabels": true,
                         "actions": {
-                            "draw": false,
-                            "label": false,
-                            "edit": false
+                            "draw": true,
+                            "label": true,
+                            "edit": true
                         }
                     },
                     "img": {
                         "multilabels": true,
                         "actions": {
-                            "label": false
+                            "label": true
                         }
                     }
                 }}
@@ -314,6 +328,63 @@ class SIAReview extends Component {
             <div class={this.state.fullscreenCSS} ref={this.container}>
                 {this.renderCanvas()}
                 {this.renderFilter()}
+                {/* <ToolBar 
+                    svg={this.state.svg}
+                    currentImage={this.props.annos.image}
+                    onToolSelected={tool => this.handleToolSelected(tool)}
+                    onToggleImgLabelInput={() => this.handleToggleImgLabelInput()}
+                    onToggleJunk={() => this.handleToggleJunk()}
+                    onNextImage={imgId => this.handleNextPrevImage(imgId, 'next')}
+                    onPrevImage={imgId => this.handleNextPrevImage(imgId, 'previous')}
+                    onToggleFullscreen={() => this.toggleFullscreen()}
+                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+                    onSaveAnnos={() => this.handleSaveAnnos()}
+                />
+                <Canvas
+                    ref={this.canvas} 
+                    imgBarVisible={true}
+                    imgLabelInputVisible={this.state.imgLabelInputVisible}
+                    container={this.container}
+                    annos={this.props.annos}
+                    image={this.state.image}
+                    uiConfig={this.props.uiConfig}
+                    layoutUpdate={this.props.layoutUpdate}
+                    selectedTool={this.state.tool}
+                    canvasConfig={{
+                        "tools": {
+                            "point": true,
+                            "line": true,
+                            "polygon": true,
+                            "bbox": true,
+                            "junk": true
+                        },
+                        "annos": {
+                            "minArea": 20,
+                            "multilabels": true,
+                            "actions": {
+                                "draw": true,
+                                "label": true,
+                                "edit": true
+                            }
+                        },
+                        "img": {
+                            "multilabels": true,
+                            "actions": {
+                                "label": true
+                            }
+                        }
+                    }}
+                    possibleLabels={this.props.filterOptions.possible_labels}
+                    onSVGUpdate={svg => this.handleSetSVG(svg)}
+                    // onAnnoSelect={anno => this.props.selectAnnotation(anno)}
+                    layoutOffset={this.state.layoutOffset}
+                    isJunk={this.props.isJunk}
+                    onImgLabelInputClose={() => this.handleToggleImgLabelInput()}
+                    centerCanvasInContainer={false}
+                    onNotification={(messageObj) => this.handleNotification(messageObj)}
+                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
+                    // defaultLabel='no label'
+                /> */}
                 <NotificationContainer/>
              </div>
         )
@@ -349,7 +420,8 @@ export default connect(
     {
         siaLayoutUpdate, 
         // getSiaAnnos,
-        // getSiaConfig, getSiaLabels, siaSetSVG, 
+        // getSiaConfig, 
+        // getSiaLabels, siaSetSVG, 
         getSiaImage,
         // siaUpdateAnnos, siaSendFinishToBackend,
         // selectAnnotation,

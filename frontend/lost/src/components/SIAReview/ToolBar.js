@@ -114,6 +114,12 @@ class ToolBar extends Component{
         this.setState({showHelp: !this.state.showHelp})
     }
 
+    saveAnnos(){
+        if (this.props.onSaveAnnos){
+            this.props.onSaveAnnos()
+        }
+    }
+
     handleOnDeleteAllAnnos(){
         if(this.props.onDeleteAllAnnos){
             this.props.onDeleteAllAnnos()
@@ -317,9 +323,19 @@ class ToolBar extends Component{
             ref={this.toolBarGroup}
             style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
-                {/* {this.renderImgLabelInput()} */}
+                <Menu.Item name='save'  key='save'
+                    // color='red'
+                    // inverted
+                        // active={false} 
+                        onClick={() => this.saveAnnos()}
+                        // disabled={this.props.currentImage.isLast}
+                    >
+                        <Icon name='save'  color='red'/>
+
+                </Menu.Item>
+                {this.renderImgLabelInput()}
                 {this.renderNavigation()}
-                {/* {this.renderToolButtons()}
+                {this.renderToolButtons()}
                 <Menu.Item name='expand arrows alternate' 
                     active={this.props.fullscreenMode} 
                     onClick={() => this.toggleFullscreen()}
@@ -329,7 +345,7 @@ class ToolBar extends Component{
                 {this.renderJunkButton()}
                 {this.renderDeleteAllAnnosButton()}
                 <SIASettingButton></SIASettingButton>
-                {this.renderHelpButton()} */}
+                {this.renderHelpButton()}
             </Menu>
         </div>
         )

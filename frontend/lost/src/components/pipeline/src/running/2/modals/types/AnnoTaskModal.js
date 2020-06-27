@@ -4,9 +4,12 @@ import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 import { createHashHistory } from 'history'
 
-function handleSiaRewiewClick(siaReviewSetElement, elementId){
-    siaReviewSetElement(elementId)
-    createHashHistory().push('/sia-review')
+function handleSiaRewiewClick(props){
+    props.siaReviewSetElement(props.id)
+    props.chooseAnnoTask(
+        props.annoTask.id, 
+        createHashHistory().push('/sia-review')
+    )
 }
 
 export default (props)=>{
@@ -53,7 +56,7 @@ export default (props)=>{
                     />
                 </CollapseCard>
                 <Button color="warning" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
-                    onClick={e => handleSiaRewiewClick(props.siaReviewSetElement, props.id)}>Review Annotations</Button>
+                    onClick={e => handleSiaRewiewClick(props)}>Review Annotations</Button>
 
             </ModalBody>
         </>
