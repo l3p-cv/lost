@@ -4,24 +4,23 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
 import 'semantic-ui-css/semantic.min.css'
-import { Button } from 'reactstrap'
 import { createHashHistory } from 'history'
 import Canvas from '../SIA/lost-sia/src/Canvas'
 import '../SIA/lost-sia/src/SIA.scss';
 import FilterInfoBox from './FilterInfoBox'
 
-import {dummyAnnos, uiConfig, possibleLabels, imageBlob, canvasConfig} from './dummyData'
+// import {dummyAnnos, uiConfig, possibleLabels, imageBlob, canvasConfig} from './dummyData'
 import ToolBar from './ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css';
 import * as notificationType from '../SIA/lost-sia/src/types/notificationType'
 
 const { 
-    siaLayoutUpdate, getSiaAnnos,
-    getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
-    siaUpdateAnnos, siaSendFinishToBackend,
-    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
-    siaGetNextImage, siaGetPrevImage, getSiaReviewAnnos, getSiaReviewOptions,
+    siaLayoutUpdate, 
+    getSiaImage, 
+    siaImgIsJunk, 
+    getSiaReviewAnnos, 
+    getSiaReviewOptions,
     siaReviewResetAnnos
 } = actions
 
@@ -65,7 +64,6 @@ class SIAReview extends Component {
         this.setState({imgLabelInputVisible: !this.state.imgLabelInputVisible})
     }
     handleToggleJunk(){
-        // this.setState({isJunk: !this.state.isJunk})
         this.props.siaImgIsJunk(!this.props.isJunk)
     }
    
@@ -343,63 +341,6 @@ class SIAReview extends Component {
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 {this.renderCanvas()}
                 {this.renderFilter()}
-                {/* <ToolBar 
-                    svg={this.state.svg}
-                    currentImage={this.props.annos.image}
-                    onToolSelected={tool => this.handleToolSelected(tool)}
-                    onToggleImgLabelInput={() => this.handleToggleImgLabelInput()}
-                    onToggleJunk={() => this.handleToggleJunk()}
-                    onNextImage={imgId => this.handleNextPrevImage(imgId, 'next')}
-                    onPrevImage={imgId => this.handleNextPrevImage(imgId, 'previous')}
-                    onToggleFullscreen={() => this.toggleFullscreen()}
-                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
-                    onSaveAnnos={() => this.handleSaveAnnos()}
-                />
-                <Canvas
-                    ref={this.canvas} 
-                    imgBarVisible={true}
-                    imgLabelInputVisible={this.state.imgLabelInputVisible}
-                    container={this.container}
-                    annos={this.props.annos}
-                    image={this.state.image}
-                    uiConfig={this.props.uiConfig}
-                    layoutUpdate={this.props.layoutUpdate}
-                    selectedTool={this.state.tool}
-                    canvasConfig={{
-                        "tools": {
-                            "point": true,
-                            "line": true,
-                            "polygon": true,
-                            "bbox": true,
-                            "junk": true
-                        },
-                        "annos": {
-                            "minArea": 20,
-                            "multilabels": true,
-                            "actions": {
-                                "draw": true,
-                                "label": true,
-                                "edit": true
-                            }
-                        },
-                        "img": {
-                            "multilabels": true,
-                            "actions": {
-                                "label": true
-                            }
-                        }
-                    }}
-                    possibleLabels={this.props.filterOptions.possible_labels}
-                    onSVGUpdate={svg => this.handleSetSVG(svg)}
-                    // onAnnoSelect={anno => this.props.selectAnnotation(anno)}
-                    layoutOffset={this.state.layoutOffset}
-                    isJunk={this.props.isJunk}
-                    onImgLabelInputClose={() => this.handleToggleImgLabelInput()}
-                    centerCanvasInContainer={false}
-                    onNotification={(messageObj) => this.handleNotification(messageObj)}
-                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
-                    // defaultLabel='no label'
-                /> */}
                 <NotificationContainer/>
              </div>
         )
@@ -408,22 +349,9 @@ class SIAReview extends Component {
 
 function mapStateToProps(state) {
     return ({
-        // fullscreenMode: state.sia.fullscreenMode,
-        // selectedAnno: state.sia.selectedAnno,
-        // getNextImage: state.sia.getNextImage,
-        // getPrevImage: state.sia.getPrevImage,
         uiConfig: state.sia.uiConfig,
         layoutUpdate: state.sia.layoutUpdate,
-        // selectedTool: state.sia.selectedTool,
-        // appliedFullscreen: state.sia.appliedFullscreen,
-        // imageLoaded: state.sia.imageLoaded,
-        // requestAnnoUpdate: state.sia.requestAnnoUpdate,
-        // taskFinished: state.sia.taskFinished,
-        // possibleLabels: state.sia.possibleLabels,
-        // imgLabelInput: state.sia.imgLabelInput,
-        // canvasConfig: state.sia.config,
         isJunk: state.sia.isJunk,
-        // currentImage: state.sia.annos.image,
         pipeElementId: state.siaReview.elementId,
         annos: state.siaReview.annos,
         filterOptions: state.siaReview.options
@@ -434,15 +362,10 @@ export default connect(
     mapStateToProps,
     {
         siaLayoutUpdate, 
-        // getSiaAnnos,
-        // getSiaConfig, 
-        // getSiaLabels, siaSetSVG, 
         getSiaImage,
-        // siaUpdateAnnos, siaSendFinishToBackend,
-        // selectAnnotation,
-        // getWorkingOnAnnoTask,
-        // siaGetNextImage, siaGetPrevImage,
-        getSiaReviewAnnos, getSiaReviewOptions,siaImgIsJunk,
+        getSiaReviewAnnos, 
+        getSiaReviewOptions,
+        siaImgIsJunk,
         siaReviewResetAnnos
     }
     , null,
