@@ -21,17 +21,17 @@ const customStyles = {
         zIndex: 10,
       },
   };
-  
+
 
 class WorkingOnSIA extends Component {
     constructor() {
         super();
-    
+
         this.state = {
           modalIsOpen: true,
           height: undefined
         };
-    
+
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -40,7 +40,7 @@ class WorkingOnSIA extends Component {
 
 
     componentDidUpdate(){
-        const checkHeight = this.myref.current.getBoundingClientRect().height 
+        const checkHeight = this.myref.current.getBoundingClientRect().height
         if (checkHeight !== this.state.height){
             this.props.siaLayoutUpdate()
             this.setState({height: checkHeight})
@@ -120,11 +120,11 @@ class WorkingOnSIA extends Component {
                         <CardHeader><i className="fa fa-question-circle"></i> Instructions</CardHeader>
                         <CardBody>
                             <Alert color="info">
-                                {this.props.annoTask.instructions}
+                              <div dangerouslySetInnerHTML={{__html: this.props.annoTask.instructions}} />
                             </Alert>
                             <Button color='success' onClick={this.closeModal}><i className="fa fa-times"></i> Close</Button>
                         </CardBody>
-                    </Card>                   
+                    </Card>
                 </Modal>
             </div>
         )

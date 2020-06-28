@@ -11,7 +11,7 @@ class LabelInfo extends Component{
     }
 
     componentDidMount(){
-        
+
     }
     componentDidUpdate(prevProps){
 
@@ -40,12 +40,12 @@ class LabelInfo extends Component{
                 <Header>{
                     lbl.label
                 }</Header>
-                {lbl.description}
+              <div dangerouslySetInnerHTML={{__html: lbl.description}} />
             </div>
         }
     }
 
-    
+
     render(){
         return <InfoBox
             header="Label Info"
