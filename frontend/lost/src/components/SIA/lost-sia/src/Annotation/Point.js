@@ -36,9 +36,7 @@ class Point extends Component{
     }
 
     componentDidUpdate(prevProps){
-        console.log('POINT: componentDidUpdate')
         if (prevProps.anno !== this.props.anno){
-            console.log('POINT: updated', this.props.anno)
             this.setState({anno: {...this.props.anno}})
         }
     }
@@ -175,7 +173,6 @@ class Point extends Component{
 
     render(){
         if (this.state.anno){
-            console.log('POINT: render', this.state.anno)
             return(
                 <g
                     onMouseMove={e => this.onMouseMove(e)}

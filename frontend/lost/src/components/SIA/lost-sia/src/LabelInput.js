@@ -16,7 +16,6 @@ class LabelInput extends Component{
     }
 
     componentWillMount(){
-        console.log('LabelInput will mount', this.props)
         this.updatePossibleLabels()
     }
 
@@ -27,11 +26,9 @@ class LabelInput extends Component{
     }
 
     componentDidUpdate(prevProps, prevState){
-        console.log('LabelInput DidUpdate', this.state, this.props.initLabelIds, this.props.relatedId)
         if (this.props.visible){
             if (this.props.focusOnRender){
                 if (this.inputRef.current){
-                    console.log('LabelInput', this.inputRef.current)
                     this.inputRef.current.click()
                 }
             }
@@ -47,7 +44,6 @@ class LabelInput extends Component{
         if (this.props.initLabelIds){
             if (this.state.performInit){
                 this.setState({performInit: false})
-                console.log('LabelInput InitLabels', this.props.initLabelIds, this.props.relatedId)
                 if(this.props.initLabelIds.length > 0){
                     this.setState({label: this.props.initLabelIds})
                     // const lbl = this.state.possibleLabels.find(e => {
@@ -55,7 +51,6 @@ class LabelInput extends Component{
                     // })
                     // if (lbl){
                     //     this.setState({label:lbl.value})
-                    //     console.log('LabelInput set label to', lbl)
                     // }
                 } else {
                         this.setState({label:[]})
@@ -74,14 +69,12 @@ class LabelInput extends Component{
     **************/
     onKeyDown(e: Event){
         e.stopPropagation()
-        console.log('LabelInputEvent KeyDown on Input field: ', e.key)
         this.performKeyAction(e.key)
 
     }
 
     onChange(e, item ){
-        console.log('LabelInputEvent onChange', item)
-        let lbl
+        let lbl 
         if (this.props.multilabels){
             lbl = item.value !== -1 ? item.value : []
         } else {
@@ -93,7 +86,6 @@ class LabelInput extends Component{
     }
 
     onItemClick(e, item){
-        console.log('LabelInputEvent onClick on item', item)
         this.confirmLabel()
     }
 
@@ -130,7 +122,6 @@ class LabelInput extends Component{
                 }
                 break
             case 'Escape':
-                // console.log('LabelInput Escape current label', this.state.label.id)
                 this.closeLabelInput()
                 break
             default:
@@ -178,7 +169,6 @@ class LabelInput extends Component{
                 lbl = -1
             }
         }
-        console.log('Render LabelInput lbl', lbl)
 
         return (
             <Ref innerRef={this.inputRef}>
@@ -228,7 +218,6 @@ class LabelInput extends Component{
 
     render(){
         if (!this.props.visible) return null
-        console.log('Render LabelInput with state', this.state)
         if (this.props.renderPopup){
             return (
                 <Popup trigger={this.renderLabelInput()}

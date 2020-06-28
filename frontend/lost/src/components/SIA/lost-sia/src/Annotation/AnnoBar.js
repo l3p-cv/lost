@@ -42,7 +42,6 @@ class AnnoBar extends Component{
      * LOGIC     *
      *************/
     setPosition(){
-        // console.log('AnnoBar set Position', this.props.anno, this.props.mode)
         // const center = transform.getCenter(this.props.anno.data, this.props.anno.type)
         // const top = center.y
         // const left = center.x 
@@ -56,7 +55,6 @@ class AnnoBar extends Component{
         topPoint = transform.getMonstLeftPoint(topPoint)[0]
         if (this.textRef.current){
             const text = this.textRef.current.getBoundingClientRect()
-            console.log('AnnoBar text', text.width, text.height)
             const textPadding = 2
             let rectWidth = (text.width + textPadding)/this.props.svg.scale
             if (rectWidth !== this.state.width){
@@ -67,7 +65,7 @@ class AnnoBar extends Component{
                 })
             }
         }
-        let top = topPoint.y + 10 
+        let top = topPoint.y - 10 
         let left = topPoint.x + 7
         if (top < 0) top = topPoint.y + 10
         if (this.state.top !== top || this.state.left !== left){  
@@ -86,10 +84,8 @@ class AnnoBar extends Component{
 
     render(){
         let label = ''
-        console.log('AnnoBar possibleLabels', this.props.possibleLabels)
         if (!this.props.possibleLabels) return null
         if (this.props.anno.labelIds && this.props.anno.labelIds.length > 0){
-            console.log('AnnoBar',this.props.anno)
             let labelObject 
             this.props.anno.labelIds.forEach((lbl, idx) => {
                 labelObject = this.props.possibleLabels.find(el => {

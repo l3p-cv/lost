@@ -6,7 +6,6 @@ class UndoRedo{
     }
 
     push(entry, description='No description'){
-        console.log(this.pointer)
         const histEl = {
             entry,
             description
@@ -27,7 +26,6 @@ class UndoRedo{
         if (this.pointer+1 < this.hist.length){
             // const element = 
             this.pointer++
-            console.log(this.pointer)
             return this.hist[this.pointer]
         } else {
             return this.hist[this.hist.length-1]

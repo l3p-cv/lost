@@ -71,14 +71,12 @@ class ToolBar extends Component{
         // this.props.siaSetImageLoaded(false)
         // this.props.selectAnnotation(undefined)
         this.props.siaGetNextImage(this.props.currentImage.id)
-        console.log("TOOLBAR - wrongLoad - getNextImg", this.props.currentImage.id)
     }
 
     getPrevImg(){
         // this.props.siaSetImageLoaded(false)
         // this.props.selectAnnotation(undefined)
         this.props.siaGetPrevImage(this.props.currentImage.id)
-        console.log("TOOLBAR - wrongLoad - getPrevImg", this.props.currentImage.id)
     }
 
     setFinished(){
@@ -377,11 +375,15 @@ class ToolBar extends Component{
                     <Card>
                         <Card.Content header='Zoom/ Move Canvas' />
                         <Card.Content description='Zoom: Use MOUSE WHEEL to zoom in/out'/>
-                        <Card.Content description='Move: Hold MOUSE WHEEL and move mouse'/>
+                        <Card.Content description='Move: Hold MOUSE WHEEL and move mouse. Or Use W/A/S/D keys to move camera up/left/down/right'/>
                     </Card>
                     <Card>
                         <Card.Content header='TAB navigation' />
                         <Card.Content description='You can traverse all visible annotation by hitting TAB.'/>
+                    </Card>
+                    <Card>
+                        <Card.Content header='Next/Prev image navigation' />
+                        <Card.Content description='Get next image by hitting ARROW_RIGHT key. Get previous image by hitting ARROW_LEFT key.'/>
                     </Card>
                     </Card.Group>
                 </div>}
@@ -404,7 +406,6 @@ class ToolBar extends Component{
     }
 
     render(){
-        console.log('Toobar state', this.state, this.props.currentImage)
         return(
         <div
             ref={this.toolBarGroup}

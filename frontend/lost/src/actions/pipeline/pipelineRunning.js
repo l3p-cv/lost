@@ -77,6 +77,19 @@ const playPipeline = (id) => async dispatch => {
 const regeneratePipeline = (id) => async dispatch => {
 
 }
+
+const getLog = async (path) => {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${API_URL}/${path}?nocache=${Math.random()}`,
+        {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }
+    )
+    return response.text()
+}
+
 const downloadLogfile = (path, id) => async  dispatch => {
     const token = localStorage.getItem('token')
     const response = await http.get({
@@ -141,7 +154,7 @@ const toggleModal = (id) => {
     }
 }
 
-export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, downloadDataExport, downloadImage }
+export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, getLog,  downloadDataExport, downloadImage }
 
 
 

@@ -23,7 +23,6 @@ class AnnoToolBar extends Component{
     
     componentDidUpdate(prevProps){
         if (this.props.visible){
-            console.log('ShowLabelInput')
             this.setPosition()
         } 
 
@@ -37,18 +36,14 @@ class AnnoToolBar extends Component{
         if (this.props.selectedAnno){
             // const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
             // const annoBox = transform.getBox(this.props.selectedAnno.data, this.props.selectedAnno.type)
-            // console.log('AnnoToolBar annoBox', annoBox)
             let topPoint = transform.getTopPoint(this.props.selectedAnno.data)
             topPoint = transform.getMonstLeftPoint(topPoint)[0]
             const inputRect = this.inputGroupRef.current.getBoundingClientRect()
             let top = this.props.svg.top + (topPoint.y + this.props.svg.translateY) *this.props.svg.scale - 44
             let left = this.props.svg.left + (topPoint.x + this.props.svg.translateX) *this.props.svg.scale - inputRect.width /2.0 - 1
-            // console.log('AnnoToolBar top, left', top, left)
             // if (left < this.props.svg.left) left = this.props.svg.left
             // if (left+inputRect.width > this.props.svg.left+this.props.svg.width){
-            //     console.log('labelinput right, svg right', left+inputRect.width, this.props.svg.left+this.props.svg.width)
             //     left = this.props.svg.left+this.props.svg.width - inputRect.width
-            //     console.log('labelinput new left', left)
             // }
             if (top < 0) top = this.props.svg.top + (topPoint.y + this.props.svg.translateY + 10) *this.props.svg.scale 
             if (this.state.top !== top || this.state.left !== left){  

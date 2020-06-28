@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] -  2020-06-08
+### Fixed
+- Updated nodejs version in oder to get ci running
+
+## [1.1.3] - 2020-06-05
+### Added
+- SIA: 
+  * Added next/ prev image shortcut via ArrowLeft/ArrowRight keys (see https://github.com/l3p-cv/lost/issues/67)
+  * Added camera move on wasd keys
+### Changed
+- SIA: Show annotation nodes in foreground and label above annotation to prevent that nodes are not accessible by the annotator (see https://github.com/l3p-cv/lost/issues/74)
+
+
+## [1.1.2] - 2020-05-26
+### Fixed
+-  PyAPI: get_label_tree method did not return any label tree 
+
+
+## [1.0.1] - 2020-05-26
+### Fixed
+-  PyAPI: get_label_tree method did not return any label tree 
+
+
+## [1.1.1] - 2020-05-15
+### Added 
+- Docs: Migration guide -> How to migrate from 0.0.6 to 1.1.0 (see https://github.com/l3p-cv/lost/pull/71)
+- Reduction of docker images size (see https://github.com/l3p-cv/lost/pull/68)
+- Use docker-compose for gpu worker (see https://github.com/l3p-cv/lost/pull/65)
+
 ## [1.1.0] - 2020-04-06
 ### Changed
 - Usermanagement: Integrated usermanagement refactoring (see also https://github.com/l3p-cv/lost/pull/47)

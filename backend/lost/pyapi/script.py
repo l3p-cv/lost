@@ -138,7 +138,7 @@ class Script(pe_base.Element):
                 it will be returned. Otherwise None
                 will be returned'''
         root_list = self._dbm.get_all_label_trees()
-        root = next(filter(lambda x: x==name, root_list), None)
+        root = next(filter(lambda x: x.name==name, root_list), None)
         if root is None:
             return None
         else:

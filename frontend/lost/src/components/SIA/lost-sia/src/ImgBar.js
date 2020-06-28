@@ -32,7 +32,6 @@ class ImgBar extends Component{
      * Events
      *********/
     handleLabelUpdate(label){
-        console.log('ImgBar label update', label)
         if (this.props.onLabelUpdate){
             this.props.onLabelUpdate(label)
         }
@@ -73,7 +72,6 @@ class ImgBar extends Component{
     renderImgLabels(){
         let label = ''
         if (this.props.imgLabelIds && this.props.imgLabelIds.length > 0){
-            // console.log('AnnoBar',this.props.anno)
             let labelObject 
             this.props.imgLabelIds.forEach((lbl, idx) => {
                 labelObject = this.props.possibleLabels.find(el => {

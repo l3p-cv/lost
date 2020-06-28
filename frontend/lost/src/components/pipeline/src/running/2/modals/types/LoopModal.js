@@ -2,9 +2,6 @@ import React from 'react'
 import {ModalHeader, ModalBody } from 'reactstrap';
 import Table from 'pipelineGlobalComponents/modals/Table'
 export default (props) =>{
-  console.log('-----------VisualOutputprops-------------------------');
-  console.log(props);
-  console.log('------------------------------------');
   return (
     <>
       <ModalHeader>Loop Modal</ModalHeader>

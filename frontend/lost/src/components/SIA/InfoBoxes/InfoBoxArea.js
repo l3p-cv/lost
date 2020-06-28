@@ -24,7 +24,6 @@ class InfoBoxes extends Component{
 
         if (this.props.layoutUpdate !== prevProps.layoutUpdate){
             const container = this.props.container.current.getBoundingClientRect()
-            console.log('ImgBar layout update container', container)
             this.setState({
                 position: {...this.state.position,
                 left: container.right - 250,
@@ -37,7 +36,6 @@ class InfoBoxes extends Component{
     onDismiss(type){
         switch (type){
             case 'AnnoDetails':
-                console.log('InfoBoxArea Dismiss AnnoDetails')
                 this.props.siaSetUIConfig(
                     {...this.props.uiConfig,
                         annoDetails: {

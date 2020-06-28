@@ -18,12 +18,14 @@ import InfoBoxArea from './InfoBoxes/InfoBoxArea'
 import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
+import { toSia } from './lost-sia/src/utils/transform'
 
 const { 
     siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
-    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask
+    selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
+    siaGetNextImage, siaGetPrevImage
 } = actions
 
 class SIA extends Component {
@@ -65,7 +67,6 @@ class SIA extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log('Sia did update', this.container.current.getBoundingClientRect())
         this.setFullscreen(this.props.fullscreenMode)
         if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
             // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
@@ -110,16 +111,15 @@ class SIA extends Component {
         }
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
+                this.canvas.current.resetZoom()
                 const newAnnos = this.canvas.current.getAnnos()
                 this.canvas.current.unloadImage()
-                console.log('getNextImage newAnnos', newAnnos)
                 this.setState({image: {
                     id: undefined, 
                     data:undefined
                 }})
                 this.props.siaImgIsJunk(false)
                 this.props.siaUpdateAnnos(newAnnos).then((r) => {
-                    console.log('SIA REQUEST: Updated Annos', r)
                     this.props.getSiaAnnos(this.props.getNextImage)
                     
                 })
@@ -128,6 +128,7 @@ class SIA extends Component {
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
             if (this.props.getPrevImage){
+                this.canvas.current.resetZoom()
                 const newAnnos = this.canvas.current.getAnnos()
                 this.canvas.current.unloadImage()
                 this.setState({image: {
@@ -172,10 +173,43 @@ class SIA extends Component {
     }
 
     handleNotification(messageObj){
-        console.log('SIANotification', messageObj)
         this.setState({
             notification: messageObj
         })
+    }
+
+    handleCanvasKeyDown(e){
+        console.log('Canvas keyDown: ', e.key)
+        switch(e.key){
+            case 'ArrowLeft':
+                if (!this.props.currentImage.isFirst){
+                    this.props.siaGetPrevImage(this.props.currentImage.id)
+                } else {
+                    this.setState({notification:
+                        {
+                            title: "No previous image",
+                            message: 'This is the first image!',
+                            type: notificationType.WARNING
+                        }
+                    })
+                }
+                break
+            case 'ArrowRight':
+                if (!this.props.currentImage.isLast){
+                    this.props.siaGetNextImage(this.props.currentImage.id)
+                } else {
+                    this.setState({notification:
+                        {
+                            title: "No next image",
+                            message: 'This is the last image!',
+                            type: notificationType.WARNING
+                        }
+                    })
+                }
+                break
+            default:
+                break
+        }
     }
 
     requestImageFromBackend(){
@@ -218,7 +252,6 @@ class SIA extends Component {
     }
 
     render() {
-        console.log('Sia renders', this.state.image)
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas
@@ -240,9 +273,13 @@ class SIA extends Component {
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
                     centerCanvasInContainer={true}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
+                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     // defaultLabel='no label'
                 />
-                <ToolBar onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}></ToolBar>
+                <ToolBar 
+                    ref={this.toolbar} 
+                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+                />
                 <InfoBoxArea container={this.container}></InfoBoxArea>
                 <NotificationContainer/>
              </div>
@@ -268,7 +305,8 @@ function mapStateToProps(state) {
         possibleLabels: state.sia.possibleLabels,
         imgLabelInput: state.sia.imgLabelInput,
         canvasConfig: state.sia.config,
-        isJunk: state.sia.isJunk
+        isJunk: state.sia.isJunk,
+        currentImage: state.sia.annos.image
     })
 }
 
@@ -282,6 +320,7 @@ export default connect(
         siaShowImgLabelInput,
         siaImgIsJunk,
         getWorkingOnAnnoTask,
+        siaGetNextImage, siaGetPrevImage
     }
     , null,
     {})(SIA)
