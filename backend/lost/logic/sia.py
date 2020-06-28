@@ -457,9 +457,10 @@ class SiaUpdate(object):
         return two_d_json
     def __update_history_json_file(self):
         # create history directory if not exist
-        self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
-        self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
-        self.history_json['image_anno_time'] = self.image_anno.anno_time
+        if self.sia_type == 'sia':
+            self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
+            self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
+            self.history_json['image_anno_time'] = self.image_anno.anno_time
         self.history_json['user_id'] = self.user_id
         self.history_json['user_name'] = None
         if self.image_anno.annotator:
@@ -593,6 +594,9 @@ def review(dbm, data, user_id, media_url):
 def reviewoptions(dbm, pe_id, user_id):
     options = {}
     pipe_element = dbm.get_pipe_element(pipe_e_id=pe_id)
-    options['max_iteration'] = pipe_element.iteration
+    if pipe_element.state == state.PipeElement.PENDING:
+        options['max_iteration'] = pipe_element.iteration - 1 
+    else:
+        options['max_iteration'] = pipe_element.iteration
     options['possible_labels'] = get_label_trees(dbm, user_id, pipe_element.anno_task)['labels']
     return options
