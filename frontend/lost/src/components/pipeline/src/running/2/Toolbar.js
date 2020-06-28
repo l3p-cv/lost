@@ -6,8 +6,9 @@ import startActions from 'actions/pipeline/pipelineStart'
 import { connect } from 'react-redux'
 import { alertLoading, alertClose, alertDeletePipeline } from 'pipelineGlobalComponents/Sweetalert'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrash, faDownload, faPause, faPlay, faRedo } from '@fortawesome/free-solid-svg-icons'
+import { faTrash, faStickyNote, faPause, faPlay, faRedo } from '@fortawesome/free-solid-svg-icons'
 import ToolbarTooltip from './ToolbarTooltip'
+import LogFileModal from './modals/LogFileModal'
 
 
 const { pausePipeline, playPipeline, deletePipeline, downloadLogfile } = actions
@@ -17,12 +18,13 @@ class Toolbar extends Component {
     constructor() {
         super()
         this.delete = this.delete.bind(this)
-        this.downloadLogfile = this.downloadLogfile.bind(this)
+        this.showLogfile = this.showLogfile.bind(this)
         this.pause = this.pause.bind(this)
         this.regenerate = this.regenerate.bind(this)
         this.play = this.play.bind(this)
         this.state = {
             modal: false,
+            isLogFileModalOpen: false,
             name: undefined,
             description: undefined
         };
@@ -44,8 +46,9 @@ class Toolbar extends Component {
         }));
     }
 
-    downloadLogfile() {
-        this.props.downloadLogfile(this.props.data.logfilePath, this.props.data.id)
+    showLogfile() {
+        this.setState({isLogFileModalOpen: !this.state.isLogFileModalOpen})
+        // this.props.downloadLogfile(this.props.data.logfilePath, this.props.data.id)
     }
 
     pause() {
@@ -86,6 +89,12 @@ class Toolbar extends Component {
         return (
             <div className='pipeline-running-toolbar'>
                 <GrayLine />
+                <LogFileModal
+                    isOpen= {this.state.isLogFileModalOpen}
+                    logId={this.props.data ? this.props.data.id: null}
+                    logPath={this.props.data ? this.props.data.logfilePath : null}
+                    toggle={()=>{this.setState({isLogFileModalOpen: !this.state.isLogFileModalOpen})}}
+                />
                 <Button className='pipeline-running-toolbar-button'
                     id='pipeline-button-delete-pipeline'
                     onClick={this.delete}
@@ -98,10 +107,10 @@ class Toolbar extends Component {
                 {this.props.data && <>
                     <Button className='pipeline-running-toolbar-button'
                         id='pipeline-button-download-logfile'
-                        onClick={this.downloadLogfile}
+                        onClick={this.showLogfile}
                         color="secondary">
                         <FontAwesomeIcon
-                            icon={faDownload}
+                            icon={faStickyNote}
                             size="2x"
                         />
                     </Button>
