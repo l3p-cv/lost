@@ -40,6 +40,7 @@ proposals that are presented to an annotator inside the annotation tool.
         Getting Started <getting_started.rst>
         Quick Setup <quick_setup.rst>
         For Annotators <annotators.rst>
+        Annotation Review <annotation_review.rst>
         The LOST Ecosystem <lost_ecosystem.rst>
         For Pipeline Designers <designers.rst>
         ALL About Pipelines <all_about_pipelines.rst>
