@@ -24,7 +24,7 @@ def get_first(db_man, user_id, media_url):
             elif image_anno.state == state.Anno.LABELED:
                 image_anno.state = state.Anno.LABELED_LOCKED
             is_last_image = __is_last_image__(db_man, user_id, at.idx, iteration, image_anno.idx)
-            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
+            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx, at.pipe_element.iteration)
             sia_serialize = SiaSerialize(image_anno, user_id, media_url, True, is_last_image, current_image_number, total_image_amount)
             db_man.save_obj(image_anno)
             return sia_serialize.serialize()
@@ -72,7 +72,7 @@ def get_next(db_man, user_id, img_id, media_url):
             if first_image_anno is not None and first_image_anno.idx != image_anno.idx:
                 is_first_image = False
             is_last_image = __is_last_image__(db_man, user_id, at.idx, iteration, image_anno.idx) 
-            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
+            current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx, at.pipe_element.iteration)
             sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
             db_man.save_obj(image_anno)
             return sia_serialize.serialize()
@@ -95,16 +95,17 @@ def get_previous(db_man, user_id, img_id, media_url):
             is_first_image = True
         image_anno.timestamp_lock = datetime.now()
         db_man.save_obj(image_anno)
-        current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx)
+        current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx, at.pipe_element.iteration)
         sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
         return sia_serialize.serialize()
     else:
         return "nothing available"
-def get_label_trees(db_man, user_id):
+def get_label_trees(db_man, user_id, at=None):
     """
     :type db_man: lost.db.access.DBMan
     """
-    at = get_sia_anno_task(db_man, user_id)
+    if at is None:
+        at = get_sia_anno_task(db_man, user_id)
     label_trees_json = dict()
     label_trees_json['labels'] = list()
     if at:
@@ -132,11 +133,23 @@ def get_sia_anno_task(db_man, user_id):
         if cat.anno_task.dtype == dtype.AnnoTask.SIA:
             return cat.anno_task
     return None
-def get_image_progress(db_man, anno_task, img_id):
-    pipe_element=db_man.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
+def get_image_progress(db_man, anno_task, img_id, iteration=None):
+    '''Get image progress for current request
+    
+    Args:
+        db_man (access.DBMan): Database manager
+        anno_task (model.AnnoTask): Annotation task
+        img_id (int): Id of the current image
+        iteration (int): int or None. If None all annotations will be considered
+
+    '''
     anno_ids = list()
-    for anno in db_man.get_all_image_annos_by_iteration(anno_task.idx, pipe_element.iteration):
-        anno_ids.append(anno.idx)
+    if iteration is None:
+        for anno in db_man.get_all_image_annos(anno_task.idx):
+            anno_ids.append(anno.idx)
+    else:
+        for anno in db_man.get_all_image_annos_by_iteration(anno_task.idx, iteration):
+            anno_ids.append(anno.idx)
     total_image_amount = len(anno_ids)
     current_image_number = anno_ids.index(img_id) + 1 
 
@@ -173,8 +186,19 @@ def update(db_man, data, user_id):
     """ Update Image and TwoDAnnotation from SIA
     :type db_man: lost.db.access.DBMan
     """
-    sia_update = SiaUpdate(db_man, data, user_id)
+    anno_task = get_sia_anno_task(db_man, user_id)
+    sia_update = SiaUpdate(db_man, data, user_id, anno_task)
     return sia_update.update()
+
+def review_update(db_man, data, user_id, pe_id):
+    """ Update Image and TwoDAnnotation from SIA
+    :type db_man: lost.db.access.DBMan
+    """
+    pe = db_man.get_pipe_element(pipe_e_id=pe_id)
+    at = pe.anno_task
+    sia_update = SiaUpdate(db_man, data, user_id, at, sia_type='review')
+    return sia_update.update()
+
 def finish(db_man, user_id):
     at = get_sia_anno_task(db_man, user_id)
     if at.idx: 
@@ -194,21 +218,23 @@ def junk(db_man, user_id, img_id):
         return "error: image_anno not found"
 
 class SiaUpdate(object):
-    def __init__(self, db_man, data, user_id):
+    def __init__(self, db_man, data, user_id, anno_task, sia_type='sia'):
         """
         :type db_man: lost.db.access.DBMan
         """
+        self.sia_type = sia_type
         self.timestamp = datetime.now()
         self.db_man = db_man
         self.user_id = user_id 
-        self.at = get_sia_anno_task(db_man, user_id) #type: lost.db.model.AnnoTask
+        self.at = anno_task #type: lost.db.model.AnnoTask
         self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
         self.image_anno = self.db_man.get_image_annotation(data['imgId'])
         self.image_anno.timestamp = self.timestamp
         if self.image_anno.anno_time is None:
             self.image_anno.anno_time = 0.0
-        self.image_anno.anno_time += (self.image_anno.timestamp-self.image_anno.timestamp_lock).total_seconds()
+        if self.sia_type == 'sia':
+            self.image_anno.anno_time += (self.image_anno.timestamp-self.image_anno.timestamp_lock).total_seconds()
         self.b_boxes = list()
         self.points = list()
         self.lines = list()
@@ -288,8 +314,10 @@ class SiaUpdate(object):
         # caution: anno_time will be added to *every* two_d anno - 
         # we assume that the attention of every box is equally valid
         average_anno_time = 0
-        if len(annotations) > 0:
-            average_anno_time = self.image_anno.anno_time/len(annotations)
+        #sia review updates should have no influence on anno time!
+        if self.sia_type == 'sia':
+            if len(annotations) > 0:
+                average_anno_time = self.image_anno.anno_time/len(annotations)
         for annotation in annotations:
             if annotation['status'] != "database" \
             and annotation['status'] != "deleted" \
@@ -429,9 +457,10 @@ class SiaUpdate(object):
         return two_d_json
     def __update_history_json_file(self):
         # create history directory if not exist
-        self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
-        self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
-        self.history_json['image_anno_time'] = self.image_anno.anno_time
+        if self.sia_type == 'sia':
+            self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
+            self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
+            self.history_json['image_anno_time'] = self.image_anno.anno_time
         self.history_json['user_id'] = self.user_id
         self.history_json['user_name'] = None
         if self.image_anno.annotator:
@@ -526,3 +555,48 @@ def get_last_image_id(dbm, user_id):
         if tmp_anno:
             return tmp_anno.idx -1 
     return None
+
+def review(dbm, data, user_id, media_url):
+    direction = data['direction']
+    current_idx = data['image_anno_id']
+    iteration = data['iteration']
+    pe_id = data['pe_id']
+
+    at = dbm.get_pipe_element(pipe_e_id=pe_id).anno_task
+    first_anno = dbm.get_sia_review_first(at.idx, iteration)
+    if direction == 'first':
+        image_anno = first_anno
+    elif direction == 'next':
+        image_anno = dbm.get_sia_review_next(at.idx, current_idx, iteration)
+    elif direction == 'previous':
+        image_anno = dbm.get_sia_review_prev(at.idx, current_idx, iteration)
+
+    if image_anno:
+        # all_iterations = True
+        # if iteration:
+        #     all_iterations = False
+
+        current_image_number, total_image_amount = get_image_progress(dbm, at, image_anno.idx, iteration)
+
+        is_first_image = False
+        if first_anno.idx == image_anno.idx:
+            is_first_image = True
+
+        is_last_image = False
+        if current_image_number == total_image_amount:
+            is_last_image = True
+
+        sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
+        return sia_serialize.serialize()
+    else:
+        return 'no annotation found'
+
+def reviewoptions(dbm, pe_id, user_id):
+    options = {}
+    pipe_element = dbm.get_pipe_element(pipe_e_id=pe_id)
+    if pipe_element.state == state.PipeElement.PENDING:
+        options['max_iteration'] = pipe_element.iteration - 1 
+    else:
+        options['max_iteration'] = pipe_element.iteration
+    options['possible_labels'] = get_label_trees(dbm, user_id, pipe_element.anno_task)['labels']
+    return options

@@ -35,6 +35,11 @@ const Workers = Loadable({
   loading: Loading,
 })
 
+const SiaReview = Loadable({
+  loader: () => import('./views/SiaReview.js'),
+  loading: Loading,
+})
+
 
 
 
@@ -47,6 +52,7 @@ const routes = [
   { path: '/users', name: 'Manage Users', component: User },
   { path: '/workers', name: 'Workers', component: Workers },
   { path: '/profile', name: 'My Profile', component: Profile },
+  { path: '/sia-review', name: 'Sia Review', component: SiaReview },
   //{ path: '/users/:id', exact: true, name: 'User Details', component: User },
 ]
 

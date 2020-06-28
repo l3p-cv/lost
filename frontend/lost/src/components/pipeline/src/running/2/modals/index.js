@@ -8,9 +8,11 @@ import DataExportModal from './types/DataExportModal'
 import { Button, Modal, ModalFooter } from 'reactstrap';
 import {connect} from 'react-redux'
 import actions from 'actions/pipeline/pipelineRunning'
+import actionsAll from '../../../../../../actions'
+
 
 const {toggleModal} = actions
-
+const {siaReviewSetElement, chooseAnnoTask} = actionsAll
 
 class BaseModal extends Component {
     constructor() {
@@ -33,6 +35,8 @@ class BaseModal extends Component {
             } else if('annoTask' in this.props.data){
                 return (
                     <AnnoTaskModal
+                    siaReviewSetElement={this.props.siaReviewSetElement}
+                    chooseAnnoTask={this.props.chooseAnnoTask}
                     {...this.props.data}
                     />
                 )
@@ -88,5 +92,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps,
-    {toggleModal}
+    {toggleModal, siaReviewSetElement, chooseAnnoTask}
 )(BaseModal)
