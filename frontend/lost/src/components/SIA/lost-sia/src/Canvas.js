@@ -139,6 +139,8 @@ class Canvas extends Component{
             imgLoadCount: 0,
             imgLabelIds: [],
             imgLabelChanged: false,
+            imgAnnoTime: 0,
+            imgLoadTimestamp: 0,
             performedImageInit: false,
             prevLabel: [],
             imageData: undefined,
@@ -166,6 +168,8 @@ class Canvas extends Component{
         if (prevProps.annos !== this.props.annos){
             this.setState({
                 imgLabelIds: this.props.annos.image.labelIds,
+                imgAnnoTime: this.props.annos.image.annoTime,
+                imgLoadTimestamp: performance.now()
                 // isJunk: this.props.annos.image.isJunk
             })
             this.setState({
@@ -763,7 +767,8 @@ class Canvas extends Component{
             imgLabelIds: this.state.imgLabelIds,
             imgLabelChanged: this.state.imgLabelChanged,
             annotations: backendFormat,
-            isJunk: this.state.isJunk
+            isJunk: this.state.isJunk,
+            annoTime: this.props.annos.image.annoTime + (performance.now() - this.state.imgLoadTimestamp)/1000
         }
         return finalData
     }

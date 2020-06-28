@@ -234,7 +234,8 @@ class SiaUpdate(object):
         if self.image_anno.anno_time is None:
             self.image_anno.anno_time = 0.0
         if self.sia_type == 'sia':
-            self.image_anno.anno_time += (self.image_anno.timestamp-self.image_anno.timestamp_lock).total_seconds()
+            # self.image_anno.anno_time += (self.image_anno.timestamp-self.image_anno.timestamp_lock).total_seconds()
+            self.image_anno.anno_time = data['annoTime']
         self.b_boxes = list()
         self.points = list()
         self.lines = list()
@@ -499,6 +500,7 @@ class SiaSerialize(object):
         self.sia_json['image']['number'] = self.current_image_number
         self.sia_json['image']['amount'] = self.total_image_amount
         self.sia_json['image']['isJunk'] = self.image_anno.is_junk
+        self.sia_json['image']['annoTime'] = self.image_anno.anno_time
         if self.image_anno.labels is None:
             self.sia_json['image']['labelIds'] = []
         else:
@@ -516,6 +518,7 @@ class SiaSerialize(object):
                 if two_d_anno.labels: #type: lost.db.model.Label
                     bbox_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 bbox_json['data'] = json.loads(two_d_anno.data)
+                bbox_json['annoTime'] = two_d_anno.anno_time
                 self.sia_json['annotations']['bBoxes'].append(bbox_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POINT:
                 point_json = dict()
@@ -524,6 +527,7 @@ class SiaSerialize(object):
                 if two_d_anno.labels: #type: lost.db.model.Label
                     point_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 point_json['data'] = json.loads(two_d_anno.data)
+                point_json['annoTime'] = two_d_anno.anno_time
                 self.sia_json['annotations']['points'].append(point_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.LINE:
                 line_json = dict()
@@ -532,6 +536,7 @@ class SiaSerialize(object):
                 if two_d_anno.labels: #type: lost.db.model.Label
                     line_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 line_json['data'] = json.loads(two_d_anno.data)
+                line_json['annoTime'] = two_d_anno.anno_time
                 self.sia_json['annotations']['lines'].append(line_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
                 polygon_json = dict()
@@ -540,6 +545,7 @@ class SiaSerialize(object):
                 if two_d_anno.labels: #type: lost.db.model.Label
                     polygon_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 polygon_json['data'] = json.loads(two_d_anno.data)
+                polygon_json['annoTime'] = two_d_anno.anno_time
                 self.sia_json['annotations']['polygons'].append(polygon_json)
         return self.sia_json
 class SiaStatusNotFoundError(Exception):
