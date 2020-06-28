@@ -32,7 +32,7 @@ class LabelInput extends Component{
                     this.inputRef.current.click()
                 }
             }
-            
+
         }
         if (prevState.confirmLabel !== this.state.confirmLabel){
             this.annoLabelUpdate(this.state.label)
@@ -70,7 +70,7 @@ class LabelInput extends Component{
     onKeyDown(e: Event){
         e.stopPropagation()
         this.performKeyAction(e.key)
-        
+
     }
 
     onChange(e, item ){
@@ -137,7 +137,7 @@ class LabelInput extends Component{
         }
     }
 
-    
+
     confirmLabel(){
         //If not allowed to label -> return
         this.setState({confirmLabel: this.state.confirmLabel+1})
@@ -159,9 +159,9 @@ class LabelInput extends Component{
      * RENDERING *
     **************/
     renderLabelInput(){
-        let lbl 
+        let lbl
         if (this.props.multilabels){
-            lbl = this.state.label        
+            lbl = this.state.label
         } else {
             if (this.state.label.length > 0){
                 lbl = this.state.label[0]
@@ -204,7 +204,7 @@ class LabelInput extends Component{
             <Header>{
                 lbl.label
             }</Header>
-            {lbl.description}
+            <div dangerouslySetInnerHTML={{__html: lbl.description}} />
         </div>
     }
 
@@ -230,9 +230,9 @@ class LabelInput extends Component{
         } else {
             return this.renderLabelInput()
         }
-        
+
     }
-    
+
 }
 
 export default LabelInput

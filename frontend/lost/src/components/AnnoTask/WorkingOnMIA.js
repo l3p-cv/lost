@@ -17,15 +17,15 @@ const customStyles = {
         backgroundColor: 'rgba(0,0,0,0.75)'
       },
   };
-  
+
 class WorkingOnMIA extends Component {
     constructor() {
         super();
-    
+
         this.state = {
           modalIsOpen: true
         };
-    
+
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
@@ -43,7 +43,7 @@ class WorkingOnMIA extends Component {
     closeModal() {
         this.setState({modalIsOpen: false});
     }
-    
+
     render() {
         if(this.props.annoTask !== null){
         let progress = Math.floor((this.props.annoTask.finished / this.props.annoTask.size) * 100)
@@ -104,11 +104,11 @@ class WorkingOnMIA extends Component {
                         <CardHeader><i className="fa fa-question-circle"></i> Instructions</CardHeader>
                         <CardBody>
                             <Alert color="info">
-                                {this.props.annoTask.instructions}
+                              <div dangerouslySetInnerHTML={{__html: this.props.annoTask.instructions}} />
                             </Alert>
                             <Button color='success' onClick={this.closeModal}><i className="fa fa-times"></i> Close</Button>
                         </CardBody>
-                    </Card>                   
+                    </Card>
                 </Modal>
             </div>
         )
