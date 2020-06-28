@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Review tool for annotation tasks in designer interfaces
   * Allows to view and adjust annotations for SIA and MIA tasks
   * Allows also to filter annotations by iteration 
+- Live logs: Show logs live in pipeline when clicking on logs (see https://github.com/l3p-cv/lost/pull/84)
 
 ## [1.1.4] -  2020-06-08
 ### Fixed
