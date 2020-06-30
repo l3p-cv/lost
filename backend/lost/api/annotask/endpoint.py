@@ -6,7 +6,8 @@ from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
 from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
-
+from lost.logic.report import Report
+import json
 
 namespace = api.namespace('annotask', description='AnnoTask API.')
 
@@ -83,3 +84,20 @@ class Statistic(Resource):
             annotask_statistics = annotask_service.get_annotask_statistics(dbm, annotask_id)
             dbm.close_session()
             return annotask_statistics
+
+@namespace.route('/report')
+class ReportService(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+        data = json.loads(request.data)
+        report = Report(dbm, data)
+        report_data = report.get_report()
+        dbm.close_session()
+        return report_data
