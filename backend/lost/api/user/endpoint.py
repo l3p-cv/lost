@@ -299,3 +299,25 @@ class UserLogin(Resource):
             }, 200
         dbm.close_session()
         return {'message': 'Invalid credentials'}, 401
+
+@namespace.route('/token')
+class Token(Resource):
+    @api.expect(user_login)
+    def post(self):
+        # get data from parser
+        data = login_parser.parse_args()
+        dbm = access.DBMan(LOST_CONFIG)
+        # find user in database
+        if 'user_name' in data:
+            user = dbm.find_user_by_user_name(data['user_name'])
+
+        # check password
+        if user and user.check_password(data['password']):
+            dbm.close_session()
+            expires = datetime.timedelta(days=3650)
+            access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
+            return {
+                'token': access_token
+            }, 200
+        dbm.close_session()
+        return {'message': 'Invalid credentials'}, 401
