@@ -96,8 +96,8 @@ class ReportService(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-        data = json.loads(request.data)
-        report = Report(dbm, data)
-        report_data = report.get_report()
-        dbm.close_session()
-        return report_data
+            data = json.loads(request.data)
+            report = Report(dbm, data)
+            report_data = report.get_report()
+            dbm.close_session()
+            return report_data
