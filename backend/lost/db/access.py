@@ -809,10 +809,10 @@ class DBMan(object):
 
         sql = "SELECT label.label_leaf_id, label_leaf.name, COUNT(label.idx) AS num_items \
                 FROM label INNER JOIN two_d_anno ON two_d_anno.idx = label.two_d_anno_id \
-                INNER JOIN anno_task ON anno_task.pipe_element_id = {} \
+                INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
                 INNER JOIN label_leaf ON label_leaf.idx = label.label_leaf_id \
                 WHERE anno_task.pipe_element_id = {} \
-                {} {} {} GROUP BY label.label_leaf_id".format(pipe_element_id, pipe_element_id, user_id_str, iteration_str, between_str)
+                {} {} {} GROUP BY label.label_leaf_id".format(pipe_element_id, user_id_str, iteration_str, between_str)
         return self.session.execute(sql)
     
     def count_two_d_annos_per_day(self, pipe_element_id, user_id=None, iteration=None, date_from=None, date_to=None):
@@ -831,8 +831,8 @@ class DBMan(object):
                 between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(date_from, date_to)
 
         sql = "SELECT COUNT(two_d_anno.idx), DAY(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), YEAR(two_d_anno.timestamp) \
-                FROM two_d_anno INNER JOIN anno_task ON anno_task.pipe_element_id = {} \
+                FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id\
                 WHERE anno_task.pipe_element_id = {} {}\
-                GROUP BY YEAR(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), DAY(two_d_anno.timestamp)".format(pipe_element_id, pipe_element_id, between_str)
+                GROUP BY YEAR(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), DAY(two_d_anno.timestamp)".format(pipe_element_id, between_str)
 
         return self.session.execute(sql)
