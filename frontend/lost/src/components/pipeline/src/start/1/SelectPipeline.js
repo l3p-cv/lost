@@ -28,7 +28,6 @@ class SelectPipeline extends Component {
                     <div className='pipeline-error-message'>{this.props.data.error}</div>
                 )
             }
-            console.log(this.props.data.response.templates)
             const data = this.props.data.response.templates.map(el=>(
                     {
                     ...el,
