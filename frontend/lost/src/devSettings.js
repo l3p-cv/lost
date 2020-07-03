@@ -7,7 +7,7 @@ let API_URL = ""
 if(DEV){
 	console.warn('TURN OF DEV MODE IN PRODUCTION')
 
-	API_URL = `${window.location.origin.replace(/:\d+?$/, "")}/api`
+	API_URL = `${window.location.origin.replace(/:\d+?$/, "")}${process.env.REACT_APP_PORT?`:${process.env.REACT_APP_PORT}` : ''}/api`
 } else {
 	API_URL = `${window.location.origin}/api`
 }
