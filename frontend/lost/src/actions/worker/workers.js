@@ -34,3 +34,20 @@ export const getWorkerLogFile = async (path) => {
     )
     return response.text()
 }
+
+export const downloadWorkerLogfile = (path, id) => async  dispatch => {
+    const token = localStorage.getItem('token')
+    const response = await http.get({
+        url: `${API_URL}/data/workerlogs/${path}`,
+        token,
+        type: 'image'
+    })
+    const objectURL = window.URL.createObjectURL(response)
+    const link = document.createElement('a');
+    link.href = objectURL;
+    link.download=`worker-idx-${id}.log`
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(objectURL);
+}

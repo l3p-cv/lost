@@ -65,7 +65,9 @@ const LogModal = (props) => {
 
     useInterval(
         () => {
-            getLog()
+            if(props.isOpen){
+                getLog()
+            }
         },
         2000
     )
@@ -77,7 +79,7 @@ const LogModal = (props) => {
             dispatch(pipelineActions.downloadLogfile(props.logPath, props.wiLogId))
             break
         case LogModal.TYPES.WORKERS:
-            // dispatch(actions.downloadWorkerLogfile(props.logPath, props.wiLogId))
+            dispatch(actions.downloadWorkerLogfile(props.logPath, props.wiLogId))
             break
         default:
             throw new Error('Unknown type')

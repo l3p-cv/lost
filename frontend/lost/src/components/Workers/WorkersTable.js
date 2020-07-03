@@ -34,18 +34,7 @@ class WorkersTable extends Component {
             logBlobUrl: '',
             modalsIsOpen: []
         }
-
-        // this.openModal = this.openModal.bind(this);
-        this.afterOpenModal = this.afterOpenModal.bind(this);
-        // this.closeModal = this.closeModal.bind(this);
     }
-
-
-    afterOpenModal() {
-        // references are now sync'd and can be accessed.
-        //this.subtitle.style.color = '#f00';
-    }
-
 
 
     componentDidMount() {
@@ -56,11 +45,6 @@ class WorkersTable extends Component {
     }
 
      handleLogfileButtonClick(worker){
-        //const {idx,type,status} = worker
-        // const logFile = this.props.getWorkerLogFile(`${worker.worker_name}.log`)
-        // logFile.then(response=>
-        //     this.setState({logBlobUrl: window.URL.createObjectURL(response)})
-        // )
         this.setState({
             modalsIsOpen: this.state.modalsIsOpen.map(el=>({
                 idx: el.idx,
@@ -76,39 +60,6 @@ class WorkersTable extends Component {
         this.workertimer = null
       }
     
-    // renderLogFile(){
-    //     if(this.state.logBlobUrl!=='')
-    //     {
-    //         //return(  <LazyLog url={this.state.logBlobUrl} />)
-    //         return( <ScrollFollow
-    //             startFollowing={true}
-    //             render={({ follow, onScroll }) => (
-    //             <LazyLog url={this.state.logBlobUrl} stream follow={follow} onScroll={onScroll} />
-    //             )}
-    //         />)
-    //     }
-    //     else return <div></div>
-    // }
-
-    // renderLogFileModal(){
-    //     return(
-    //     <Modal
-    //         isOpen={this.state.modalIsOpen}
-    //         onAfterOpen={this.afterOpenModal}
-    //         onRequestClose={this.closeModal}
-    //         style={customStyles}
-    //         ariaHideApp={false}
-    //         contentLabel="Logfile"
-    //         >
-    //         <Card style={{height:'90%'}}>
-    //             <CardHeader><i className="fa fa-question-circle"></i> Logs</CardHeader>
-    //             <CardBody style={{height:'100%'}}>
-    //                 {this.renderLogFile()}
-    //             </CardBody>
-    //             <Button color='success' onClick={this.closeModal}><i className="fa fa-times"></i> Close</Button>
-    //         </Card>                   
-    //     </Modal>)    
-    // }
 
     componentWillReceiveProps(){
         if(this.state.modalsIsOpen.length != this.props.workers.length){
@@ -127,6 +78,7 @@ class WorkersTable extends Component {
                 <LogModal
                     actionType={LogModal.TYPES.WORKERS}
                     isDownloadable
+                    wiLogId={worker.idx}
                     isOpen={this.state.modalsIsOpen.filter(el=>el.idx===worker.idx)[0].isOpen}
                     toggle={()=>{this.setState({
                         modalsIsOpen: this.state.modalsIsOpen.map(el=>{
