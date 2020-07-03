@@ -12,12 +12,25 @@ export const getWorkers = () => async dispatch => {
     } catch (e) {}
 }
 
-export const getWorkerLogFile = (path) => async dispatch =>{
+// export const getWorkerLogFile = (path) => async dispatch =>{
   
-    const config = {
-        url: API_URL +'/data/workerlogs/'+ path,
-        type: 'image',
-        token: localStorage.getItem('token')
-    }
-    return await http.get(config)
+//     const config = {
+//         url: API_URL +'/data/workerlogs/'+ path,
+//         type: 'image',
+//         token: localStorage.getItem('token')
+//     }
+//     return await http.get(config)
+// }
+
+
+export const getWorkerLogFile = async (path) => {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${API_URL}/data/workerlogs/${path}`,
+        {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }
+    )
+    return response.text()
 }

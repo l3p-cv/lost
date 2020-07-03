@@ -3,8 +3,8 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {Badge, Button, Card, CardHeader, CardBody, Table} from 'reactstrap'
 import { LazyLog, ScrollFollow } from 'react-lazylog'
-import Modal from 'react-modal'
-
+// import Modal from 'react-modal'
+import LogModal from '../BasicComponents/LogModal'
 import actions from '../../actions'
 
 
@@ -32,26 +32,21 @@ class WorkersTable extends Component {
         super(props)
         this.state = {
             logBlobUrl: '',
-            modalIsOpen: false
+            modalsIsOpen: []
         }
 
-        this.openModal = this.openModal.bind(this);
+        // this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
-        this.closeModal = this.closeModal.bind(this);
+        // this.closeModal = this.closeModal.bind(this);
     }
 
-    openModal() {
-        this.setState({modalIsOpen: true});
-    }
 
     afterOpenModal() {
         // references are now sync'd and can be accessed.
         //this.subtitle.style.color = '#f00';
     }
 
-    closeModal() {
-        this.setState({modalIsOpen: false});
-    }
+
 
     componentDidMount() {
         this
@@ -62,12 +57,18 @@ class WorkersTable extends Component {
 
      handleLogfileButtonClick(worker){
         //const {idx,type,status} = worker
-        const logFile = this.props.getWorkerLogFile(`${worker.worker_name}.log`)
-        logFile.then(response=>
-            this.setState({logBlobUrl: window.URL.createObjectURL(response)})
-        )
+        // const logFile = this.props.getWorkerLogFile(`${worker.worker_name}.log`)
+        // logFile.then(response=>
+        //     this.setState({logBlobUrl: window.URL.createObjectURL(response)})
+        // )
+        this.setState({
+            modalsIsOpen: this.state.modalsIsOpen.map(el=>({
+                idx: el.idx,
+                isOpen: el.idx === worker.idx ? true: false
+            }))
+        });
 
-        this.openModal()
+
     }
 
     componentWillUnmount() {
@@ -75,38 +76,74 @@ class WorkersTable extends Component {
         this.workertimer = null
       }
     
-    renderLogFile(){
-        if(this.state.logBlobUrl!=='')
-        {
-            //return(  <LazyLog url={this.state.logBlobUrl} />)
-            return( <ScrollFollow
-                startFollowing={true}
-                render={({ follow, onScroll }) => (
-                <LazyLog url={this.state.logBlobUrl} stream follow={follow} onScroll={onScroll} />
-                )}
-            />)
+    // renderLogFile(){
+    //     if(this.state.logBlobUrl!=='')
+    //     {
+    //         //return(  <LazyLog url={this.state.logBlobUrl} />)
+    //         return( <ScrollFollow
+    //             startFollowing={true}
+    //             render={({ follow, onScroll }) => (
+    //             <LazyLog url={this.state.logBlobUrl} stream follow={follow} onScroll={onScroll} />
+    //             )}
+    //         />)
+    //     }
+    //     else return <div></div>
+    // }
+
+    // renderLogFileModal(){
+    //     return(
+    //     <Modal
+    //         isOpen={this.state.modalIsOpen}
+    //         onAfterOpen={this.afterOpenModal}
+    //         onRequestClose={this.closeModal}
+    //         style={customStyles}
+    //         ariaHideApp={false}
+    //         contentLabel="Logfile"
+    //         >
+    //         <Card style={{height:'90%'}}>
+    //             <CardHeader><i className="fa fa-question-circle"></i> Logs</CardHeader>
+    //             <CardBody style={{height:'100%'}}>
+    //                 {this.renderLogFile()}
+    //             </CardBody>
+    //             <Button color='success' onClick={this.closeModal}><i className="fa fa-times"></i> Close</Button>
+    //         </Card>                   
+    //     </Modal>)    
+    // }
+
+    componentWillReceiveProps(){
+        if(this.state.modalsIsOpen.length != this.props.workers.length){
+            this.setState({
+                modalsIsOpen: this.props.workers.map(el=>({
+                    idx: el.idx,
+                    isOpen: false
+                }))
+            })
         }
-        else return <div></div>
     }
 
-    renderLogFileModal(){
-        return(
-        <Modal
-            isOpen={this.state.modalIsOpen}
-            onAfterOpen={this.afterOpenModal}
-            onRequestClose={this.closeModal}
-            style={customStyles}
-            ariaHideApp={false}
-            contentLabel="Logfile"
-            >
-            <Card style={{height:'90%'}}>
-                <CardHeader><i className="fa fa-question-circle"></i> Logs</CardHeader>
-                <CardBody style={{height:'100%'}}>
-                    {this.renderLogFile()}
-                </CardBody>
-                <Button color='success' onClick={this.closeModal}><i className="fa fa-times"></i> Close</Button>
-            </Card>                   
-        </Modal>)    
+    renderLogFileModal(worker){
+        if(this.state.modalsIsOpen.length){
+            return(
+                <LogModal
+                    actionType={LogModal.TYPES.WORKERS}
+                    isDownloadable
+                    isOpen={this.state.modalsIsOpen.filter(el=>el.idx===worker.idx)[0].isOpen}
+                    toggle={()=>{this.setState({
+                        modalsIsOpen: this.state.modalsIsOpen.map(el=>{
+                        if(el.idx === worker.idx){
+                            return {
+                                ... el,
+                                isOpen: !el.isOpen
+                            }
+                        }
+                        return el
+                    })})}}
+                    logPath={`${worker.worker_name}.log`}
+                />
+            )
+        }
+        return null
+
     }
 
     renderTableBody() {
@@ -150,6 +187,7 @@ class WorkersTable extends Component {
                             </td>
                             <td className='text-center'>
                                 <Button onClick={()=>this.handleLogfileButtonClick(worker)}>Logs</Button>
+                                {this.renderLogFileModal(worker)}
                             </td>
                         </tr>
                     )
@@ -161,7 +199,6 @@ class WorkersTable extends Component {
     render() {
         return (
             <React.Fragment>
-                {this.renderLogFileModal()}
                 <Table hover responsive className='table-outline mb-0 d-none d-sm-table'>
                     <thead className='thead-light'>
                         <tr>
