@@ -7,7 +7,7 @@ import pipelineActions from '../../../../../../../actions/pipeline/pipelineRunni
 import {useDispatch, useSelector} from 'react-redux'
 import IconButton from '../../../../../../BasicComponents/IconButton'
 import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons'
-
+import * as Notification from '../../../../../../BasicComponents/Notification'
 
 
 export default (props) => {
@@ -16,6 +16,8 @@ export default (props) => {
     const [scriptArguments, setScriptArguments] = useState(props.script.arguments)
     const progress = props.script.progress
     useEffect(()=>{
+        const notifcationText = 'Updated Arguments.'
+        Notification.handling(updateArgumentsRequestStatus, props.state === 'pending' ? notifcationText: `${notifcationText} Effect only in next Iteration`)
     }, [updateArgumentsRequestStatus])
 
     const argumentsOnInput  = (e) => {
