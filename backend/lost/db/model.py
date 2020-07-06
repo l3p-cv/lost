@@ -49,14 +49,16 @@ class User(Base, UserMixin):
     groups = relationship('Group', secondary='user_groups', lazy='joined')
     choosen_anno_task = relationship(
         'AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
+    api_token = Column(String(4096))
 
-    def __init__(self, user_name, password, email=None, first_name=None, last_name=None, email_confirmed_at=None):
+    def __init__(self, user_name, password, email=None, first_name=None, last_name=None, email_confirmed_at=None, api_token=None):
         self.user_name = user_name
         self.email = email
         self.email_confirmed_at = email_confirmed_at
         self.set_password(password)
         self.first_name = first_name
         self.last_name = last_name
+        self.api_token = api_token
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
