@@ -5,6 +5,8 @@ from lost.db import model, access, state, dtype
 from lost.logic.template import combine_arguments
 from lost.logic import file_man
 from lost.utils.dump import dump
+import flask
+
 __author__ = "Gereon Reus"
 
 ############################ start ################################
@@ -265,7 +267,7 @@ def get_pipelines(db_man, group_ids, debug_mode=False):
         JSON with all meta info about the pipelines.
     '''
     
-    # dump(group_ids, "--- printing group_ids ---") 
+    # dump(group_ids, "--- printing group_ids ---")
     pipes = db_man.get_pipes(group_ids)
     result = __serialize_pipes(db_man, debug_mode, pipes)
     return result
@@ -322,6 +324,7 @@ def get_running_pipe(db_man, identity, pipe_id, media_url):
     Returns:
         json content of running pipe
     '''
+    # self.logger.info('This is A test Message: {}'.format("HEy ho"))
     pipe = db_man.get_pipe(pipe_id)
     if pipe is None: #or pipe.state == state.Pipe.FINISHED
         error_msg = "Pipe with ID '"+ str(pipe_id) + "' does not exist."
@@ -712,6 +715,18 @@ def pause(db_man, pipe_id):
                 return "success"
     return "error"
 
+def updateArguments(db_man, data):
+    '''Update Arguments
+    '''
+    data = json.loads(data)
+    if data['elementId'] is not None:
+        element = db_man.get_pipe_element(pipe_e_id=data['elementId'])
+        element.arguments = json.dumps(data['updatedArguments'])
+        db_man.save_obj(element)
+        if element is not None:
+            return "success"
+    return "error"
+
 def play(db_man, pipe_id):
     ''' play a pipe. 
     '''
@@ -720,7 +735,7 @@ def play(db_man, pipe_id):
         if pipe is not None:
             if pipe.state != state.Pipe.FINISHED and pipe.state != state.Pipe.PENDING:
                 pipe.state = state.Pipe.IN_PROGRESS
-                db_man.save_obj(pipe)
+                db_man.save_obj(pipe) 
                 return "success"
     return "error"
 ############################ utils ################################

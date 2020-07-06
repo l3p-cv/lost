@@ -1,5 +1,7 @@
 import React from 'react'
-
+import IconButton from '../../../../BasicComponents/IconButton'
+import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons'
+import pipelineActions from '../../../../../actions/pipeline/pipelineRunning'
 const ArgumentsTable = (props) => {
     if(props.data){
         return (
@@ -19,6 +21,14 @@ const ArgumentsTable = (props) => {
                         })}
                     </tbody>
                 </table>
+                <IconButton
+                    color="success"
+                    icon={faCloudUploadAlt}
+                    text="Update Arguments"
+                    onClick={()=>{
+                        pipelineActions.updateArguments()
+                    }}
+                />
             </div>
         )
     }else {

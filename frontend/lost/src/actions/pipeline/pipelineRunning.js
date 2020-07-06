@@ -90,6 +90,35 @@ const getLog = async (path) => {
     return response.text()
 }
 
+const updateArguments = async () =>{
+    const response = await axios.post(`${API_URL}/pipeline/updateArguments`,{
+        elementId: 41,
+        updatedArguments: 
+            {
+                "polygon": {
+                  "value": "false",
+                  "help": "Add a dummy polygon proposal as example."
+                },
+                "line": {
+                  "value": "false",
+                  "help": "Add a dummy line proposal as example."
+                },
+                "point": {
+                  "value": "false",
+                  "help": "Add a dummy point proposal as example."
+                },
+                "bbox": {
+                  "value": "false",
+                  "help": "Add a dummy bbox proposal as example."
+                }
+              }
+        
+    })
+
+    // const response = await axios.post(`${API_URL}/updateArguments/6`)
+    console.log(response)
+}
+
 const downloadLogfile = (path, id) => async  dispatch => {
     const token = localStorage.getItem('token')
     const response = await http.get({
@@ -154,7 +183,7 @@ const toggleModal = (id) => {
     }
 }
 
-export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, getLog,  downloadDataExport, downloadImage }
+export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, updateArguments, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, getLog,  downloadDataExport, downloadImage }
 
 
 

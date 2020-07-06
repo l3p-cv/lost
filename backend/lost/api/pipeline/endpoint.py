@@ -11,6 +11,7 @@ from lost.logic.pipeline import service as pipeline_service
 from lost.logic import template as template_service
 from lost.utils.dump import dump
 namespace = api.namespace('pipeline', description='Pipeline API.')
+import flask
 
 
 @namespace.route('/template')
@@ -133,6 +134,20 @@ class PipelineStart(Resource):
                 return "default group for user {} not found.".format(identity), 400
 
 
+@namespace.route('/updateArguments')
+class PipelineUpdateArguments(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            status = pipeline_service.updateArguments(dbm, request.data)
+            dbm.close_session()
+            return status
 
 @namespace.route('/pause/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
