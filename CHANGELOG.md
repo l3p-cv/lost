@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - unreleased
 ### Added
 - DB User: Added api_token column + patch
+## [1.3.0-alpha3] - 2020-07-01
+### Fixed
+- Report webservices: filter options
 
-## [1.3.0-alpha1] - 2020-07-01
+## [1.3.0-alpha2] - 2020-07-01
 ### Fixed
 - Report webservices: order by pipe element id
+
 ## [1.3.0-alpha1] - 2020-06-30 
 ### Added
 - Report webservices for annotation tasks - get annotations per label and annotations per day statistics
