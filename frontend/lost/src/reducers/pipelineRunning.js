@@ -1,3 +1,4 @@
+import TYPES from '../types'
 const INITITAL_STATE = {
     style: {
         container: {
@@ -48,9 +49,6 @@ export default (state = INITITAL_STATE, action) => {
                 ...INITITAL_STATE
             }
         case 'PIPELINE_RUNNING_GET_PIPELINES':
-        console.log('--------action.payload----------------------------');
-        console.log(action.payload);
-        console.log('------------------------------------');
             return {
                 ...state,
                 step0Data: action.payload
@@ -199,6 +197,14 @@ export default (state = INITITAL_STATE, action) => {
                     }
                     return el
                 })
+            }
+        case TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS:
+            return{
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    updateArgumentsRequestStatus: action.payload
+                }
             }
         default:
             return state

@@ -2,7 +2,15 @@ import React from 'react'
 import IconButton from '../../../../BasicComponents/IconButton'
 import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons'
 import pipelineActions from '../../../../../actions/pipeline/pipelineRunning'
+import {useDispatch} from 'react-redux'
+
+
 const ArgumentsTable = (props) => {
+    const dispatch = useDispatch()
+
+    const updateArguments = async () =>{
+        dispatch(pipelineActions.updateArguments())
+    }
     if(props.data){
         return (
             <div style={{ marginLeft: 15, marginRight: 15 }}>
@@ -21,14 +29,16 @@ const ArgumentsTable = (props) => {
                         })}
                     </tbody>
                 </table>
+                {props.showUpdateButton && (
                 <IconButton
-                    color="success"
-                    icon={faCloudUploadAlt}
-                    text="Update Arguments"
-                    onClick={()=>{
-                        pipelineActions.updateArguments()
-                    }}
-                />
+                color="success"
+                icon={faCloudUploadAlt}
+                text="Update Arguments"
+                onClick={updateArguments}
+            />
+
+                )}
+
             </div>
         )
     }else {

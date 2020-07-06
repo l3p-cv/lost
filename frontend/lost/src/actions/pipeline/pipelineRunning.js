@@ -3,6 +3,7 @@ import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
 import { alertLoading, alertClose } from 'pipelineGlobalComponents/Sweetalert'
+import REQUEST_STATUS from '../../types/requestStatus'
 
 const verifyTab = (tabId, verified) => {
     return {
@@ -90,33 +91,45 @@ const getLog = async (path) => {
     return response.text()
 }
 
-const updateArguments = async () =>{
-    const response = await axios.post(`${API_URL}/pipeline/updateArguments`,{
-        elementId: 41,
-        updatedArguments: 
-            {
-                "polygon": {
-                  "value": "false",
-                  "help": "Add a dummy polygon proposal as example."
-                },
-                "line": {
-                  "value": "false",
-                  "help": "Add a dummy line proposal as example."
-                },
-                "point": {
-                  "value": "false",
-                  "help": "Add a dummy point proposal as example."
-                },
-                "bbox": {
-                  "value": "false",
-                  "help": "Add a dummy bbox proposal as example."
-                }
-              }
-        
+const updateArguments = (elementID, updatedArguments) => async  dispatch =>{
+    dispatch({
+        type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS,
+        payload: REQUEST_STATUS.LOADING
     })
+    try{
+        const response = await axios.post(`${API_URL}/pipeline/updateArguments`,{
+            elementId: 41,
+            updatedArguments
+            // updatedArguments: 
+            //     {
+            //         "polygon": {
+            //           "value": "false",
+            //           "help": "Add a dummy polygon proposal as example."
+            //         },
+            //         "line": {
+            //           "value": "false",
+            //           "help": "Add a dummy line proposal as example."
+            //         },
+            //         "point": {
+            //           "value": "false",
+            //           "help": "Add a dummy point proposal as example."
+            //         },
+            //         "bbox": {
+            //           "value": "false",
+            //           "help": "Add a dummy bbox proposal as example."
+            //         }
+            //       }
+            
+        })
+        dispatch({
+            type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS,
+            payload: (response.status === 200) ? REQUEST_STATUS.SUCCESS : REQUEST_STATUS.FAILED })
+    }catch(e){
+        dispatch({type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS, payload: REQUEST_STATUS.FAILED})
+    }
+
 
     // const response = await axios.post(`${API_URL}/updateArguments/6`)
-    console.log(response)
 }
 
 const downloadLogfile = (path, id) => async  dispatch => {

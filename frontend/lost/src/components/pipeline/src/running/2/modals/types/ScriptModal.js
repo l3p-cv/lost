@@ -53,6 +53,7 @@ export default (props) => {
                         ]}
                     />
                     <ArgumentsTable
+                        showUpdateButton
                         data = {props.script.arguments}
                     />
                 </CollapseCard>
