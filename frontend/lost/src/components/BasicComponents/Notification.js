@@ -34,7 +34,7 @@ export const showError = (text) => {
     })
 }
 
-export const closeNotification = () => {
+export const close = () => {
     Toast.close()
 }
 

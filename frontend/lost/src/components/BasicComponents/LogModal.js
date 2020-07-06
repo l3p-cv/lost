@@ -9,6 +9,7 @@ import {useWindowSize} from 'react-use'
 import {useInterval} from 'react-use'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import IconButton from './IconButton'
+import * as Notification from '../BasicComponents/Notification'
 const TextArea = (props)=>{
     const size = useWindowSize()
     return(
@@ -33,6 +34,7 @@ const LogModal = (props) => {
     const dispatch = useDispatch()
     const [log, setLog] = useState('')
     const [isRedBorder, setIsRedBorder] = useState(false)
+    const [firstRequest, setFirstRequest] = useState(true)
     const getLog = async () =>{
         let logResponse
         setIsRedBorder(true)
@@ -42,7 +44,14 @@ const LogModal = (props) => {
                 logResponse = await pipelineActions.getLog(props.logPath)
                 break
             case LogModal.TYPES.WORKERS:
+                if(firstRequest){
+                    Notification.showLoading()
+                }
                 logResponse = await actions.getWorkerLogFile(props.logPath)
+                if(firstRequest){
+                    Notification.close()
+                    setFirstRequest(false)
+                }
                 break
             default:
                 throw new Error('Unknown type')
@@ -57,7 +66,7 @@ const LogModal = (props) => {
         }, 100)
     }
     useEffect(()=>{
-        if(props.logPath || props.message) {
+        if((props.logPath || props.message)) {
             getLog()
         }
     }, [props.logPath])

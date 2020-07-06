@@ -6,7 +6,7 @@ import { LazyLog, ScrollFollow } from 'react-lazylog'
 // import Modal from 'react-modal'
 import LogModal from '../BasicComponents/LogModal'
 import actions from '../../actions'
-
+import * as Notification from '../BasicComponents/Notification'
 
 const {getWorkers, getWorkerLogFile} = actions
 
@@ -74,12 +74,13 @@ class WorkersTable extends Component {
 
     renderLogFileModal(worker){
         if(this.state.modalsIsOpen.length){
+            const isOpen = this.state.modalsIsOpen.filter(el=>el.idx===worker.idx)[0].isOpen
             return(
                 <LogModal
                     actionType={LogModal.TYPES.WORKERS}
                     isDownloadable
                     wiLogId={worker.idx}
-                    isOpen={this.state.modalsIsOpen.filter(el=>el.idx===worker.idx)[0].isOpen}
+                    isOpen={isOpen}
                     toggle={()=>{this.setState({
                         modalsIsOpen: this.state.modalsIsOpen.map(el=>{
                         if(el.idx === worker.idx){
@@ -90,7 +91,7 @@ class WorkersTable extends Component {
                         }
                         return el
                     })})}}
-                    logPath={`${worker.worker_name}.log`}
+                    logPath={isOpen ? `${worker.worker_name}.log`:null}
                 />
             )
         }

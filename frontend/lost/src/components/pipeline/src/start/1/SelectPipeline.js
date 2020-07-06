@@ -68,10 +68,10 @@ class SelectPipeline extends Component {
                     })}
                     defaultSorted={[
                         {
-                            id: "date",
-                            desc: true
+                          id: "date",
+                          desc: false
                         }
-                    ]}
+                      ]}
                     data={data}
                     defaultPageSize={10}
                     className="-striped -highlight"
