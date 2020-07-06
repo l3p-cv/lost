@@ -109,7 +109,6 @@ const LogModal = (props) => {
                 textArea={textArea}
                 log={log}
                 isRedBorder = {isRedBorder}
-                // borderOpacity={borderAnimation.borderOpacity}
             />
         </BaseModal>
     )

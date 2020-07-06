@@ -91,35 +91,15 @@ const getLog = async (path) => {
     return response.text()
 }
 
-const updateArguments = (elementID, updatedArguments) => async  dispatch =>{
+const updateArguments = (elementId, updatedArguments) => async  dispatch =>{
     dispatch({
         type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS,
         payload: REQUEST_STATUS.LOADING
     })
     try{
         const response = await axios.post(`${API_URL}/pipeline/updateArguments`,{
-            elementId: 41,
+            elementId,
             updatedArguments
-            // updatedArguments: 
-            //     {
-            //         "polygon": {
-            //           "value": "false",
-            //           "help": "Add a dummy polygon proposal as example."
-            //         },
-            //         "line": {
-            //           "value": "false",
-            //           "help": "Add a dummy line proposal as example."
-            //         },
-            //         "point": {
-            //           "value": "false",
-            //           "help": "Add a dummy point proposal as example."
-            //         },
-            //         "bbox": {
-            //           "value": "false",
-            //           "help": "Add a dummy bbox proposal as example."
-            //         }
-            //       }
-            
         })
         dispatch({
             type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS,
