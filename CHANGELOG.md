@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Sorting Running Pipeline and Start Pipeline by Date does not worked correctly
 ### Added
+- DB User: Added api_token column + patch
 - Designer can update Arguments in Running Pipeline in Script Nodes
 ### Change
 - Implement Worker Live Log
