@@ -1,5 +1,6 @@
 import React from 'react'
 
+
 const ArgumentsTable = (props) => {
     if(props.data){
         return (

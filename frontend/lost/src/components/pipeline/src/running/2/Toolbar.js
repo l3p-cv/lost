@@ -8,7 +8,7 @@ import { alertLoading, alertClose, alertDeletePipeline } from 'pipelineGlobalCom
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faStickyNote, faPause, faPlay, faRedo } from '@fortawesome/free-solid-svg-icons'
 import ToolbarTooltip from './ToolbarTooltip'
-import LogFileModal from './modals/LogFileModal'
+import LogModal from '../../../../BasicComponents/LogModal'
 
 
 const { pausePipeline, playPipeline, deletePipeline, downloadLogfile } = actions
@@ -48,7 +48,6 @@ class Toolbar extends Component {
 
     showLogfile() {
         this.setState({isLogFileModalOpen: !this.state.isLogFileModalOpen})
-        // this.props.downloadLogfile(this.props.data.logfilePath, this.props.data.id)
     }
 
     pause() {
@@ -89,11 +88,13 @@ class Toolbar extends Component {
         return (
             <div className='pipeline-running-toolbar'>
                 <GrayLine />
-                <LogFileModal
+                <LogModal
+                    isDownloadable={true}
                     isOpen= {this.state.isLogFileModalOpen}
-                    logId={this.props.data ? this.props.data.id: null}
+                    wiLogId={this.props.data ? this.props.data.id: null}
                     logPath={this.props.data ? this.props.data.logfilePath : null}
                     toggle={()=>{this.setState({isLogFileModalOpen: !this.state.isLogFileModalOpen})}}
+                    actionType={LogModal.TYPES.PIPELINE}
                 />
                 <Button className='pipeline-running-toolbar-button'
                     id='pipeline-button-delete-pipeline'
@@ -146,7 +147,7 @@ class Toolbar extends Component {
                     />
                     <ToolbarTooltip
                         target='pipeline-button-download-logfile'
-                        text='Download Logfile'
+                        text='Show Logs'
                     />
                     <ToolbarTooltip
                         target='pipeline-button-play-pause'

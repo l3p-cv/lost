@@ -28,7 +28,13 @@ class SelectPipeline extends Component {
                     <div className='pipeline-error-message'>{this.props.data.error}</div>
                 )
             }
-            return (
+            const data = this.props.data.response.templates.map(el=>(
+                    {
+                    ...el,
+                    date: new Date(el.date)
+                    }
+              ))
+              return (
                 <ReactTable
                     columns={[
                         {
@@ -45,9 +51,15 @@ class SelectPipeline extends Component {
                         },
                         {
                             Header: "Date",
+                            Cell:(row) => {
+                                return(new Date(row.value).toLocaleString('de'))
+                              },
                             accessor: "date",
-                            Cell: (row) => {
-                                return(new Date(row.value).toString())
+                            sortMethod: (date1, date2) => {
+                                if(new Date(date1) > new Date(date2)){
+                                  return -1
+                                }
+                                return 1
                               }
                         }
                     ]}
@@ -56,11 +68,11 @@ class SelectPipeline extends Component {
                     })}
                     defaultSorted={[
                         {
-                            id: "date",
-                            desc: true
+                          id: "date",
+                          desc: false
                         }
-                    ]}
-                    data={this.props.data.response.templates}
+                      ]}
+                    data={data}
                     defaultPageSize={10}
                     className="-striped -highlight"
                 />)

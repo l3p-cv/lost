@@ -3,6 +3,7 @@ import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
 import { alertLoading, alertClose } from 'pipelineGlobalComponents/Sweetalert'
+import REQUEST_STATUS from '../../types/requestStatus'
 
 const verifyTab = (tabId, verified) => {
     return {
@@ -90,6 +91,27 @@ const getLog = async (path) => {
     return response.text()
 }
 
+const updateArguments = (elementId, updatedArguments) => async  dispatch =>{
+    dispatch({
+        type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS,
+        payload: REQUEST_STATUS.LOADING
+    })
+    try{
+        const response = await axios.post(`${API_URL}/pipeline/updateArguments`,{
+            elementId,
+            updatedArguments
+        })
+        dispatch({
+            type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS,
+            payload: (response.status === 200) ? REQUEST_STATUS.SUCCESS : REQUEST_STATUS.FAILED })
+    }catch(e){
+        dispatch({type: TYPES.PIPELINE_RUNNING_UPDATE_ARGUMENTS_REQUEST_STATUS, payload: REQUEST_STATUS.FAILED})
+    }
+
+
+    // const response = await axios.post(`${API_URL}/updateArguments/6`)
+}
+
 const downloadLogfile = (path, id) => async  dispatch => {
     const token = localStorage.getItem('token')
     const response = await http.get({
@@ -154,7 +176,7 @@ const toggleModal = (id) => {
     }
 }
 
-export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, getLog,  downloadDataExport, downloadImage }
+export default { verifyTab, selectTab, getPipelines, getPipeline, toggleModal, reset, deletePipeline, updateArguments, pausePipeline, playPipeline, regeneratePipeline, downloadLogfile, getLog,  downloadDataExport, downloadImage }
 
 
 

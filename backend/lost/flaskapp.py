@@ -10,7 +10,11 @@ app = Flask(__name__)
 import logging
 from logging import FileHandler
 file_handler = FileHandler(os.path.join(settings.LOST_CONFIG.project_path,'logs','flask.log'))
-file_handler.setLevel(logging.WARNING)
+if settings.LOST_CONFIG.debug:
+    logging.basicConfig(level=logging.INFO)
+    file_handler.setLevel(logging.INFO)
+else:
+    file_handler.setLevel(logging.WARNING)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 file_handler.setFormatter(formatter)
 app.logger.addHandler(file_handler)

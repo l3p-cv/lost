@@ -12,12 +12,42 @@ export const getWorkers = () => async dispatch => {
     } catch (e) {}
 }
 
-export const getWorkerLogFile = (path) => async dispatch =>{
+// export const getWorkerLogFile = (path) => async dispatch =>{
   
-    const config = {
-        url: API_URL +'/data/workerlogs/'+ path,
-        type: 'image',
-        token: localStorage.getItem('token')
-    }
-    return await http.get(config)
+//     const config = {
+//         url: API_URL +'/data/workerlogs/'+ path,
+//         type: 'image',
+//         token: localStorage.getItem('token')
+//     }
+//     return await http.get(config)
+// }
+
+
+export const getWorkerLogFile = async (path) => {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${API_URL}/data/workerlogs/${path}`,
+        {
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }
+    )
+    return response.text()
+}
+
+export const downloadWorkerLogfile = (path, id) => async  dispatch => {
+    const token = localStorage.getItem('token')
+    const response = await http.get({
+        url: `${API_URL}/data/workerlogs/${path}`,
+        token,
+        type: 'image'
+    })
+    const objectURL = window.URL.createObjectURL(response)
+    const link = document.createElement('a');
+    link.href = objectURL;
+    link.download=`worker-idx-${id}.log`
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(objectURL);
 }

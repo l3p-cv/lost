@@ -1,14 +1,41 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import { ModalHeader, ModalBody, Progress } from 'reactstrap';
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../../../globalComponents/modals/ScriptArgumentsTable'
-
-
+import pipelineActions from '../../../../../../../actions/pipeline/pipelineRunning'
+import {useDispatch, useSelector} from 'react-redux'
+import IconButton from '../../../../../../BasicComponents/IconButton'
+import {faCloudUploadAlt} from '@fortawesome/free-solid-svg-icons'
+import * as Notification from '../../../../../../BasicComponents/Notification'
 
 
 export default (props) => {
+    const dispatch = useDispatch()
+    const updateArgumentsRequestStatus = useSelector(state=>state.pipelineRunning.step1Data.updateArgumentsRequestStatus)
+    const [scriptArguments, setScriptArguments] = useState(props.script.arguments)
     const progress = props.script.progress
+    useEffect(()=>{
+        const notifcationText = 'Updated Arguments.'
+        Notification.handling(updateArgumentsRequestStatus, props.state === 'pending' ? notifcationText: `${notifcationText} Effect only in next Iteration`)
+    }, [updateArgumentsRequestStatus])
+
+    const argumentsOnInput  = (e) => {
+        const key = e.target.getAttribute('data-ref')
+        const value = e.target.value
+        setScriptArguments(
+            {
+                ...scriptArguments,
+                [key]: {
+                    ...scriptArguments[key],
+                    value
+                }
+            }
+        )
+    }
+    const updateArguments = async () =>{
+        dispatch(pipelineActions.updateArguments(props.id, scriptArguments))
+    }
     return (
         <>
             <ModalHeader>Script</ModalHeader>
@@ -53,8 +80,16 @@ export default (props) => {
                         ]}
                     />
                     <ArgumentsTable
-                        data = {props.script.arguments}
+                        showUpdateButton
+                        data = {scriptArguments}
+                        onInput={argumentsOnInput}
                     />
+                                    <IconButton
+                color="success"
+                icon={faCloudUploadAlt}
+                text="Update Arguments"
+                onClick={updateArguments}
+            />
                 </CollapseCard>
             </ModalBody>
         </>
