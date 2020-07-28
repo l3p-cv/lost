@@ -39,7 +39,7 @@ class Report():
     def __get_annos_per_label(self):
         data = []
         labels = []
-        two_d_anno_counts = self.dbm.count_two_d_annos_per_label(self.pe_id, self.user_id, self.iteration, self.date_from, self.date_to)
+        two_d_anno_counts = self.dbm.count_two_d_annos_per_label(self.pe_id, self.user_id, self.iteration, self.date_from, self.date_to, exclude_current_iteration=True)
         for row in two_d_anno_counts:
             data.append(row[2])
             labels.append(row[1])
@@ -48,7 +48,7 @@ class Report():
     def __get_annos_per_day(self):
         data = [] 
         labels = []
-        two_d_anno_counts = self.dbm.count_two_d_annos_per_day(self.pe_id, self.user_id, self.iteration, self.date_from, self.date_to)
+        two_d_anno_counts = self.dbm.count_two_d_annos_per_day(self.pe_id, self.user_id, self.iteration, self.date_from, self.date_to, exclude_current_iteration=True)
         for row in two_d_anno_counts:
             data.append(row[0])
             labels.append('{}-{}-{}'.format(row[3], row[2], row[1]))
