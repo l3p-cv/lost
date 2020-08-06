@@ -4,13 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] - Unreleased
+## [1.3.0-alpha4] - 2020-07-28
 ### Fixed
 - Sorting Running Pipeline and Start Pipeline by Date does not worked correctly
 ### Added
+- DB User: Added api_token column + patch
 - Designer can update Arguments in Running Pipeline in Script Nodes
 ### Change
 - Implement Worker Live Log
+- Don't report anno_task's current iteration annotations
 
 ## [1.3.0-alpha3] - 2020-07-01
 ### Fixed

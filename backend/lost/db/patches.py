@@ -3,6 +3,7 @@ from lost.logic.file_man import FileMan
 from lost.logic.config import LOSTConfig
 import os
 import json
+from lost.db.db_patch import DBPatcher
 
 def update_version_log():
     fm = FileMan(LOSTConfig())
@@ -16,9 +17,15 @@ def update_version_log():
     else:
         with open(path) as json_file:  
             versions = json.load(json_file)
+            print("Versions: ", versions)
         if versions[-1] == lost.__version__:
             print('Patchsystem: No version change!')
         else:
             print('Patchsystem: We maybe need to patch!')
+            dbp = DBPatcher()
+            dbp.patch()
+            versions.append(lost.__version__)
+            with open(path, 'w') as json_file:
+                json.dump(versions, json_file)
 
 
