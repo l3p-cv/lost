@@ -50,19 +50,30 @@ def exec_pipe():
     dbm.close_session()
 
 
-def __release_project_annos(dbm):
+def release_annos_by_timeout(dbm, timeout):
+    '''Release annotations based on timeout
+
+    Args:
+        dbm (DBMan): Database manager
+        timeout (int): Timeout in minutes when annotations should be released
+    '''
+    c_imgs = 0
+    c_2dannos = 0
     present = datetime.now()
-    unlock_time = present - timedelta(hours=2)
+    unlock_time = present - timedelta(minutes=timeout)
     for anno_task in dbm.get_anno_task(state=state.AnnoTask.IN_PROGRESS):
         for anno in dbm.get_locked_img_annos(anno_task.idx):
             if anno.timestamp_lock < unlock_time:
                 anno.state = state.Anno.UNLOCKED
                 dbm.add(anno)
-        for anno in dbm.get_locked_bbox_annos(anno_task.idx):
+                c_imgs += 1
+        for anno in dbm.get_locked_two_d_annos(anno_task.idx):
             if anno.timestamp_lock < unlock_time:
                 anno.state = state.Anno.UNLOCKED
                 dbm.add(anno)
+                c_2dannos += 1
         dbm.commit()
+    return c_imgs, c_2dannos
 
 def release_user_annos(dbm, user_id):
     '''Release locked annos for a specific user.
@@ -96,9 +107,9 @@ def release_user_annos(dbm, user_id):
             dbm.add(anno)
         dbm.commit()
 
-def release_annos():
-    lostconfig = get_args()
+def release_annos_on_session_timeout():
+    lostconfig = config.LOSTConfig()
     dbm = DBMan(lostconfig)
-    __release_project_annos(dbm)
+    c_imgs, c_2dannos = release_annos_by_timeout(dbm, lostconfig.session_timeout)
     dbm.close_session()
-
+    return c_imgs, c_2dannos

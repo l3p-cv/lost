@@ -1,6 +1,5 @@
 [![pipeline status](https://gitlab.com/l3p-cv/lost/badges/master/pipeline.svg)](https://gitlab.com/l3p-cv/lost/pipelines)
 [![Documentation Status](https://readthedocs.org/projects/lost/badge/?version=latest)](https://lost.readthedocs.io/en/latest/?badge=latest)
-[![Gitter](https://badges.gitter.im/l3p-cv/lost.svg)](https://gitter.im/l3p-cv/lost?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 # LOST - Label Objects and Save Time
 ![LOST Features](docs/sphinx/source/images/LOSTFeaturesIn40seconds.gif)
 ## Demo Videos
@@ -75,10 +74,10 @@ tested for Ubuntu):
 ```
 Find our paper on [arXiv](https://arxiv.org/abs/1910.07486)
 
+## Projects using LOST
+* PlantVillage @ Pennsylvania State University is using LOST to build [a tool that is positively impacting millions of lives in Kenya with the Desert Locust Crisis](https://news.psu.edu/story/609265/2020/02/21/research/penn-state-responds-app-aids-un-efforts-control-africas-locust). See this [blog article](https://plantvillage.psu.edu/blogposts/97-getting-lost-can-be-good) by Annalyse Kehs to get more information how LOST is utilized in the project.
 
-## Contact
-We've created a chat room for you. Feel free to contact us directly:
-https://gitter.im/l3p-cv/lost
+If you are using LOST and like to share your project, please contact [@jaeger-j](https://github.com/jaeger-j).
 
 # Creators
 ## People

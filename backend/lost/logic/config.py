@@ -24,8 +24,9 @@ class LOSTConfig(object):
         self.pipe_schedule = os.environ['PIPE_SCHEDULE']
         self.session_timeout = 30
         
+        # self.session_timeout = 1
         if "SESSION_TIMEOUT" in os.environ:
-            self.session_timeout = os.environ['SESSION_TIMEOUT']
+            self.session_timeout = int(os.environ['SESSION_TIMEOUT'])
             if self.session_timeout < 10:
                 self.session_timeout = 10
 
