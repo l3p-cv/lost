@@ -72,7 +72,6 @@ dependencies:
   - protobuf=3.6.1=py36hf484d3e_1001
   - pthread-stubs=0.4=h14c3975_1001
   - pygpu=0.7.6=py36h3010b51_1000
-  - python=3.6.6=hd21baee_1003
   - pyyaml=3.13=py36h14c3975_1001
   - qt=5.6.2=hbe13537_1012
   - setuptools=40.6.3=py36_0
