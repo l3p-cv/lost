@@ -8,10 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Updated conda in order to get lost-cv container running
 
-## [1.2.2-alpha.0] - 2020-10-03
-### Fixed
-- Do not specify python version in environment.yml of lost-cv container to prevent build fail.
-
 ## [1.2.1] - 2020-10-03
 ### Fixed
 - AnnotationTask deadlock (see https://github.com/l3p-cv/lost/issues/27)
