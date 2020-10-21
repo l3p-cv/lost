@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { Icon, Menu, Button, Card } from 'semantic-ui-react'
 import {connect} from 'react-redux'
 import SIASettingButton from './SIASettingButton'
+import ImageFilter from './ImageFilter'
 import Prompt from './lost-sia/src/Prompt'
 
 import actions from '../../actions'
@@ -354,6 +355,8 @@ class ToolBar extends Component{
                 {this.renderJunkButton()}
                 {this.renderDeleteAllAnnosButton()}
                 <SIASettingButton></SIASettingButton>
+                {this.props.isImageFilterEnabled && (<ImageFilter></ImageFilter>)}
+
                 {this.renderHelpButton()}
             </Menu>
         </div>

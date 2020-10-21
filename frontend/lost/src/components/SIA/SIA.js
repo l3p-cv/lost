@@ -25,7 +25,7 @@ const {
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
-    siaGetNextImage, siaGetPrevImage
+    siaGetNextImage, siaGetPrevImage, siaSetUIConfig
 } = actions
 
 class SIA extends Component {
@@ -33,6 +33,7 @@ class SIA extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            isImageFilterEnabled: false,
             fullscreenCSS: '',
             didMount: false,
             image: {
@@ -51,6 +52,8 @@ class SIA extends Component {
         
         this.container = React.createRef()
         this.canvas = React.createRef()
+        this.onImageChanged = this.onImageChanged.bind(this)
+        this.enableImageFilter = this.enableImageFilter.bind(this)
     }
 
     componentDidMount() {
@@ -251,6 +254,25 @@ class SIA extends Component {
         }
     }
 
+    onImageChanged(){
+        if(!this.props.uiConfig.imageFilter.isRemember){
+            this.props.siaSetUIConfig(
+                {...this.props.uiConfig,
+                    imageFilter: {
+                        equalizeHist: false
+                    }
+                }
+            )
+        }
+
+    }
+
+    enableImageFilter(){
+        this.setState({
+            isImageFilterEnabled: true
+        })
+    }
+
     render() {
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
@@ -274,10 +296,13 @@ class SIA extends Component {
                     centerCanvasInContainer={true}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
+                    onImageChanged={this.onImageChanged}
+                    enableImageFilter={this.enableImageFilter}
                     // defaultLabel='no label'
                 />
                 <ToolBar 
                     ref={this.toolbar} 
+                    isImageFilterEnabled={this.state.isImageFilterEnabled}
                     onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
                 />
                 <InfoBoxArea container={this.container}></InfoBoxArea>
@@ -289,6 +314,7 @@ class SIA extends Component {
 
 function mapStateToProps(state) {
     return ({
+        uiConfig: state.sia.uiConfig,
         fullscreenMode: state.sia.fullscreenMode,
         selectedAnno: state.sia.selectedAnno,
         svg: state.sia.svg,
@@ -320,7 +346,7 @@ export default connect(
         siaShowImgLabelInput,
         siaImgIsJunk,
         getWorkingOnAnnoTask,
-        siaGetNextImage, siaGetPrevImage
+        siaGetNextImage, siaGetPrevImage, siaSetUIConfig
     }
     , null,
     {})(SIA)

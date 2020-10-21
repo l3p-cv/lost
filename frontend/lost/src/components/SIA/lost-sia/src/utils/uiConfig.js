@@ -4,6 +4,10 @@ export const SIA_INITIAL_UI_CONFIG = {
     annoDetails:{
         visible: false
     },
+    imageFilter:{
+        equalizeHist: false,
+        isRemember: false
+    },
     labelInfo:{
         visible: false
     }
