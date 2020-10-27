@@ -9,7 +9,7 @@ certifi==2018.11.29
 cffi==1.11.5
 Click==7.0
 cloudpickle==0.7.0
-cryptography==2.5
+cryptography==3.2
 cycler==0.10.0
 dask==1.1.0
 decorator==4.3.2
