@@ -9,7 +9,8 @@ import 'semantic-ui-css/semantic.min.css'
 
 // import from source code
 import Canvas from './lost-sia/src/Canvas'
-import './lost-sia/src/SIA.scss';
+
+import './sia-container.scss';
 
 import ToolBar from './ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
