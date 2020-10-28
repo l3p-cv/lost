@@ -24,5 +24,9 @@ CELERYBEAT_SCHEDULE = {
         'options': {
             'queue': 'worker_status',
             'exchange': 'worker_status'}
+    },
+    'release_annos': {
+        'task': 'lost.logic.tasks.release_annos',
+        'schedule': int(LOST_CONFIG.session_timeout)*60
     }
 }
