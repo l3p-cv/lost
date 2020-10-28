@@ -34,10 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Allows to view and adjust annotations for SIA and MIA tasks
   * Allows also to filter annotations by iteration 
 - Docs: Description of Utf-8 char encoding fix (see https://github.com/l3p-cv/lost/pull/72)
-
 ### Changed
 - Live logs: Show logs live in pipeline frontend when clicking on logs (see https://github.com/l3p-cv/lost/pull/84)
 - Allow html tags inside task instructions and label descriptions (see https://github.com/l3p-cv/lost/pull/78)
+
 ## [1.1.4] -  2020-06-08
 ### Fixed
 - Updated nodejs version in oder to get ci running
