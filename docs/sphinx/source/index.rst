@@ -47,7 +47,7 @@ proposals that are presented to an annotator inside the annotation tool.
         All About Scripts <all_about_scripts.rst>
         Command Line Interface <lost_cli.rst>
         Advanced Setup <advanced_setup.rst>
-        How to develop frontend <how_to_develop_frontend.rst>
+        Contribution Guide <contribution_guide.rst>
         Users and Groups <users_groups.rst>
         Conventions <conventions.rst>
         PyAPI <pyapi.rst>
