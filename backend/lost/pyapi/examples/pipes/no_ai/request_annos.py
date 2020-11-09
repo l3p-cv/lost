@@ -45,10 +45,14 @@ class RequestAnnos(script.Script):
                 annos.append(box)
                 anno_types.append('bbox')
                 lbls.append(random.sample(possible_labels, 2))
-            for img_file in os.listdir(media_path):
-                img_path = os.path.join(media_path, img_file)
-                self.outp.request_annos(img_path=img_path, annos=annos, anno_types=anno_types, anno_labels=lbls)
-                self.logger.info('Requested annos for: {}'.format(img_path))
+            # request annotation only for 'jpg','jpeg', 'bmp' and 'png' image type
+            imgfile_filter = ['.jpg','.jpeg','.bmp','.png'] 
+            for dirpath, dirnames, filenames in os.walk(media_path):
+                for file in filenames:
+                    if any(file.endswith(filter) for filter in imgfile_filter):
+                        img_path = os.path.join(media_path, dirpath, file)
+                        self.outp.request_annos(img_path=img_path, annos=annos, anno_types=anno_types, anno_labels=lbls)
+                        self.logger.info('Requested annos for: {}'.format(img_path))
 
 if __name__ == "__main__":
     my_script = RequestAnnos() 
