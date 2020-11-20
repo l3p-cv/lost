@@ -438,6 +438,8 @@ class Canvas extends Component{
                 )
                 break
             case canvasActions.ANNO_CREATED:
+                anno = this.stopAnnotimeMeasure(anno)
+                console.log('ANNO_CREATED', anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
@@ -447,6 +449,7 @@ class Canvas extends Component{
                 this.setState({annoToolBarVisible:true})
                 break
             case canvasActions.ANNO_MOVED:
+                anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.showSingleAnno(undefined)
                 this.pushHist(
@@ -456,10 +459,14 @@ class Canvas extends Component{
                 this.setState({annoToolBarVisible:true})
                 break
             case canvasActions.ANNO_ENTER_MOVE_MODE:
+                anno = this.startAnnotimeMeasure(anno)
+                this.updateSelectedAnno(anno, modes.MOVE)
                 this.showSingleAnno(anno.id)
                 this.setState({annoToolBarVisible:false})
                 break
             case canvasActions.ANNO_ENTER_EDIT_MODE:
+                anno = this.startAnnotimeMeasure(anno)
+                this.updateSelectedAnno(anno, modes.EDIT)
                 // this.showSingleAnno(anno.id)
                 this.setState({annoToolBarVisible:false})
                 break
@@ -471,6 +478,7 @@ class Canvas extends Component{
                 )
                 break
             case canvasActions.ANNO_EDITED:
+                anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
@@ -488,6 +496,7 @@ class Canvas extends Component{
                 )
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
+                anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
@@ -503,6 +512,8 @@ class Canvas extends Component{
                 )
                 break
             case canvasActions.ANNO_CREATED_FINAL_NODE:
+                anno = this.stopAnnotimeMeasure(anno)
+                console.log('ANNO_CREATED_FINAL_NODE', anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
@@ -577,6 +588,24 @@ class Canvas extends Component{
     /*************
      * LOGIC     *
     **************/
+
+    startAnnotimeMeasure(anno){
+        anno.timestamp = performance.now()
+        return anno
+    }
+    
+    stopAnnotimeMeasure(anno){
+        if (anno.timestamp === undefined){
+            console.error('No timestamp for annotime measurement. Check if you started measurement', anno)
+            return undefined
+        } else {
+            let now = performance.now()
+            anno.annoTime += (now - anno.timestamp) / 1000
+            anno.timestamp = now
+            return anno
+        }
+    }
+
     updatePossibleLabels(){
         if (!this.props.possibleLabels) return
         if (this.props.possibleLabels.length <= 0) return
@@ -594,7 +623,8 @@ class Canvas extends Component{
 
     editAnnoLabel(){
         if (this.state.selectedAnnoId){
-            const anno = this.findAnno(this.state.selectedAnnoId)
+            let anno = this.findAnno(this.state.selectedAnnoId)
+            anno = this.startAnnotimeMeasure(anno)
             this.showLabelInput()
             this.updateSelectedAnno(anno, modes.EDIT_LABEL)
         }
@@ -847,7 +877,7 @@ class Canvas extends Component{
         if (this.props.selectedTool){
             const mousePos = this.getMousePosition(e)
             // const selAnno = this.findAnno(this.state.selectedAnnoId)
-            const newAnno = {
+            let newAnno = {
                 id: _.uniqueId('new'),
                 type: this.props.selectedTool,
                 data: [{
@@ -860,8 +890,10 @@ class Canvas extends Component{
                 mode: modes.CREATE,
                 status: annoStatus.NEW,
                 labelIds: this.state.prevLabel,
-                selectedNode: 1
+                selectedNode: 1,
+                annoTime: 0.0
             }
+            newAnno = this.startAnnotimeMeasure(newAnno)
             this.setState({
                 annos: [...this.state.annos, newAnno],
                 selectedAnnoId: newAnno.id,

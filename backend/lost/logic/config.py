@@ -25,7 +25,7 @@ class LOSTConfig(object):
         self.session_timeout = 30
         
         if "SESSION_TIMEOUT" in os.environ:
-            self.session_timeout = os.environ['SESSION_TIMEOUT']
+            self.session_timeout = int(os.environ['SESSION_TIMEOUT'])
             if self.session_timeout < 10:
                 self.session_timeout = 10
 

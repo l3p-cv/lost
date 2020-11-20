@@ -125,8 +125,6 @@ def get_label_trees(db_man, user_id, at=None):
         
 def get_configuration(db_man, user_id):
     at = get_sia_anno_task(db_man,user_id)
-    print('anno task', at, at.idx)
-    print('anno task config', at.configuration)
     return json.loads(at.configuration)
 def get_sia_anno_task(db_man, user_id): 
     for cat in db_man.get_choosen_annotask(user_id):
@@ -234,7 +232,7 @@ class SiaUpdate(object):
         if self.image_anno.anno_time is None:
             self.image_anno.anno_time = 0.0
         if self.sia_type == 'sia':
-            # self.image_anno.anno_time += (self.image_anno.timestamp-self.image_anno.timestamp_lock).total_seconds()
+            # Do not update image annotation time for sia review
             self.image_anno.anno_time = data['annoTime']
         self.b_boxes = list()
         self.points = list()
@@ -273,9 +271,6 @@ class SiaUpdate(object):
             new = set(data['imgLabelIds'])
             to_delete = old - new
             to_add = new - old
-            print('HERE***')
-            print('old, new', old, new) 
-            print('to_delete, to_add', to_delete, to_add)
             for lbl in self.image_anno.labels:
                 if lbl.label_leaf_id in to_delete:
                     self.image_anno.labels.remove(lbl)
@@ -309,16 +304,6 @@ class SiaUpdate(object):
         annotation_json['new'] = list()
         annotation_json['changed'] = list()
    
-        # calculate average_anno_time:
-        # average anno time = anno_time of image_annotation divided by number of annotations (also deleted ones !)
-        # the average anno_time will be added to the certain annotations anno time 
-        # caution: anno_time will be added to *every* two_d anno - 
-        # we assume that the attention of every box is equally valid
-        average_anno_time = 0
-        #sia review updates should have no influence on anno time!
-        if self.sia_type == 'sia':
-            if len(annotations) > 0:
-                average_anno_time = self.image_anno.anno_time/len(annotations)
         for annotation in annotations:
             if annotation['status'] != "database" \
             and annotation['status'] != "deleted" \
@@ -336,7 +321,7 @@ class SiaUpdate(object):
                 two_d.timestamp_lock = self.image_anno.timestamp_lock
                 if two_d.anno_time is None:
                     two_d.anno_time = 0.0
-                two_d.anno_time += average_anno_time
+                # two_d.anno_time += average_anno_time
                 two_d_json = self.__serialize_two_d_json(two_d)
                 annotation_json['unchanged'].append(two_d_json)
                 self.db_man.save_obj(two_d)
@@ -363,7 +348,7 @@ class SiaUpdate(object):
                                     img_anno_id=self.image_anno.idx,
                                     timestamp=self.timestamp,
                                     timestamp_lock=self.image_anno.timestamp_lock,
-                                    anno_time=average_anno_time,
+                                    anno_time=annotation['annoTime'],
                                     data=json.dumps(annotation_data),
                                     user_id=self.user_id,
                                     iteration=self.iteration,
@@ -377,7 +362,7 @@ class SiaUpdate(object):
                                      timestamp=self.timestamp,
                                      annotator_id=self.user_id,
                                      timestamp_lock=self.image_anno.timestamp_lock,
-                                     anno_time=average_anno_time)
+                                     anno_time=annotation['annoTime'])
                     self.db_man.save_obj(label)
                 two_d_json = self.__serialize_two_d_json(two_d)
                 annotation_json['new'].append(two_d_json)
@@ -397,7 +382,7 @@ class SiaUpdate(object):
                 two_d.user_id = self.user_id
                 if two_d.anno_time is None:
                     two_d.anno_time = 0.0
-                two_d.anno_time += average_anno_time
+                two_d.anno_time = annotation['annoTime']
                 two_d.state = state.Anno.LABELED
 
                 l_id_list = list()
@@ -412,7 +397,7 @@ class SiaUpdate(object):
                     else:   
                         if label.anno_time is None:
                             label.anno_time = 0.0
-                        label.anno_time += average_anno_time
+                        label.anno_time = annotation['annoTime']
                         label.timestamp = self.timestamp
                         label.annotator_id=self.user_id,
                         label.timestamp_lock = self.image_anno.timestamp_lock
@@ -426,7 +411,7 @@ class SiaUpdate(object):
                                         timestamp=self.timestamp,
                                         annotator_id=self.user_id,
                                         timestamp_lock=self.image_anno.timestamp_lock,
-                                        anno_time=average_anno_time)
+                                        anno_time=annotation['annoTime'])
                         self.db_man.save_obj(label) 
                 self.db_man.save_obj(two_d)
                 two_d_json = self.__serialize_two_d_json(two_d)

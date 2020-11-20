@@ -110,28 +110,32 @@ sia_update_bbox = api.model('SIA update bbox', {
     'id': fields.Integer(description='The identifier of the bbox'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
     'status': fields.String(required=True, description='Status of that bbox can be "new", "changed" and "deleted".'),
-    'data': fields.Nested(bbox_data)
+    'data': fields.Nested(bbox_data),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_point = api.model('SIA update point', {
     'id': fields.Integer(description='The identifier of the point'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that point.'),
     'status': fields.String(required=True, description='Status of that point can be "new", "changed" and "deleted".'),
-    'data': fields.Nested(point_data,required=True,)
+    'data': fields.Nested(point_data,required=True,),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_line = api.model('SIA update line', {
     'id': fields.Integer(description='The identifier of the line'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that line.'),
     'status': fields.String(required=True, description='Status of that line can be "new", "changed" and "deleted".'),
-    'data': fields.List(fields.Nested(point_data),required=True,)
+    'data': fields.List(fields.Nested(point_data),required=True,),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_polygon = api.model('SIA update polygon', {
     'id': fields.Integer(description='The identifier of the polygon'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
     'status': fields.String(required=True, description='Status of that polygon can be "new", "changed" and "deleted".'),
-    'data': fields.List(fields.Nested(point_data),required=True)
+    'data': fields.List(fields.Nested(point_data),required=True),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_annotations = api.model('SIA update annotations',{
