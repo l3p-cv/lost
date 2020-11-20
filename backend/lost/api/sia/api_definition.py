@@ -12,6 +12,7 @@ image = api.model('Image', {
     'isLast': fields.Boolean(readOnly=True, description='Weather the image is the last one of the annotation process.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to this image.'),
     'isJunk': fields.Boolean(readOnly=True, description='Indicates if the image was marked as Junk.'),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 bbox_data = api.model('BBox Data',{
@@ -24,7 +25,8 @@ bbox_data = api.model('BBox Data',{
 bbox = api.model('BBox',{
     'id': fields.Integer(readOnly=True, description='The identifier of the bbox.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
-    'data': fields.Nested(bbox_data, description='2-D data of that box.')
+    'data': fields.Nested(bbox_data, description='2-D data of that box.'),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 
@@ -37,21 +39,24 @@ point_data = api.model('Point Data',{
 point = api.model('Point',{
     'id': fields.Integer(readOnly=True, description='The identifier of the point.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that point.'),
-    'data': fields.Nested(point_data, description='2-D data of that point.')
+    'data': fields.Nested(point_data, description='2-D data of that point.'),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 
 line = api.model('Line',{
     'id': fields.Integer(readOnly=True, description='The identifier of the line.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that line.'),
-    'data': fields.List(fields.Nested(point_data, description='2-D data of that line.'))
+    'data': fields.List(fields.Nested(point_data, description='2-D data of that line.')),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 
 polygon = api.model('Polygon',{
     'id': fields.Integer(readOnly=True, description='The identifier of the polygon.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
-    'data': fields.List(fields.Nested(point_data, description='2-D data of that polygon.'))
+    'data': fields.List(fields.Nested(point_data, description='2-D data of that polygon.')),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 annotations = api.model('Annotations',{
@@ -105,28 +110,32 @@ sia_update_bbox = api.model('SIA update bbox', {
     'id': fields.Integer(description='The identifier of the bbox'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
     'status': fields.String(required=True, description='Status of that bbox can be "new", "changed" and "deleted".'),
-    'data': fields.Nested(bbox_data)
+    'data': fields.Nested(bbox_data),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_point = api.model('SIA update point', {
     'id': fields.Integer(description='The identifier of the point'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that point.'),
     'status': fields.String(required=True, description='Status of that point can be "new", "changed" and "deleted".'),
-    'data': fields.Nested(point_data,required=True,)
+    'data': fields.Nested(point_data,required=True,),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_line = api.model('SIA update line', {
     'id': fields.Integer(description='The identifier of the line'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that line.'),
     'status': fields.String(required=True, description='Status of that line can be "new", "changed" and "deleted".'),
-    'data': fields.List(fields.Nested(point_data),required=True,)
+    'data': fields.List(fields.Nested(point_data),required=True,),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_polygon = api.model('SIA update polygon', {
     'id': fields.Integer(description='The identifier of the polygon'),
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
     'status': fields.String(required=True, description='Status of that polygon can be "new", "changed" and "deleted".'),
-    'data': fields.List(fields.Nested(point_data),required=True)
+    'data': fields.List(fields.Nested(point_data),required=True),
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
 sia_update_annotations = api.model('SIA update annotations',{
