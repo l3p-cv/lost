@@ -505,9 +505,10 @@ class Canvas extends Component{
                 this.setState({annoToolBarVisible:true})
                 break
             case canvasActions.ANNO_CREATED_NODE:
-                const merged = this.mergeSelectedAnno(anno, modes.CREATE)
+                anno = this.stopAnnotimeMeasure(anno)
+                newAnnos = this.updateSelectedAnno(anno, modes.CREATE)
                 this.pushHist(
-                    merged.newAnnos, anno.id,
+                    newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
                 break
