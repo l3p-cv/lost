@@ -497,7 +497,17 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 anno = this.stopAnnotimeMeasure(anno)
-                newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                if (anno.type === 'polygon' && anno.data.length < 3){
+                    console.log('POLYGON has fewer than 3 point', anno)
+                    newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
+                    this.handleNotification({
+                        title: "Invalid polygon!",
+                        message: 'A vaild polygon needs at least 3 point!',
+                        type: notificationType.WARNING
+                    })
+                } else {
+                    newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                }
                 this.pushHist(
                     newAnnos, anno.id,
                     pAction, undefined
@@ -514,7 +524,6 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_CREATED_FINAL_NODE:
                 anno = this.stopAnnotimeMeasure(anno)
-                console.log('ANNO_CREATED_FINAL_NODE', anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
