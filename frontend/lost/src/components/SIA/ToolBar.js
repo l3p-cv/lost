@@ -304,6 +304,10 @@ class ToolBar extends Component{
                         <Card.Content description='Hit STRG + Click left on the line'/>
                     </Card>
                     <Card>
+                        <Card.Content header='Remove a node from Line/Polygon in create mode' />
+                        <Card.Content description='Press DELETE or BACKSPACE'/>
+                    </Card>
+                    <Card>
                         <Card.Content header='Zoom/ Move Canvas' />
                         <Card.Content description='Zoom: Use MOUSE WHEEL to zoom in/out'/>
                         <Card.Content description='Move: Hold MOUSE WHEEL and move mouse. Or Use W/A/S/D keys to move camera up/left/down/right'/>

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - SIA:
   * Frontend annotation time measurement: Annotation time is now measured in frontend, based on user events. For each annotation individual user interaction time is measured. 
+  * Delete last node of polygon/ line when hitting delete key in create mode
 ### Fixed
 - SIA:
   * Do not lose polygon annotation when hitting enter in create mode

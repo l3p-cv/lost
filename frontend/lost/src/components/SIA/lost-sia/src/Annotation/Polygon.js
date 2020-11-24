@@ -225,6 +225,17 @@ class Polygon extends Component{
         this.performedAction(newAnno, canvasActions.ANNO_ADDED_NODE)
     }
 
+    removeLastNode(){
+        const newAnno = {
+            ...this.state.anno,
+            data: [...this.state.anno.data.slice(0, this.state.anno.data.length-1)],
+            selectedNode: this.state.anno.selectedNode - 1
+        }
+        this.setState({anno: newAnno
+        })
+        this.performedAction(newAnno, canvasActions.ANNO_REMOVED_NODE)
+    }
+
     updateAnnoByMousePos(e, idx){
         const mousePos = mouse.getMousePosition(e, this.props.svg)
         let newAnnoData = [...this.state.anno.data]

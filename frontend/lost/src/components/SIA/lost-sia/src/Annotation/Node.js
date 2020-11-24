@@ -237,6 +237,7 @@ class Node extends Component{
    }
     renderNodes(){
         const data = this.props.anno[this.props.idx]
+        if (data === undefined) {return}
         return (
             <g
                 onClick={(e) => this.onClick(e)}
