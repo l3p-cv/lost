@@ -337,7 +337,16 @@ class Canvas extends Component{
 
         switch(action){
             case keyActions.EDIT_LABEL:
-                this.editAnnoLabel()
+                // Need to get the newest version of annotation data directly 
+                // from annotation object, when editing label/ hitting enter
+                // in create mode, since annotation data in canvas are not updated
+                // to this point in time. 
+                const ar = this.findAnnoRef(this.state.selectedAnnoId)
+                let myAnno = undefined
+                if (ar !== undefined){
+                    myAnno = ar.current.myAnno.current.getResult()
+                }
+                this.editAnnoLabel(myAnno)
                 break
             case keyActions.DELETE_ANNO:
                 this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
@@ -497,14 +506,8 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 anno = this.stopAnnotimeMeasure(anno)
-                if (anno.type === 'polygon' && anno.data.length < 3){
-                    console.log('POLYGON has fewer than 3 point', anno)
+                if (!this.checkAnnoLength(anno)){
                     newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
-                    this.handleNotification({
-                        title: "Invalid polygon!",
-                        message: 'A vaild polygon needs at least 3 point!',
-                        type: notificationType.WARNING
-                    })
                 } else {
                     newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 }
@@ -599,6 +602,27 @@ class Canvas extends Component{
      * LOGIC     *
     **************/
 
+    checkAnnoLength(anno){
+        console.log('checkAnnoLength', anno)
+        if (anno.type === 'polygon' && anno.data.length < 3){
+            this.handleNotification({
+                title: "Invalid polygon!",
+                message: 'A vaild polygon needs at least 3 points!',
+                type: notificationType.WARNING
+            })
+            return false
+        } 
+        // if (anno.type === 'line' && anno.data.length < 2){
+        //     this.handleNotification({
+        //         title: "Invalid line!",
+        //         message: 'A vaild line needs at least 2 points!',
+        //         type: notificationType.WARNING
+        //     })
+        //     return false
+        // } 
+        return true
+    }
+
     startAnnotimeMeasure(anno){
         anno.timestamp = performance.now()
         return anno
@@ -631,12 +655,17 @@ class Canvas extends Component{
         })
     }
 
-    editAnnoLabel(){
+    editAnnoLabel(anno){
         if (this.state.selectedAnnoId){
-            let anno = this.findAnno(this.state.selectedAnnoId)
-            anno = this.startAnnotimeMeasure(anno)
+            let myAnno
+            if (anno === undefined){
+                myAnno = this.findAnno(this.state.selectedAnnoId)
+            } else {
+                myAnno = {...anno}
+            }
+            myAnno = this.startAnnotimeMeasure(myAnno)
             this.showLabelInput()
-            this.updateSelectedAnno(anno, modes.EDIT_LABEL)
+            this.updateSelectedAnno(myAnno, modes.EDIT_LABEL)
         }
     }
     unloadImage(){
@@ -652,6 +681,13 @@ class Canvas extends Component{
     findAnno(annoId){
         return this.state.annos.find(e => {
             return e.id === annoId
+        })
+    }
+
+    findAnnoRef(annoId){
+        if (this.state.selectedAnnoId === undefined) return undefined
+        return this.annoRefs.find(e => {
+            return e.current.isSelected()
         })
     }
 
@@ -1147,12 +1183,12 @@ class Canvas extends Component{
     renderAnnotations(){
         // Do not render annotations while moving the camera!
         if (this.state.mode !== modes.CAMERA_MOVE){
-            // this.annoRefs = []
+            this.annoRefs = []
             const annos =  this.state.annos.map((el) => {
-                // this.annoRefs.push(React.createRef())
+                this.annoRefs.push(React.createRef())
                 return <Annotation type={el.type} 
                         data={el} key={el.id} svg={{...this.state.svg}}
-                        // ref={this.annoRefs[this.annoRefs.length - 1]}
+                        ref={this.annoRefs[this.annoRefs.length - 1]}
                         onMouseDown={e => this.onAnnoMouseDown(e)}
                         onAction={(anno, pAction) => this.onAnnoPerformedAction(anno, pAction)}
                         selectedAnno={this.state.selectedAnnoId}

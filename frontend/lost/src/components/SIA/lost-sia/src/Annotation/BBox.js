@@ -173,6 +173,10 @@ class BBox extends Component{
     /*************
     *  LOGIC     *
     **************/
+    getResult(){
+        return this.state.anno
+    }
+    
     requestModeChange(anno, mode){
         this.props.onModeChangeRequest(anno, mode)
     }

@@ -92,6 +92,10 @@ class Point extends Component{
     /*************
     *  LOGIC     *
     **************/
+    getResult(){
+        return this.state.anno
+    }
+    
     performedAction(anno, pAction){
         if (this.props.onAction){
             this.props.onAction(anno, pAction)

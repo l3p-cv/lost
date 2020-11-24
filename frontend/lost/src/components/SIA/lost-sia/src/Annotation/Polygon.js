@@ -26,7 +26,6 @@ class Polygon extends Component{
 
     componentDidMount(){
         if (this.props.anno.mode === modes.CREATE){
-            // this.performedAction(this.props.anno, canvasActions.ANNO_CREATED_NODE)
             const data = this.props.anno.data[0]
             const newAnno = {
                 ...this.props.anno,
