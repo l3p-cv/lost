@@ -8,12 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - SIA:
   * Frontend annotation time measurement: Annotation time is now measured in frontend, based on user events. For each annotation individual user interaction time is measured. 
-  * Delete last node of polygon/ line when hitting delete key in create mode
-  * Added copy & paste for annotations
+  * Delete last node of polygon/ line when hitting delete key in create mode (see https://github.com/l3p-cv/lost/issues/102)
+  * Added copy & paste for annotations (see https://github.com/l3p-cv/lost/issues/82)
 ### Fixed
 - SIA:
   * Do not lose polygon annotation when hitting enter in create mode
-  * Do not allow to draw a polygon consisting of two points
+  * Do not allow to draw a polygon consisting of two points (see https://github.com/l3p-cv/lost/issues/101)
   * Do not collapse line with two points, when confirming with enter  
 - Pipeline import:
   * Script parsing fails when list/dictionary literals are not valid JSON (see https://github.com/l3p-cv/lost/issues/97)
