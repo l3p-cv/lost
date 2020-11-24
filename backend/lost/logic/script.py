@@ -5,6 +5,7 @@ import importlib
 import os
 import json
 import sys
+import ast
 
 def remove_script(dbm, file_name):
     db_script = dbm.get_script(file_name=file_name)
@@ -108,8 +109,8 @@ def parse_script_constants(script_path, constant_name, bracket_type='{'):
                     args += line
                     open_count += line.count(b_open)
                     close_count += line.count(b_close)
-                args = args.replace('\'','\"') #Make it json parsable
-                arg_dict = json.loads(args)
+                # args = args.replace('\'','\"') #Make it json parsable
+                arg_dict = ast.literal_eval(args)
                 return arg_dict
 
         #No arguments for this script
