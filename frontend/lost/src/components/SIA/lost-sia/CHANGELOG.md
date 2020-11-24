@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Annotation time is now measured in frontend, based on user events. For each annotation individual user interaction time is measured. 
 ### Fixed
 - Do not lose polygon annotation when hitting enter in create mode
+- Do not allow to draw a polygon consisting of two points
+- Do not collapse line with two points, when confirming with enter
 
 ## [0.2.2] - 2020-08-06
 ### Fixed

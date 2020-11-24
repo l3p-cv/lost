@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - SIA:
   * Do not lose polygon annotation when hitting enter in create mode
+  * Do not allow to draw a polygon consisting of two points
+  * Do not collapse line with two points, when confirming with enter  
 
 ## [1.2.2] - 2020-10-08
 ### Fixed
