@@ -320,6 +320,11 @@ class ToolBar extends Component{
                         <Card.Content header='Next/Prev image navigation' />
                         <Card.Content description='Get next image by hitting ARROW_RIGHT key. Get previous image by hitting ARROW_LEFT key.'/>
                     </Card>
+                    <Card>
+                        <Card.Content header='Copy and Paste annotations' />
+                        <Card.Content description='Copy: 1.) Select annotation 2.) Hit STRG + C'/>
+                        <Card.Content description='Paste: STRG + V'/>
+                    </Card>
                     </Card.Group>
                 </div>}
             />

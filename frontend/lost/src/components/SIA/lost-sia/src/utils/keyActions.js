@@ -10,6 +10,8 @@ export const CAM_MOVE_DOWN='camMoveDown'
 export const CAM_MOVE_LEFT='camMoveLeft'
 export const CAM_MOVE_RIGHT='camMoveRight'
 export const CAM_MOVE_STOP='camMoveStop'
+export const COPY_ANNOTATION='copyAnnotation'
+export const PASTE_ANNOTATION='pasteAnnotation'
 
 
 class KeyMapper{
@@ -57,6 +59,16 @@ class KeyMapper{
                 break
             case 'd':
                 this.triggerKeyAction(CAM_MOVE_RIGHT)
+                break
+            case 'c':
+                if (this.controlDown){
+                    this.triggerKeyAction(COPY_ANNOTATION)
+                }
+                break
+            case 'v':
+                if (this.controlDown){
+                    this.triggerKeyAction(PASTE_ANNOTATION)
+                }
                 break
             default:
                 break

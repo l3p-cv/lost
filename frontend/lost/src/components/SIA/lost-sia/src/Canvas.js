@@ -155,6 +155,7 @@ class Canvas extends Component{
         this.hist = new UndoRedo()
         this.keyMapper = new KeyMapper((keyAction) => this.handleKeyAction(keyAction))
         this.mousePosAbs = undefined
+        this.clipboard = undefined
     }
 
     componentDidMount(){
@@ -398,6 +399,12 @@ class Canvas extends Component{
             case keyActions.CAM_MOVE_STOP:
                 // this.setMode(modes.VIEW)
                 break
+            case keyActions.COPY_ANNOTATION:
+                this.copyAnnotation()
+                break
+            case keyActions.PASTE_ANNOTATION:
+                this.pasteAnnotation(0)
+                break
             default:
                 console.warn('Unknown key action', action)
         }
@@ -619,6 +626,37 @@ class Canvas extends Component{
     /*************
      * LOGIC     *
     **************/
+    copyAnnotation(){
+        this.clipboard =  this.findAnno(this.state.selectedAnnoId)
+        this.handleNotification({
+            title: "Copyed annotation to clipboard",
+            message: 'Copyed '+this.clipboard.type,
+            type: notificationType.SUCCESS
+        })
+    }
+
+    pasteAnnotation(offset=0){
+        if (this.clipboard){
+            let annos = [...this.state.annos]
+            const uid = _.uniqueId('new')
+            annos.push({
+                ...this.clipboard,
+                id: uid,
+                annoTime: 0,
+                status: annoStatus.NEW,
+                data: this.clipboard.data.map(e => {
+                    return {x: e.x+offset, y: e.y+offset}
+                })
+            })
+            this.setState({annos: annos, selectedAnnoId: uid})
+            this.handleNotification({
+                title: "Pasted annotation to canvas",
+                message: 'Pasted and selected '+this.clipboard.type,
+                type: notificationType.SUCCESS
+            })
+        }
+    }
+
 
     checkAnnoLength(anno){
         console.log('checkAnnoLength', anno)
