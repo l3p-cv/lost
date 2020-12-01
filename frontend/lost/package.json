@@ -72,6 +72,7 @@
     "react-scripts": "^2.0.4"
   },
   "scripts": {
+    "start2": "react-scripts start",
     "install:tools": "npm install --prefix src/components/pipeline -d",
     "start": "bash src/frontendDev.sh && npm run install:tools &&REACT_APP_PORT='' react-app-rewired start",
     "build": "react-app-rewired build",

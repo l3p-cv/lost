@@ -1,87 +1,104 @@
 import React, { useEffect, useState } from 'react'
-import groupActions from 'actions/group'
-import userActions from 'actions/user'
-import * as Alert from '../BasicComponents/Alert' 
-import { useDispatch, useSelector } from 'react-redux';
-import BaseTable from './BaseTable'
-// * tableData: {header: [{title: Age, key: age}, ...], data:[{age: 12,...}, ...]}
-import { Button, Input } from 'semantic-ui-react'
+import Datatable from '../BasicComponents/Datatable'
+import actions from '../../actions/group'
+import userActions from '../../actions/user'
 
-function GroupTable() {
-    const groups = useSelector((state) => {
+import { useDispatch, useSelector } from 'react-redux'
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import IconButton from '../BasicComponents/IconButton'
+import { Input, InputGroupAddon, InputGroup } from 'reactstrap'
+import * as Notification from '../BasicComponents/Notification'
+import * as REQUEST_STATUS from '../../types/requestStatus'
+export const Groups = () => {
+    const dispatch = useDispatch()
+    const groups = useSelector((state) => state.group.groups)
+    const [newGroup, setNewGroup] = useState('')
+    const addGroupStatus = useSelector(state=>state.group.createGroupStatus)
+    const deleteGroupStatus = useSelector(state=>state.group.deleteGroupStatus)
 
-        return state.group.groups
-    });
-
-    const users = useSelector((state) => state.user.users);
-
-    const dispatch = useDispatch();
-    const getGroups = () => dispatch(groupActions.getGroupsAction());
-    const createGroup = (payload)=> dispatch(groupActions.createGroupAction(payload));
-    const deleteGroup = (payload)=> dispatch(groupActions.deleteGroupAction(payload));
-
-    const data = groups.map(group => ({ 'groupName': group.name } ))
-    const [groupName, setGroupName] = useState("")
-    const tableData = {
-        header: [
-            {
-                title: "Group",
-                key: "groupName"
-            },
-            {
-                title: "",
-                key: "deleteUser"
+    useEffect(()=>{
+        if(addGroupStatus.status) {
+            Notification.networkRequest(addGroupStatus)
+            if(addGroupStatus.status === REQUEST_STATUS.SUCCESS) {
+                dispatch(actions.getGroups())
+                setNewGroup('')
             }
-        ],
-        data: data
-    }
-    useEffect(() => {
-         function fetchGroups() {
-             getGroups();
         }
-        fetchGroups();
+    }, [addGroupStatus])
 
+    useEffect(()=>{
+        if(deleteGroupStatus.status) {
+            Notification.networkRequest(deleteGroupStatus)
+            if(deleteGroupStatus.status === REQUEST_STATUS.SUCCESS) {
+                dispatch(actions.getGroups())
+                dispatch(userActions.getUsers())
+            }
+        }
+    }, [deleteGroupStatus])
+
+    useEffect(() => {
+        dispatch(actions.getGroups())
     }, [])
-    const dataTableCallback =  async (type, row) => {
-        const group = groups.filter(el=>el.name == row.groupName)[0]
-        await deleteGroup(group.idx)
-        getGroups()
 
+    const addGroup = () => {
+        if (newGroup.length < 3) {
+            Notification.showError('Minimum 3 character')
+        } else if(newGroup.length > 25) {
+            Notification.showError('Maximum 25 character')
+        } else {
+            dispatch(
+                actions.createGroup({
+                    groupName: newGroup
+                })
+            )
+        }
+    }
+
+    const deleteGroup = id =>{
+        dispatch(actions.deleteGroup(id))
     }
 
     return (
         <div>
-            <Input
-                value={groupName}
-                action={
-                    <Button basic color='blue'
-                        onClick={() => {
-                            if(users.filter(user=>user.user_name === groupName).length){
-                                Alert.error("groupname and username can not be the same")
-                                return
-                            }
-                            if(groups.filter(group=>group.name===groupName).length){
-                                Alert.error("groupname already taken")
-                                return
-                            }
-                            
-                                createGroup({'group_name': groupName})
-                                setGroupName("")
-                                getGroups()
-                            
+            <InputGroup style={{ marginBottom: 20 }}>
+                <Input
+                    placeholder='groupname'
+                    value={newGroup}
+                    onChange={(e) => setNewGroup(e.currentTarget.value)}
+                />
+                <InputGroupAddon addonType="append">
+                    <IconButton
+                        color="primary"
+                        icon={faPlus}
+                        onClick={addGroup}
+                    />
+                </InputGroupAddon>
+            </InputGroup>
+            <Datatable
+                showPageSizeOptions={false}
+                data={groups}
+                columns={[
+                    {
+                        Header: 'Group',
+                        accessor: 'name'
+                    },
+                    {
+                        Header: '',
+                        width: 50,
+                        Cell: row=> (Datatable.centeredCell({children: (
+                            <IconButton
+                                icon={faTrash}
+                                color='danger'
+                                onClick={()=>{
+                                    deleteGroup(row.original.idx)
+                                }}
+                            />
 
-                        }}>
-                        Add Group
-                    </Button>
-                }
-                onChange={(e)=>setGroupName(e.currentTarget.value)}
-                iconPosition='left'
-                placeholder='Groupname'
+                        )}))
+                    }
+                ]}
             />
-{groups.length > 0 && <BaseTable tableData={tableData} callback={dataTableCallback} />}
-            
         </div>
     )
 }
-
-export default GroupTable
+export default Groups

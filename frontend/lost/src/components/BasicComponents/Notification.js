@@ -39,11 +39,21 @@ export const close = () => {
 }
 
 export const handling = (status, successText) => {
-    if(REQUEST_STATUS.LOADING === status) {
+    if (REQUEST_STATUS.LOADING === status) {
         showLoading()
-    }else if(REQUEST_STATUS.SUCCESS === status) {
+    } else if (REQUEST_STATUS.SUCCESS === status) {
         showSuccess(successText)
     }
 }
 
-
+export const networkRequest = (requestStatus) => {
+    if(requestStatus.status) {
+        if (REQUEST_STATUS.LOADING === requestStatus.status) {
+            showLoading()
+        } else if (REQUEST_STATUS.SUCCESS === requestStatus.status) {
+            showSuccess(requestStatus.message)
+        } else if (REQUEST_STATUS.FAILED === requestStatus.status) {
+            showError(requestStatus.message)
+        }
+    }
+}

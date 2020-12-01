@@ -1,0 +1,273 @@
+import React, { useEffect, useState } from 'react'
+import BaseModal from '../BasicComponents/BaseModal'
+import Datatable from '../BasicComponents/Datatable'
+import { Input } from 'reactstrap'
+import { useSelector } from 'react-redux'
+import IconButton from '../BasicComponents/IconButton'
+import { faSave, faBan } from '@fortawesome/free-solid-svg-icons'
+import actions from '../../actions'
+import validator from 'validator'
+import { useDispatch } from 'react-redux'
+import * as Notification from '../BasicComponents/Notification'
+import * as REQUEST_STATUS from '../../types/requestStatus'
+import { roles } from '../../settings'
+
+const ErrorLabel = ({ text }) => (
+    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>
+        {text}
+    </p>
+)
+
+export default (props) => {
+    console.log('props')
+    console.log(props)
+    const dispatch = useDispatch()
+    const userModified = props.user[0]
+    // userModified.roles = userModified.roles.map(el=>el.name)
+    const [user, setUser] = useState(userModified)
+    const [emailError, setEmailError] = useState(false)
+    const [passwordError, setPasswordError] = useState(false)
+    const [passwordConfirmError, setPasswordConfirmError] = useState(false)
+    const [usernameError, setUsernameError] = useState(false)
+
+    const groups = useSelector((state) => state.group.groups)
+    const updateUserStatus = useSelector((state) => state.user.updateUserStatus)
+
+    useEffect(() => {
+        Notification.networkRequest(updateUserStatus)
+        if (updateUserStatus.status === REQUEST_STATUS.SUCCESS) {
+            props.closeModal()
+        }
+    }, [updateUserStatus])
+
+    const userNameField = () => {
+        return (
+            <>
+                <Datatable.centeredCell>
+                    <Input
+                        placeholder="Username"
+                        disabled={!props.isNewUser}
+                        defaultValue={user.userName}
+                        onChange={(e) =>
+                            setUser({
+                                ...user,
+                                userName: e.currentTarget.value
+                            })
+                        }
+                    />
+                </Datatable.centeredCell>
+                {usernameError ? <ErrorLabel text={usernameError} /> : null}
+            </>
+        )
+    }
+
+    const emailField = () => (
+        <>
+            <Datatable.centeredCell>
+                <Input
+                    placeholder="example@example.com"
+                    defaultValue={user.email}
+                    onChange={(e) => {
+                        setUser({ ...user, email: e.currentTarget.value })
+                    }}
+                />
+            </Datatable.centeredCell>
+            {emailError ? <ErrorLabel text="Email is not valid" /> : null}
+        </>
+    )
+
+    const passwordField = () => (
+        <>
+            <Datatable.centeredCell>
+                <Input
+                    placeholder="*******"
+                    type="password"
+                    defaultValue={user.password}
+                    onChange={(e) => {
+                        setUser({ ...user, password: e.currentTarget.value })
+                    }}
+                />
+            </Datatable.centeredCell>
+            {passwordError ? <ErrorLabel text={passwordError} /> : null}
+        </>
+    )
+
+    const confirmPasswordField = () => (
+        <>
+            <Datatable.centeredCell>
+                <Input
+                    placeholder="*******"
+                    type="password"
+                    defaultValue={user.confirmPassword}
+                    onChange={(e) =>
+                        setUser({
+                            ...user,
+                            confirmPassword: e.currentTarget.value
+                        })
+                    }
+                />
+            </Datatable.centeredCell>
+            {passwordConfirmError ? (
+                <ErrorLabel text="Passwords do not match" />
+            ) : null}
+        </>
+    )
+
+    const rolesField = () => {
+        return roles.map((guiSetupRole) => {
+            const isActive =
+                user.roles.filter((role) => role.name === guiSetupRole).length >
+                0
+            return Datatable.renderBadge(
+                `user-${user.idx}-role-${guiSetupRole}`,
+                guiSetupRole,
+                isActive ? 'success' : 'secondary',
+                () => {
+                    setUser({
+                        ...user,
+                        roles: isActive
+                            ? user.roles.filter(
+                                (role) => role.name !== guiSetupRole
+                            )
+                            : [...user.roles, { name: guiSetupRole }]
+                    })
+                }
+            )
+        })
+    }
+
+    const groupField = () => {
+        return groups.map((el) => {
+            const isActive =
+                user.groups.filter((group) => group.idx === el.idx).length > 0
+            return Datatable.renderBadge(
+                `user-${user.idx}-group-${el.idx}`,
+                el.name,
+                isActive ? 'success' : 'secondary',
+                () => {
+                    setUser({
+                        ...user,
+                        groups: isActive
+                            ? user.groups.filter(
+                                (group) => group.idx !== el.idx
+                            )
+                            : [...user.groups, el]
+                    })
+                }
+            )
+        })
+    }
+
+    const save = () => {
+        let isError = false
+        if (!validator.isEmail(user.email)) {
+            setEmailError(true)
+            isError = true
+        } else {
+            setEmailError(false)
+        }
+
+        if (props.isNewUser && user.userName.length < 2) {
+            setUsernameError('Min 2 character')
+            isError = true
+        } else {
+            setUsernameError(false)
+        }
+
+        if (user.password || props.isNewUser) {
+            if (user.password.length < 5) {
+                isError = true
+                setPasswordError('Min 5 character')
+            } else {
+                setPasswordError(false)
+            }
+            if (user.password !== user.confirmPassword) {
+                setPasswordConfirmError(true)
+                isError = true
+            } else {
+                setPasswordConfirmError(false)
+            }
+        } else {
+            setPasswordError(false)
+        }
+
+        if (!isError) {
+            // save user
+            user.roles = user.roles.map((role) => role.name)
+            user.groups = user.groups.map((group) => group.name)
+            if (props.isNewUser) {
+                dispatch(actions.createUser(user))
+            } else {
+                dispatch(actions.updateUser(user))
+            }
+        }
+    }
+
+    const cancel = () => {
+        props.closeModal()
+    }
+
+    return (
+        <BaseModal
+            isOpen={props.isOpen}
+            title="Edit User"
+            toggle={props.closeModal}
+            onClosed={props.onClosed}
+            footer={
+                <>
+                    <IconButton
+                        icon={faBan}
+                        color="warning"
+                        text="Cancel"
+                        onClick={cancel}
+                    />
+                    <IconButton
+                        icon={faSave}
+                        color="success"
+                        text="Save"
+                        onClick={save}
+                    />
+                </>
+            }
+        >
+            <Datatable
+                noText={true}
+                pageSize={1}
+                showPagination={false}
+                data={[user]}
+                columns={[
+                    {
+                        Header: 'Username',
+                        accessor: 'userName',
+                        Cell: userNameField
+                    },
+                    {
+                        Header: 'Email',
+                        accessor: 'email',
+                        Cell: emailField
+                    },
+                    {
+                        Header: 'Password',
+                        accessor: 'password',
+                        Cell: passwordField
+                    },
+                    {
+                        Header: 'Confirm Password',
+                        accessor: 'confirmPassword',
+                        Cell: confirmPasswordField
+                    },
+                    {
+                        Header: 'Roles',
+                        accessor: 'roles',
+                        Cell: rolesField
+                    },
+                    {
+                        Header: 'Groups',
+                        accessor: 'groups',
+                        Cell: groupField
+                    }
+                ]}
+            />
+        </BaseModal>
+    )
+}
