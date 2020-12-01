@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Graph from 'react-graph-vis';
 import { connect } from 'react-redux'
-import actions from 'actions/pipeline/pipelineStartModals/annoTask'
+import actions from '../../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
+
 import {Card, CardBody} from 'reactstrap'
 import _ from 'lodash'
 

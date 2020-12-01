@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import Graph from 'react-graph-vis';
-import mapTreeToGraph from 'libs/graph-vis/mapTreeToGraph'
+import mapTreeToGraph from '../../libs/graph-vis/mapTreeToGraph'
 import EditLabel from '../../components/Labels/EditLabel'
 
 const options = {

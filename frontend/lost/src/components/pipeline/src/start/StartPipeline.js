@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Stepper from 'react-stepper-wizard'
 import { connect } from 'react-redux'
-import actions from 'actions/pipeline/pipelineStart'
+import actions from '../../../../actions/pipeline/pipelineStart'
+
 import '../globalComponents/node.scss'
 import '../globalComponents/pipeline.scss'
 import SelectPipeline from './1/SelectPipeline'

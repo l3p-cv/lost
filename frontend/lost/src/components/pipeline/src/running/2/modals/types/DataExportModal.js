@@ -1,9 +1,11 @@
 import React, {Component} from 'react'
 import { ModalHeader, ModalBody } from 'reactstrap';
-import Table from 'pipelineGlobalComponents/modals/Table'
+import Table from '../../../../globalComponents/modals/Table'
+
 import { Button } from 'reactstrap'
 import {connect} from 'react-redux'
-import actions from 'actions/pipeline/pipelineRunning'
+import actions from '../../../../../../../actions/pipeline/pipelineRunning'
+
 const {downloadDataExport} = actions
 class DataExportModal extends Component {
   constructor() {

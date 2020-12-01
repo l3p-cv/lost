@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {Card, CardBody, Form, FormGroup, Label, Input} from 'reactstrap'
-import actions from 'actions/pipeline/pipelineStart'
+import actions from '../../../../../actions/pipeline/pipelineStart'
+
 import {connect} from 'react-redux'
 
 const {nameOnInput, descriptionOnInput, verifyTab} = actions

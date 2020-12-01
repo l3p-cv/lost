@@ -3,7 +3,8 @@ import DatasourceModal from './types/DatasourceModal'
 import ScriptModal from './types/ScriptModal'
 import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
 import LoopModal from './types/LoopModal'
-import actions from 'actions/pipeline/pipelineStart'
+import actions from '../../../../../../actions/pipeline/pipelineStart'
+
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux'
 const { toggleModal, verifyNode, verifyTab } = actions

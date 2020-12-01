@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Stepper from 'react-stepper-wizard'
 import { connect } from 'react-redux'
-import actions from 'actions/pipeline/pipelineStartModals/annoTask'
+import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import UserInfo from './1/UserInfo'
 import SelectUser from './2/SelectUser'
 import SelectTree from './3/SelectTree'

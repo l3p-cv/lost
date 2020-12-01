@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Card, CardBody, Form, FormGroup, Label, Input } from 'reactstrap'
-import GrayLine from 'pipelineGlobalComponents/GrayLine'
-import actions from 'actions/pipeline/pipelineRunning'
-import startActions from 'actions/pipeline/pipelineStart'
+import GrayLine from '../../globalComponents/GrayLine'
+
+import actions from '../../../../../actions/pipeline/pipelineRunning'
+
+import startActions from '../../../../../actions/pipeline/pipelineStart'
+
 import { connect } from 'react-redux'
-import { alertLoading, alertClose, alertDeletePipeline } from 'pipelineGlobalComponents/Sweetalert'
+import { alertLoading, alertClose, alertDeletePipeline } from '../../globalComponents/Sweetalert'
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash, faStickyNote, faPause, faPlay, faRedo } from '@fortawesome/free-solid-svg-icons'
 import ToolbarTooltip from './ToolbarTooltip'

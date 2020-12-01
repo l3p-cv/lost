@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import actions from 'actions/pipeline/pipelineStart'
+import actions from '../../../../../actions/pipeline/pipelineStart'
 import { connect } from 'react-redux'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'

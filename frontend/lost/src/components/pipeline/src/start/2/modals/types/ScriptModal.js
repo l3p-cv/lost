@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
-import Table from 'pipelineGlobalComponents/modals/Table'
-import ArgumentsTable from 'pipelineGlobalComponents/modals/ScriptArgumentsTable'
-import CollapseCard from 'pipelineGlobalComponents/modals/CollapseCard'
+import Table from '../../../../globalComponents/modals/Table'
+
+import ArgumentsTable from '../../../../globalComponents/modals/ScriptArgumentsTable'
+
+import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
+
 import {connect} from 'react-redux'
-import actions from 'actions/pipeline/pipelineStartModals/script'
+import actions from '../../../../../../../actions/pipeline/pipelineStartModals/script'
+
 const {updateArguments} = actions
 class ScriptModal extends Component {
     constructor() {

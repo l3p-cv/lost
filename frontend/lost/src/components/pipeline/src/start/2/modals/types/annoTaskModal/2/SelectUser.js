@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import actions from 'actions/pipeline/pipelineStartModals/annoTask'
+import actions from '../../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
+
 import { connect } from 'react-redux';
 import {Card, CardBody} from 'reactstrap'
 import ReactTable from 'react-table'

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import Table from "pipelineGlobalComponents/modals/Table";
-import actions from "actions/pipeline/pipelineStartModals/loop";
+import Table from "../../../../globalComponents/modals/Table";
+
+// import actions from "actions/pipeline/pipelineStartModals/loop";
+import actions from "../../../../../../../actions/pipeline/pipelineStartModals/loop"
 import { Input } from "reactstrap";
 import { connect } from "react-redux";
 const { inputMaxIteration } = actions;

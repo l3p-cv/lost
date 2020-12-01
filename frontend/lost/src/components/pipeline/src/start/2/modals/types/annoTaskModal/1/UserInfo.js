@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Card, CardBody, Form, FormGroup, Label, Input } from 'reactstrap';
-import actions from 'actions/pipeline/pipelineStartModals/annoTask'
+import actions from '../../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
+
 import {connect} from 'react-redux'
 
 const {nameOnInput, instructionsOnInput} = actions
