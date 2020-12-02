@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [1.3.0-alpha5] - 2020-12-02
+### Change
+- Refactor User Management frontend with using reactstrap
+- Logmodal update only scroll position if the the scroll position is at the bottom of the textarea
+### Fixed
+- Pipeline throws error when the user pressed ctrl key
 
 ## [1.3.0-alpha4] - 2020-07-28
 ### Fixed
