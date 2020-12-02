@@ -62,7 +62,7 @@
     "semantic-ui-react": "^0.87.3",
     "simple-line-icons": "^2.4.1",
     "sweetalert2": "^9.15.1",
-    "react-directed-graph": "^1.0.5",
+    "react-directed-graph": "^1.0.7",
     "react-stepper-wizard": "^1.1.5"
   },
   "devDependencies": {

@@ -10,6 +10,8 @@ import {useInterval} from 'react-use'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import IconButton from './IconButton'
 import * as Notification from '../BasicComponents/Notification'
+import { text } from '@fortawesome/fontawesome-svg-core'
+import { first } from 'lodash'
 const TextArea = (props)=>{
     const size = useWindowSize()
     return(
@@ -48,25 +50,29 @@ const LogModal = (props) => {
                     Notification.showLoading()
                 }
                 logResponse = await actions.getWorkerLogFile(props.logPath)
-                if(firstRequest){
-                    Notification.close()
-                    setFirstRequest(false)
-                }
                 break
             default:
                 throw new Error('Unknown type')
             }
         }
-        setLog(logResponse)
+        let isAtBottom = false
         if(textArea.current){
+            isAtBottom = textArea.current.scrollHeight <= (textArea.current.scrollTop + textArea.current.clientHeight)
+        }
+        setLog(logResponse)
+        if(textArea.current && (isAtBottom || firstRequest)){
             textArea.current.scrollTop = textArea.current.scrollHeight
+        }
+        if(firstRequest){
+            Notification.close()
+            setFirstRequest(false)
         }
         setTimeout(function () {
             setIsRedBorder(false)
         }, 100)
     }
     useEffect(()=>{
-        if((props.logPath || props.message)) {
+        if(((props.logPath || props.message)&& props.isOpen)) {
             getLog()
         }
     }, [props.logPath])
