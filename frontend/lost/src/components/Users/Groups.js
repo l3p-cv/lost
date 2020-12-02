@@ -48,7 +48,7 @@ export const Groups = () => {
         } else {
             dispatch(
                 actions.createGroup({
-                    groupName: newGroup
+                    group_name: newGroup
                 })
             )
         }

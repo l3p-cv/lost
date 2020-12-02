@@ -19,20 +19,18 @@ const ErrorLabel = ({ text }) => (
 )
 
 export default (props) => {
-    console.log('props')
-    console.log(props)
+
     const dispatch = useDispatch()
-    const userModified = props.user[0]
+    const userRaw = props.user[0]
     // userModified.roles = userModified.roles.map(el=>el.name)
-    const [user, setUser] = useState(userModified)
+    const [user, setUser] = useState(userRaw)
     const [emailError, setEmailError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
     const [passwordConfirmError, setPasswordConfirmError] = useState(false)
     const [usernameError, setUsernameError] = useState(false)
-
+    const [focusedField, setFocusedFieled] = useState()
     const groups = useSelector((state) => state.group.groups)
     const updateUserStatus = useSelector((state) => state.user.updateUserStatus)
-
     useEffect(() => {
         Notification.networkRequest(updateUserStatus)
         if (updateUserStatus.status === REQUEST_STATUS.SUCCESS) {
@@ -45,14 +43,17 @@ export default (props) => {
             <>
                 <Datatable.centeredCell>
                     <Input
+                        autoFocus={focusedField == 0}
                         placeholder="Username"
                         disabled={!props.isNewUser}
-                        defaultValue={user.userName}
-                        onChange={(e) =>
+                        defaultValue={user.user_name}
+                        onChange={(e) => {
+                            setFocusedFieled(0)
                             setUser({
                                 ...user,
-                                userName: e.currentTarget.value
+                                user_name: e.currentTarget.value
                             })
+                        }
                         }
                     />
                 </Datatable.centeredCell>
@@ -65,9 +66,11 @@ export default (props) => {
         <>
             <Datatable.centeredCell>
                 <Input
+                    autoFocus={focusedField == 1}
                     placeholder="example@example.com"
                     defaultValue={user.email}
                     onChange={(e) => {
+                        setFocusedFieled(1)
                         setUser({ ...user, email: e.currentTarget.value })
                     }}
                 />
@@ -80,10 +83,12 @@ export default (props) => {
         <>
             <Datatable.centeredCell>
                 <Input
+                    autoFocus={focusedField == 2}
                     placeholder="*******"
                     type="password"
                     defaultValue={user.password}
                     onChange={(e) => {
+                        setFocusedFieled(2)
                         setUser({ ...user, password: e.currentTarget.value })
                     }}
                 />
@@ -96,14 +101,17 @@ export default (props) => {
         <>
             <Datatable.centeredCell>
                 <Input
+                    autoFocus={focusedField == 3}
                     placeholder="*******"
                     type="password"
                     defaultValue={user.confirmPassword}
-                    onChange={(e) =>
+                    onChange={(e) =>{
+                        setFocusedFieled(3)
                         setUser({
                             ...user,
                             confirmPassword: e.currentTarget.value
                         })
+                    }
                     }
                 />
             </Datatable.centeredCell>
@@ -167,7 +175,7 @@ export default (props) => {
             setEmailError(false)
         }
 
-        if (props.isNewUser && user.userName.length < 2) {
+        if (props.isNewUser && user.user_name.length < 2) {
             setUsernameError('Min 2 character')
             isError = true
         } else {
@@ -195,6 +203,8 @@ export default (props) => {
             // save user
             user.roles = user.roles.map((role) => role.name)
             user.groups = user.groups.map((group) => group.name)
+            console.log("new user")
+            console.log(user)
             if (props.isNewUser) {
                 dispatch(actions.createUser(user))
             } else {

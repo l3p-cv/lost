@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "LOST Label Objects and Save Time",
   "author": "Jonas Jäger, Gereon Reus",
-  "homepage": "https://lost.training",
+  "homepage": ".",
   "copyright": "Copyright Jonas Jäger & Gereon Reus",
   "license": "MIT",
   "private": true,
@@ -61,7 +61,9 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.87.3",
     "simple-line-icons": "^2.4.1",
-    "sweetalert2": "^9.15.1"
+    "sweetalert2": "^9.15.1",
+    "react-directed-graph": "^1.0.5",
+    "react-stepper-wizard": "^1.1.5"
   },
   "devDependencies": {
     "circular-dependency-plugin": "^5.0.2",
@@ -72,10 +74,8 @@
     "react-scripts": "^2.0.4"
   },
   "scripts": {
-    "start2": "react-scripts start",
-    "install:tools": "npm install --prefix src/components/pipeline -d",
-    "start": "bash src/frontendDev.sh && npm run install:tools &&REACT_APP_PORT='' react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "REACT_APP_PORT='8083' react-scripts start",
+    "build": "react-scripts build",
     "test": "react-app-rewired test",
     "test:debug": "react-app-rewired --inspect-brk test --runInBand",
     "eject": "react-app-rewired eject"

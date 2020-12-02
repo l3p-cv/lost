@@ -83,7 +83,7 @@ export const Users = () => {
 
     const editClick = ({ row }) => {
         setIsNewUser(false)
-        setSelectedUser(users.filter((el) => el.userName === row.userName))
+        setSelectedUser(users.filter((el) => el.user_name === row.user_name))
 
         openUserModal()
     }
@@ -125,7 +125,7 @@ export const Users = () => {
                 columns={[
                     {
                         Header: 'Username',
-                        accessor: 'userName',
+                        accessor: 'user_name',
                         Cell: (row) =>
                             Datatable.centeredCell({ children: row.value })
                     },
