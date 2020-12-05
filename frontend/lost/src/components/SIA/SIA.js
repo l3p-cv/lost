@@ -26,7 +26,7 @@ const {
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
-    siaGetNextImage, siaGetPrevImage
+    siaGetNextImage, siaGetPrevImage, siaFilterImage
 } = actions
 
 class SIA extends Component {
@@ -46,7 +46,8 @@ class SIA extends Component {
                 bottom: 5,
                 right: 5
             },
-            notification: undefined
+            notification: undefined,
+            filteredData: undefined
         }
         this.siteHistory = createHashHistory()
         
@@ -213,6 +214,28 @@ class SIA extends Component {
         }
     }
 
+
+    filterImage(){
+        this.props.siaFilterImage(this.props.annos.annotations).then(response => {
+            console.log('filterImage response', response)
+            // var blob = new Blob([response.request.response], { type: response.headers['content-type'] });
+            // var url = URL.createObjectURL(blob);
+            // console.log('filterImage createObjectURL',url)
+
+            // var blob = Buffer.from(response.data, 'binary').toString('base64')
+            // var url = blob
+            // console.log('filterImage createObjectURL',url)
+
+            // var b64Response = btoa(response.data);
+            // var url = 'data:image/png;base64,'+b64Response;
+
+            this.setState({filteredData: response.data})
+        //     var img = new Image();
+        //     img.src = url;
+        //     document.body.appendChild(img);
+        })
+    }
+
     requestImageFromBackend(){
         this.props.getSiaImage(this.props.annos.image.url).then(response=>
             {
@@ -255,6 +278,10 @@ class SIA extends Component {
     render() {
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
+                <img 
+                    src={this.state.filteredData}
+                    width="100%" height="100%"
+                />
                 <Canvas
                     ref={this.canvas} 
                     imgBarVisible={true}
@@ -276,11 +303,11 @@ class SIA extends Component {
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     // defaultLabel='no label'
-                />
+                    />
                 <ToolBar 
                     ref={this.toolbar} 
                     onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
-                />
+                    />
                 <InfoBoxArea container={this.container}></InfoBoxArea>
                 <NotificationContainer/>
              </div>
@@ -321,7 +348,7 @@ export default connect(
         siaShowImgLabelInput,
         siaImgIsJunk,
         getWorkingOnAnnoTask,
-        siaGetNextImage, siaGetPrevImage
+        siaGetNextImage, siaGetPrevImage, siaFilterImage
     }
     , null,
     {})(SIA)

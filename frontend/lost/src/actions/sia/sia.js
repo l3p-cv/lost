@@ -18,6 +18,15 @@ export const siaUpdateAnnos = (data) => async dispatch => {
     } catch (e) {console.error(e)}
 }
 
+export const siaFilterImage = (data) => async dispatch => {
+    try {
+        const response = await axios.post(API_URL + '/sia/filter', data)
+        console.log('REQUEST: sia/filter response: ', response)
+        return response
+    } catch (e) {console.error(e)}
+}
+
+
 /**
  * Set annotation task in backend to finished
  */

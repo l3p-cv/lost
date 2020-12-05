@@ -1,4 +1,5 @@
-from flask import request
+import flask
+from flask import request, send_file
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
@@ -8,6 +9,8 @@ from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
 import json
+import PIL
+from io import BytesIO
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -84,6 +87,35 @@ class Last(Resource):
                 re = sia.get_next(dbm, identity, -1, DATA_URL)
             dbm.close_session()
             return re
+
+@namespace.route('/filter')
+class Filter(Resource):
+    # @api.expect(sia_update)
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+
+        else:
+            import base64
+            data = json.loads(request.data)
+            img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
+            flask.current_app.logger.info('Triggered filter. Received data: {}'.format(data))
+            # img_io = BytesIO()
+            # img.save(img_io, 'PNG')
+            # img_io.seek(0)
+            # return send_file(img_io, mimetype='image/png')
+            data = BytesIO()
+            img.save(data, "JPEG")
+            data64 = base64.b64encode(data.getvalue())
+            return u'data:img/jpeg;base64,'+data64.decode('utf-8')
+            # re = sia.update(dbm, data, user.idx)
+            # dbm.close_session()
+            # return 'success'
 
 @namespace.route('/update')
 class Update(Resource):
