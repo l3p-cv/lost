@@ -216,6 +216,7 @@ class SIA extends Component {
     filterImage(angle){
         this.props.siaFilterImage({
             'imageId': this.props.annos.image.id,
+            'clahe' : {'clipLimit':2.0},
             'rotate':{'angle':angle}
         }).then(response => {
             console.log('filterImage response', response)

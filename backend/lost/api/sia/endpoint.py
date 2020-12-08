@@ -104,22 +104,41 @@ class Filter(Resource):
         else:
             import base64
             from PIL import ImageOps
+            import cv2
             data = json.loads(request.data)
             img = dbm.get_image_anno(data['imageId'])
             img_path = FileMan(LOST_CONFIG).get_abs_path(img.img_path)
             #img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
-            img = PIL.Image.open(img_path)
+            # img = PIL.Image.open(img_path)
+            if 'clahe' in data:
+                img = cv2.imread(img_path,0)
+            else:
+                img = cv2.imread(img_path)
+                
             flask.current_app.logger.info('Triggered filter. Received data: {}'.format(data))
+
             # img_io = BytesIO()
             # img.save(img_io, 'PNG')
             # img_io.seek(0)
             # return send_file(img_io, mimetype='image/png')
             if 'rotate' in data:
-                img = img.rotate(data['rotate']['angle'], expand=True)
+                pass
+                if data['rotate']['angle'] == 90:
+                    img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+                elif data['rotate']['angle'] == -90:
+                    img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                elif data['rotate']['angle'] == 180:
+                    img = cv2.rotate(img, cv2.ROTATE_180)
+            if 'clahe' in data:
+                clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+                img = clahe.apply(img)
+                # img = img.rotate(data['rotate']['angle'], expand=True)
             # img = ImageOps.autocontrast(img)
-            data = BytesIO()
-            img.save(data, "PNG")
-            data64 = base64.b64encode(data.getvalue())
+
+            # data = BytesIO()
+            # img.save(data, "PNG")
+            _, data = cv2.imencode('.png', img)
+            data64 = base64.b64encode(data.tobytes())
             return u'data:img/png;base64,'+data64.decode('utf-8')
             # re = sia.update(dbm, data, user.idx)
             # dbm.close_session()
