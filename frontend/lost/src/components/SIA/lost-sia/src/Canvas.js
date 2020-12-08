@@ -9,6 +9,7 @@ import AnnoToolBar from './AnnoToolBar'
 
 
 import * as transform from './utils/transform'
+import * as annoConversion from './utils/annoConversion'
 import * as keyActions from './utils/keyActions'
 import KeyMapper from './utils/keyActions'
 import * as TOOLS from './types/tools'
@@ -228,7 +229,10 @@ class Canvas extends Component{
             } 
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
-                this.updateCanvasView(this.getAnnoBackendFormat())
+                // this.updateCanvasView(this.getAnnoBackendFormat())
+                this.updateCanvasView(annoConversion.canvasToBackendAnnos(
+                    this.state.annos, this.state.svg
+                ))
             }
             
         }
@@ -862,38 +866,10 @@ class Canvas extends Component{
         }
     } 
 
-    getAnnoBackendFormat(forBackendPost=false, annos=undefined){
-        let myAnnos = annos ? annos : this.state.annos
-        const bAnnos = myAnnos.map( el => {
-            var annoId 
-            if (forBackendPost){
-                // If an annotation will be send to backend,
-                // ids of new created annoations need to be set to 
-                // undefined.
-                annoId = (typeof el.id) === "string" ? undefined : el.id
-            } else {
-                annoId = el.id
-            }
-            return {
-                ...el,
-                id: annoId,
-                mode: modes.VIEW,
-                data: transform.toBackend(el.data, this.state.svg, el.type)
-            }
-        })
-
-        const backendFormat = {
-                bBoxes: bAnnos.filter((el) => {return el.type === 'bBox'}),
-                lines: bAnnos.filter((el) => {return el.type === 'line'}),
-                points: bAnnos.filter((el) => {return el.type === 'point'}),
-                polygons: bAnnos.filter((el) => {return el.type === 'polygon'}),
-        }
-        return backendFormat
-    }
-
     getAnnos(annos=undefined, removeFrontedIds=true){
         const myAnnos = annos ? annos : this.state.annos
-        const backendFormat = this.getAnnoBackendFormat(removeFrontedIds, myAnnos)
+        // const backendFormat = this.getAnnoBackendFormat(removeFrontedIds, myAnnos)
+        const backendFormat = annoConversion.canvasToBackendAnnos(myAnnos, this.state.svg, removeFrontedIds)
         const finalData = {
             imgId: this.props.annos.image.id,
             imgLabelIds: this.state.imgLabelIds,
@@ -1205,34 +1181,7 @@ class Canvas extends Component{
         //for svg should be calculated
         if(annotations){
             const imgSize = this.updateImageSize()
-            annos = [
-                ...annotations.bBoxes.map((element) => {
-                    return {...element, type:'bBox', 
-                    mode: element.mode ? element.mode : modes.VIEW, 
-                    status: element.status ? element.status : annoStatus.DATABASE}
-                }),
-                ...annotations.lines.map((element) => {
-                    return {...element, type:'line', 
-                    mode: element.mode ? element.mode : modes.VIEW, 
-                    status: element.status ? element.status : annoStatus.DATABASE}
-                }),
-                ...annotations.polygons.map((element) => {
-                    return {...element, type:'polygon', 
-                    mode: element.mode ? element.mode : modes.VIEW, 
-                    status: element.status ? element.status : annoStatus.DATABASE}
-                }),
-                ...annotations.points.map((element) => {
-                    return {...element, type:'point', 
-                    mode: element.mode ? element.mode : modes.VIEW, 
-                        status: element.status ? element.status : annoStatus.DATABASE
-                    }
-                })
-            ]
-            annos = annos.map((el) => {
-                return {...el, 
-                    data:transform.toSia(el.data, {width: imgSize.imgWidth, height:imgSize.imgHeight}, el.type)}
-                })
-            this.setState({annos: [...annos]})
+            this.setState({annos: [...annoConversion.backendAnnosToCanvas(annotations, {width: imgSize.imgWidth, height:imgSize.imgHeight})]})
         }
     }
 

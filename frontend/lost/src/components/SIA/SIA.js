@@ -20,6 +20,8 @@ import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
 import { toSia } from './lost-sia/src/utils/transform'
+import * as annoConversion from './lost-sia/src/utils/annoConversion'
+
 
 const { 
     siaLayoutUpdate, getSiaAnnos,
@@ -212,7 +214,11 @@ class SIA extends Component {
         }
     }
 
-
+    rotateAnnos(){
+        const bAnnos = this.canvas.current.getAnnos()
+        let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, this.props.svg)
+        return sAnnos
+    }
     filterImage(angle){
         this.props.siaFilterImage({
             'imageId': this.props.annos.image.id,
@@ -280,10 +286,6 @@ class SIA extends Component {
     render() {
         return (
             <div className={this.state.fullscreenCSS} ref={this.container}>
-                <img 
-                    src={this.state.filteredData}
-                    width="100%" height="100%"
-                />
                 <Canvas
                     ref={this.canvas} 
                     imgBarVisible={true}

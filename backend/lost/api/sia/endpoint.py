@@ -103,7 +103,7 @@ class Filter(Resource):
 
         else:
             import base64
-            from PIL import ImageOps
+            # from PIL import ImageOps
             import cv2
             data = json.loads(request.data)
             img = dbm.get_image_anno(data['imageId'])
@@ -122,7 +122,6 @@ class Filter(Resource):
             # img_io.seek(0)
             # return send_file(img_io, mimetype='image/png')
             if 'rotate' in data:
-                pass
                 if data['rotate']['angle'] == 90:
                     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
                 elif data['rotate']['angle'] == -90:
@@ -130,7 +129,7 @@ class Filter(Resource):
                 elif data['rotate']['angle'] == 180:
                     img = cv2.rotate(img, cv2.ROTATE_180)
             if 'clahe' in data:
-                clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8,8))
+                clahe = cv2.createCLAHE(**data['clahe'])
                 img = clahe.apply(img)
                 # img = img.rotate(data['rotate']['angle'], expand=True)
             # img = ImageOps.autocontrast(img)

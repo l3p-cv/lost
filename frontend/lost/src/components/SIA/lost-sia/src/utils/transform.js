@@ -248,3 +248,35 @@ export function correctAnnotation(data, image){
         })
     return corrected
 }
+
+// export function backendAnnosToCanvas(backendAnnos, imgSize){
+//     let annos = [
+//         ...backendAnnos.bBoxes.map((element) => {
+//             return {...element, type:'bBox', 
+//             mode: element.mode ? element.mode : modes.VIEW, 
+//             status: element.status ? element.status : annoStatus.DATABASE}
+//         }),
+//         ...backendAnnos.lines.map((element) => {
+//             return {...element, type:'line', 
+//             mode: element.mode ? element.mode : modes.VIEW, 
+//             status: element.status ? element.status : annoStatus.DATABASE}
+//         }),
+//         ...backendAnnos.polygons.map((element) => {
+//             return {...element, type:'polygon', 
+//             mode: element.mode ? element.mode : modes.VIEW, 
+//             status: element.status ? element.status : annoStatus.DATABASE}
+//         }),
+//         ...backendAnnos.points.map((element) => {
+//             return {...element, type:'point', 
+//             mode: element.mode ? element.mode : modes.VIEW, 
+//                 status: element.status ? element.status : annoStatus.DATABASE
+//             }
+//         })
+//     ]
+//     annos = annos.map((el) => {
+//         return {...el, 
+//             data: toSia(el.data, {width: imgSize.imgWidth, height:imgSize.imgHeight}, el.type)}
+//         })
+//     // this.setState({annos: [...annos]})
+//     return annos
+// }
