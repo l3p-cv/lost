@@ -20,7 +20,6 @@ variables:
   LOST_CI_REGISTRY_LOST_CV_GPU_IMAGE: $CI_REGISTRY_LOST_CV_GPU_IMAGE:$CI_COMMIT_TAG
   LOST_VERSION: $CI_PIPELINE_ID
 
-  
 before_script:
   - apk add --update nodejs npm
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
