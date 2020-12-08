@@ -8,7 +8,6 @@ import LabelInput from './LabelInput'
 import AnnoToolBar from './AnnoToolBar'
 
 
-import * as transform from './utils/transform'
 import * as annoConversion from './utils/annoConversion'
 import * as keyActions from './utils/keyActions'
 import KeyMapper from './utils/keyActions'

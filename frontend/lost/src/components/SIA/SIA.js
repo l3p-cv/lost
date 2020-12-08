@@ -19,7 +19,7 @@ import InfoBoxArea from './InfoBoxes/InfoBoxArea'
 import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
-import { toSia } from './lost-sia/src/utils/transform'
+import * as transform from './lost-sia/src/utils/transform'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
 
 
@@ -41,6 +41,10 @@ class SIA extends Component {
             image: {
                 id: undefined,
                 data: undefined,
+            },
+            annos: {
+                image: undefined,
+                annotations: undefined
             },
             layoutOffset: {
                 left: 20,
@@ -151,6 +155,9 @@ class SIA extends Component {
                 data: this.state.filteredData
             }})
         }
+        if(prevProps.annos !== this.props.annos){
+            this.setState({annos:this.props.annos})
+        }
     }
 
     getNewImage(imageId, direction){
@@ -214,11 +221,40 @@ class SIA extends Component {
         }
     }
 
-    rotateAnnos(){
+    rotateAnnos(angle){
         const bAnnos = this.canvas.current.getAnnos()
-        let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, this.props.svg)
-        return sAnnos
+        const svg = this.canvas.current.state.image
+        let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg)
+        console.log('sAnnos', sAnnos)
+        console.log('svg', svg)
+        sAnnos = sAnnos.map(el => {
+            return {
+                ...el,
+                data: transform.rotateAnnotation(el.data, {x:svg.width/2.0, y:svg.height/2.0}, angle)
+            }
+        })
+        // sAnnos = transform.rotateAnnotation(sAnnos, {x:svg.width/2, y:svg.height/2}, angle)
+        console.log('Rotated canvas annos', sAnnos)
+        let newSize
+        if (angle==90 || angle==-90){
+            newSize = {width:svg.height, height:svg.width}
+        } else {
+            newSize = svg
+        }
+        console.log('newSize', newSize)
+        let bAnnosNew = {
+            ...bAnnos,
+            annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize)
+        }
+        this.setState({
+            annos: {
+                image: {...this.state.image},
+                annotations: bAnnosNew.annotations
+            }
+        })
+        return bAnnosNew
     }
+
     filterImage(angle){
         this.props.siaFilterImage({
             'imageId': this.props.annos.image.id,
@@ -237,7 +273,9 @@ class SIA extends Component {
             // var b64Response = btoa(response.data);
             // var url = 'data:image/png;base64,'+b64Response;
 
-            this.setState({filteredData: response.data})
+            this.setState({
+                filteredData: response.data
+            })
         //     var img = new Image();
         //     img.src = url;
         //     document.body.appendChild(img);
@@ -291,7 +329,7 @@ class SIA extends Component {
                     imgBarVisible={true}
                     imgLabelInputVisible={this.props.imgLabelInput.show}
                     container={this.container}
-                    annos={this.props.annos}
+                    annos={this.state.annos}
                     image={this.state.image}
                     uiConfig={this.props.uiConfig}
                     layoutUpdate={this.props.layoutUpdate}

@@ -90,6 +90,7 @@ class ImgBar extends Component{
     render(){
         if (!this.props.visible) return null
         if (!this.props.annos.image) return null
+        if (!this.props.annos.image.url) return null
         return(
         <div style={{
             position:'fixed', 

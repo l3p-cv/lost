@@ -249,34 +249,39 @@ export function correctAnnotation(data, image){
     return corrected
 }
 
-// export function backendAnnosToCanvas(backendAnnos, imgSize){
-//     let annos = [
-//         ...backendAnnos.bBoxes.map((element) => {
-//             return {...element, type:'bBox', 
-//             mode: element.mode ? element.mode : modes.VIEW, 
-//             status: element.status ? element.status : annoStatus.DATABASE}
-//         }),
-//         ...backendAnnos.lines.map((element) => {
-//             return {...element, type:'line', 
-//             mode: element.mode ? element.mode : modes.VIEW, 
-//             status: element.status ? element.status : annoStatus.DATABASE}
-//         }),
-//         ...backendAnnos.polygons.map((element) => {
-//             return {...element, type:'polygon', 
-//             mode: element.mode ? element.mode : modes.VIEW, 
-//             status: element.status ? element.status : annoStatus.DATABASE}
-//         }),
-//         ...backendAnnos.points.map((element) => {
-//             return {...element, type:'point', 
-//             mode: element.mode ? element.mode : modes.VIEW, 
-//                 status: element.status ? element.status : annoStatus.DATABASE
-//             }
-//         })
-//     ]
-//     annos = annos.map((el) => {
-//         return {...el, 
-//             data: toSia(el.data, {width: imgSize.imgWidth, height:imgSize.imgHeight}, el.type)}
-//         })
-//     // this.setState({annos: [...annos]})
-//     return annos
-// }
+/**
+ * Rotate annotation around center.
+ * @param {*} data list of points {x:int,y:int} 
+ * @param {*} center Center to rotate point 
+ * @param {*} angle Rotation angle
+ */
+export function rotateAnnotation(data, center, angle){
+    console.log('ROTATE-ANNO:data, center, angle', data, center, angle)
+    angle = (angle ) * (Math.PI/180); // Convert to radians
+    const rotated = data.map(point => {
+        return {
+            x: Math.cos(angle) * (point.x - center.x) - Math.sin(angle) * (point.y-center.y) + center.x,
+            y: Math.sin(angle) * (point.x - center.x) + Math.cos(angle) * (point.y - center.y) + center.y
+        }
+    })
+    console.log('ROTATE-ANNO: rotated', rotated)
+    return rotated;
+}
+
+/**
+ * Resize annotation data in canvas format to new image size
+ * @param {*} data Annotation data in canvas format [{x:int, y:int},...]
+ * @param {*} sizeOld Size of old image {width:int, height:int}
+ * @param {*} sizeNew Size of new image {width:int, height:int}
+ */
+export function resizeAnnoData(data, sizeOld, sizeNew){
+    console.log('RESIZE ANNO', sizeOld, sizeNew)
+    const xRatio = sizeNew.width / sizeOld.width
+    const yRatio = sizeNew.height / sizeOld.height
+    return data.map(e => {
+        return {
+            x: parseInt(e.x*xRatio),
+            y: parseInt(e.y*yRatio)
+        }
+    })
+}
