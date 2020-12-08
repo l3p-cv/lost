@@ -113,34 +113,12 @@ class SIA extends Component {
         }
         if (prevProps.getNextImage !== this.props.getNextImage){
             if (this.props.getNextImage){
-                this.canvas.current.resetZoom()
-                const newAnnos = this.canvas.current.getAnnos()
-                this.canvas.current.unloadImage()
-                this.setState({image: {
-                    id: undefined, 
-                    data:undefined
-                }})
-                this.props.siaImgIsJunk(false)
-                this.props.siaUpdateAnnos(newAnnos).then((r) => {
-                    this.props.getSiaAnnos(this.props.getNextImage)
-                    
-                })
-                
+                this.getNewImage(this.props.getNextImage, 'next')
             }
         }
         if (prevProps.getPrevImage !== this.props.getPrevImage){
             if (this.props.getPrevImage){
-                this.canvas.current.resetZoom()
-                const newAnnos = this.canvas.current.getAnnos()
-                this.canvas.current.unloadImage()
-                this.setState({image: {
-                    id: undefined, 
-                    data:undefined
-                }})
-                this.props.siaImgIsJunk(false)
-                this.props.siaUpdateAnnos(newAnnos).then(() => {
-                    this.props.getSiaAnnos(this.props.getPrevImage, 'prev')
-                })
+                this.getNewImage(this.props.getPrevImage, 'prev')
             }
         }
         if (prevProps.annos !== this.props.annos){
@@ -164,8 +142,28 @@ class SIA extends Component {
                 this.requestImageFromBackend()
             }
         }
+        if(prevState.filteredData != this.state.filteredData){
+            console.log('Filtered Data changed')
+            this.setState({image:{
+                ...this.state.image,
+                data: this.state.filteredData
+            }})
+        }
     }
 
+    getNewImage(imageId, direction){
+        this.canvas.current.resetZoom()
+        const newAnnos = this.canvas.current.getAnnos()
+        this.canvas.current.unloadImage()
+        this.setState({image: {
+            id: undefined, 
+            data:undefined
+        }})
+        this.props.siaImgIsJunk(false)
+        this.props.siaUpdateAnnos(newAnnos).then(() => {
+            this.props.getSiaAnnos(imageId, direction)
+        })
+    }
     // handleImgBarClose(){
     //     this.props.siaShowImgBar(false)
     // }
@@ -215,8 +213,11 @@ class SIA extends Component {
     }
 
 
-    filterImage(){
-        this.props.siaFilterImage(this.props.annos.annotations).then(response => {
+    filterImage(angle){
+        this.props.siaFilterImage({
+            'imageId': this.props.annos.image.id,
+            'rotate':{'angle':angle}
+        }).then(response => {
             console.log('filterImage response', response)
             // var blob = new Blob([response.request.response], { type: response.headers['content-type'] });
             // var url = URL.createObjectURL(blob);

@@ -11,6 +11,7 @@ from lost.logic import sia
 import json
 import PIL
 from io import BytesIO
+from lost.logic.file_man import FileMan
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -102,17 +103,24 @@ class Filter(Resource):
 
         else:
             import base64
+            from PIL import ImageOps
             data = json.loads(request.data)
-            img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
+            img = dbm.get_image_anno(data['imageId'])
+            img_path = FileMan(LOST_CONFIG).get_abs_path(img.img_path)
+            #img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
+            img = PIL.Image.open(img_path)
             flask.current_app.logger.info('Triggered filter. Received data: {}'.format(data))
             # img_io = BytesIO()
             # img.save(img_io, 'PNG')
             # img_io.seek(0)
             # return send_file(img_io, mimetype='image/png')
+            if 'rotate' in data:
+                img = img.rotate(data['rotate']['angle'], expand=True)
+            # img = ImageOps.autocontrast(img)
             data = BytesIO()
-            img.save(data, "JPEG")
+            img.save(data, "PNG")
             data64 = base64.b64encode(data.getvalue())
-            return u'data:img/jpeg;base64,'+data64.decode('utf-8')
+            return u'data:img/png;base64,'+data64.decode('utf-8')
             # re = sia.update(dbm, data, user.idx)
             # dbm.close_session()
             # return 'success'
