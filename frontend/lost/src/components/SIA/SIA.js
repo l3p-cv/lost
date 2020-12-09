@@ -225,14 +225,30 @@ class SIA extends Component {
         const bAnnos = this.canvas.current.getAnnos()
         const svg = this.canvas.current.state.image
         let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg)
+        let pivotPoint = {x:svg.width/2.0, y:svg.height/2.0}
         console.log('sAnnos', sAnnos)
         console.log('svg', svg)
         sAnnos = sAnnos.map(el => {
             return {
                 ...el,
-                data: transform.rotateAnnotation(el.data, {x:svg.width/2.0, y:svg.height/2.0}, angle)
+                data: transform.rotateAnnotation(
+                    el.data, 
+                    pivotPoint, 
+                    // {x:0.0,y:0.0},
+                    angle)
             }
         })
+        // translate into origin
+        let transPoint = {x:0, y:svg.height}
+        transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
+        console.log('TransPoint', transPoint)
+        sAnnos = sAnnos.map(el => {
+            return {
+                ...el,
+                data: transform.move(el.data, -transPoint.x, -transPoint.y)
+            }
+        })
+
         // sAnnos = transform.rotateAnnotation(sAnnos, {x:svg.width/2, y:svg.height/2}, angle)
         console.log('Rotated canvas annos', sAnnos)
         let newSize
