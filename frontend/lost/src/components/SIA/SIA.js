@@ -238,9 +238,18 @@ class SIA extends Component {
                     angle)
             }
         })
-        // translate into origin
-        let transPoint = {x:0, y:svg.height}
-        transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
+        // translate annotations into origin of new coordinate system
+        let imageCorners = [
+            {x:0, y:0},{x:0, y:svg.height}, 
+            {x:svg.width,y:0}, {x:svg.width,y:svg.height}
+        ]
+        imageCorners = transform.rotateAnnotation(
+            imageCorners, 
+            pivotPoint, 
+            angle)
+    
+        let transPoint = transform.getMostLeftPoint(transform.getTopPoint(imageCorners))[0]
+        // transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
         console.log('TransPoint', transPoint)
         sAnnos = sAnnos.map(el => {
             return {
@@ -262,12 +271,12 @@ class SIA extends Component {
             ...bAnnos,
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize)
         }
-        this.setState({
-            annos: {
-                image: {...this.state.image},
-                annotations: bAnnosNew.annotations
-            }
-        })
+        // this.setState({
+        //     annos: {
+        //         image: {...this.state.image},
+        //         annotations: bAnnosNew.annotations
+        //     }
+        // })
         return bAnnosNew
     }
 
@@ -288,10 +297,14 @@ class SIA extends Component {
 
             // var b64Response = btoa(response.data);
             // var url = 'data:image/png;base64,'+b64Response;
-
+            const bAnnosNew = this.rotateAnnos(angle)
             this.setState({
-                filteredData: response.data
-            })
+                filteredData: response.data,
+                annos: {
+                    image: {...this.state.image},
+                    annotations: bAnnosNew.annotations
+                }
+        })
         //     var img = new Image();
         //     img.src = url;
         //     document.body.appendChild(img);
