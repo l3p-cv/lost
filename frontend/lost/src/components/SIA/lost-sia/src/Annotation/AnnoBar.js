@@ -52,7 +52,7 @@ class AnnoBar extends Component{
         //     })
         // }
         let topPoint = transform.getTopPoint(this.props.anno.data)
-        topPoint = transform.getMonstLeftPoint(topPoint)[0]
+        topPoint = transform.getMostLeftPoint(topPoint)[0]
         if (this.textRef.current){
             const text = this.textRef.current.getBoundingClientRect()
             const textPadding = 2

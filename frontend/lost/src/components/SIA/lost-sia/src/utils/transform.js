@@ -187,7 +187,7 @@ export function getCenter(data, type){
  * @returns {object} A list of point [{x,y}...]. Multiple points are
  *  returned when multiple points have the same distance to the left side.
  */
-export function getMonstLeftPoint(data){
+export function getMostLeftPoint(data){
     let minX = Infinity
     let minXList = []    
     data.forEach(el => {

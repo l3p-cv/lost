@@ -37,7 +37,7 @@ class AnnoToolBar extends Component{
             // const center = transform.getCenter(this.props.selectedAnno.data, this.props.selectedAnno.type)
             // const annoBox = transform.getBox(this.props.selectedAnno.data, this.props.selectedAnno.type)
             let topPoint = transform.getTopPoint(this.props.selectedAnno.data)
-            topPoint = transform.getMonstLeftPoint(topPoint)[0]
+            topPoint = transform.getMostLeftPoint(topPoint)[0]
             const inputRect = this.inputGroupRef.current.getBoundingClientRect()
             let top = this.props.svg.top + (topPoint.y + this.props.svg.translateY) *this.props.svg.scale - 44
             let left = this.props.svg.left + (topPoint.x + this.props.svg.translateX) *this.props.svg.scale - inputRect.width /2.0 - 1
