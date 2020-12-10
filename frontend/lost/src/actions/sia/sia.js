@@ -26,6 +26,12 @@ export const siaFilterImage = (data) => async dispatch => {
     } catch (e) {console.error(e)}
 }
 
+export const siaApplyFilter = (filter) => {
+    return {
+        type: TYPES.SIA_APPLY_FILTER,
+        payload: filter
+    }
+}
 
 /**
  * Set annotation task in backend to finished

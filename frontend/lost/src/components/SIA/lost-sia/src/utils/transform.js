@@ -58,10 +58,18 @@ export function toBackend(data, image, type){
             // const h = image.height * data.h
             // const x0 = image.width * data.x - w/2.0
             // const y0 = image.height * data.y - h/2.0
-            const w = data[1].x - data[0].x
-            const h = data[2].y - data[0].y
-            const x = data[0].x + w/2.0
-            const y = data[0].y + h/2.0
+
+            // console.error('GO On Here! w = max_x - min_x; h = max_y - min_y')
+            const xList = data.map(e => {return e.x})
+            const yList = data.map(e => {return e.y})
+            const minX = Math.min(...xList)
+            const maxX = Math.max(...xList)
+            const minY = Math.min(...yList)
+            const maxY = Math.max(...yList)
+            const w = maxX - minX
+            const h = maxY - minY
+            const x = minX + w/2.0
+            const y = minY + h/2.0
             return {
                 x:x/image.width,
                 y:y/image.height,
@@ -260,8 +268,8 @@ export function rotateAnnotation(data, center, angle){
     angle = (angle ) * (Math.PI/180); // Convert to radians
     const rotated = data.map(point => {
         return {
-            x: Math.cos(angle) * (point.x - center.x) - Math.sin(angle) * (point.y-center.y) + center.x,
-            y: Math.sin(angle) * (point.x - center.x) + Math.cos(angle) * (point.y - center.y) + center.y
+            x: Math.round(Math.cos(angle) * (point.x - center.x) - Math.sin(angle) * (point.y-center.y) + center.x),
+            y: Math.round(Math.sin(angle) * (point.x - center.x) + Math.cos(angle) * (point.y - center.y) + center.y)
         }
     })
     console.log('ROTATE-ANNO: rotated', rotated)

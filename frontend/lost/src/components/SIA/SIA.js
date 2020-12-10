@@ -28,7 +28,7 @@ const {
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
-    siaGetNextImage, siaGetPrevImage, siaFilterImage
+    siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
 } = actions
 
 class SIA extends Component {
@@ -53,7 +53,8 @@ class SIA extends Component {
                 right: 5
             },
             notification: undefined,
-            filteredData: undefined
+            filteredData: undefined,
+            currentRotation: 0
         }
         this.siteHistory = createHashHistory()
         
@@ -131,7 +132,7 @@ class SIA extends Component {
             this.props.siaImgIsJunk(this.props.annos.image.isJunk)
         }
         if (prevProps.taskFinished !== this.props.taskFinished){
-            const newAnnos = this.canvas.current.getAnnos()
+            const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
             this.props.siaUpdateAnnos(newAnnos).then(()=>{
                 this.props.siaSendFinishToBackend().then(()=>{
                     this.siteHistory.push('/dashboard')
@@ -158,11 +159,16 @@ class SIA extends Component {
         if(prevProps.annos !== this.props.annos){
             this.setState({annos:this.props.annos})
         }
+        if(prevProps.filter != this.props.filter){
+            if (this.props.filter){
+                this.filterImage(this.props.filter)
+            }
+        }
     }
 
     getNewImage(imageId, direction){
         this.canvas.current.resetZoom()
-        const newAnnos = this.canvas.current.getAnnos()
+        const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
         this.canvas.current.unloadImage()
         this.setState({image: {
             id: undefined, 
@@ -221,8 +227,26 @@ class SIA extends Component {
         }
     }
 
-    rotateAnnos(angle){
-        const bAnnos = this.canvas.current.getAnnos()
+    undoAnnoRotationForUpdate(currentFilter){
+        if (this.state.currentRotation!== 0){
+            // const currentRotation = this.state.currentRotation
+            // this.setState({currentRotation:0})
+            return this.rotateAnnos(0, true)
+        }
+        // if (currentFilter){
+        //     if (currentFilter.rotate){
+        //         if (currentFilter.rotate.angle !== 0){
+        //             return this.rotateAnnos(-currentFilter.rotate.angle, true)
+        //         }
+        //     } 
+        // }
+        return this.canvas.current.getAnnos(undefined, true)
+    }
+
+    rotateAnnos(absAngle, removeFrontendIds=false){
+        const angle = absAngle - this.state.currentRotation
+        console.log('angle, absAngle', angle, absAngle)
+        const bAnnos = this.canvas.current.getAnnos(undefined, removeFrontendIds)
         const svg = this.canvas.current.state.image
         let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg)
         let pivotPoint = {x:svg.width/2.0, y:svg.height/2.0}
@@ -249,6 +273,11 @@ class SIA extends Component {
             angle)
     
         let transPoint = transform.getMostLeftPoint(transform.getTopPoint(imageCorners))[0]
+        // let transPoint = transform.getTopPoint(transform.getMostLeftPoint(imageCorners))[0]
+        if (angle==180 || angle===-180){
+            transPoint={x:0.0,y:0.0}
+        }
+
         // transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
         console.log('TransPoint', transPoint)
         sAnnos = sAnnos.map(el => {
@@ -271,6 +300,7 @@ class SIA extends Component {
             ...bAnnos,
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize)
         }
+        this.setState({currentRotation:absAngle})
         // this.setState({
         //     annos: {
         //         image: {...this.state.image},
@@ -280,12 +310,25 @@ class SIA extends Component {
         return bAnnosNew
     }
 
-    filterImage(angle){
-        this.props.siaFilterImage({
-            'imageId': this.props.annos.image.id,
-            'clahe' : {'clipLimit':2.0},
-            'rotate':{'angle':angle}
-        }).then(response => {
+    // {
+    //     'clahe' : {'clipLimit':2.0},
+    //     'rotate':{'angle':angle}
+    // }
+
+    /**
+     * Filter image via backend service
+     * @param {*} filter The image filter to apply e.g.
+     * {
+     *   'clahe' : {'clipLimit':2.0},
+     *   'rotate':{'angle':90}
+     * }
+     */
+    filterImage(filter){
+        const data = {
+            ...filter,
+            'imageId': this.props.annos.image.id
+        }
+        this.props.siaFilterImage(data).then(response => {
             console.log('filterImage response', response)
             // var blob = new Blob([response.request.response], { type: response.headers['content-type'] });
             // var url = URL.createObjectURL(blob);
@@ -297,7 +340,13 @@ class SIA extends Component {
 
             // var b64Response = btoa(response.data);
             // var url = 'data:image/png;base64,'+b64Response;
-            const bAnnosNew = this.rotateAnnos(angle)
+            
+            let bAnnosNew
+            if (filter.rotate){
+                bAnnosNew = this.rotateAnnos(filter.rotate.angle, false)
+            } else {
+                bAnnosNew = this.canvas.current.getAnnos(undefined, false)
+            }
             this.setState({
                 filteredData: response.data,
                 annos: {
@@ -405,7 +454,8 @@ function mapStateToProps(state) {
         imgLabelInput: state.sia.imgLabelInput,
         canvasConfig: state.sia.config,
         isJunk: state.sia.isJunk,
-        currentImage: state.sia.annos.image
+        currentImage: state.sia.annos.image,
+        filter: state.sia.filter
     })
 }
 
@@ -419,7 +469,7 @@ export default connect(
         siaShowImgLabelInput,
         siaImgIsJunk,
         getWorkingOnAnnoTask,
-        siaGetNextImage, siaGetPrevImage, siaFilterImage
+        siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }
     , null,
     {})(SIA)

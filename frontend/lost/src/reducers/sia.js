@@ -52,7 +52,8 @@ const INITIAL_STATE = {
         }
     },
     taskFinished: 0,
-    isJunk: false
+    isJunk: false,
+    filter: undefined
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -66,6 +67,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 config: action.payload
+            }
+        case TYPES.SIA_APPLY_FILTER:
+            return {
+                ...state,
+                filter: {...action.payload}
             }
         case TYPES.SIA_SELECT_ANNO:
             if (action.payload){
