@@ -94,6 +94,14 @@ export function toBackend(data, image, type){
     }
 }
 
+export function getMinMaxPoints(data){
+    const xList = data.map(e => {return e.x})
+    const yList = data.map(e => {return e.y})
+    const minPoint = {x:Math.min(...xList), y:Math.min(...yList)}
+    const maxPoint = {x:Math.max(...xList), y:Math.max(...yList)}
+    return [minPoint, maxPoint]
+}
+
 /**
  * Get area relative to the image 
  * 

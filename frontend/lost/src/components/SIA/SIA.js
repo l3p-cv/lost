@@ -274,9 +274,9 @@ class SIA extends Component {
     
         let transPoint = transform.getMostLeftPoint(transform.getTopPoint(imageCorners))[0]
         // let transPoint = transform.getTopPoint(transform.getMostLeftPoint(imageCorners))[0]
-        if (angle==180 || angle===-180){
-            transPoint={x:0.0,y:0.0}
-        }
+        // if (angle==180 || angle===-180){
+        //     transPoint={x:0.0,y:0.0}
+        // }
 
         // transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
         console.log('TransPoint', transPoint)
@@ -289,12 +289,18 @@ class SIA extends Component {
 
         // sAnnos = transform.rotateAnnotation(sAnnos, {x:svg.width/2, y:svg.height/2}, angle)
         console.log('Rotated canvas annos', sAnnos)
-        let newSize
-        if (angle==90 || angle==-90){
-            newSize = {width:svg.height, height:svg.width}
-        } else {
-            newSize = svg
+        let newSize, minCorner, maxCorner
+        [minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
+        newSize = {
+            width: maxCorner.x - minCorner.x, 
+            height: maxCorner.y - minCorner.y
         }
+        // newSize
+        // if (angle==90 || angle==-90){
+        //     newSize = {width:svg.height, height:svg.width}
+        // } else {
+        //     newSize = svg
+        // }
         console.log('newSize', newSize)
         let bAnnosNew = {
             ...bAnnos,
@@ -342,8 +348,8 @@ class SIA extends Component {
             // var url = 'data:image/png;base64,'+b64Response;
             
             let bAnnosNew
-            if (filter.rotate){
-                bAnnosNew = this.rotateAnnos(filter.rotate.angle, false)
+            if (filter.rotate !== undefined){
+                bAnnosNew = this.rotateAnnos(filter.rotate, false)
             } else {
                 bAnnosNew = this.canvas.current.getAnnos(undefined, false)
             }
