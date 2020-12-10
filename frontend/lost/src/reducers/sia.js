@@ -53,7 +53,10 @@ const INITIAL_STATE = {
     },
     taskFinished: 0,
     isJunk: false,
-    filter: undefined
+    filter: {
+        'clahe' : {'clipLimit':3.0, 'active': false},
+        'rotate':{'angle':0, 'active':false}
+    }
 }
 
 export default function (state = INITIAL_STATE, action) {

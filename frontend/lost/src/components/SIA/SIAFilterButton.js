@@ -10,70 +10,42 @@ class SIAFilterButton extends Component{
     constructor(props) {
         super(props)
         this.state = {
-
+            clipLimit: 3
         }
     }
 
-    toggleAnnoDetails(){
-        this.props.siaSetUIConfig(
-            {...this.props.uiConfig,
-                annoDetails: {
-                    ...this.props.uiConfig.annoDetails,
-                    visible: !this.props.uiConfig.annoDetails.visible
-                }
-            }
-        )
+    componentDidUpdate(prevProps){
+        if (prevProps.filter.clahe.clipLimit != this.props.filter.clahe.clipLimit){
+            this.setState({clipLimit:this.props.filter.clahe.clipLimit})
+        }
     }
 
-    toggleLabelInfo(){
-        this.props.siaSetUIConfig(
-            {...this.props.uiConfig,
-                labelInfo: {
-                    ...this.props.uiConfig.labelInfo,
-                    visible: !this.props.uiConfig.labelInfo.visible
-                }
-            }
-        )
-    }
-
-    handleStrokeWidthChange(e){
-        this.props.siaSetUIConfig({
-            ...this.props.uiConfig,
-            strokeWidth: parseInt(e.target.value)
-        })
-    }
-
-    handleNodeRadiusChange(e){
-        this.props.siaSetUIConfig({
-            ...this.props.uiConfig,
-            nodeRadius: parseInt(e.target.value)
-        })
+    handleClipLimitChange(e){
+        const cl = parseInt(e.target.value)
+        this.setState({clipLimit:cl})
+        // this.claheFilter(cl)
     }
 
     rotateImg(angle){
-        if (this.props.filter){
-            console.log('Angle', angle == this.props.filter.angle ? 0 : angle)
-            this.props.siaApplyFilter({
-                ...this.props.filter,
-                rotate: angle == this.props.filter.rotate ? 0 : angle
-            })
-        } else {
-            this.props.siaApplyFilter({rotate:angle})
-        }
-        
+        const active = !(this.props.filter.rotate.active && this.props.filter.rotate.angle === angle)
+        const myAngle = active ? angle : 0
+        this.props.siaApplyFilter({
+            ...this.props.filter,
+            rotate: {angle:myAngle, active:active}
+        })
     }
 
     claheFilter(clipLimit){
-        const filter = {'clahe' : {'clipLimit':clipLimit}}
-        if (this.props.filter){
-            this.props.siaApplyFilter({
-                ...this.props.filter,
-                ...filter
-            })
-        } else {
-            this.props.siaApplyFilter(filter)
+        const filter = {
+            'clahe' : {
+                'clipLimit':clipLimit, 
+                active:!this.props.filter.clahe.active
+            }
         }
-        
+        this.props.siaApplyFilter({
+            ...this.props.filter,
+            clahe: filter.clahe
+        })
     }
 
     render(){
@@ -82,33 +54,33 @@ class SIAFilterButton extends Component{
         const popupContent = <div >
             <Divider horizontal>Rotate</Divider>
             <Checkbox 
-                checked={filter ? filter.rotate === 90: false} 
+                checked={filter.rotate.active && filter.rotate.angle === 90} 
                 label="Rotate 90" toggle
                 onClick={() => this.rotateImg(90)}
                 />
             <Checkbox 
-                checked={filter ? filter.rotate === -90: false} 
+                checked={filter.rotate.active && filter.rotate.angle === -90} 
                 label="Rotate -90" toggle
                 onClick={() => this.rotateImg(-90)}
                 />
             <Checkbox 
-                checked={filter ? filter.rotate === 180: false} 
+                checked={filter.rotate.active && filter.rotate.angle === 180 } 
                 label="Rotate 180" toggle
                 onClick={() => this.rotateImg(180)}
                 />
-            <Divider horizontal>Appearance Filter</Divider>
+            <Divider horizontal>Histogram equalization</Divider>
             <Checkbox 
-                checked={filter ? filter.clahe !== undefined: false} 
+                checked={filter.clahe.active} 
                 label="Histogram equalization" toggle
-                onClick={() => this.claheFilter(3)}
+                onClick={() => this.claheFilter(this.state.clipLimit)}
                 />
-            <div>Stroke width: {this.props.uiConfig.strokeWidth}</div>
+            <div>Cliplimit: {this.state.clipLimit}</div>
             <input
                 type='range'
                 min={0}
                 max={40}
-                value={this.props.uiConfig.strokeWidth}
-                onChange={e => this.handleStrokeWidthChange(e)}
+                value={this.state.clipLimit}
+                onChange={e => this.handleClipLimitChange(e)}
                 />
         </div>
         return(
@@ -128,7 +100,7 @@ class SIAFilterButton extends Component{
 
 function mapStateToProps(state) {
     return ({
-        uiConfig: state.sia.uiConfig,
+        // uiConfig: state.sia.uiConfig,
         annos: state.sia.annos,
         filter: state.sia.filter
     })

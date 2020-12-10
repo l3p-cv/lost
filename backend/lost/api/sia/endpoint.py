@@ -110,7 +110,7 @@ class Filter(Resource):
             img_path = FileMan(LOST_CONFIG).get_abs_path(img.img_path)
             #img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
             # img = PIL.Image.open(img_path)
-            if 'clahe' in data:
+            if data['clahe']['active'] :
                 img = cv2.imread(img_path,0)
             else:
                 img = cv2.imread(img_path)
@@ -121,15 +121,15 @@ class Filter(Resource):
             # img.save(img_io, 'PNG')
             # img_io.seek(0)
             # return send_file(img_io, mimetype='image/png')
-            if 'rotate' in data:
-                if data['rotate'] == 90:
+            if data['rotate']['active']:
+                if data['rotate']['angle'] == 90:
                     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-                elif data['rotate'] == -90:
+                elif data['rotate']['angle'] == -90:
                     img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                elif data['rotate'] == 180:
+                elif data['rotate']['angle'] == 180:
                     img = cv2.rotate(img, cv2.ROTATE_180)
-            if 'clahe' in data:
-                clahe = cv2.createCLAHE(**data['clahe'])
+            if data['clahe']['active']:
+                clahe = cv2.createCLAHE(data['clahe']['clipLimit'])
                 img = clahe.apply(img)
                 # img = img.rotate(data['rotate']['angle'], expand=True)
             # img = ImageOps.autocontrast(img)

@@ -227,7 +227,7 @@ class SIA extends Component {
         }
     }
 
-    undoAnnoRotationForUpdate(currentFilter){
+    undoAnnoRotationForUpdate(){
         if (this.state.currentRotation!== 0){
             // const currentRotation = this.state.currentRotation
             // this.setState({currentRotation:0})
@@ -334,6 +334,7 @@ class SIA extends Component {
             ...filter,
             'imageId': this.props.annos.image.id
         }
+        this.canvas.current.unloadImage()
         this.props.siaFilterImage(data).then(response => {
             console.log('filterImage response', response)
             // var blob = new Blob([response.request.response], { type: response.headers['content-type'] });
@@ -349,7 +350,7 @@ class SIA extends Component {
             
             let bAnnosNew
             if (filter.rotate !== undefined){
-                bAnnosNew = this.rotateAnnos(filter.rotate, false)
+                bAnnosNew = this.rotateAnnos(filter.rotate.angle, false)
             } else {
                 bAnnosNew = this.canvas.current.getAnnos(undefined, false)
             }
@@ -364,6 +365,7 @@ class SIA extends Component {
         //     img.src = url;
         //     document.body.appendChild(img);
         })
+        this.canvas.current.resetZoom()
     }
 
     requestImageFromBackend(){
@@ -376,7 +378,10 @@ class SIA extends Component {
                 }})
             }
         )
-        this.props.getWorkingOnAnnoTask()       
+        this.props.getWorkingOnAnnoTask()
+        if (this.props.filter.rotate.active || this.props.filter.clahe.active){
+            this.filterImage(this.props.filter)
+        }       
     }
 
     setFullscreen(fullscreen = true) {
