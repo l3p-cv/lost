@@ -122,11 +122,11 @@ class Filter(Resource):
             # img_io.seek(0)
             # return send_file(img_io, mimetype='image/png')
             if 'rotate' in data:
-                if data['rotate']['angle'] == 90:
+                if data['rotate'] == 90:
                     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-                elif data['rotate']['angle'] == -90:
+                elif data['rotate'] == -90:
                     img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                elif data['rotate']['angle'] == 180:
+                elif data['rotate'] == 180:
                     img = cv2.rotate(img, cv2.ROTATE_180)
             if 'clahe' in data:
                 clahe = cv2.createCLAHE(**data['clahe'])
