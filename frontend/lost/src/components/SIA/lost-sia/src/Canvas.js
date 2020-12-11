@@ -99,6 +99,7 @@ import './SIA.scss'
  *      middle of the container.
  * @param {str} defaultLabel (optional) - Name of the default label that is used
  *      when no label was selected for a annotation. If not set "no label" will be used.
+ * @param {bool} blocked Block canvas view with loading dimmer.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
  *      args: {width: int, height: int, scale: float, translateX: float,
  *      translateY:float}
@@ -1296,7 +1297,7 @@ class Canvas extends Component{
                 // allowedActions={this.props.canvasConfig.img.actions}
                 onMouseEnter={e => this.handleImgBarMouseEnter(e)}
             />
-            <Dimmer active={!this.state.imageLoaded}><Loader>Loading</Loader></Dimmer>
+            <Dimmer active={!this.state.imageLoaded||this.props.blocked}><Loader>Loading</Loader></Dimmer>
             <Dimmer active={this.state.isJunk}>
                 <Header as='h2' icon inverted>
                     <Icon name='ban' />
