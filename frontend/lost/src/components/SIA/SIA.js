@@ -54,8 +54,9 @@ class SIA extends Component {
                 right: 5
             },
             notification: undefined,
-            // filteredData: undefined,
-            currentRotation: 0
+            filteredData: undefined,
+            currentRotation: 0,
+            blockCanvas: false
         }
         this.siteHistory = createHashHistory()
         
@@ -150,13 +151,13 @@ class SIA extends Component {
                 this.requestImageFromBackend()
             }
         }
-        // if(prevState.filteredData != this.state.filteredData){
-        //     console.log('Filtered Data changed')
-        //     this.setState({image:{
-        //         ...this.state.image,
-        //         data: this.state.filteredData
-        //     }})
-        // }
+        if(prevState.filteredData != this.state.filteredData){
+            console.log('Filtered Data changed')
+            this.setState({image:{
+                ...this.state.image,
+                data: this.state.filteredData
+            }})
+        }
         if(prevProps.annos !== this.props.annos){
             this.setState({annos:this.props.annos})
         }
@@ -170,7 +171,6 @@ class SIA extends Component {
     getNewImage(imageId, direction){
         this.canvas.current.resetZoom()
         const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
-        console.log('getNewImage', newAnnos)
         this.canvas.current.unloadImage()
         this.setState({image: {
             id: undefined, 
@@ -359,21 +359,13 @@ class SIA extends Component {
                 bAnnosNew = this.canvas.current.getAnnos(undefined, false)
             }
             this.setState({
-                // filteredData: response.data,
-                image: {
-                    data: response.data,
-                    id: this.props.annos.image.id
-                },
+                filteredData: response.data,
+                blockCanvas: false,
                 annos: {
-                    image: {...this.props.image},
+                    image: {...this.state.image},
                     annotations: bAnnosNew.annotations
                 }
-                
-            })
-            // if (!ignoreCanvasAnnos){
-            //     this.setState()
-            // }
-            
+        })
         //     var img = new Image();
         //     img.src = url;
         //     document.body.appendChild(img);
@@ -385,17 +377,20 @@ class SIA extends Component {
     requestImageFromBackend(){
         this.props.getSiaImage(this.props.annos.image.url).then(response=>
             {
-                this.setState({image: {
-                    // ...this.state.image, 
-                    id: this.props.annos.image.id, 
-                    data:window.URL.createObjectURL(response)
-                }})
+                this.setState({
+                    image: {
+                        // ...this.state.image, 
+                        id: this.props.annos.image.id, 
+                        data:window.URL.createObjectURL(response),
+                    },
+                    blockCanvas: filterTools.active(this.props.filter)
+                })
             }
         )
+        this.props.getWorkingOnAnnoTask()
         if (filterTools.active(this.props.filter)){
             this.filterImage(this.props.filter)
-        } 
-        this.props.getWorkingOnAnnoTask()
+        }       
     }
 
     setFullscreen(fullscreen = true) {
@@ -447,6 +442,7 @@ class SIA extends Component {
                     centerCanvasInContainer={true}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
+                    blocked={this.state.blockCanvas}
                     // defaultLabel='no label'
                     />
                 <ToolBar 

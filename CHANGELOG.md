@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Frontend annotation time measurement: Annotation time is now measured in frontend, based on user events. For each annotation individual user interaction time is measured. 
   * Delete last node of polygon/ line when hitting delete key in create mode (see https://github.com/l3p-cv/lost/issues/102)
   * Added copy & paste for annotations (see https://github.com/l3p-cv/lost/issues/82)
+  * Added Sia image filters -> Image can now be *rotated* and *histogram equalization* can be applied for dark images
+  * Use *j*-Key as shortcut for junk images
 ### Fixed
 - SIA:
   * Do not lose polygon annotation when hitting enter in create mode
