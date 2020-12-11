@@ -20,6 +20,7 @@ import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
 import * as transform from './lost-sia/src/utils/transform'
+import * as filterTools from './filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
 
 
@@ -330,6 +331,7 @@ class SIA extends Component {
      * }
      */
     filterImage(filter){
+        // if (filterTools.active(filter)){
         const data = {
             ...filter,
             'imageId': this.props.annos.image.id
@@ -366,6 +368,7 @@ class SIA extends Component {
         //     document.body.appendChild(img);
         })
         this.canvas.current.resetZoom()
+        // }
     }
 
     requestImageFromBackend(){
@@ -379,7 +382,7 @@ class SIA extends Component {
             }
         )
         this.props.getWorkingOnAnnoTask()
-        if (this.props.filter.rotate.active || this.props.filter.clahe.active){
+        if (filterTools.active(this.props.filter)){
             this.filterImage(this.props.filter)
         }       
     }
