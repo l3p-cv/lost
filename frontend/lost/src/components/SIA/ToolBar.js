@@ -326,6 +326,10 @@ class ToolBar extends Component{
                         <Card.Content description='Copy: 1.) Select annotation 2.) Hit STRG + C'/>
                         <Card.Content description='Paste: STRG + V'/>
                     </Card>
+                    <Card>
+                        <Card.Content header='Mark image as junk' />
+                        <Card.Content description='1.) Press J key'/>
+                    </Card>
                     </Card.Group>
                 </div>}
             />
