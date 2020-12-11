@@ -224,13 +224,16 @@ class SIA extends Component {
                     })
                 }
                 break
+            case 'j':
+            case 'J':
+                this.props.siaImgIsJunk(!this.props.isJunk)
+                break
             default:
                 break
         }
     }
 
     undoAnnoRotationForUpdate(){
-        console.log('UndoRotationForUpdate')
         if (this.state.currentRotation!== 0){
             // const currentRotation = this.state.currentRotation
             // this.setState({currentRotation:0})
