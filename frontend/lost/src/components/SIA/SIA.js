@@ -54,7 +54,7 @@ class SIA extends Component {
                 right: 5
             },
             notification: undefined,
-            filteredData: undefined,
+            // filteredData: undefined,
             currentRotation: 0
         }
         this.siteHistory = createHashHistory()
@@ -150,13 +150,13 @@ class SIA extends Component {
                 this.requestImageFromBackend()
             }
         }
-        if(prevState.filteredData != this.state.filteredData){
-            console.log('Filtered Data changed')
-            this.setState({image:{
-                ...this.state.image,
-                data: this.state.filteredData
-            }})
-        }
+        // if(prevState.filteredData != this.state.filteredData){
+        //     console.log('Filtered Data changed')
+        //     this.setState({image:{
+        //         ...this.state.image,
+        //         data: this.state.filteredData
+        //     }})
+        // }
         if(prevProps.annos !== this.props.annos){
             this.setState({annos:this.props.annos})
         }
@@ -357,9 +357,13 @@ class SIA extends Component {
                 bAnnosNew = this.canvas.current.getAnnos(undefined, false)
             }
             this.setState({
-                filteredData: response.data,
+                // filteredData: response.data,
+                image: {
+                    data: response.data,
+                    id: this.props.annos.image.id
+                },
                 annos: {
-                    image: {...this.state.image},
+                    image: {...this.props.image},
                     annotations: bAnnosNew.annotations
                 }
         })
@@ -369,22 +373,24 @@ class SIA extends Component {
         })
         this.canvas.current.resetZoom()
         // }
+        return
     }
 
     requestImageFromBackend(){
-        this.props.getSiaImage(this.props.annos.image.url).then(response=>
-            {
-                this.setState({image: {
-                    // ...this.state.image, 
-                    id: this.props.annos.image.id, 
-                    data:window.URL.createObjectURL(response)
-                }})
-            }
-        )
-        this.props.getWorkingOnAnnoTask()
         if (filterTools.active(this.props.filter)){
             this.filterImage(this.props.filter)
-        }       
+        } else {
+            this.props.getSiaImage(this.props.annos.image.url).then(response=>
+                {
+                    this.setState({image: {
+                        // ...this.state.image, 
+                        id: this.props.annos.image.id, 
+                        data:window.URL.createObjectURL(response)
+                    }})
+                }
+            )
+        }      
+        this.props.getWorkingOnAnnoTask()
     }
 
     setFullscreen(fullscreen = true) {
