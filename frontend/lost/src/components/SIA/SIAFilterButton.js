@@ -13,7 +13,7 @@ class SIAFilterButton extends Component{
         this.state = {
             clipLimit: 3,
             active: false,
-            color: 'white'
+            color: undefined
         }
     }
 
