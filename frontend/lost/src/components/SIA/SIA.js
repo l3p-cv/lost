@@ -170,6 +170,7 @@ class SIA extends Component {
     getNewImage(imageId, direction){
         this.canvas.current.resetZoom()
         const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
+        console.log('getNewImage', newAnnos)
         this.canvas.current.unloadImage()
         this.setState({image: {
             id: undefined, 
@@ -229,6 +230,7 @@ class SIA extends Component {
     }
 
     undoAnnoRotationForUpdate(){
+        console.log('UndoRotationForUpdate')
         if (this.state.currentRotation!== 0){
             // const currentRotation = this.state.currentRotation
             // this.setState({currentRotation:0})
@@ -366,30 +368,33 @@ class SIA extends Component {
                     image: {...this.props.image},
                     annotations: bAnnosNew.annotations
                 }
-        })
+                
+            })
+            // if (!ignoreCanvasAnnos){
+            //     this.setState()
+            // }
+            
         //     var img = new Image();
         //     img.src = url;
         //     document.body.appendChild(img);
         })
         this.canvas.current.resetZoom()
         // }
-        return
     }
 
     requestImageFromBackend(){
+        this.props.getSiaImage(this.props.annos.image.url).then(response=>
+            {
+                this.setState({image: {
+                    // ...this.state.image, 
+                    id: this.props.annos.image.id, 
+                    data:window.URL.createObjectURL(response)
+                }})
+            }
+        )
         if (filterTools.active(this.props.filter)){
             this.filterImage(this.props.filter)
-        } else {
-            this.props.getSiaImage(this.props.annos.image.url).then(response=>
-                {
-                    this.setState({image: {
-                        // ...this.state.image, 
-                        id: this.props.annos.image.id, 
-                        data:window.URL.createObjectURL(response)
-                    }})
-                }
-            )
-        }      
+        } 
         this.props.getWorkingOnAnnoTask()
     }
 

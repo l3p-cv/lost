@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import { Popup, Icon, Menu, Divider, Checkbox } from 'semantic-ui-react'
 import actions from '../../actions'
+import * as filterTools from './filterTools'
 const { siaApplyFilter } = actions
 
 class SIAFilterButton extends Component{
@@ -10,13 +11,22 @@ class SIAFilterButton extends Component{
     constructor(props) {
         super(props)
         this.state = {
-            clipLimit: 3
+            clipLimit: 3,
+            active: false,
+            color: 'white'
         }
     }
 
     componentDidUpdate(prevProps){
         if (prevProps.filter.clahe.clipLimit != this.props.filter.clahe.clipLimit){
             this.setState({clipLimit:this.props.filter.clahe.clipLimit})
+        }
+        if (this.props.filter != prevProps.filter){
+            if (filterTools.active(this.props.filter)){
+                this.setState({color:'red', active:true})
+            } else {
+                this.setState({color:'white', active:false})
+            }
         }
     }
 
@@ -40,6 +50,19 @@ class SIAFilterButton extends Component{
             'clahe' : {
                 'clipLimit':clipLimit, 
                 active:!this.props.filter.clahe.active
+            }
+        }
+        this.props.siaApplyFilter({
+            ...this.props.filter,
+            clahe: filter.clahe
+        })
+    }
+
+    releaseCLAHESlider(e){
+        const filter = {
+            'clahe' : {
+                'clipLimit':parseInt(e.target.value), 
+                active:true
             }
         }
         this.props.siaApplyFilter({
@@ -81,12 +104,13 @@ class SIAFilterButton extends Component{
                 max={40}
                 value={this.state.clipLimit}
                 onChange={e => this.handleClipLimitChange(e)}
+                onMouseUp={e => this.releaseCLAHESlider(e)}
                 />
         </div>
         return(
             <Popup trigger={ 
-                <Menu.Item name='filter'>
-                    <Icon name='filter' />
+                <Menu.Item name='filter' active={this.state.active}>
+                    <Icon name='filter' color={this.state.color}/>
                 </Menu.Item>
                 }
                 content={popupContent}
