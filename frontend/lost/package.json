@@ -41,6 +41,7 @@
     "react-autocomplete": "^1.8.1",
     "react-chartjs-2": "^2.7.2",
     "react-contexify": "^4.0.0",
+    "react-directed-graph": "^1.0.7",
     "react-dom": "^16.11.0",
     "react-draggable": "^3.3.0",
     "react-graph-vis": "^1.0.2",
@@ -51,6 +52,7 @@
     "react-redux": "^7.1.3",
     "react-router-config": "^4.4.0-beta.1",
     "react-router-dom": "^4.3.1",
+    "react-stepper-wizard": "^1.1.5",
     "react-table": "^6.9.0",
     "react-test-renderer": "^16.5.2",
     "react-use": "^15.2.5",
@@ -62,8 +64,7 @@
     "semantic-ui-react": "^0.87.3",
     "simple-line-icons": "^2.4.1",
     "sweetalert2": "^9.15.1",
-    "react-directed-graph": "^1.0.7",
-    "react-stepper-wizard": "^1.1.5"
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "circular-dependency-plugin": "^5.0.2",
