@@ -4,14 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] - unreleased
+## [1.3.0] - 2020-12-11
 ### Added
 - SIA:
-  * Frontend annotation time measurement: Annotation time is now measured in frontend, based on user events. For each annotation individual user interaction time is measured. 
+  * Frontend annotation time measurement: Annotation time is now measured in frontend, based on user events. For each annotation, user interaction time is measured. 
   * Delete last node of polygon/ line when hitting delete key in create mode (see https://github.com/l3p-cv/lost/issues/102)
   * Added copy & paste for annotations (see https://github.com/l3p-cv/lost/issues/82)
   * Added Sia image filters -> Image can now be *rotated* and *histogram equalization* can be applied for dark images
   * Use *j*-Key as shortcut for junk images
+- BaseImage: Installed opencv + dependencies
 ### Fixed
 - SIA:
   * Do not lose polygon annotation when hitting enter in create mode
