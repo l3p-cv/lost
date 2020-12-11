@@ -365,7 +365,7 @@ class SIA extends Component {
                 filteredData: response.data,
                 blockCanvas: false,
                 annos: {
-                    image: {...this.state.image},
+                    image: {...this.props.annos.image},
                     annotations: bAnnosNew.annotations
                 }
         })
