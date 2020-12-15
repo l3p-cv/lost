@@ -10,7 +10,7 @@ import validator from 'validator'
 import { useDispatch } from 'react-redux'
 import * as Notification from '../BasicComponents/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
-import { roles } from '../../settings'
+import { roles } from '../../lost_settings'
 
 const ErrorLabel = ({ text }) => (
     <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>
