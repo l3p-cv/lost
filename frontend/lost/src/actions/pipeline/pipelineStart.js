@@ -1,4 +1,4 @@
-import { API_URL } from '../../settings'
+import { API_URL } from '../../lost_settings'
 import axios from 'axios'
 import { alertLoading, alertClose, alertError } from '../../components/pipeline/src/globalComponents/Sweetalert'
 

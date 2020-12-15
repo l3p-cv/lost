@@ -10,7 +10,7 @@ import validator from 'validator'
 import { useDispatch } from 'react-redux'
 import * as Notification from '../BasicComponents/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
-import { roles } from '../../settings'
+import { roles } from '../../lost_settings'
 
 const ErrorLabel = ({ text }) => (
     <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>
@@ -203,8 +203,6 @@ export default (props) => {
             // save user
             user.roles = user.roles.map((role) => role.name)
             user.groups = user.groups.map((group) => group.name)
-            console.log("new user")
-            console.log(user)
             if (props.isNewUser) {
                 dispatch(actions.createUser(user))
             } else {

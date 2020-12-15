@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {API_URL} from '../../settings'
+import {API_URL} from '../../lost_settings'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'

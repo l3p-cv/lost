@@ -1,6 +1,6 @@
 import axios from 'axios'
 import TYPES from '../../types/index'
-import {API_URL} from '../../settings'
+import {API_URL} from '../../lost_settings'
 import {http} from 'l3p-frontend'
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
