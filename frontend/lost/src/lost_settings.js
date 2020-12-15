@@ -8,4 +8,4 @@ if(IS_DEV){
 else { 
 	API_URL = `${window.location.origin}/api` } 
 export { API_URL } 
-export const roles = ['Designer', 'Annotater']
+export const roles = ['Designer', 'Annotator']

@@ -21,8 +21,6 @@ export const getGroups = () => async (dispatch) => {
 }
 
 export const createGroup = (payload) => async (dispatch) => {
-    console.log("payload")
-    console.log(payload)
     const REQUEST_STATUS_TYPE = TYPES.CREATE_GROUP_STATUS
 
     dispatchRequestLoading(dispatch, REQUEST_STATUS_TYPE)

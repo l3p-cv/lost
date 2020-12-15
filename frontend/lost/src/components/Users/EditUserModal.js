@@ -203,8 +203,6 @@ export default (props) => {
             // save user
             user.roles = user.roles.map((role) => role.name)
             user.groups = user.groups.map((group) => group.name)
-            console.log("new user")
-            console.log(user)
             if (props.isNewUser) {
                 dispatch(actions.createUser(user))
             } else {

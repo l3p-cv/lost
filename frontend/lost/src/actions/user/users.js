@@ -47,8 +47,6 @@ export const deleteUser = (payload) => async (dispatch) => {
 
 export const updateUser = (payload) => async (dispatch) => {
     const TYPE = TYPES.UPDATE_USER_STATUS
-    console.log("TYPE")
-    console.log(TYPE)
     dispatchRequestLoading(dispatch, TYPE)
     try {
         await axios.patch(API_URL + `/user/${payload.idx}`, payload)
