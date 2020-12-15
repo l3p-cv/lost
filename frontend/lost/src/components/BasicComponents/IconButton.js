@@ -11,22 +11,23 @@ const IconButton = (props) => {
             disabled={props.disabled}
             onClick={props.onClick}
             color= {props.color}
-            size= {props.size}
         >
             <FontAwesomeIcon icon={props.icon} />
-            <span style={{marginLeft: 5}}>{props.text}</span>
+            { props.text && (
+                <span style={{marginLeft: 5}}>{props.text}</span>
+            )
+            }
         </Button>
     )
 }
 
 IconButton.propTypes = {
-    size: PropTypes.string,
     style: PropTypes.object,
     disabled: PropTypes.bool,
     color: PropTypes.string,
     onClick: PropTypes.func.isRequired,
     icon: PropTypes.object.isRequired,
-    text: PropTypes.string.isRequired
+    text: PropTypes.string
 }
 
 export default IconButton

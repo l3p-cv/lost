@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "LOST Label Objects and Save Time",
   "author": "Jonas Jäger, Gereon Reus",
-  "homepage": "https://lost.training",
+  "homepage": ".",
   "copyright": "Copyright Jonas Jäger & Gereon Reus",
   "license": "MIT",
   "private": true,
@@ -41,6 +41,7 @@
     "react-autocomplete": "^1.8.1",
     "react-chartjs-2": "^2.7.2",
     "react-contexify": "^4.0.0",
+    "react-directed-graph": "^1.0.7",
     "react-dom": "^16.11.0",
     "react-draggable": "^3.3.0",
     "react-graph-vis": "^1.0.2",
@@ -51,6 +52,7 @@
     "react-redux": "^7.1.3",
     "react-router-config": "^4.4.0-beta.1",
     "react-router-dom": "^4.3.1",
+    "react-stepper-wizard": "^1.1.5",
     "react-table": "^6.9.0",
     "react-test-renderer": "^16.5.2",
     "react-use": "^15.2.5",
@@ -61,7 +63,8 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.87.3",
     "simple-line-icons": "^2.4.1",
-    "sweetalert2": "^9.15.1"
+    "sweetalert2": "^9.15.1",
+    "validator": "^13.5.2"
   },
   "devDependencies": {
     "circular-dependency-plugin": "^5.0.2",
@@ -72,9 +75,8 @@
     "react-scripts": "^2.0.4"
   },
   "scripts": {
-    "install:tools": "npm install --prefix src/components/pipeline -d",
-    "start": "bash src/frontendDev.sh && npm run install:tools &&REACT_APP_PORT='' react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "REACT_APP_PORT='8083' react-scripts start",
+    "build": "react-scripts build",
     "test": "react-app-rewired test",
     "test:debug": "react-app-rewired --inspect-brk test --runInBand",
     "eject": "react-app-rewired eject"

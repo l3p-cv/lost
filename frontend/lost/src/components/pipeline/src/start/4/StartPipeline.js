@@ -3,13 +3,14 @@ import { faPlayCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "reactstrap";
 import { connect } from "react-redux";
-import actions from "actions/pipeline/pipelineStart";
+// import actions from "actions/pipeline/pipelineStart";
+import actions from "../../../../../actions/pipeline/pipelineStart";
+
 import {
   alertLoading,
   alertClose,
   alertError
-} from "pipelineGlobalComponents/Sweetalert";
-
+} from "../../globalComponents/Sweetalert";
 const { postPipeline } = actions;
 class StartPipeline extends Component {
   constructor() {

@@ -35,6 +35,7 @@ const BaseModal = (props) => {
     }
     return(
         <Modal
+            key={props.key}
             size= {props.size ? props.size : 'xl'}
             isOpen={props.isOpen}
             onClosed={props.onClosed ? props.onClosed : ()=>{}}
@@ -55,5 +56,6 @@ BaseModal.propTypes = {
     children: PropTypes.element.isRequired,
     footer: PropTypes.element
 }
+
 
 export default BaseModal

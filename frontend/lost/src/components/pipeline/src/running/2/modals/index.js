@@ -7,7 +7,7 @@ import VisualOutputModal from './types/VisualOutputModal'
 import DataExportModal from './types/DataExportModal'
 import { Button, Modal, ModalFooter } from 'reactstrap';
 import {connect} from 'react-redux'
-import actions from 'actions/pipeline/pipelineRunning'
+import actions from '../../../../../../actions/pipeline/pipelineRunning'
 import actionsAll from '../../../../../../actions'
 
 

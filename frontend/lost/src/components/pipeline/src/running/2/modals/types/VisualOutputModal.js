@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { ModalHeader, ModalBody } from 'reactstrap';
-import actions from 'actions/pipeline/pipelineRunning'
+import actions from '../../../../../../../actions/pipeline/pipelineRunning'
+
 import { connect } from 'react-redux'
 import { Card } from 'reactstrap'
 const { downloadImage } = actions

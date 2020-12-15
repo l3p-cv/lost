@@ -1,6 +1,7 @@
 import React from 'react'
 import {ModalHeader, ModalBody } from 'reactstrap';
-import Table from 'pipelineGlobalComponents/modals/Table'
+import Table from '../../../../globalComponents/modals/Table'
+
 export default (props) =>{
   return (
     <>

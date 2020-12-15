@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
-import Table from 'pipelineGlobalComponents/modals/Table'
+import Table from '../../../../globalComponents/modals/Table'
+
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import actions from 'actions/pipeline/pipelineStartModals/datasource'
+import actions from '../../../../../../../actions/pipeline/pipelineStartModals/datasource'
+
 import {connect} from 'react-redux'
 const {selectDropdown} = actions
 
