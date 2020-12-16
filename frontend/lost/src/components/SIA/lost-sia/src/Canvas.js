@@ -181,10 +181,10 @@ class Canvas extends Component{
                 imgLoadTimestamp: performance.now()
                 // isJunk: this.props.annos.image.isJunk
             })
-            this.setState({
-                imageLoaded: false,
-                // imageData: undefined
-            })
+            // this.setState({
+            //     imageLoaded: false,
+            //     // imageData: undefined
+            // })
         }
         if (prevProps.isJunk !== this.props.isJunk){
             if (this.state.isJunk !== this.props.isJunk){
