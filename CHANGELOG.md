@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.3.2] - unreleased
+- Added maxAnnos to canvasConfig. This allows to define a maximum number of annotations that are allowed per image.
+
 ## [1.3.1] - 2020-12-15
 ### Change
 - Refactor User Management frontend with using reactstrap

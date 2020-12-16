@@ -82,7 +82,9 @@ import './SIA.scss'
  *              draw: bool,
  *              label: bool,
  *              edit: bool,
- *          }
+ *          },
+ *          maxAnnos: null or int,
+ *          minArea: int
  *      },
  *      img: {
  *          multilabels: bool,
@@ -956,8 +958,33 @@ class Canvas extends Component{
 
     createNewAnnotation(e){
         //Do not create new Annotation if controlKey was pressed!
+        let allowed = false
         if (this.keyMapper.controlDown) return
         if (this.props.selectedTool){
+            const maxAnnos = this.props.canvasConfig.annos.maxAnnos
+            if (maxAnnos){
+                if (this.state.annos.length < maxAnnos){
+                    allowed = true
+                } else {
+                    console.warn('Maximum number of annotations reached! MaxAnnos:', maxAnnos)
+                    this.handleNotification({
+                        title: 'Maximum number of annotations reached!',
+                        message: `Only ${maxAnnos} annotations per image are allowed by config` ,
+                        type: notificationType.WARNING
+                    })
+                }
+            } else {
+                allowed = true
+            }
+        } else {
+            console.warn('No annotation tool selected!')
+            this.handleNotification({
+                title: 'No tool selected!',
+                message: 'Please select an annotation tool in the toolbar.',
+                type: notificationType.INFO
+            })
+        }
+        if (allowed){
             const mousePos = this.getMousePosition(e)
             // const selAnno = this.findAnno(this.state.selectedAnnoId)
             let newAnno = {
@@ -993,14 +1020,7 @@ class Canvas extends Component{
                     newAnno.id
                 )
             }
-        } else {
-            console.warn('No annotation tool selected!')
-            this.handleNotification({
-                title: 'No tool selected!',
-                message: 'Please select an annotation tool in the toolbar.',
-                type: notificationType.INFO
-            })
-        }
+        } 
     }
 
     putSelectedOnTop(prevState){

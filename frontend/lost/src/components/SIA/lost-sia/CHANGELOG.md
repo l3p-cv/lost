@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.1] - 2020-12-16
 ### Added
 - A possible label can now be selected as default label by id
+- Added maxAnnos to canvasConfig. This allows to define a maximum number of annotations that are allowed per image.
 
 ## [0.3.0] - 2020-12-11
 ### Added

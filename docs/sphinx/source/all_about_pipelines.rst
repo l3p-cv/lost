@@ -290,7 +290,8 @@ If **"type"** is **"sia"** the configuration will be the following:
               "label": "[boolean]",
               "edit": "[boolean]",
           },
-          "minArea": "[int]"
+          "minArea": "[int]",
+          "maxAnnos": "[int or null]"
       },
       "img": {
           "multilabels": "[boolean]",
@@ -320,6 +321,7 @@ SIA configuration:
               that is already present.
         * **multilabels** allows to assign multiple labels per annotation.
         * **minArea** The minimum area in pixels that an annotation may have. This constraint is only applied to annotations where an area can be defined (e.g. BBoxs, Polygons).
+        * **maxAnnos** Maximum number of annos that are allowed per image. If null an infinite number of annotation are allowed per image.
     * **img** (configuration for the image)
         * **actions**
             * **label** allows to disable the possibility to assign 

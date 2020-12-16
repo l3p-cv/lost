@@ -435,7 +435,10 @@ class SIA extends Component {
                     uiConfig={this.props.uiConfig}
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
-                    canvasConfig={this.props.canvasConfig}
+                    canvasConfig={{
+                        ...this.props.canvasConfig,
+                        annos: {...this.props.canvasConfig.annos, maxAnnos:null}
+                    }}
                     possibleLabels={this.props.possibleLabels}
                     onSVGUpdate={svg => this.props.siaSetSVG(svg)}
                     onAnnoSelect={anno => this.props.selectAnnotation(anno)}
