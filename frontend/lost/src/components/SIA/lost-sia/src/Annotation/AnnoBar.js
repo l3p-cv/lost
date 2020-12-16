@@ -85,8 +85,8 @@ class AnnoBar extends Component{
     render(){
         let label = ''
         if (!this.props.possibleLabels) return null
+        let labelObject 
         if (this.props.anno.labelIds && this.props.anno.labelIds.length > 0){
-            let labelObject 
             this.props.anno.labelIds.forEach((lbl, idx) => {
                 labelObject = this.props.possibleLabels.find(el => {
                     return el.id === lbl
@@ -95,7 +95,18 @@ class AnnoBar extends Component{
                 label += labelObject.label
             })
         } else {
-            label = this.props.defaultLabel ? this.props.defaultLabel : 'no label'
+            if (this.props.defaultLabel){
+                if (Number.isInteger(this.props.defaultLabel)){
+                    labelObject = this.props.possibleLabels.find(el => {
+                        return el.id === this.props.defaultLabel
+                    })
+                    label = labelObject.label
+                } else {
+                    label = this.props.defaultLabel
+                }
+            } else {
+                label = 'no label'
+            }
         }
         switch(this.props.mode){
             case modes.VIEW:

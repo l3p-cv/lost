@@ -97,8 +97,9 @@ import './SIA.scss'
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
  * @param {bool} centerCanvasInContainer - Center the canvas in the 
  *      middle of the container.
- * @param {str} defaultLabel (optional) - Name of the default label that is used
- *      when no label was selected for a annotation. If not set "no label" will be used.
+ * @param {str or int} defaultLabel (optional) - Name or ID of the default label that is used
+ *      when no label was selected by the annotator. If not set "no label" will be used.
+ *      If ID is used, it needs to be one of the possible label ids.
  * @param {bool} blocked Block canvas view with loading dimmer.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
  *      args: {width: int, height: int, scale: float, translateX: float,
@@ -161,6 +162,10 @@ class Canvas extends Component{
 
     componentDidMount(){
         this.updatePossibleLabels()
+        if (Number.isInteger(this.props.defaultLabel)){
+
+            this.setState({prevLabel:[this.props.defaultLabel]})
+        }
     }
 
     componentDidUpdate(prevProps, prevState){

@@ -95,7 +95,17 @@ class LabelInput extends Component{
      *************/
     updatePossibleLabels(){
         let possibleLabels = []
-        const defaultLabel = this.props.defaultLabel ? this.props.defaultLabel : 'no label'
+        let defaultLabel
+        if (this.props.defaultLabel){
+            if (Number.isInteger(this.props.defaultLabel)){
+                defaultLabel = undefined
+            } else {
+                defaultLabel = this.props.defaultLabel
+            }
+        } else {
+            defaultLabel = 'no label'
+        }
+        
         if (this.props.possibleLabels.length > 0){
             possibleLabels = this.props.possibleLabels.map(e => {
                 return {
@@ -105,11 +115,13 @@ class LabelInput extends Component{
                 }
             })
         }
-        possibleLabels.unshift({
-            key: -1, value: -1, text: defaultLabel,
-            content: (<div onClick={(event) => this.onItemClick(event, -1)}>
-            {defaultLabel}</div>)
-        })
+        if (defaultLabel){
+            possibleLabels.unshift({
+                key: -1, value: -1, text: defaultLabel,
+                content: (<div onClick={(event) => this.onItemClick(event, -1)}>
+                {defaultLabel}</div>)
+            })
+        }
         this.setState({possibleLabels})
 
     }
