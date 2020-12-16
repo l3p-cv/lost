@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.1] - 2020-12-16
 ### Added
-- A possible label can now be selected as default label
+- A possible label can now be selected as default label by id
 
 ## [0.3.0] - 2020-12-11
 ### Added
