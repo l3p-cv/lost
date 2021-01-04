@@ -152,7 +152,6 @@ class SIA extends Component {
             }
         }
         if(prevState.filteredData != this.state.filteredData){
-            console.log('Filtered Data changed')
             this.setState({image:{
                 ...this.state.image,
                 data: this.state.filteredData
@@ -196,7 +195,6 @@ class SIA extends Component {
     }
 
     handleCanvasKeyDown(e){
-        console.log('Canvas keyDown: ', e.key)
         switch(e.key){
             case 'ArrowLeft':
                 if (!this.props.currentImage.isFirst){
@@ -251,13 +249,10 @@ class SIA extends Component {
 
     rotateAnnos(absAngle, removeFrontendIds=false){
         const angle = absAngle - this.state.currentRotation
-        console.log('angle, absAngle', angle, absAngle)
         const bAnnos = this.canvas.current.getAnnos(undefined, removeFrontendIds)
         const svg = this.canvas.current.state.image
         let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg)
         let pivotPoint = {x:svg.width/2.0, y:svg.height/2.0}
-        console.log('sAnnos', sAnnos)
-        console.log('svg', svg)
         sAnnos = sAnnos.map(el => {
             return {
                 ...el,
@@ -285,7 +280,6 @@ class SIA extends Component {
         // }
 
         // transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
-        console.log('TransPoint', transPoint)
         sAnnos = sAnnos.map(el => {
             return {
                 ...el,
@@ -294,7 +288,6 @@ class SIA extends Component {
         })
 
         // sAnnos = transform.rotateAnnotation(sAnnos, {x:svg.width/2, y:svg.height/2}, angle)
-        console.log('Rotated canvas annos', sAnnos)
         let newSize, minCorner, maxCorner
         [minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
         newSize = {
@@ -307,7 +300,6 @@ class SIA extends Component {
         // } else {
         //     newSize = svg
         // }
-        console.log('newSize', newSize)
         let bAnnosNew = {
             ...bAnnos,
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize)
@@ -343,14 +335,11 @@ class SIA extends Component {
         }
         this.canvas.current.unloadImage()
         this.props.siaFilterImage(data).then(response => {
-            console.log('filterImage response', response)
             // var blob = new Blob([response.request.response], { type: response.headers['content-type'] });
             // var url = URL.createObjectURL(blob);
-            // console.log('filterImage createObjectURL',url)
 
             // var blob = Buffer.from(response.data, 'binary').toString('base64')
             // var url = blob
-            // console.log('filterImage createObjectURL',url)
 
             // var b64Response = btoa(response.data);
             // var url = 'data:image/png;base64,'+b64Response;

@@ -1,7 +1,7 @@
 {
   "name": "lost-sia",
-  "version": "0.4.1",
-  "description": "Single Image Annotatio Tool for LOST",
+  "version": "0.5.0",
+  "description": "Single Image Annotation Tool for LOST",
   "author": "l3p-cv",
   "license": "MIT",
   "repository": "l3p-cv/lost",

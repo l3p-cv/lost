@@ -272,7 +272,6 @@ export function correctAnnotation(data, image){
  * @param {*} angle Rotation angle
  */
 export function rotateAnnotation(data, center, angle){
-    console.log('ROTATE-ANNO:data, center, angle', data, center, angle)
     angle = (angle ) * (Math.PI/180); // Convert to radians
     const rotated = data.map(point => {
         return {
@@ -280,7 +279,6 @@ export function rotateAnnotation(data, center, angle){
             y: Math.round(Math.sin(angle) * (point.x - center.x) + Math.cos(angle) * (point.y - center.y) + center.y)
         }
     })
-    console.log('ROTATE-ANNO: rotated', rotated)
     return rotated;
 }
 
@@ -291,7 +289,6 @@ export function rotateAnnotation(data, center, angle){
  * @param {*} sizeNew Size of new image {width:int, height:int}
  */
 export function resizeAnnoData(data, sizeOld, sizeNew){
-    console.log('RESIZE ANNO', sizeOld, sizeNew)
     const xRatio = sizeNew.width / sizeOld.width
     const yRatio = sizeNew.height / sizeOld.height
     return data.map(e => {

@@ -115,6 +115,8 @@ import './SIA.scss'
  *      args: {title: str, message: str, type: str}
  * @event onKeyDown - Fires for keyDown on canvas 
  * @event onKeyUp - Fires for keyUp on canvas 
+ * @event onAnnoPerformedAction - Fires when an anno performed an action
+ *      args: {annoId: int, newAnnos: list of annoObjects, pAction: str}
  */
 class Canvas extends Component{
 
@@ -437,7 +439,6 @@ class Canvas extends Component{
         if (this.props.onKeyUp){
             this.props.onKeyUp(e)
         }
-        // console.log('KEY up on Canvas', e.key, e.keyCode, e.keyCode, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey)
     }
 
     onMouseMove(e){
@@ -472,7 +473,6 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_CREATED:
                 anno = this.stopAnnotimeMeasure(anno)
-                console.log('ANNO_CREATED', anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
@@ -575,6 +575,9 @@ class Canvas extends Component{
                 console.warn('Action not handeled', pAction)
                 break
         }
+        if (this.props.onAnnoPerformedAction){
+            this.props.onAnnoPerformedAction(anno.id, newAnnos, pAction)
+        }
     }
 
     onAnnoLabelInputUpdate(anno){
@@ -670,7 +673,6 @@ class Canvas extends Component{
 
 
     checkAnnoLength(anno){
-        console.log('checkAnnoLength', anno)
         if (anno.type === 'polygon' && anno.data.length < 3){
             this.handleNotification({
                 title: "Invalid polygon!",

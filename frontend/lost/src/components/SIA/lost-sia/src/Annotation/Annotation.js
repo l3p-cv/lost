@@ -329,7 +329,6 @@ class Annotation extends Component{
         if(!this.state.anno.data) return null
         if(!this.props.possibleLabels) return null
         if(this.state.anno.status === annoStatus.DELETED) return null
-        console.log('Render Annos', this.state.anno.annoTime)
         return (
             <g>
             <g visibility={this.state.visibility}
