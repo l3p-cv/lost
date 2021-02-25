@@ -50,6 +50,26 @@ def exec_pipe():
     dbm.close_session()
 
 
+def force_anno_release(dbm, anno_task_id):
+    '''Force a release of all annotations that are currently locked by a user for annotation
+
+    Args:
+        dbm (DBMan): Database manager
+        anno_task_id (int): Id of the annotation task
+    '''
+    c_imgs = 0
+    c_2dannos = 0
+    for anno in dbm.get_locked_img_annos(anno_task_id):
+        anno.state = state.Anno.UNLOCKED
+        dbm.add(anno)
+        c_imgs += 1
+    for anno in dbm.get_locked_two_d_annos(anno_task_id):
+        anno.state = state.Anno.UNLOCKED
+        dbm.add(anno)
+        c_2dannos += 1
+    dbm.commit()
+    return c_imgs, c_2dannos
+
 def release_annos_by_timeout(dbm, timeout):
     '''Release annotations based on timeout
 

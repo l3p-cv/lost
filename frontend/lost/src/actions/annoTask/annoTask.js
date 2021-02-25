@@ -31,6 +31,15 @@ export const chooseAnnoTask = (id, callBack) => async dispatch => {
     }
 }
 
+export const forceAnnotationRelease = (id, callBack) => async dispatch => {
+    try {
+        await axios.get(API_URL + `/annotask/force_release/${id}`)
+        
+        callBack()
+    } catch(e){
+
+    }
+}
 
 export const getAnnoTaskStatistic = (id) => async dispatch => {
     try {

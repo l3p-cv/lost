@@ -6,6 +6,7 @@ from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
 from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
+from lost.logic.jobs.jobs import force_anno_release
 from lost.logic.report import Report
 import json
 
@@ -101,3 +102,19 @@ class ReportService(Resource):
             report_data = report.get_report()
             dbm.close_session()
             return report_data
+
+@namespace.route('/force_release/<int:annotask_id>')
+@namespace.param('annotask_id', 'The id of the annotation task.')
+class ForceRelease(Resource):
+    @jwt_required 
+    def get(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            force_anno_release(dbm, annotask_id)
+            dbm.close_session()
+            return "Success", 200
