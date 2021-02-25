@@ -24,7 +24,7 @@ def download_model(s):
     model_path = s.get_path(os.path.basename(model_url), context='static')
     if os.path.exists(model_path):
         return model_path
-    s.logger.info('Donwload yolo model from: {}'.format(model_url))
+    s.logger.info('Download yolo model from: {}'.format(model_url))
     with urllib.request.urlopen(model_url) as response, open(model_path, 'wb') as out_file:
         shutil.copyfileobj(response, out_file)
     s.logger.info('Stored model file in static context: {}'.format(model_path))
