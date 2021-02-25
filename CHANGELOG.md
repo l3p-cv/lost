@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4] - unreleased
+## [1.4.0] - unreleased
 ### Added
 - SIA:
   * Added maxAnnos to canvasConfig. This allows to define a maximum number of annotations that are allowed per image.
 ### Changed 
 - to_dict()/to_df() method for annotation export -> use annotator.user_name for annotator entry in dict/dataframe
+### Fixed
+- db.access -> Use with_for_update method when locking images for an annotator in SIA tasks to prevent assignment of same image to multiple annotators 
 
 
 ## [1.3.1] - 2020-12-15

@@ -464,7 +464,7 @@ class DBMan(object):
     def get_next_unlocked_sia_anno(self, anno_task_id, iteration):
         ''' Get next sia annotation of an anno_task
         '''
-        return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+        return self.session.query(model.ImageAnno).with_for_update().filter(model.ImageAnno.anno_task_id==anno_task_id, \
                                                        model.ImageAnno.state==state.Anno.UNLOCKED, \
                                                        model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.asc()).first()
 
