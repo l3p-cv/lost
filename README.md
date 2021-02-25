@@ -90,6 +90,6 @@ If you are using LOST and like to share your project, please contact [@jaeger-j]
 
 
 ## Institutions
-| L3P UG | CVG University Jena | Hochschule Fulda |
+| L3bm GmbH | CVG University Jena | Hochschule Fulda |
 |--|--|--|
-|[![L3P UG](docs/l3pug.png)](https://lost.training/) | [![CVG Uni Jena](docs/cvgjena.png)](https://www.inf-cv.uni-jena.de/) | [![Hochschule Fulda](docs/hsfd.png)](https://www.hs-fulda.de/elektrotechnik-und-informationstechnik/)
+|[![L3bm GmbH](docs/L_L3BM_RGB_kl.png)](https://l3bm.com/) | [![CVG Uni Jena](docs/cvgjena.png)](https://www.inf-cv.uni-jena.de/) | [![Hochschule Fulda](docs/hsfd.png)](https://www.hs-fulda.de/elektrotechnik-und-informationstechnik/)
