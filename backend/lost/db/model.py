@@ -281,8 +281,7 @@ class TwoDAnno(Base):
         except:
             pass
         try:
-            anno_dict['anno.annotator'] = self.annotator.first_name + \
-                ' ' + self.annotator.last_name
+            anno_dict['anno.annotator'] = self.annotator.user_name
         except:
             pass
 
@@ -750,8 +749,7 @@ class ImageAnno(Base):
         except:
             pass
         try:
-            img_dict['img.annotator'] = self.annotator.first_name + \
-                ' ' + self.annotator.last_name
+            img_dict['img.annotator'] = self.annotator.user_name
         except:
             pass
         if style == 'hierarchical':
