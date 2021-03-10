@@ -27,13 +27,13 @@ sys.path.append(os.path.abspath('../../../backend/'))
 # -- Project information -----------------------------------------------------
 
 project = 'lost'
-copyright = '2019, Jonas Jäger, Gereon Reus'
+copyright = '2021, Jonas Jäger, Gereon Reus'
 author = 'Jonas Jäger, Gereon Reus'
 
 # The short X.Y version
-version = ''
+version = '1.x'
 # The full version, including alpha/beta/rc tags
-release = '1.0.x'
+release = '1.x.x'
 
 
 # -- General configuration ---------------------------------------------------

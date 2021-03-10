@@ -19,7 +19,7 @@ idna==2.7
 itsdangerous==1.1.0
 jinja2==2.10
 jsonschema==2.6.0
-markupsafe==1.0
+markupsafe
 passlib==1.7.1
 pudb==2018.1
 pycparser==2.19
