@@ -137,7 +137,10 @@ class CurrentWorker(object):
             scripts = json.loads(self.worker.in_progress)
         else:
             return
-        scripts.pop(str(pipe_e.idx))
+        try:
+            scripts.pop(str(pipe_e.idx))
+        except:
+            print('Could not find pipe_element id to remove script from worker!')
         self.worker.in_progress = json.dumps(scripts)
         if self.worker.resources:
             if 'lock_all' in json.loads(script.resources):
