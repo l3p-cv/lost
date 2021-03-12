@@ -66,8 +66,8 @@ class ImgBlacklist(object):
             imgs (list): A list of image identifiers that should be added
                 to the blacklist.
         '''
-        if type(imgs) != list:
-            self.my_script.logger.warning('Lists should be used as argument for add method!')
+        if type(imgs) != list or type(imgs) != set:
+            self.my_script.logger.warning('Lists should be used as argument for add method! Not {}'.format(type(imgs)))
         self.blacklist.update(imgs)
 
     def contains(self, img):
@@ -111,10 +111,10 @@ class ImgBlacklist(object):
         '''
         new = set(img_list) - self.blacklist
         if n == 'all':
-            return new
+            return list(new)
         else:
             if len(new) < n:
-                return new
+                return list(new)
             else:
                 new_list = list(new)[:n]
                 return new_list

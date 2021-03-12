@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ImgBlacklist: 
   * Do not log every blacklist load
   * Warn for other argument types than lists in blacklist add method
+  * Return always lists in get_whitelist method
 ## Fixed
 - Version in lost backend init
 
