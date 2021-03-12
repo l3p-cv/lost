@@ -66,7 +66,7 @@ class ImgBlacklist(object):
             imgs (list): A list of image identifiers that should be added
                 to the blacklist.
         '''
-        if type(imgs) != list or type(imgs) != set:
+        if type(imgs) != list and type(imgs) != set:
             self.my_script.logger.warning('Lists should be used as argument for add method! Not {}'.format(type(imgs)))
         self.blacklist.update(imgs)
 
