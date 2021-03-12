@@ -19,7 +19,7 @@ class ImgBlacklist(object):
         Add images to blacklist.
 
         >>> blacklist = ImgBlacklist(self, name='blacklist.json')
-        >>> blacklist.add('path/to/img0.jpg')
+        >>> blacklist.add(['path/to/img0.jpg'])
         >>> balcklist.save()
 
         Load a blacklist and check if a certain image is already in list.
@@ -52,7 +52,7 @@ class ImgBlacklist(object):
         if os.path.exists(self.path):
             with open(self.path) as json_file:
                 self.blacklist = set(json.load(json_file))
-            self.my_script.logger.info('Loaded blacklist from: {}'.format(self.path))
+            # self.my_script.logger.info('Loaded blacklist from: {}'.format(self.path))
 
     def save(self):
         '''Write blacklist to filesystem'''
@@ -60,12 +60,14 @@ class ImgBlacklist(object):
             json.dump(list(self.blacklist), outfile)
 
     def add(self, imgs):
-        '''Add an image to the blacklist.
+        '''Add a list of images to blacklist.
 
         Args:
             imgs (list): A list of image identifiers that should be added
                 to the blacklist.
         '''
+        if type(imgs) != list:
+            self.my_script.logger.warning('Lists should be used as argument for add method!')
         self.blacklist.update(imgs)
 
     def contains(self, img):
