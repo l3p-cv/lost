@@ -3,20 +3,20 @@ asn1crypto==0.24.0
 astor==0.7.1
 backports.weakref==1.0rc1
 bcrypt==3.1.6
-bleach==1.5.0
+bleach==3.3.0
 blinker==1.4
 certifi==2018.11.29
 cffi==1.11.5
 Click==7.0
 cloudpickle==0.7.0
-cryptography==2.5
+cryptography==3.4.6
 cycler==0.10.0
 dask==1.1.0
 decorator==4.3.2
 Flask==1.0.2
 Flask-Login==0.4.1
 Flask-Mail==0.9.1
-Flask-SQLAlchemy==2.3.2
+Flask-SQLAlchemy==2.5.1
 Flask-User==1.0.1.5
 Flask-WTF==0.14.2
 gast==0.2.1.post0
@@ -25,7 +25,7 @@ h5py==2.8.0
 html5lib==0.9999999
 imageai==2.0.2
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 Keras==2.2.4
 Keras-Applications==1.0.4
 Keras-Preprocessing==1.0.2
@@ -44,7 +44,7 @@ opencv-python==4.0.0.21
 pandas==0.24.0
 passlib==1.7.1
 pbr==5.1.1
-Pillow==5.4.1
+Pillow==8.1.2
 protobuf==3.6.1
 pudb==2018.1
 pycparser==2.19
@@ -56,7 +56,7 @@ python-dateutil==2.7.5
 python-igraph==0.7.1.post6
 pytz==2018.9
 PyWavelets==1.0.1
-PyYAML==3.13
+PyYAML==5.4.1
 scikit-image==0.14.2
 scipy==1.1.0
 six==1.12.0
@@ -69,5 +69,5 @@ Theano==1.0.4
 toolz==0.9.0
 urwid==2.0.1
 webencodings==0.5.1
-Werkzeug==0.14.1
+Werkzeug==1.0.1
 WTForms==2.2.1

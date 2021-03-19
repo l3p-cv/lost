@@ -38,19 +38,19 @@ dependencies:
     - cffi==1.11.5
     - celery==4.2.1
     - click==7.0
-    - cryptography==2.3.1
+    - cryptography==3.4.6
     - flask==1.0.2
     - flask-cors==3.0.6
     - flask-jwt-extended==3.13.1
     - flask-login==0.4.1
     - flask-mail==0.9.1
     - flask-restplus==0.12.1
-    - flask-sqlalchemy==2.3.2
+    - flask-sqlalchemy==2.5.1
     - flask-user==1.0.1.5
     - flask-wtf==0.14.2
     - idna==2.7
     - itsdangerous==1.1.0
-    - jinja2==2.10
+    - Jinja2==2.11.3
     - jsonschema==2.6.0
     - markupsafe==1.0
     - passlib==1.7.1
@@ -63,7 +63,7 @@ dependencies:
     - scikit-image
     - six==1.11.0
     - sk-video
-    - sqlalchemy==1.2.13
+    - sqlalchemy==1.4.1
     - urwid==2.0.1
-    - werkzeug==0.14.1
+    - Werkzeug==1.0.1
     - wtforms==2.2.1
