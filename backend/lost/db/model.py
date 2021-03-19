@@ -1590,3 +1590,31 @@ class Worker(Base):
         self.register_timestamp = register_timestamp
         self.resources = resources
         self.in_progress = in_progress
+
+
+class FileSystem(Base):
+    '''FileSystem
+
+    Args:
+        idx (int): Id of entry.
+        group_id (int): User or group who owns this filesystem.
+        connection (str): Connection string to filesystem.
+        root_path (str): Root path for this filesystem.
+        dtype (int): Filesystem type.
+        timestamp (DateTime): Timestamp when filesystem was added to data base.
+
+    '''
+    __tablename__ = "filesystem"
+    idx = Column(Integer, primary_key=True)
+    group_id = Column(Integer, ForeignKey('group.idx'))
+    connection = Column(Text)
+    root_path = Column(String(4096))
+    dtype = Column(Integer)
+    timestamp = Column(DATETIME(fsp=6))
+
+    def __init__(self, group_id=None, connection=None,
+                 root_path=None, dtype=None):
+        self.group_id = group_id
+        self.dtype = dtype
+        self.connection = connection
+        self.root_path = root_path
