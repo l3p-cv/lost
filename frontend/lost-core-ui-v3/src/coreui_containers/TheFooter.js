@@ -62,7 +62,7 @@ const TheFooter = () => {
         <CFooter fixed={false}>
             <div>
                 <span className="ml-1">
-                    Powered by <a href="https://lost.com">L3bm GmbH</a>
+                    Powered by <a href="https://lost.com">LOST</a>
                 </span>
             </div>
             {renderAutologoutTimerFooter()}

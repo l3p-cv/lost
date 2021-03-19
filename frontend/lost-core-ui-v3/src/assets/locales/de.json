@@ -1,0 +1,44 @@
+{
+    "general": {
+        "selectedLanguage": "Deutsch",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "color": "Farbe",
+        "timestamp": "Zeitstempel",
+        "component": "Bauteil",
+        "loading": "Laden",
+        "error": "Fehler",
+        "yes": "ja",
+        "no": "nein",
+        "previous": "Vorheriges",
+        "next": "Nächstes",
+        "edit": "Bearbeiten",
+        "warning": "Warnung",
+        "delete": "Entfernen",
+        "chooseLanguage": "Sprache auswählen",
+        "back": "Zurück"
+    },
+    "myProfile": {
+        "user": "Benutzer",
+        "password": "Passwort",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "confirmPassword": "Passwort bestätigen",
+        "usernameIsNotEditable": "Benutzername ist nicht editierbar",
+        "userIdIsNotEditable": "Benutzer ID ist nicht editierbar",
+        "pleaseEnterYourEmail": "Bitte geben Sie ihre Email Addresse ein",
+        "pleaseEnterYourFirstName": "Bitte geben Sie ihren Vornamen ein",
+        "pleaseEnterYourLastName": "Bitte geben Sie ihren Nachnamen ein",
+        "pleaseEnterNewPassword": "Bitte geben Sie ein neues Password ein",
+        "pleaseConfirmNewPassword": "Bitte wiederholen Sie das Password",
+        "submit": "Bestätigen"
+    },
+    "users": {
+        "groupname": "Gruppenname",
+        "group": "Gruppe",
+        "editUser": "Benutzer bearbeiten",
+        "userName": "Benutzername",
+        "roles": "Rollen",
+        "addUser": "Benutzer hinzufügen"
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "general": {
+        "selectedLanguage": "English",
+        "save": "Save",
+        "cancel": "Cancel",
+        "color": "Color",
+        "timestamp": "Timestamp",
+        "component": "Component",
+        "loading": "load",
+        "error": "Error",
+        "yes": "yes",
+        "no": "no",
+        "previous": "previous",
+        "next": "next",
+        "edit": "edit",
+        "warning": "warning",
+        "delete": "Delete",
+        "chooseLanguage": "Choose Language",
+        "back": "Back"
+    },
+    "myProfile": {
+        "user": "User",
+        "password": "Password",
+        "firstName": "First name",
+        "lastName": "Surname",
+        "confirmPassword": "Confirm Password",
+        "usernameIsNotEditable": "Username is not editable",
+        "userIdIsNotEditable": "User id is not editable",
+        "pleaseEnterYourEmail": "Please enter your email",
+        "pleaseEnterYourFirstName": "Please enter your first name",
+        "pleaseEnterYourLastName": "Please enter your last name",
+        "pleaseEnterNewPassword": "Please enter new password",
+        "pleaseConfirmNewPassword": "Please confirm new Password",
+        "submit": "Submit"
+    },
+    "users": {
+        "groupname": "groupname",
+        "group": "Group",
+        "editUser": "Edit User",
+        "userName": "Username",
+        "roles": "Roles",
+        "addUser": "Add User"
+    }
+}

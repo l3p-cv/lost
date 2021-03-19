@@ -3,8 +3,39 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { store } from './store';
 import { Provider } from 'react-redux';
 import './scss/style.scss'
+import enTranslation from './assets/locales/en'
+import deTranslation from './assets/locales/de'
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import { flatObj } from './utils'
 
 // Containers
+
+
+const resources = {
+    en: {
+        translation: flatObj(enTranslation),
+    },
+    de: {
+        translation: flatObj(deTranslation),
+    },
+}
+i18n.use(initReactI18next) // passes i18n down to react-i18next
+    .init({
+        resources,
+        lng: 'de',
+
+        keySeparator: true, // we do not use keys in form messages.welcome
+
+        interpolation: {
+            escapeValue: false, // react already safes from xss
+        },
+    })
+
+
+
+
+
 const TheLayout = React.lazy(() => import('./coreui_containers/TheLayout'))
 
 // Pages
