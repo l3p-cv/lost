@@ -75,7 +75,7 @@
     "react-scripts": "^2.0.4"
   },
   "scripts": {
-    "start": "REACT_APP_PORT='' react-scripts start",
+    "start": "REACT_APP_PORT='8083' react-scripts start",
     "build": "react-scripts build",
     "test": "react-app-rewired test",
     "test:debug": "react-app-rewired --inspect-brk test --runInBand",

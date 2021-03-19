@@ -1,0 +1,47 @@
+//*******************
+//* General styling *
+//*******************
+.sel-area-off{
+    fill: none;
+}
+
+.sel-area-on{
+    fill: blue;
+    fill-opacity:  0.001;
+}
+
+//**********************
+//* Annotation styling *
+//**********************
+.selected{
+    fill-opacity: 0.01;
+    cursor: grab;
+}
+
+circle.selected{
+    fill-opacity: 1.0;
+}
+
+.not-selected{
+    fill-opacity: 0.3;
+}
+
+circle.not-selected{
+    fill-opacity: 1.0;
+}
+
+//****************
+//* Node styling *
+//****************
+.node-halo-on{
+    fill: orange;
+    stroke: orange;
+    fill-opacity: 0.5;
+    stroke-opacity: 0.5;
+    cursor: grab;
+}
+
+.node-halo-off{
+    fill: none;
+    stroke: none;
+}
