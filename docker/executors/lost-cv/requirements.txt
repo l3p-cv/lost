@@ -25,7 +25,7 @@ h5py==2.8.0
 html5lib==0.9999999
 imageai==2.0.2
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 Keras==2.2.4
 Keras-Applications==1.0.4
 Keras-Preprocessing==1.0.2
