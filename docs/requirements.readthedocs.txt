@@ -17,7 +17,7 @@ flask-user==1.0.1.5
 flask-wtf==0.14.2
 idna==2.7
 itsdangerous==1.1.0
-jinja2==2.10
+jinja2==2.11.3
 jsonschema==2.6.0
 markupsafe
 passlib==1.7.1
