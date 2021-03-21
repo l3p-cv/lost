@@ -7,29 +7,6 @@ import {
     dispatchRequestSuccess,
     dispatchRequestError,
 } from './dispatchHelper'
-// const login = (formProps, callback) => async dispatch => {
-//     try {
-//         const response = await axios.post(API_URL + '/user/login', formProps)
-//         dispatch({ type: TYPES.AUTH_USER, payload: response.data})
-//         localStorage.setItem('token', response.data.token)
-//         localStorage.setItem('refreshToken', response.data.refresh_token)
-//         localStorage.setItem('view', 'Annotator')
-//         axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
-//         const decodedToken = jwt_decode(response.data.token)
-//         if(decodedToken.user_claims.roles.indexOf('Designer') > -1){
-//             dispatch({ type: TYPES.CHANGE_VIEW, payload: 'Designer'})
-//             localStorage.setItem('view', 'Designer')
-//             callback()
-//         }else{
-//             dispatch({ type: TYPES.CHANGE_VIEW, payload: 'Annotator'})
-//             localStorage.setItem('view', 'Annotator')
-//             callback()
-//         }
-//     } catch(e){
-//         dispatch({ type: TYPES.AUTH_ERR, payload: 'No valid credentials.'})
-//     }
-// }
-
 
 
 const login = (loginInformations) => async (dispatch) => {
@@ -93,8 +70,8 @@ const changeView = (view, callback) => async dispatch => {
 
 const logout = () => async dispatch => {
     await axios.post(API_URL + '/user/logout')
-    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('refreshToken')
-    await axios.post(API_URL + '/user/logout2')
+    // axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('refreshToken')
+    // await axios.post(API_URL + '/user/logout2')
     dispatch({type: TYPES.LOGOUT})
     axios.defaults.headers.common['Authorization'] = undefined
     localStorage.removeItem('token')

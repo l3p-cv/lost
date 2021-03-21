@@ -2,7 +2,7 @@ import { API_URL } from '../../lost_settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
-import { alertLoading, alertClose } from '../../components/pipeline/src/globalComponents/Sweetalert'
+import { alertLoading, alertClose } from '../../containers/Pipeline/globalComponents/Sweetalert'
 
 import REQUEST_STATUS from '../../types/requestStatus'
 

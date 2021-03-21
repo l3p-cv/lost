@@ -1,4 +1,4 @@
-import DashboardComponent from './containers/Dashboard'
+import DashboardComponent from './containers/Pipeline/running/RunningPipeline'
 import StartPipelineComponent from './containers/StartPipeline'
 import LabelsComponent from './containers/Labels'
 import WorkersComponent from './containers/Workers'
@@ -73,7 +73,7 @@ const guiSetup = {
     additionalRoutes: [
 
     ],
-    Administrator: {
+    Designer: {
         redirect: '/dashboard',
         navItems: [
             Dashboard,

@@ -26,13 +26,11 @@ const Login = () => {
     const history = useHistory()
     const submit = (e) => {
         e.preventDefault()
-        dispatch(actions.login({ password, userName: username }))
+        dispatch(actions.login({ password, user_name: username }))
     }
     const loginStatus = useSelector((state) => state.auth.loginStatus)
 
     useEffect(() => {
-        console.log('loginStatus')
-        console.log(loginStatus)
         if (loginStatus.status === REQUEST_STATUS.SUCCESS) {
             history.push('/')
         }
