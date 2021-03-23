@@ -7,6 +7,8 @@ import json
 import shutil
 import zipfile
 import lost
+import fsspec
+
 #import ptvsd
 
 
@@ -28,14 +30,19 @@ MY_DATA_PATH = "my_data/"
 class FileMan(object):
     def __init__(self, lostconfig):
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
+        if len(lostconfig.fs_args) > 0:
+            self.fs = fsspec.filesystem(lostconfig.fs_type, **lostconfig.fs_args)
+        else:
+            self.fs = fsspec.filesystem(lostconfig.fs_type)
+
 
     def get_version_log_path(self):
         return os.path.join(self.lostconfig.project_path, 'version-log.json')
             
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.lostconfig.project_path, PIPE_LOG_PATH)
-        if not os.path.exists(base_path):
-            os.makedirs(base_path)
+        if not self.fs.exists(base_path):
+            self.fs.mkdirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
 
     def get_rel_path(self, path):
@@ -87,13 +94,15 @@ class FileMan(object):
 
     def rm_instance_path(self, pipe_element):
         i_path = self.get_instance_path(pipe_element)
-        if os.path.exists(i_path):
-            shutil.rmtree(i_path)
+        if self.fs.exists(i_path):
+            #shutil.rmtree(i_path)
+            self.fs.rm(i_path, recursive=True)
 
     def rm_pipe_context_path(self, pipe):
         p_path = self.get_pipe_context_path(pipe=pipe)
-        if os.path.exists(p_path):
-            shutil.rmtree(p_path)
+        if self.fs.exists(p_path):
+            # shutil.rmtree(p_path)
+            self.fs.rm(p_path, recursive=True)
     
     def rm_pipe_log_path(self, pipe):
         '''Remove log file for pipe
@@ -102,7 +111,7 @@ class FileMan(object):
             pipe (:class:`lost.db.model.Pipe`): The pipeline where
                 the log file should be deleted for.'''
         path = self.get_pipe_log_path(pipe.idx)
-        if os.path.exists(path):
+        if self.fs.exists(path):
             os.remove(path)
 
     def get_instance_path(self, pipe_element):
@@ -122,15 +131,15 @@ class FileMan(object):
         if pe is not None:
             pipe_context = join(self.lostconfig.project_path, INSTANCE_ROOT_PATH,
                                 'p-{}'.format(pe.pipe_id))
-            if not os.path.exists(pipe_context):
-                os.mkdir(pipe_context)
+            if not self.fs.exists(pipe_context):
+                self.fs.mkdirs(pipe_context)
             return pipe_context
 
         elif pipe is not None:
             pipe_context = join(self.lostconfig.project_path, INSTANCE_ROOT_PATH,
                                 'p-{}'.format(pipe.idx))
-            if not os.path.exists(pipe_context):
-                os.mkdir(pipe_context)
+            if not self.fs.exists(pipe_context):
+                self.fs.mkdirs(pipe_context)
             return pipe_context
         else:
             raise Exception("No valid argument for pipe context path.")
@@ -150,14 +159,14 @@ class FileMan(object):
         '''
         root_path = self.lostconfig.project_path
         i_path = join(root_path, INSTANCE_ROOT_PATH)
-        if not os.path.exists(i_path):
-            os.mkdir(i_path)
+        if not self.fs.exists(i_path):
+            self.fs.mkdirs(i_path)
         # task_path = join(i_path, str(pipe_element.task_id))
-        # if not os.path.exists(task_path):
-        #     os.mkdir(task_path)
+        # if not self.fs.exists(task_path):
+        #     self.fs.mkdirs(task_path)
         pe_i_path = join(i_path, 'i-{}'.format(str(pipe_element.idx)))
-        if not os.path.exists(pe_i_path):
-            os.mkdir(pe_i_path)
+        if not self.fs.exists(pe_i_path):
+            self.fs.mkdirs(pe_i_path)
         return pe_i_path
 
     # def create_script_path(self, script_id):
@@ -170,11 +179,11 @@ class FileMan(object):
     #     '''
     #     root_path = self.lostconfig.project_path
     #     script_dir = os.path.join(root_path,SCRIPT_ROOT_PATH)
-    #     if not os.path.exists(script_dir):
-    #         os.mkdir(script_dir)
+    #     if not self.fs.exists(script_dir):
+    #         self.fs.mkdirs(script_dir)
     #     script_i_dir = os.path.join(script_dir,str(script_id))
-    #     if not os.path.exists(script_i_dir):
-    #         os.mkdir(script_i_dir)
+    #     if not self.fs.exists(script_i_dir):
+    #         self.fs.mkdirs(script_i_dir)
     #     return script_i_dir
 
     @property
@@ -191,14 +200,14 @@ class FileMan(object):
     def create_debug_path(self, pipe_element):
         root_path = self.lostconfig.project_path
         debug_path = join(root_path, DEBUG_ROOT_PATH)
-        if not os.path.exists(debug_path):
-            os.mkdir(debug_path)
+        if not self.fs.exists(debug_path):
+            self.fs.mkdirs(debug_path)
         task_path = join(debug_path, str(pipe_element.pipe_id))
-        if not os.path.exists(task_path):
-            os.mkdir(task_path)
+        if not self.fs.exists(task_path):
+            self.fs.mkdirs(task_path)
         pe_i_path = join(task_path, str(pipe_element.idx))
-        if not os.path.exists(pe_i_path):
-            os.mkdir(pe_i_path)
+        if not self.fs.exists(pe_i_path):
+            self.fs.mkdirs(pe_i_path)
         return pe_i_path
 
     def create_project_folders(self):
@@ -208,23 +217,23 @@ class FileMan(object):
             root: Root path of the project.
         '''
         root = self.lostconfig.project_path
-        if not os.path.exists(root):
-            os.mkdir(root)
+        if not self.fs.exists(root):
+            self.fs.mkdirs(root)
             print("\t Created: %s"%(root,))
-        # if not os.path.exists(join(root,SCRIPT_ROOT_PATH)):
-        #     os.mkdir(join(root,SCRIPT_ROOT_PATH))
+        # if not self.fs.exists(join(root,SCRIPT_ROOT_PATH)):
+        #     self.fs.mkdirs(join(root,SCRIPT_ROOT_PATH))
         #     print("\t Created: %s"%(join(root,SCRIPT_ROOT_PATH),))
-        if not os.path.exists(join(root,INSTANCE_ROOT_PATH)):
-            os.mkdir(join(root,INSTANCE_ROOT_PATH))
+        if not self.fs.exists(join(root,INSTANCE_ROOT_PATH)):
+            self.fs.mkdirs(join(root,INSTANCE_ROOT_PATH))
             print("\t Created: %s"%(join(root,INSTANCE_ROOT_PATH),))
-        if not os.path.exists(join(root,MEDIA_ROOT_PATH)):
-            os.mkdir(join(root,MEDIA_ROOT_PATH))
+        if not self.fs.exists(join(root,MEDIA_ROOT_PATH)):
+            self.fs.mkdirs(join(root,MEDIA_ROOT_PATH))
             print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
-        if not os.path.exists(join(root,DEBUG_ROOT_PATH)):
-            os.mkdir(join(root,DEBUG_ROOT_PATH))
+        if not self.fs.exists(join(root,DEBUG_ROOT_PATH)):
+            self.fs.mkdirs(join(root,DEBUG_ROOT_PATH))
             print("\t Created: %s"%(join(root,DEBUG_ROOT_PATH),))
-        if not os.path.exists(join(root, MY_DATA_PATH)):
-            os.mkdir(join(root, MY_DATA_PATH))
+        if not self.fs.exists(join(root, MY_DATA_PATH)):
+            self.fs.mkdirs(join(root, MY_DATA_PATH))
             print("\t Created: %s"%(join(root, MY_DATA_PATH),))
 
     @property
@@ -262,7 +271,7 @@ class FileMan(object):
         ''' get absolute path of mia_crop directory
         '''
         directory = os.path.join(self.lostconfig.project_path, MIA_CROP_PATH, str(annotask_id))
-        if not os.path.exists(directory):
+        if not self.fs.exists(directory):
             os.makedirs(directory)
         return directory
 
@@ -273,7 +282,7 @@ class FileMan(object):
             annotask_id: Id of annotask where the mia crops should be deleted for.
         '''
         mia_crop_path = self.get_mia_crop_path(annotask_id)
-        if os.path.exists(mia_crop_path):
+        if self.fs.exists(mia_crop_path):
             shutil.rmtree(mia_crop_path)
 
     @property
@@ -286,7 +295,7 @@ class FileMan(object):
         '''str: get absolute sia_history_path
         '''
         sia_hist_file = os.path.join(self.lostconfig.project_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
-        if not os.path.exists(os.path.split(sia_hist_file)[0]):
+        if not self.fs.exists(os.path.split(sia_hist_file)[0]):
             os.makedirs(os.path.split(sia_hist_file)[0])
         return sia_hist_file
 
@@ -299,10 +308,10 @@ class FileMan(object):
         '''
         path = self.get_sia_history_path(annotask)
         backup_dir = os.path.join(self.lostconfig.project_path, SIA_HISTORY_BACKUP_PATH)
-        if not os.path.exists(backup_dir):
+        if not self.fs.exists(backup_dir):
             os.makedirs(backup_dir)
         backup_path = os.path.join(self.lostconfig.project_path, SIA_HISTORY_BACKUP_PATH, '{}_{}_{}.json'.format(datetime.now(), annotask.idx, annotask.name))
-        if os.path.exists(path):
+        if self.fs.exists(path):
             os.rename(path, backup_path)
 
 def unzipdir(src, dst):
