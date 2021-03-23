@@ -66,8 +66,9 @@ class Script(pe_base.Element):
             pe = dbm.get_pipe_element(pe_id)
         super().__init__(pe, dbm)
         logfile_path = self.file_man.get_pipe_log_path(self._pipe.idx)
-        self._logger = log.get_file_logger(os.path.basename(pe.script.path),
-                                          logfile_path)
+        self._log_stream = self.file_man.fs.open(logfile_path, 'a')
+        self._logger = log.get_stream_logger(os.path.basename(pe.script.path),
+                                          self._log_stream)
         if self.pipe_info.logfile_path is None or not self.pipe_info.logfile_path:
             self.pipe_info.logfile_path = self.get_rel_path(logfile_path)
         self._inp = inout.Input(self)
@@ -201,6 +202,14 @@ class Script(pe_base.Element):
             return args[arg_name]['value']
         else:
             return None
+
+    def get_filesystem(self):
+        '''Get current filesystem.
+
+        Returns:
+            fsspec.spec.AbstractFileSystem: See https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.spec.AbstractFileSystem
+        '''
+        return self.file_man.fs
 
     def get_path(self, file_name, context='instance', ptype='abs'):
         '''Get path for the filename in a specific context in filesystem.
@@ -355,6 +364,7 @@ class Script(pe_base.Element):
                 self.outp.clean_up()
             self._pipe_man.pipe.state = state.Pipe.IN_PROGRESS
             self._dbm.commit()
+        self._log_stream.close()
 
     def report_err(self, msg):
         '''Report an error for this user script to portal
