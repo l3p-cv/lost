@@ -367,13 +367,14 @@ class SIA extends Component {
     }
 
     requestImageFromBackend(){
-        this.props.getSiaImage(this.props.annos.image.url).then(response=>
+        this.props.getSiaImage(this.props.annos.image.id).then(response=>
             {
                 this.setState({
                     image: {
                         // ...this.state.image, 
                         id: this.props.annos.image.id, 
-                        data:window.URL.createObjectURL(response),
+                        data:response.data,
+                        // data:window.URL.createObjectURL(response),
                     },
                     blockCanvas: filterTools.active(this.props.filter)
                 })

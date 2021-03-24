@@ -1,13 +1,12 @@
 import axios from 'axios'
 import TYPES from '../../types/index'
 import {API_URL} from '../../lost_settings'
-import {http} from 'l3p-frontend'
 
 export const getSiaAnnos = (imageId, type='next') => async dispatch => {
     try {
         const response = await axios.get(API_URL + '/sia/' + type + '/' + imageId)
         dispatch({type: TYPES.GET_SIA_ANNOS, payload: response.data})
-        console.log('REQUEST: getSiaAnnos: wrongLoad ', response)
+        console.log('REQUEST: getSiaAnnos: ', response)
     } catch (e) {console.error(e)}
 }
 
@@ -16,6 +15,21 @@ export const siaUpdateAnnos = (data) => async dispatch => {
         const response = await axios.post(API_URL + '/sia/update', data)
         console.log('REQUEST: siaUpdateAnnos: wrongLoad ', response)
     } catch (e) {console.error(e)}
+}
+
+export const getSiaImage = (imgId) => async dispatch =>{
+    try {
+        const response = await axios.post(API_URL + '/sia/getimage', {imgId:imgId})
+        console.log('REQUEST: sia/getimage response: ', response)
+        return response
+    } catch (e) {console.error(e)}
+    // console.log(path)
+    // const config = {
+    //     url: API_URL + path,
+    //     type: 'image',
+    //     token: localStorage.getItem('token')
+    // }
+    // return await http.get(config)
 }
 
 export const siaFilterImage = (data) => async dispatch => {
@@ -57,15 +71,6 @@ export const getSiaConfig = () => async dispatch => {
     } catch (e) {console.log(e)}
 }
 
-export const getSiaImage = (path) => async dispatch =>{
-    console.log(path)
-    const config = {
-        url: API_URL + path,
-        type: 'image',
-        token: localStorage.getItem('token')
-    }
-    return await http.get(config)
-}
 
 export const selectAnnotation = (anno) => {
     return {

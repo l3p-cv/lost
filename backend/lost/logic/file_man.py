@@ -8,6 +8,8 @@ import shutil
 import zipfile
 import lost
 import fsspec
+import numpy as np
+import cv2
 
 #import ptvsd
 
@@ -35,6 +37,33 @@ class FileMan(object):
         else:
             self.fs = fsspec.filesystem(lostconfig.fs_type)
 
+
+    def load_img(self, path, color_type='color'):
+        '''Load image from filesystem
+        
+        Args:
+            path (str): Can be a relative path within the LOST filesystem or
+                an absolute path for any other supported filesystem
+            color_type (int): Color type of the image. Can be 'color' or 'gray'
+        
+        Returns:
+            np.array: The loaded image
+        '''
+        if color_type == 'color':
+            color = cv2.IMREAD_COLOR
+        else:
+            color = cv2.IMREAD_GRAYSCALE
+        if not os.path.isabs(path):
+            img_path = self.get_abs_path(path)
+            with self.fs.open(img_path, 'rb') as f:
+                arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
+                img = cv2.imdecode(arr, color)
+            return img
+        else:
+            with fsspec.open(path) as f:
+                arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
+                img = cv2.imdecode(arr, color)
+            return img
 
     def get_version_log_path(self):
         return os.path.join(self.lostconfig.project_path, 'version-log.json')
