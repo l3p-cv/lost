@@ -23,9 +23,9 @@ class MIAImage extends Component{
         .bind(this)
     } 
     componentDidMount(){
-        const image = this.props.getMiaImage(this.props.image.path)
+        const image = this.props.getMiaImage(this.props.image.id)
         image.then(response=>
-        this.setState({image: {...this.state.image, data:window.URL.createObjectURL(response)}})
+        this.setState({image: {...this.state.image, data:response.data}})
         )
     }
 
