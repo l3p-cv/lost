@@ -4,7 +4,7 @@ from lost.api.api import api
 
 image = api.model('Image', {
     'id': fields.Integer(readOnly=True, description='The identifier of the image.'),
-    'url': fields.String(readOnly=True, description='The url of the image.'),
+    # 'url': fields.String(readOnly=True, description='The url of the image.'),
     'number': fields.Integer(readOnly=True, description='Number of the current image in that annotation task.'),
     'amount': fields.Integer(readOnly=True, description='Number of total images in that annotation task.'),
     'isFirst': fields.Boolean(readOnly=True, description='Weather the image is the first one of the annotation process.'),
