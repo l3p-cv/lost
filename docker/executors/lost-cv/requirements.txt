@@ -56,7 +56,7 @@ python-dateutil==2.7.5
 python-igraph==0.7.1.post6
 pytz==2018.9
 PyWavelets==1.0.1
-PyYAML==3.13
+PyYAML==5.4
 scikit-image==0.14.2
 scipy==1.1.0
 six==1.12.0
