@@ -12,6 +12,8 @@ import json
 import cv2
 import base64
 from lost.logic.file_man import FileMan
+from lost.pyapi.utils import anno_helper
+from lost.logic import mia
 
 namespace = api.namespace('mia', description='MIA Annotation API.')
 
@@ -99,7 +101,7 @@ class Special(Resource):
 
 @namespace.route('/getimage')
 class GetImage(Resource):
-    # @api.expect(sia_update)
+
     @jwt_required 
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -113,12 +115,35 @@ class GetImage(Resource):
             #TODO: Check if user is permitted to load this image
             fm = FileMan(LOST_CONFIG)
             data = json.loads(request.data)
-            flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
-            db_img = dbm.get_image_anno(data['imgId'])
-            img = fm.load_img(db_img.img_path)
-            # img_path = fm.get_abs_path(db_img.img_path)
-            # #raise Exception('sia -> getimage: {}'.format(img_path))
-            # img = cv2.imread(img_path)
+            #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
+            if data['type'] == 'imageBased':
+                db_img = dbm.get_image_anno(data['id'])
+                img = fm.load_img(db_img.img_path)
+            elif data['type'] == 'annoBased':
+                db_anno = dbm.get_two_d_anno(two_d_anno_id=data['id'])
+                db_img = dbm.get_image_anno(db_anno.img_anno_id)
+                image = fm.load_img(db_img.img_path)
+                # get annotation_task config
+                config = mia.get_config(dbm, user.idx)
+                draw_anno = False
+                context = None
+                try:
+                    draw_anno = config['drawAnno']
+                except:
+                    pass
+                try:
+                    context = float(config['addContext'])
+                except:
+                    pass
+                crops, _ = anno_helper.crop_boxes(
+                    [db_anno.to_vec('anno.data')],
+                    [db_anno.to_vec('anno.dtype')], 
+                    image, context=context, 
+                    draw_annotations=draw_anno
+                )
+                img = crops[0]
+            else:
+                raise Exception('Unknown mia image type')
             _, data = cv2.imencode('.jpg', img)
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()

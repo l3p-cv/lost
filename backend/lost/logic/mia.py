@@ -40,7 +40,8 @@ class ImageSerialize(object):
         for anno in self.annos:
             image = dict()
             image['id'] = anno.idx
-            image['path'] = anno.img_path 
+            # image['path'] = anno.img_path
+            image['type'] = 'imageBased' 
             self.mia_json['images'].append(image) 
 
 class TwoDSerialize(object):
@@ -53,7 +54,7 @@ class TwoDSerialize(object):
         self.file_man = FileMan(self.db_man.lostconfig)
         self.proposedLabel = proposedLabel
     def serialize(self):
-        directory = self.file_man.get_mia_crop_path(self.anno_task_id)
+        # directory = self.file_man.get_mia_crop_path(self.anno_task_id)
         self.mia_json['images'] = list()
         self.mia_json['proposedLabel'] = None
         if self.proposedLabel:
@@ -61,50 +62,53 @@ class TwoDSerialize(object):
         for anno in self.annos:
             image_json = dict()
             image_json['id'] = anno.idx
+            image_json['type'] = 'annoBased'
             # get image_anno of two_d anno
             image_anno = self.db_man.get_image_annotation(img_anno_id=anno.img_anno_id)
-            cropped_image_path = os.path.join(directory, str(anno.idx)) + '.png'
-            relative_cropped_image_path = self.file_man.mia_crop_rel_path + \
-            str(self.anno_task_id) + "/" + str(anno.idx) + ".png"
-            if os.path.exists(cropped_image_path):
-                image_json['path'] = relative_cropped_image_path 
-                self.mia_json['images'].append(image_json) 
-                continue
-            else:    
-                # crop two_d_anno out of image_anno
-                config = get_config(self.db_man, self.user_id)
-                draw_anno = False
-                context = None
-                try:
-                    draw_anno = config['drawAnno']
-                except:
-                    pass
-                try:
-                    context = float(config['addContext'])
-                except:
-                    pass
-                self._crop_twod_anno(image_anno, anno, draw_anno, 
-                    context, cropped_image_path)
-                image_json['path'] = relative_cropped_image_path 
-                self.mia_json['images'].append(image_json) 
+            self.mia_json['images'].append(image_json) 
 
-    def _crop_twod_anno(self, img_anno, twod_anno, draw_anno, context, out_path):
-        '''Helper method to crop a bounding box for a TwoDAnnotation and store it on disc
+            # cropped_image_path = os.path.join(directory, str(anno.idx)) + '.png'
+            # relative_cropped_image_path = self.file_man.mia_crop_rel_path + \
+            # str(self.anno_task_id) + "/" + str(anno.idx) + ".png"
+            # if os.path.exists(cropped_image_path):
+            #     image_json['path'] = relative_cropped_image_path 
+            #     self.mia_json['images'].append(image_json) 
+            #     continue
+            # else:    
+            #     # crop two_d_anno out of image_anno
+            #     config = get_config(self.db_man, self.user_id)
+            #     draw_anno = False
+            #     context = None
+            #     try:
+            #         draw_anno = config['drawAnno']
+            #     except:
+            #         pass
+            #     try:
+            #         context = float(config['addContext'])
+            #     except:
+            #         pass
+            #     self._crop_twod_anno(image_anno, anno, draw_anno, 
+            #         context, cropped_image_path)
+            #     image_json['path'] = relative_cropped_image_path 
+            #     self.mia_json['images'].append(image_json) 
+
+    # def _crop_twod_anno(self, img_anno, twod_anno, draw_anno, context, out_path):
+    #     '''Helper method to crop a bounding box for a TwoDAnnotation and store it on disc
         
-        Args:
-            img_anno (:class:`model.ImageAnno`): The ImageAnno where the twod_anno belongs to.
-            twod_anno (:class:`model.TwoDAnno`): The 2D-anno to crop.
-            draw_anno (bool): Indicates wether the annotation should be painted inside the crop.
-            context (float): Value that indicates how much context should 
-                be cropped around the 2D annotation.  
-            out_path (str): Path to store the cropped image.
-        '''
-        image = skimage.io.imread(self.file_man.get_abs_path(img_anno.img_path))
-        crops, _ = anno_helper.crop_boxes([twod_anno.to_vec('anno.data')],
-            [twod_anno.to_vec('anno.dtype')], image, context=context, 
-            draw_annotations=draw_anno)
-        cropped_image = crops[0]
-        skimage.io.imsave(out_path, cropped_image)
+    #     Args:
+    #         img_anno (:class:`model.ImageAnno`): The ImageAnno where the twod_anno belongs to.
+    #         twod_anno (:class:`model.TwoDAnno`): The 2D-anno to crop.
+    #         draw_anno (bool): Indicates wether the annotation should be painted inside the crop.
+    #         context (float): Value that indicates how much context should 
+    #             be cropped around the 2D annotation.  
+    #         out_path (str): Path to store the cropped image.
+    #     '''
+    #     image = skimage.io.imread(self.file_man.get_abs_path(img_anno.img_path))
+    #     crops, _ = anno_helper.crop_boxes([twod_anno.to_vec('anno.data')],
+    #         [twod_anno.to_vec('anno.dtype')], image, context=context, 
+    #         draw_annotations=draw_anno)
+    #     cropped_image = crops[0]
+    #     skimage.io.imsave(out_path, cropped_image)
 
 def update(db_man, user_id, data):
     at = __get_mia_anno_task(db_man, user_id)

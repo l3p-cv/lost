@@ -25,7 +25,7 @@ DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
 SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
-MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
+# MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
 JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
 MY_DATA_PATH = "my_data/"
 
@@ -296,29 +296,29 @@ class FileMan(object):
         '''
         return path_to_dict(self.media_root_path)
 
-    def get_mia_crop_path(self, annotask_id):
-        ''' get absolute path of mia_crop directory
-        '''
-        directory = os.path.join(self.lostconfig.project_path, MIA_CROP_PATH, str(annotask_id))
-        if not self.fs.exists(directory):
-            os.makedirs(directory)
-        return directory
+    # def get_mia_crop_path(self, annotask_id):
+    #     ''' get absolute path of mia_crop directory
+    #     '''
+    #     directory = os.path.join(self.lostconfig.project_path, MIA_CROP_PATH, str(annotask_id))
+    #     if not self.fs.exists(directory):
+    #         os.makedirs(directory)
+    #     return directory
 
-    def rm_mia_crop_path(self, annotask_id):
-        '''Remove all mia crops of an annotask
+    # def rm_mia_crop_path(self, annotask_id):
+    #     '''Remove all mia crops of an annotask
 
-        Args:
-            annotask_id: Id of annotask where the mia crops should be deleted for.
-        '''
-        mia_crop_path = self.get_mia_crop_path(annotask_id)
-        if self.fs.exists(mia_crop_path):
-            shutil.rmtree(mia_crop_path)
+    #     Args:
+    #         annotask_id: Id of annotask where the mia crops should be deleted for.
+    #     '''
+    #     mia_crop_path = self.get_mia_crop_path(annotask_id)
+    #     if self.fs.exists(mia_crop_path):
+    #         shutil.rmtree(mia_crop_path)
 
-    @property
-    def mia_crop_rel_path(self):
-        ''' get relative path of mia_crop directory
-        '''
-        return MIA_CROP_PATH
+    # @property
+    # def mia_crop_rel_path(self):
+    #     ''' get relative path of mia_crop directory
+    #     '''
+    #     return MIA_CROP_PATH
     
     def get_sia_history_path(self, annotask):
         '''str: get absolute sia_history_path

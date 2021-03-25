@@ -19,9 +19,9 @@ export const getSpecialMiaAnnos = (miaIds, getWorkingAnnoTask) => async dispatch
     } catch (e) {console.log(e)}
 }
 
-export const getMiaImage = (imgId) => async dispatch =>{
+export const getMiaImage = (img) => async dispatch =>{
     try {
-        const response = await axios.post(API_URL + '/mia/getimage', {imgId:imgId})
+        const response = await axios.post(API_URL + '/mia/getimage', img)
         console.log('REQUEST: mia/getimage response: ', response)
         return response
     } catch (e) {console.error(e)}
