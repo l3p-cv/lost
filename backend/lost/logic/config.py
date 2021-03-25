@@ -1,4 +1,5 @@
 import os
+import json
 
 class LOSTConfig(object):
 
@@ -9,6 +10,9 @@ class LOSTConfig(object):
             if os.environ['DEBUG'].lower() == 'true':
                 self.debug = True
         self.project_path = '/home/lost'
+        self.fs_type = os.environ['LOST_FS_TYPE']
+        # print(os.environ['LOST_FS_ARGS'])
+        self.fs_args = json.loads(os.environ['LOST_FS_ARGS'])
         self.py3_init = os.environ['PY3_INIT']
         self.lost_db_user = os.environ['LOST_DB_USER']
         self.lost_db_name = os.environ['LOST_DB_NAME']
@@ -23,8 +27,6 @@ class LOSTConfig(object):
         self.worker_beat = os.environ['WORKER_BEAT']
         self.pipe_schedule = os.environ['PIPE_SCHEDULE']
         self.session_timeout = 30
-        self.fs_type = 'file'
-        self.fs_args = {}
         
         # self.session_timeout = 1
         if "SESSION_TIMEOUT" in os.environ:

@@ -14,7 +14,7 @@ import cv2
 #import ptvsd
 
 
-DATA_ROOT_PATH = "data/"
+DATA_ROOT_PATH = ""
 MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
 MEDIA_UPLOAD_PATH = MEDIA_ROOT_PATH + "uploads/"
 MEDIA_CHUNK_PATH = MEDIA_ROOT_PATH + ".chunks/"
@@ -25,6 +25,7 @@ DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
 SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
+APP_LOG_PATH = DATA_ROOT_PATH + "logs/app/"
 # MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
 JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
 MY_DATA_PATH = "my_data/"
@@ -73,6 +74,12 @@ class FileMan(object):
         if not self.fs.exists(base_path):
             self.fs.mkdirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
+
+    def get_app_log_path(self, log_file_name):
+        base_path = os.path.join(self.lostconfig.project_path, APP_LOG_PATH)
+        if not self.fs.exists(base_path):
+            self.fs.mkdirs(base_path)
+        return os.path.join(base_path, log_file_name)
 
     def get_rel_path(self, path):
         '''Get relativ path for current project
@@ -288,7 +295,7 @@ class FileMan(object):
         '''str: get absolute media chunk path
         '''
         return os.path.join(self.lostconfig.project_path, MEDIA_CHUNK_PATH)
-    
+
     def get_media_rel_path_tree(self):
         '''get first sublevel of media directory
         Returns: 
