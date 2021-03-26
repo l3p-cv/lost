@@ -27,7 +27,7 @@ const TheLayout = () => {
             if (!guiSetup[role.current]) {
                 throw new Error(`Role ${role.current} not found in Gui Setup`)
             } else {
-                const roles = Object.keys(guiSetup).filter((e) => e !== 'additonalRoutes')
+                const roles = Object.keys(guiSetup).filter((e) => e !== 'additionalRoutes')
                 dispatch(actions.setRoles(roles))
                 const newRoutes1 = guiSetup[role.current].navItems.map((navItem) => ({
                     path: navItem.to,

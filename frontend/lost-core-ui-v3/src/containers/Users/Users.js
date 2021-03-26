@@ -1,25 +1,31 @@
 import React from 'react'
-import { Grid } from 'semantic-ui-react'
+import { Col, Row, Card, CardBody } from 'reactstrap'
 import GroupTable from './GroupsTable'
 import UserTable from './UsersTable'
+import BaseContainer from '../../components/BaseContainer'
 
 
 
-function Users() {
-    return (
-        <Grid columns={2} divided style={{backgroundColor: 'white', padding: 15}}>
-            <Grid.Row>
-                <Grid.Column width={5}>
-                    <GroupTable />
-                </Grid.Column>
-                <Grid.Column width={11}>
-                    <UserTable />
-                </Grid.Column>
-            </Grid.Row>
-        </Grid>
-    )
-}
-
+const Users = () => (
+    <BaseContainer>
+        <Row>
+            <Col xs="3">
+                <Card>
+                    <CardBody>
+                        <GroupTable />
+                    </CardBody>
+                </Card>
+            </Col>
+            <Col xs="9">
+                <Card>
+                    <CardBody>
+                        <UserTable />
+                    </CardBody>
+                </Card>
+            </Col>
+        </Row>
+    </BaseContainer>
+)
 
 export default Users
 

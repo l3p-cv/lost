@@ -2,24 +2,22 @@ import React, { useEffect, useState } from 'react'
 import BaseModal from '../../components/BaseModal'
 import Datatable from '../../components/Datatable'
 import { Input } from 'reactstrap'
-import { useSelector } from 'react-redux'
 import IconButton from '../../components/IconButton'
 import { faSave, faBan } from '@fortawesome/free-solid-svg-icons'
 import actions from '../../actions'
 import validator from 'validator'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
 // import { roles } from '../../lost_settings'
-const roles = []
 const ErrorLabel = ({ text }) => (
     <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>
         {text}
     </p>
 )
 
-export default (props) => {
-
+const EditUserModal  = (props) => {
+    const roles = useSelector(state=>state.lost.roles)
     const dispatch = useDispatch()
     const userRaw = props.user[0]
     // userModified.roles = userModified.roles.map(el=>el.name)
@@ -279,3 +277,6 @@ export default (props) => {
         </BaseModal>
     )
 }
+
+
+export default EditUserModal
