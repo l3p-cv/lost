@@ -270,7 +270,8 @@ class Script(pe_base.Element):
         Files that are stored at this path can be accessed by all instances of a
         script.
         '''
-        return os.path.join(self._lostconfig.project_path,
+        #TODO: Check how to handle different filesystem!
+        return os.path.join(self._lostconfig.app_path,
                             os.path.split(self._pipe_element.script.path)[0])
 
     @property

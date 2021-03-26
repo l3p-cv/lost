@@ -7,7 +7,7 @@ import lost
 from lost.logic.pipeline import pipe_model
 import os
 import shutil
-from lost.logic.file_man import FileMan
+from lost.logic.file_man import FileMan, AppFileMan
 from lost.logic import anno_task as at_man
 from lost.pyapi import script as script_api
 import subprocess
@@ -72,7 +72,7 @@ class PipeEngine(pipe_model.PipeEngine):
 
     def __gen_run_cmd(self, program, pipe_e):
         # script = self.dbm.get_script(pipe_e.script_id)
-        script_path = os.path.join(self.lostconfig.project_path, pipe_e.script.path)
+        script_path = os.path.join(self.lostconfig.app_path, pipe_e.script.path)
         cmd = self.lostconfig.py3_init + " && "
         cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
         return cmd
@@ -86,7 +86,7 @@ class PipeEngine(pipe_model.PipeEngine):
         script_content = cmd
         with open(debug_file_path, 'w') as dfile:
             dfile.write(script_content)
-        script_path = os.path.join(self.lostconfig.project_path, pipe_e.script.path)
+        script_path = os.path.join(self.lostconfig.app_path, pipe_e.script.path)
         dsession_str = "For DEBUG start: bash " + debug_file_path
         dsession_str += "<br>If you want to EDIT go to: " + script_path
         pipe_e.debug_session = dsession_str
@@ -303,7 +303,7 @@ class PipeEngine(pipe_model.PipeEngine):
 
 def gen_run_cmd(program, pipe_e, lostconfig):
     # script = self.dbm.get_script(pipe_e.script_id)
-    script_path = os.path.join(lostconfig.project_path, pipe_e.script.path)
+    script_path = os.path.join(lostconfig.app_path, pipe_e.script.path)
     cmd = lostconfig.py3_init + "\n"
     cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
     return cmd
@@ -322,17 +322,18 @@ def celery_exec_script(pipe_element_id):
             return
         pipe_e.state = state.PipeElement.IN_PROGRESS
         dbm.save_obj(pipe_e)
-        file_man = FileMan(lostconfig)
+        file_man = AppFileMan(lostconfig)
         pipe = pipe_e.pipe
 
         cmd = gen_run_cmd("pudb3", pipe_e, lostconfig)
-        debug_script_path = file_man.get_instance_path(pipe_e)
+        debug_script_path = file_man.get_debug_path(pipe_e)
         debug_script_path = os.path.join(debug_script_path, 'debug.sh')
         with open(debug_script_path, 'w') as sfile:
             sfile.write(cmd)
 
         cmd = gen_run_cmd("python3", pipe_e, lostconfig)
-        start_script_path = file_man.get_instance_path(pipe_e)
+        # file_man.create_debug_path(pipe_e)
+        start_script_path = file_man.get_debug_path(pipe_e)
         start_script_path = os.path.join(start_script_path, 'start.sh')
         with open(start_script_path, 'w') as sfile:
             sfile.write(cmd)

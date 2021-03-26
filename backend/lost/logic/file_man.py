@@ -16,8 +16,8 @@ import cv2
 
 DATA_ROOT_PATH = ""
 MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
-MEDIA_UPLOAD_PATH = MEDIA_ROOT_PATH + "uploads/"
-MEDIA_CHUNK_PATH = MEDIA_ROOT_PATH + ".chunks/"
+# MEDIA_UPLOAD_PATH = MEDIA_ROOT_PATH + "uploads/"
+# MEDIA_CHUNK_PATH = MEDIA_ROOT_PATH + ".chunks/"
 # SCRIPT_ROOT_PATH = DATA_ROOT_PATH + "script/"
 PIPE_ROOT_PATH = DATA_ROOT_PATH + "pipes/"
 INSTANCE_ROOT_PATH = DATA_ROOT_PATH + "instance/"
@@ -25,18 +25,96 @@ DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
 SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
-APP_LOG_PATH = DATA_ROOT_PATH + "logs/app/"
+APP_LOG_PATH = DATA_ROOT_PATH + "logs/"
 # MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
-JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
-MY_DATA_PATH = "my_data/"
+# JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
+# MY_DATA_PATH = "my_data/"
 
+class AppFileMan(object):
+    def __init__(self, lostconfig):
+        self.lostconfig = lostconfig
+        self.fs = fsspec.filesystem('file')
+
+    def get_version_log_path(self):
+        return os.path.join(self.lostconfig.app_path, 'version-log.json')
+
+    def get_app_log_path(self, log_file_name):
+        base_path = os.path.join(self.lostconfig.app_path, APP_LOG_PATH)
+        if not self.fs.exists(base_path):
+            self.fs.mkdirs(base_path)
+        return os.path.join(base_path, log_file_name)
+
+    def make_path_relative(self, in_path):
+        '''Make a path relative to project root path.
+
+        Args:
+            in_path: Path to process.
+
+        Returns:
+            str: relative path.
+        '''
+        project_root = self.lostconfig.app_path
+        if os.path.isabs(in_path):
+            c_path = os.path.commonpath((in_path, project_root))
+            out_path = in_path.replace(project_root, "")
+            while out_path[0] == "/":
+                out_path = out_path[1:]
+            return out_path
+        else:
+            return in_path
+
+    def get_debug_path(self, pipe_element):
+        '''Create the instance path for a :class:`lost.db.models.PipeElement`
+
+        Args:
+            pipe_element (object): :class:`lost.db.models.PipeElement`
+
+        Returns:
+            str: The absolute instance path
+        '''
+        root_path = self.lostconfig.app_path
+        i_path = join(root_path, DEBUG_ROOT_PATH)
+        if not self.fs.exists(i_path):
+            self.fs.mkdirs(i_path)
+        # task_path = join(i_path, str(pipe_element.task_id))
+        # if not self.fs.exists(task_path):
+        #     self.fs.mkdirs(task_path)
+        pe_i_path = join(i_path, 'i-{}'.format(str(pipe_element.idx)))
+        if not self.fs.exists(pe_i_path):
+            self.fs.mkdirs(pe_i_path)
+        return pe_i_path
+
+
+    # def create_debug_path(self, pipe_element):
+    #     root_path = self.lostconfig.app_path
+    #     debug_path = join(root_path, DEBUG_ROOT_PATH)
+    #     if not self.fs.exists(debug_path):
+    #         self.fs.mkdirs(debug_path)
+    #     task_path = join(debug_path, str(pipe_element.pipe_id))
+    #     if not self.fs.exists(task_path):
+    #         self.fs.mkdirs(task_path)
+    #     pe_i_path = join(task_path, str(pipe_element.idx))
+    #     if not self.fs.exists(pe_i_path):
+    #         self.fs.mkdirs(pe_i_path)
+    #     return pe_i_path
+    
+    @property
+    def pipe_path(self):
+        '''Get path to store pipeline directories.
+
+        Returns:
+            The absolute path to the pipeline folder.
+        '''
+        root_path = self.lostconfig.app_path
+        pipe_path = os.path.join(root_path, PIPE_ROOT_PATH)
+        return pipe_path
 class FileMan(object):
     def __init__(self, lostconfig):
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
-        if len(lostconfig.fs_args) > 0:
-            self.fs = fsspec.filesystem(lostconfig.fs_type, **lostconfig.fs_args)
+        if len(lostconfig.data_fs_args) > 0:
+            self.fs = fsspec.filesystem(lostconfig.data_fs_type, **lostconfig.data_fs_args)
         else:
-            self.fs = fsspec.filesystem(lostconfig.fs_type)
+            self.fs = fsspec.filesystem(lostconfig.data_fs_type)
 
 
     def load_img(self, path, color_type='color'):
@@ -65,21 +143,12 @@ class FileMan(object):
                 arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
                 img = cv2.imdecode(arr, color)
             return img
-
-    def get_version_log_path(self):
-        return os.path.join(self.lostconfig.project_path, 'version-log.json')
             
     def get_pipe_log_path(self, pipe_id):
-        base_path = os.path.join(self.lostconfig.project_path, PIPE_LOG_PATH)
+        base_path = os.path.join(self.lostconfig.data_path, PIPE_LOG_PATH)
         if not self.fs.exists(base_path):
             self.fs.mkdirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
-
-    def get_app_log_path(self, log_file_name):
-        base_path = os.path.join(self.lostconfig.project_path, APP_LOG_PATH)
-        if not self.fs.exists(base_path):
-            self.fs.mkdirs(base_path)
-        return os.path.join(base_path, log_file_name)
 
     def get_rel_path(self, path):
         '''Get relativ path for current project
@@ -105,7 +174,7 @@ class FileMan(object):
             str: Absolute path
         '''
         if not os.path.isabs(path):
-            return os.path.join(self.lostconfig.project_path, path)
+            return os.path.join(self.lostconfig.data_path, path)
         else:
             return path
 
@@ -118,7 +187,7 @@ class FileMan(object):
         Returns:
             str: relative path.
         '''
-        project_root = self.lostconfig.project_path
+        project_root = self.lostconfig.data_path
         if os.path.isabs(in_path):
             c_path = os.path.commonpath((in_path, project_root))
             out_path = in_path.replace(project_root, "")
@@ -148,7 +217,7 @@ class FileMan(object):
                 the log file should be deleted for.'''
         path = self.get_pipe_log_path(pipe.idx)
         if self.fs.exists(path):
-            os.remove(path)
+            self.fs.remove(path)
 
     def get_instance_path(self, pipe_element):
         return self.create_instance_path(pipe_element)
@@ -165,14 +234,14 @@ class FileMan(object):
             str: pipe context path
         '''
         if pe is not None:
-            pipe_context = join(self.lostconfig.project_path, INSTANCE_ROOT_PATH,
+            pipe_context = join(self.lostconfig.data_path, INSTANCE_ROOT_PATH,
                                 'p-{}'.format(pe.pipe_id))
             if not self.fs.exists(pipe_context):
                 self.fs.mkdirs(pipe_context)
             return pipe_context
 
         elif pipe is not None:
-            pipe_context = join(self.lostconfig.project_path, INSTANCE_ROOT_PATH,
+            pipe_context = join(self.lostconfig.data_path, INSTANCE_ROOT_PATH,
                                 'p-{}'.format(pipe.idx))
             if not self.fs.exists(pipe_context):
                 self.fs.mkdirs(pipe_context)
@@ -180,9 +249,7 @@ class FileMan(object):
         else:
             raise Exception("No valid argument for pipe context path.")
 
-    
-    def get_jupyter_notebook_output_file(self):
-        return join(self.lostconfig.project_path, JUPYTER_NOTEBOOK_OUTPUT_PATH)
+
         
     def create_instance_path(self, pipe_element):
         '''Create the instance path for a :class:`lost.db.models.PipeElement`
@@ -193,7 +260,7 @@ class FileMan(object):
         Returns:
             str: The absolute instance path
         '''
-        root_path = self.lostconfig.project_path
+        root_path = self.lostconfig.data_path
         i_path = join(root_path, INSTANCE_ROOT_PATH)
         if not self.fs.exists(i_path):
             self.fs.mkdirs(i_path)
@@ -205,46 +272,12 @@ class FileMan(object):
             self.fs.mkdirs(pe_i_path)
         return pe_i_path
 
-    # def create_script_path(self, script_id):
-    #     '''Create path where a script file will be stored.
 
-    #         script_id: ID of the related :class:`lost.db.models.Script`
 
-    #     Returns:
-    #         The absolute path to the script folder.
-    #     '''
-    #     root_path = self.lostconfig.project_path
-    #     script_dir = os.path.join(root_path,SCRIPT_ROOT_PATH)
-    #     if not self.fs.exists(script_dir):
-    #         self.fs.mkdirs(script_dir)
-    #     script_i_dir = os.path.join(script_dir,str(script_id))
-    #     if not self.fs.exists(script_i_dir):
-    #         self.fs.mkdirs(script_i_dir)
-    #     return script_i_dir
+    # def get_debug_path(self, pipe_e):
+    #     return self.create_instance_path(pipe_e, debug=True)
 
-    @property
-    def pipe_path(self):
-        '''Get path to store pipeline directories.
-
-        Returns:
-            The absolute path to the pipeline folder.
-        '''
-        root_path = self.lostconfig.project_path
-        pipe_path = os.path.join(root_path, PIPE_ROOT_PATH)
-        return pipe_path
-
-    def create_debug_path(self, pipe_element):
-        root_path = self.lostconfig.project_path
-        debug_path = join(root_path, DEBUG_ROOT_PATH)
-        if not self.fs.exists(debug_path):
-            self.fs.mkdirs(debug_path)
-        task_path = join(debug_path, str(pipe_element.pipe_id))
-        if not self.fs.exists(task_path):
-            self.fs.mkdirs(task_path)
-        pe_i_path = join(task_path, str(pipe_element.idx))
-        if not self.fs.exists(pe_i_path):
-            self.fs.mkdirs(pe_i_path)
-        return pe_i_path
+    
 
     def create_project_folders(self):
         '''Create folder structure for a project in lost webportal.
@@ -252,49 +285,34 @@ class FileMan(object):
         Args:
             root: Root path of the project.
         '''
-        root = self.lostconfig.project_path
+        root = self.lostconfig.data_path
         if not self.fs.exists(root):
             self.fs.mkdirs(root)
             print("\t Created: %s"%(root,))
-        # if not self.fs.exists(join(root,SCRIPT_ROOT_PATH)):
-        #     self.fs.mkdirs(join(root,SCRIPT_ROOT_PATH))
-        #     print("\t Created: %s"%(join(root,SCRIPT_ROOT_PATH),))
         if not self.fs.exists(join(root,INSTANCE_ROOT_PATH)):
             self.fs.mkdirs(join(root,INSTANCE_ROOT_PATH))
             print("\t Created: %s"%(join(root,INSTANCE_ROOT_PATH),))
         if not self.fs.exists(join(root,MEDIA_ROOT_PATH)):
             self.fs.mkdirs(join(root,MEDIA_ROOT_PATH))
             print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
-        if not self.fs.exists(join(root,DEBUG_ROOT_PATH)):
-            self.fs.mkdirs(join(root,DEBUG_ROOT_PATH))
-            print("\t Created: %s"%(join(root,DEBUG_ROOT_PATH),))
-        if not self.fs.exists(join(root, MY_DATA_PATH)):
-            self.fs.mkdirs(join(root, MY_DATA_PATH))
-            print("\t Created: %s"%(join(root, MY_DATA_PATH),))
+        # debug_path = join(self.lostconfig.app_path,DEBUG_ROOT_PATH)
+        # if not self.fs.exists(debug_path):
+        #     self.fs.mkdirs(debug_path)
+        #     print("\t Created: %s"%(debug_path,))
+
 
     @property
     def media_root_path(self):
         '''str: get absolute media root path
         '''
-        return os.path.join(self.lostconfig.project_path, MEDIA_ROOT_PATH)
+        return os.path.join(self.lostconfig.data_path, MEDIA_ROOT_PATH)
     
     @property
     def data_root_path(self):
         '''str: get absolute data root path
         '''
-        return os.path.join(self.lostconfig.project_path, DATA_ROOT_PATH)
+        return self.lostconfig.data_path
 
-    @property
-    def media_upload_path(self):
-        '''str: get absolute media upload path
-        '''
-        return os.path.join(self.lostconfig.project_path, MEDIA_UPLOAD_PATH)
-    
-    @property
-    def media_chunk_path(self):
-        '''str: get absolute media chunk path
-        '''
-        return os.path.join(self.lostconfig.project_path, MEDIA_CHUNK_PATH)
 
     def get_media_rel_path_tree(self):
         '''get first sublevel of media directory
@@ -302,35 +320,11 @@ class FileMan(object):
             list: ['path/1', 'path/2']
         '''
         return path_to_dict(self.media_root_path)
-
-    # def get_mia_crop_path(self, annotask_id):
-    #     ''' get absolute path of mia_crop directory
-    #     '''
-    #     directory = os.path.join(self.lostconfig.project_path, MIA_CROP_PATH, str(annotask_id))
-    #     if not self.fs.exists(directory):
-    #         os.makedirs(directory)
-    #     return directory
-
-    # def rm_mia_crop_path(self, annotask_id):
-    #     '''Remove all mia crops of an annotask
-
-    #     Args:
-    #         annotask_id: Id of annotask where the mia crops should be deleted for.
-    #     '''
-    #     mia_crop_path = self.get_mia_crop_path(annotask_id)
-    #     if self.fs.exists(mia_crop_path):
-    #         shutil.rmtree(mia_crop_path)
-
-    # @property
-    # def mia_crop_rel_path(self):
-    #     ''' get relative path of mia_crop directory
-    #     '''
-    #     return MIA_CROP_PATH
     
     def get_sia_history_path(self, annotask):
         '''str: get absolute sia_history_path
         '''
-        sia_hist_file = os.path.join(self.lostconfig.project_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
+        sia_hist_file = os.path.join(self.lostconfig.data_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
         if not self.fs.exists(os.path.split(sia_hist_file)[0]):
             os.makedirs(os.path.split(sia_hist_file)[0])
         return sia_hist_file
@@ -343,10 +337,10 @@ class FileMan(object):
                 the sia_history file should be deleted for.
         '''
         path = self.get_sia_history_path(annotask)
-        backup_dir = os.path.join(self.lostconfig.project_path, SIA_HISTORY_BACKUP_PATH)
+        backup_dir = os.path.join(self.lostconfig.data_path, SIA_HISTORY_BACKUP_PATH)
         if not self.fs.exists(backup_dir):
             os.makedirs(backup_dir)
-        backup_path = os.path.join(self.lostconfig.project_path, SIA_HISTORY_BACKUP_PATH, '{}_{}_{}.json'.format(datetime.now(), annotask.idx, annotask.name))
+        backup_path = os.path.join(self.lostconfig.data_path, SIA_HISTORY_BACKUP_PATH, '{}_{}_{}.json'.format(datetime.now(), annotask.idx, annotask.name))
         if self.fs.exists(path):
             os.rename(path, backup_path)
 
