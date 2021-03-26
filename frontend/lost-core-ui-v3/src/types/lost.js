@@ -1,0 +1,3 @@
+export const SET_NAVBAR_VISIBLE = 'SET_NAVBAR_VISIBLE'
+export const SET_SETTINGS = 'SET_SETTINGS'
+export const SET_ROLES = 'SET_ROLES'

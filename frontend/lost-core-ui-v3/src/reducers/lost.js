@@ -22,6 +22,11 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 settings: action.payload,
             }
+        case TYPES.SET_ROLES:
+            return {
+                ...state,
+                roles: action.payload
+            }
         default:
             return state
     }

@@ -1,7 +1,8 @@
 import DashboardComponent from './containers/pipeline//running/RunningPipeline'
 import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
 import LabelsComponent from './containers/Labels/Labels'
-import WorkersComponent from './containers/Workers'
+import WorkersComponent from './containers/Workers/WorkersTable'
+import UsersComponent from './containers/Users/Users'
 import {
     FaTachometerAlt,
     FaPlay,
@@ -62,7 +63,7 @@ const Workers = {
 const Users = {
     name: 'Users',
     to: '/users',
-    component: WorkersComponent,
+    component: UsersComponent,
     icon: <FaUsers {...iconProps} />,
 
 }
