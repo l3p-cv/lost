@@ -1,6 +1,6 @@
-import DashboardComponent from './containers/Pipeline/running/RunningPipeline'
-import StartPipelineComponent from './containers/StartPipeline'
-import LabelsComponent from './containers/Labels'
+import DashboardComponent from './containers/pipeline//running/RunningPipeline'
+import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
+import LabelsComponent from './containers/Labels/Labels'
 import WorkersComponent from './containers/Workers'
 import {
     FaTachometerAlt,

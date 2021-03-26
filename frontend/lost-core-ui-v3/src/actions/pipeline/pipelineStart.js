@@ -1,6 +1,6 @@
 import { API_URL } from '../../lost_settings'
 import axios from 'axios'
-import { alertLoading, alertClose, alertError } from '../../containers/Pipeline/globalComponents/Sweetalert'
+import { alertLoading, alertClose, alertError } from '../../containers/pipeline//globalComponents/Sweetalert'
 
 const selectTab = (tabId) => {
     return {
