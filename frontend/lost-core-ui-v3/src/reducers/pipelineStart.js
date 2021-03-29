@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 const INITITAL_STATE = {
     stepper: {
         style: {
@@ -6,7 +7,7 @@ const INITITAL_STATE = {
               paddingBottom: 40,       //pixel
             },
             shape: {
-              size: 80,
+              size: 60,
               borderWidth: 4,
               borderRadius: '50%',
             },
@@ -71,7 +72,7 @@ const INITITAL_STATE_ANNO_TASK_MODAL = {
           paddingBottom: 24,       //pixel
         },
         shape: {
-          size: 80,
+          size: 60,
           borderWidth: 4,
           borderRadius: '50%',
         },

@@ -9,7 +9,7 @@ import SelectPipeline from './1/SelectPipeline'
 import ShowStartPipeline from './2/ShowStartPipeline'
 import StartPipelineForm from './3/StartPipelineForm'
 import StartRunPipeline from './4/StartPipeline'
-
+import BaseContainer from '../../../components/BaseContainer'
 const { selectTab } = actions
 
 class StartPipeline extends Component {
@@ -37,13 +37,13 @@ class StartPipeline extends Component {
 
     render() {
         return (
-            <div className='pipeline-start-container'>
+            <BaseContainer className='pipeline-start-container'>
                 <Stepper
                     stepperData={this.props.stepperData}
                     changeCurrentStep={this.changeCurrentStep}
                 />
                 {this.renderContent()}
-            </div>
+            </BaseContainer>
         )
     }
 }

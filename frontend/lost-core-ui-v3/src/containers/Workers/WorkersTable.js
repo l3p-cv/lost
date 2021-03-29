@@ -6,6 +6,7 @@ import {Badge, Button, Card, CardHeader, CardBody, Table} from 'reactstrap'
 import LogModal from '../../components/LogModal'
 import actions from '../../actions'
 import * as Notification from '../../components/Notification'
+import BaseContainer from '../../components/BaseContainer'
 
 const {getWorkers, getWorkerLogFile} = actions
 
@@ -150,7 +151,7 @@ class WorkersTable extends Component {
     }
     render() {
         return (
-            <React.Fragment>
+            <BaseContainer>
                 <Table hover responsive className='table-outline mb-0 d-none d-sm-table'>
                     <thead className='thead-light'>
                         <tr>
@@ -164,7 +165,7 @@ class WorkersTable extends Component {
                     </thead>
                     {this.renderTableBody()}
                 </Table>
-            </React.Fragment>
+            </BaseContainer>
         )
 
     }

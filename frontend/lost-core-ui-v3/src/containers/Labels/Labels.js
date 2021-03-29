@@ -11,7 +11,7 @@ import {
 import LabelTreeTable from './LabelTreeTable';
 import LabelTree from './LabelTree';
 import CreateLabelTree from './CreateLabelTree';
-
+import BaseContainer from '../../components/BaseContainer'
 
 
 const {getLabelTrees} = actions
@@ -34,7 +34,7 @@ class Label extends Component {
     }
     render() {
         return (
-            <div>
+            <BaseContainer>
                 <Row>
                     <Col xs='12' sm='12' lg='12'>
                         <Card className='text-black'>
@@ -53,7 +53,7 @@ class Label extends Component {
                         </Card>
                     </Col>
                 </Row>
-            </div>
+            </BaseContainer>
         )
     }
 }

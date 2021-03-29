@@ -6,7 +6,7 @@ const INITITAL_STATE = {
             paddingBottom: 40,       //pixel
         },
         shape: {
-            size: 80,
+            size: 60,
             borderWidth: 4,
             borderRadius: '50%',
         },

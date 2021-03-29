@@ -7,6 +7,7 @@ import Stepper from 'react-stepper-wizard'
 import SelectPipeline from './1/SelectPipeline'
 import ShowRunningPipeline from './2/ShowRunningPipeline'
 import actions from '../../../actions/pipeline/pipelineRunning'
+import BaseContainer from '../../../components/BaseContainer'
 
 const {selectTab} = actions
 
@@ -38,7 +39,7 @@ class RunningPipeline extends Component{
 
     render(){
         return(
-            <div className='pipeline-running-container'>
+            <BaseContainer className='pipeline-running-container'>
             <Stepper
             stepperData={this.props.pipelineRunning}
             changeCurrentStep={this.changeCurrentStep}
@@ -47,7 +48,7 @@ class RunningPipeline extends Component{
           
   
           {this.renderContent()}
-          </div>
+          </BaseContainer>
         )
     }
 }
