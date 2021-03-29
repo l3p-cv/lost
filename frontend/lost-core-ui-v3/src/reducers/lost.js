@@ -1,7 +1,10 @@
 import TYPES from '../types/index'
 
+const initIsNavBarVisible = localStorage.getItem('isNavBarVisible') === 'true'
+console.log('initIsNavBarVisible')
+console.log(initIsNavBarVisible)
 const INITIAL_STATE = {
-    isNavBarVisible: true,
+    isNavBarVisible: initIsNavBarVisible === undefined? true: initIsNavBarVisible,
     version: '0.0.0',
     settings: {
         autoLogoutWarnTime: 300,
@@ -13,6 +16,7 @@ const INITIAL_STATE = {
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
         case TYPES.SET_NAVBAR_VISIBLE:
+            localStorage.setItem('isNavBarVisible', action.payload)
             return {
                 ...state,
                 isNavBarVisible: action.payload,

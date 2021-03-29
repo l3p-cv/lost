@@ -20,13 +20,16 @@ const TheHeader = ({numNavItems}) => {
     }
 
     const renderSidebarToggler = () => {
-        if (numNavItems > 1){
-            return (<>
-                <CToggler inHeader className="ml-md-3 d-lg-none" onClick={toggleSidebarMobile} />
-                <CToggler inHeader className="ml-3 d-md-down-none" onClick={toggleSidebar} />
-            </>)
+        if(numNavItems){
+            if (numNavItems > 1){
+                return (<>
+                    <CToggler inHeader className="ml-md-3 d-lg-none" onClick={toggleSidebarMobile} />
+                    <CToggler inHeader className="ml-3 d-md-down-none" onClick={toggleSidebar} />
+                </>)
+            }else{
+                dispatch(actions.setNavbarVisible(false))
+            }
         }
-        dispatch(actions.setNavbarVisible(false))
         return null
     }
 

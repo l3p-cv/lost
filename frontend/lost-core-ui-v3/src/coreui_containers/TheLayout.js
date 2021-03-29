@@ -15,7 +15,7 @@ const TheLayout = () => {
     const role = useRef()
     const history = useHistory()
     const dispatch = useDispatch()
-    const [navItems, setNavItems] = useState()
+    const [navItems, setNavItems] = useState([])
     const [routes, setRoutes] = useState([])
     const { i18n } = useTranslation()
     useEffect(() => {
@@ -81,13 +81,11 @@ const TheLayout = () => {
         }
     }, [i18n.language])
 
-    console.log('routes')
-    console.log(routes)
     return (
         <div className="c-app c-default-layout">
             <TheSidebar navItems={navItems} />
             <div className="c-wrapper">
-                <TheHeader numNavItems={navItems? navItems.length: 0}/>
+                <TheHeader numNavItems={navItems.length}/>
                 <div className="c-body">
                     <TheContent routes={routes} />
                 </div>
