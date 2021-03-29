@@ -48,7 +48,7 @@ Pillow==5.4.1
 protobuf==3.6.1
 pudb==2018.1
 pycparser==2.19
-Pygments==2.3.1
+Pygments==2.7.4
 pygpu==0.7.6
 PyMySQL==0.9.3
 pyparsing==2.3.1
