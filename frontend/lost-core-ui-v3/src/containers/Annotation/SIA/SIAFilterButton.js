@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 
 import {connect} from 'react-redux'
 import { Popup, Icon, Menu, Divider, Checkbox } from 'semantic-ui-react'
-import actions from '../../actions'
+import actions from '../../../actions'
 import * as filterTools from './filterTools'
 const { siaApplyFilter } = actions
 

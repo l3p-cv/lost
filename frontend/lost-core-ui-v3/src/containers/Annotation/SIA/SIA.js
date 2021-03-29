@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import actions from '../../actions'
+import actions from '../../../actions'
 import 'semantic-ui-css/semantic.min.css'
 
 // import from npm package
@@ -74,6 +74,7 @@ class SIA extends Component {
         // console.warn('We are not using real SIA config')
     }
     componentWillUnmount() {
+        document.body.style.overflow = ""
         window.removeEventListener("resize", this.props.siaLayoutUpdate);
     }
 
@@ -489,4 +490,3 @@ export default connect(
     }
     , null,
     {})(SIA)
-

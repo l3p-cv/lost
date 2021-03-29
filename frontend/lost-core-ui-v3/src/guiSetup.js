@@ -3,17 +3,22 @@ import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
 import LabelsComponent from './containers/Labels/Labels'
 import WorkersComponent from './containers/Workers/WorkersTable'
 import UsersComponent from './containers/Users/Users'
+import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
+import SiaComponent from './containers/Annotation/SingleImageAnnotation'
+import MiaComponent from './containers/Annotation/MultiImageAnnotation'
+
 import {
     FaTachometerAlt,
     FaPlay,
     FaTag,
     FaCubes,
-    FaUsers
+    FaUsers,
+    FaPaintBrush
 } from 'react-icons/fa'
 
 const iconProps = {
-    className: 'c-sidebar-nav-icon',
     size: 20,
+    className: 'c-sidebar-nav-icon',
     style: {
         marginRight: 10
         }
@@ -68,11 +73,29 @@ const Users = {
 
 }
 
+const Annotation = {
+    name: 'Annotation',
+    to: '/annotation',
+    component: AnnotationTableComponent,
+    icon: <FaPaintBrush {...iconProps} />
+}
 
 
+const Sia = {
+    path: '/sia',
+    exact: false,
+    component: SiaComponent
+}
+
+const Mia = {
+    path: '/mia',
+    exact: false,
+    component: MiaComponent
+}
 const guiSetup = {
     additionalRoutes: [
-
+        Sia,
+        Mia
     ],
     Designer: {
         redirect: '/dashboard',
@@ -83,7 +106,8 @@ const guiSetup = {
             TitleProject,
             Labels,
             Workers,
-            Users
+            Users,
+            Annotation
         ]
     }
 }

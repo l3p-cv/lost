@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import AnnoDetails from './AnnoDetails'
 import LabelInfo from './LabelInfo'
-import actions from '../../../actions'
+import actions from '../../../../actions'
 const { siaShowImgBar, siaSetUIConfig } = actions
 
 class InfoBoxes extends Component{

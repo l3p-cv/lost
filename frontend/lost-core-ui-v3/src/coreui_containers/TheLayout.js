@@ -35,8 +35,8 @@ const TheLayout = () => {
                     component: navItem.component,
                 }))
                 let newRoutes2 = []
-                if (guiSetup.additonalRoutes) {
-                    newRoutes2 = guiSetup.additonalRoutes.map((route) => ({
+                if (guiSetup.additionalRoutes) {
+                    newRoutes2 = guiSetup.additionalRoutes.map((route) => ({
                         path: route.path,
                         name: route.path,
                         exact: route.exact,
@@ -81,6 +81,8 @@ const TheLayout = () => {
         }
     }, [i18n.language])
 
+    console.log('routes')
+    console.log(routes)
     return (
         <div className="c-app c-default-layout">
             <TheSidebar navItems={navItems} />

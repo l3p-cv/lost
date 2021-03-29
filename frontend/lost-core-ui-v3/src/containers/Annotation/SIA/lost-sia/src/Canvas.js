@@ -297,6 +297,7 @@ class Canvas extends Component{
             translateX: newTranslation.x,
             translateY: newTranslation.y
         }})
+        return false
     }
 
     onRightClick(e){
@@ -1346,7 +1347,7 @@ class Canvas extends Component{
                         transform={`scale(${this.state.svg.scale}) translate(${this.state.svg.translateX}, ${this.state.svg.translateY})`}
                         onMouseOver={() => {this.onMouseOver()}}
                         onMouseUp={(e) => {this.onMouseUp(e)}}
-                        onWheel={(e) => {this.onWheel(e)}}
+                        onWheel={(e) => this.onWheel(e)}
                         onMouseMove={(e) => {this.onMouseMove(e)}}
                     >
                         <image

@@ -5,7 +5,7 @@ import SIASettingButton from './SIASettingButton'
 import SIAFilterButton from './SIAFilterButton'
 import Prompt from './lost-sia/src/Prompt'
 
-import actions from '../../actions'
+import actions from '../../../actions'
 import * as TOOLS from './lost-sia/src/types/tools'
 import * as siaIcons from './lost-sia/src/utils/siaIcons'
 
@@ -58,10 +58,10 @@ class ToolBar extends Component{
         if (tb){
             if (this.props.svg){
                 let toolBarTop = undefined
-                toolBarTop = this.props.svg.top + (this.props.svg.height - tb.height)/2
+                toolBarTop = this.props.svg.top + (this.props.svg.height)/6
                 this.setState({
                     position: {...this.state.position,
-                    left: this.props.svg.left - 50,
+                    left: this.props.svg.left - 55,
                     top: toolBarTop,
                     }
                 })
