@@ -8,7 +8,7 @@ const INITIAL_STATE = {
     version: '0.0.0',
     settings: {
         autoLogoutWarnTime: 300,
-        autoLogoutTime: 6000,
+        autoLogoutTime: 3600,
         isDevMode: true
     }
 }

@@ -1,12 +1,22 @@
 import Swal from 'sweetalert2'
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false
+})
+
+
 export const alertLoading =  () => {
-    Swal.fire({
-        title: 'Loading...',
-        onBeforeOpen: () => {
-            Swal.showLoading()
-        }
+    Toast.fire({
+        title: 'Loading...'
     })
+    // Swal.fire({
+    //     title: 'Loading...',
+    //     onBeforeOpen: () => {
+    //         Swal.showLoading()
+    //     }
+    // })
 }
 
 export const alertClose = () =>{

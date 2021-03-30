@@ -109,6 +109,12 @@ const guiSetup = {
             Users,
             Annotation
         ]
+    },
+    Annotator: {
+        redirect: '/annotation',
+        navItems: [
+            Annotation
+        ]
     }
 }
 
