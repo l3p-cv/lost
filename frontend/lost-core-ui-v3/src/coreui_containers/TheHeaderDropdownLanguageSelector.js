@@ -38,13 +38,13 @@ const TheHeaderDropdownTasks = () => {
                 </CDropdownItem>
                 <CDropdownItem className="d-block">
                     <div>
-                        <LanguageDropdownItem
+                        {/* <LanguageDropdownItem
                             language="Deutsch"
                             onClick={() => {
                                 i18n.changeLanguage('de')
                             }}
                             countryCode="de"
-                        />
+                        /> */}
                     </div>
                 </CDropdownItem>
                 <CDropdownItem className="d-block">
