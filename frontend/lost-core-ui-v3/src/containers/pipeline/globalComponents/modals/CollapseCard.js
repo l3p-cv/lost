@@ -12,7 +12,9 @@ class CollapseCustom extends Component {
     render() {
         return (
             <>
-                <Button color="primary" onClick={this.toggle} style={{ marginTop:20, marginBottom: '1rem' }}>More Information</Button>
+                <Button color="primary" onClick={this.toggle} style={{ marginTop:20, marginRight: 10,  marginBottom: '1rem' }}>
+                    {this.props.buttonText?this.props.buttonText: "More Informations"}
+                </Button>
                 <Collapse isOpen={this.state.collapse}>
                     <Card>
                         <CardBody>

@@ -1,10 +1,12 @@
-import React from 'react'
+import React,{useEffect, useState} from 'react'
 import { ModalHeader, ModalBody, Button } from 'reactstrap';
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
-
+import ReactTable from 'react-table'
+import {useDispatch, useSelector} from 'react-redux'
 import { createHashHistory } from 'history'
+import actions from '../../../../../../actions'
 
 function handleSiaRewiewClick(props){
     props.siaReviewSetElement(props.id)
@@ -13,6 +15,8 @@ function handleSiaRewiewClick(props){
         createHashHistory().push('/sia-review')
     )
 }
+
+
 
 function annotationReleaseSuccessful(){
     // console.log('Annotation release successful')
@@ -23,7 +27,27 @@ function handleForceAnnotationRelease(props){
     // console.log('Start annotation release')
     props.forceAnnotationRelease(props.annoTask.id, annotationReleaseSuccessful)
 }
-export default (props)=>{
+const AnnoTaskModal =  (props)=>{
+    const dispatch = useDispatch()
+    const users = useSelector(state=>state.user.users)
+    const groups = useSelector(state=>state.group.groups)
+    const [newUserIdx, setNewUserIdx]  = useState()
+    useEffect(()=>{
+        dispatch(actions.getUsers())
+        dispatch(actions.getGroups())
+    }, [])
+    const dataTableData = [
+        ...users.map(user=>({
+            idx: user.idx,
+            rawName: user.user_name,
+            name: `${user.user_name} (user)`
+        })),
+        ...groups.map(group=>({
+            idx: group.idx,
+            rawName: group.name,
+            name: `${group.name} (group)` 
+        }))
+    ]
     return (
         <>
             <ModalHeader>Annotation Task</ModalHeader>
@@ -37,13 +61,48 @@ export default (props)=>{
                         {
                             key: 'Instructions',
                             value: props.annoTask.instructions
-                        },
-                        {
-                            key: 'User/Group Name',
-                            value: props.annoTask.userName
                         }
                     ]}
                 />
+                <CollapseCard
+                    buttonText="Adapt Users/Groups"
+                >
+                    <ReactTable
+                        data={dataTableData}
+                        getTrProps={(state,rowInfo)=>{
+                            let backgroundColor
+                            if(rowInfo){
+                                if(!newUserIdx && props.annoTask.userName === rowInfo.original.rawName){
+                                    backgroundColor = 'orange'
+                                }else if(newUserIdx && newUserIdx == rowInfo.original.idx){
+                                    backgroundColor = 'orange'
+                                } 
+
+                            }
+                            return {
+                                onClick: (e) => {
+                                    setNewUserIdx(rowInfo.original.idx)
+                                },
+                                style: {
+                                    background: backgroundColor,
+                                }
+                            }
+
+
+                        }}
+                        columns={[
+                            {
+                                Header: 'ID',
+                                accessor: 'idx',
+                            },
+                            {
+                                Header: 'Name',
+                                accessor: 'name',
+                            }
+                        ]}
+
+                    />
+                </CollapseCard>
                 <CollapseCard>
                     <Table
                         data={[
@@ -76,5 +135,4 @@ export default (props)=>{
     )
 }
 
-
-
+export default AnnoTaskModal
