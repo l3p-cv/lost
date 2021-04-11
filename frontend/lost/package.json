@@ -24,6 +24,8 @@
     "axios": "^0.18.1",
     "bootstrap": "^4.3.1",
     "chart.js": "^2.7.2",
+    "chonky": "^2.1.0",
+    "chonky-icon-fontawesome": "^2.1.0",
     "classnames": "^2.2.6",
     "core-js": "^2.5.7",
     "enzyme": "^3.7.0",

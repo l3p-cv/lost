@@ -728,6 +728,35 @@ class DBMan(object):
             return self.session.query(model.Worker)\
                 .filter(model.Worker.worker_name==worker_name).first()
 
+    def get_fs(self, name=None, group_id=None):
+        '''Get filesystem entries from database
+
+        Args:
+            name (str): Get filesystem by name.
+            group_id (int): GroupID for Group or User
+        
+        Retruns:
+            list of `model.FileSystem`: If no arg or group_id was given.
+            `model.FileSystem` object: If one arg was given.
+        '''
+        if name is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.name==name).first()
+        elif group_id is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.group_id==group_id).all()
+        else:
+            return self.session.query(model.FileSystem).all()
+    
+    def get_public_fs(self):
+        '''Get all public available filesystem entries
+
+        Retruns:
+            list of `model.FileSystem`: All public filesystem entries.
+        '''
+        return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.group_id==None).all()
+
     def get_worker_and_lock(self, worker_name):
         '''Get an worker object and lock for update in database.
 

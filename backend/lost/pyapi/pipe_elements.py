@@ -1,28 +1,30 @@
 import lost
 import os
+import fsspec
+import ast
 import pandas as pd
 from lost.db import dtype
 from lost.pyapi.pe_base import Element
 from lost.pyapi import script
+from lost.logic.file_man import FileMan
+# class RawFile(Element):
 
-class RawFile(Element):
+#     def __init__(self, pe, dbm):
+#         '''RawFile: Represents a file or folder in the filesystem.
 
-    def __init__(self, pe, dbm):
-        '''RawFile: Represents a file or folder in the filesystem.
+#         Args:
+#             pe (object): :class:`lost.db.model.PipeElement`
+#             dbm (object): Database Management object.
 
-        Args:
-            pe (object): :class:`lost.db.model.PipeElement`
-            dbm (object): Database Management object.
+#         Note:
+#             It is essential the same as a Datasource.
+#         '''
+#         super().__init__(pe, dbm)
 
-        Note:
-            It is essential the same as a Datasource.
-        '''
-        super().__init__(pe, dbm)
-
-    @property
-    def path(self):
-        '''str: Absolute path to file or folder'''
-        return self._fm.get_abs_path(self._pipe_element.datasource.raw_file_path)
+#     @property
+#     def path(self):
+#         '''str: Absolute path to file or folder'''
+#         return self._fm.get_abs_path(self._pipe_element.datasource.raw_file_path)
 
 class Datasource(Element):
 
@@ -34,11 +36,21 @@ class Datasource(Element):
             dbm (object): Database Management object.
         '''
         super().__init__(pe, dbm)
+        self.file_man = FileMan(fs_db=pe.datasource.fs)
 
     @property
     def path(self):
-        '''str: Absolute path to file or folder'''
-        return self._fm.get_abs_path(self._pipe_element.datasource.raw_file_path)
+        '''str: Relative path to file or folder'''
+        return self.file_man.get_abs_path(self.pe.datasource.selected_path)
+
+    def get_fs(self):
+        '''Get filesystem for this datasource'''
+        # ds = self.pe.datasource
+        # fs_args = ast.literal_eval(ds.fs.connection)
+        # fs = fsspec.filesystem(ds.fs.fs_type, **fs_args)
+        # fs.lost_fs = ds.fs
+        return self.file_man.fs
+
 
 class AnnoTask(Element):
 

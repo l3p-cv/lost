@@ -171,6 +171,28 @@ export default (state = INITITAL_STATE, action)=>{
                 })
             }
         }
+        case 'PIPELINE_START_DATASOURCE_UPDATE':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('datasource' in el && (el.peN === action.payload.elementId)){
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                datasource: {
+                                    ...el.exportData.datasource,
+                                    fs_name: action.payload.value
+                                }
+                            }
+                        }
+                    }
+                    return el
+                })
+            }
+        }
         // DATASOURCE END
         // LOOP START
         case 'PIPELINE_START_LOOP_INPUT_MAXITERATION':

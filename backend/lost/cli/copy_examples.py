@@ -15,5 +15,5 @@ if __name__ == "__main__":
 
     lostconfig = config.LOSTConfig()
     fm = FileMan(lostconfig)
-    fm.fs.copy(args.src, fm.media_root_path, recursive=True)
+    fm.fs.put(args.src, fm.media_root_path, recursive=True)
     logging.info('Copyed images from {} to {}'.format(args.src, fm.media_root_path))

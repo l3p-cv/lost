@@ -33,3 +33,7 @@ class Element(object):
         ''':class:`lost.pyapi.pipeline.PipeInfo`: An object with pipeline informations
         '''
         return self._pipe_info
+
+    @property
+    def pe(self):
+        return self._pipe_element

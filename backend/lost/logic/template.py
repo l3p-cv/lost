@@ -85,12 +85,15 @@ def get_template(db_man, template_id ,user):
     available_groups = db_man.get_groups()
     available_label_trees = db_man.get_all_label_trees()
     available_scripts = db_man.get_all_scripts()
+    available_fs = db_man.get_public_fs()
+    
     try:
          template_serialize = TemplateSerialize(db_man, template,
                                             available_raw_files, 
                                             available_label_trees, 
                                             available_groups,
-                                            available_scripts)
+                                            available_scripts,
+                                            available_fs)
     except TypeError:
             return "No JSON found in PipeTemplate."
     template_serialize.add_available_info()
@@ -107,7 +110,8 @@ class TemplateSerialize(object):
     def __init__(self, dbm, template=None, available_raw_files=None,
                  available_label_trees=None,
                  available_groups=None,
-                 available_scripts=None):
+                 available_scripts=None,
+                 available_fs=None):
         self.dbm = dbm
         self.template = template
         self.template_json = json.loads(template.json_template)
@@ -115,6 +119,7 @@ class TemplateSerialize(object):
         self.available_label_trees = available_label_trees
         self.available_groups = available_groups
         self.available_scripts = available_scripts
+        self.available_fs = available_fs
 
     def add_available_info(self):
         self.template_json['id'] = self.template.idx
@@ -126,11 +131,22 @@ class TemplateSerialize(object):
             if 'datasource' in pe:
                 if pe['datasource']['type'] == 'rawFile':
                     pe['datasource']['fileTree'] = self.available_raw_files
+                    pe['datasource']['filesystems'] = self.__get_filesystem_infos()
             elif 'script' in pe:
                 pe['script']['arguments'] = self.__script_arguments(pe)
                 pe['script']['id'] = self.__script_id(pe)
                 pe['script']['envs'] = self.__script_envs(pe)
    
+    def __get_filesystem_infos(self):
+        res = []
+        for fs in self.available_fs:
+            res.append({
+                'name': fs.name,
+                'id': fs.idx,
+                'rootPath': fs.root_path,
+                'fsType': fs.fs_type
+            })
+        return res
 
     def __label_trees(self):
         label_trees_json = list()

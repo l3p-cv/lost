@@ -7,6 +7,15 @@ const selectDropdown = (elementId, value) => {
     }
 }
 
+const pipeStartUpdateDS = (elementId, value) => {
+    return {
+        type: 'PIPELINE_START_DATASOURCE_UPDATE',
+        payload: {
+            elementId, value
+        }
+    }
+}
+
 export default {
-    selectDropdown
+    selectDropdown, pipeStartUpdateDS
 }

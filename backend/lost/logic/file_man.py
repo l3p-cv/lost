@@ -10,7 +10,7 @@ import lost
 import fsspec
 import numpy as np
 import cv2
-
+import ast
 #import ptvsd
 
 
@@ -109,13 +109,21 @@ class AppFileMan(object):
         pipe_path = os.path.join(root_path, PIPE_ROOT_PATH)
         return pipe_path
 class FileMan(object):
-    def __init__(self, lostconfig):
-        self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
-        if len(lostconfig.data_fs_args) > 0:
-            self.fs = fsspec.filesystem(lostconfig.data_fs_type, **lostconfig.data_fs_args)
+    def __init__(self, lostconfig=None, fs_db=None):
+        if fs_db is not None:
+            fs_args = ast.literal_eval(fs_db.connection)
+            fs = fsspec.filesystem(fs_db.fs_type, **fs_args)
+            fs.lost_fs = fs_db
+            self.fs = fs
+            self.root_path = fs_db.root_path
+        elif lostconfig is not None:
+            if len(lostconfig.data_fs_args) > 0:
+                self.fs = fsspec.filesystem(lostconfig.data_fs_type, **lostconfig.data_fs_args)
+            else:
+                self.fs = fsspec.filesystem(lostconfig.data_fs_type)
+            self.root_path = lostconfig.data_path
         else:
-            self.fs = fsspec.filesystem(lostconfig.data_fs_type)
-
+            raise Exception('Need either lostconifg or fs_db as argument!')
 
     def load_img(self, path, color_type='color'):
         '''Load image from filesystem
@@ -145,7 +153,7 @@ class FileMan(object):
             return img
             
     def get_pipe_log_path(self, pipe_id):
-        base_path = os.path.join(self.lostconfig.data_path, PIPE_LOG_PATH)
+        base_path = os.path.join(self.root_path, PIPE_LOG_PATH)
         if not self.fs.exists(base_path):
             self.fs.mkdirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
@@ -174,7 +182,7 @@ class FileMan(object):
             str: Absolute path
         '''
         if not os.path.isabs(path):
-            return os.path.join(self.lostconfig.data_path, path)
+            return os.path.join(self.root_path, path)
         else:
             return path
 
@@ -187,7 +195,7 @@ class FileMan(object):
         Returns:
             str: relative path.
         '''
-        project_root = self.lostconfig.data_path
+        project_root = self.root_path
         if os.path.isabs(in_path):
             c_path = os.path.commonpath((in_path, project_root))
             out_path = in_path.replace(project_root, "")
@@ -234,14 +242,14 @@ class FileMan(object):
             str: pipe context path
         '''
         if pe is not None:
-            pipe_context = join(self.lostconfig.data_path, INSTANCE_ROOT_PATH,
+            pipe_context = join(self.root_path, INSTANCE_ROOT_PATH,
                                 'p-{}'.format(pe.pipe_id))
             if not self.fs.exists(pipe_context):
                 self.fs.mkdirs(pipe_context)
             return pipe_context
 
         elif pipe is not None:
-            pipe_context = join(self.lostconfig.data_path, INSTANCE_ROOT_PATH,
+            pipe_context = join(self.root_path, INSTANCE_ROOT_PATH,
                                 'p-{}'.format(pipe.idx))
             if not self.fs.exists(pipe_context):
                 self.fs.mkdirs(pipe_context)
@@ -260,7 +268,7 @@ class FileMan(object):
         Returns:
             str: The absolute instance path
         '''
-        root_path = self.lostconfig.data_path
+        root_path = self.root_path
         i_path = join(root_path, INSTANCE_ROOT_PATH)
         if not self.fs.exists(i_path):
             self.fs.mkdirs(i_path)
@@ -285,7 +293,7 @@ class FileMan(object):
         Args:
             root: Root path of the project.
         '''
-        root = self.lostconfig.data_path
+        root = self.root_path
         if not self.fs.exists(root):
             self.fs.mkdirs(root)
             print("\t Created: %s"%(root,))
@@ -295,23 +303,18 @@ class FileMan(object):
         if not self.fs.exists(join(root,MEDIA_ROOT_PATH)):
             self.fs.mkdirs(join(root,MEDIA_ROOT_PATH))
             print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
-        # debug_path = join(self.lostconfig.app_path,DEBUG_ROOT_PATH)
-        # if not self.fs.exists(debug_path):
-        #     self.fs.mkdirs(debug_path)
-        #     print("\t Created: %s"%(debug_path,))
-
 
     @property
     def media_root_path(self):
         '''str: get absolute media root path
         '''
-        return os.path.join(self.lostconfig.data_path, MEDIA_ROOT_PATH)
+        return os.path.join(self.root_path, MEDIA_ROOT_PATH)
     
     @property
     def data_root_path(self):
         '''str: get absolute data root path
         '''
-        return self.lostconfig.data_path
+        return self.root_path
 
 
     def get_media_rel_path_tree(self):
@@ -319,12 +322,26 @@ class FileMan(object):
         Returns: 
             list: ['path/1', 'path/2']
         '''
-        return path_to_dict(self.media_root_path)
+        return self._path_to_dict(self.media_root_path)
+
+    def _path_to_dict(self, path):
+        if os.path.basename(path) == "":
+            d = {'name': 'root'}
+        else:
+            d = {'name': os.path.basename(path)}
+        # if os.path.isdir(path):
+        d['type'] = "directory"
+        d['children'] = [
+            {'name':os.path.basename(p), 'type':'directory'} for p in self.fs.ls(path)
+            ]#[path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
+        # else:
+        #     d['type'] = "file"
+        return d
     
     def get_sia_history_path(self, annotask):
         '''str: get absolute sia_history_path
         '''
-        sia_hist_file = os.path.join(self.lostconfig.data_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
+        sia_hist_file = os.path.join(self.root_path, SIA_HISTORY_PATH, '{}_{}.json'.format(annotask.idx, annotask.name))
         if not self.fs.exists(os.path.split(sia_hist_file)[0]):
             os.makedirs(os.path.split(sia_hist_file)[0])
         return sia_hist_file
@@ -337,10 +354,10 @@ class FileMan(object):
                 the sia_history file should be deleted for.
         '''
         path = self.get_sia_history_path(annotask)
-        backup_dir = os.path.join(self.lostconfig.data_path, SIA_HISTORY_BACKUP_PATH)
+        backup_dir = os.path.join(self.root_path, SIA_HISTORY_BACKUP_PATH)
         if not self.fs.exists(backup_dir):
             os.makedirs(backup_dir)
-        backup_path = os.path.join(self.lostconfig.data_path, SIA_HISTORY_BACKUP_PATH, '{}_{}_{}.json'.format(datetime.now(), annotask.idx, annotask.name))
+        backup_path = os.path.join(self.root_path, SIA_HISTORY_BACKUP_PATH, '{}_{}_{}.json'.format(datetime.now(), annotask.idx, annotask.name))
         if self.fs.exists(path):
             os.rename(path, backup_path)
 
@@ -382,14 +399,3 @@ def validate_action(db_man, path):
     return True
 
 
-def path_to_dict(path):
-    if os.path.basename(path) == "":
-        d = {'name': 'root'}
-    else:
-        d = {'name': os.path.basename(path)}
-    if os.path.isdir(path):
-        d['type'] = "directory"
-        d['children'] = [path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
-    else:
-        d['type'] = "file"
-    return d

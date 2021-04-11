@@ -9,8 +9,11 @@ class LOSTConfig(object):
             if os.environ['DEBUG'].lower() == 'true':
                 self.debug = True
         self.app_path = '/home/lost/app'
-        self.data_path = '/home/lost/data'
         self.data_fs_type = os.environ['LOST_DATA_FS_TYPE']
+        if self.data_fs_type.lower() == 'file':
+            self.data_path = '/home/lost/data'
+        else:
+            self.data_path = os.environ['LOST_DATA']
         # print(os.environ['LOST_FS_ARGS'])
         self.data_fs_args = ast.literal_eval(os.environ['LOST_DATA_FS_ARGS'])
         self.py3_init = os.environ['PY3_INIT']
