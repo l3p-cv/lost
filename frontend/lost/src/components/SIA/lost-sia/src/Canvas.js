@@ -758,7 +758,11 @@ class Canvas extends Component{
     findAnnoRef(annoId){
         if (this.state.selectedAnnoId === undefined) return undefined
         return this.annoRefs.find(e => {
-            return e.current.isSelected()
+            if (e.current){
+                return e.current.isSelected()
+            } else {
+                return false
+            }
         })
     }
 

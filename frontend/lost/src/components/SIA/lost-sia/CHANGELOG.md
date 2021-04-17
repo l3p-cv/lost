@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.5.1] - 2021-04-17
 ### Fixed
 - Prevent to crash when hitting delete and no annotation was selected
+- Prevent to crash when no AnnoRef was found
 
 ## [0.5.0] - 2021-01-04
 ### Added
