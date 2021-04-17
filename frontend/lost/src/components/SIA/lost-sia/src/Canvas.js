@@ -363,14 +363,16 @@ class Canvas extends Component{
                 this.editAnnoLabel(myAnno)
                 break
             case keyActions.DELETE_ANNO:
-                if (anno.mode === modes.CREATE){
-                    const ar = this.findAnnoRef(this.state.selectedAnnoId)
-                    if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
+                if (anno){
+                    if (anno.mode === modes.CREATE){
+                        const ar = this.findAnnoRef(this.state.selectedAnnoId)
+                        if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
 
-                } else {
-                    this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+                    } else {
+                        this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+                    }
                 }
-                break
+               break
             case keyActions.ENTER_ANNO_ADD_MODE:
                 if (anno){
                     this.updateSelectedAnno(
