@@ -1,14 +1,5 @@
 import React, {Component} from 'react'
-import { FullFileBrowser } from 'chonky';
-import {
-  FileBrowser,
-  FileContextMenu,
-  FileList,
-  FileNavbar,
-  FileToolbar,
-} from 'chonky';
-import { setChonkyDefaults } from 'chonky';
-import { ChonkyIconFA } from 'chonky-icon-fontawesome';
+import LostFileBrowser from '../../../../../../FileBrowser/LostFileBrowser'
 import Table from '../../../../globalComponents/modals/Table'
 
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
@@ -29,10 +20,6 @@ class DatasourceModal extends Component{
       dsDropdownOpen: false,
       selectedFs: undefined
     };
-  }
-
-  componentDidMount(){
-    setChonkyDefaults({ iconComponent: ChonkyIconFA })
   }
 
   toggle() {
@@ -97,38 +84,12 @@ class DatasourceModal extends Component{
   }
 
   render() {
-    const files = [
-        null, // Loading animation will be shown for this file
-        null,
-        {
-          id: 'nTe',
-          name: 'Normal file.yml',
-          size: 890,
-          modDate: new Date('2012-01-01'),
-        },
-        {
-          id: 'zxc',
-          name: 'Hidden file.mp4',
-          isHidden: true,
-          size: 890,
-        },
-        {
-          id: 'bnm',
-          name: 'Normal folder',
-          isDir: true,
-          childrenCount: 12,
-        },
-    ]
     return (
       <div>
       <div>{'Select Datasource:'}</div>
       <div>{this.datasourceDropDown()}</div>
-      <FileBrowser files={files} onFileAction={e => {console.log('chonky action', e)}}>
-            <FileNavbar />
-            <FileToolbar />
-            <FileList />
-            <FileContextMenu />
-        </FileBrowser>
+      <div><LostFileBrowser></LostFileBrowser></div>
+      
       {/* <FullFileBrowser files={files}/> */}
       {/* <Table
         data= {
