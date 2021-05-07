@@ -88,7 +88,7 @@ class DatasourceModal extends Component{
       <div>
       <div>{'Select Datasource:'}</div>
       <div>{this.datasourceDropDown()}</div>
-      <div><LostFileBrowser></LostFileBrowser></div>
+      <div><LostFileBrowser fs={this.state.selectedFs}/></div>
       
       {/* <FullFileBrowser files={files}/> */}
       {/* <Table

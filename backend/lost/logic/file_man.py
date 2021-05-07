@@ -30,6 +30,30 @@ APP_LOG_PATH = DATA_ROOT_PATH + "logs/"
 # JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
 # MY_DATA_PATH = "my_data/"
 
+def chonkyfy(fs_list, root, fs):
+    files, folder_chain = [], []
+    body = root
+    for idx in range((len(root.split('/')))):
+        body, head = os.path.split(body)
+        folder_chain.insert(0,{
+            'id': os.path.join(body, head),
+            'name': head 
+        })
+    for el in fs_list:
+        res = {
+            'id':el['name'],
+            'name':os.path.basename(el['name'])
+        }
+        if el['type'] == 'file':
+            res['size'] = el['size']
+        elif el['type'] == 'directory':
+            res['isDir'] = True
+            res['childrenCount'] = len(fs.ls(el['name']))
+        else:
+            raise Exception('Unknown file type')
+        files.append(res)
+    
+    return {'files': files, 'folderChain': folder_chain}
 class AppFileMan(object):
     def __init__(self, lostconfig):
         self.lostconfig = lostconfig
@@ -140,18 +164,23 @@ class FileMan(object):
             color = cv2.IMREAD_COLOR
         else:
             color = cv2.IMREAD_GRAYSCALE
-        if not os.path.isabs(path):
-            img_path = self.get_abs_path(path)
-            with self.fs.open(img_path, 'rb') as f:
-                arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
-                img = cv2.imdecode(arr, color)
-            return img
-        else:
-            with fsspec.open(path) as f:
-                arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
-                img = cv2.imdecode(arr, color)
-            return img
-            
+        # if not os.path.isabs(path):
+        #     img_path = self.get_abs_path(path)
+        #     with self.fs.open(img_path, 'rb') as f:
+        #         arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
+        #         img = cv2.imdecode(arr, color)
+        #     return img
+        # else:
+        #     with fsspec.open(path) as f:
+        #         arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
+        #         img = cv2.imdecode(arr, color)
+        #     return img
+        img_path = self.get_abs_path(path)
+        with self.fs.open(img_path, 'rb') as f:
+            arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
+            img = cv2.imdecode(arr, color)
+        return img
+        
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.root_path, PIPE_LOG_PATH)
         if not self.fs.exists(base_path):
@@ -181,10 +210,18 @@ class FileMan(object):
         Returns:
             str: Absolute path
         '''
-        if not os.path.isabs(path):
-            return os.path.join(self.root_path, path)
-        else:
+        if path.startswith(self.root_path):
             return path
+        else:
+            return os.path.join(self.root_path, path)
+        # if not os.path.isabs(path):
+        #     return os.path.join(self.root_path, path)
+        # else:
+        #     return path
+
+    def ls(self, path, detail=False):
+        abs_path = self.get_abs_path(path)
+        return self.fs.ls(abs_path, detail=detail)
 
     def make_path_relative(self, in_path):
         '''Make a path relative to project root path.
