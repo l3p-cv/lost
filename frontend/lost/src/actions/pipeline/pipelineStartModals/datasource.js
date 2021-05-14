@@ -1,8 +1,8 @@
-const selectDropdown = (elementId, value) => {
+const selectDropdown = (elementId, path, fs_id) => {
     return {
         type: 'PIPELINE_START_DATASOURCE_SELECT_DROPDOWN',
         payload: {
-            elementId, value
+            elementId, path, fs_id
         }
     }
 }

@@ -57,8 +57,9 @@ class Script(pe_base.Element):
                                 help='Id of related pipeline element.')
             args = parser.parse_args()
         lostconfig = LOSTConfig()
-        self.file_man = FileMan(lostconfig)
         dbm = access.DBMan(lostconfig)
+        db_fs = dbm.get_fs(name='lost_data')
+        self.file_man = FileMan(fs_db=db_fs)
         self._dbm = dbm #type: lost.db.access.DBMan
         if pe_id is None:
             pe = dbm.get_pipe_element(int(args.idx))

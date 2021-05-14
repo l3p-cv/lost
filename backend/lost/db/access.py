@@ -728,7 +728,7 @@ class DBMan(object):
             return self.session.query(model.Worker)\
                 .filter(model.Worker.worker_name==worker_name).first()
 
-    def get_fs(self, name=None, group_id=None):
+    def get_fs(self, name=None, group_id=None, fs_id=None):
         '''Get filesystem entries from database
 
         Args:
@@ -745,6 +745,9 @@ class DBMan(object):
         elif group_id is not None:
             return self.session.query(model.FileSystem)\
                 .filter(model.FileSystem.group_id==group_id).all()
+        elif fs_id is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.idx==fs_id).first()
         else:
             return self.session.query(model.FileSystem).all()
     

@@ -1336,10 +1336,13 @@ class DataExport(Base):
     __tablename__ = "data_export"
     idx = Column(Integer, primary_key=True)
     file_path = Column(String(4096))
+    fs_id = Column(Integer, ForeignKey('filesystem.idx'))
+    fs = relationship('FileSystem', uselist=False)
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
 
-    def __init__(self, file_path=None, result_id=None, iteration=0):
+    def __init__(self, file_path=None, result_id=None, iteration=0, fs_id=None):
+        self.fs_id = fs_id
         self.file_path = file_path
         self.result_id = result_id
         self.iteration = iteration

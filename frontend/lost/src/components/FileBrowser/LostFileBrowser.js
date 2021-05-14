@@ -22,7 +22,7 @@ const getPath2 = () => {
 }
 
 
-const LostFileBrowser = ({fs}) => {
+const LostFileBrowser = ({fs, onPathSelected}) => {
   // Declare a new state variable, which we'll call "count"
   const [count, setCount] = useState(0)
   const [files, setFiles] = useState([])
@@ -55,6 +55,14 @@ const LostFileBrowser = ({fs}) => {
         if (data){
           console.log('OpenFiles: ', data.payload.targetFile.id)
           ls(fs, data.payload.targetFile.id)
+        }
+        break
+      case ChonkyActions.MouseClickFile.id:
+        if (data){
+          console.log('MouseClickFile: ', data.payload.file.id)
+          if (onPathSelected){
+            onPathSelected(data.payload.file.id)
+          }
         }
         break
       default:

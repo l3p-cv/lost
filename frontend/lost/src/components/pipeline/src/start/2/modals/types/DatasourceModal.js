@@ -3,12 +3,13 @@ import LostFileBrowser from '../../../../../../FileBrowser/LostFileBrowser'
 import Table from '../../../../globalComponents/modals/Table'
 
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import {Divider, Icon, Label} from 'semantic-ui-react'
 import actions from '../../../../../../../actions/pipeline/pipelineStartModals/datasource'
 
 import {connect} from 'react-redux'
 const {selectDropdown, pipeStartUpdateDS} = actions
 
-
+const DEFAULT_TEXT_PATH = 'No path selected!'
 class DatasourceModal extends Component{
   constructor(props) {
     super(props);
@@ -18,7 +19,9 @@ class DatasourceModal extends Component{
     this.state = {
       dropdownOpen: false,
       dsDropdownOpen: false,
-      selectedFs: undefined
+      selectedFs: undefined,
+      selectedPath: DEFAULT_TEXT_PATH,
+      selectedPathColor: 'red'
     };
   }
 
@@ -34,8 +37,16 @@ class DatasourceModal extends Component{
     })
   }
 
-  selectItem(e){
-    this.props.selectDropdown(this.props.peN, e.target.innerText)
+  selectItem(path){
+    if (path !== this.state.selectedPath){
+      let color = 'red'
+      if (path !== DEFAULT_TEXT_PATH) color = 'green'
+      this.setState({
+        selectedPath:path,
+        selectedPathColor: color
+      })
+      this.props.selectDropdown(this.props.peN, path, this.state.selectedFs.id)
+    }
   }
 
   selectDS(fs){
@@ -65,9 +76,11 @@ class DatasourceModal extends Component{
     // const rawFilePath = this.props.exportData.datasource.rawFilePath
     // if (!this.state.dsDropdownOpen) return null
     return (
+      <div>
       <Dropdown isOpen={this.state.dsDropdownOpen} toggle={e => {this.toggleDs()}}>
         <DropdownToggle caret>
-          {this.state.selectedFs?this.state.selectedFs.name:'Select Item...'}
+          <Icon name='database'/>
+          {this.state.selectedFs?this.state.selectedFs.name:'Select Datasource ...'}
           {/* {'Select Item ...'} */}
         </DropdownToggle>
         <DropdownMenu>
@@ -80,15 +93,20 @@ class DatasourceModal extends Component{
           })}
         </DropdownMenu>
       </Dropdown>
+      </div>
     );
   }
 
   render() {
     return (
       <div>
-      <div>{'Select Datasource:'}</div>
       <div>{this.datasourceDropDown()}</div>
-      <div><LostFileBrowser fs={this.state.selectedFs}/></div>
+      <Divider horizontal>File Browser</Divider>
+      <div><LostFileBrowser fs={this.state.selectedFs} 
+        onPathSelected={path => this.selectItem(path)}/>
+      </div>
+      <Divider horizontal>Selected Datasource</Divider>
+      <Label color={this.state.selectedPathColor}><Icon name='folder open' /> {this.state.selectedPath}</Label>
       
       {/* <FullFileBrowser files={files}/> */}
       {/* <Table

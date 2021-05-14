@@ -284,18 +284,20 @@ class ScriptOutput(Output):
                                           iteration=self._script._pipe_element.iteration)
                 self._script._dbm.add(vis_out)
 
-    def add_data_export(self, file_path):
+    def add_data_export(self, file_path, fs):
         '''Serve a file for download inside the web gui via a DataExport element.
 
         Args:
             file_path (str): Path to the file that should be provided 
                 for download.
+            fs (filesystem): Filesystem, where file_path is valid.
         '''
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.DATA_EXPORT:
-                rel_path = self._script.file_man.make_path_relative(file_path)
-                export = model.DataExport(file_path=rel_path,
+                # rel_path = self._script.file_man.make_path_relative(file_path)
+                export = model.DataExport(file_path=file_path,
                                        result_id=self._result_map[pe.idx],
+                                       fs_id = fs.lost_fs.idx,
                                        iteration=self._script._pipe_element.iteration)
                 self._script._dbm.add(export)
 
@@ -478,7 +480,7 @@ class ScriptOutput(Output):
                                 frame_n=frame_n,
                                 video_path=video_path,
                                 sim_class=img_sim_class,
-                                fs_id=fs.idx)
+                                fs_id=fs.lost_fs.idx)
         self._script._dbm.add(img_anno)
         if img_labels is not None:
             self._update_labels(img_labels, img_anno)

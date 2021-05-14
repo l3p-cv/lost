@@ -54,6 +54,7 @@ def chonkyfy(fs_list, root, fs):
         files.append(res)
     
     return {'files': files, 'folderChain': folder_chain}
+
 class AppFileMan(object):
     def __init__(self, lostconfig):
         self.lostconfig = lostconfig

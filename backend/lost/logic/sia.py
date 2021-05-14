@@ -225,7 +225,7 @@ class SiaUpdate(object):
         self.db_man = db_man
         self.user_id = user_id 
         self.at = anno_task #type: lost.db.model.AnnoTask
-        self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
+        # self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
         self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
         self.image_anno = self.db_man.get_image_annotation(data['imgId'])
         self.image_anno.timestamp = self.timestamp
@@ -294,7 +294,7 @@ class SiaUpdate(object):
         # self.image_anno.labels = self.img_labels
         self.db_man.add(self.image_anno)
         self.db_man.commit()
-        self.__update_history_json_file()
+        # self.__update_history_json_file()
         update_anno_task(self.db_man, self.at.idx, self.user_id)
         return "success"
     def __update_annotations(self, annotations, two_d_type):
@@ -441,29 +441,29 @@ class SiaUpdate(object):
 
         two_d_json['labels'] = label_list_json
         return two_d_json
-    def __update_history_json_file(self):
-        # create history directory if not exist
-        if self.sia_type == 'sia':
-            self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
-            self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
-            self.history_json['image_anno_time'] = self.image_anno.anno_time
-        self.history_json['user_id'] = self.user_id
-        self.history_json['user_name'] = None
-        if self.image_anno.annotator:
-            self.history_json['user_name'] = self.image_anno.annotator.first_name + " " + self.image_anno.annotator.last_name
-        if not os.path.exists(self.sia_history_file):
-            with open(self.sia_history_file, 'w') as f:
-                event_json = dict()
-                json.dump(event_json, f)
-        with open(self.sia_history_file) as f:
-            data = json.load(f)
-            if str(self.image_anno.idx) in data:
-                data[str(self.image_anno.idx)].append(self.history_json)
-            else:
-                data[str(self.image_anno.idx)] = list()
-                data[str(self.image_anno.idx)].append(self.history_json)
-        with open(self.sia_history_file, 'w') as f:
-            json.dump(data, f)
+    # def __update_history_json_file(self):
+    #     # create history directory if not exist
+    #     if self.sia_type == 'sia':
+    #         self.history_json['timestamp'] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
+    #         self.history_json['timestamp_lock'] = self.image_anno.timestamp_lock.strftime("%Y-%m-%d %H:%M:%S.%f")
+    #         self.history_json['image_anno_time'] = self.image_anno.anno_time
+    #     self.history_json['user_id'] = self.user_id
+    #     self.history_json['user_name'] = None
+    #     if self.image_anno.annotator:
+    #         self.history_json['user_name'] = self.image_anno.annotator.first_name + " " + self.image_anno.annotator.last_name
+    #     if not os.path.exists(self.sia_history_file):
+    #         with open(self.sia_history_file, 'w') as f:
+    #             event_json = dict()
+    #             json.dump(event_json, f)
+    #     with open(self.sia_history_file) as f:
+    #         data = json.load(f)
+    #         if str(self.image_anno.idx) in data:
+    #             data[str(self.image_anno.idx)].append(self.history_json)
+    #         else:
+    #             data[str(self.image_anno.idx)] = list()
+    #             data[str(self.image_anno.idx)].append(self.history_json)
+    #     with open(self.sia_history_file, 'w') as f:
+    #         json.dump(data, f)
 
 class SiaSerialize(object):
     def __init__(self, image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount):

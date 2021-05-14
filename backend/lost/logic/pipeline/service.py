@@ -164,7 +164,8 @@ class PipeStarter(object):
         pe_id = self.pe_map.get(pe_n).idx
         datasource = model.Datasource()
         datasource.pipe_element_id = pe_id
-        datasource.selected_path = os.path.join(file_man.MEDIA_ROOT_PATH, data_element['datasource']['rawFilePath'])
+        datasource.selected_path = data_element['datasource']['selectedPath']
+        datasource.fs_id = data_element['datasource']['fs_id']
         # if template_element['datasource']['type'] == 'dataset':
         #     datasource.dtype = dtype.Datasource.DATASET
         #     datasource.dataset_id = data_element['datasource']['datasetId']
@@ -545,12 +546,14 @@ class PipeSerialize(object):
         pe_json = self.add_pe_info(pe, pe_json)
         data_exports_json = list()
         for de in data_exports:
-                data_export_json = dict()
-                data_export_json['id'] = de.idx
-                data_export_json['iteration'] = de.iteration
-                data_export_json['file_path'] = de.file_path
-                data_export_json['result_id'] = de.result_id
-                data_exports_json.append(data_export_json)
+            data_export_json = dict()
+            data_export_json['id'] = de.idx
+            data_export_json['iteration'] = de.iteration
+            data_export_json['file_path'] = de.file_path
+            data_export_json['result_id'] = de.result_id
+            data_export_json['fs_id'] = de.fs_id
+            raise Exception('Test {}'.format(de.fs_id))
+            data_exports_json.append(data_export_json)
         pe_json['dataExport'] = data_exports_json
         self.append_pe_json(pe_json)
     def add_visual_output(self, pe, visual_outputs):

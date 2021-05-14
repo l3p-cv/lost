@@ -134,13 +134,16 @@ class Filter(Resource):
         else:
             data = json.loads(request.data)
             img = dbm.get_image_anno(data['imageId'])
-            img_path = FileMan(LOST_CONFIG).get_abs_path(img.img_path)
+            flask.current_app.logger.info('img.img_path: {}'.format(img.img_path))
+            flask.current_app.logger.info('img.fs.name: {}'.format(img.fs.name))
+            # fs_db = dbm.get_fs(img.fs_id)
+            fs = FileMan(fs_db=img.fs)
             #img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
             # img = PIL.Image.open(img_path)
             if data['clahe']['active'] :
-                img = cv2.imread(img_path,0)
+                img = fs.load_img(img.img_path, color_type='gray')
             else:
-                img = cv2.imread(img_path)
+                img = fs.load_img(img.img_path, color_type='color')
                 
             flask.current_app.logger.info('Triggered filter. Received data: {}'.format(data))
 

@@ -15,7 +15,7 @@ def get_stream_logger(name, stream):
     logger = logging.getLogger(name)
     sh = logging.StreamHandler(stream)
     sh.setLevel(logging.DEBUG)
-    #sh.mode = 'a'
+    sh.mode = 'a'
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s : %(message)s')
     sh.setFormatter(formatter)
     logger.addHandler(sh)

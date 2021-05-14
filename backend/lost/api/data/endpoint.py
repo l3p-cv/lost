@@ -7,7 +7,7 @@ from lost.db import access, roles
 from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
 from lost.logic.file_man import FileMan
-
+import json
 import os
 
 namespace = api.namespace('data', description='Data API.')
@@ -65,6 +65,28 @@ class Logs(Resource):
             # raise Exception('data/logs/ -> Not Implemented!')
             fm = FileMan(LOST_CONFIG)
             with fm.fs.open(fm.get_abs_path(path), 'rb') as f:
+                resp = make_response(f.read())
+                resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
+                resp.headers["Content-Type"] = "text/csv"
+            return resp
+
+@namespace.route('/dataexport')
+#@namespace.param('path', 'Path to logfile')
+class Logs(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            # raise Exception('data/logs/ -> Not Implemented!')
+            data = json.loads(request.data)
+            fs_db = dbm.get_fs(fs_id=data['fs_id'])
+            fm = FileMan(fs_db=fs_db)
+            with fm.fs.open(fm.get_abs_path(data['path']), 'rb') as f:
                 resp = make_response(f.read())
                 resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
                 resp.headers["Content-Type"] = "text/csv"

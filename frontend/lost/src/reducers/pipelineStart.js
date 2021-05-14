@@ -162,7 +162,8 @@ export default (state = INITITAL_STATE, action)=>{
                                 ...el.exportData,
                                 datasource: {
                                     ...el.exportData.datasource,
-                                    rawFilePath: action.payload.value
+                                    selectedPath: action.payload.path,
+                                    fs_id: action.payload.fs_id
                                 }
                             }
                         }
