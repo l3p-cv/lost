@@ -391,6 +391,12 @@ class DBMan(object):
         return self.session.query(model.DataExport)\
         .filter(model.DataExport.result_id==result_id).all()
 
+    def get_data_export(self, de_id):
+        ''' Get data_export by id
+        '''
+        return self.session.query(model.DataExport)\
+        .filter(model.DataExport.idx==de_id).first()
+
     def get_visual_outputs(self, result_id):
         ''' Get visual_output by result_id
         '''

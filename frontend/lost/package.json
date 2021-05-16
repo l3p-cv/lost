@@ -32,6 +32,7 @@
     "enzyme-adapter-react-16": "^1.6.0",
     "flag-icon-css": "^3.2.0",
     "font-awesome": "^4.7.0",
+    "js-file-download": "^0.4.12",
     "jwt-decode": "^2.2.0",
     "l3p-frontend": "^3.2.12",
     "lodash": "^4.17.15",

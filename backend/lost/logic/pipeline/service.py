@@ -409,6 +409,7 @@ class PipeSerialize(object):
 
     def append_pe_json(self, pe_json):
         self.pipe_json['elements'].append(pe_json)
+        
     def add_pe_info(self, pe, pe_json):
         pe_json['id'] = pe.idx
         pe_json['peN'] = pe.idx
@@ -539,6 +540,7 @@ class PipeSerialize(object):
 
         pe_json['annoTask'] = anno_task_json
         self.append_pe_json(pe_json)
+
     def add_data_export(self, pe, data_exports):
         # create pipe element json
         pe_json = dict()
@@ -552,10 +554,11 @@ class PipeSerialize(object):
             data_export_json['file_path'] = de.file_path
             data_export_json['result_id'] = de.result_id
             data_export_json['fs_id'] = de.fs_id
-            raise Exception('Test {}'.format(de.fs_id))
+            # raise Exception('Test {}'.format(de.fs_id))
             data_exports_json.append(data_export_json)
         pe_json['dataExport'] = data_exports_json
         self.append_pe_json(pe_json)
+
     def add_visual_output(self, pe, visual_outputs):
         # create pipe element json
         pe_json = dict()

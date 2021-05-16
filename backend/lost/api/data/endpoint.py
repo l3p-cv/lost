@@ -82,14 +82,14 @@ class Logs(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            # raise Exception('data/logs/ -> Not Implemented!')
             data = json.loads(request.data)
-            fs_db = dbm.get_fs(fs_id=data['fs_id'])
+            de = dbm.get_data_export(data['de_id'])
+            fs_db = de.fs
             fm = FileMan(fs_db=fs_db)
-            with fm.fs.open(fm.get_abs_path(data['path']), 'rb') as f:
+            with fm.fs.open(de.file_path, 'rb') as f:
                 resp = make_response(f.read())
                 resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
-                resp.headers["Content-Type"] = "text/csv"
+                resp.headers["Content-Type"] = "blob"
             return resp
 
 @namespace.route('/workerlogs/<path:path>')
