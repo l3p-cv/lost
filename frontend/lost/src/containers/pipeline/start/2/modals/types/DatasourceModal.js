@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
-import LostFileBrowser from '../../../../../../FileBrowser/LostFileBrowser'
+import LostFileBrowser from '../../../../../../components/FileBrowser/LostFileBrowser'
 import Table from '../../../../globalComponents/modals/Table'
 
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import {Divider, Icon, Label} from 'semantic-ui-react'
-import actions from '../../../../../../../actions/pipeline/pipelineStartModals/datasource'
+import actions from '../../../../../../actions/pipeline/pipelineStartModals/datasource'
 
 import {connect} from 'react-redux'
 const {selectDropdown, pipeStartUpdateDS} = actions

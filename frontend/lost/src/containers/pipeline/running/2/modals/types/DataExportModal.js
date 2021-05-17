@@ -7,7 +7,7 @@ import {connect} from 'react-redux'
 import actions from '../../../../../../actions/pipeline/pipelineRunning'
 
 import axios from 'axios'
-import {API_URL} from '../../../../../../../lost_settings'
+import {API_URL} from '../../../../../../lost_settings'
 import fileDownload from 'js-file-download'
 
 const {downloadDataExport} = actions

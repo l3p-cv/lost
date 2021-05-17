@@ -6,7 +6,7 @@ import { alertSuccess } from '../../../../globalComponents/Sweetalert'
 import ReactTable from 'react-table'
 import {useDispatch, useSelector} from 'react-redux'
 import axios from 'axios'
-import {API_URL} from '../../../../../../../lost_settings'
+import {API_URL} from '../../../../../../lost_settings'
 import fileDownload from 'js-file-download'
 
 import { createHashHistory } from 'history'
