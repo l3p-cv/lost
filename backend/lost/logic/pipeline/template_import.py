@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import shutil
-from lost.logic.file_man import FileMan
+from lost.logic.file_man import AppFileMan
 from lost.logic import file_man as fm
 from distutils import dir_util
 from lost.db import model
@@ -44,7 +44,7 @@ class PipeImporter(object):
         '''
         self.forTest = forTest
         self.dbm = dbm
-        self.file_man = FileMan(self.dbm.lostconfig)
+        self.file_man = AppFileMan(self.dbm.lostconfig)
         if pipe_template_dir.endswith('/'):
             pipe_template_dir = pipe_template_dir[:-1]
         self.src_pipe_template_path = pipe_template_dir

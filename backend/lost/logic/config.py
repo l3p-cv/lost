@@ -1,5 +1,5 @@
 import os
-
+import ast
 class LOSTConfig(object):
 
     def __init__(self):
@@ -8,7 +8,14 @@ class LOSTConfig(object):
         if "DEBUG" in os.environ:
             if os.environ['DEBUG'].lower() == 'true':
                 self.debug = True
-        self.project_path = '/home/lost'
+        self.app_path = '/home/lost/app'
+        self.data_fs_type = os.environ['LOST_DATA_FS_TYPE']
+        if self.data_fs_type.lower() == 'file':
+            self.data_path = '/home/lost/data'
+        else:
+            self.data_path = os.environ['LOST_DATA']
+        # print(os.environ['LOST_FS_ARGS'])
+        self.data_fs_args = ast.literal_eval(os.environ['LOST_DATA_FS_ARGS'])
         self.py3_init = os.environ['PY3_INIT']
         self.lost_db_user = os.environ['LOST_DB_USER']
         self.lost_db_name = os.environ['LOST_DB_NAME']

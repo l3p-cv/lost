@@ -1,6 +1,7 @@
 from flask import Flask
 from lost import settings
 from lost.taskman import make_celery
+from lost.logic.file_man import AppFileMan
 from flask_mail import Mail
 import os
 import traceback 
@@ -9,7 +10,12 @@ app = Flask(__name__)
 
 import logging
 from logging import FileHandler
-file_handler = FileHandler(os.path.join(settings.LOST_CONFIG.project_path,'logs','flask.log'))
+
+file_man = AppFileMan(settings.LOST_CONFIG)
+logfile_path = file_man.get_app_log_path('flask.log')
+# log_file_stream = file_man.fs.open(logfile_path, 'a')
+# file_handler = StreamHandler(log_file_stream)
+file_handler = FileHandler(logfile_path)
 if settings.LOST_CONFIG.debug:
     logging.basicConfig(level=logging.INFO)
     file_handler.setLevel(logging.INFO)

@@ -1,12 +1,12 @@
 import lost
-from lost.logic.file_man import FileMan
+from lost.logic.file_man import AppFileMan
 from lost.logic.config import LOSTConfig
 import os
 import json
 from lost.db.db_patch import DBPatcher
 
 def update_version_log():
-    fm = FileMan(LOSTConfig())
+    fm = AppFileMan(LOSTConfig())
     path = fm.get_version_log_path()
     if not os.path.exists(path):
         print('Patchsystem: Created version log file: {}'.format(path))

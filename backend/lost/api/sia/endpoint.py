@@ -10,6 +10,8 @@ from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
 import json
 import PIL
+import base64
+import cv2
 from io import BytesIO
 from lost.logic.file_man import FileMan
 
@@ -89,6 +91,34 @@ class Last(Resource):
             dbm.close_session()
             return re
 
+@namespace.route('/getimage')
+class GetImage(Resource):
+    # @api.expect(sia_update)
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+
+        else:
+            #TODO: Check if user is permitted to load this image
+            #TODO: Read img from stream -> cv2.imdecode()
+            fm = FileMan(LOST_CONFIG)
+            data = json.loads(request.data)
+            flask.current_app.logger.info('sia -> getimage. Received data: {}'.format(data))
+            db_img = dbm.get_image_anno(data['imgId'])
+            img = fm.load_img(db_img.img_path)
+            # img_path = fm.get_abs_path(db_img.img_path)
+            # #raise Exception('sia -> getimage: {}'.format(img_path))
+            # img = cv2.imread(img_path)
+            _, data = cv2.imencode('.jpg', img)
+            data64 = base64.b64encode(data.tobytes())
+            dbm.close_session()
+            return u'data:img/jpg;base64,'+data64.decode('utf-8')
+
 @namespace.route('/filter')
 class Filter(Resource):
     # @api.expect(sia_update)
@@ -102,18 +132,18 @@ class Filter(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
-            import base64
-            # from PIL import ImageOps
-            import cv2
             data = json.loads(request.data)
             img = dbm.get_image_anno(data['imageId'])
-            img_path = FileMan(LOST_CONFIG).get_abs_path(img.img_path)
+            flask.current_app.logger.info('img.img_path: {}'.format(img.img_path))
+            flask.current_app.logger.info('img.fs.name: {}'.format(img.fs.name))
+            # fs_db = dbm.get_fs(img.fs_id)
+            fs = FileMan(fs_db=img.fs)
             #img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
             # img = PIL.Image.open(img_path)
             if data['clahe']['active'] :
-                img = cv2.imread(img_path,0)
+                img = fs.load_img(img.img_path, color_type='gray')
             else:
-                img = cv2.imread(img_path)
+                img = fs.load_img(img.img_path, color_type='color')
                 
             flask.current_app.logger.info('Triggered filter. Received data: {}'.format(data))
 
@@ -136,9 +166,10 @@ class Filter(Resource):
 
             # data = BytesIO()
             # img.save(data, "PNG")
-            _, data = cv2.imencode('.png', img)
+            _, data = cv2.imencode('.jpg', img)
             data64 = base64.b64encode(data.tobytes())
-            return u'data:img/png;base64,'+data64.decode('utf-8')
+            dbm.close_session()
+            return u'data:img/jpg;base64,'+data64.decode('utf-8')
             # re = sia.update(dbm, data, user.idx)
             # dbm.close_session()
             # return 'success'

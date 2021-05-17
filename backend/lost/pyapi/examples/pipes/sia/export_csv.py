@@ -13,12 +13,17 @@ class ExportCsv(script.Script):
     '''
     def main(self):
         df = self.inp.to_df()
+        fs = self.get_filesystem()
+        
         csv_path = self.get_path(self.get_arg('file_name'), context='instance')
-        df.to_csv(path_or_buf=csv_path,
+        self.logger.info('CSV path: {}'.format(csv_path))
+        with fs.open(csv_path, 'w') as f:
+            df.to_csv(f,
                       sep=',',
                       header=True,
                       index=False)
-        self.outp.add_data_export(file_path=csv_path)
+        self.logger.info('Wrote csv file: {}'.format(fs.ls(os.path.split(csv_path)[0])))
+        self.outp.add_data_export(file_path=csv_path, fs=fs)
 
 if __name__ == "__main__":
     my_script = ExportCsv()

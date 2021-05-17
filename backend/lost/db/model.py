@@ -598,6 +598,7 @@ class ImageAnno(Base):
         is_junk (bool): This image was marked as Junk.
         description (str): Description for this annotation. Assigned by an 
             annotator or algorithm.
+        fs_id (int): Id of the filesystem where image is located
     """
     __tablename__ = "image_anno"
 
@@ -619,6 +620,8 @@ class ImageAnno(Base):
     anno_time = Column(Float)
     is_junk = Column(Boolean)
     description = Column(Text)
+    fs_id = Column(Integer, ForeignKey('filesystem.idx'))
+    fs = relationship('FileSystem', uselist=False)
 
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
@@ -626,7 +629,7 @@ class ImageAnno(Base):
                  frame_n=None,
                  video_path=None,
                  iteration=0, anno_time=None, is_junk=None,
-                 description=None):
+                 description=None, fs_id=None):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
         self.timestamp = timestamp
@@ -640,6 +643,7 @@ class ImageAnno(Base):
         self.anno_time = anno_time
         self.is_junk = is_junk
         self.description = description
+        self.fs_id = fs_id
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -737,7 +741,8 @@ class ImageAnno(Base):
             'img.lbl.name': None,
             'img.lbl.external_id': None,
             'img.annotator': None,
-            'img.is_junk': self.is_junk
+            'img.is_junk': self.is_junk,
+            'img.fs_name': self.fs.name
         }
         try:
             img_dict['img.lbl.idx'] = [
@@ -1252,21 +1257,22 @@ class Datasource(Base):
 
     Attributes:
         idx (int): Id in databse.
-        raw_file_id (int): Link to RawFile.
-        dtype (enum): see :class:`data_model.dtype.Datasource`
-        pipe_element_id: The PipeElement this Datasource belongs to.
+        selected_path (str): Selected path for a specific filesystem.
+        pipe_element_id (int): The PipeElement this Datasource belongs to.
+        fs_id (int): The filesystem this datasource belongs to.
     '''
     __tablename__ = "datasource"
     idx = Column(Integer, primary_key=True)
-    raw_file_path = Column(String(4096))
-    dtype = Column(Integer)
+    selected_path = Column(String(4096))
     pipe_element_id = Column(Integer, ForeignKey('pipe_element.idx'))
+    fs_id = Column(Integer, ForeignKey('filesystem.idx'))
+    fs = relationship("FileSystem", uselist=False)
 
-    def __init__(self, media_id=None, dtype=None,
-                 pipe_element_id=None):
-        self.media_id = media_id
-        self.dtype = dtype
+    def __init__(self, selected_path=None, 
+                 pipe_element_id=None, fs_id=None):
         self.pipe_element_id = pipe_element_id
+        self.fs_id = fs_id
+        self.selected_path = selected_path
 
 
 class VisualOutput(Base):
@@ -1330,10 +1336,13 @@ class DataExport(Base):
     __tablename__ = "data_export"
     idx = Column(Integer, primary_key=True)
     file_path = Column(String(4096))
+    fs_id = Column(Integer, ForeignKey('filesystem.idx'))
+    fs = relationship('FileSystem', uselist=False)
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
 
-    def __init__(self, file_path=None, result_id=None, iteration=0):
+    def __init__(self, file_path=None, result_id=None, iteration=0, fs_id=None):
+        self.fs_id = fs_id
         self.file_path = file_path
         self.result_id = result_id
         self.iteration = iteration
@@ -1590,3 +1599,38 @@ class Worker(Base):
         self.register_timestamp = register_timestamp
         self.resources = resources
         self.in_progress = in_progress
+
+
+class FileSystem(Base):
+    '''FileSystem
+
+    Args:
+        idx (int): Id of entry.
+        group_id (int): User or group who owns this filesystem.
+        connection (str): Connection string to filesystem.
+        root_path (str): Root path for this filesystem.
+        dtype (int): Filesystem type.
+        timestamp (DateTime): Timestamp when filesystem was added to data base.
+        name (str): Name of the filesystem
+    
+    Note:
+        group_id is None if this filesystem is available for all users!
+
+    '''
+    __tablename__ = "filesystem"
+    idx = Column(Integer, primary_key=True)
+    group_id = Column(Integer, ForeignKey('group.idx'))
+    connection = Column(Text)
+    root_path = Column(String(4096))
+    fs_type = Column(String(20))
+    timestamp = Column(DATETIME(fsp=6))
+    name = Column(String(200))
+
+    def __init__(self, group_id=None, connection=None,
+                 root_path=None, fs_type=None, name=None, timestamp=None):
+        self.group_id = group_id
+        self.fs_type = fs_type
+        self.connection = connection
+        self.root_path = root_path
+        self.name = name
+        self.timestamp = timestamp

@@ -75,15 +75,23 @@ const regeneratePipeline = (id) => async dispatch => {
 }
 
 const getLog = async (path) => {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`${API_URL}/${path}?nocache=${Math.random()}`,
-        {
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
-        }
-    )
-    return response.text()
+    // const token = localStorage.getItem('token')
+    // const response = await fetch(`${API_URL}/${path}?nocache=${Math.random()}`,
+    //     {
+    //         headers: {
+    //             Authorization: 'Bearer ' + token
+    //         }
+    //     }
+    // )
+    let response ={}
+    try {
+        response = await axios.get(`${API_URL}/data/logs/${path}`)
+        // console.log('pipelineRunning getLog', response)
+    }catch(err){
+        console.warn(err)
+        response.data = 'ERROR'
+    }
+    return response.data
 }
 
 const updateArguments = (elementId, updatedArguments) => async  dispatch =>{

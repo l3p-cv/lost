@@ -1,7 +1,6 @@
 import axios from 'axios'
 import TYPES from '../../types/index'
 import {API_URL} from '../../lost_settings'
-import {http} from 'l3p-frontend'
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
 
@@ -20,14 +19,18 @@ export const getSpecialMiaAnnos = (miaIds, getWorkingAnnoTask) => async dispatch
     } catch (e) {console.log(e)}
 }
 
-export const getMiaImage = (path) => async dispatch =>{
-  
-        const config = {
-            url: API_URL +'/'+ path,
-            type: 'image',
-            token: localStorage.getItem('token')
-        }
-        return await http.get(config)
+export const getMiaImage = (img) => async dispatch =>{
+    try {
+        const response = await axios.post(API_URL + '/mia/getimage', img)
+        console.log('REQUEST: mia/getimage response: ', response)
+        return response
+    } catch (e) {console.error(e)}
+        // const config = {
+        //     url: API_URL +'/'+ path,
+        //     type: 'image',
+        //     token: localStorage.getItem('token')
+        // }
+        // return await http.get(config)
 }
 
 export const miaZoomIn = (zoom) => dispatch =>{

@@ -79,6 +79,9 @@ Find our paper on [arXiv](https://arxiv.org/abs/1910.07486)
 
 If you are using LOST and like to share your project, please contact [@jaeger-j](https://github.com/jaeger-j).
 
+# Roadmap
+See our [Roadmap](ROADMAP.md)
+
 # Creators
 ## People
 |   | Github | 

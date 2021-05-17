@@ -163,7 +163,30 @@ export default (state = INITITAL_STATE, action)=>{
                                 ...el.exportData,
                                 datasource: {
                                     ...el.exportData.datasource,
-                                    rawFilePath: action.payload.value
+                                    selectedPath: action.payload.path,
+                                    fs_id: action.payload.fs_id
+                                }
+                            }
+                        }
+                    }
+                    return el
+                })
+            }
+        }
+        case 'PIPELINE_START_DATASOURCE_UPDATE':
+        return{
+            ...state,
+            step1Data:{
+                ...state.step1Data,
+                elements: state.step1Data.elements.map((el)=>{
+                    if('datasource' in el && (el.peN === action.payload.elementId)){
+                        return {
+                            ...el,
+                            exportData: {
+                                ...el.exportData,
+                                datasource: {
+                                    ...el.exportData.datasource,
+                                    fs_name: action.payload.value
                                 }
                             }
                         }

@@ -5,6 +5,10 @@ import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
 import ReactTable from 'react-table'
 import {useDispatch, useSelector} from 'react-redux'
+import axios from 'axios'
+import {API_URL} from '../../../../../../../lost_settings'
+import fileDownload from 'js-file-download'
+
 import { createHashHistory } from 'history'
 import actions from '../../../../../../actions'
 
@@ -16,7 +20,11 @@ function handleSiaRewiewClick(props){
     )
 }
 
-
+function handleInstantAnnoDownload(pe_id){
+    axios.post(API_URL+'/data/annoexport', {'pe_id':pe_id}).then( resp => {
+      fileDownload(resp.data, `annos_pe_${pe_id}.csv`)
+    })
+  }
 
 function annotationReleaseSuccessful(){
     // console.log('Annotation release successful')
@@ -125,6 +133,8 @@ const AnnoTaskModal =  (props)=>{
                         ]}
                     />
                 </CollapseCard>
+                <Button color="success" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
+                    onClick={e => handleInstantAnnoDownload(props.id)}>Download Annotations</Button>
                 <Button color="warning" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
                     onClick={e => handleSiaRewiewClick(props)}>Review Annotations</Button>
                 <Button color="danger" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}

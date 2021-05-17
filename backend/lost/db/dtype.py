@@ -29,19 +29,19 @@ class AnnoTask():
     MIA = 1
     SIA = 2
 
-class Datasource():
-    '''Type of a Datasource
+# class Datasource():
+#     '''Type of a Datasource
 
-    Attributes:
-       DATASET (1): A Dataset.
-       MODEL_LEAF (2): A ModelLeaf.
-       RAW_FILE (3): A RawFile.
-       PIPE_ELEMENT (4): A PipeElement (for e.g. Script)
-    '''
-    DATASET = 1
-    MODEL_LEAF = 2
-    RAW_FILE = 3
-    PIPE_ELEMENT = 4
+#     Attributes:
+#        DATASET (1): A Dataset.
+#        MODEL_LEAF (2): A ModelLeaf.
+#        RAW_FILE (3): A RawFile.
+#        PIPE_ELEMENT (4): A PipeElement (for e.g. Script)
+#     '''
+#     DATASET = 1
+#     MODEL_LEAF = 2
+#     RAW_FILE = 3
+#     PIPE_ELEMENT = 4
 
 class PipeElement():
     '''Type of an PipeElement.

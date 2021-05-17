@@ -14,8 +14,8 @@
       "peN": 1,
       "peOut": [2],
       "script": {
-        "path": "request_yolo_annos.py",
-        "description": "Request BBoxAnnotations for all images in an rawFile. Create box proposals with Yolo V3."
+        "path": "request_annos.py",
+        "description": "Request BBoxAnnotations for all images in an rawFile."
       }
     },
     {
@@ -56,7 +56,7 @@
       "peOut": [4],
       "script": {
         "path": "cluster_using_prev_stage.py",
-        "description": "Cluster bboxes by using yolo pedictions as sim class"
+        "description": "Cluster bboxes by class labels from previous stage"
       }
     },
     {

@@ -164,18 +164,20 @@ class PipeStarter(object):
         pe_id = self.pe_map.get(pe_n).idx
         datasource = model.Datasource()
         datasource.pipe_element_id = pe_id
-        if template_element['datasource']['type'] == 'dataset':
-            datasource.dtype = dtype.Datasource.DATASET
-            datasource.dataset_id = data_element['datasource']['datasetId']
-        elif template_element['datasource']['type'] == 'modelLeaf':
-            datasource.dtype = dtype.Datasource.MODEL_LEAF
-            datasource.model_leaf_id = data_element['datasource']['modelLeafId']
-        elif template_element['datasource']['type'] == 'rawFile':
-            datasource.dtype = dtype.Datasource.RAW_FILE
-            datasource.raw_file_path = os.path.join(file_man.MEDIA_ROOT_PATH, data_element['datasource']['rawFilePath'])
-        elif template_element['datasource']['type'] == 'pipeElement':
-            datasource.dtype = dtype.Datasource.PIPE_ELEMENT
-            datasource.pipe_element_id = data_element['datasource']['pipeElementId']
+        datasource.selected_path = data_element['datasource']['selectedPath']
+        datasource.fs_id = data_element['datasource']['fs_id']
+        # if template_element['datasource']['type'] == 'dataset':
+        #     datasource.dtype = dtype.Datasource.DATASET
+        #     datasource.dataset_id = data_element['datasource']['datasetId']
+        # elif template_element['datasource']['type'] == 'modelLeaf':
+        #     datasource.dtype = dtype.Datasource.MODEL_LEAF
+        #     datasource.model_leaf_id = data_element['datasource']['modelLeafId']
+        # elif template_element['datasource']['type'] == 'rawFile':
+        #     datasource.dtype = dtype.Datasource.RAW_FILE
+        #     datasource.raw_file_path = os.path.join(file_man.MEDIA_ROOT_PATH, data_element['datasource']['rawFilePath'])
+        # elif template_element['datasource']['type'] == 'pipeElement':
+        #     datasource.dtype = dtype.Datasource.PIPE_ELEMENT
+        #     datasource.pipe_element_id = data_element['datasource']['pipeElementId']
         return datasource
 
     def create_anno_task(self, pe_n):
@@ -407,6 +409,7 @@ class PipeSerialize(object):
 
     def append_pe_json(self, pe_json):
         self.pipe_json['elements'].append(pe_json)
+        
     def add_pe_info(self, pe, pe_json):
         pe_json['id'] = pe.idx
         pe_json['peN'] = pe.idx
@@ -434,20 +437,22 @@ class PipeSerialize(object):
         # create datasource json
         datasource_json = dict()
         # fill datasource with info
-        dump(datasource, "--- dump ---") 
+        # dump(datasource, "--- dump ---") 
         datasource_json['id'] = datasource.idx
-        if datasource.dtype == dtype.Datasource.DATASET:
-            datasource_json['type'] = "dataset"
-            datasource_json['dataset'] = self.__ds_dataset(datasource.dataset)
-        elif datasource.dtype == dtype.Datasource.MODEL_LEAF:
-            datasource_json['type'] = "modelLeaf"
-            datasource_json['modelLeaf'] = self.__ds_model_leaf(datasource.model_leaf)
-        elif datasource.dtype == dtype.Datasource.RAW_FILE:
-            datasource_json['type'] = "rawFile"
-            datasource_json['rawFilePath'] = datasource.raw_file_path
-        elif datasource.dtype == dtype.Datasource.PIPE_ELEMENT:
-            datasource_json['type'] = "pipeElement"
-            datasource_json['pipeElement'] = self.__ds_dataset(datasource.pipe_element_id)
+        datasource_json['rawFilePath'] = datasource.selected_path
+
+        # if datasource.dtype == dtype.Datasource.DATASET:
+        #     datasource_json['type'] = "dataset"
+        #     datasource_json['dataset'] = self.__ds_dataset(datasource.dataset)
+        # elif datasource.dtype == dtype.Datasource.MODEL_LEAF:
+        #     datasource_json['type'] = "modelLeaf"
+        #     datasource_json['modelLeaf'] = self.__ds_model_leaf(datasource.model_leaf)
+        # elif datasource.dtype == dtype.Datasource.RAW_FILE:
+        #     datasource_json['type'] = "rawFile"
+        #     datasource_json['rawFilePath'] = datasource.selected_path
+        # elif datasource.dtype == dtype.Datasource.PIPE_ELEMENT:
+        #     datasource_json['type'] = "pipeElement"
+        #     datasource_json['pipeElement'] = self.__ds_dataset(datasource.pipe_element_id)
 
         pe_json['datasource'] = datasource_json
         self.append_pe_json(pe_json)
@@ -535,6 +540,7 @@ class PipeSerialize(object):
 
         pe_json['annoTask'] = anno_task_json
         self.append_pe_json(pe_json)
+
     def add_data_export(self, pe, data_exports):
         # create pipe element json
         pe_json = dict()
@@ -542,14 +548,17 @@ class PipeSerialize(object):
         pe_json = self.add_pe_info(pe, pe_json)
         data_exports_json = list()
         for de in data_exports:
-                data_export_json = dict()
-                data_export_json['id'] = de.idx
-                data_export_json['iteration'] = de.iteration
-                data_export_json['file_path'] = de.file_path
-                data_export_json['result_id'] = de.result_id
-                data_exports_json.append(data_export_json)
+            data_export_json = dict()
+            data_export_json['id'] = de.idx
+            data_export_json['iteration'] = de.iteration
+            data_export_json['file_path'] = de.file_path
+            data_export_json['result_id'] = de.result_id
+            data_export_json['fs_id'] = de.fs_id
+            # raise Exception('Test {}'.format(de.fs_id))
+            data_exports_json.append(data_export_json)
         pe_json['dataExport'] = data_exports_json
         self.append_pe_json(pe_json)
+
     def add_visual_output(self, pe, visual_outputs):
         # create pipe element json
         pe_json = dict()

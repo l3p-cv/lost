@@ -52,7 +52,7 @@ class BaseModal extends Component {
         switch (this.modalData.type) {
             case 'datasource':
                 const { datasource } = this.modalData.exportData
-                if (datasource.rawFilePath) {
+                if (datasource.selectedPath) {
                     verified = true
                 } else {
                     verified = false

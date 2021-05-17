@@ -18,21 +18,12 @@ class Input(object):
         self._connected_pes = element._pipe_man.get_prev_pes(element._pipe_element)
 
     @property
-    def raw_files(self):
-        '''list of :class:`lost.pyapi.pipe_elements.RawFile` objects'''
-        res_list = []
-        for pe in self._connected_pes:
-            if pe.dtype == dtype.PipeElement.DATASOURCE:
-                res_list.append(pipe_elements.RawFile(pe, self._element._dbm))
-        return res_list
-
-    @property
     def datasources(self):
         '''list of :class:`lost.pyapi.pipe_elements.Datasource` objects'''
         res_list = []
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.DATASOURCE:
-                res_list.append(pipe_elements.RawFile(pe, self._element._dbm))
+                res_list.append(pipe_elements.Datasource(pe, self._element._dbm))
         return res_list
 
     @property
@@ -293,18 +284,20 @@ class ScriptOutput(Output):
                                           iteration=self._script._pipe_element.iteration)
                 self._script._dbm.add(vis_out)
 
-    def add_data_export(self, file_path):
+    def add_data_export(self, file_path, fs):
         '''Serve a file for download inside the web gui via a DataExport element.
 
         Args:
             file_path (str): Path to the file that should be provided 
                 for download.
+            fs (filesystem): Filesystem, where file_path is valid.
         '''
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.DATA_EXPORT:
-                rel_path = self._script.file_man.make_path_relative(file_path)
-                export = model.DataExport(file_path=rel_path,
+                # rel_path = self._script.file_man.make_path_relative(file_path)
+                export = model.DataExport(file_path=file_path,
                                        result_id=self._result_map[pe.idx],
+                                       fs_id = fs.lost_fs.idx,
                                        iteration=self._script._pipe_element.iteration)
                 self._script._dbm.add(export)
 
@@ -315,7 +308,7 @@ class ScriptOutput(Output):
             raise Exception('If video_path is provided a frame_n is also required!')
 
     def request_bbox_annos(self, img_path, boxes=[], labels=[],
-                    frame_n=None, video_path=None, sim_classes=[]):
+                    frame_n=None, video_path=None, sim_classes=[], fs=None):
         '''Request BBox annotations for a subsequent annotaiton task.
 
         Args:
@@ -329,6 +322,10 @@ class ScriptOutput(Output):
             sim_classes (list): [sim_class1, sim_class2,...] 
                 A list of similarity classes that is used to 
                 cluster BBoxes when using MIA for annotation.
+            fs (obj): The filesystem where image is located. 
+                User lost standard filesystem if no filesystem was given.
+                You can get this Filesystem object from a DataSource-Element by calling
+                get_fs method.
 
         Note:
             There are three cases when you request a bbox annotation.
@@ -366,12 +363,13 @@ class ScriptOutput(Output):
                     anno_sim_classes=sim_classes,
                     frame_n=frame_n,
                     video_path=video_path,
-                    anno_task_id=pe.anno_task.idx)
+                    anno_task_id=pe.anno_task.idx,
+                    fs=fs)
                 
 
     def request_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None):
+        video_path=None, fs=None):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
@@ -394,6 +392,10 @@ class ScriptOutput(Output):
                 the framenumber.
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
+            fs (obj): The filesystem where image is located. 
+                User lost standard filesystem if no filesystem was given.
+                You can get this Filesystem object from a DataSource-Element by calling
+                get_fs method.
         
         Example:
             Request human annotations for an image with annotation proposals::
@@ -428,11 +430,12 @@ class ScriptOutput(Output):
                     anno_sim_classes=anno_sim_classes,
                     frame_n=frame_n,
                     video_path=video_path,
-                    anno_task_id=pe.anno_task.idx)
+                    anno_task_id=pe.anno_task.idx,
+                    fs=fs)
 
     def _add_annos(self, pe, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, anno_task_id=None):
+        video_path=None, anno_task_id=None, fs=None):
         '''Add annos in list style to an image.
         
         Args:
@@ -457,11 +460,17 @@ class ScriptOutput(Output):
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
             anno_task_id (int): Id of the assigned annotation task.
+            fs (obj): The filesystem where image is located. 
+                User lost standard filesystem if no filesystem was given.
+                You can get this Filesystem object from a DataSource-Element by calling
+                get_fs method. 
         '''
         if img_sim_class is None:
             img_sim_class = 1
         if video_path is not None:
             video_path = self._script.get_rel_path(video_path)
+        if fs is None:
+            fs = self._script._dbm.get_fs(name='lost_data')
         rel_img_path = self._script.file_man.make_path_relative(img_path)
         img_anno = model.ImageAnno(anno_task_id=anno_task_id,
                                 img_path=rel_img_path,
@@ -470,7 +479,8 @@ class ScriptOutput(Output):
                                 iteration=self._script._pipe_element.iteration,
                                 frame_n=frame_n,
                                 video_path=video_path,
-                                sim_class=img_sim_class)
+                                sim_class=img_sim_class,
+                                fs_id=fs.lost_fs.idx)
         self._script._dbm.add(img_anno)
         if img_labels is not None:
             self._update_labels(img_labels, img_anno)
@@ -512,7 +522,7 @@ class ScriptOutput(Output):
 
     def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None):
+        video_path=None, fs=None):
         '''Add annos in list style to an image.
         
         Args:
@@ -535,6 +545,10 @@ class ScriptOutput(Output):
                 the framenumber.
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
+            fs (obj): The filesystem where image is located. 
+                User lost standard filesystem if no filesystem was given.
+                You can get this Filesystem object from a DataSource-Element by calling
+                get_fs method.
 
         Example:
             Add annotations to an::
@@ -572,9 +586,11 @@ class ScriptOutput(Output):
                 anno_sim_classes=anno_sim_classes,
                 frame_n=frame_n,
                 video_path=video_path,
-                anno_task_id=pe.anno_task.idx)
+                anno_task_id=pe.anno_task.idx,
+                fs=fs)
 
-    def request_image_anno(self, img_path, sim_class=None, labels=None, frame_n=None, video_path=None):
+    def request_image_anno(self, img_path, sim_class=None, labels=None, 
+        frame_n=None, video_path=None, fs=None):
         '''Request a class label annotation for an image.
 
         Args:
@@ -589,7 +605,10 @@ class ScriptOutput(Output):
                 the framenumber.
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video. 
-        
+            fs (obj): The filesystem where image is located. 
+                User lost standard filesystem if no filesystem was given.
+                You can get this Filesystem object from a DataSource-Element by calling
+                get_fs method.
         Example:
             Request image annotation::
                 >>> self.request_image_anno('path/to/image', sim_class=2)
@@ -601,15 +620,5 @@ class ScriptOutput(Output):
                     img_labels=labels,
                     frame_n=frame_n,
                     video_path=video_path,
-                    anno_task_id=pe.anno_task.idx)
-                # if pe.anno_task.dtype == dtype.AnnoTask.MIA:
-                #     rel_img_path = self._script.file_man.make_path_relative(img_path)
-                #     img_anno = model.ImageAnno(anno_task_id=pe.anno_task.idx,
-                #                           img_path=rel_img_path,
-                #                           sim_class=sim_class,
-                #                           state=state.Anno.UNLOCKED,
-                #                           result_id=self._result_map[pe.idx],
-                #                           iteration=self._script._pipe_element.iteration,
-                #                           frame_n=frame_n,
-                #                           video_path=video_path)
-                #     img_anno.add_to_context(self._script._dbm)
+                    anno_task_id=pe.anno_task.idx,
+                    fs=fs)

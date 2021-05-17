@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - unreleased
+## Changed
+- Use fsspec for filesystem abstraction
+  * SIA: Do not send any image urls to frontend
+  * MIA
+    * Do not send any image urls to frontend
+    * If a mia task is annoBased, crop annos on the fly (do not store anno crops in filesystem)
+  * fileMan: Use fsspec instead of os for filesystm operations
+
 ## [1.4.2] - 2021-03-12
 ## Changed 
 - ImgBlacklist: 

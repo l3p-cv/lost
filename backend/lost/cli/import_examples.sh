@@ -7,5 +7,5 @@ python3 import_label_tree.py '../pyapi/examples/label_trees/dummy_label_tree.csv
     python3 import_pipe_project.py '../pyapi/examples/pipes/mia'
     python3 import_pipe_project.py '../pyapi/examples/pipes/two_stage'
     fi
-cp -r ../pyapi/examples/images/* $LOST_HOME/data/media
+python3 copy_examples.py ../pyapi/examples/images
 fi

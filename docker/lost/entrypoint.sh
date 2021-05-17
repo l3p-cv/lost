@@ -1,6 +1,8 @@
 #!/bin/bash
  /bin/bash -c "source /opt/conda/bin/activate lost"
 source /opt/conda/bin/activate lost
+pip install fsspec
+pip install adlfs
 
 # clean celery lock
 rm -rf /tmp/celerybeat.pid
