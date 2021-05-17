@@ -17,7 +17,7 @@ class DataExportModal extends Component {
     this.state = {
       downloadBlob : undefined
     }
-    this.download = this.download.bind(this)
+    // this.download = this.download.bind(this)
   }
 
   download_file(de_id, fileName){
@@ -26,10 +26,10 @@ class DataExportModal extends Component {
     })
   }
 
-  download(e){
-    const path = e.target.getAttribute('data-ref')
-    this.props.downloadDataExport(path)
-  }
+  // download(e){
+  //   const path = e.target.getAttribute('data-ref')
+  //   this.props.downloadDataExport(path)
+  // }
 
   render() {
     return (

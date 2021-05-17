@@ -9,6 +9,7 @@ from lost.logic import anno_task as annotask_service
 from lost.logic.file_man import FileMan
 import json
 import os
+from lost.pyapi import pe_base
 
 namespace = api.namespace('data', description='Data API.')
 
@@ -78,7 +79,7 @@ class Logs(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATOR):
+        if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
@@ -90,6 +91,27 @@ class Logs(Resource):
                 resp = make_response(f.read())
                 resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
                 resp.headers["Content-Type"] = "blob"
+            return resp
+
+@namespace.route('/annoexport')
+class Logs(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            data = json.loads(request.data)
+            pe_db = dbm.get_pipe_element(pipe_e_id=data['pe_id'])
+            pe = pe_base.Element(pe_db, dbm)
+            df = pe.inp.to_df()
+            # raise Exception('GO ON HERE !!!')
+            resp = make_response(df.to_csv(index=False).encode())
+            resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
+            resp.headers["Content-Type"] = "blob"
             return resp
 
 @namespace.route('/workerlogs/<path:path>')

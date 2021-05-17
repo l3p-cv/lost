@@ -3,6 +3,9 @@ import { ModalHeader, ModalBody, Button } from 'reactstrap';
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
+import axios from 'axios'
+import {API_URL} from '../../../../../../../lost_settings'
+import fileDownload from 'js-file-download'
 
 import { createHashHistory } from 'history'
 
@@ -13,6 +16,12 @@ function handleSiaRewiewClick(props){
         createHashHistory().push('/sia-review')
     )
 }
+
+function handleInstantAnnoDownload(pe_id){
+    axios.post(API_URL+'/data/annoexport', {'pe_id':pe_id}).then( resp => {
+      fileDownload(resp.data, `annos_pe_${pe_id}.csv`)
+    })
+  }
 
 function annotationReleaseSuccessful(){
     // console.log('Annotation release successful')
@@ -66,6 +75,8 @@ export default (props)=>{
                         ]}
                     />
                 </CollapseCard>
+                <Button color="success" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
+                    onClick={e => handleInstantAnnoDownload(props.id)}>Download Annotations</Button>
                 <Button color="warning" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
                     onClick={e => handleSiaRewiewClick(props)}>Review Annotations</Button>
                 <Button color="danger" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
