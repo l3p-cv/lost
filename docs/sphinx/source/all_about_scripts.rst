@@ -331,14 +331,14 @@ be executed in order to start the `pudb <https://documen.tician.de/pudb/>`_
 debugger.
 You will find your script by its unique *pipeline element id*.
 The path to the script instance folder will be
-*/home/lost/data/instance/i-<pipe_element_id>*.
+*/home/lost/app/debug/i-<pipe_element_id>*.
 
 .. code-block:: bash
 
     # Log in to docker
     docker exec -it lost bash
     # Change directory to the instance path of your script
-    cd /home/lost/data/instance/i-<pipe_element_id>
+    cd /home/lost/app/debug/i-<pipe_element_id>
     # Start debugging
     bash debug.sh
 
