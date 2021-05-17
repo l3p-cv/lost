@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import TYPES from '../types/index'
 const INITIAL_STATE = {
     token: '',
@@ -5,7 +6,11 @@ const INITIAL_STATE = {
     refreshToken: '',
     errorMessage: '',
     roles: [],
-    view: ''
+    view: '',
+    loginStatus: {
+        status: undefined,
+        message: undefined,
+    }
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -35,6 +40,11 @@ export default function (state = INITIAL_STATE, action) {
             }
         case TYPES.LOGOUT:
             return INITIAL_STATE
+        case TYPES.LOGIN_STATUS:
+                return {
+                    ...state,
+                    loginStatus: action.payload,
+                }
         default:
             return state
     }

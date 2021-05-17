@@ -1,17 +1,5 @@
 // Here you can add other styles
-.app-header {
-    border-bottom: 0px;
-}
 
-.app-header .nav-item .nav-link{
-    padding-right: 20px;
-}
-
-body{
-    background-color: #eee8d5 !important
-}
-
-.dropdown-menu.show {
-    max-height: calc(100vh - 1.75rem);
-    overflow-y: auto;
+html {
+    font-size: 1em !important;
 }

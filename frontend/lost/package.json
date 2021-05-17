@@ -1,108 +1,80 @@
 {
   "name": "lost",
-  "version": "0.0.1",
-  "description": "LOST Label Objects and Save Time",
-  "author": "Jonas Jäger, Gereon Reus",
-  "homepage": ".",
-  "copyright": "Copyright Jonas Jäger & Gereon Reus",
-  "license": "MIT",
+  "version": "0.1.0",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/l3p-cv/lost/"
-  },
   "dependencies": {
-    "@cartok/object-assign-deep": "^0.4.3",
-    "@coreui/coreui": "^2.1.9",
-    "@coreui/coreui-plugin-chartjs-custom-tooltips": "^1.2.0",
-    "@coreui/icons": "0.3.0",
-    "@coreui/react": "^2.0.9",
-    "@fortawesome/fontawesome-svg-core": "^1.2.29",
-    "@fortawesome/free-regular-svg-icons": "^5.8.2",
-    "@fortawesome/free-solid-svg-icons": "^5.13.1",
-    "@fortawesome/react-fontawesome": "^0.1.11",
-    "axios": "^0.18.1",
-    "bootstrap": "^4.3.1",
-    "chart.js": "^2.7.2",
-    "classnames": "^2.2.6",
-    "core-js": "^2.5.7",
-    "enzyme": "^3.7.0",
-    "enzyme-adapter-react-16": "^1.6.0",
-    "flag-icon-css": "^3.2.0",
-    "font-awesome": "^4.7.0",
-    "jwt-decode": "^2.2.0",
-    "l3p-frontend": "^3.2.12",
+    "@coreui/chartjs": "^2.0.0",
+    "@coreui/coreui": "^3.4.0",
+    "@coreui/icons": "^2.0.0-rc.0",
+    "@coreui/icons-react": "^1.0.2",
+    "@coreui/react": ">=3.4.0",
+    "@coreui/react-chartjs": "^1.0.1",
+    "@coreui/utils": "^1.3.1",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.21.1",
+    "i18next": "^19.8.7",
+    "i18next-browser-languagedetector": "^6.0.1",
+    "i18next-http-backend": "^1.1.0",
+    "jwt-decode": "^3.1.2",
     "lodash": "^4.17.15",
-    "lost-sia": "0.0.0-alpha-13",
-    "node-sass": "^4.12.0",
-    "prop-types": "^15.6.2",
+    "l3p-frontend": "^3.2.12",
+    "node-sass": "^4.14.1",
+    "prop-types": "^15.7.2",
     "react": "^16.11.0",
-    "react-app-polyfill": "^0.1.3",
-    "react-autocomplete": "^1.8.1",
-    "react-chartjs-2": "^2.7.2",
-    "react-contexify": "^4.0.0",
+    "react-bootstrap-sweetalert": "^5.2.0",
     "react-directed-graph": "^1.0.7",
-    "react-dom": "^16.11.0",
-    "react-draggable": "^3.3.0",
     "react-graph-vis": "^1.0.2",
-    "react-lazylog": "^3.2.0",
-    "react-loadable": "^5.5.0",
+    "react-dom": "^16.11.0",
+    "react-i18next": "^11.8.5",
+    "react-icons": "^4.1.0",
+    "react-redux": "^7.2.2",
     "react-modal": "^3.8.1",
-    "react-notifications": "^1.4.3",
-    "react-redux": "^7.1.3",
-    "react-router-config": "^4.4.0-beta.1",
-    "react-router-dom": "^4.3.1",
+    "react-autocomplete": "^1.8.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
     "react-stepper-wizard": "^1.1.5",
-    "react-table": "^6.9.0",
-    "react-test-renderer": "^16.5.2",
-    "react-use": "^15.2.5",
-    "reactstrap": "^7.1.0",
-    "redux": "^4.0.1",
+    "react-table": "^6.5.3",
+    "react-draggable": "^3.3.0",
+    "react-use": "^17.1.0",
+    "reactstrap": "^8.9.0",
+    "redux": "4.0.5",
     "redux-form": "^8.2.0",
     "redux-thunk": "^2.3.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.87.3",
-    "simple-line-icons": "^2.4.1",
-    "sweetalert2": "^9.15.1",
+    "sass": "^1.32.7",
+    "sweetalert2": "^10.14.0",
+    "react-notifications": "^1.4.3",
+    "web-vitals": "^1.0.1",
     "validator": "^13.5.2"
   },
-  "devDependencies": {
-    "circular-dependency-plugin": "^5.0.2",
-    "copy-webpack-plugin": "^4.6.0",
-    "eslint-plugin-react-hooks": "^2.2.0",
-    "react-app-rewire-eslint": "^0.2.3",
-    "react-app-rewired": "^1.6.2",
-    "react-scripts": "^2.0.4"
-  },
   "scripts": {
-    "start": "REACT_APP_PORT='8083' react-scripts start",
+    "start": "REACT_APP_PORT='' react-scripts start",
     "build": "react-scripts build",
-    "test": "react-app-rewired test",
-    "test:debug": "react-app-rewired --inspect-brk test --runInBand",
-    "eject": "react-app-rewired eject"
-  },
-  "bugs": {
-    "url": "https://github.com/l3p-cv/lost/issues"
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
-  "eslintIgnore": [
-    "node_modules"
-  ],
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 9",
-    "not op_mini all"
-  ],
-  "nodemonConfig": {
-    "watch": [
-      "test/**/*",
-      "src/**/*"
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
     ],
-    "ext": "js",
-    "delay": 500,
-    "verbose": true
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

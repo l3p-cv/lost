@@ -1,5 +1,5 @@
 import axios from 'axios'
-import TYPES from '../../types/index'
+import TYPES from '../../types'
 import { API_URL } from '../../lost_settings'
 
 

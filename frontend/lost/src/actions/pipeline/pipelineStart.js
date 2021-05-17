@@ -1,6 +1,7 @@
 import { API_URL } from '../../lost_settings'
 import axios from 'axios'
-import { alertLoading, alertClose, alertError } from '../../components/pipeline/src/globalComponents/Sweetalert'
+import { alertLoading, alertClose, alertError } from '../../containers/pipeline//globalComponents/Sweetalert'
+import types from '../../types'
 
 const selectTab = (tabId) => {
     return {
@@ -41,7 +42,7 @@ const getTemplates = () => async dispatch => {
     }
     alertClose()
     
-    dispatch({ type: 'PIPELINE_START_GET_TEMPLATES', 
+    dispatch({ type: types.PIPELINE_START_GET_TEMPLATES, 
     payload: {
         response: response.data,
         error: error

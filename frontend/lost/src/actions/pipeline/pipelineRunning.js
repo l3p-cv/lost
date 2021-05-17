@@ -2,8 +2,8 @@ import { API_URL } from '../../lost_settings'
 import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
-import { alertLoading, alertClose } from '../../components/pipeline/src/globalComponents/Sweetalert'
-
+import { alertLoading, alertClose } from '../../containers/pipeline//globalComponents/Sweetalert'
+import {dispatchRequestLoading, dispatchRequestReset, dispatchRequestError} from '../dispatchHelper'
 import REQUEST_STATUS from '../../types/requestStatus'
 
 const verifyTab = (tabId, verified) => {
@@ -24,25 +24,19 @@ const selectTab = (tabId) => {
     }
 }
 
-const getPipelines = (showAlert) => async dispatch => {
-    let response = {}
-    let error
-    if(showAlert){
-        alertLoading()
-    }
+const getPipelines = () => async dispatch => {
+    const TYPE = TYPES.PIPELINE_RUNNING_GET_PIPELINES_STATUS
+    dispatchRequestLoading(dispatch, TYPE)
     try {
-        response = await axios.get(`${API_URL}/pipeline`)
+        const response = await axios.get(`${API_URL}/pipeline`)
+        dispatch({ type: TYPES.PIPELINE_RUNNING_GET_PIPELINES, 
+        payload: {
+            response: response.data
+        }})
     }catch(err){
-        error = err.message
+        dispatchRequestError(dispatch, TYPE)
     }
-    if(showAlert){
-        alertClose()
-    }
-    dispatch({ type: 'PIPELINE_RUNNING_GET_PIPELINES', 
-    payload: {
-        response: response.data,
-        error: error
-    }})
+    dispatchRequestReset(dispatch, TYPE)
 }
 
 const getPipeline = (id) => async dispatch => {

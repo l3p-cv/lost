@@ -2,29 +2,34 @@ import axios from 'axios'
 import TYPES from '../types/index'
 import { API_URL } from '../lost_settings'
 import jwt_decode from 'jwt-decode'
+import {
+    dispatchRequestLoading,
+    dispatchRequestSuccess,
+    dispatchRequestError,
+} from './dispatchHelper'
 
-const login = (formProps, callback) => async dispatch => {
+
+const login = (loginInformations) => async (dispatch) => {
+    dispatchRequestLoading(dispatch, TYPES.LOGIN_STATUS)
     try {
-        const response = await axios.post(API_URL + '/user/login', formProps)
-        dispatch({ type: TYPES.AUTH_USER, payload: response.data})
+        const response = await axios.post(`${API_URL}/user/login`, loginInformations)
         localStorage.setItem('token', response.data.token)
-        localStorage.setItem('refreshToken', response.data.refresh_token)
-        localStorage.setItem('view', 'Annotator')
-        axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
-        const decodedToken = jwt_decode(response.data.token)
-        if(decodedToken.user_claims.roles.indexOf('Designer') > -1){
-            dispatch({ type: TYPES.CHANGE_VIEW, payload: 'Designer'})
-            localStorage.setItem('view', 'Designer')
-            callback()
-        }else{
-            dispatch({ type: TYPES.CHANGE_VIEW, payload: 'Annotator'})
-            localStorage.setItem('view', 'Annotator')
-            callback()
-        }
-    } catch(e){
-        dispatch({ type: TYPES.AUTH_ERR, payload: 'No valid credentials.'})
+        localStorage.setItem('refreshToken', response.data.refreshToken)
+        axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
+        console.log('response')
+        console.log(response)
+        dispatchRequestSuccess(dispatch, TYPES.LOGIN_STATUS, 'success')
+    } catch (e) {
+        dispatchRequestError(dispatch, TYPES.LOGIN_STATUS, e.message)
     }
 }
+
+
+
+
+
+
+
 
 const decodeJwt = (decoded_token, callback) => async dispatch => {
     if (decoded_token !== undefined ){
@@ -65,8 +70,8 @@ const changeView = (view, callback) => async dispatch => {
 
 const logout = () => async dispatch => {
     await axios.post(API_URL + '/user/logout')
-    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('refreshToken')
-    await axios.post(API_URL + '/user/logout2')
+    // axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('refreshToken')
+    // await axios.post(API_URL + '/user/logout2')
     dispatch({type: TYPES.LOGOUT})
     axios.defaults.headers.common['Authorization'] = undefined
     localStorage.removeItem('token')

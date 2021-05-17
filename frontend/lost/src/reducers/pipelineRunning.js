@@ -6,7 +6,7 @@ const INITITAL_STATE = {
             paddingBottom: 40,       //pixel
         },
         shape: {
-            size: 80,
+            size: 60,
             borderWidth: 4,
             borderRadius: '50%',
         },
@@ -54,7 +54,6 @@ export default (state = INITITAL_STATE, action) => {
                 step0Data: action.payload
             }
         case 'PIPELINE_RUNNING_GET_PIPELINE':
-
             return {
                 ...state,
                 step1Data:

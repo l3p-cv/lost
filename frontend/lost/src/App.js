@@ -1,36 +1,65 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { HashRouter, Route, Switch } from 'react-router-dom'
-import './App.scss'
-import 'semantic-ui-css/semantic.min.css'
+import React, { Suspense } from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { store } from './store';
+import { Provider } from 'react-redux';
+import './scss/style.scss'
+import enTranslation from './assets/locales/en'
+import deTranslation from './assets/locales/de'
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
+import { flatObj } from './utils'
 
-import DefaultLayout  from './components/DefaultLayout/DefaultLayout'
-import TimeOut  from './views/Pages/TimeOut/TimeOut'
-import Login  from './views/Pages/Login/Login'
-import Logout  from './views/Pages/Logout/Logout'
-import Page404  from './views/Pages/Page404/Page404'
+// Containers
 
-import actions from './actions/index'
-const { checkExpireDateCron } = actions
-class App extends Component {
-  
-  componentDidMount(){
-      this.timer = setInterval(()=>  this.props.checkExpireDateCron(), 4000)
-  }
-  render() {
-    return (
-      <HashRouter>
-        <Switch>
-          <Route exact path='/timeout' name='Time Out' component={TimeOut} />
-          <Route exact path='/login' name='Login Page' component={Login} />
-          <Route exact path='/logout' name='Logout Page' component={Logout} />
-          <Route exact path='/404' name='Page 404' component={Page404} />
-          <Route path='/' name='Home' component={DefaultLayout} />
-        </Switch>
-      </HashRouter>
-    )
-  }
+
+const resources = {
+    en: {
+        translation: flatObj(enTranslation),
+    },
+    de: {
+        translation: flatObj(deTranslation),
+    },
+}
+i18n.use(initReactI18next) // passes i18n down to react-i18next
+    .init({
+        resources,
+        lng: 'en',
+
+        keySeparator: true, // we do not use keys in form messages.welcome
+
+        interpolation: {
+            escapeValue: false, // react already safes from xss
+        },
+    })
+
+
+
+
+
+const TheLayout = React.lazy(() => import('./coreui_containers/TheLayout'))
+
+// Pages
+const Login = React.lazy(() => import('./containers/Login'))
+const Logout = React.lazy(() => import('./containers/Logout'))
+
+const loading = () => {
+    return <div>Loading</div>
 }
 
 
-export default connect(null, { checkExpireDateCron })(App)
+const App = () => (
+    <Provider store={store}>
+    <Suspense fallback={loading}>
+    <BrowserRouter>
+        <Switch>
+            <Route exact path="/login" name="Login Page" render={(props) => <Login {...props} />} />
+            <Route exact path="/logout" name="Logout Page" component={Logout} />
+            <Route path="/" name="Home" render={() => <TheLayout />} />
+        </Switch>
+    </BrowserRouter>
+    </Suspense>
+    </Provider>
+
+)
+
+export default App
