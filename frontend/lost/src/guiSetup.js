@@ -6,6 +6,7 @@ import UsersComponent from './containers/Users/Users'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
+import DataSourcesComponent from './containers/DataSources/DataSources'
 
 import {
     FaTachometerAlt,
@@ -13,7 +14,8 @@ import {
     FaTag,
     FaCubes,
     FaUsers,
-    FaPaintBrush
+    FaPaintBrush,
+    FaDatabase
 } from 'react-icons/fa'
 
 const iconProps = {
@@ -73,6 +75,14 @@ const Users = {
 
 }
 
+const DataSources = {
+    name: 'Datasources',
+    to: '/datasources',
+    component: DataSourcesComponent,
+    icon: <FaDatabase {...iconProps} />,
+
+}
+
 const Annotation = {
     name: 'Annotation',
     to: '/annotation',
@@ -107,7 +117,8 @@ const guiSetup = {
             Labels,
             Workers,
             Users,
-            Annotation
+            Annotation,
+            DataSources
         ]
     },
     Annotator: {

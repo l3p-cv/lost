@@ -1609,7 +1609,7 @@ class FileSystem(Base):
         group_id (int): User or group who owns this filesystem.
         connection (str): Connection string to filesystem.
         root_path (str): Root path for this filesystem.
-        dtype (int): Filesystem type.
+        fs_type (int): Filesystem type.
         timestamp (DateTime): Timestamp when filesystem was added to data base.
         name (str): Name of the filesystem
     

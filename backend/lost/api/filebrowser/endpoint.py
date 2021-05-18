@@ -26,3 +26,29 @@ class LS(Resource):
             res = fm.ls(data['path'], detail=True)
             dbm.close_session()
             return chonkyfy(res, data['path'], fm)
+
+@namespace.route('/fslist')
+class LS(Resource):
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            fs_list = dbm.get_public_fs()
+            ret = []
+            for fs in fs_list:
+                ret.append({
+                    'id': fs.idx,
+                    'group_id': fs.group_id,
+                    'connection': fs.connection,
+                    'rootPath': fs.root_path,
+                    'fsType': fs.fs_type,
+                    'name' : fs.name,
+                    'timestamp': fs.timestamp.isoformat()
+                })
+            dbm.close_session()
+            return ret

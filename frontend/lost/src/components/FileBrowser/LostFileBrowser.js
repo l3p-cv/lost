@@ -8,18 +8,19 @@ import {
   FileNavbar,
   FileToolbar,
 } from 'chonky'
-import axios from 'axios'
-import {API_URL} from '../../lost_settings'
+// import axios from 'axios'
+// import {API_URL} from '../../lost_settings'
+import * as fbaccess from '../../access/fb'
 
-const getPath = async () => {
-  let response = await axios.get(API_URL+'/fb/first')
-  return response.data
-}
-const getPath2 = () => {
-  axios.get(API_URL+'/fb/first').then( resp => {
-    console.log('getPath2 response',resp)
-  })
-}
+// const getPath = async () => {
+//   let response = await axios.get(API_URL+'/fb/first')
+//   return response.data
+// }
+// const getPath2 = () => {
+//   axios.get(API_URL+'/fb/first').then( resp => {
+//     console.log('getPath2 response',resp)
+//   })
+// }
 
 
 const LostFileBrowser = ({fs, onPathSelected}) => {
@@ -30,8 +31,6 @@ const LostFileBrowser = ({fs, onPathSelected}) => {
 
   useEffect(() => {
     setChonkyDefaults({ iconComponent: ChonkyIconFA })
-    console.log('getPath', getPath())
-    getPath2()
   }, [])
   useEffect(() => {
     console.log('FS', fs)
@@ -40,12 +39,21 @@ const LostFileBrowser = ({fs, onPathSelected}) => {
     }
   }, [fs])
 
-  const ls = (fs, path) => {
-    axios.post(API_URL+'/fb/ls', {'fs':fs, 'path':path}).then( resp => {
-      setFiles(resp.data['files'])
-      setFolderChain(resp.data['folderChain'])
-      console.log('ls response',resp)
-    })
+  const ls = async (fs, path) => {
+    const res_data = await fbaccess.ls(fs, path)
+    // console.log('Async ls', res_data)
+    setFiles(res_data['files'])
+    setFolderChain(res_data['folderChain'])
+    // fbaccess.ls(fs, path, (data) => {
+    //   setFiles(data['files'])
+    //   setFolderChain(data['folderChain'])
+    // })
+
+    // axios.post(API_URL+'/fb/ls', {'fs':fs, 'path':path}).then( resp => {
+    //   setFiles(resp.data['files'])
+    //   setFolderChain(resp.data['folderChain'])
+    //   console.log('ls response',resp)
+    // })
   }
 
   const handleFileAction = (data) => {
