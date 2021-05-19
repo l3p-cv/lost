@@ -1,4 +1,4 @@
-from flask_restplus import reqparse
+from flask_restx import reqparse
 
 annotask_parser = reqparse.RequestParser()
 annotask_parser.add_argument('id',

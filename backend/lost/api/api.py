@@ -1,4 +1,4 @@
-from flask_restplus import Api
+from flask_restx import Api
 
 api = Api(version='0.1', title='LOST API', description='REST and LOST specific services.')
 

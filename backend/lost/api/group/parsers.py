@@ -1,4 +1,4 @@
-from flask_restplus import reqparse
+from flask_restx import reqparse
 
 group_parser = reqparse.RequestParser()
 group_parser.add_argument('group_name',
