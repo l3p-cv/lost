@@ -17,12 +17,6 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs && rm -rf /var/lib/apt/lists/*
 ADD /docker/lost-base/environment.yml .
 RUN /bin/bash -c "source /opt/conda/bin/activate && conda env create -f environment.yml && conda clean -ay"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir python-igraph"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install sphinx && conda clean -ay"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir sphinx-rtd-theme"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pandas && conda clean -ay"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pytest && conda clean -ay"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir opencv-python==4.0.0.21"
-RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir fsspec adlfs pyarrow"
+# RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir python-igraph"
 # Change to CLI
 WORKDIR /code/backend/lost/cli
