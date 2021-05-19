@@ -61,6 +61,7 @@ dependencies:
     - pymysql==0.9.2
     - pytz==2018.7
     - scikit-image
+    - setuptools_rust
     - six==1.11.0
     - sk-video
     - sqlalchemy==1.4.1
