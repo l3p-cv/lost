@@ -23,5 +23,6 @@ RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pandas && conda clean -ay"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && conda install pytest && conda clean -ay"
 RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir opencv-python==4.0.0.21"
+RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir fsspec adlfs pyarrow"
 # Change to CLI
 WORKDIR /code/backend/lost/cli
