@@ -38,17 +38,31 @@ def tree():
     tree = testils.get_voc_label_tree(dbm)
     yield tree
 
+@pytest.fixture
+def local_fs():
+    dbm = DBMan(config.LOSTConfig())
+    test_user = testils.get_user(dbm)
+    fs = model.FileSystem(group_id=test_user.groups[0].idx, connection=json.dumps(dict()), root_path='',
+                fs_type='file', timestamp=datetime.datetime.now(), name='test_request_annos_fs')
+    dbm.add(fs)
+    dbm.commit()
+    yield fs
+class TempFSDummy(object):
+    def __init__(self, fs):
+        self.lost_fs = fs
 class TestScriptApi(object):
 
-    def test_request_annos(self, script_element, tree):
+    def test_request_annos(self, script_element, tree, local_fs):
         s = Script(pe_id=script_element.idx)
+        fs = TempFSDummy(local_fs)
         # pudb.set_trace()
         lbl_vec = tree.get_child_vec(tree.root.idx)
         s.outp.request_annos(IMG_PATH1,
             img_labels=[lbl_vec[1]],
             annos=REF_BBOXES,
             anno_types=['bbox']*len(REF_BBOXES),
-            anno_labels=[[lbl_vec[1]]]*len(REF_BBOXES)
+            anno_labels=[[lbl_vec[1]]]*len(REF_BBOXES),
+            fs=fs
             )
         s.outp.request_annos(IMG_PATH2,
             img_labels=[lbl_vec[2]],
@@ -58,7 +72,8 @@ class TestScriptApi(object):
             anno_types=['bbox'],
             anno_labels=[
                 [lbl_vec[2]]
-            ]
+            ],
+            fs=fs
             )
         df = s.outp.to_df()
         df1 = df[df['img.img_path']==IMG_PATH1]
