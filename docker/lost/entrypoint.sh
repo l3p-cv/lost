@@ -5,7 +5,7 @@ source /opt/conda/bin/activate lost
 # clean celery lock
 rm -rf /tmp/celerybeat.pid
 
- # init env vars 
+# init env vars 
 
 export LOST_HOME="/home/lost"
 
@@ -39,7 +39,7 @@ mkdir -p ${LOST_HOME}/logs
 
 python3 /code/backend/lost/logic/init/initlost.py
 cd /code/backend/lost/cli && bash import_examples.sh && cd -
-cd /code/docs/sphinx &&  make html && cd -
+# cd /code/docs/sphinx &&  make html && cd -
 python3 /code/backend/lost/logic/init/initworker.py
 python3 /code/backend/lost/logic/init/init_patchsystem.py
 
