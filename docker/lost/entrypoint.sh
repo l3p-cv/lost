@@ -1,14 +1,11 @@
 #!/bin/bash
  /bin/bash -c "source /opt/conda/bin/activate lost"
 source /opt/conda/bin/activate lost
-pip install fsspec
-pip install adlfs
 
 # clean celery lock
 rm -rf /tmp/celerybeat.pid
 
- # init env vars 
-
+# init env vars 
 export LOST_HOME="/home/lost"
 
 if [ -z "${LOST_DB_IP}" ]; then
@@ -41,7 +38,7 @@ mkdir -p ${LOST_HOME}/logs
 
 python3 /code/backend/lost/logic/init/initlost.py
 cd /code/backend/lost/cli && bash import_examples.sh && cd -
-cd /code/docs/sphinx &&  make html && cd -
+# cd /code/docs/sphinx &&  make html && cd -
 python3 /code/backend/lost/logic/init/initworker.py
 python3 /code/backend/lost/logic/init/init_patchsystem.py
 

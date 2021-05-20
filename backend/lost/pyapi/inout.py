@@ -1,4 +1,5 @@
 from lost.pyapi import pipe_elements
+from lost.logic.file_man import DummyFileMan
 from lost.db import access, dtype
 from lost.db import model
 from lost.db import state
@@ -470,7 +471,8 @@ class ScriptOutput(Output):
         if video_path is not None:
             video_path = self._script.get_rel_path(video_path)
         if fs is None:
-            fs = self._script._dbm.get_fs(name='lost_data')
+            fs_db = self._script._dbm.get_fs(name='lost_data')
+            fs = DummyFileMan(fs_db)
         rel_img_path = self._script.file_man.make_path_relative(img_path)
         img_anno = model.ImageAnno(anno_task_id=anno_task_id,
                                 img_path=rel_img_path,

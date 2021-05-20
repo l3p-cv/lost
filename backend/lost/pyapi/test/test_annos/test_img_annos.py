@@ -60,6 +60,8 @@ def full_img_anno():
     line.annotator = test_user
     line.line = REF_LINE
     img_anno = model.ImageAnno(img_path='path/to/img1.jpg')
+    fs = add_local_fs(dbm, 'local_fs_for_full_img_anno')
+    img_anno.fs_id = fs.idx
     lbl = model.Label(label_leaf_id=label_vec[3])
     dbm.add(lbl)
     img_anno.labels.append(lbl)
@@ -79,20 +81,32 @@ def full_img_anno():
     # dbm.delete(img_anno.labels)
     dbm.delete(img_anno)
     dbm.commit()
+    delete_local_fs(dbm, fs)
 
 @pytest.fixture
 def empty_img_anno():
     dbm = DBMan(config.LOSTConfig())
-    test_user = testils.get_user(dbm)
-    tree = testils.get_voc_label_tree(dbm)
-    label_leaf_id = tree.get_child_vec(tree.root.idx)[0]
     img_anno = model.ImageAnno(img_path='path/to/img1.jpg')
+    fs = add_local_fs(dbm, 'local_fs_for_empty_img_anno')
+    img_anno.fs_id = fs.idx
     dbm.add(img_anno)
     dbm.commit()
     yield img_anno
     dbm.delete(img_anno)
     dbm.commit()
+    delete_local_fs(dbm, fs)
 
+def add_local_fs(dbm, fs_name):
+    test_user = testils.get_user(dbm)
+    fs = model.FileSystem(group_id=test_user.groups[0].idx, connection=json.dumps(dict()), root_path='',
+                fs_type='file', timestamp=datetime.datetime.now(), name=fs_name)
+    dbm.add(fs)
+    dbm.commit()
+    return fs
+
+def delete_local_fs(dbm, fs):
+    dbm.delete(fs)
+    dbm.commit()
 class TestImageAnnos(object):
     
     def test_to_dict_flat(self, full_img_anno):

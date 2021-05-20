@@ -1,6 +1,6 @@
 import json
 from flask import request
-from flask_restplus import Resource
+from flask_restx import Resource
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, DATA_URL
 from flask_jwt_extended import jwt_required, get_jwt_identity
