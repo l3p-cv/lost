@@ -7,9 +7,10 @@ import {
     faUserEdit,
     faTrash,
     faUserPlus,
+    faEdit,
     faCopy
 } from '@fortawesome/free-solid-svg-icons'
-import EditUserModal from './EditUserModal'
+import EditDSModal from './EditDSModal'
 import { useCopyToClipboard } from 'react-use'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
@@ -29,7 +30,7 @@ export const DSTable = () => {
     let users = useSelector((state) => state.user.users)
     const [copiedObj, copyToClipboard] = useCopyToClipboard()
     const deleteUserStatus = useSelector((state) => state.user.deleteUserStatus)
-    const [isNewUser, setIsNewUser] = useState(false)
+    const [isNewDS, setIsNewDS] = useState(false)
     const [fsList, setFSList] = useState([])
 
     useEffect(async ()=>{
@@ -62,10 +63,10 @@ export const DSTable = () => {
     }, [copiedObj])
 
     // control modal close
-    const [isUserEditOpenControl, setIsUserEditOpenControl] = useState(false)
-    const [selectedUser, setSelectedUser] = useState()
+    const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
+    const [selectedDs, setSelectedDs] = useState()
     // only close modal when animation finished
-    const [isUserEditOpenView, setIsUserEditOpenView] = useState(false)
+    const [isDsEditOpenView, setIsDsEditOpenView] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -73,47 +74,53 @@ export const DSTable = () => {
         dispatch(actions.getUsers())
     }
 
-    const createNewUser = () => {
-        setIsNewUser(true)
-        setSelectedUser(EMPTY_USER)
-        openUserModal()
+    const createNewDS = () => {
+        setIsNewDS(true)
+        setSelectedDs(undefined)
+        openEditDSModal()
+    }
+
+    const handleEditDs = (row) => {
+        console.log('handleEditDs', row)
+        setSelectedDs(row.value)
+        openEditDSModal()
     }
 
     useEffect(() => {
         getUsers()
     }, [])
 
-    const openUserModal = () => {
-        setIsUserEditOpenControl(true)
-        setIsUserEditOpenView(true)
+    const openEditDSModal = () => {
+        setIsDsEditOpenControl(true)
+        setIsDsEditOpenView(true)
     }
 
-    const editClick = ({ row }) => {
-        setIsNewUser(false)
-        setSelectedUser(users.filter((el) => el.user_name === row.user_name))
+    // const editClick = ({ row }) => {
+    //     setIsNewDS(false)
+    //     setSelectedUser(users.filter((el) => el.user_name === row.user_name))
 
-        openUserModal()
-    }
+    //     openEditDSModal()
+    // }
 
-    const deleteClick = (row) => {
-        dispatch(actions.deleteUser(row.original.idx))
-    }
+    // const deleteClick = (row) => {
+    //     dispatch(actions.deleteUser(row.original.idx))
+    // }
 
     const closeModal = () => {
-        setIsUserEditOpenControl(false)
+        setIsDsEditOpenControl(false)
         getUsers()
     }
     const onClosedModal = () => {
-        setIsUserEditOpenView(false)
+        setIsDsEditOpenView(false)
     }
     return (
         <div>
-            {isUserEditOpenView && (
-                <EditUserModal
-                    isNewUser={isNewUser}
-                    users={users}
-                    user={selectedUser}
-                    isOpen={isUserEditOpenControl}
+            {isDsEditOpenView && (
+                <EditDSModal
+                    isNewDs={isNewDS}
+                    fsList={fsList}
+                    selectedId={selectedDs}
+                    modalOpen={isDsEditOpenControl}
                     closeModal={closeModal}
                     onClosed={onClosedModal}
                 />
@@ -122,8 +129,8 @@ export const DSTable = () => {
             <IconButton
                 color="primary"
                 icon={faUserPlus}
-                text="Add User"
-                onClick={createNewUser}
+                text="Add Datasource"
+                onClick={createNewDS}
                 style={{ marginBottom: 20 }}
             />
 
@@ -131,6 +138,19 @@ export const DSTable = () => {
                 data={fsList}
                 columns={[
                     {
+                        Header: 'Edit',
+                        accessor: 'id',
+                        Cell: (row) =>
+                            Datatable.centeredCell({
+                                children: (
+                                    <IconButton
+                                        icon={faEdit}
+                                        color="warning"
+                                        onClick={() => handleEditDs(row)}
+                                    />
+                                )
+                            })
+                    },{
                         Header: 'Name',
                         accessor: 'name',
                         Cell: (row) =>
