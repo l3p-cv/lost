@@ -10,7 +10,7 @@ from lost.db.model import User as DBUser, Role, Group
 from lost.logic import email 
 from lost.logic.user import release_user_annos
 from flaskapp import blacklist
-
+from lost.api.user.login_manager import LoginManager
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
@@ -151,7 +151,7 @@ class User(Resource):
 
         requesteduser = dbm.get_user_by_id(id)
          
-        if requesteduser:
+        if requesteduser and not requesteduser.is_external:
             requesteduser.email = args.get('email')
             requesteduser.first_name = args.get('first_name')
             requesteduser.last_name = args.get('last_name')
@@ -180,7 +180,7 @@ class User(Resource):
                     group = dbm.get_group_by_name(group_name)
                     if group:
                         requesteduser.groups.append(group)
-            if args.get('password'):
+            if args.get('password') and not requesteduser.is_external:
                 print(args.get('password')) 
                 requesteduser.set_password(args.get('password'))
 
@@ -279,27 +279,10 @@ class UserLogin(Resource):
         # get data from parser
         data = login_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
-        # find user in database
-        if 'user_name' in data:
-            user = dbm.find_user_by_user_name(data['user_name'])
-
-        # check password
-        if user and user.check_password(data['password']):
-            dbm.close_session()
-            expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
-            expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
-            if FLASK_DEBUG:
-                expires = datetime.timedelta(days=365)
-                expires_refresh = datetime.timedelta(days=366)
-            access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
-            refresh_token = create_refresh_token(user.idx, expires_delta=expires_refresh)
-            return {
-                'token': access_token,
-                'refresh_token': refresh_token
-            }, 200
+        lm = LoginManager(dbm, data['user_name'], data['password'])
+        response = lm.login()
         dbm.close_session()
-        return {'message': 'Invalid credentials'}, 401
-
+        return response
 @namespace.route('/token')
 class Token(Resource):
     @api.expect(user_login)

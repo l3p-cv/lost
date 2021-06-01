@@ -36,7 +36,7 @@ class User(Base, UserMixin):
     user_name = Column(String(100), nullable=False, unique=True)
     email = Column(String(255), unique=True)
     email_confirmed_at = Column(DateTime())
-    password = Column(String(255), nullable=False, server_default='')
+    password = Column(String(255), server_default='')
 
     # User information
     first_name = Column(String(100), server_default='')
@@ -50,15 +50,18 @@ class User(Base, UserMixin):
     choosen_anno_task = relationship(
         'AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
     api_token = Column(String(4096))
+    is_external = Column(Boolean)
 
-    def __init__(self, user_name, password, email=None, first_name=None, last_name=None, email_confirmed_at=None, api_token=None):
+    def __init__(self, user_name, password=None, email=None, first_name=None, last_name=None, email_confirmed_at=None, api_token=None, is_external=False):
         self.user_name = user_name
         self.email = email
         self.email_confirmed_at = email_confirmed_at
-        self.set_password(password)
+        if not is_external:
+            self.set_password(password)
         self.first_name = first_name
         self.last_name = last_name
         self.api_token = api_token
+        self.is_external = is_external
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
