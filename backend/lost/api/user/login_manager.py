@@ -4,47 +4,6 @@ from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from flask_jwt_extended import create_access_token, create_refresh_token
 from lost.db.model import User as DBUser, Group
 from lost.db import roles
-config = dict()
-
-# Setup LDAP Configuration Variables. Change these to your own settings.
-# All configuration directives can be found in the documentation.
-
-# Hostname of your LDAP Server
-config['LDAP_HOST'] = 'ldap_host'
-config['LDAP_PORT'] = 389
-
-# Define objectclass of group
-config['LDAP_GROUP_OBJECT_FILTER'] = '(objectclass=posixGroup)'
-
-# Base DN of your directory
-config['LDAP_BASE_DN'] = 'dc=example,dc=com'
-
-# Users DN to be prepended to the Base DN
-config['LDAP_USER_DN'] = 'ou=OrganizationUnit'
-
-# Groups DN to be prepended to the Base DN
-config['LDAP_GROUP_DN'] = '' #ou=groups
-
-# The RDN attribute for your user schema on LDAP
-config['LDAP_USER_RDN_ATTR'] = 'cn'
-
-# The Attribute you want users to authenticate to LDAP with.
-config['LDAP_USER_LOGIN_ATTR'] = 'uid'
-
-# The Username to bind to LDAP with
-config['LDAP_BIND_USER_DN'] = 'cn=binduser,dc=example,dc=com'
-
-# The Password to bind to LDAP with
-config['LDAP_BIND_USER_PASSWORD'] = 'bindUserPassword'
-
-# Specify the server connection should use SSL
-config['LDAP_USE_SSL'] = False
-
-# Instruct Flask-LDAP3-Login to not automatically add the server
-config['LDAP_ADD_SERVER'] = True
-
-config['LDAP_ACTIVE'] = True
-
 class LoginManager():
     def __init__(self, dbm, user_name, password):
         self.dbm = dbm
@@ -52,7 +11,7 @@ class LoginManager():
         self.password = password
     
     def login(self):
-        if config['LDAP_ACTIVE']:
+        if LOST_CONFIG.ldap_config['LDAP_ACTIVE']:
             access_token, refresh_token = self.__authenticate_ldap()
         else:
             access_token, refresh_token = self.__authenticate_flask()
@@ -84,11 +43,10 @@ class LoginManager():
     def __authenticate_ldap(self):
         # auth with ldap
         ldap_manager = LDAP3LoginManager()
-        ldap_manager.init_config(config)
+        ldap_manager.init_config(LOST_CONFIG.ldap_config)
 
         # Check if the credentials are correct
         response = ldap_manager.authenticate(self.user_name, self.password)
-        print(response.status)
         if response.status != AuthenticationResponseStatus.success:
             # no user found in ldap, try it with db user:
             return self.__authenticate_flask()

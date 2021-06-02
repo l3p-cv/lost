@@ -16,6 +16,12 @@ const ErrorLabel = ({ text }) => (
     </p>
 )
 
+const ExternalUserLabel = ({ text }) => (
+    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'blue' }}>
+        {text}
+    </p>
+)
+
 const EditUserModal  = (props) => {
     const roles = useSelector(state=>state.lost.roles)
     const dispatch = useDispatch()
@@ -67,12 +73,14 @@ const EditUserModal  = (props) => {
                     autoFocus={focusedField == 1}
                     placeholder="example@example.com"
                     defaultValue={user.email}
+                    disabled={user.is_external}
                     onChange={(e) => {
                         setFocusedFieled(1)
                         setUser({ ...user, email: e.currentTarget.value })
                     }}
                 />
             </Datatable.centeredCell>
+            {user.is_external ? <ExternalUserLabel text="External user" />: null}
             {emailError ? <ErrorLabel text="Email is not valid" /> : null}
         </>
     )
@@ -85,12 +93,14 @@ const EditUserModal  = (props) => {
                     placeholder="*******"
                     type="password"
                     defaultValue={user.password}
+                    disabled={user.is_external}
                     onChange={(e) => {
                         setFocusedFieled(2)
                         setUser({ ...user, password: e.currentTarget.value })
                     }}
                 />
             </Datatable.centeredCell>
+            {user.is_external ? <ExternalUserLabel text="External user" />: null}
             {passwordError ? <ErrorLabel text={passwordError} /> : null}
         </>
     )
@@ -103,6 +113,7 @@ const EditUserModal  = (props) => {
                     placeholder="*******"
                     type="password"
                     defaultValue={user.confirmPassword}
+                    disabled={user.is_external}
                     onChange={(e) =>{
                         setFocusedFieled(3)
                         setUser({

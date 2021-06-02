@@ -80,3 +80,42 @@ class LOSTConfig(object):
             self.mail_default_sender = os.environ['MAIL_DEFAULT_SENDER']
         if 'MAIL_LOST_URL' in os.environ:
             self.mail_lost_url = os.environ['MAIL_LOST_URL']
+
+        self.ldap_config = dict()
+        self.ldap_config['LDAP_ACTIVE'] = False
+        self.ldap_config['LDAP_PORT'] = 389
+        self.ldap_config['LDAP_GROUP_OBJECT_FILTER'] = '(objectclass=posixGroup)'
+        self.ldap_config['LDAP_GROUP_DN'] = ''
+        self.ldap_config['LDAP_USER_RDN_ATTR'] = 'cn'
+        self.ldap_config['LDAP_USER_LOGIN_ATTR'] = 'uid'
+        self.ldap_config['LDAP_USE_SSL'] = False
+        self.ldap_config['LDAP_ADD_SERVER'] = True
+        
+        if 'LDAP_ACTIVE' in os.environ:
+            self.ldap_config['LDAP_ACTIVE'] = os.environ['LDAP_ACTIVE']
+        if 'LDAP_HOST' in os.environ:
+            self.ldap_config['LDAP_HOST'] = os.environ['LDAP_HOST']
+        if 'LDAP_PORT' in os.environ:
+            self.ldap_config['LDAP_PORT'] = int(os.environ['LDAP_PORT'])
+        if 'LDAP_GROUP_OBJECT_FILTER' in os.environ:
+            self.ldap_config['LDAP_GROUP_OBJECT_FILTER'] = os.environ['LDAP_GROUP_OBJECT_FILTER']
+        if 'LDAP_BASE_DN' in os.environ:
+            self.ldap_config['LDAP_BASE_DN'] = os.environ['LDAP_BASE_DN']
+        if 'LDAP_USER_DN' in os.environ:
+            self.ldap_config['LDAP_USER_DN'] = os.environ['LDAP_USER_DN']
+        if 'LDAP_GROUP_DN' in os.environ:
+            self.ldap_config['LDAP_GROUP_DN'] = os.environ['LDAP_GROUP_DN']
+        if 'LDAP_USER_RDN_ATTR' in os.environ:
+            self.ldap_config['LDAP_USER_RDN_ATTR'] = os.environ['LDAP_USER_RDN_ATTR']
+        if 'LDAP_USER_LOGIN_ATTR' in os.environ:
+            self.ldap_config['LDAP_USER_LOGIN_ATTR'] = os.environ['LDAP_USER_LOGIN_ATTR']
+        if 'LDAP_BIND_USER_DN' in os.environ:
+            self.ldap_config['LDAP_BIND_USER_DN'] = os.environ['LDAP_BIND_USER_DN']
+        if 'LDAP_BIND_USER_PASSWORD' in os.environ:
+            self.ldap_config['LDAP_BIND_USER_PASSWORD'] = os.environ['LDAP_BIND_USER_PASSWORD' ]
+        if 'LDAP_USE_SSL' in os.environ:
+            self.ldap_config['LDAP_USE_SSL'] = os.environ['LDAP_USE_SSL']
+        if 'LDAP_ADD_SERVER' in os.environ:
+            self.ldap_config['LDAP_ADD_SERVER'] = os.environ['LDAP_ADD_SERVER']
+
+        

@@ -20,6 +20,7 @@ user = api.model('User', {
     'new_password': fields.String(required=True, description='User password'),
     'groups': fields.List(fields.Nested(group)), 
     'roles': fields.List(fields.Nested(user_role)),
+    'is_external': fields.Boolean(description="User inherited from external user managament"), 
     # 'choosen_anno_task': fields.Raw()
 })
 

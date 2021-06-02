@@ -151,10 +151,11 @@ class User(Resource):
 
         requesteduser = dbm.get_user_by_id(id)
          
-        if requesteduser and not requesteduser.is_external:
-            requesteduser.email = args.get('email')
-            requesteduser.first_name = args.get('first_name')
-            requesteduser.last_name = args.get('last_name')
+        if requesteduser:
+            if not requesteduser.is_external:
+                requesteduser.email = args.get('email')
+                requesteduser.first_name = args.get('first_name')
+                requesteduser.last_name = args.get('last_name')
 
     
 
