@@ -679,7 +679,7 @@ class DBMan(object):
         return self.session.query(model.User).filter(model.User.idx==user_id).first()
 
     def get_user_roles(self, user_id):
-        return self.session.query(model.UserRoles).filter(model.UserRoles.user_id==user_id).all()
+        return self.session.query(model.UserRoles).filter(model.UserRoles.user_id==user_id).order_by(model.UserRoles.role_id.asc()).all()
 
     def get_role(self, role_id):
         return self.session.query(model.Role).filter(model.Role.idx==role_id).first()

@@ -45,7 +45,6 @@ def add_claims_to_jwt(identity):
     dbm = access.DBMan(settings.LOST_CONFIG)
     roles = []
     for role in dbm.get_user_roles(user_id=identity):
-        print(role.idx) 
         roles.append(dbm.get_role(role_id=role.role_id).name)
     dbm.close_session()
     return {"roles": roles}
