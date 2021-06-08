@@ -44,7 +44,7 @@ opencv-python==4.0.0.21
 pandas==0.24.0
 passlib==1.7.1
 pbr==5.1.1
-Pillow==5.4.1
+Pillow==8.2.0
 protobuf==3.6.1
 pudb==2018.1
 pycparser==2.19
