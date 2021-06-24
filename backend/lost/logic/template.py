@@ -85,7 +85,11 @@ def get_template(db_man, template_id ,user):
     available_groups = db_man.get_groups()
     available_label_trees = db_man.get_all_label_trees()
     available_scripts = db_man.get_all_scripts()
-    available_fs = db_man.get_public_fs()
+    available_fs = list(db_man.get_public_fs())
+    for user_group in db_man.get_user_groups_by_user_id(user.idx):
+        if user_group.group.is_user_default:
+            group_id = user_group.group.idx
+    available_fs += list(db_man.get_fs(group_id=group_id))
     
     try:
          template_serialize = TemplateSerialize(db_man, template,

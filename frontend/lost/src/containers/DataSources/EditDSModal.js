@@ -9,6 +9,7 @@ import validator from 'validator'
 import { useDispatch, useSelector } from 'react-redux'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
+import {saveFs} from '../../access/fb'
 // import { roles } from '../../lost_settings'
 const ErrorLabel = ({ text }) => (
     <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>
@@ -16,20 +17,24 @@ const ErrorLabel = ({ text }) => (
     </p>
 )
 
-const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClosed}) => {
+const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClosed, possibleFsTypes}) => {
     // const roles = useSelector(state=>state.lost.roles)
     // const dispatch = useDispatch()
     // const userRaw = props.user[0]
     // userModified.roles = userModified.roles.map(el=>el.name)
-    const [possibleFsTypes, setPossibleFsTypes] = useState([
-        'file',
-        'abfs'
-    ])
-    const [fs, setFs] = useState({
-        id : undefined,
-        name : undefined,
-        connection : undefined
-    })
+    // const [possibleFsTypes, setPossibleFsTypes] = useState([
+        // 'file',
+        // 'abfs'
+    // ])
+    const DUMMY_FS = {
+        id: undefined,
+        name: undefined,
+        connection: '{}',
+        fsType: 'file',
+        rootPath: undefined,
+        timestamp: undefined
+    }
+    const [fs, setFs] = useState(DUMMY_FS)
     // const [user, setUser] = useState(userRaw)
     // const [emailError, setEmailError] = useState(false)
     // const [passwordError, setPasswordError] = useState(false)
@@ -188,48 +193,7 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
     // }
 
     const save = () => {
-        let isError = false
-        // if (!validator.isEmail(user.email)) {
-        //     setEmailError(true)
-        //     isError = true
-        // } else {
-        //     setEmailError(false)
-        // }
-
-        // if (isNewDs && user.user_name.length < 2) {
-        //     setUsernameError('Min 2 character')
-        //     isError = true
-        // } else {
-        //     setUsernameError(false)
-        // }
-
-        // if (user.password || isNewDs) {
-        //     if (user.password.length < 5) {
-        //         isError = true
-        //         setPasswordError('Min 5 character')
-        //     } else {
-        //         setPasswordError(false)
-        //     }
-        //     if (user.password !== user.confirmPassword) {
-        //         setPasswordConfirmError(true)
-        //         isError = true
-        //     } else {
-        //         setPasswordConfirmError(false)
-        //     }
-        // } else {
-        //     setPasswordError(false)
-        // }
-
-        // if (!isError) {
-        //     // save user
-        //     user.roles = user.roles.map((role) => role.name)
-        //     user.groups = user.groups.map((group) => group.name)
-        //     if (isNewDs) {
-        //         dispatch(actions.createUser(user))
-        //     } else {
-        //         dispatch(actions.updateUser(user))
-        //     }
-        // }
+       saveFs(fs) 
     }
 
     const cancel = () => {
@@ -266,8 +230,19 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
                     <Input id="name" valid={false} invalid={false} 
                         defaultValue={''} 
                         placeholder={'DS name'} 
-                        onChange={(e) => console.log('test changed', e.target.value)} 
+                        onChange={(e) => {setFs({...fs,'name':e.target.value})}} 
                         defaultValue={fs.name}
+                    />
+                    <FormFeedback>You will not be able to see this</FormFeedback>
+                    <FormText>Example help text that remains unchanged.</FormText>
+                </FormGroup>
+                <FormGroup>
+                    <Label for="rootPath">Root path</Label>
+                    <Input id="rootPath" valid={false} invalid={false} 
+                        defaultValue={''} 
+                        placeholder={'Root path'} 
+                        onChange={(e) => {setFs({...fs, 'rootPath':e.target.value})}} 
+                        defaultValue={fs.rootPath}
                     />
                     <FormFeedback>You will not be able to see this</FormFeedback>
                     <FormText>Example help text that remains unchanged.</FormText>
@@ -277,12 +252,17 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
                     <Input type="select" 
                         name="dsType" 
                         id="dsType" 
-                        onChange={e => console.log('select ', e.target.value)}
+                        onChange={e => {setFs({...fs,'fsType':e.target.value})}}
                         defaultValue={fs.fsType}
                     >
-                        {possibleFsTypes.map(el => {
-                            return <option key={el}>{el}</option>
-                        })}
+                        {
+                        (() => {
+                            if (!possibleFsTypes) return null
+                            return possibleFsTypes.map(el => {
+                                return <option key={el}>{el}</option>
+                            })
+                        })()
+                        }
                     </Input>
                     <FormFeedback>You will not be able to see this</FormFeedback>
                     <FormText>Example help text that remains unchanged.</FormText>
@@ -290,7 +270,7 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
                 <FormGroup>
                     <Label for="connection">Connection String</Label>
                     <Input type="textarea" name="connection" id="connection"
-                        onChange={e => console.log('textarea', e.target.value)}
+                        onChange={e => {setFs({...fs,'connection':e.target.value})}}
                         defaultValue={fs.connection}
                         // value={fs.connection}
                         placeholder={fs.connection}

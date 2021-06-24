@@ -1,3 +1,4 @@
+from lost.logic import file_man
 from lost.pyapi import pipe_elements
 from lost.logic.file_man import DummyFileMan
 from lost.db import access, dtype
@@ -473,7 +474,8 @@ class ScriptOutput(Output):
         if fs is None:
             fs_db = self._script._dbm.get_fs(name='lost_data')
             fs = DummyFileMan(fs_db)
-        rel_img_path = self._script.file_man.make_path_relative(img_path)
+        fm = file_man.FileMan(fs_db=fs.lost_fs)
+        rel_img_path = fm.make_path_relative(img_path)
         img_anno = model.ImageAnno(anno_task_id=anno_task_id,
                                 img_path=rel_img_path,
                                 state=state.Anno.UNLOCKED,

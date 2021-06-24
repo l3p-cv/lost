@@ -2,6 +2,7 @@ import flask
 from flask import request, send_file
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from lost import db
 from lost.api.api import api
 from lost.api.sia.api_definition import sia_anno, sia_config, sia_update
 from lost.api.label.api_definition import label_trees
@@ -106,10 +107,11 @@ class GetImage(Resource):
         else:
             #TODO: Check if user is permitted to load this image
             #TODO: Read img from stream -> cv2.imdecode()
-            fm = FileMan(LOST_CONFIG)
             data = json.loads(request.data)
-            flask.current_app.logger.info('sia -> getimage. Received data: {}'.format(data))
             db_img = dbm.get_image_anno(data['imgId'])
+            fm = FileMan(fs_db=db_img.fs)
+            flask.current_app.logger.info('sia -> getimage. Received data: {}'.format(data))
+            flask.current_app.logger.info('sia -> getimage. fs.name: {} fs.root_path: {}'.format(db_img.fs.name, db_img.fs.root_path))
             img = fm.load_img(db_img.img_path)
             # img_path = fm.get_abs_path(db_img.img_path)
             # #raise Exception('sia -> getimage: {}'.format(img_path))

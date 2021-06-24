@@ -14,7 +14,7 @@ import EditDSModal from './EditDSModal'
 import { useCopyToClipboard } from 'react-use'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
-import {getFSList} from '../../access/fb'
+import {getFSList, getPossibleFsTypes} from '../../access/fb'
 
 const EMPTY_USER = [
     {
@@ -32,9 +32,14 @@ export const DSTable = () => {
     const deleteUserStatus = useSelector((state) => state.user.deleteUserStatus)
     const [isNewDS, setIsNewDS] = useState(false)
     const [fsList, setFSList] = useState([])
+    const [possibleFsTypes, setPossibleFsTypes] = useState([])
 
-    useEffect(async ()=>{
-        setFSList(await getFSList())
+    useEffect( () => {
+        async function fetchData(){
+            setFSList(await getFSList())
+            setPossibleFsTypes(await getPossibleFsTypes())
+        }
+        fetchData()
         // console.log('IN DSTABLE: ', await getFSList())
     }, [])
 
@@ -70,9 +75,9 @@ export const DSTable = () => {
 
     const dispatch = useDispatch()
 
-    const getUsers = () => {
-        dispatch(actions.getUsers())
-    }
+    // const getUsers = () => {
+    //     dispatch(actions.getUsers())
+    // }
 
     const createNewDS = () => {
         setIsNewDS(true)
@@ -86,9 +91,9 @@ export const DSTable = () => {
         openEditDSModal()
     }
 
-    useEffect(() => {
-        getUsers()
-    }, [])
+    // useEffect(() => {
+    //     getUsers()
+    // }, [])
 
     const openEditDSModal = () => {
         setIsDsEditOpenControl(true)
@@ -108,7 +113,7 @@ export const DSTable = () => {
 
     const closeModal = () => {
         setIsDsEditOpenControl(false)
-        getUsers()
+        // getUsers()
     }
     const onClosedModal = () => {
         setIsDsEditOpenView(false)
@@ -123,6 +128,7 @@ export const DSTable = () => {
                     modalOpen={isDsEditOpenControl}
                     closeModal={closeModal}
                     onClosed={onClosedModal}
+                    possibleFsTypes={possibleFsTypes}
                 />
             )}
 
@@ -171,82 +177,6 @@ export const DSTable = () => {
                         Cell: (row) =>
                             Datatable.centeredCell({ children: row.value })
                     }
-                    // {
-                    //     Header: 'API Token',
-                    //     accessor: 'apiToken',
-                    //     Cell: (row) => {
-                    //         if (row.original.apiToken) {
-                    //             return (
-                    //                 <Datatable.centeredCell>
-                    //                     <IconButton
-                    //                         color="primary"
-                    //                         icon={faCopy}
-                    //                         onClick={() => {
-                    //                             copyToClipboard(
-                    //                                 row.original.apiToken
-                    //                             )
-                    //                         }}
-                    //                     />
-                    //                 </Datatable.centeredCell>
-                    //             )
-                    //         }
-                    //         return null
-                    //     }
-                    // },
-                    // {
-                    //     Header: 'Roles',
-                    //     accessor: 'roles',
-                    //     Cell: (row) => {
-                    //         return row.value.map((el) => {
-                    //             return Datatable.renderBadge(
-                    //                 el.idx,
-                    //                 el.name,
-                    //                 'success'
-                    //             )
-                    //         })
-                    //     }
-                    // },
-                    // {
-                    //     Header: 'Groups',
-                    //     accessor: 'groups',
-                    //     Cell: (row) => {
-                    //         return row.value.map((el) => {
-                    //             return Datatable.renderBadge(
-                    //                 el.idx,
-                    //                 el.name,
-                    //                 'primary'
-                    //             )
-                    //         })
-                    //     }
-                    // },
-                    // {
-                    //     Header: 'Edit',
-                    //     Cell: (row) =>
-                    //         Datatable.centeredCell({
-                    //             children: (
-                    //                 <IconButton
-                    //                     icon={faUserEdit}
-                    //                     color="warning"
-                    //                     onClick={() => editClick(row)}
-                    //                 />
-                    //             )
-                    //         })
-                    // },
-                    // {
-                    //     Header: 'Delete',
-                    //     Cell: (row) =>
-                    //         Datatable.centeredCell({
-                    //             children: (
-                    //                 <IconButton
-                    //                     icon={faTrash}
-                    //                     color="danger"
-                    //                     onClick={() => {
-                    //                         deleteClick(row)
-                    //                     }}
-                    //                 />
-                    //             )
-                    //         })
-                    // }
                 ]}
             />
         </div>
