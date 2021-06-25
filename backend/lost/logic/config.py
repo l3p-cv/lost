@@ -27,9 +27,9 @@ class LOSTConfig(object):
         # Timeout when a worker is considered to be dead
         self.worker_timeout = os.environ['WORKER_TIMEOUT']
         # Intervall in seconds in which a worker should give a lifesign
-        self.worker_beat = os.environ['WORKER_BEAT']
-        self.pipe_schedule = os.environ['PIPE_SCHEDULE']
-        self.session_timeout = 30
+        self.worker_beat = int(os.environ['WORKER_BEAT'])
+        self.pipe_schedule = int(os.environ['PIPE_SCHEDULE'])
+        self.session_timeout = int(30)
         self.scheduler_ip = 'localhost'
         self.scheduler_port = 8786
         

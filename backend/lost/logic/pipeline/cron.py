@@ -26,7 +26,7 @@ from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 from lost.logic import email
 
 class PipeEngine(pipe_model.PipeEngine):
-    def __init__(self, dbm, pipe, lostconfig, client):
+    def __init__(self, dbm, pipe, lostconfig, client, logger_name=''):
         '''
         :type dbm: lost.db.access.DBMan
         :type pipe: lost.db.model.Pipe
@@ -34,10 +34,13 @@ class PipeEngine(pipe_model.PipeEngine):
         super().__init__(dbm=dbm, pipe=pipe)
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
         self.file_man = AppFileMan(self.lostconfig)
-        self.logger = lost.logic.log.get_file_logger(
-            'Executor: {}'.format(self.lostconfig.env_name), 
-            self.file_man.get_app_log_path('PipeEngine.log'))
+        # self.logger = lost.logic.log.get_file_logger(
+        #     'Executor: {}'.format(self.lostconfig.env_name), 
+        #     self.file_man.get_app_log_path('PipeEngine.log'))
         # self.logger = get_task_logger(__name__)
+        self.logger = logging.getLogger('{}.{}'.format(
+            logger_name, self.__class__.__name__)
+        )
         self.client = client
 
     def process_annotask(self, pipe_e):
@@ -172,6 +175,9 @@ class PipeEngine(pipe_model.PipeEngine):
                             return
                         # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
                         self.client.submit(exec_script, pipe_e.idx, workers=env)
+                        pipe = pipe_e.pipe
+                        self.logger.info('{} ({}): Excuting script: {}'.format(pipe.name, 
+                            pipe.idx, pipe_e.script.path))
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
                     update_anno_task(self.dbm, pipe_e.anno_task.idx)
@@ -315,10 +321,12 @@ def exec_script(pipe_element_id):
     try:
         # Collect context information for celery task
         # logger = get_task_logger(__name__)
+        print('Hello')
         lostconfig = LOSTConfig()
         dbm = DBMan(lostconfig)
         pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
         worker = CurrentWorker(dbm, lostconfig)
+        logger = logging
         if not worker.enough_resources(pipe_e.script):
             # logger.warning('Not enough resources! Rejected {} (PipeElement ID {})'.format(pipe_e.script.path, pipe_e.idx))
             raise Exception('Not enough resources')

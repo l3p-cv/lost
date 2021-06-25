@@ -55,8 +55,8 @@ eval $daskscheduler &
 worker="dask-worker localhost:8786 --name $ENV_NAME >> ${LOST_HOME}/logs/$WORKER_NAME.log"
 eval $worker &
 
-cron_jobs="python3 /code/backend/lost/logic/jobs/cron_jobs.py"
-eval $cron_jobs &
+# cron_jobs="python3 /code/backend/lost/logic/jobs/cron_jobs.py"
+# eval $cron_jobs &
 
 if [ ${DEBUG} = "True" ]; then
   if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
