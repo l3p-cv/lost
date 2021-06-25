@@ -1,6 +1,7 @@
 #!/bin/bash
  /bin/bash -c "source /opt/conda/bin/activate lost"
 source /opt/conda/bin/activate lost
+pip install dask distributed
 
 
  # init env vars 
@@ -47,7 +48,9 @@ echo "All Services ready. Starting celery worker now."
 #mkdir -p ${LOST_HOME}/logs
 python3 /code/backend/lost/logic/init/initworker.py
 
-#start celery worker.
-worker="celery -A flaskapp.celery worker -Q worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+#start worker.
+# worker="celery -A flaskapp.celery worker -Q worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+# worker="dask-scheduler"
+worker="dask-worker localhost:8786 --name $ENV_NAME"
 eval $worker
 

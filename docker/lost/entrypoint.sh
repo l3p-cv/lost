@@ -1,6 +1,8 @@
 #!/bin/bash
  /bin/bash -c "source /opt/conda/bin/activate lost"
 source /opt/conda/bin/activate lost
+pip install dask distributed
+pip install bokeh
 
 # clean celery lock
 rm -rf /tmp/celerybeat.pid
@@ -43,13 +45,18 @@ python3 /code/backend/lost/logic/init/initworker.py
 python3 /code/backend/lost/logic/init/init_patchsystem.py
 
 
-# celery cronjob.
-celery="celery -A flaskapp.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
-eval $celery &
+# start scheduler.
+# celery="celery -A flaskapp.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
+daskscheduler="dask-scheduler >> ${LOST_HOME}/logs/dask-scheduler.log"
+eval $daskscheduler &
 
-#start a celery worker.
-worker="celery -A flaskapp.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+#start a worker.
+# worker="celery -A flaskapp.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
+worker="dask-worker localhost:8786 --name $ENV_NAME >> ${LOST_HOME}/logs/$WORKER_NAME.log"
 eval $worker &
+
+# cron_jobs="python3 /code/backend/lost/logic/jobs/cron_jobs.py"
+# eval $cron_jobs &
 
 if [ ${DEBUG} = "True" ]; then
   if [ "$CUSTOM_NGINX_CONF" != "True" ]; then

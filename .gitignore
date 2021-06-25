@@ -1,4 +1,5 @@
 .vscode/
+backend/lost/cli/dask-worker-space/
 frontend/lost/src/settings.js
 node_modules
 __pycache__

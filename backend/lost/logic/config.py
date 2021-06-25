@@ -30,6 +30,8 @@ class LOSTConfig(object):
         self.worker_beat = os.environ['WORKER_BEAT']
         self.pipe_schedule = os.environ['PIPE_SCHEDULE']
         self.session_timeout = 30
+        self.scheduler_ip = 'localhost'
+        self.scheduler_port = 8786
         
         # self.session_timeout = 1
         if "SESSION_TIMEOUT" in os.environ:
