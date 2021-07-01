@@ -9,13 +9,11 @@ from dask.distributed import Client
 from lost.logic.log import get_file_logger
 from lost.logic.file_man import FileMan, AppFileMan
 import logging
+from lost.logic.jobs import jobs
 
-def process_pipes(log_name):
+def process_pipes(log_name, client):
     lostconfig = config.LOSTConfig()
     dbm = DBMan(lostconfig)
-    client = Client('{}:{}'.format(
-        lostconfig.scheduler_ip, lostconfig.scheduler_port)
-    )
     pipe_list = dbm.get_pipes_to_process()
     # For each task in this project
     for p in pipe_list:
@@ -23,38 +21,48 @@ def process_pipes(log_name):
             client=client, logger_name=log_name)
         pipe_man.process_pipeline()
     dbm.close_session()
-
+        
+def run_loop(run, sleep_time, **kwargs):
+    logger = logging.getLogger(kwargs["log_name"])
+    logger.info('Starting {} loop'.format(run.__name__))
+    while True:
+        try:
+            run(**kwargs)
+            time.sleep(sleep_time)
+        except Exception as e:
+            logger.error(e)
+            time.sleep(1)
+            
 def process_pipes_loop(log_name):
     lostconfig = config.LOSTConfig()
-    logger = logging.getLogger(log_name)
-    logger.info('Starting process_pipes_loop')
-    while True:
-        process_pipes()
-        time.sleep(lostconfig.pipe_schedule)
+    client = Client('{}:{}'.format(
+        lostconfig.scheduler_ip, lostconfig.scheduler_port)
+    )
+    run_loop(process_pipes, lostconfig.pipe_schedule, log_name=log_name, client=client)
+
+def worker_lifesign(log_name):
+    worker.send_life_sign()
 
 def worker_lifesign_loop(log_name):
     lostconfig = config.LOSTConfig()
+    run_loop(worker_lifesign, lostconfig.worker_beat, log_name=log_name)
+
+def release_annos(log_name):
     logger = logging.getLogger(log_name)
-    logger.info('Starting worker_lifesign_loop')
-    while True:
-        worker.send_life_sign()
-        time.sleep(lostconfig.worker_beat)
+    c_imgs, c_annos = jobs.release_annos_on_session_timeout()
+    logger.info('Released img_annos: {}, 2d_annos: {}'.format(c_imgs, c_annos))
 
 def release_annos_loop(log_name):
     lostconfig = config.LOSTConfig()
-    logger = logging.getLogger(log_name)
-    logger.info('Starting release_annos_loop')
-    while True:
-        c_imgs, c_annos = jobs.release_annos_on_session_timeout()
-        logger.info('Released img_annos: {}, 2d_annos: {}'.format(c_imgs, c_annos))
-        time.sleep(lostconfig.session_timeout*60)
+    run_loop(release_annos, lostconfig.session_timeout*60, log_name=log_name)
 
 def main():
     parser = argparse.ArgumentParser(description='Run LOST cronjobs')
     parser.add_argument('--debug', action='store_true',
                         help='start cronjobs just once for debugging')
     args = parser.parse_args()
-    fm = AppFileMan(config.LOSTConfig())
+    lostconfig = config.LOSTConfig()
+    fm = AppFileMan(lostconfig)
     log_name = 'cron_jobs'
     logger = get_file_logger(log_name, fm.get_app_log_path('cron_jobs.log') )
     logger.info('Starting cron jobs!')
@@ -65,7 +73,10 @@ def main():
             daemon=True
         )
         t.start()
-        process_pipes(log_name)
+        client = Client('{}:{}'.format(
+            lostconfig.scheduler_ip, lostconfig.scheduler_port)
+        )
+        process_pipes(log_name, client)
     else:
         jobs = [
             process_pipes_loop,
