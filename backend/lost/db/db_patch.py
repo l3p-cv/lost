@@ -1,5 +1,5 @@
 import MySQLdb
-from lost.logic.config import LOSTConfig
+from lostconfig import LOSTConfig
 import time
 
 class DBPatcher():

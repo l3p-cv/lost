@@ -2,7 +2,7 @@
 
 import argparse
 from lost.db import model, access
-from lost.logic import config
+import lostconfig as config
 from lost.logic.pipeline import template_import 
 import logging
 import json

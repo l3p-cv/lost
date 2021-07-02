@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from lost.logic import config
+import lostconfig as config
 from lost.logic.file_man import FileMan
 import logging
 

@@ -1,6 +1,6 @@
 from flask import Flask
 from lost import settings
-from lost.taskman import make_celery
+# from lost.taskman import make_celery
 from lost.logic.file_man import AppFileMan
 from flask_mail import Mail
 import os
@@ -25,10 +25,10 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 file_handler.setFormatter(formatter)
 app.logger.addHandler(file_handler)
 
-app.config['CELERY_BROKER_URL'] = settings.CELERY_BROKER_URL
-app.config['CELERY_RESULT_BACKEND'] = settings.CELERY_RESULT_BACKEND
+# app.config['CELERY_BROKER_URL'] = settings.CELERY_BROKER_URL
+# app.config['CELERY_RESULT_BACKEND'] = settings.CELERY_RESULT_BACKEND
 
-celery = make_celery(app)
+# celery = make_celery(app)
 
 
 app.config['MAIL_SERVER'] = settings.MAIL_SERVER

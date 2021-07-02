@@ -21,7 +21,7 @@ import logging
 # from celery.utils.log import get_task_logger
 # from celery import task
 from lost.db.access import DBMan
-from lost.logic.config import LOSTConfig
+from lostconfig import LOSTConfig
 from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 from lost.logic import email
 

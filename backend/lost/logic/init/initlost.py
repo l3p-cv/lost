@@ -1,7 +1,7 @@
 import os
 from os.path import join
 from lost.db import access
-from lost.logic import config
+import lostconfig as config
 from lost.logic import file_man
 from lost.db import roles
 from lost.db.model import User, Role, Group

@@ -1,7 +1,7 @@
 from lost.db import model
 # from celery.utils.log import get_task_logger
 # from celery import task
-from lost.logic.config import LOSTConfig
+from lostconfig import LOSTConfig
 from lost.db.access import DBMan
 from datetime import datetime, timedelta
 import json

@@ -1,7 +1,7 @@
 import pytest
 from lost.db import model, dtype
 from lost.db.access import DBMan
-from lost.logic import config
+import lostconfig as config
 from lost.logic.label import LabelTree
 
 ROOT_NAME = 'first tree'

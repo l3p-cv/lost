@@ -1,6 +1,6 @@
 import lost
 from lost.logic.file_man import AppFileMan
-from lost.logic.config import LOSTConfig
+from lostconfig import LOSTConfig
 import os
 import json
 from lost.db.db_patch import DBPatcher

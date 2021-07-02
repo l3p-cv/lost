@@ -1,7 +1,7 @@
 import argparse
 from lost.logic.pipeline import cron
 from lost.logic.pipeline import worker
-from lost.logic import config
+import lostconfig as config
 from lost.db.access import DBMan
 import time
 import threading

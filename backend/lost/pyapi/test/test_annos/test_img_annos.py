@@ -1,7 +1,7 @@
 import pytest
 from lost.db import model, dtype
 from lost.db.access import DBMan
-from lost.logic import config
+import lostconfig as config
 import json
 import datetime
 from lost.utils import testils

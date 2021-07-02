@@ -1564,13 +1564,12 @@ class RequiredLabelLeaf(Base):
 
 
 class Worker(Base):
-    '''Represents a container with related celery worker that executes scripts.
+    '''Represents a container with related worker that executes scripts.
 
     Attributes:
         idx (int): ID in database.
         env_name (str): Name that indicates the environment that is
-            installed in this worker. Each env is realted to a queue in
-            celery.
+            installed in this worker.
         worker_name (str): Unique name for a container/ worker. 
         timestamp (DateTime): Last life sign of worker.
         register_timestamp (DateTime): Timestamp of first registration 

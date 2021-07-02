@@ -12,7 +12,7 @@ import argparse
 import datetime
 import traceback
 import os
-from lost.logic.config import LOSTConfig
+from lostconfig import LOSTConfig
 import json
 import pickle
 from lost.pyapi import pe_base

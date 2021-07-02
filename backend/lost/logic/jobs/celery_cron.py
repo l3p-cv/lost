@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 try:
     from lost.db import access
     from lost.logic.pipeline import cron
-    from lost.logic import config
+    import lostconfig as config
     from lost.db.access import DBMan
     from lost.db import state
 except:
