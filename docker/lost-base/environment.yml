@@ -83,11 +83,13 @@ dependencies:
     - bcrypt==3.1.4
     - billiard==3.5.0.5
     - blinker==1.4
-    - celery==4.2.1
     - cffi==1.14.5
     - click==7.1.2
     - cryptography==3.4.7
     - cycler==0.10.0
+    - dask
+    - distributed
+    - bokeh
     - decorator==4.4.2
     - docutils==0.16
     - flask==1.1.4
@@ -110,7 +112,6 @@ dependencies:
     - jinja2==2.11.3
     - jsonschema==2.6.0
     - kiwisolver==1.3.1
-    - kombu==4.6.11
     - ldap3==2.9
     - markupsafe==2.0.1
     - matplotlib==3.4.2
