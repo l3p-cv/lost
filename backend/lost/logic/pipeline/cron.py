@@ -170,11 +170,15 @@ class PipeEngine(pipe_model.PipeEngine):
                     #     self.make_debug_session(pipe_e)
                     # else:
                     if pipe_e.state == state.PipeElement.PENDING:
-                        env = self.select_env_for_script(pipe_e)
-                        if env is None:
-                            return
-                        # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
-                        self.client.submit(exec_script, pipe_e.idx, workers=env)
+                        if self.lostconfig.worker_management != 'dynamic':
+                            env = self.select_env_for_script(pipe_e)
+                            if env is None:
+                                return
+                            # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
+                            self.client.submit(exec_script, pipe_e.idx, workers=env)
+                        else:
+                            self.client.submit(exec_script, pipe_e.idx)
+
                         pipe = pipe_e.pipe
                         self.logger.info('{} ({}): Excuting script: {}'.format(pipe.name, 
                             pipe.idx, pipe_e.script.path))

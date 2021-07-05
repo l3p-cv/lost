@@ -11,6 +11,7 @@ from lost.logic.log import get_file_logger
 from lost.logic.file_man import FileMan, AppFileMan
 import logging
 from lost.logic.jobs import jobs
+from lost.logic.dask_session import ds_man
 
 def process_pipes(log_name, client):
     lostconfig = config.LOSTConfig()
@@ -18,6 +19,12 @@ def process_pipes(log_name, client):
     pipe_list = dbm.get_pipes_to_process()
     # For each task in this project
     for p in pipe_list:
+        if client is None:
+            # If client is no, try to get client form dask_session
+            user = dbm.get_user_by_id(p.manager_id)
+            client = ds_man.get_dask_client(user)
+            logger = logging.getLogger(log_name)
+            logger.info('Process pipline with dask client: {}'.format(client))
         pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig, 
             client=client, logger_name=log_name)
         pipe_man.process_pipeline()
@@ -36,9 +43,12 @@ def run_loop(run, sleep_time, **kwargs):
             
 def process_pipes_loop(log_name):
     lostconfig = config.LOSTConfig()
-    client = Client('{}:{}'.format(
-        lostconfig.scheduler_ip, lostconfig.scheduler_port)
-    )
+    if lostconfig.worker_management != 'dynamic':
+        client = Client('{}:{}'.format(
+            lostconfig.scheduler_ip, lostconfig.scheduler_port)
+        )
+    else:
+        client = None
     run_loop(process_pipes, lostconfig.pipe_schedule, log_name=log_name, client=client)
 
 def worker_lifesign(log_name):

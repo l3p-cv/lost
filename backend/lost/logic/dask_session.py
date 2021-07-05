@@ -17,6 +17,7 @@ class DaskSessionMan(object):
 
     def create_user_cluster(self, user):
         if self.lostconfig.worker_management == 'dynamic':
+            #TODO: spawn cluster as specific user
             # cluster = self.lostconfig.DaskCluster(user=_user_key(user), **self.lostconfig.cluster_arguments)
             cluster = self.lostconfig.DaskCluster(**self.lostconfig.cluster_arguments)
             client = self.lostconfig.DaskClient(cluster)
@@ -26,6 +27,25 @@ class DaskSessionMan(object):
         else:
             raise Exception('Can only use create_cluster in dynamic worker management mode!')
         return cluster, client
+
+    def get_dask_client(self, user):
+        '''Get dask client for a specific user.
+
+        Args:
+            user (model.User): A lost user.
+
+        Note:
+            If no cluster available for this user, a new cluster will be created.
+
+        Returns:
+            dask.Client: A dask client for a specific user cluster.
+        '''
+        user_key = _user_key(user)
+        if user_key in self.session:
+            return self.session[user_key]['client']
+        else:
+            cluster, client = self.create_user_cluster(user)
+            return client
 
     def shutdown_cluster(self, user):
         if user in self.session:

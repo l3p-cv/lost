@@ -973,7 +973,7 @@ class Pipe(Base):
     Attributes:
         idx (int): Id of Pipe in database.
         name (str): Pipe Name
-        manager_id : If of user who started this pipe
+        manager_id : Id of user who started this pipe
         state (enum): Status of this pipe. See :class:`data_model.state.Pipe`
         pipe_template_id (int): Id of related PipeTemplate
         timestamp (DateTime): Date and time when this task was created
