@@ -83,15 +83,17 @@ def release_annos_by_timeout(dbm, timeout):
     unlock_time = present - timedelta(minutes=timeout)
     for anno_task in dbm.get_anno_task(state=state.AnnoTask.IN_PROGRESS):
         for anno in dbm.get_locked_img_annos(anno_task.idx):
-            if anno.timestamp_lock < unlock_time:
-                anno.state = state.Anno.UNLOCKED
-                dbm.add(anno)
-                c_imgs += 1
+            if anno.timestamp_lock is not None:
+                if anno.timestamp_lock < unlock_time:
+                    anno.state = state.Anno.UNLOCKED
+                    dbm.add(anno)
+                    c_imgs += 1
         for anno in dbm.get_locked_two_d_annos(anno_task.idx):
-            if anno.timestamp_lock < unlock_time:
-                anno.state = state.Anno.UNLOCKED
-                dbm.add(anno)
-                c_2dannos += 1
+            if anno.timestamp_lock is not None:
+                if anno.timestamp_lock < unlock_time:
+                    anno.state = state.Anno.UNLOCKED
+                    dbm.add(anno)
+                    c_2dannos += 1
         dbm.commit()
     return c_imgs, c_2dannos
 

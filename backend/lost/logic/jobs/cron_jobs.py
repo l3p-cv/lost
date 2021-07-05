@@ -1,4 +1,5 @@
 import argparse
+import traceback
 from lost.logic.pipeline import cron
 from lost.logic.pipeline import worker
 import lostconfig as config
@@ -30,7 +31,7 @@ def run_loop(run, sleep_time, **kwargs):
             run(**kwargs)
             time.sleep(sleep_time)
         except Exception as e:
-            logger.error(e)
+            logger.error(traceback.format_exc())
             time.sleep(1)
             
 def process_pipes_loop(log_name):
@@ -83,6 +84,7 @@ def main():
             worker_lifesign_loop,
             release_annos_loop
         ]
+        jobs += lostconfig.extra_cron_jobs
         threads = []
         for j in jobs:
             t = threading.Thread(

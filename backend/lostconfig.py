@@ -32,6 +32,8 @@ class LOSTConfig(object):
         self.session_timeout = int(30)
         self.scheduler_ip = 'localhost'
         self.scheduler_port = 8786
+
+        self.extra_cron_jobs = []
         
         # self.session_timeout = 1
         if "SESSION_TIMEOUT" in os.environ:

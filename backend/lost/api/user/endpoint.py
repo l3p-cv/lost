@@ -1,4 +1,6 @@
 import datetime
+
+from numpy.core.numeric import identity
 from flask_restx import Resource
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
 from lost.api.api import api
@@ -10,6 +12,7 @@ from lost.db.model import User as DBUser, Role, Group
 from lost.logic import email 
 from lost.logic.user import release_user_annos
 from flaskapp import blacklist
+from lost.logic import dask_session
 
 namespace = api.namespace('user', description='Users in System.')
 
@@ -234,6 +237,8 @@ class UserLogout(Resource):
         identity = get_jwt_identity()
         dbm = access.DBMan(LOST_CONFIG)
         release_user_annos(dbm, identity)
+        user = dbm.get_user_by_id(identity)
+        dask_session.ds_man.shutdown_cluster(user)
         dbm.close_session()
         jti = get_raw_jwt()['jti'] 
         blacklist.add(jti)
@@ -285,6 +290,7 @@ class UserLogin(Resource):
 
         # check password
         if user and user.check_password(data['password']):
+            dask_session.ds_man.create_user_cluster(user)
             dbm.close_session()
             expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
             expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)

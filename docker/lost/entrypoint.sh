@@ -48,14 +48,16 @@ python3 /code/backend/lost/logic/init/init_patchsystem.py
 # start scheduler.
 # celery="celery -A flaskapp.celery beat -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/beat.log  --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid"
 # daskscheduler="dask-scheduler >> ${LOST_HOME}/logs/dask-scheduler.log"
-daskscheduler="dask-scheduler"
-eval $daskscheduler &
+
+# daskscheduler="dask-scheduler"
+# eval $daskscheduler &
 
 #start a worker.
 # worker="celery -A flaskapp.celery worker -Q celery,worker_status,$ENV_NAME -n $WORKER_NAME@%h -l info --workdir /code/backend/lost/ -f ${LOST_HOME}/logs/$WORKER_NAME.log"
 # worker="dask-worker localhost:8786 --name $ENV_NAME >> ${LOST_HOME}/logs/$WORKER_NAME.log"
-worker="dask-worker localhost:8786 --name $ENV_NAME"
-eval $worker &
+
+# worker="dask-worker localhost:8786 --name $ENV_NAME"
+# eval $worker &
 
 cron_jobs="python3 /code/backend/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &

@@ -15,6 +15,8 @@ import base64
 import cv2
 from io import BytesIO
 from lost.logic.file_man import FileMan
+# from lost.lost_session import lost_session
+from lost.logic import dask_session
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -100,6 +102,7 @@ class GetImage(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
+        # raise Exception('lostsession: {}'.format(dask_session.ds_man.session))
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
@@ -108,11 +111,17 @@ class GetImage(Resource):
             #TODO: Check if user is permitted to load this image
             #TODO: Read img from stream -> cv2.imdecode()
             data = json.loads(request.data)
-            db_img = dbm.get_image_anno(data['imgId'])
-            fm = FileMan(fs_db=db_img.fs)
             flask.current_app.logger.info('sia -> getimage. Received data: {}'.format(data))
-            flask.current_app.logger.info('sia -> getimage. fs.name: {} fs.root_path: {}'.format(db_img.fs.name, db_img.fs.root_path))
-            img = fm.load_img(db_img.img_path)
+            db_img = dbm.get_image_anno(data['imgId'])
+            if LOST_CONFIG.worker_management != 'dynamic':
+                fm = FileMan(fs_db=db_img.fs)
+                flask.current_app.logger.info('sia -> getimage. fs.name: {} fs.root_path: {}'.format(db_img.fs.name, db_img.fs.root_path))
+                img = fm.load_img(db_img.img_path)
+            else:
+                img = dask_session.ds_man.read_fs_img(user, db_img.fs, db_img.img_path)
+                flask.current_app.logger.info('dask_session read_fs_img type: {}'.format(type(img)))
+                flask.current_app.logger.info('dask_session read_fs_img shape: {}'.format(img.shape))
+
             # img_path = fm.get_abs_path(db_img.img_path)
             # #raise Exception('sia -> getimage: {}'.format(img_path))
             # img = cv2.imread(img_path)
