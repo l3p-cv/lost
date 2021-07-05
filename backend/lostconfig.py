@@ -20,6 +20,8 @@ class LOSTConfig(object):
         self.lost_db_user = os.environ['LOST_DB_USER']
         self.lost_db_name = os.environ['LOST_DB_NAME']
         self.lost_db_pwd = os.environ['LOST_DB_PASSWORD']
+        self.db_connector = "mysql+mysqldb"
+
         # Name of the environment that is installed in this container and used to execute scripts
         self.env_name = os.environ['ENV_NAME']
         # Unique name for this container worker
