@@ -33,7 +33,15 @@ class LOSTConfig(object):
         self.scheduler_ip = 'localhost'
         self.scheduler_port = 8786
 
+        self.worker_management = 'static'
         self.extra_cron_jobs = []
+        self.DaskCluster = None
+        self.cluster_arguments = {}
+        self.DaskClient = None
+
+        # DASK scheduler properties
+        self.scheduler_ip = 'localhost'
+        self.scheduler_port = 8786
         
         # self.session_timeout = 1
         if "SESSION_TIMEOUT" in os.environ:
