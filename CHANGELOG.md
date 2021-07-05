@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * If a mia task is annoBased, crop annos on the fly (do not store anno crops in filesystem)
   * fileMan: Use fsspec instead of os for filesystm operations
 - Updated frontend to Core-UI-3
+- Use Dask as scheduler instead of clelery
 
 ## [1.4.2] - 2021-03-12
 ## Changed 
