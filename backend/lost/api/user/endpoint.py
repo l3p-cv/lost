@@ -285,8 +285,7 @@ class UserLogin(Resource):
         # get data from parser
         data = login_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
+        user = dbm.find_user_by_user_name(data['user_name'])
         dask_session.ds_man.create_user_cluster(user)
         lm = LoginManager(dbm, data['user_name'], data['password'])
         response = lm.login()

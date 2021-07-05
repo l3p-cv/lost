@@ -117,6 +117,17 @@ class LOSTConfig(object):
         # Timout when a user get automatically logged out
         self.session_timeout = 10
 
+        # LDAP Configuation
+        self.ldap_config = dict()
+        self.ldap_config['LDAP_ACTIVE'] = False
+        self.ldap_config['LDAP_PORT'] = 389
+        self.ldap_config['LDAP_GROUP_OBJECT_FILTER'] = '(objectclass=posixGroup)'
+        self.ldap_config['LDAP_GROUP_DN'] = ''
+        self.ldap_config['LDAP_USER_RDN_ATTR'] = 'cn'
+        self.ldap_config['LDAP_USER_LOGIN_ATTR'] = 'uid'
+        self.ldap_config['LDAP_USE_SSL'] = False
+        self.ldap_config['LDAP_ADD_SERVER'] = True
+
         # Mail configuration
         self.send_mail = False
         self.mail_server = ""
