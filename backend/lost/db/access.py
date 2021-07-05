@@ -6,7 +6,6 @@ from sqlalchemy import or_
 from lost.db import model, state, dtype
 import os
 
-CONNECTOR = "mysql+mysqldb"
 def convert_connection_str(lostconfig):
     '''Convert connection string from config format to sqlalchemy format.
 
@@ -18,7 +17,7 @@ def convert_connection_str(lostconfig):
         str: *mysql+mysqldb://user:pwd@server_ip:port/database*
     '''
     #out = CONNECTOR + "://" + lostconfig.lost_db_user + ":" + lostconfig.lost_db_pwd + "@" + lostconfig.lost_db_ip + "/" + lostconfig.lost_db_name
-    out = CONNECTOR + "://" + lostconfig.lost_db_user + ":" + lostconfig.lost_db_pwd + "@" + lostconfig.lost_db_ip +":"+ lostconfig.lost_db_port + "/" + lostconfig.lost_db_name
+    out = lostconfig.db_connector + "://" + lostconfig.lost_db_user + ":" + lostconfig.lost_db_pwd + "@" + lostconfig.lost_db_ip +":"+ lostconfig.lost_db_port + "/" + lostconfig.lost_db_name
     return out
 
 class DBMan(object):
