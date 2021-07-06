@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * fileMan: Use fsspec instead of os for filesystm operations
 - Updated frontend to Core-UI-3
 - Use Dask as scheduler instead of clelery
-- Replace Anaconda package manager with mamba 
+- Replace Anaconda package manager with mamba
 
 ## [1.4.2] - 2021-03-12
 ## Changed 
