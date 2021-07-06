@@ -16,8 +16,8 @@ RUN wget --quiet https://github.com/conda-forge/miniforge/releases/latest/downlo
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs && rm -rf /var/lib/apt/lists/*
 # ADD /docker/lost-base/environment.yml .
-# ADD /docker/lost-base/mamba_env.sh .
-ADD mamba_env.sh .
+ADD /docker/lost-base/mamba_env.sh .
+# ADD mamba_env.sh .
 RUN /bin/bash -c "source /opt/mambaforge/bin/activate && source mamba_env.sh && conda clean -ay"
 # RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir python-igraph"
 # Change to CLI
