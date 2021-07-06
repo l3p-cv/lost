@@ -1,7 +1,7 @@
 #!/bin/bash
- /bin/bash -c "source /opt/conda/bin/activate lost"
-source /opt/conda/bin/activate lost
-pip install dask distributed
+ /bin/bash -c "source /opt/mambaforge/bin/activate lost"
+source /opt/mambaforge/bin/activate lost
+# pip install dask distributed
 
 
  # init env vars 
