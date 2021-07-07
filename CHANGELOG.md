@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use Dask as scheduler instead of clelery
 - Replace Anaconda package manager with mamba
 
-
 ## [1.4.2] - 2021-03-12
 ## Changed 
 - ImgBlacklist: 
