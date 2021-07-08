@@ -1,3 +1,4 @@
+import threading
 from flask import Flask, Blueprint
 from flask_cors import CORS
 from flask import request
@@ -14,7 +15,7 @@ from lost.api.data.endpoint import namespace as data_namespace
 from lost.api.label.endpoint import namespace as label_namespace
 from lost.api.worker.endpoint import namespace as worker_namespace
 from lost.api.filebrowser.endpoint import namespace as filebrowser_namespace
-
+from lost.logic import dask_session
 #from lost.database.db import db
 from lost.db.model import User, Role, UserRoles
 from lost.db import access
@@ -66,6 +67,13 @@ app.register_blueprint(blueprint)
 CORS(app)
 
 def main():
+    if settings.LOST_CONFIG.worker_management=='dynamic':
+        t = threading.Thread(
+            target=dask_session.release_client_by_timeout_loop, 
+            args=(app.logger.name,),
+            daemon=True
+        )
+        t.start()
     app.run(debug=settings.FLASK_DEBUG, threaded=settings.FLASK_THREADED)
 
 if __name__ == "__main__":

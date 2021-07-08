@@ -36,6 +36,8 @@ class LOSTConfig(object):
         self.scheduler_port = 8786
 
         self.worker_management = 'static'
+        #Can be any attribute from model.User that identifies a unique user
+        self.dask_user_key = 'idx'
         self.extra_cron_jobs = []
         self.DaskCluster = None
         self.cluster_arguments = {}

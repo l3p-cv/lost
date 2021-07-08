@@ -239,7 +239,8 @@ class UserLogout(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         release_user_annos(dbm, identity)
         user = dbm.get_user_by_id(identity)
-        dask_session.ds_man.shutdown_cluster(user)
+        if LOST_CONFIG.worker_management == 'dynamic':
+            dask_session.ds_man.shutdown_cluster(user)
         dbm.close_session()
         jti = get_raw_jwt()['jti'] 
         blacklist.add(jti)
@@ -261,6 +262,8 @@ class UserTokenRefresh(Resource):
         dbm = access.DBMan(LOST_CONFIG) 
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
+        if LOST_CONFIG.worker_management == 'dynamic':
+            dask_session.ds_man.refresh_user_session(user)
         expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
         expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
         if FLASK_DEBUG:
@@ -286,11 +289,14 @@ class UserLogin(Resource):
         data = login_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
         user = dbm.find_user_by_user_name(data['user_name'])
-        dask_session.ds_man.create_user_cluster(user)
         lm = LoginManager(dbm, data['user_name'], data['password'])
         response = lm.login()
+        if LOST_CONFIG.worker_management == 'dynamic':
+            if response[1] == 200:
+                dask_session.ds_man.create_user_cluster(user)
         dbm.close_session()
         return response
+
 @namespace.route('/token')
 class Token(Resource):
     @api.expect(user_login)

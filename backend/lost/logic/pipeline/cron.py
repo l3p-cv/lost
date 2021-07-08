@@ -24,7 +24,7 @@ from lost.db.access import DBMan
 from lostconfig import LOSTConfig
 from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 from lost.logic import email
-
+from lost.logic.dask_session import ds_man
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig, client, logger_name=''):
         '''
@@ -170,14 +170,23 @@ class PipeEngine(pipe_model.PipeEngine):
                     #     self.make_debug_session(pipe_e)
                     # else:
                     if pipe_e.state == state.PipeElement.PENDING:
-                        if self.lostconfig.worker_management != 'dynamic':
+                        if self.client is not None:
                             env = self.select_env_for_script(pipe_e)
                             if env is None:
                                 return
                             # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
                             self.client.submit(exec_script, pipe_e.idx, workers=env)
                         else:
-                            self.client.submit(exec_script, pipe_e.idx)
+                            # If client is no, try to get client form dask_session
+                            user = self.dbm.get_user_by_id(self.pipe.manager_id)
+                            client = ds_man.get_dask_client(user)
+                            ds_man.refresh_user_session(user)
+                            self.logger.info('Process script with dask client: {}'.format(client))
+                            self.logger.info('dask_session: {}'.format(ds_man.session))
+                            # logger.info('pipe.manager_id: {}'.format(p.manager_id))
+                            # logger.info('pipe.name: {}'.format(p.name))
+                            # logger.info('pipe.group_id: {}'.format(p.group_id))
+                            client.submit(exec_script, pipe_e.idx)
 
                         pipe = pipe_e.pipe
                         self.logger.info('{} ({}): Excuting script: {}'.format(pipe.name, 
@@ -208,6 +217,12 @@ class PipeEngine(pipe_model.PipeEngine):
                 self.dbm.commit()
             pipe_e = self.get_next_element()
 
+    def refesh_dask_user_session(self):
+        if self.client is None:
+            user = self.dbm.get_user_by_id(self.pipe.manager_id)
+            ds_man.refresh_user_session(user)
+            self.logger.info('Refreshed dask user session for user: {}'.format(user.idx))
+
     def process_pipeline(self):
         try:
             p = self.pipe
@@ -220,10 +235,12 @@ class PipeEngine(pipe_model.PipeEngine):
             else:
                 return
             if p.state == state.Pipe.PENDING:
+                self.refesh_dask_user_session()
                 p.state = state.Pipe.IN_PROGRESS
                 self.dbm.save_obj(p)
                 self.process_pipe_element()
             elif p.state == state.Pipe.IN_PROGRESS:
+                self.refesh_dask_user_session()
                 self.process_pipe_element()
             elif p.state == state.Pipe.FINISHED:
                 return

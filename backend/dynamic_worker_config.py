@@ -90,6 +90,8 @@ class LOSTConfig(object):
         self.worker_name = 'lost-0'
         # Can be static or dynamic
         self.worker_management = 'dynamic'
+        #Can be any attribute from model.User that identifies a unique user
+        self.dask_user_key = 'idx'
 
         if self.worker_management == 'dynamic':
             # Yarn jobs

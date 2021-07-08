@@ -1,5 +1,6 @@
 import argparse
 import traceback
+from lost.logic import dask_session
 from lost.logic.pipeline import cron
 from lost.logic.pipeline import worker
 import lostconfig as config
@@ -19,12 +20,6 @@ def process_pipes(log_name, client):
     pipe_list = dbm.get_pipes_to_process()
     # For each task in this project
     for p in pipe_list:
-        if client is None:
-            # If client is no, try to get client form dask_session
-            user = dbm.get_user_by_id(p.manager_id)
-            client = ds_man.get_dask_client(user)
-            logger = logging.getLogger(log_name)
-            logger.info('Process pipline with dask client: {}'.format(client))
         pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig, 
             client=client, logger_name=log_name)
         pipe_man.process_pipeline()
@@ -94,6 +89,8 @@ def main():
             worker_lifesign_loop,
             release_annos_loop
         ]
+        if lostconfig.worker_management == 'dynamic':
+            jobs.append(dask_session.release_client_by_timeout_loop)
         jobs += lostconfig.extra_cron_jobs
         threads = []
         for j in jobs:
