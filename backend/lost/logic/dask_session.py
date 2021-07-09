@@ -30,12 +30,12 @@ class DaskSessionMan(object):
 
     def create_user_cluster(self, user):
         if self.lostconfig.worker_management == 'dynamic':
-            #TODO: spawn cluster as specific user
-            # cluster = self.lostconfig.DaskCluster(user=_user_key(user), **self.lostconfig.cluster_arguments)
-            cluster = self.lostconfig.DaskCluster(**self.lostconfig.cluster_arguments)
+            if self.lostconfig.dask_spawn_as_proxy_user:
+                # Spawn cluster as specific proxy user
+                cluster = self.lostconfig.DaskCluster(user=_user_key(user), **self.lostconfig.cluster_arguments)
+            else:
+                cluster = self.lostconfig.DaskCluster(**self.lostconfig.cluster_arguments)
             client = self.lostconfig.DaskClient(cluster)
-            # global lost_session
-            # lost_session[user] = {'client': client}
             self.session[_user_key(user)] = {
                 'client': client,
                 'timestamp': datetime.utcnow()

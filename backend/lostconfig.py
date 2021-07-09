@@ -31,13 +31,14 @@ class LOSTConfig(object):
         # Intervall in seconds in which a worker should give a lifesign
         self.worker_beat = int(os.environ['WORKER_BEAT'])
         self.pipe_schedule = int(os.environ['PIPE_SCHEDULE'])
-        self.session_timeout = int(30)
+        self.session_timeout = 30*60
         self.scheduler_ip = 'localhost'
         self.scheduler_port = 8786
 
         self.worker_management = 'static'
         #Can be any attribute from model.User that identifies a unique user
         self.dask_user_key = 'idx'
+        self.dask_spawn_as_proxy_user = False
         self.extra_cron_jobs = []
         self.DaskCluster = None
         self.cluster_arguments = {}

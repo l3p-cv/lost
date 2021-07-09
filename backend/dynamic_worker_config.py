@@ -90,8 +90,6 @@ class LOSTConfig(object):
         self.worker_name = 'lost-0'
         # Can be static or dynamic
         self.worker_management = 'dynamic'
-        #Can be any attribute from model.User that identifies a unique user
-        self.dask_user_key = 'idx'
 
         if self.worker_management == 'dynamic':
             # Yarn jobs
@@ -100,6 +98,9 @@ class LOSTConfig(object):
             self.DaskCluster = LocalCluster
             self.cluster_arguments = {'n_workers':1, 'processes':False}
             self.DaskClient = Client
+            self.dask_spawn_as_proxy_user = True
+            #Can be any attribute from model.User that identifies a unique user
+            self.dask_user_key = 'idx'
         else:
             self.extra_cron_jobs = []
 
@@ -110,7 +111,7 @@ class LOSTConfig(object):
         # Intervall in seconds in which a worker should give a lifesign
         self.worker_beat = 10
         self.pipe_schedule = 5
-        self.session_timeout = 30
+        self.session_timeout = 30*60
 
         # DASK scheduler properties
         self.scheduler_ip = 'localhost'
