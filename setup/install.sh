@@ -48,7 +48,7 @@ mamba create -n lost adlfs bokeh dask distributed \
 conda clean -ay
 
 # activate python environment
-conda activate lost
+source /opt/mambaforge/bin/activate lost
 
 echo
 echo 🛠️  creating lost log directory
