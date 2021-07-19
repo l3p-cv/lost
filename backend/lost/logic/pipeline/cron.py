@@ -346,12 +346,13 @@ def exec_script(pipe_element_id):
         lostconfig = LOSTConfig()
         dbm = DBMan(lostconfig)
         pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
-        worker = CurrentWorker(dbm, lostconfig)
         logger = logging
-        if not worker.enough_resources(pipe_e.script):
-            # logger.warning('Not enough resources! Rejected {} (PipeElement ID {})'.format(pipe_e.script.path, pipe_e.idx))
-            raise Exception('Not enough resources')
-            return
+        if lostconfig.worker_management == 'static':
+            worker = CurrentWorker(dbm, lostconfig)
+            if not worker.enough_resources(pipe_e.script):
+                # logger.warning('Not enough resources! Rejected {} (PipeElement ID {})'.format(pipe_e.script.path, pipe_e.idx))
+                raise Exception('Not enough resources')
+                return
         pipe_e.state = state.PipeElement.IN_PROGRESS
         dbm.save_obj(pipe_e)
         file_man = AppFileMan(lostconfig)
@@ -372,9 +373,11 @@ def exec_script(pipe_element_id):
         p = subprocess.Popen('bash {}'.format(start_script_path), stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, shell=True)
         logger.info("{} ({}): Started script\n{}".format(pipe.name, pipe.idx, cmd))
-        worker.add_script(pipe_e, pipe_e.script)       
+        if lostconfig.worker_management == 'static':
+            worker.add_script(pipe_e, pipe_e.script)       
         out, err = p.communicate()
-        worker.remove_script(pipe_e, pipe_e.script)       
+        if lostconfig.worker_management == 'static':
+            worker.remove_script(pipe_e, pipe_e.script)       
         if p.returncode != 0:
             raise Exception(err.decode('utf-8'))
         logger.info('{} ({}): Executed script successful: {}'.format(pipe.name, 
