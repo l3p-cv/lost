@@ -52,5 +52,5 @@ The installation script will automatically crate a service entry called `lost`.
 If you want to start lost without the service, enter following commands in your terminal:  
 ```bash
 conda activate lost
-bash setup/start.sh
+/usr/local/src/lost/start.sh
 ```
