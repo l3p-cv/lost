@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# make conda available inside bash shell scripts
+eval "$(conda shell.bash hook)"
+
 # activate lost mamba environment
-source /opt/mambaforge/bin/activate lost
+conda activate lost
 
 # set python path to find custom python modules
 export PYTHONPATH=/usr/local/src/lost/backend
