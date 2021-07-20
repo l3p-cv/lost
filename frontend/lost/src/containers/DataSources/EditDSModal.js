@@ -18,14 +18,7 @@ const ErrorLabel = ({ text }) => (
 )
 
 const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClosed, possibleFsTypes}) => {
-    // const roles = useSelector(state=>state.lost.roles)
-    // const dispatch = useDispatch()
-    // const userRaw = props.user[0]
-    // userModified.roles = userModified.roles.map(el=>el.name)
-    // const [possibleFsTypes, setPossibleFsTypes] = useState([
-        // 'file',
-        // 'abfs'
-    // ])
+
     const DUMMY_FS = {
         id: undefined,
         name: undefined,
@@ -35,20 +28,6 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
         timestamp: undefined
     }
     const [fs, setFs] = useState(DUMMY_FS)
-    // const [user, setUser] = useState(userRaw)
-    // const [emailError, setEmailError] = useState(false)
-    // const [passwordError, setPasswordError] = useState(false)
-    // const [passwordConfirmError, setPasswordConfirmError] = useState(false)
-    // const [usernameError, setUsernameError] = useState(false)
-    // const [focusedField, setFocusedFieled] = useState()
-    // const groups = useSelector((state) => state.group.groups)
-    const updateUserStatus = useSelector((state) => state.user.updateUserStatus)
-    useEffect(() => {
-        Notification.networkRequest(updateUserStatus)
-        if (updateUserStatus.status === REQUEST_STATUS.SUCCESS) {
-            closeModal()
-        }
-    }, [updateUserStatus])
 
     useEffect(() => {
         if (fsList && selectedId){
@@ -60,140 +39,10 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
         }
     }, [fsList, selectedId])
 
-    // useEffect(()=> {
-    //     console.log('EditDSModal modalOpen', modalOpen)
-    // }, [modalOpen])
-
-    // const userNameField = () => {
-    //     return (
-    //         <>
-    //             <Datatable.centeredCell>
-    //                 <Input
-    //                     autoFocus={focusedField == 0}
-    //                     placeholder="Username"
-    //                     disabled={!props.isNewDS}
-    //                     defaultValue={user.user_name}
-    //                     onChange={(e) => {
-    //                         setFocusedFieled(0)
-    //                         setUser({
-    //                             ...user,
-    //                             user_name: e.currentTarget.value
-    //                         })
-    //                     }
-    //                     }
-    //                 />
-    //             </Datatable.centeredCell>
-    //             {usernameError ? <ErrorLabel text={usernameError} /> : null}
-    //         </>
-    //     )
-    // }
-
-    // const emailField = () => (
-    //     <>
-    //         <Datatable.centeredCell>
-    //             <Input
-    //                 autoFocus={focusedField == 1}
-    //                 placeholder="example@example.com"
-    //                 defaultValue={user.email}
-    //                 onChange={(e) => {
-    //                     setFocusedFieled(1)
-    //                     setUser({ ...user, email: e.currentTarget.value })
-    //                 }}
-    //             />
-    //         </Datatable.centeredCell>
-    //         {emailError ? <ErrorLabel text="Email is not valid" /> : null}
-    //     </>
-    // )
-
-    // const passwordField = () => (
-    //     <>
-    //         <Datatable.centeredCell>
-    //             <Input
-    //                 autoFocus={focusedField == 2}
-    //                 placeholder="*******"
-    //                 type="password"
-    //                 defaultValue={user.password}
-    //                 onChange={(e) => {
-    //                     setFocusedFieled(2)
-    //                     setUser({ ...user, password: e.currentTarget.value })
-    //                 }}
-    //             />
-    //         </Datatable.centeredCell>
-    //         {passwordError ? <ErrorLabel text={passwordError} /> : null}
-    //     </>
-    // )
-
-    // const confirmPasswordField = () => (
-    //     <>
-    //         <Datatable.centeredCell>
-    //             <Input
-    //                 autoFocus={focusedField == 3}
-    //                 placeholder="*******"
-    //                 type="password"
-    //                 defaultValue={user.confirmPassword}
-    //                 onChange={(e) =>{
-    //                     setFocusedFieled(3)
-    //                     setUser({
-    //                         ...user,
-    //                         confirmPassword: e.currentTarget.value
-    //                     })
-    //                 }
-    //                 }
-    //             />
-    //         </Datatable.centeredCell>
-    //         {passwordConfirmError ? (
-    //             <ErrorLabel text="Passwords do not match" />
-    //         ) : null}
-    //     </>
-    // )
-
-    // const rolesField = () => {
-    //     return roles.map((guiSetupRole) => {
-    //         const isActive =
-    //             user.roles.filter((role) => role.name === guiSetupRole).length >
-    //             0
-    //         return Datatable.renderBadge(
-    //             `user-${user.idx}-role-${guiSetupRole}`,
-    //             guiSetupRole,
-    //             isActive ? 'success' : 'secondary',
-    //             () => {
-    //                 setUser({
-    //                     ...user,
-    //                     roles: isActive
-    //                         ? user.roles.filter(
-    //                             (role) => role.name !== guiSetupRole
-    //                         )
-    //                         : [...user.roles, { name: guiSetupRole }]
-    //                 })
-    //             }
-    //         )
-    //     })
-    // }
-
-    // const groupField = () => {
-    //     return groups.map((el) => {
-    //         const isActive =
-    //             user.groups.filter((group) => group.idx === el.idx).length > 0
-    //         return Datatable.renderBadge(
-    //             `user-${user.idx}-group-${el.idx}`,
-    //             el.name,
-    //             isActive ? 'success' : 'secondary',
-    //             () => {
-    //                 setUser({
-    //                     ...user,
-    //                     groups: isActive
-    //                         ? user.groups.filter(
-    //                             (group) => group.idx !== el.idx
-    //                         )
-    //                         : [...user.groups, el]
-    //                 })
-    //             }
-    //         )
-    //     })
-    // }
-
     const save = () => {
        saveFs(fs) 
+       Notification.showSuccess('Saved datasource')
+       closeModal()
     }
 
     const cancel = () => {
