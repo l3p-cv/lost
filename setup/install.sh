@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# assume that mamba + nodejs + nginx is already installed
-
-#
 # configuration section
 # (feel free to change variables in here)
 
@@ -17,6 +14,8 @@ export ADD_AI_EXAMPLES=True
 # end of configuration section
 #
 
+# make conda available inside bash shell scripts
+eval "$(conda shell.bash hook)"
 
 # save current working directory in case we need to go back to it
 INSTALLER_LOCATION_DIR=`pwd`
@@ -29,13 +28,14 @@ echo -e ' \t ' 🚈🚃🚃🚃🚃🚃🚃🚃🚃🚃🚃🚃
 
 echo
 echo 🛠️  installing system requirements
-apt-get update && apt-get install -y --no-install-recommends wget curl bzip2 python3.5 \
+sudo apt-get update && sudo apt-get install -y --no-install-recommends wget curl bzip2 python3.5 nginx \
     python3-pip python3-setuptools python3-dev build-essential libigraph0-dev \
-    libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg && rm -rf /var/lib/apt/lists/*
-apt-get update && apt-get install -y --no-install-recommends gnupg gnupg2 gnupg1 && rm -rf /var/lib/apt/lists/*
+    libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg
+sudo apt-get update && sudo apt-get install -y --no-install-recommends gnupg gnupg2 gnupg1
 
 # activate mamba
-source /opt/mambaforge/bin/activate
+conda activate
+conda config --add channels conda-forge
 
 echo
 echo 🛠️  installing backend dependencies
@@ -48,15 +48,12 @@ mamba create -n lost adlfs bokeh dask distributed \
 conda clean -ay
 
 # activate python environment
-source /opt/mambaforge/bin/activate lost
+conda activate lost
 
 echo
 echo 🛠️  creating lost log directory
-mkdir -p /var/log/lost/
-echo "" > /var/log/lost/uswgi.log
-
-# upgrade npm to avoid installation error...
-npm install -g npm@7.20.0
+sudo mkdir -p /var/log/lost/
+sudo echo "" > /var/log/lost/uswgi.log
 
 echo
 echo 🛠️  installing frontend dependencies
@@ -66,28 +63,28 @@ npm install
 echo
 echo 🛠️  building frontend
 npm run build
-mkdir -p $TARGET_LOCATION_DIR/frontend/lost
-cp -r build $TARGET_LOCATION_DIR/frontend/lost
+sudo mkdir -p $TARGET_LOCATION_DIR/frontend/lost
+sudo cp -r build $TARGET_LOCATION_DIR/frontend/lost
 cd $INSTALLER_LOCATION_DIR
 
 echo
 echo 🛠️  copying backend
 # copy backend  source code
-cp -r backend $TARGET_LOCATION_DIR/
+sudo cp -r backend $TARGET_LOCATION_DIR/
 
 # copy undockerized wsgi.ini
-cp setup/wsgi.ini $TARGET_LOCATION_DIR/backend/lost
+sudo cp setup/wsgi.ini $TARGET_LOCATION_DIR/backend/lost
 
 # copy documentation
-mkdir /usr/share/doc/lost
-cp -r docs /usr/share/doc/lost
+sudo mkdir /usr/share/doc/lost
+sudo cp -r docs /usr/share/doc/lost
 
 echo
 echo 🛠️  setting up nginx
 # copy & activate nginx config
-cp setup/nginx.conf /etc/nginx/sites-available/lost.conf
-ln -s /etc/nginx/sites-available/lost.conf /etc/nginx/sites-enabled/lost.conf
-service nginx restart
+sudo cp setup/nginx.conf /etc/nginx/sites-available/lost.conf
+sudo ln -s /etc/nginx/sites-available/lost.conf /etc/nginx/sites-enabled/lost.conf
+sudo service nginx restart
 
 echo
 echo 🛠️  initializing application
@@ -99,11 +96,11 @@ python3 $TARGET_LOCATION_DIR/backend/lost/logic/init/initlost.py
 cd $TARGET_LOCATION_DIR/backend/lost/cli && bash import_examples.sh && cd -
 
 # prepare startup script
-cp setup/start.sh $TARGET_LOCATION_DIR/start.sh
-cp setup/lost.service /etc/systemd/system/lost.service
+sudo cp setup/start.sh $TARGET_LOCATION_DIR/start.sh
+sudo cp setup/lost.service /etc/systemd/system/lost.service
 
-systemctl enable lost.service
-systemctl start lost.service
+sudo systemctl enable lost.service
+sudo systemctl start lost.service
 
 echo
 echo ℹ️  LOST will start at boot.
