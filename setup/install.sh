@@ -30,8 +30,7 @@ echo
 echo 🛠️  installing system requirements
 sudo apt-get update && sudo apt-get install -y --no-install-recommends wget curl bzip2 python3.5 nginx \
     python3-pip python3-setuptools python3-dev build-essential libigraph0-dev \
-    libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg
-sudo apt-get update && sudo apt-get install -y --no-install-recommends gnupg gnupg2 gnupg1
+    libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg gnupg gnupg2 gnupg1
 
 # activate mamba
 conda activate
@@ -53,7 +52,12 @@ conda activate lost
 echo
 echo 🛠️  creating lost log directory
 sudo mkdir -p /var/log/lost/
-sudo echo "" > /var/log/lost/uswgi.log
+echo "" | sudo tee -a /var/log/lost/uswgi.log
+
+echo
+echo 🛠️  creating lost base directory
+sudo mkdir -p $TARGET_LOCATION_DIR
+sudo chown $USER:$USER $TARGET_LOCATION_DIR
 
 echo
 echo 🛠️  installing frontend dependencies
@@ -63,17 +67,17 @@ npm install
 echo
 echo 🛠️  building frontend
 npm run build
-sudo mkdir -p $TARGET_LOCATION_DIR/frontend/lost
-sudo cp -r build $TARGET_LOCATION_DIR/frontend/lost
+mkdir -p $TARGET_LOCATION_DIR/frontend/lost
+cp -r build $TARGET_LOCATION_DIR/frontend/lost
 cd $INSTALLER_LOCATION_DIR
 
 echo
 echo 🛠️  copying backend
 # copy backend  source code
-sudo cp -r backend $TARGET_LOCATION_DIR/
+cp -r backend $TARGET_LOCATION_DIR/
 
 # copy undockerized wsgi.ini
-sudo cp setup/wsgi.ini $TARGET_LOCATION_DIR/backend/lost
+cp setup/wsgi.ini $TARGET_LOCATION_DIR/backend/lost
 
 # copy documentation
 sudo mkdir /usr/share/doc/lost
@@ -93,7 +97,8 @@ export PYTHONPATH=$TARGET_LOCATION_DIR/backend
 
 # finally initialize python environment (install database tables etc..)
 python3 $TARGET_LOCATION_DIR/backend/lost/logic/init/initlost.py
-cd $TARGET_LOCATION_DIR/backend/lost/cli && bash import_examples.sh && cd -
+cd $TARGET_LOCATION_DIR/backend/lost/cli && bash import_examples.sh
+cd $INSTALLER_LOCATION_DIR
 
 # prepare startup script
 sudo cp setup/start.sh $TARGET_LOCATION_DIR/start.sh
