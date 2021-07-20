@@ -9,15 +9,18 @@ import axios from 'axios'
 import {API_URL} from '../../../../../../lost_settings'
 import fileDownload from 'js-file-download'
 
-import { createHashHistory } from 'history'
+// import { createHashHistory } from 'history'
+import { useHistory } from 'react-router-dom'
 import actions from '../../../../../../actions'
 
 function handleSiaRewiewClick(props){
     props.siaReviewSetElement(props.id)
     props.chooseAnnoTask(
         props.annoTask.id, 
-        createHashHistory().push('/sia-review')
+        // createHashHistory().push('/sia-review')
+        () => {}
     )
+    // history.push('/sia-review')
 }
 
 function handleInstantAnnoDownload(pe_id){
@@ -43,6 +46,7 @@ const AnnoTaskModal =  (props)=>{
     useEffect(()=>{
         dispatch(actions.getUsers())
         dispatch(actions.getGroups())
+        hist = useHistory()
     }, [])
     const dataTableData = [
         ...users.map(user=>({

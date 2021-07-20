@@ -6,6 +6,7 @@ import UsersComponent from './containers/Users/Users'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
+import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 
 import {
@@ -17,6 +18,7 @@ import {
     FaPaintBrush,
     FaDatabase
 } from 'react-icons/fa'
+// import SIAReviewAnnotation from './containers/Annotation/SIAReviewAnnotation'
 
 const iconProps = {
     size: 20,
@@ -83,6 +85,13 @@ const DataSources = {
 
 }
 
+const SIAReview = {
+    name: 'SIAReview',
+    to: '/sia-review',
+    component: SiaReviewComponent,
+    icon: <FaDatabase {...iconProps} />,
+
+}
 const Annotation = {
     name: 'Annotation',
     to: '/annotation',
@@ -118,7 +127,8 @@ const guiSetup = {
             Workers,
             Users,
             Annotation,
-            DataSources
+            DataSources,
+            SIAReview
         ]
     },
     Annotator: {
