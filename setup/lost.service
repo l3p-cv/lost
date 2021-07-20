@@ -2,7 +2,7 @@
 Description="LOST - Label Objects Save Time"
 
 [Service]
-ExecStart=bash setup/start.sh
+ExecStart=bash start.sh
 WorkingDirectorys=/usr/local/src/lost
 Restart=always
 RestartSec=10
