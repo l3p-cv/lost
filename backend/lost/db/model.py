@@ -1067,6 +1067,7 @@ class Script(Base):
         envs (str): json object containing the names of environments that
             may execute this script
         resources (str): Json that defines the resources required by this script
+        extra_packages (str): Json that defines extra packages that should be installed
     """
     __tablename__ = "script"
     idx = Column(Integer, primary_key=True)
@@ -1076,9 +1077,10 @@ class Script(Base):
     arguments = Column(Text)
     envs = Column(Text)
     resources = Column(Text)
+    extra_packages = Column(Text)
 
     def __init__(self, idx=None, name=None, path=None, description=None,
-                 arguments=None, envs=None, resources=None):
+                 arguments=None, envs=None, resources=None, extra_packages=None):
         self.idx = idx
         self.name = name
         self.path = path
@@ -1086,6 +1088,7 @@ class Script(Base):
         self.arguments = arguments
         self.envs = envs
         self.resources = resources
+        self.extra_packages = extra_packages
 
 
 class ChoosenAnnoTask(Base):
