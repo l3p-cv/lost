@@ -1,0 +1,15 @@
+[Unit]
+Description="LOST - Label Objects Save Time"
+
+[Service]
+ExecStart=bash start.sh
+WorkingDirectorys=/usr/local/src/lost
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=lost
+Environment=LOST_HOME=production PORT=8080
+
+[Install]
+WantedBy=multi-user.target
