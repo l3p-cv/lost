@@ -1,115 +1,111 @@
 #!/bin/bash
 
-# configuration section
-# (feel free to change variables in here)
+# folder where the cloned repo is located (only needed while installing)
+LOST_INSTALLER_LOCATION_FILE=$(readlink -f $0)
+LOST_SETUP_LOCATION_DIR=`dirname $LOST_INSTALLER_LOCATION_FILE`
+export LOST_REPO_LOCATION_DIR=`dirname $LOST_SETUP_LOCATION_DIR`
 
-# allow mamba to skip installation confirmations
-export CONDA_ALWAYS_YES="true"
+# fetch basic / runtime environment variables
+source $LOST_REPO_LOCATION_DIR/lost-env.sh
 
-# add AI annotation examples to installation
-export ADD_EXAMPLES=True
-export ADD_AI_EXAMPLES=True
+# fetch setup environment variables
+source $LOST_SETUP_LOCATION_DIR/lost-setup-env.sh
 
-#
-# end of configuration section
-#
-
-# make conda available inside bash shell scripts
-eval "$(conda shell.bash hook)"
-
-# save current working directory in case we need to go back to it
-INSTALLER_LOCATION_DIR=`pwd`
-TARGET_LOCATION_DIR=/usr/local/src/lost
+# escape file path for sed
+ESCAPED_LOST_BASE_DIR=${LOST_BASE_DIR//\//\\/}
 
 # show welcome message :)
-echo -e ' \t ' 🚈🚃🚃🚃🚃🚃🚃🚃🚃🚃🚃🚃
+echo -e ' \t ' 🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋
 echo -e ' \t ' LOST installation script
-echo -e ' \t ' 🚈🚃🚃🚃🚃🚃🚃🚃🚃🚃🚃🚃
-
-echo
-echo 🛠️  installing system requirements
-sudo apt-get update && sudo apt-get install -y --no-install-recommends wget curl bzip2 python3.5 nginx \
-    python3-pip python3-setuptools python3-dev build-essential libigraph0-dev \
-    libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg gnupg gnupg2 gnupg1
-
-# activate mamba
-conda activate
-conda config --add channels conda-forge
+echo -e ' \t ' 🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋🐋
 
 echo
 echo 🛠️  installing backend dependencies
+
 # create mamba env named lost with all needed dependencies
-mamba create -n lost adlfs bokeh dask distributed \
+$LOST_MAMBA_BASE_DIR/bin/mamba create -n lost adlfs bokeh dask distributed \
     flask==1.1.2 flask-jwt-extended==3.13.1 flask-cors flask-ldap3-login flask-mail flask-restx flask-sqlalchemy flask-user flask-wtf \
-    fsspec imagesize mysqlclient numpy opencv pandas pyjwt=1.7.1 pytest python-igraph sphinx sk-video sqlalchemy scikit-image \
+    fsspec imagesize mysqlclient numpy opencv pandas pyjwt=1.7.1 pytest python python-devtools python-igraph sphinx sk-video sqlalchemy scikit-image \
     uwsgi nodejs==14.17.1
 
-conda clean -ay
+# make conda available inside bash shell scripts
+eval "$($LOST_MAMBA_BASE_DIR/bin/conda shell.bash hook)"
 
-# activate python environment
-conda activate lost
+# use mamba dirs
+source $LOST_MAMBA_BASE_DIR/bin/activate lost
 
 echo
 echo 🛠️  creating lost log directory
-sudo mkdir -p /var/log/lost/
-echo "" | sudo tee -a /var/log/lost/uswgi.log
+mkdir -p $LOST_DOCUMENTATION_DIR
+echo "" > $LOST_DOCUMENTATION_DIR/uswgi.log
 
 echo
 echo 🛠️  creating lost base directory
-sudo mkdir -p $TARGET_LOCATION_DIR
-sudo chown $USER:$USER $TARGET_LOCATION_DIR
+mkdir -p $LOST_BASE_DIR
 
 echo
 echo 🛠️  installing frontend dependencies
-cd frontend/lost
-npm install
+mkdir -p $LOST_BASE_DIR/build
+cp -r $LOST_REPO_LOCATION_DIR/frontend $LOST_BASE_DIR/build
+cd $LOST_BASE_DIR/build/frontend/lost
+npm install --unsafe-perm=true --allow-root
 
 echo
 echo 🛠️  building frontend
 npm run build
-mkdir -p $TARGET_LOCATION_DIR/frontend/lost
-cp -r build $TARGET_LOCATION_DIR/frontend/lost
-cd $INSTALLER_LOCATION_DIR
+mkdir -p $LOST_BASE_DIR/src/frontend/lost
+cp -r $LOST_BASE_DIR/build/frontend/lost/build $LOST_BASE_DIR/src/frontend/lost/
+cd $LOST_REPO_LOCATION_DIR
 
 echo
 echo 🛠️  copying backend
 # copy backend  source code
-cp -r backend $TARGET_LOCATION_DIR/
+cp -r $LOST_REPO_LOCATION_DIR/backend $LOST_BASE_DIR/src/
 
-# copy undockerized wsgi.ini
-cp setup/wsgi.ini $TARGET_LOCATION_DIR/backend/lost
+echo
+echo 🛠️  adding config to wsgi.ini
+
+# insert file path from variable
+sed -i "s/chdir=--chdir-inserted-by-installation-script--/chdir=$ESCAPED_LOST_BASE_DIR\/src\/backend\/lost/" $LOST_SETUP_LOCATION_DIR/wsgi.ini
+cp $LOST_SETUP_LOCATION_DIR/wsgi.ini $LOST_BASE_DIR/src/backend/lost
 
 # copy documentation
-sudo mkdir /usr/share/doc/lost
-sudo cp -r docs /usr/share/doc/lost
+mkdir -p $LOST_LOG_DIR
+cp -r $LOST_REPO_LOCATION_DIR/docs $LOST_LOG_DIR
 
 echo
 echo 🛠️  setting up nginx
+
+# escape file path for sed
+ESCAPED_LOST_DOCUMENTATION_DIR=${LOST_DOCUMENTATION_DIR//\//\\/}
+
+# insert file paths from variable
+sed -i "s/--nginx-base-alias-inserted-by-installation-script--/$ESCAPED_LOST_BASE_DIR\/src\/frontend\/lost\/build\//" $LOST_SETUP_LOCATION_DIR/nginx.conf
+sed -i "s/--nginx-docs-alias-inserted-by-installation-script--/$ESCAPED_LOST_DOCUMENTATION_DIR\/build\/html\//" $LOST_SETUP_LOCATION_DIR/nginx.conf
+
 # copy & activate nginx config
-sudo cp setup/nginx.conf /etc/nginx/sites-available/lost.conf
-sudo ln -s /etc/nginx/sites-available/lost.conf /etc/nginx/sites-enabled/lost.conf
-sudo service nginx restart
+cp $LOST_SETUP_LOCATION_DIR/nginx.conf $LOST_NGINX_SITES_DIR/lost.conf
+service nginx restart
 
 echo
 echo 🛠️  initializing application
-# tell lost where it's base directory is
-export PYTHONPATH=$TARGET_LOCATION_DIR/backend
 
 # finally initialize python environment (install database tables etc..)
-python3 $TARGET_LOCATION_DIR/backend/lost/logic/init/initlost.py
-cd $TARGET_LOCATION_DIR/backend/lost/cli && bash import_examples.sh
-cd $INSTALLER_LOCATION_DIR
+python3 $LOST_BASE_DIR/src/backend/lost/logic/init/initlost.py
+cd $LOST_BASE_DIR/src/backend/lost/cli && bash import_examples.sh
+cd $LOST_REPO_LOCATION_DIR
 
 # prepare startup script
-sudo cp setup/start.sh $TARGET_LOCATION_DIR/start.sh
-sudo cp setup/lost.service /etc/systemd/system/lost.service
+cp $LOST_SETUP_LOCATION_DIR/start.sh $LOST_BASE_DIR/start.sh
+cp $LOST_REPO_LOCATION_DIR/lost-env.sh $LOST_BASE_DIR/lost-env.sh
 
-sudo systemctl enable lost.service
-sudo systemctl start lost.service
-
-echo
-echo ℹ️  LOST will start at boot.
-echo To change this, type:
-echo "systemctl disable lost.service"
 echo
 echo 🏁  installation finished
+echo 
+echo ➡️  Start LOST by typing:
+echo "source $LOST_MAMBA_BASE_DIR/bin/activate lost"
+echo "$LOST_BASE_DIR/start.sh"
+echo
+echo "ℹ️ Environment File (lost-env.sh) in now located at:"
+echo "$LOST_BASE_DIR/lost-env.sh"
+echo
