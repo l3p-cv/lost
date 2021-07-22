@@ -48,6 +48,7 @@ def keytab_renewer_loop(logger_name):
         kinit(logger, local_keytab_path, principal)
         logger.info('Sleep for {} seconds'.format(sleep_time))
         sleep(sleep_time)
+
 class LOSTConfig(object):
 
     def __init__(self):
@@ -87,12 +88,9 @@ class LOSTConfig(object):
         self.worker_management = ge('LOST_WORKER_MANAGEMENT','static')
 
         if self.worker_management == 'dynamic':
-            # Yarn jobs
-            # self.extra_cron_jobs = [keytab_renewer_loop]
-            # from dask.distributed import Client, LocalCluster
-            # self.DaskCluster = LocalCluster
             self.DaskCluster = import_by_string(
-                ge('LOST_DASK_CLUSTER','dask.distributed.LocalCluster'))
+                ge('LOST_DASK_CLUSTER','dask.distributed.LocalCluster')
+            )
             self.cluster_arguments = {'n_workers':1, 'processes':False}
             self.DaskClient = Client
             #Can be any attribute from model.User that identifies a unique user
