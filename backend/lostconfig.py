@@ -4,26 +4,8 @@ import logging
 from os import environ as env
 from time import sleep
 import importlib
-from dask.distributed import Client, LocalCluster
+from dask.distributed import Client
 # from dask_yarn import YarnCluster
-
-def keytab_renewer_loop(logger_name):
-    def kinit(logger, local_keytab_path, principal):
-        try:
-            logger.debug(f"performing kinit -kt {local_keytab_path} {principal}")
-            p = subprocess.run([ 'kinit', '-kt', local_keytab_path, principal], capture_output=True)
-            logger.debug(f"stdout of subprocess: {str(p.stdout)}")
-        except:
-            logger.error(f"stderr of subprocess: {str(p.stderr)}")
-    logger = logging.getLogger('{}.{}'.format(logger_name,'keytab_renewer_loop'))
-    keytab = eval_env('LOST_KINIT_KEYTAB')
-    principal = eval_env('LOST_KINIT_PRINCIPAL')
-    sleep_time = ge('LOST_KINIT_SLEEP_TIME',60*60*6) # Sleep for 6 hours
-    local_keytab_path = f"{env['HOME']}/.{keytab.split('/')[-1]}"
-    while True:
-        kinit(logger, local_keytab_path, principal)
-        logger.info('Sleep for {} seconds'.format(sleep_time))
-        sleep(sleep_time)
 
 def eval_env(name):
     try:
@@ -49,6 +31,23 @@ def import_by_string(full_name):
     mod = importlib.import_module(module_name)
     return getattr(mod, unit_name)
  
+def keytab_renewer_loop(logger_name):
+    def kinit(logger, local_keytab_path, principal):
+        try:
+            logger.debug(f"performing kinit -kt {local_keytab_path} {principal}")
+            p = subprocess.run([ 'kinit', '-kt', local_keytab_path, principal], capture_output=True)
+            logger.debug(f"stdout of subprocess: {str(p.stdout)}")
+        except:
+            logger.error(f"stderr of subprocess: {str(p.stderr)}")
+    logger = logging.getLogger('{}.{}'.format(logger_name,'keytab_renewer_loop'))
+    keytab = eval_env('LOST_KINIT_KEYTAB')
+    principal = eval_env('LOST_KINIT_PRINCIPAL')
+    sleep_time = ge('LOST_KINIT_SLEEP_TIME',60*60*6) # Sleep for 6 hours
+    local_keytab_path = f"{env['HOME']}/.{keytab.split('/')[-1]}"
+    while True:
+        kinit(logger, local_keytab_path, principal)
+        logger.info('Sleep for {} seconds'.format(sleep_time))
+        sleep(sleep_time)
 class LOSTConfig(object):
 
     def __init__(self):
