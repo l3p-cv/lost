@@ -26,35 +26,34 @@ If a message like *For changes to take effect, close and re-open your current sh
 6. Step into the cloned repository  
 `cd lost`
 
-7. configure settings for your environment  
-Feel free to copy out docker-free-installation example config:  
-`cp setup/lostconfig_example.py backend/lostconfig.py`  
+7. configure installation settings for your environment  
+`vim setup/lost-setup-env.sh`  
+
+8. configure runtime settings for your environment  
 In most cases you need to change the following config entries:  
-- self.app_path
-- self.data_path
-- self.lost_db_user
-- self.lost_db_name
-- self.lost_db_pwd
-- self.lost_db_port
-- self.lost_db_ip  
-`vim backend/lostconfig.py`
+- LOST_APP_PATH
+- LOST_DATA_PATH
+- LOST_DB_CONNECTOR
+- LOST_DB_IP
+- LOST_DB_PORT
+- LOST_DB_NAME
+- LOST_DB_USER
+- LOST_DB_PASSWORD
+`vim lost-env.sh`
 
 **Important:**   This config file can only be used **before** installation since it will be copied to `/usr/local/src/lost/backend/lostconfig.py`. But you can make your changes there once the application is installed.
 
-8. Start the installation  
+9. Start the installation  
 `bash setup/install.sh`
 
 ## Configure environment
 
-To change environment settings (for example the database host) edit the lostconfig.py file:  
-`vim /usr/local/src/lost/backend/lostconfig.py`  
-An example lostconfig file for a docker-free installation is located in `setup/lostconfig_example.py`.
-
+To change environment settings (for example the database host) edit the lost-env.sh file:  
+`vim /your/installation/path/lost-env.sh`  
 
 ## Startup
-The installation script will automatically crate a service entry called `lost`.  
-If you want to start lost without the service, enter following commands in your terminal:  
+If you want to start lost enter following commands in your terminal:  
 ```bash
 conda activate lost
-/usr/local/src/lost/start.sh
+/your/installation/path/start.sh
 ```

@@ -104,7 +104,7 @@ echo 🏁  installation finished
 echo 
 echo ➡️  Start LOST by typing:
 echo "source $LOST_MAMBA_BASE_DIR/bin/activate lost"
-echo "$LOST_BASE_DIR/start.sh"
+echo "bash $LOST_BASE_DIR/start.sh"
 echo
 echo "ℹ️ Environment File (lost-env.sh) in now located at:"
 echo "$LOST_BASE_DIR/lost-env.sh"
