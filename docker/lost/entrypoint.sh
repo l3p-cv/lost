@@ -60,7 +60,7 @@ python3 /code/backend/lost/logic/init/init_patchsystem.py
 cron_jobs="python3 /code/backend/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &
 
-if [ ${DEBUG} = "True" ]; then
+if [ ${LOST_DEBUG_MODE} = "True" ]; then
   if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
 	cp /code/docker/lost/nginx/dev.conf /etc/nginx/conf.d/default.conf
   fi

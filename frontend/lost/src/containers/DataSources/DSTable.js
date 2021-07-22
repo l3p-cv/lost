@@ -39,7 +39,9 @@ export const DSTable = () => {
             setFSList(await getFSList())
             setPossibleFsTypes(await getPossibleFsTypes())
         }
-        fetchData()
+        const interval = setInterval(fetchData, 1000)
+        return () => clearInterval(interval)
+        // fetchData()
         // console.log('IN DSTABLE: ', await getFSList())
     }, [])
 
