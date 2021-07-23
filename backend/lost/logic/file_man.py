@@ -92,11 +92,15 @@ class AppFileMan(object):
         else:
             return in_path
     
-    def get_packed_pipe_path(self, file_name):
+    def get_packed_pipe_path(self, file_name, timestamp=None):
         base_path = join(self.lostconfig.app_path, PACKED_PIPE_ROOT_PATH)
         if not os.path.exists(base_path):
             os.makedirs(base_path, exist_ok=True)
-        return join(base_path, file_name)
+        my_path =  join(base_path, file_name)
+        if timestamp is not None:
+            head, ext = os.path.splitext(my_path)
+            my_path = f'{head}_{timestamp}{ext}'
+            return my_path
 
     def get_pipe_project_path(self, scr):
         pp_name = scr.name.split('.')[0]

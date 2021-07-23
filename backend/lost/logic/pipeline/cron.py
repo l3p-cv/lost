@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 #from py3nvml.py3nvml import *
 import sys
 from lost.db import model, state, dtype
@@ -172,6 +172,13 @@ class PipeEngine(pipe_model.PipeEngine):
                     [f'{x}' for x in traceback.format_tb(fut.traceback())]
                 )
             ))
+        # class User():
+        #     def __init__(self, idx):
+        #         self.idx = idx
+
+        # # client = ds_man.get_dask_client(User(1))
+        # self.logger.info(f'shutdown cluster: {ds_man.shutdown_cluster(User(1))}')
+        # self.logger.info(f'client.restart: {client.restart()}')
 
     def exec_dask_direct(self, client, pipe_e, worker=None):
         # TODO: Create zip file of pipeline project
@@ -179,11 +186,16 @@ class PipeEngine(pipe_model.PipeEngine):
         # TODO: Install extra pip packages for worker
         pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
         self.logger.info('pp_path: {}'.format(pp_path))
-        packed_pp_path = self.file_man.get_packed_pipe_path(f'{os.path.basename(pp_path)}.zip')
+        timestamp = datetime.now().strftime("%m%d%Y%H%M%S")
+        packed_pp_path = self.file_man.get_packed_pipe_path(
+            f'{os.path.basename(pp_path)}.zip', timestamp
+        )
         self.logger.info('packed_pp_path: {}'.format(packed_pp_path))
-        exec_utils.zipdir(pp_path, packed_pp_path)
+        exec_utils.zipdir(pp_path, packed_pp_path, timestamp)
         self.logger.info(f'Upload file:{client.upload_file(packed_pp_path)}')
-        import_name = exec_utils.get_import_name_by_script(pipe_e.script.name)
+        import_name = exec_utils.get_import_name_by_script(
+            pipe_e.script.name, timestamp)
+        self.logger.info(f'import_name:{import_name}')
         fut = client.submit(exec_utils.exec_dyn_class, pipe_e.idx, 
             import_name, workers=worker
         )
@@ -380,9 +392,6 @@ def gen_run_cmd(program, pipe_e, lostconfig):
 
 def exec_script_in_subprocess(pipe_element_id):
     try:
-        # Collect context information for celery task
-        # logger = get_task_logger(__name__)
-        print('Hello')
         lostconfig = LOSTConfig()
         dbm = DBMan(lostconfig)
         pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
