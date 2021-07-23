@@ -84,10 +84,9 @@ class DaskSessionMan(object):
             return client
 
     def shutdown_cluster(self, user):
-        if user in self.session:
+        if _user_key(user) in self.session:
             self.session[_user_key(user)]['client'].shutdown()
-            self.session.pop(_user_key(user))
-        return
+            return self.session.pop(_user_key(user))
 
     def read_fs_img(self, user, fs, img_path):
         client = self.get_dask_client(user)
