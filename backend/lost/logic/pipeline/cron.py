@@ -25,6 +25,7 @@ from lostconfig import LOSTConfig
 from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 from lost.logic import email
 from lost.logic.dask_session import ds_man
+from lost.logic.pipeline import exec_utils
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig, client, logger_name=''):
         '''
@@ -157,6 +158,49 @@ class PipeEngine(pipe_model.PipeEngine):
         self.logger.warning('No suitable env to execute script: {}'.format(pipe_e.script.path))
         return None 
 
+    def exec_dask_direct(self, client, pipe_e, worker=None):
+        # TODO: Create zip file of pipeline project
+        # TODO: Upload zip file to worker
+        # TODO: Install extra pip packages for worker
+        # client.restart()
+        pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
+        self.logger.info('pp_path: {}'.format(pp_path))
+        packed_pp_path = self.file_man.get_packed_pipe_path(f'{os.path.basename(pp_path)}.zip')
+        self.logger.info('packed_pp_path: {}'.format(packed_pp_path))
+        exec_utils.zipdir(pp_path, packed_pp_path)
+        # import sys
+        # sys.path.append(pp_path)
+        self.logger.info(f'Upload file:{client.upload_file(packed_pp_path)}')
+        import_name = exec_utils.get_import_name_by_script(pipe_e.script)
+        client.submit(exec_utils.exec_dyn_class, pipe_e.idx, 
+            import_name, workers=worker
+        )
+
+    def start_script(self,pipe_e):
+        if self.client is not None: # Workermanagement == static
+            env = self.select_env_for_script(pipe_e)
+            if env is None:
+                return
+            # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
+            worker = env
+            client = self.client
+        else:
+            # If client is None, try to get client form dask_session
+            user = self.dbm.get_user_by_id(self.pipe.manager_id)
+            client = ds_man.get_dask_client(user)
+            ds_man.refresh_user_session(user)
+            self.logger.info('Process script with dask client: {}'.format(client))
+            self.logger.info('dask_session: {}'.format(ds_man.session))
+            # logger.info('pipe.manager_id: {}'.format(p.manager_id))
+            # logger.info('pipe.name: {}'.format(p.name))
+            # logger.info('pipe.group_id: {}'.format(p.group_id))
+            worker = None
+            # client.submit(exec_script_in_subprocess, pipe_e.idx)
+        if self.lostconfig.script_execution == 'subprocess':
+            client.submit(exec_script_in_subprocess, pipe_e.idx, workers=worker)
+        else:
+            self.exec_dask_direct(client, pipe_e, worker)
+
     def process_pipe_element(self):
         pipe_e = self.get_next_element()
         while (pipe_e is not None):
@@ -170,24 +214,7 @@ class PipeEngine(pipe_model.PipeEngine):
                     #     self.make_debug_session(pipe_e)
                     # else:
                     if pipe_e.state == state.PipeElement.PENDING:
-                        if self.client is not None:
-                            env = self.select_env_for_script(pipe_e)
-                            if env is None:
-                                return
-                            # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
-                            self.client.submit(exec_script, pipe_e.idx, workers=env)
-                        else:
-                            # If client is no, try to get client form dask_session
-                            user = self.dbm.get_user_by_id(self.pipe.manager_id)
-                            client = ds_man.get_dask_client(user)
-                            ds_man.refresh_user_session(user)
-                            self.logger.info('Process script with dask client: {}'.format(client))
-                            self.logger.info('dask_session: {}'.format(ds_man.session))
-                            # logger.info('pipe.manager_id: {}'.format(p.manager_id))
-                            # logger.info('pipe.name: {}'.format(p.name))
-                            # logger.info('pipe.group_id: {}'.format(p.group_id))
-                            client.submit(exec_script, pipe_e.idx)
-
+                        self.start_script(pipe_e)
                         pipe = pipe_e.pipe
                         self.logger.info('{} ({}): Excuting script: {}'.format(pipe.name, 
                             pipe.idx, pipe_e.script.path))
@@ -337,8 +364,8 @@ def gen_run_cmd(program, pipe_e, lostconfig):
     cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
     return cmd
 
-# @task
-def exec_script(pipe_element_id):
+
+def exec_script_in_subprocess(pipe_element_id):
     try:
         # Collect context information for celery task
         # logger = get_task_logger(__name__)

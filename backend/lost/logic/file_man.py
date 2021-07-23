@@ -22,6 +22,7 @@ MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
 PIPE_ROOT_PATH = DATA_ROOT_PATH + "pipes/"
 INSTANCE_ROOT_PATH = DATA_ROOT_PATH + "instance/"
 DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
+PACKED_PIPE_ROOT_PATH = DATA_ROOT_PATH + "packed_pipes/"
 SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
@@ -90,6 +91,17 @@ class AppFileMan(object):
             return out_path
         else:
             return in_path
+    
+    def get_packed_pipe_path(self, file_name):
+        base_path = join(self.lostconfig.app_path, PACKED_PIPE_ROOT_PATH)
+        if not os.path.exists(base_path):
+            os.makedirs(base_path, exist_ok=True)
+        return join(base_path, file_name)
+
+    def get_pipe_project_path(self, scr):
+        pp_name = scr.name.split('.')[0]
+        return os.path.join(self.lostconfig.app_path, PIPE_ROOT_PATH, pp_name)
+
 
     def get_debug_path(self, pipe_element):
         '''Create the instance path for a :class:`lost.db.models.PipeElement`
