@@ -20,8 +20,8 @@ def import_by_string(full_name):
 def exec_dyn_class(idx, class_name):
     my_class = import_by_string(class_name)
     instance = my_class(idx)
-    instance._run()
+    return instance._run()
 
-def get_import_name_by_script(scr):
-    mod_name = os.path.splitext(scr.name)[0]
+def get_import_name_by_script(script_name):
+    mod_name = os.path.splitext(script_name)[0]
     return f'{mod_name}.LostScript'

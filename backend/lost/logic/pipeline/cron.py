@@ -26,6 +26,7 @@ from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 from lost.logic import email
 from lost.logic.dask_session import ds_man
 from lost.logic.pipeline import exec_utils
+
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig, client, logger_name=''):
         '''
@@ -158,23 +159,35 @@ class PipeEngine(pipe_model.PipeEngine):
         self.logger.warning('No suitable env to execute script: {}'.format(pipe_e.script.path))
         return None 
 
+    def dask_done_callback(self, fut):
+        self.logger.info(f'fut.done: {fut.done()}')
+        self.logger.info(f'fut.cancelled: {fut.cancelled()}')
+        exc = fut.exception()
+        if exc is None:
+            self.logger.info(fut.result())
+        else:
+            self.logger.info(f'exception:\n{fut.exception()}')
+            self.logger.error('traceback:\n{}'.format(
+                ''.join(
+                    [f'{x}' for x in traceback.format_tb(fut.traceback())]
+                )
+            ))
+
     def exec_dask_direct(self, client, pipe_e, worker=None):
         # TODO: Create zip file of pipeline project
         # TODO: Upload zip file to worker
         # TODO: Install extra pip packages for worker
-        # client.restart()
         pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
         self.logger.info('pp_path: {}'.format(pp_path))
         packed_pp_path = self.file_man.get_packed_pipe_path(f'{os.path.basename(pp_path)}.zip')
         self.logger.info('packed_pp_path: {}'.format(packed_pp_path))
         exec_utils.zipdir(pp_path, packed_pp_path)
-        # import sys
-        # sys.path.append(pp_path)
         self.logger.info(f'Upload file:{client.upload_file(packed_pp_path)}')
-        import_name = exec_utils.get_import_name_by_script(pipe_e.script)
-        client.submit(exec_utils.exec_dyn_class, pipe_e.idx, 
+        import_name = exec_utils.get_import_name_by_script(pipe_e.script.name)
+        fut = client.submit(exec_utils.exec_dyn_class, pipe_e.idx, 
             import_name, workers=worker
         )
+        fut.add_done_callback(self.dask_done_callback)
 
     def start_script(self,pipe_e):
         if self.client is not None: # Workermanagement == static
@@ -197,7 +210,8 @@ class PipeEngine(pipe_model.PipeEngine):
             worker = None
             # client.submit(exec_script_in_subprocess, pipe_e.idx)
         if self.lostconfig.script_execution == 'subprocess':
-            client.submit(exec_script_in_subprocess, pipe_e.idx, workers=worker)
+            fut = client.submit(exec_script_in_subprocess, pipe_e.idx, workers=worker)
+            fut.add_done_callback(self.dask_done_callback)
         else:
             self.exec_dask_direct(client, pipe_e, worker)
 
@@ -216,8 +230,8 @@ class PipeEngine(pipe_model.PipeEngine):
                     if pipe_e.state == state.PipeElement.PENDING:
                         self.start_script(pipe_e)
                         pipe = pipe_e.pipe
-                        self.logger.info('{} ({}): Excuting script: {}'.format(pipe.name, 
-                            pipe.idx, pipe_e.script.path))
+                        self.logger.info('PipeElementID: {} Excuting script: {}'.format(pipe_e.idx, 
+                            pipe_e.script.name))
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
                     update_anno_task(self.dbm, pipe_e.anno_task.idx)
@@ -364,7 +378,6 @@ def gen_run_cmd(program, pipe_e, lostconfig):
     cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
     return cmd
 
-
 def exec_script_in_subprocess(pipe_element_id):
     try:
         # Collect context information for celery task
@@ -379,7 +392,6 @@ def exec_script_in_subprocess(pipe_element_id):
             if not worker.enough_resources(pipe_e.script):
                 # logger.warning('Not enough resources! Rejected {} (PipeElement ID {})'.format(pipe_e.script.path, pipe_e.idx))
                 raise Exception('Not enough resources')
-                return
         pipe_e.state = state.PipeElement.IN_PROGRESS
         dbm.save_obj(pipe_e)
         file_man = AppFileMan(lostconfig)

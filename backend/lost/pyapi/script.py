@@ -78,13 +78,16 @@ class Script(pe_base.Element):
         # If pe_id is None we have a normal script
         # If pe_id is not None a JupyterNotebook uses this script
         if pe_id is None:
-            self._run()
+            return self._run()
 
     def _run(self):
         try:
             self.main()
             self.i_am_done()
+            success = 'PipeElementID: {}, Successfully executed script: {}'.format(
+                self._pipe_element.idx, self._pipe_element.script.name)
             self._dbm.close_session()
+            return success 
         except:
             err_msg = str(datetime.datetime.now()) + '\n'
             err_msg += traceback.format_exc()
