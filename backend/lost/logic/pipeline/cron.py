@@ -274,7 +274,7 @@ class PipeEngine(pipe_model.PipeEngine):
         if self.client is None:
             user = self.dbm.get_user_by_id(self.pipe.manager_id)
             ds_man.refresh_user_session(user)
-            self.logger.info('Refreshed dask user session for user: {}'.format(user.idx))
+            # self.logger.info('Refreshed dask user session for user: {}'.format(user.idx))
 
     def process_pipeline(self):
         try:
