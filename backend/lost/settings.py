@@ -34,5 +34,16 @@ CORS_HEADERS = 'Content-Type'
 
 DATA_URL = 'data/'
 
-CELERY_BROKER_URL = 'amqp://'+LOST_CONFIG.rabbitmq_ip+':'+LOST_CONFIG.rabbitmq_port
-CELERY_RESULT_BACKEND = 'amqp://'+LOST_CONFIG.rabbitmq_ip+':'+LOST_CONFIG.rabbitmq_port
+url = 'amqp://'
+
+# Allow username/password protected connexion
+if LOST_CONFIG.rabbitmq_user is not None:
+    if LOST_CONFIG.rabbitmq_password is not None:
+        url += LOST_CONFIG.rabbitmq_user + ":" + LOST_CONFIG.rabbitmq_password
+    else:
+        url += LOST_CONFIG.rabbitmq_user
+    url += "@"
+url += LOST_CONFIG.rabbitmq_ip + ':' + LOST_CONFIG.rabbitmq_port
+
+CELERY_BROKER_URL = url
+CELERY_RESULT_BACKEND = url
