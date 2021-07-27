@@ -52,6 +52,20 @@ def get_default_script_envs(script_path):
     except Exception:
         logging.error(traceback.format_exc())
 
+def get_extra_pip(script_path):
+    try:
+        exec_list = parse_script_constants(script_path, 'EXTRA_PIP', 
+                                          bracket_type='[')
+        if exec_list is None:
+            logging.warning('Script has no EXTRA_PIP: {}!'.format(script_path))
+            return []
+        else:
+            envs = [e.lower() for e in exec_list]
+            logging.info('Found EXTRA_PIP: {}'.format(envs))
+            return envs
+    except Exception:
+        logging.error(traceback.format_exc())
+
 def get_default_script_resources(script_path):
     try:
         res_list = parse_script_constants(script_path, 'RESOURCES', 
