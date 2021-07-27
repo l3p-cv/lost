@@ -60,9 +60,42 @@ def get_extra_pip(script_path):
             logging.warning('Script has no EXTRA_PIP: {}!'.format(script_path))
             return []
         else:
-            envs = [e.lower() for e in exec_list]
+            # envs = [e.lower() for e in exec_list]
+            envs = exec_list
             logging.info('Found EXTRA_PIP: {}'.format(envs))
             return envs
+    except Exception:
+        logging.error(traceback.format_exc())
+
+def get_extra_conda(script_path):
+    try:
+        exec_list = parse_script_constants(script_path, 'EXTRA_CONDA', 
+                                          bracket_type='[')
+        if exec_list is None:
+            logging.warning('Script has no EXTRA_PIP: {}!'.format(script_path))
+            return []
+        else:
+            # envs = [e.lower() for e in exec_list]
+            envs = exec_list
+            logging.info('Found EXTRA_PIP: {}'.format(envs))
+            return envs
+    except Exception:
+        logging.error(traceback.format_exc())
+
+def get_script_args(script_path, arg_name, bracket_type='[', to_lower=True):
+    try:
+        arg_list = parse_script_constants(script_path, arg_name, 
+                                          bracket_type=bracket_type)
+        if arg_list is None:
+            logging.warning('Script has no {}: {}!'.format(arg_name, script_path))
+            return []
+        else:
+            if to_lower:
+                args = [e.lower() for e in arg_list]
+            else:
+                args = arg_list
+            logging.info('Found {}: {}'.format(arg_name, args))
+            return args
     except Exception:
         logging.error(traceback.format_exc())
 

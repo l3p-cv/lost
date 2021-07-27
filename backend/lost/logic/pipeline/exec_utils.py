@@ -51,7 +51,7 @@ def import_by_string(full_name):
 def exec_dyn_class(idx, class_name):
     my_class = import_by_string(class_name)
     instance = my_class(idx)
-    return instance._run()
+    return instance._run(ret_success=True)
 
 def get_import_name_by_script(script_name, timestamp=None):
     mod_name = os.path.splitext(script_name)[0]

@@ -88,6 +88,9 @@ class LOSTConfig(object):
         self.worker_management = ge('LOST_WORKER_MANAGEMENT','static')
         # Can be *subprocess* or *dask_direct*
         self.script_execution = ge('LOST_SCRIPT_EXECUTION', 'subprocess')
+        
+        self.allow_extra_pip = ge('LOST_ALLOW_EXTRA_PIP', True)
+        self.allow_extra_conda = ge('LOST_ALLOW_EXTRA_CONDA', True)
 
         if self.worker_management == 'dynamic':
             self.DaskCluster = import_by_string(

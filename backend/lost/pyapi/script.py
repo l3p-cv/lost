@@ -80,14 +80,15 @@ class Script(pe_base.Element):
         if pe_id is None:
             return self._run()
 
-    def _run(self):
+    def _run(self, ret_success=False):
         try:
             self.main()
             self.i_am_done()
             success = 'PipeElementID: {}, Successfully executed script: {}'.format(
                 self._pipe_element.idx, self._pipe_element.script.name)
             self._dbm.close_session()
-            return success 
+            if ret_success:
+                return success
         except:
             err_msg = str(datetime.datetime.now()) + '\n'
             err_msg += traceback.format_exc()

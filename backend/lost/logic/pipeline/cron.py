@@ -27,6 +27,19 @@ from lost.logic import email
 from lost.logic.dask_session import ds_man, ppp_man
 from lost.logic.pipeline import exec_utils
 
+def gen_extra_install_cmd(extra_packages, lostconfig):
+    def cmd(install_cmd, packages):
+        return f'{install_cmd} {packages}'
+    extra = json.loads(extra_packages)
+    pip_cmd = None
+    if lostconfig.allow_extra_pip:
+        if len(extra['pip']) > 1:
+            pip_cmd = cmd('pip install', extra['pip'])
+    conda_cmd = None
+    if lostconfig.allow_extra_conda:
+        if len(extra['conda']) > 1:
+            conda_cmd = cmd('conda install', extra['conda'])
+    return pip_cmd, conda_cmd
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig, client, logger_name=''):
         '''
@@ -180,9 +193,31 @@ class PipeEngine(pipe_model.PipeEngine):
         # self.logger.info(f'shutdown cluster: {ds_man.shutdown_cluster(User(1))}')
         # self.logger.info(f'client.restart: {client.restart()}')
 
+    def _install_extra_packages(self, client, packages):
+        def install(cmd):
+            import subprocess
+            output = subprocess.check_output(f'{cmd}',stderr=subprocess.STDOUT, shell=True)
+            return output
+            # import os
+            # os.system(f'{install_cmd} {packages}')
+        pip_cmd, conda_cmd = gen_extra_install_cmd(packages, self.lostconfig)
+        if pip_cmd is not None:
+            self.logger.info(f'Start install cmd: {pip_cmd}')
+            self.logger.info(client.run(install, pip_cmd))
+            self.logger.info(f'Install finished: {pip_cmd}')
+        if conda_cmd is not None:
+            self.logger.info(f'Start install cmd: {conda_cmd}')
+            self.logger.info(client.run(install, conda_cmd))
+            self.logger.info(f'Install finished: {conda_cmd}')
+
     def exec_dask_direct(self, client, pipe_e, worker=None):
-        # TODO: Upload zip file to worker
-        # TODO: Install extra pip packages for worker
+        scr = pipe_e.script
+        self._install_extra_packages(client, scr.extra_packages)
+        # extra_packages = json.loads(scr.extra_packages)
+        # if self.lostconfig.allow_extra_pip:
+        #     self._install_extra_packages(client, 'pip install', extra_packages['pip'])
+        # if self.lostconfig.allow_extra_conda:
+        #     self._install_extra_packages(client, 'conda install', extra_packages['conda'])
         pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
         # self.logger.info('pp_path: {}'.format(pp_path))
         # timestamp = datetime.now().strftime("%m%d%Y%H%M%S")
@@ -388,8 +423,14 @@ class PipeEngine(pipe_model.PipeEngine):
 
 def gen_run_cmd(program, pipe_e, lostconfig):
     # script = self.dbm.get_script(pipe_e.script_id)
-    script_path = os.path.join(lostconfig.app_path, pipe_e.script.path)
     cmd = lostconfig.py3_init + "\n"
+    # extra_packages = json.loads(pipe_e.script.extra_packages)
+    pip_cmd, conda_cmd = gen_extra_install_cmd(pipe_e.script.extra_packages, lostconfig)
+    if pip_cmd is not None:
+        cmd += pip_cmd + '\n'
+    if conda_cmd is not None:
+        cmd += conda_cmd +'\n'
+    script_path = os.path.join(lostconfig.app_path, pipe_e.script.path)
     cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
     return cmd
 

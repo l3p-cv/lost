@@ -11,6 +11,7 @@ import importlib
 from lost.logic.script import get_default_script_arguments
 from lost.logic.script import get_default_script_envs
 from lost.logic.script import get_default_script_resources
+from lost.logic.script import get_script_args
 from lost.logic.pipeline import cron
 from distutils import dir_util
 from os.path import join
@@ -33,6 +34,8 @@ def parse_script(element):
                         description=element['description'])
     return script
 
+def _dump_extra_packages(extra_pip, extra_conda):
+    return json.dumps({'pip': extra_pip, 'conda': extra_conda})
 
 class PipeImporter(object):
 
@@ -186,6 +189,12 @@ class PipeImporter(object):
                     script_arguments = get_default_script_arguments(script.path)
                     script_envs = get_default_script_envs(script.path)
                     script_resources = get_default_script_resources(script.path)
+                    extra_pip = get_script_args(script.path, 'EXTRA_PIP', to_lower=False)
+                    extra_pip = ' '.join(extra_pip)
+                    if extra_pip is None: extra_pip=''
+                    extra_conda = get_script_args(script.path, 'EXTRA_CONDA', to_lower=False)
+                    extra_conda = ' '.join(extra_conda)
+                    if extra_conda is None: extra_conda=''
                     if 'arguments' in element_j:
                         for arg in element_j['arguments']:
                             if arg not in script_arguments:
@@ -203,6 +212,7 @@ class PipeImporter(object):
                         script.arguments = json.dumps(script_arguments)
                         script.envs = json.dumps(script_envs)
                         script.resources = json.dumps(script_resources)
+                        script.extra_packages = _dump_extra_packages(extra_pip, extra_conda)
                         self.dbm.save_obj(script)
                         logging.info("Added script to database\n")
                     else:
@@ -213,6 +223,7 @@ class PipeImporter(object):
                         db_script.envs = json.dumps(script_envs)
                         db_script.description = script.description
                         db_script.resources = json.dumps(script_resources)
+                        db_script.extra_packages = _dump_extra_packages(extra_pip, extra_conda)
                         self.dbm.save_obj(db_script)
                         logging.warning((str(db_script.idx), db_script.name, db_script.path))
                 # self._fix_sia_config(pe_j)
