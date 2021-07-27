@@ -13,12 +13,13 @@ import fileDownload from 'js-file-download'
 import { useHistory } from 'react-router-dom'
 import actions from '../../../../../../actions'
 
-function handleSiaRewiewClick(props){
+function handleSiaRewiewClick(props, callback){
     props.siaReviewSetElement(props.id)
     props.chooseAnnoTask(
         props.annoTask.id, 
+        callback
         // createHashHistory().push('/sia-review')
-        () => {}
+        // () => {}
     )
     // history.push('/sia-review')
 }
@@ -43,10 +44,10 @@ const AnnoTaskModal =  (props)=>{
     const users = useSelector(state=>state.user.users)
     const groups = useSelector(state=>state.group.groups)
     const [newUserIdx, setNewUserIdx]  = useState()
+    const hist = useHistory()
     useEffect(()=>{
         dispatch(actions.getUsers())
         dispatch(actions.getGroups())
-        hist = useHistory()
     }, [])
     const dataTableData = [
         ...users.map(user=>({
@@ -140,7 +141,7 @@ const AnnoTaskModal =  (props)=>{
                 <Button color="success" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
                     onClick={e => handleInstantAnnoDownload(props.id)}>Download Annotations</Button>
                 <Button color="warning" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
-                    onClick={e => handleSiaRewiewClick(props)}>Review Annotations</Button>
+                    onClick={e => handleSiaRewiewClick(props, () => {hist.push('/sia-review')})}>Review Annotations</Button>
                 <Button color="danger" style={{ marginLeft:10, marginTop:20, marginBottom: '1rem' }}
                     onClick={e => handleForceAnnotationRelease(props)}>Force Annotation Release</Button>
 
