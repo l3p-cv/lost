@@ -1,4 +1,5 @@
 import os
+import hashlib
 import importlib
 import zipfile
     
@@ -16,6 +17,31 @@ def zipdir(path, out_path, timestamp=None):
                                         os.path.join(path, '..'))
             zipf.write(src, dst)
     zipf.close()
+
+# def module_to_bytes(path, ignore=['__pycache__']):
+#     # zipf is zipfile handle
+#     cont = b''
+#     for root, dirs, files in os.walk(path):
+#         for file in files:
+#             for i in ignore:
+#                 src = os.path.join(root, file)
+#                 if i not in src:
+#                     with open(src, 'rb') as f:
+#                         cont += f.read()
+#     return cont
+
+def get_module_hash(path, ignore=['__pycache__']):
+    # zipf is zipfile handle
+    sha = hashlib.sha256()
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            for i in ignore:
+                src = os.path.join(root, file)
+                if i not in src:
+                    with open(src, 'rb') as f:
+                        sha.update(f.read())
+                        # cont += f.read()
+    return sha.hexdigest()
 
 def import_by_string(full_name):
     module_name, unit_name = full_name.rsplit('.', 1)

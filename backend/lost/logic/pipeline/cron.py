@@ -24,7 +24,7 @@ from lost.db.access import DBMan
 from lostconfig import LOSTConfig
 from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 from lost.logic import email
-from lost.logic.dask_session import ds_man
+from lost.logic.dask_session import ds_man, ppp_man
 from lost.logic.pipeline import exec_utils
 
 class PipeEngine(pipe_model.PipeEngine):
@@ -181,21 +181,24 @@ class PipeEngine(pipe_model.PipeEngine):
         # self.logger.info(f'client.restart: {client.restart()}')
 
     def exec_dask_direct(self, client, pipe_e, worker=None):
-        # TODO: Create zip file of pipeline project
         # TODO: Upload zip file to worker
         # TODO: Install extra pip packages for worker
         pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
-        self.logger.info('pp_path: {}'.format(pp_path))
-        timestamp = datetime.now().strftime("%m%d%Y%H%M%S")
-        packed_pp_path = self.file_man.get_packed_pipe_path(
-            f'{os.path.basename(pp_path)}.zip', timestamp
+        # self.logger.info('pp_path: {}'.format(pp_path))
+        # timestamp = datetime.now().strftime("%m%d%Y%H%M%S")
+        # packed_pp_path = self.file_man.get_packed_pipe_path(
+        #     f'{os.path.basename(pp_path)}.zip', timestamp
+        # )
+        # self.logger.info('packed_pp_path: {}'.format(packed_pp_path))
+        # if ppp_man.should_i_update(client, pp_path):
+        #     exec_utils.zipdir(pp_path, packed_pp_path, timestamp)
+        #     self.logger.info(f'Upload file:{client.upload_file(packed_pp_path)}')
+        # import_name = exec_utils.get_import_name_by_script(
+        #     pipe_e.script.name, timestamp)
+        # self.logger.info(f'import_name:{import_name}')
+        import_name = ppp_man.prepare_import(
+            client, pp_path, pipe_e.script.name, self.logger
         )
-        self.logger.info('packed_pp_path: {}'.format(packed_pp_path))
-        exec_utils.zipdir(pp_path, packed_pp_path, timestamp)
-        self.logger.info(f'Upload file:{client.upload_file(packed_pp_path)}')
-        import_name = exec_utils.get_import_name_by_script(
-            pipe_e.script.name, timestamp)
-        self.logger.info(f'import_name:{import_name}')
         fut = client.submit(exec_utils.exec_dyn_class, pipe_e.idx, 
             import_name, workers=worker
         )

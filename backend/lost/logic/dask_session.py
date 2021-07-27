@@ -1,8 +1,10 @@
+import os
 from datetime import date, datetime, timedelta
+from lost.logic.pipeline import exec_utils
 import logging
 from time import sleep
 # from lost.lost_session import lost_session
-from lost.logic.file_man import FileMan
+from lost.logic.file_man import AppFileMan, FileMan
 import lostconfig
 
 config = lostconfig.LOSTConfig()
@@ -94,5 +96,59 @@ class DaskSessionMan(object):
         img = client.submit(_read_fs_img, fs, img_path)
         return img.result()
 
+class PipeProjectPackageMan(object):
+    '''Remember which pipe project versions are present for which client'''
 
+    def __init__(self):
+        self.mem = dict()
+        self.fm = AppFileMan(config)
+    
+    def _get_import_and_update(self, client, pp_path, script_import_name, pp_hash=None):
+        client_id = id(client)
+        if pp_hash is None:
+            pp_hash = exec_utils.get_module_hash(pp_path)
+        if client_id in self.mem:
+            if pp_path in self.mem[client_id]:
+                if pp_hash == self.mem[client_id][pp_path]['hash']:
+                    return False, self.mem[client_id][pp_path]['import']
+                else:
+                    self.mem[client_id][pp_path]['hash'] = pp_hash
+                    self.mem[client_id][pp_path]['import'] = script_import_name
+                    return True, script_import_name
+            else:
+                self.mem[client_id][pp_path] = dict()
+                self.mem[client_id][pp_path]['hash'] = pp_hash
+                self.mem[client_id][pp_path]['import'] = script_import_name
+                return True, script_import_name 
+        else:
+            self.mem[client_id] = {pp_path: dict()}
+            self.mem[client_id][pp_path]['hash'] = pp_hash
+            self.mem[client_id][pp_path]['import'] = script_import_name
+            return True, script_import_name
+    
+    def prepare_import(self, client, pp_path, script_name, logger=None):
+        if logger is not None:
+            logger.info('pp_path: {}'.format(pp_path))
+        timestamp = datetime.now().strftime("%m%d%Y%H%M%S")
+        packed_pp_path = self.fm.get_packed_pipe_path(
+            f'{os.path.basename(pp_path)}.zip', timestamp
+        )
+        if logger is not None:
+            logger.info('packed_pp_path: {}'.format(packed_pp_path))
+        new_import_name = exec_utils.get_import_name_by_script(
+            script_name, timestamp)
+        update, import_name = self._get_import_and_update(
+            client, pp_path, new_import_name
+        )
+        if update:
+            exec_utils.zipdir(pp_path, packed_pp_path, timestamp)
+            upload_ret = client.upload_file(packed_pp_path)
+            if logger is not None:
+                logger.info(f'Upload file:{upload_ret}')
+        if logger is not None:
+            logger.info(f'import_name:{import_name}')
+        return import_name
+
+
+ppp_man = PipeProjectPackageMan()
 ds_man = DaskSessionMan()
