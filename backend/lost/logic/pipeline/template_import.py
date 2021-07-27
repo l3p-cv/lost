@@ -11,6 +11,7 @@ import importlib
 from lost.logic.script import get_default_script_arguments
 from lost.logic.script import get_default_script_envs
 from lost.logic.script import get_default_script_resources
+from lost.logic.script import get_script_args
 from lost.logic.pipeline import cron
 from distutils import dir_util
 from os.path import join
@@ -33,6 +34,8 @@ def parse_script(element):
                         description=element['description'])
     return script
 
+def _dump_extra_packages(extra_pip, extra_conda):
+    return json.dumps({'pip': extra_pip, 'conda': extra_conda})
 
 class PipeImporter(object):
 
@@ -72,77 +75,76 @@ class PipeImporter(object):
     def _namespaced_name(self, name):
         return '{}.{}'.format(self.namespace, name)
 
-    def update_pipe_project(self):
+    # def update_pipe_project(self):
 
-        if os.path.exists(self.dst_pipe_template_path):
-            logging.info('\n\n++++++++++++++++++++++\n\n')
-            for pipe in self.pipes:
-                if not self.checker.check(pipe):
-                    logging.error('Pipeline was not updated!')
-                    return False
-            for pipe in self.pipes:
-                self.update_pipe(pipe)
-            dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-            
-            logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
-                                                    self.dst_pipe_template_path))
-        else:
-            logging.warning(('Cannot update. No such pipe project: *{}*. '
-                            'Maybe you want to import a pipeline instead ' 
-                            'of updating it.').format(self.namespace))
+    #     if os.path.exists(self.dst_pipe_template_path):
+    #         logging.info('\n\n++++++++++++++++++++++\n\n')
+    #         for pipe in self.pipes:
+    #             if not self.checker.check(pipe):
+    #                 logging.error('Pipeline was not updated!')
+    #                 return False
+    #         for pipe in self.pipes:
+    #             self.update_pipe(pipe)
+    #         # dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
+    #         # logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
+    #         #                                         self.dst_pipe_template_path))
+    #     else:
+    #         logging.warning(('Cannot update. No such pipe project: *{}*. '
+    #                         'Maybe you want to import a pipeline instead ' 
+    #                         'of updating it.').format(self.namespace))
     
-    def update_pipe(self, pipe):
-        for db_pipe in self.dbm.get_all_pipeline_templates():
-            db_json = json.loads(db_pipe.json_template)
-            # update pipeline if already present in db
-            if db_json['name'].lower() == pipe['name'].lower():
-                # Do everything relative from pipeline definition file path.
-                oldwd = os.getcwd()
-                os.chdir(self.src_pipe_template_path)
-                logging.info('Updated pipeline: {}'.format(db_json['name']))           
-                for pe_j in pipe['elements']:
-                    if 'script' in pe_j:
-                        element_j = pe_j['script']
-                        script = parse_script(element_j)
-                        db_script = self.dbm.get_script(name=self._get_script_name(script))
-                        script_arguments = get_default_script_arguments(script.path)
-                        script_envs = get_default_script_envs(script.path)
-                        script_resources = get_default_script_resources(script.path)
-                        if 'arguments' in element_j:
-                            for arg in element_j['arguments']:
-                                if arg not in script_arguments:
-                                    logging.error("Invalid argument >> {} << in pipeline definition json".format(arg))
-                                    valid_args = ""
-                                    for v_arg in script_arguments:
-                                        valid_args += ">> {} <<\n".format(v_arg)
-                                    logging.error("Valid arguments are: \n{}".format(valid_args[:-1]))
-                                    raise Exception('Invalid arguments. Start Cleanup')
-                        if db_script is None:
-                            self.dbm.add(script)
-                            self.dbm.commit()
-                            script_out_path = os.path.join(self.dst_pipe_template_path, script.path)
-                            script.path = self.file_man.make_path_relative(script_out_path)
-                            script.arguments = json.dumps(script_arguments)
-                            script.envs = json.dumps(script_envs)
-                            script.resources = json.dumps(script_resources)
-                            self.dbm.save_obj(script)
-                            logging.info("Added script to database")
-                        else: 
-                            script_out_path = os.path.join(self.dst_pipe_template_path, script.path)
-                            db_script.path = self.file_man.make_path_relative(script_out_path)
-                            db_script.arguments = json.dumps(script_arguments)
-                            db_script.envs = json.dumps(script_envs)
-                            db_script.description = script.description
-                            db_script.resources = json.dumps(script_resources)
-                            self.dbm.save_obj(db_script)
-                            logging.info('Updated script: {}'.format(db_script.name))
-                    # self._fix_sia_config(pe_j)
-                db_pipe.json_template = json.dumps(pipe)
-                self.dbm.save_obj(db_pipe)
-                os.chdir(oldwd) # Change dir back to old working directory.                
-                return True
-        # import pipe if not already present in database    
-        self.import_pipe(pipe)
+    # def update_pipe(self, pipe):
+    #     for db_pipe in self.dbm.get_all_pipeline_templates():
+    #         db_json = json.loads(db_pipe.json_template)
+    #         # update pipeline if already present in db
+    #         if db_json['name'].lower() == pipe['name'].lower():
+    #             # Do everything relative from pipeline definition file path.
+    #             oldwd = os.getcwd()
+    #             os.chdir(self.src_pipe_template_path)
+    #             logging.info('Updated pipeline: {}'.format(db_json['name']))           
+    #             for pe_j in pipe['elements']:
+    #                 if 'script' in pe_j:
+    #                     element_j = pe_j['script']
+    #                     script = parse_script(element_j)
+    #                     db_script = self.dbm.get_script(name=self._get_script_name(script))
+    #                     script_arguments = get_default_script_arguments(script.path)
+    #                     script_envs = get_default_script_envs(script.path)
+    #                     script_resources = get_default_script_resources(script.path)
+    #                     if 'arguments' in element_j:
+    #                         for arg in element_j['arguments']:
+    #                             if arg not in script_arguments:
+    #                                 logging.error("Invalid argument >> {} << in pipeline definition json".format(arg))
+    #                                 valid_args = ""
+    #                                 for v_arg in script_arguments:
+    #                                     valid_args += ">> {} <<\n".format(v_arg)
+    #                                 logging.error("Valid arguments are: \n{}".format(valid_args[:-1]))
+    #                                 raise Exception('Invalid arguments. Start Cleanup')
+    #                     if db_script is None:
+    #                         self.dbm.add(script)
+    #                         self.dbm.commit()
+    #                         script_out_path = os.path.join(self.src_pipe_template_path, script.path)
+    #                         script.path = self.file_man.make_path_relative(script_out_path)
+    #                         script.arguments = json.dumps(script_arguments)
+    #                         script.envs = json.dumps(script_envs)
+    #                         script.resources = json.dumps(script_resources)
+    #                         self.dbm.save_obj(script)
+    #                         logging.info("Added script to database")
+    #                     else: 
+    #                         script_out_path = os.path.join(self.src_pipe_template_path, script.path)
+    #                         db_script.path = self.file_man.make_path_relative(script_out_path)
+    #                         db_script.arguments = json.dumps(script_arguments)
+    #                         db_script.envs = json.dumps(script_envs)
+    #                         db_script.description = script.description
+    #                         db_script.resources = json.dumps(script_resources)
+    #                         self.dbm.save_obj(db_script)
+    #                         logging.info('Updated script: {}'.format(db_script.name))
+    #                 # self._fix_sia_config(pe_j)
+    #             db_pipe.json_template = json.dumps(pipe)
+    #             self.dbm.save_obj(db_pipe)
+    #             os.chdir(oldwd) # Change dir back to old working directory.                
+    #             return True
+    #     # import pipe if not already present in database    
+    #     self.import_pipe(pipe)
 
     def _get_script_name(self, script):
         return self._namespaced_name(os.path.basename(script.path))
@@ -154,15 +156,15 @@ class PipeImporter(object):
             if not self.checker.check(pipe):
                 logging.error('Wrong pipeline definition! Did not import pipe project!')
                 return False
-        if os.path.exists(self.dst_pipe_template_path):
-            logging.warning('Cannot import pipeline!')
-            logging.warning('Pipe Template Dir already exist: {}'.format(
-                self.dst_pipe_template_path
-            ))
-            return
-        dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-        logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
-                                                    self.dst_pipe_template_path))
+        # if os.path.exists(self.dst_pipe_template_path):
+        #     logging.warning('Cannot import pipeline!')
+        #     logging.warning('Pipe Template Dir already exist: {}'.format(
+        #         self.dst_pipe_template_path
+        #     ))
+        #     return
+        # dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
+        # logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
+        #                                             self.dst_pipe_template_path))
         for pipe in self.pipes:
             self.import_pipe(pipe)
 
@@ -174,11 +176,11 @@ class PipeImporter(object):
             os.chdir(self.src_pipe_template_path)
             for db_pipe in self.dbm.get_all_pipeline_templates():
                 db_json = json.loads(db_pipe.json_template)
-                if db_json['name'].lower() == pipe['name'].lower():
-                    logging.warning("PipeTemplate in database.")
-                    logging.warning("Name of this template is: %s"%(pipe['name'],))
-                    logging.warning("Will not import PipeTemplate.")
-                    return db_pipe.idx
+                # if db_json['name'].lower() == pipe['name'].lower():
+                #     logging.warning("PipeTemplate in database.")
+                #     logging.warning("Name of this template is: %s"%(pipe['name'],))
+                #     logging.warning("Will not import PipeTemplate.")
+                #     return db_pipe.idx
             for pe_j in pipe['elements']:
                 if 'script' in pe_j:
                     element_j = pe_j['script']
@@ -187,6 +189,12 @@ class PipeImporter(object):
                     script_arguments = get_default_script_arguments(script.path)
                     script_envs = get_default_script_envs(script.path)
                     script_resources = get_default_script_resources(script.path)
+                    extra_pip = get_script_args(script.path, 'EXTRA_PIP', to_lower=False)
+                    extra_pip = ' '.join(extra_pip)
+                    if extra_pip is None: extra_pip=''
+                    extra_conda = get_script_args(script.path, 'EXTRA_CONDA', to_lower=False)
+                    extra_conda = ' '.join(extra_conda)
+                    if extra_conda is None: extra_conda=''
                     if 'arguments' in element_j:
                         for arg in element_j['arguments']:
                             if arg not in script_arguments:
@@ -199,15 +207,24 @@ class PipeImporter(object):
                     if db_script is None:
                         self.dbm.add(script)
                         self.dbm.commit()
-                        script_out_path = os.path.join(self.dst_pipe_template_path, script.path)
+                        script_out_path = os.path.join(self.src_pipe_template_path, script.path)
                         script.path = self.file_man.make_path_relative(script_out_path)
                         script.arguments = json.dumps(script_arguments)
                         script.envs = json.dumps(script_envs)
                         script.resources = json.dumps(script_resources)
+                        script.extra_packages = _dump_extra_packages(extra_pip, extra_conda)
                         self.dbm.save_obj(script)
                         logging.info("Added script to database\n")
                     else:
-                        logging.warning("Script is already present in database.\n")
+                        # logging.warning("Script is already present in database.\n")
+                        script_out_path = os.path.join(self.src_pipe_template_path, script.path)
+                        db_script.path = self.file_man.make_path_relative(script_out_path)
+                        db_script.arguments = json.dumps(script_arguments)
+                        db_script.envs = json.dumps(script_envs)
+                        db_script.description = script.description
+                        db_script.resources = json.dumps(script_resources)
+                        db_script.extra_packages = _dump_extra_packages(extra_pip, extra_conda)
+                        self.dbm.save_obj(db_script)
                         logging.warning((str(db_script.idx), db_script.name, db_script.path))
                 # self._fix_sia_config(pe_j)
             pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
@@ -229,18 +246,19 @@ class PipeImporter(object):
             Pipeline folder in LOST filesystem and all related db
             entrys will be deleted.
         '''
-        clean_filesystem = True
+        # clean_filesystem = True
         for pipe in self.pipes:
             if not self.remove_pipeline(pipe):
-                clean_filesystem = False
-        if clean_filesystem:
-            shutil.rmtree(self.dst_pipe_template_path)
-            logging.info('Removed pipeline project from lost filesystem {}'.format(
-                self.dst_pipe_template_path
-            ))
-            logging.info('Whole pipeline project {} was successfull removed'.format(
-                self.namespace
-            ))
+                pass
+                # clean_filesystem = False
+        # if clean_filesystem:
+        #     shutil.rmtree(self.dst_pipe_template_path)
+        #     logging.info('Removed pipeline project from lost filesystem {}'.format(
+        #         self.dst_pipe_template_path
+        #     ))
+        #     logging.info('Whole pipeline project {} was successfull removed'.format(
+        #         self.namespace
+        #     ))
         else:
             logging.info('''Pipeline project {} was not completely removed 
                 since some pipes are still in use'''.format(self.namespace))
@@ -248,7 +266,6 @@ class PipeImporter(object):
     def remove_pipeline(self, pipe):
         '''Remove all related db entrys of a pipeline from lost database.
         '''
-        #TODO: Remove script
         for db_pipe in self.dbm.get_all_pipeline_templates():
             db_json = json.loads(db_pipe.json_template)
             if db_json['name'].lower() == pipe['name'].lower():

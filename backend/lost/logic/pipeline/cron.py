@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 #from py3nvml.py3nvml import *
 import sys
 from lost.db import model, state, dtype
@@ -24,7 +24,22 @@ from lost.db.access import DBMan
 from lostconfig import LOSTConfig
 from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
 from lost.logic import email
-from lost.logic.dask_session import ds_man
+from lost.logic.dask_session import ds_man, ppp_man
+from lost.logic.pipeline import exec_utils
+
+def gen_extra_install_cmd(extra_packages, lostconfig):
+    def cmd(install_cmd, packages):
+        return f'{install_cmd} {packages}'
+    extra = json.loads(extra_packages)
+    pip_cmd = None
+    if lostconfig.allow_extra_pip:
+        if len(extra['pip']) > 1:
+            pip_cmd = cmd('pip install', extra['pip'])
+    conda_cmd = None
+    if lostconfig.allow_extra_conda:
+        if len(extra['conda']) > 1:
+            conda_cmd = cmd('conda install', extra['conda'])
+    return pip_cmd, conda_cmd
 class PipeEngine(pipe_model.PipeEngine):
     def __init__(self, dbm, pipe, lostconfig, client, logger_name=''):
         '''
@@ -157,6 +172,99 @@ class PipeEngine(pipe_model.PipeEngine):
         self.logger.warning('No suitable env to execute script: {}'.format(pipe_e.script.path))
         return None 
 
+    def dask_done_callback(self, fut):
+        self.logger.info(f'fut.done: {fut.done()}')
+        self.logger.info(f'fut.cancelled: {fut.cancelled()}')
+        exc = fut.exception()
+        if exc is None:
+            self.logger.info(fut.result())
+        else:
+            self.logger.info(f'exception:\n{fut.exception()}')
+            self.logger.error('traceback:\n{}'.format(
+                ''.join(
+                    [f'{x}' for x in traceback.format_tb(fut.traceback())]
+                )
+            ))
+        # class User():
+        #     def __init__(self, idx):
+        #         self.idx = idx
+
+        # # client = ds_man.get_dask_client(User(1))
+        # self.logger.info(f'shutdown cluster: {ds_man.shutdown_cluster(User(1))}')
+        # self.logger.info(f'client.restart: {client.restart()}')
+
+    def _install_extra_packages(self, client, packages):
+        def install(cmd):
+            import subprocess
+            output = subprocess.check_output(f'{cmd}',stderr=subprocess.STDOUT, shell=True)
+            return output
+            # import os
+            # os.system(f'{install_cmd} {packages}')
+        pip_cmd, conda_cmd = gen_extra_install_cmd(packages, self.lostconfig)
+        if pip_cmd is not None:
+            self.logger.info(f'Start install cmd: {pip_cmd}')
+            self.logger.info(client.run(install, pip_cmd))
+            self.logger.info(f'Install finished: {pip_cmd}')
+        if conda_cmd is not None:
+            self.logger.info(f'Start install cmd: {conda_cmd}')
+            self.logger.info(client.run(install, conda_cmd))
+            self.logger.info(f'Install finished: {conda_cmd}')
+
+    def exec_dask_direct(self, client, pipe_e, worker=None):
+        scr = pipe_e.script
+        self._install_extra_packages(client, scr.extra_packages)
+        # extra_packages = json.loads(scr.extra_packages)
+        # if self.lostconfig.allow_extra_pip:
+        #     self._install_extra_packages(client, 'pip install', extra_packages['pip'])
+        # if self.lostconfig.allow_extra_conda:
+        #     self._install_extra_packages(client, 'conda install', extra_packages['conda'])
+        pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
+        # self.logger.info('pp_path: {}'.format(pp_path))
+        # timestamp = datetime.now().strftime("%m%d%Y%H%M%S")
+        # packed_pp_path = self.file_man.get_packed_pipe_path(
+        #     f'{os.path.basename(pp_path)}.zip', timestamp
+        # )
+        # self.logger.info('packed_pp_path: {}'.format(packed_pp_path))
+        # if ppp_man.should_i_update(client, pp_path):
+        #     exec_utils.zipdir(pp_path, packed_pp_path, timestamp)
+        #     self.logger.info(f'Upload file:{client.upload_file(packed_pp_path)}')
+        # import_name = exec_utils.get_import_name_by_script(
+        #     pipe_e.script.name, timestamp)
+        # self.logger.info(f'import_name:{import_name}')
+        import_name = ppp_man.prepare_import(
+            client, pp_path, pipe_e.script.name, self.logger
+        )
+        fut = client.submit(exec_utils.exec_dyn_class, pipe_e.idx, 
+            import_name, workers=worker
+        )
+        fut.add_done_callback(self.dask_done_callback)
+
+    def start_script(self,pipe_e):
+        if self.client is not None: # Workermanagement == static
+            env = self.select_env_for_script(pipe_e)
+            if env is None:
+                return
+            # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
+            worker = env
+            client = self.client
+        else:
+            # If client is None, try to get client form dask_session
+            user = self.dbm.get_user_by_id(self.pipe.manager_id)
+            client = ds_man.get_dask_client(user)
+            ds_man.refresh_user_session(user)
+            self.logger.info('Process script with dask client: {}'.format(client))
+            self.logger.info('dask_session: {}'.format(ds_man.session))
+            # logger.info('pipe.manager_id: {}'.format(p.manager_id))
+            # logger.info('pipe.name: {}'.format(p.name))
+            # logger.info('pipe.group_id: {}'.format(p.group_id))
+            worker = None
+            # client.submit(exec_script_in_subprocess, pipe_e.idx)
+        if self.lostconfig.script_execution == 'subprocess':
+            fut = client.submit(exec_script_in_subprocess, pipe_e.idx, workers=worker)
+            fut.add_done_callback(self.dask_done_callback)
+        else:
+            self.exec_dask_direct(client, pipe_e, worker)
+
     def process_pipe_element(self):
         pipe_e = self.get_next_element()
         while (pipe_e is not None):
@@ -170,27 +278,10 @@ class PipeEngine(pipe_model.PipeEngine):
                     #     self.make_debug_session(pipe_e)
                     # else:
                     if pipe_e.state == state.PipeElement.PENDING:
-                        if self.client is not None:
-                            env = self.select_env_for_script(pipe_e)
-                            if env is None:
-                                return
-                            # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
-                            self.client.submit(exec_script, pipe_e.idx, workers=env)
-                        else:
-                            # If client is no, try to get client form dask_session
-                            user = self.dbm.get_user_by_id(self.pipe.manager_id)
-                            client = ds_man.get_dask_client(user)
-                            ds_man.refresh_user_session(user)
-                            self.logger.info('Process script with dask client: {}'.format(client))
-                            self.logger.info('dask_session: {}'.format(ds_man.session))
-                            # logger.info('pipe.manager_id: {}'.format(p.manager_id))
-                            # logger.info('pipe.name: {}'.format(p.name))
-                            # logger.info('pipe.group_id: {}'.format(p.group_id))
-                            client.submit(exec_script, pipe_e.idx)
-
+                        self.start_script(pipe_e)
                         pipe = pipe_e.pipe
-                        self.logger.info('{} ({}): Excuting script: {}'.format(pipe.name, 
-                            pipe.idx, pipe_e.script.path))
+                        self.logger.info('PipeElementID: {} Excuting script: {}'.format(pipe_e.idx, 
+                            pipe_e.script.name))
             elif pipe_e.dtype == dtype.PipeElement.ANNO_TASK:
                 if pipe_e.state == state.PipeElement.PENDING:
                     update_anno_task(self.dbm, pipe_e.anno_task.idx)
@@ -221,7 +312,7 @@ class PipeEngine(pipe_model.PipeEngine):
         if self.client is None:
             user = self.dbm.get_user_by_id(self.pipe.manager_id)
             ds_man.refresh_user_session(user)
-            self.logger.info('Refreshed dask user session for user: {}'.format(user.idx))
+            # self.logger.info('Refreshed dask user session for user: {}'.format(user.idx))
 
     def process_pipeline(self):
         try:
@@ -332,17 +423,19 @@ class PipeEngine(pipe_model.PipeEngine):
 
 def gen_run_cmd(program, pipe_e, lostconfig):
     # script = self.dbm.get_script(pipe_e.script_id)
-    script_path = os.path.join(lostconfig.app_path, pipe_e.script.path)
     cmd = lostconfig.py3_init + "\n"
+    # extra_packages = json.loads(pipe_e.script.extra_packages)
+    pip_cmd, conda_cmd = gen_extra_install_cmd(pipe_e.script.extra_packages, lostconfig)
+    if pip_cmd is not None:
+        cmd += pip_cmd + '\n'
+    if conda_cmd is not None:
+        cmd += conda_cmd +'\n'
+    script_path = os.path.join(lostconfig.app_path, pipe_e.script.path)
     cmd += program + " " + script_path + " --idx " + str(pipe_e.idx) 
     return cmd
 
-# @task
-def exec_script(pipe_element_id):
+def exec_script_in_subprocess(pipe_element_id):
     try:
-        # Collect context information for celery task
-        # logger = get_task_logger(__name__)
-        print('Hello')
         lostconfig = LOSTConfig()
         dbm = DBMan(lostconfig)
         pipe_e = dbm.get_pipe_element(pipe_e_id=pipe_element_id)
@@ -352,7 +445,6 @@ def exec_script(pipe_element_id):
             if not worker.enough_resources(pipe_e.script):
                 # logger.warning('Not enough resources! Rejected {} (PipeElement ID {})'.format(pipe_e.script.path, pipe_e.idx))
                 raise Exception('Not enough resources')
-                return
         pipe_e.state = state.PipeElement.IN_PROGRESS
         dbm.save_obj(pipe_e)
         file_man = AppFileMan(lostconfig)

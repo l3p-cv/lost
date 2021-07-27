@@ -1,13 +1,12 @@
 from lost.pyapi import script
 import os
-import pandas as pd
 
 ENVS = ['lost']
 ARGUMENTS = {'file_name' : { 'value':'annos.csv',
                             'help': 'Name of the file with exported bbox annotations.'}
             }
 
-class ExportCsv(script.Script):
+class LostScript(script.Script):
     '''This Script creates a csv file from image annotations and adds a data_export
     to the output of this script in pipeline.
     '''
@@ -26,4 +25,4 @@ class ExportCsv(script.Script):
         self.outp.add_data_export(file_path=csv_path, fs=fs)
 
 if __name__ == "__main__":
-    my_script = ExportCsv()
+    my_script = LostScript()
