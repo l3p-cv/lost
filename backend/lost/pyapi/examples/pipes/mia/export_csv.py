@@ -7,7 +7,7 @@ ARGUMENTS = {'file_name' : { 'value':'annos.csv',
                             'help': 'Name of the file with exported bbox annotations.'}
             }
 
-class ExportCsv(script.Script):
+class LostScript(script.Script):
     '''This Script creates a csv file from image annotations and adds a data_export
     to the output of this script in pipeline.
     '''
@@ -22,4 +22,4 @@ class ExportCsv(script.Script):
         self.logger.info('Stored export to: {}'.format(csv_path))
         
 if __name__ == "__main__":
-    my_script = ExportCsv()
+    my_script = LostScript()

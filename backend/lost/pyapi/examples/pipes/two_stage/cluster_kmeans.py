@@ -20,7 +20,7 @@ ARGUMENTS = {'n-clusters' : {'value': 20,
             'feat_layer' : {'value': 'avg_pool',
                             'help': 'Layer to extract features from for ResNet50.'}
             }
-class ClusterKMeans(script.Script):
+class LostScript(script.Script):
     '''This Script clusters all annotation from previous stage and requests annotations for each cluster.
 
     For each image in a folder CNN features are extracted. 
@@ -93,4 +93,4 @@ class ClusterKMeans(script.Script):
             self.update_progress(90 + (counter*10/len(img_path_list)))
 
 if __name__ == "__main__":
-    my_script = ClusterKMeans()
+    my_script = LostScript()

@@ -17,7 +17,6 @@ class LostScript(script.Script):
     An imageset is basicly a folder with images.
     '''
     def main(self):
-        # raise Exception('JJ-Test')
         for ds in self.inp.datasources:
             media_path = ds.path
             fs = ds.get_fs()

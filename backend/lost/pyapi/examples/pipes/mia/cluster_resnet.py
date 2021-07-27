@@ -12,7 +12,7 @@ ENVS = ['lost-cv-gpu','lost-cv']
 #Lock all resources of a worker when this script is executed. 
 #This will prevent worker from executing other scripts while this script is executed.
 RESOURCES = ['lock_all'] 
-class ClusterAndAnno(script.Script):
+class LostScript(script.Script):
     '''This Script clusters all images and requests annotations for each cluster.
 
     For each image a class label will be predicted with ResNet50.
@@ -43,4 +43,4 @@ class ClusterAndAnno(script.Script):
                 self.logger.info('Requested annotation for: {} (cluster: {})'.format(img_path, sim_class))
                 self.update_progress(index*100/total)
 if __name__ == "__main__":
-    my_script = ClusterAndAnno()
+    my_script = LostScript()

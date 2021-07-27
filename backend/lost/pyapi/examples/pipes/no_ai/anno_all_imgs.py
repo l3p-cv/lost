@@ -3,7 +3,7 @@ import os
 
 ENVS = ['lost']
 
-class AnnoAllImgs(script.Script):
+class LostScript(script.Script):
     '''This Script requests image annotations for each image of an imageset.
 
     An imageset is basicly a folder with images.
@@ -18,4 +18,4 @@ class AnnoAllImgs(script.Script):
                 self.logger.debug(img_path)
 
 if __name__ == "__main__":
-    my_script = AnnoAllImgs()
+    my_script = LostScript()

@@ -8,7 +8,7 @@ ARGUMENTS = {'n' : { 'value': 20,
                     'help': 'Number of images that will be request during each iteration.'}
             }
 
-class RequestLoopAnnos(script.Script):
+class LostScript(script.Script):
     '''Annotations in a loop setup.
     '''
     def main(self):
@@ -38,4 +38,4 @@ class RequestLoopAnnos(script.Script):
             self.logger.info('Dump used image list to: {}'.format(used_path))
 
 if __name__ == "__main__":
-    my_script = RequestLoopAnnos()
+    my_script = LostScript()

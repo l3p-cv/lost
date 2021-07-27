@@ -16,7 +16,7 @@ RESOURCES = ['lock_all']
 ARGUMENTS = {'n-clusters' : {'value': 20,
                             'help': 'Expected number of clusters - should be equal to number of classes.'}
             }
-class ClusterKMeans(script.Script):
+class LostScript(script.Script):
     '''This Script clusters all images and requests annotations for each cluster.
 
     For each image in a folder CNN features are extracted. 
@@ -62,4 +62,4 @@ class ClusterKMeans(script.Script):
             self.update_progress(70 + (counter*30/len(img_path_list)))
 
 if __name__ == "__main__":
-    my_script = ClusterKMeans()
+    my_script = LostScript()

@@ -68,7 +68,7 @@ def map_lbls_to_lbltree(lbls, possible_labels):
     return mapped
 
 
-class RequestYoloAnnos(script.Script):
+class LostScript(script.Script):
     '''Request annotations and yolov3 bbox proposals for each image of an imageset.
 
     An imageset is basicly a folder with images.
@@ -111,4 +111,4 @@ class RequestYoloAnnos(script.Script):
                 self.update_progress(index*100/total)
 
 if __name__ == "__main__":
-    my_script = RequestYoloAnnos() 
+    my_script = LostScript() 

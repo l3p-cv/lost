@@ -2,7 +2,7 @@ from lost.pyapi import script
 import os
 import random
 
-class ClusterBoxes(script.Script):
+class LostScript(script.Script):
     '''Set sim class for already present bounding boxes and request them again for annotation.
     
     Note:
@@ -28,4 +28,4 @@ class ClusterBoxes(script.Script):
             self.outp.to_vec(['anno.data', 'anno.sim_class', 'img.img_path'])))
 
 if __name__ == "__main__":
-    my_script = ClusterBoxes()
+    my_script = LostScript()

@@ -12,7 +12,7 @@ ARGUMENTS = {'polygon' : { 'value':'false',
             'bbox' : { 'value':'false',
                             'help': 'Add a dummy bbox proposal as example.'}
             }
-class RequestAnnos(script.Script):
+class LostScript(script.Script):
     '''Request annotations for each image of an imageset.
 
     An imageset is basicly a folder with images.
@@ -44,4 +44,4 @@ class RequestAnnos(script.Script):
                 self.logger.info('Requested annos for: {}'.format(img_path))
 
 if __name__ == "__main__":
-    my_script = RequestAnnos() 
+    my_script = LostScript() 
