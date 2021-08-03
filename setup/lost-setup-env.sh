@@ -14,5 +14,8 @@ export LOST_NGINX_SITES_DIR=/etc/nginx/sites-enabled
 #export LOST_MAMBA_BASE_DIR=/home/$USER/miniconda3
 export LOST_MAMBA_BASE_DIR=/home/jgoebel/miniconda3
 
+# add additional mamba packages that should be installed during installation (can be left empty)
+export LOST_MAMBA_ADDITIONAL_PACKAGES=
+
 # allow mamba to skip installation confirmations
 export CONDA_ALWAYS_YES="true"
