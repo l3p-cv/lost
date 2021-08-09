@@ -16,20 +16,16 @@ Please check if the [mamba package manager](https://github.com/mamba-org/mamba) 
 3. Add the conda-forge channel to mamba  
 `/path/to/mamba/bin/conda config --add channels conda-forge`
 
-4. Activate mamba  
-`/path/to/mamba init bash`  
-If a message like *For changes to take effect, close and re-open your current shell.* appears, this is the first time you initialized conda. Please close and reopen your terminal or ssh session.
-
-5. Clone the repository  
+4. Clone the repository  
 `git clone https://github.com/l3p-cv/lost.git`
 
-6. Step into the cloned repository  
+5. Step into the cloned repository  
 `cd lost`
 
-7. configure installation settings for your environment  
+6. configure installation settings for your environment  
 `vim setup/lost-setup-env.sh`  
 
-8. configure runtime settings for your environment  
+7. configure runtime settings for your environment  
 In most cases you need to change the following config entries:  
 - LOST_APP_PATH
 - LOST_DATA_PATH
@@ -38,12 +34,12 @@ In most cases you need to change the following config entries:
 - LOST_DB_PORT
 - LOST_DB_NAME
 - LOST_DB_USER
-- LOST_DB_PASSWORD
+- LOST_DB_PASSWORD  
 `vim lost-env.sh`
 
 **Important:**   This config file can only be used **before** installation since it will be copied to `/usr/local/src/lost/backend/lostconfig.py`. But you can make your changes there once the application is installed.
 
-9. Start the installation  
+8. Start the installation  
 `bash setup/install.sh`
 
 ## Configure environment
@@ -57,3 +53,8 @@ If you want to start lost enter following commands in your terminal:
 conda activate lost
 /your/installation/path/start.sh
 ```
+
+## Troubleshooting
+### npm installation errors
+- Maximum call stack size exceeded  
+This error can happen when your connection to the npm servers is blocked. Check out the [npm config](https://docs.npmjs.com/cli/v7/using-npm/config#https-proxy) to configure a connection behind a https proxy.
