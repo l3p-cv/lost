@@ -15,7 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated frontend to Core-UI-3
 - Use Dask as scheduler instead of clelery
 - Replace Anaconda package manager with mamba
-
+- LOST standard export format
+  - Added anno_style and anno_format
+  - Removed unused columns from dataframe
+  - Export anno_data to lists instead of dicts
+  - Changed dot column name style to underscore style
 
 ## [1.4.2] - 2021-03-12
 ## Changed 

@@ -43,13 +43,13 @@ python3 /code/backend/lost/logic/init/initworker.py
 python3 /code/backend/lost/logic/init/init_patchsystem.py
 
 
-# # start scheduler.
-# daskscheduler="dask-scheduler"
-# eval $daskscheduler &
+# start scheduler.
+daskscheduler="dask-scheduler"
+eval $daskscheduler &
 
-# #start a worker.
-# worker="dask-worker localhost:8786 --name $ENV_NAME"
-# eval $worker &
+#start a worker.
+worker="dask-worker localhost:8786 --name $ENV_NAME"
+eval $worker &
 
 cron_jobs="python3 /code/backend/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &

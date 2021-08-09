@@ -252,51 +252,45 @@ class TwoDAnno(Base):
                 }
         '''
         anno_dict = {
-            'anno.idx': self.idx,
-            'anno.anno_task_id': self.anno_task_id,
-            'anno.timestamp': self.timestamp,
-            'anno.timestamp_lock': self.timestamp_lock,
-            'anno.state': self.state,
-            'anno.track_id': self.track_id,
-            'anno.dtype': None,
-            'anno.sim_class': self.sim_class,
-            'anno.iteration': self.iteration,
-            'anno.user_id': self.user_id,
-            'anno.img_anno_id': self.img_anno_id,
-            'anno.annotator': None,
-            'anno.confidence': self.confidence,
-            'anno.anno_time': self.anno_time,
-            'anno.lbl.idx': None,
-            'anno.lbl.name': None,
-            'anno.lbl.external_id': None
+            'anno_idx': self.idx,
+            # 'anno.anno_task_id': self.anno_task_id,
+            'anno_timestamp': self.timestamp,
+            # 'anno.timestamp_lock': self.timestamp_lock,
+            'anno_state': self.state,
+            # 'anno_track_id': self.track_id,
+            'anno_dtype': None,
+            'anno_sim_class': self.sim_class,
+            'anno_iteration': self.iteration,
+            'anno_user_id': self.user_id,
+            # 'anno.img_anno_id': self.img_anno_id,
+            'anno_user': None,
+            'anno_confidence': self.confidence,
+            'anno_anno_time': self.anno_time,
+            'anno_lbl': None,
+            'anno_style':'xcycwh',
+            'anno_format':'rel'
         }
         try:
-            anno_dict['anno.dtype'] = dtype.TwoDAnno.TYPE_TO_STR[self.dtype]
+            anno_dict['anno_dtype'] = dtype.TwoDAnno.TYPE_TO_STR[self.dtype]
         except:
             pass
         try:
-            anno_dict['anno.lbl.idx'] = [
-                lbl.label_leaf.idx for lbl in self.labels]
-            anno_dict['anno.lbl.name'] = [
-                lbl.label_leaf.name for lbl in self.labels]
-            anno_dict['anno.lbl.external_id'] = [
-                lbl.label_leaf.external_id for lbl in self.labels]
+            anno_dict['anno_lbl'] = [
+                lbl.label_leaf.name for lbl in self.labels
+            ]
         except:
             pass
         try:
-            anno_dict['anno.annotator'] = self.annotator.user_name
+            anno_dict['anno_user'] = self.annotator.user_name
         except:
             pass
 
         if style == 'flat':
-            anno_dict['anno.data'] = self.data
-            anno_dict['anno.lbl.idx'] = json.dumps(anno_dict['anno.lbl.idx'])
-            anno_dict['anno.lbl.name'] = json.dumps(anno_dict['anno.lbl.name'])
-            anno_dict['anno.lbl.external_id'] = json.dumps(
-                anno_dict['anno.lbl.external_id'])
+            anno_dict['anno_data'] = self.get_anno_vec()#self.data
+            # anno_dict['anno.lbl.name'] = json.dumps(anno_dict['anno.lbl.name'])
             return anno_dict
         elif style == 'hierarchical':
-            anno_dict['anno.data'] = json.loads(self.data)
+            anno_dict['anno_data'] = self.get_anno_vec() #self.data
             return anno_dict
         else:
             raise ValueError(
@@ -353,9 +347,9 @@ class TwoDAnno(Base):
             >>> bbox.to_vec(['anno.data', 'anno.lbl.idx', 'anno.lbl.name'])
             [[0.1, 0.1, 0.2, 0.2], "[14]", "['Aeroplane']"]
         '''
-        df = self.to_df().drop(columns=['anno.data'])
+        df = self.to_df().drop(columns=['anno_data'])
         df_new = df.assign(data=[self.get_anno_vec()])
-        df_new = df_new.rename(index=str, columns={'data': 'anno.data'})
+        df_new = df_new.rename(index=str, columns={'data': 'anno_data'})
         if columns == 'all':
             return df_new.values.tolist()[0]
         else:
@@ -494,7 +488,9 @@ class TwoDAnno(Base):
                 array([0.1 , 0.2 , 0.3 , 0.18])
         '''
 
-        data = json.loads(self.data)
+        if self.dtype is not None:
+            data = json.loads(self.data)
+        # data = self.data
         if self.dtype == dtype.TwoDAnno.BBOX:
             return [data['x'], data['y'], data['w'], data['h']]
         elif self.dtype == dtype.TwoDAnno.POINT:
@@ -503,6 +499,8 @@ class TwoDAnno(Base):
             return [[e['x'], e['y']] for e in data]
         elif self.dtype == dtype.TwoDAnno.POLYGON:
             return [[e['x'], e['y']] for e in data]
+        elif self.dtype is None:
+            return []
         else:
             raise Exception('Unknown TwoDAnno type!')
 
@@ -656,6 +654,7 @@ class ImageAnno(Base):
         Args:
             style (str): 'flat' or 'hierarchical'. 
                 Return a dict in flat or nested style. 
+            essential (bool): Export only essential information to dict
 
         Returns:
             list of dict OR dict:
@@ -727,53 +726,45 @@ class ImageAnno(Base):
         '''
 
         img_dict = {
-            'img.idx': self.idx,
-            'img.anno_task_id': self.anno_task_id,
-            'img.timestamp': self.timestamp,
-            'img.timestamp_lock': self.timestamp_lock,
-            'img.state': self.state,
-            'img.sim_class': self.sim_class,
-            'img.frame_n': self.frame_n,
-            'img.video_path': self.video_path,
-            'img.img_path': self.img_path,
-            'img.result_id': self.result_id,
-            'img.iteration': self.iteration,
-            'img.user_id': self.user_id,
-            'img.anno_time': self.anno_time,
-            'img.lbl.idx': None,
-            'img.lbl.name': None,
-            'img.lbl.external_id': None,
-            'img.annotator': None,
-            'img.is_junk': self.is_junk,
-            'img.fs_name': self.fs.name
+            'img_idx': self.idx,
+            # 'img_anno_task_id': self.anno_task_id,
+            'img_timestamp': self.timestamp,
+            'img_state': self.state,
+            'img_sim_class': self.sim_class,
+            'img_frame_n': self.frame_n,
+            # 'img_video_path': self.video_path,
+            'img_path': self.img_path,
+            # 'img_result_id': self.result_id,
+            'img_iteration': self.iteration,
+            'img_user_id': self.user_id,
+            'img_anno_time': self.anno_time,
+            'img_lbl': None,
+            'img_user': None,
+            'img_is_junk': self.is_junk,
+            'img_fs_name': self.fs.name
         }
         try:
-            img_dict['img.lbl.idx'] = [
-                lbl.label_leaf.idx for lbl in self.labels]
-            img_dict['img.lbl.name'] = [
+            img_dict['img_lbl'] = [
                 lbl.label_leaf.name for lbl in self.labels]
-            img_dict['img.lbl.external_id'] = [
-                lbl.label_leaf.external_id for lbl in self.labels]
         except:
             pass
         try:
-            img_dict['img.annotator'] = self.annotator.user_name
+            img_dict['img_user'] = self.annotator.user_name
         except:
             pass
         if style == 'hierarchical':
-            img_dict['img.twod_annos'] = []
+            img_dict['img_2d_annos'] = []
             for anno in self.twod_annos:
-                img_dict['img.twod_annos'].append(
+                img_dict['img_2d_annos'].append(
                     anno.to_dict(style='hierarchical')
                 )
             return img_dict
         elif style == 'flat':
-            img_dict['img.lbl.idx'] = json.dumps(img_dict['img.lbl.idx'])
-            img_dict['img.lbl.name'] = json.dumps(img_dict['img.lbl.name'])
-            img_dict['img.lbl.external_id'] = json.dumps(
-                img_dict['img.lbl.external_id'])
+            # img_dict['img.lbl.name'] = json.dumps(img_dict['img.lbl.name'])
             d_list = []
             if len(self.twod_annos) > 0:
+                empty_anno = TwoDAnno().to_dict()
+                d_list.append(dict(img_dict, **empty_anno))
                 for anno in self.twod_annos:
                     d_list.append(
                         dict(img_dict, **anno.to_dict())
