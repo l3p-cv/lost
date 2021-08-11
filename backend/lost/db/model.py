@@ -357,11 +357,11 @@ class TwoDAnno(Base):
 
     def get_anno_style(self):
         if self.dtype == dtype.TwoDAnno.BBOX:
-            return '[[xc,yc,w,h]]'
+            return 'xcycwh'
         elif self.dtype == dtype.TwoDAnno.POINT:
-            return '[[x,y]]'
+            return 'xy'
         elif self.dtype == dtype.TwoDAnno.LINE or self.dtype == dtype.TwoDAnno.POLYGON:
-            return '[[x,y],...,[x,y]]'
+            return 'xy'
         elif self.dtype is None:
             return ''
         else:
