@@ -252,7 +252,7 @@ class TwoDAnno(Base):
                 }
         '''
         anno_dict = {
-            'anno_idx': self.idx,
+            'anno_uid': self.idx,
             # 'anno.anno_task_id': self.anno_task_id,
             'anno_timestamp': self.timestamp,
             # 'anno.timestamp_lock': self.timestamp_lock,
@@ -267,7 +267,7 @@ class TwoDAnno(Base):
             'anno_confidence': self.confidence,
             'anno_anno_time': self.anno_time,
             'anno_lbl': None,
-            'anno_style':'xcycwh',
+            'anno_style': self.get_anno_style(),
             'anno_format':'rel'
         }
         try:
@@ -354,6 +354,18 @@ class TwoDAnno(Base):
             return df_new.values.tolist()[0]
         else:
             return df_new[columns].values.tolist()[0]
+
+    def get_anno_style(self):
+        if self.dtype == dtype.TwoDAnno.BBOX:
+            return '[[xc,yc,w,h]]'
+        elif self.dtype == dtype.TwoDAnno.POINT:
+            return '[[x,y]]'
+        elif self.dtype == dtype.TwoDAnno.LINE or self.dtype == dtype.TwoDAnno.POLYGON:
+            return '[[x,y],...,[x,y]]'
+        elif self.dtype is None:
+            return ''
+        else:
+            raise Exception('Unknown TwoDAnno type!')
 
     def add_label(self, label_leaf_id):
         '''Add a label to this 2D annotation.
@@ -726,7 +738,7 @@ class ImageAnno(Base):
         '''
 
         img_dict = {
-            'img_idx': self.idx,
+            'img_uid': self.idx,
             # 'img_anno_task_id': self.anno_task_id,
             'img_timestamp': self.timestamp,
             'img_state': self.state,
