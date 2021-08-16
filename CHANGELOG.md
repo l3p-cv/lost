@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed unused columns from dataframe
   - Export anno_data to lists instead of dicts
   - Changed dot column name style to underscore style
+## FIXED
+- PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
+  not first element in pipeline graph
 
 ## [1.4.2] - 2021-03-12
 ## Changed 

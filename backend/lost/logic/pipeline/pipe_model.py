@@ -37,10 +37,6 @@ class PipeEngine(object):
             v_pe_n = pe_graph.vs.select(pe_eq=pe)[0]
             if pe.state == state.PipeElement.FINISHED:
                 v_pe_n["visited"] = True
-            #Check if pe should be linked to source
-            target = pe_graph.es.select(_target=v_pe_n.index)
-            if len(target) == 0:
-                pe_graph.add_edge(0, v_pe_n.index)
             # Link PipeElements
             for pe_out in pe.pe_outs:
                 v_pe_out = pe_graph.vs.select(pe_eq=pe_out)[0]
@@ -48,6 +44,12 @@ class PipeEngine(object):
             # Check if pe should be linked to sink
             if len(pe.pe_outs) == 0:
                 pe_graph.add_edge(v_pe_n.index, sink.index)
+        for pe in pe_list:
+            #Check if pe should be linked to source
+            v_pe_n = pe_graph.vs.select(pe_eq=pe)[0]
+            target = pe_graph.es.select(_target=v_pe_n.index)
+            if len(target) == 0:
+                pe_graph.add_edge(0, v_pe_n.index)
         return pe_graph
 
     def get_all_loop_elements(self):
