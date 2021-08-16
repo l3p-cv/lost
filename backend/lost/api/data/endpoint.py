@@ -1,3 +1,6 @@
+from typing import BinaryIO
+from sqlalchemy import engine
+from sqlalchemy.sql.schema import DEFAULT_NAMING_CONVENTION
 from flask_restx import Resource
 from flask import request, send_from_directory, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -10,7 +13,7 @@ from lost.logic.file_man import FileMan
 import json
 import os
 from lost.pyapi import pe_base
-
+from io import BytesIO
 namespace = api.namespace('data', description='Data API.')
 
 @namespace.route('/<string:path>')
@@ -109,8 +112,11 @@ class Logs(Resource):
             pe = pe_base.Element(pe_db, dbm)
             df = pe.inp.to_df()
             # raise Exception('GO ON HERE !!!')
-            resp = make_response(df.to_csv(index=False).encode())
-            resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
+            f = BytesIO()
+            df.to_parquet(f)
+            f.seek(0)
+            resp = make_response(f.read())
+            resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
             resp.headers["Content-Type"] = "blob"
             return resp
 

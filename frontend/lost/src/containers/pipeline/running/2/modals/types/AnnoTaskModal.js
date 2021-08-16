@@ -26,7 +26,7 @@ function handleSiaRewiewClick(props, callback){
 
 function handleInstantAnnoDownload(pe_id){
     axios.post(API_URL+'/data/annoexport', {'pe_id':pe_id}).then( resp => {
-      fileDownload(resp.data, `annos_pe_${pe_id}.csv`)
+      fileDownload(resp.data, `annos_pe_${pe_id}.parquet`)
     })
   }
 

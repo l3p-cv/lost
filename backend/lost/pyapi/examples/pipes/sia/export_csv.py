@@ -2,7 +2,7 @@ from lost.pyapi import script
 import os
 
 ENVS = ['lost']
-ARGUMENTS = {'file_name' : { 'value':'annos.csv',
+ARGUMENTS = {'file_name' : { 'value':'annos.parquet',
                             'help': 'Name of the file with exported bbox annotations.'}
             }
 
@@ -14,15 +14,12 @@ class LostScript(script.Script):
         df = self.inp.to_df()
         fs = self.get_filesystem()
         
-        csv_path = self.get_path(self.get_arg('file_name'), context='instance')
-        self.logger.info('CSV path: {}'.format(csv_path))
-        with fs.open(csv_path, 'w') as f:
-            df.to_csv(f,
-                      sep=',',
-                      header=True,
-                      index=False)
-        self.logger.info('Wrote csv file: {}'.format(fs.ls(os.path.split(csv_path)[0])))
-        self.outp.add_data_export(file_path=csv_path, fs=fs)
+        file_path = self.get_path(self.get_arg('file_name'), context='instance')
+        self.logger.info('File path: {}'.format(file_path))
+        with fs.open(file_path, 'wb') as f:
+            df.to_parquet(f)
+        self.logger.info('Wrote file: {}'.format(fs.ls(os.path.split(file_path)[0])))
+        self.outp.add_data_export(file_path=file_path, fs=fs)
 
 if __name__ == "__main__":
     my_script = LostScript()
