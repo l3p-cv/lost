@@ -3,7 +3,7 @@ from flask_user import current_user, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean
-from sqlalchemy.dialects.mysql import DATETIME
+# from sqlalchemy.dialects.mysql import DATETIME
 from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
@@ -145,8 +145,8 @@ class TwoDAnno(Base):
 
     idx = Column(Integer, primary_key=True)
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
-    timestamp = Column(DATETIME(fsp=6))
-    timestamp_lock = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
+    timestamp_lock = Column(DateTime())
     state = Column(Integer)
     track_id = Column(Integer, ForeignKey('track.idx'))
     data = Column(Text)
@@ -286,11 +286,11 @@ class TwoDAnno(Base):
             pass
 
         if style == 'flat':
-            anno_dict['anno_data'] = self.get_anno_vec()#self.data
+            anno_dict['anno_data'] = self.get_anno_serialization_format()#self.data
             # anno_dict['anno.lbl.name'] = json.dumps(anno_dict['anno.lbl.name'])
             return anno_dict
         elif style == 'hierarchical':
-            anno_dict['anno_data'] = self.get_anno_vec() #self.data
+            anno_dict['anno_data'] = self.get_anno_serialization_format() #self.data
             return anno_dict
         else:
             raise ValueError(
@@ -479,6 +479,43 @@ class TwoDAnno(Base):
         self.data = json.dumps(val_list)
         self.dtype = dtype.TwoDAnno.POLYGON
 
+    def get_anno_serialization_format(self):
+        '''Get annotation data in list style parquet serialization.
+
+        Returns:
+            list of floats:
+                For a POINT:
+                    [[ x, y ]]
+
+                For a BBOX:
+                    [[ x, y, w, h ]]
+
+                For a LINE and POLYGONS:
+                    [[x, y], [x, y],...]
+
+        Example:
+            HowTo get a numpy array? In the following example a bounding box is returned::
+
+                >>> np.array(twod_anno.get_anno_vec())
+                array([0.1 , 0.2 , 0.3 , 0.18])
+        '''
+
+        if self.dtype is not None:
+            data = json.loads(self.data)
+        # data = self.data
+        if self.dtype == dtype.TwoDAnno.BBOX:
+            return [[ data['x'], data['y'], data['w'], data['h'] ]]
+        elif self.dtype == dtype.TwoDAnno.POINT:
+            return [[ data['x'], data['y'] ]]
+        elif self.dtype == dtype.TwoDAnno.LINE:
+            return [[e['x'], e['y']] for e in data]
+        elif self.dtype == dtype.TwoDAnno.POLYGON:
+            return [[e['x'], e['y']] for e in data]
+        elif self.dtype is None:
+            return [[None]]
+        else:
+            raise Exception('Unknown TwoDAnno type!')
+
     def get_anno_vec(self):
         '''Get annotation data in list style.
 
@@ -617,8 +654,8 @@ class ImageAnno(Base):
 
     idx = Column(Integer, primary_key=True)
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
-    timestamp = Column(DATETIME(fsp=6))
-    timestamp_lock = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
+    timestamp_lock = Column(DateTime())
     state = Column(Integer)
     sim_class = Column(Integer)
     frame_n = Column(Integer)
@@ -943,10 +980,10 @@ class AnnoTask(Base):
     name = Column(String(100))
     dtype = Column(Integer)
     pipe_element_id = Column(Integer, ForeignKey('pipe_element.idx'))
-    timestamp = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
     instructions = Column(Text)
     configuration = Column(Text)
-    last_activity = Column(DATETIME(fsp=6))
+    last_activity = Column(DateTime())
     last_annotator_id = Column(Integer, ForeignKey('user.idx'))
     last_annotator = relationship(
         "User", foreign_keys='AnnoTask.last_annotator_id', uselist=False)
@@ -997,8 +1034,8 @@ class Pipe(Base):
     manager_id = Column(Integer, ForeignKey('user.idx'))
     state = Column(Integer)
     pipe_template_id = Column(Integer, ForeignKey('pipe_template.idx'))
-    timestamp = Column(DATETIME(fsp=6))
-    timestamp_finished = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
+    timestamp_finished = Column(DateTime())
     description = Column(Text)
     is_debug_mode = Column(Boolean)
     is_locked = Column(Boolean)
@@ -1046,7 +1083,7 @@ class PipeTemplate(Base):
     __tablename__ = "pipe_template"
     idx = Column(Integer, primary_key=True)
     json_template = Column(Text)
-    timestamp = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
     is_debug_mode = Column(Boolean)
 
     def __init__(self, idx=None, json_template=None, timestamp=None,
@@ -1215,7 +1252,7 @@ class Result(Base):
     """
     __tablename__ = "result"
     idx = Column(Integer, primary_key=True)
-    timestamp = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
     img_annos = relationship("ImageAnno")
     visual_outputs = relationship("VisualOutput")
     data_exports = relationship("VisualOutput")
@@ -1407,7 +1444,7 @@ class LabelLeaf(Base):
     idx = Column(Integer, primary_key=True)
     name = Column(String(100))
     abbreviation = Column(String(20))
-    timestamp = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
     description = Column(Text)
     external_id = Column(String(4096))
     is_deleted = Column(Boolean)
@@ -1480,8 +1517,8 @@ class Label(Base):
     img_anno_id = Column(Integer, ForeignKey('image_anno.idx'))
     two_d_anno_id = Column(Integer, ForeignKey('two_d_anno.idx'))
     annotator_id = Column(Integer, ForeignKey('user.idx'))
-    timestamp = Column(DATETIME(fsp=6))
-    timestamp_lock = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
+    timestamp_lock = Column(DateTime())
     label_leaf = relationship('LabelLeaf', uselist=False)
     confidence = Column(Float)
     anno_time = Column(Float)
@@ -1523,7 +1560,7 @@ class Track(Base):
     track_n = Column(Integer)
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))    
     name = Column(String(100))
-    timestamp = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
     user_id = Column(Integer, ForeignKey('user.idx'))
     iteration = Column(Integer)
     confidence = Column(Float)
@@ -1592,8 +1629,8 @@ class Worker(Base):
     idx = Column(Integer, primary_key=True)
     env_name = Column(String(100))
     worker_name = Column(String(100))
-    timestamp = Column(DATETIME(fsp=6))
-    register_timestamp = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
+    register_timestamp = Column(DateTime())
     resources = Column(Text)
     in_progress = Column(Text)
 
@@ -1631,7 +1668,7 @@ class FileSystem(Base):
     connection = Column(Text)
     root_path = Column(String(4096))
     fs_type = Column(String(20))
-    timestamp = Column(DATETIME(fsp=6))
+    timestamp = Column(DateTime())
     name = Column(String(200))
 
     def __init__(self, group_id=None, connection=None,
