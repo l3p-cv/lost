@@ -96,29 +96,28 @@ class Logs(Resource):
                 resp.headers["Content-Type"] = "blob"
             return resp
 
-@namespace.route('/annoexport')
-class Logs(Resource):
-    @jwt_required 
-    def post(self):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            data = json.loads(request.data)
-            pe_db = dbm.get_pipe_element(pipe_e_id=data['pe_id'])
-            pe = pe_base.Element(pe_db, dbm)
-            df = pe.inp.to_df()
-            # raise Exception('GO ON HERE !!!')
-            f = BytesIO()
-            df.to_parquet(f)
-            f.seek(0)
-            resp = make_response(f.read())
-            resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
-            resp.headers["Content-Type"] = "blob"
-            return resp
+@namespace.route('/annoexport/<peid>')
+class AnnoExport(Resource):
+    def get(self, peid):
+         dbm = access.DBMan(LOST_CONFIG)
+         identity = get_jwt_identity()
+         user = dbm.get_user_by_id(identity)
+         if not user.has_role(roles.DESIGNER):
+             dbm.close_session()
+             return "You are not authorized.", 401
+         else:
+             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+             pe = pe_base.Element(pe_db, dbm)
+             df = pe.inp.to_df()
+             # raise Exception('GO ON HERE !!!')
+             f = BytesIO()
+             df.to_parquet(f)
+             f.seek(0)
+             resp = make_response(f.read())
+             resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
+             resp.headers["Content-Type"] = "blob"
+             return resp
+
 
 @namespace.route('/workerlogs/<path:path>')
 class Logs(Resource): 

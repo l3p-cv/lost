@@ -8,10 +8,27 @@ import {useDispatch, useSelector} from 'react-redux'
 import axios from 'axios'
 import {API_URL} from '../../../../../../lost_settings'
 import fileDownload from 'js-file-download'
+import {saveAs}  from 'file-saver';
 
 // import { createHashHistory } from 'history'
 import { useHistory } from 'react-router-dom'
 import actions from '../../../../../../actions'
+
+
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }
+
+
 
 function handleSiaRewiewClick(props, callback){
     props.siaReviewSetElement(props.id)
@@ -25,9 +42,13 @@ function handleSiaRewiewClick(props, callback){
 }
 
 function handleInstantAnnoDownload(pe_id){
-    axios.post(API_URL+'/data/annoexport', {'pe_id':pe_id}).then( resp => {
-      fileDownload(resp.data, `annos_pe_${pe_id}.parquet`)
-    })
+    fetch(`http://localhost/api/data/annoexport/${pe_id}`,
+    {
+        method: 'get',
+        headers: new Headers({
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+        })
+    }).then(res => res.blob()).then(blob => saveAs(blob, `annos_pe_${pe_id}.parquet`))
   }
 
 function annotationReleaseSuccessful(){
