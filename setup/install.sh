@@ -65,6 +65,9 @@ cp -r $LOST_REPO_LOCATION_DIR/backend $LOST_BASE_DIR/src/
 echo
 echo 🛠️  adding config to wsgi.ini
 
+# insert uwsgi port from variable
+sed -i "s/--socket-port-inserted-by-installation-script--/$LOST_UWSGI_PORT/" $LOST_SETUP_LOCATION_DIR/wsgi.ini
+
 # insert file path from variable
 sed -i "s/chdir=--chdir-inserted-by-installation-script--/chdir=$ESCAPED_LOST_BASE_DIR\/src\/backend\/lost/" $LOST_SETUP_LOCATION_DIR/wsgi.ini
 cp $LOST_SETUP_LOCATION_DIR/wsgi.ini $LOST_BASE_DIR/src/backend/lost
@@ -78,6 +81,9 @@ echo 🛠️  setting up nginx
 
 # escape file path for sed
 ESCAPED_LOST_DOCUMENTATION_DIR=${LOST_DOCUMENTATION_DIR//\//\\/}
+
+# insert uwsgi port from variable
+sed -i "s/--socket-port-inserted-by-installation-script--/$LOST_UWSGI_PORT/" $LOST_SETUP_LOCATION_DIR/nginx.conf
 
 # insert file paths from variable
 sed -i "s/--nginx-base-alias-inserted-by-installation-script--/$ESCAPED_LOST_BASE_DIR\/src\/frontend\/lost\/build\//" $LOST_SETUP_LOCATION_DIR/nginx.conf

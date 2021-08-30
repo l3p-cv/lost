@@ -10,9 +10,10 @@ export LOST_ADD_AI_EXAMPLES=True
 # directory where nginx site config can be stored
 export LOST_NGINX_SITES_DIR=/etc/nginx/sites-enabled
 
+export LOST_UWSGI_PORT=4242
+
 # directory to mamba (programs access the bin folder)
-#export LOST_MAMBA_BASE_DIR=/home/$USER/miniconda3
-export LOST_MAMBA_BASE_DIR=/home/jgoebel/miniconda3
+export LOST_MAMBA_BASE_DIR=/home/$USER/miniconda3
 
 # add additional mamba packages that should be installed during installation (can be left empty)
 export LOST_MAMBA_ADDITIONAL_PACKAGES=
