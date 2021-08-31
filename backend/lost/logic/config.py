@@ -43,6 +43,12 @@ class LOSTConfig(object):
         self.rabbitmq_ip = "rabbitmqlost"
         if "RABBITMQ_IP" in os.environ:
             self.rabbitmq_ip = os.environ['RABBITMQ_IP']
+        self.rabbitmq_user = None
+        if "RABBITMQ_USER" in os.environ:
+            self.rabbitmq_user = os.environ['RABBITMQ_USER']
+        self.rabbitmq_password = None
+        if "RABBITMQ_PASSWORD" in os.environ:
+            self.rabbitmq_password = os.environ['RABBITMQ_PASSWORD']
 
         self.send_mail = False
         self.mail_server = ""
