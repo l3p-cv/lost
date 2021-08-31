@@ -4,13 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - unreleased
+### Added
+- Added user and password to amqp url if set in .env file (see https://github.com/l3p-cv/lost/issues/133)
+
 ## [1.4.2] - 2021-03-12
-## Changed 
+### Changed 
 - ImgBlacklist: 
   * Do not log every blacklist load
   * Warn for other argument types than lists in blacklist add method
   * Return always lists in get_whitelist method
-## Fixed
+### Fixed
 - Version in lost backend init
 
 ## [1.4.1] - 2021-03-10
