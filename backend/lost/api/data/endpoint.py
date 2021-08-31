@@ -98,6 +98,7 @@ class Logs(Resource):
 
 @namespace.route('/annoexport/<peid>')
 class AnnoExport(Resource):
+    @jwt_required 
     def get(self, peid):
          dbm = access.DBMan(LOST_CONFIG)
          identity = get_jwt_identity()
