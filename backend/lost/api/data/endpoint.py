@@ -74,11 +74,11 @@ class Logs(Resource):
                 resp.headers["Content-Type"] = "text/csv"
             return resp
 
-@namespace.route('/dataexport')
+@namespace.route('/dataexport/<deid>')
 #@namespace.param('path', 'Path to logfile')
-class Logs(Resource):
+class DataExport(Resource):
     @jwt_required 
-    def post(self):
+    def get(self, deid):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -86,13 +86,13 @@ class Logs(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            data = json.loads(request.data)
-            de = dbm.get_data_export(data['de_id'])
+            # data = json.loads(request.data)
+            de = dbm.get_data_export(deid)
             fs_db = de.fs
             fm = FileMan(fs_db=fs_db)
             with fm.fs.open(de.file_path, 'rb') as f:
                 resp = make_response(f.read())
-                resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
+                resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
                 resp.headers["Content-Type"] = "blob"
             return resp
 
