@@ -1,6 +1,8 @@
 #!/bin/bash
  /bin/bash -c "source /opt/mambaforge/bin/activate lost"
 source /opt/mambaforge/bin/activate lost
+pip install psycopg2 pyarrow fastparquet
+# conda install pyarrow fastparquet
 
 # clean celery lock
 rm -rf /tmp/celerybeat.pid

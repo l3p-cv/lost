@@ -1,3 +1,6 @@
+from typing import BinaryIO
+from sqlalchemy import engine
+from sqlalchemy.sql.schema import DEFAULT_NAMING_CONVENTION
 from flask_restx import Resource
 from flask import request, send_from_directory, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -10,7 +13,7 @@ from lost.logic.file_man import FileMan
 import json
 import os
 from lost.pyapi import pe_base
-
+from io import BytesIO
 namespace = api.namespace('data', description='Data API.')
 
 @namespace.route('/<string:path>')
@@ -71,11 +74,11 @@ class Logs(Resource):
                 resp.headers["Content-Type"] = "text/csv"
             return resp
 
-@namespace.route('/dataexport')
+@namespace.route('/dataexport/<deid>')
 #@namespace.param('path', 'Path to logfile')
-class Logs(Resource):
+class DataExport(Resource):
     @jwt_required 
-    def post(self):
+    def get(self, deid):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -83,36 +86,39 @@ class Logs(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            data = json.loads(request.data)
-            de = dbm.get_data_export(data['de_id'])
+            # data = json.loads(request.data)
+            de = dbm.get_data_export(deid)
             fs_db = de.fs
             fm = FileMan(fs_db=fs_db)
             with fm.fs.open(de.file_path, 'rb') as f:
                 resp = make_response(f.read())
-                resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
+                resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
                 resp.headers["Content-Type"] = "blob"
             return resp
 
-@namespace.route('/annoexport')
-class Logs(Resource):
+@namespace.route('/annoexport/<peid>')
+class AnnoExport(Resource):
     @jwt_required 
-    def post(self):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            data = json.loads(request.data)
-            pe_db = dbm.get_pipe_element(pipe_e_id=data['pe_id'])
-            pe = pe_base.Element(pe_db, dbm)
-            df = pe.inp.to_df()
-            # raise Exception('GO ON HERE !!!')
-            resp = make_response(df.to_csv(index=False).encode())
-            resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
-            resp.headers["Content-Type"] = "blob"
-            return resp
+    def get(self, peid):
+         dbm = access.DBMan(LOST_CONFIG)
+         identity = get_jwt_identity()
+         user = dbm.get_user_by_id(identity)
+         if not user.has_role(roles.DESIGNER):
+             dbm.close_session()
+             return "You are not authorized.", 401
+         else:
+             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+             pe = pe_base.Element(pe_db, dbm)
+             df = pe.inp.to_df()
+             # raise Exception('GO ON HERE !!!')
+             f = BytesIO()
+             df.to_parquet(f)
+             f.seek(0)
+             resp = make_response(f.read())
+             resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
+             resp.headers["Content-Type"] = "blob"
+             return resp
+
 
 @namespace.route('/workerlogs/<path:path>')
 class Logs(Resource): 
