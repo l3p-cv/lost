@@ -1,4 +1,4 @@
-if [ ${LOST_ADD_EXAMPLES} = "True" ]; then
+if [ -n ${LOST_ADD_EXAMPLES+x} ] && [ ${LOST_ADD_EXAMPLES} = "True" ]; then
 python3 import_pipe_project.py --copy '../pyapi/examples/pipes/no_ai'
 python3 import_label_tree.py '../pyapi/examples/label_trees/pascal_voc2012.csv'
 python3 import_label_tree.py '../pyapi/examples/label_trees/dummy_label_tree.csv'
