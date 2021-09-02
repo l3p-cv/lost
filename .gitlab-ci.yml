@@ -45,20 +45,12 @@ build-lost-gpu-base:
 build-lost:
   stage: build-lost
   script:
-    - npm install --prefix frontend/lost/src/tools/sia -d 
-    - npm install --prefix frontend/lost/src/components/pipeline -d
-    - npm install --prefix frontend/lost -d 
-    - CI=false npm run build --prefix frontend/lost -d 
-    - rm -rf frontend/lost/node_modules
-    - rm -rf frontend/lost/src/tools/sia/node_modules
-    - rm -rf frontend/lost/src/components/pipeline/node_modules
     - docker build --build-arg base_image=$LOST_CI_REGISTRY_BASE_IMAGE --pull -t $LOST_CI_REGISTRY_TEST_IMAGE -f docker/lost/Dockerfile .
     - docker push $LOST_CI_REGISTRY_TEST_IMAGE
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
       - $CI_COMMIT_MESSAGE =~ /lost-gpu-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-cv/
       - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
 
 test-lost:
@@ -72,19 +64,8 @@ test-lost:
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
       - $CI_COMMIT_MESSAGE =~ /lost-gpu-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-cv/
       - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
       
-build-lost-cv:
-  stage: build-lost-cv
-  script: 
-    - docker build --build-arg base_image=$LOST_CI_REGISTRY_BASE_IMAGE --pull -t $LOST_CI_REGISTRY_LOST_CV_IMAGE -f docker/executors/lost-cv/Dockerfile .
-    - docker push $LOST_CI_REGISTRY_LOST_CV_IMAGE
-  only:
-    # variables:
-    #   - $CI_COMMIT_MESSAGE =~ /lost-cv/
-    - tags
-
 build-lost-cv-gpu:
   stage: build-lost-cv-gpu
   script: 
@@ -107,5 +88,4 @@ release-lost:
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
       - $CI_COMMIT_MESSAGE =~ /lost-gpu-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-cv/
       - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
