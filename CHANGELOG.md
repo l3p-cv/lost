@@ -26,6 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
   not first element in pipeline graph
 
+## Removed
+- removed lost-cv images. This is now integrated into the lost image
+
 ## [1.4.2] - 2021-03-12
 ## Changed 
 - ImgBlacklist: 
