@@ -36,6 +36,7 @@ app.config['CORS_HEADERS'] = settings.CORS_HEADERS
 jwt = JWTManager(app)
 
 
+
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     jti = decrypted_token['jti']
@@ -50,7 +51,9 @@ def add_claims_to_jwt(identity):
     dbm.close_session()
     return {"roles": roles}
     
+# blueprint = Blueprint('api', __name__, url_prefix='/api', static_folder='/home/lost/data/static')
 blueprint = Blueprint('api', __name__, url_prefix='/api')
+
 api.init_app(blueprint)
 #register endpoints here
 api.add_namespace(user_namespace)

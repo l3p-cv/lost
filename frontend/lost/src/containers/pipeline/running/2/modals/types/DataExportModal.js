@@ -5,10 +5,10 @@ import Table from '../../../../globalComponents/modals/Table'
 import { Button } from 'reactstrap'
 import {connect} from 'react-redux'
 import actions from '../../../../../../actions/pipeline/pipelineRunning'
+import {saveAs}  from 'file-saver';
 
 import axios from 'axios'
 import {API_URL} from '../../../../../../lost_settings'
-import fileDownload from 'js-file-download'
 
 const {downloadDataExport} = actions
 class DataExportModal extends Component {
@@ -21,9 +21,16 @@ class DataExportModal extends Component {
   }
 
   download_file(de_id, fileName){
-    axios.post(API_URL+'/data/dataexport', {'de_id':de_id}).then( resp => {
-      fileDownload(resp.data, fileName)
-    })
+    // axios.post(API_URL+'/data/dataexport', {'de_id':de_id}).then( resp => {
+    //   saveAs(resp.data, fileName)
+    // })
+    fetch(`${API_URL}/data/dataexport/${de_id}`,
+    {
+        method: 'get',
+        headers: new Headers({
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, 
+        })
+    }).then(res => res.blob()).then(blob => saveAs(blob, fileName))
   }
 
   // download(e){
