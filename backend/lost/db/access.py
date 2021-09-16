@@ -139,7 +139,7 @@ class DBMan(object):
             return self.session.query(model.Pipe)\
                     .filter(model.Pipe.pipe_template_id==pipe_template_id).first()
         else:
-            raise Exception("db_access.get_pipw: Need to specify one of the arguments!")
+            raise Exception("db_access.get_pipe: Need to specify one of the arguments!")
 
     def get_all_pipes(self):
         '''Get all pipes in project
@@ -712,10 +712,10 @@ class DBMan(object):
         if not user_id:
             user_id_query = ''
         if anno_type == 'imageBased':
-            sql = "SELECT AVG(`anno_time`) FROM `image_anno` WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
+            sql = "SELECT AVG(anno_time) FROM image_anno WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT AVG(`anno_time`) FROM `two_d_anno` WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
+            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE {} anno_task_id={} AND anno_time IS NOT NULL".format(user_id_query, anno_task_id)
             return self.session.execute(sql).first()
 
     def get_worker(self, worker_name=None):
@@ -780,10 +780,10 @@ class DBMan(object):
     
     def get_amount_per_label(self, anno_task_id, label_leaf_id, anno_type):
         if anno_type == 'imageBased':
-            sql = "SELECT COUNT(`idx`) FROM `label` WHERE `label_leaf_id`={} AND `img_anno_id` IN (SELECT `idx` FROM `image_anno` WHERE `anno_task_id`={})".format(label_leaf_id, anno_task_id)
+            sql = "SELECT COUNT(idx) FROM label WHERE label_leaf_id={} AND img_anno_id IN (SELECT idx FROM image_anno WHERE anno_task_id={})".format(label_leaf_id, anno_task_id)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT COUNT(`idx`) FROM `label` WHERE `label_leaf_id`={} AND `two_d_anno_id` IN (SELECT `idx` FROM `two_d_anno` WHERE `anno_task_id`={})".format(label_leaf_id, anno_task_id)
+            sql = "SELECT COUNT(idx) FROM label WHERE label_leaf_id={} AND two_d_anno_id IN (SELECT idx FROM two_d_anno WHERE anno_task_id={})".format(label_leaf_id, anno_task_id)
             return self.session.execute(sql).first()
 
     def get_script_errors(self, pipe_id):
