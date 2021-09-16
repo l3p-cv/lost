@@ -1,8 +1,8 @@
  #!/bin/bash
-export PYTHONPATH=$PYTHONPATH:/code/backend
+export PYTHONPATH=$PYTHONPATH:/code/src/backend
 source /opt/mambaforge/bin/activate lost
 
 mkdir -p ${LOST_HOME}/logs
-python3 /code/backend/lost/logic/init/initlost.py
+python3 /code/src/backend/lost/logic/init/initlost.py
 
-pytest /code/backend/lost
+pytest /code/src/backend/lost

@@ -4,11 +4,8 @@ services:
 
 stages:
 - build-lost-base
-- build-lost-gpu-base
 - build-lost
 - test-lost
-- build-lost-cv
-- build-lost-cv-gpu
 - release-lost
 
 variables:
@@ -32,15 +29,6 @@ build-lost-base:
   only: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-    
-build-lost-gpu-base:
-  stage: build-lost-gpu-base
-  script:
-    - docker build -t $LOST_CI_REGISTRY_GPU_BASE_IMAGE -f docker/lost-gpu-base/Dockerfile .
-    - docker push $LOST_CI_REGISTRY_GPU_BASE_IMAGE
-  only: 
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /lost-gpu-base/
       
 build-lost:
   stage: build-lost
@@ -50,7 +38,6 @@ build-lost:
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-gpu-base/
       - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
 
 test-lost:
@@ -63,7 +50,6 @@ test-lost:
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-gpu-base/
       - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
       
 build-lost-cv-gpu:
@@ -87,5 +73,4 @@ release-lost:
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-gpu-base/
       - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/

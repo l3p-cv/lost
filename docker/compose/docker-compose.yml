@@ -13,13 +13,12 @@ services:
       ports:
         - "${LOST_FRONTEND_PORT}:8080"
       environment:
-        PYTHONPATH: "/code/backend"
+        PYTHONPATH: "/code/src/backend"
         ENV_NAME: "lost"
         WORKER_NAME: "lost-0"
         PY3_INIT: "source /opt/conda/bin/activate lost"
       links:
         - db-lost
-        - rabbitmqlost
 
     db-lost:
       image: mysql:5.7
@@ -32,32 +31,6 @@ services:
         MYSQL_USER: ${LOST_DB_USER}
         MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
         MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
-
-    lost-cv:
-      image: l3pcv/lost-cv:latest
-      container_name: lost-cv
-      command: bash /entrypoint.sh
-      env_file:
-        - .env
-      volumes:
-        - ${LOST_DATA}:/home/lost/data
-        - ${LOST_APP}:/home/lost/app
-      restart: always
-      environment:
-          PYTHONPATH: "/code/backend"
-          ENV_NAME: "lost-cv"
-          WORKER_NAME: "lost-cv-0"
-          PY3_INIT: "source /opt/conda/bin/activate lost-cv"
-      links:
-        - db-lost
-        - rabbitmqlost
-
-    rabbitmqlost:
-      image: rabbitmq:3-management
-      container_name: rabbitmqlost
-      restart: always
-      volumes:
-        - ${LOST_APP}/rabbitmq:/var/lib/rabbitmq
 
     # For easy db access while dev.
     phpmyadmin:

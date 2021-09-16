@@ -41,7 +41,7 @@ If you want to adjust backend code and test your changes please perform the foll
                 - .env
               volumes:
                 - ${LOST_DATA}:/home/lost
-                - </path/to/lost_clone>/backend/lost:/code/backend/lost
+                - </path/to/lost_clone>/backend/lost:/code/src/backend/lost
 
 .. note::
   Because flask is in debug mode, code changes are applied immediately. 
@@ -102,6 +102,4 @@ Building lost containers locally
     - The *lost* container will inherit from the *lost-base*.
     - As first step build *lost-base*. The Dockerfile is located at `lost/docker/lost-base <https://github.com/l3p-cv/lost/blob/master/docker/lost-base/>`_.
     - After that you can build the *lost* container, using your local version of *lost-base*. The dockerfile can be found here: `lost/docker/lost <https://github.com/l3p-cv/lost/blob/master/docker/lost/>`_
-* Building *lost-cv* will work analog to building the *lost* container
-* `lost-cv-gpu <https://github.com/l3p-cv/lost/blob/master/docker/executors/lost-cv-gpu/Dockerfile>`_ is based on `lost-gpu-base <https://github.com/l3p-cv/lost/blob/master/docker/lost-gpu-base/Dockerfile>`_
-    - Build *lost-gpu-base* first and then use your local version to build *lost-cv-gpu*
+

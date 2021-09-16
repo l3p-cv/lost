@@ -24,4 +24,4 @@ ADD /docker/lost-base/mamba_env.sh .
 RUN /bin/bash -c "source /opt/mambaforge/bin/activate && source mamba_env.sh && conda clean -ay"
 # RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir python-igraph"
 # Change to CLI
-WORKDIR /code/backend/lost/cli
+WORKDIR /code/src/backend/lost/cli
