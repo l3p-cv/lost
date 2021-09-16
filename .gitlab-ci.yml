@@ -13,7 +13,6 @@ variables:
   LOST_CI_REGISTRY_GPU_BASE_IMAGE: $CI_REGISTRY_GPU_BASE_IMAGE:0.0
   LOST_CI_REGISTRY_TEST_IMAGE: $CI_REGISTRY_TEST_IMAGE:$CI_PIPELINE_ID
   LOST_CI_REGISTRY_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-  LOST_CI_REGISTRY_LOST_CV_IMAGE: $CI_REGISTRY_LOST_CV_IMAGE:$CI_COMMIT_TAG
   LOST_CI_REGISTRY_LOST_CV_GPU_IMAGE: $CI_REGISTRY_LOST_CV_GPU_IMAGE:$CI_COMMIT_TAG
   LOST_VERSION: $CI_PIPELINE_ID
 
@@ -37,8 +36,7 @@ build-lost:
     - docker push $LOST_CI_REGISTRY_TEST_IMAGE
   except: 
     variables:
-      - $CI_COMMIT_MESSAGE =~ /lost-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
+      - $CI_COMMIT_MESSAGE =~ /lost-base/      
 
 test-lost:
   stage: test-lost
@@ -50,17 +48,6 @@ test-lost:
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
-      
-build-lost-cv-gpu:
-  stage: build-lost-cv-gpu
-  script: 
-    - docker build --build-arg base_image=$LOST_CI_REGISTRY_GPU_BASE_IMAGE --pull -t $LOST_CI_REGISTRY_LOST_CV_GPU_IMAGE -f docker/executors/lost-cv-gpu/Dockerfile .
-    - docker push $LOST_CI_REGISTRY_LOST_CV_GPU_IMAGE
-  only:
-    # variables:
-    #   - $CI_COMMIT_MESSAGE =~ /lost-cv/
-    - tags
 
 release-lost:
   stage: release-lost
@@ -73,4 +60,3 @@ release-lost:
   except: 
     variables:
       - $CI_COMMIT_MESSAGE =~ /lost-base/
-      - $CI_COMMIT_MESSAGE =~ /lost-cv-gpu/
