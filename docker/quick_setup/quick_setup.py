@@ -62,73 +62,14 @@ class DockerComposeBuilder(object):
             '          MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}\n\n'
         )
 
-    def get_lostcv(self):
-        return (
-            '    lost-cv:\n'
-            '      image: l3pcv/lost-cv:${LOST_VERSION}\n'
-            '      container_name: lost-cv\n'
-            '      command: bash /entrypoint.sh\n'
-            '      env_file:\n'
-            '          - .env\n'
-            '      volumes:\n'
-            '          - ${LOST_DATA}:/home/lost\n'
-            '      restart: always\n'
-            '      environment:\n'
-            '          PYTHONPATH: "/code/src/backend"\n'
-            '          ENV_NAME: "lost-cv"\n'
-            '          WORKER_NAME: "lost-cv-0"\n'
-            '          PY3_INIT: "source /opt/conda/bin/activate lost-cv"\n'
-            '      links:\n'
-            '          - db-lost\n'
-            '          - rabbitmqlost\n\n'
-        )
-
-    def get_lostcv_gpu(self):
-        return (
-            '    lost-cv-gpu:\n'
-            '      image: l3pcv/lost-cv-gpu:${LOST_VERSION}\n'
-            '      container_name: lost-cv-gpu\n'
-            '      runtime: nvidia\n'
-            '      command: bash /entrypoint.sh\n'
-            '      env_file:\n'
-            '          - .env\n'
-            '      volumes:\n'
-            '          - ${LOST_DATA}:/home/lost\n'
-            '      restart: always\n'
-            '      environment:\n'
-            '          PYTHONPATH: "/code/src/backend"\n'
-            '          ENV_NAME: "lost-cv-gpu"\n'
-            '          WORKER_NAME: "lost-cv-gpu-0"\n'
-            '          PY3_INIT: "source /opt/conda/bin/activate lost"\n'
-            '          TF_FORCE_GPU_ALLOW_GROWTH: "true"\n'
-            '      links:\n'
-            '          - db-lost\n'
-            '          - rabbitmqlost\n\n'
-        )
-
-    def get_rabbitmq(self):
-        return (
-            '    rabbitmqlost:\n'
-            '      image: rabbitmq:3-management\n'
-            '      container_name: rabbitmqlost\n'
-            '      restart: always\n'
-            '      volumes:\n'
-            '          - ${LOST_DATA}/rabbitmq:/var/lib/rabbitmq\n\n'
-        )
     def _write_file(self, sotre_path, content):
         with open(sotre_path, 'w') as f:
             f.write(content)
 
-    def write_production_file(self, store_path, add_lostcv=True, use_gpu=False):
+    def write_production_file(self, store_path):
         content = self.get_header()
         content += self.get_lost()
         content += self.get_lostdb()
-        content += self.get_rabbitmq()
-        if add_lostcv:
-            if use_gpu:
-                content += self.get_lostcv_gpu()
-            else:
-                content += self.get_lostcv()
         self._write_file(store_path, content)
 
 class QuickSetup(object):
@@ -145,10 +86,7 @@ class QuickSetup(object):
     
     def write_docker_compose(self, store_path):
         builder = DockerComposeBuilder()
-        if self.args.no_ai:
-            builder.write_production_file(store_path, add_lostcv=False)
-        else:
-            builder.write_production_file(store_path, add_lostcv=True, use_gpu=self.args.add_gpu_worker)
+        builder.write_production_file(store_path)
         logging.info('Wrote docker-compose config to: {}'.format(store_path))
         
 
@@ -249,7 +187,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Quick setup for lost on linux')
     parser.add_argument('install_path', help='Specify path to install lost.')
     parser.add_argument('--release', help='LOST release you want to install.', default=None)
-    parser.add_argument('-gpu', '--add_gpu_worker', help='Create also config files for a local gpu worker', action='store_true')
     parser.add_argument('-noai', '--no_ai', help='Do not add ai examples and no lost-cv worker', action='store_true')
     args = parser.parse_args()
     qs = QuickSetup(args)
