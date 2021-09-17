@@ -1,10 +1,6 @@
 #!/bin/bash
  /bin/bash -c "source /opt/mambaforge/bin/activate lost"
 source /opt/mambaforge/bin/activate lost
-pip install psycopg2 pyarrow fastparquet
-
-# clean celery lock
-rm -rf /tmp/celerybeat.pid
 
 # init env vars 
 export LOST_HOME="/home/lost"
@@ -15,10 +11,6 @@ fi
 
 if [ -z "${LOST_DB_PORT}" ]; then
   export LOST_DB_PORT=3306
-fi
-
-if [ -z "${RABBITMQ_IP}" ]; then
-  export RABBITMQ_IP="rabbitmqlost"
 fi
 
 if [ -z "${RABBITMQ_PORT}" ]; then
