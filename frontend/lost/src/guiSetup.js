@@ -1,13 +1,15 @@
-import DashboardComponent from './containers/pipeline//running/RunningPipeline'
+import DesignerDashboardComponent from './containers/DesignerDashboard/DesignerDashboard'
 import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
 import LabelsComponent from './containers/Labels/Labels'
 import WorkersComponent from './containers/Workers/WorkersTable'
-import UsersComponent from './containers/Users/Users'
+import UsersComponent from './containers/Users/UsersAndGroups'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
-import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import DataSourcesComponent from './containers/DataSources/DataSources'
+
+import PipelinesComponent from './containers/Pipelines/Pipelines'
+import AdminAreaComponent from './containers/AdminArea/AdminArea'
 
 import {
     FaTachometerAlt,
@@ -16,7 +18,9 @@ import {
     FaCubes,
     FaUsers,
     FaPaintBrush,
-    FaDatabase
+    FaDatabase,
+    FaTools,
+    FaTasks
 } from 'react-icons/fa'
 // import SIAReviewAnnotation from './containers/Annotation/SIAReviewAnnotation'
 
@@ -28,17 +32,11 @@ const iconProps = {
         }
 }
 
-
-const Dashboard = {
+const DesignerDashboard = {
     name: 'Dashboard',
     to: '/dashboard',
-    component: DashboardComponent,
+    component: DesignerDashboardComponent,
     icon: <FaTachometerAlt {...iconProps} />,
-}
-
-const TitlePipeline = {
-    title: true,
-    name: 'Pipelines'
 }
 
 const StartPipeline = {
@@ -51,6 +49,16 @@ const StartPipeline = {
 const TitleProject = {
     title: true,
     name: 'Project'
+}
+
+const TitleAdmin = {
+    title: true,
+    name: 'Administration'
+}
+
+const TitleAnnotation = {
+    title: true,
+    name: 'Annotation'
 }
 
 const Labels = {
@@ -68,7 +76,6 @@ const Workers = {
 
 }
 
-
 const Users = {
     name: 'Users',
     to: '/users',
@@ -85,20 +92,12 @@ const DataSources = {
 
 }
 
-const SIAReview = {
-    name: 'SIAReview',
-    to: '/sia-review',
-    component: SiaReviewComponent,
-    icon: <FaDatabase {...iconProps} />,
-
-}
 const Annotation = {
     name: 'Annotation',
     to: '/annotation',
     component: AnnotationTableComponent,
     icon: <FaPaintBrush {...iconProps} />
 }
-
 
 const Sia = {
     path: '/sia',
@@ -111,6 +110,21 @@ const Mia = {
     exact: false,
     component: MiaComponent
 }
+
+const Pipelines = {
+    name: 'Pipelines',
+    to: '/pipelines',
+    component: PipelinesComponent,
+    icon: <FaTasks {...iconProps} />,
+}
+
+const AdminArea = {
+    name: 'Admin Area',
+    to: '/admin_area',
+    component: AdminAreaComponent,
+    icon: <FaTools {...iconProps} />,
+}
+
 const guiSetup = {
     additionalRoutes: [
         Sia,
@@ -119,16 +133,15 @@ const guiSetup = {
     Designer: {
         redirect: '/dashboard',
         navItems: [
-            Dashboard,
-            TitlePipeline,
-            StartPipeline,
+            DesignerDashboard,
             TitleProject,
+            Pipelines,
             Labels,
-            Workers,
-            Users,
-            Annotation,
             DataSources,
-            SIAReview
+            TitleAnnotation,
+            Annotation,
+            TitleAdmin,
+            AdminArea
         ]
     },
     Annotator: {
