@@ -421,6 +421,10 @@ class Canvas extends Component{
             case keyActions.PASTE_ANNOTATION:
                 this.pasteAnnotation(0)
                 break
+            case keyActions.RECREATE_ANNO:
+                // recreate selected annotation using the anno id
+                if(this.state.selectedAnnoId) this.recreateAnnotation(this.state.selectedAnnoId)
+                break
             default:
                 console.warn('Unknown key action', action)
         }
@@ -1030,6 +1034,52 @@ class Canvas extends Component{
                 )
             }
         } 
+    }
+
+    /**
+     * recreate an existing annotation in case the creation process was not finished
+     * @param {string} id of annotation
+     */
+    recreateAnnotation(annoID) {
+        let annos = this.state.annos
+
+        // search for id of selected anno in all annos (should normally be last item in list, but to be sure)
+        let annoIndex
+        let anno
+        
+        for(var k in annos) if(annos[k].id == annoID) {
+            annoIndex = k
+            anno = annos[k]
+            break
+        } 
+
+        // editing is only allowed on line and polygon
+        if(!['line', 'polygon'].includes(anno.type)) return console.log("Cant recreate annotation: Type " +  anno.type + " is forbidden")
+        
+        // remove the old annotation
+        this.state.annos.splice(annoIndex, 1)
+
+        // create a new annotation based on the datapoints of the old annotation
+        let newAnno = {
+            id: anno.id,
+            type: anno.type,
+            data: anno.data,
+            mode: modes.CREATE,
+            status: annoStatus.NEW,
+            labelIds: anno.labelIds,
+            selectedNode: anno.data.length - 1,
+            annoTime: anno.annoTime
+        }
+
+        newAnno = this.startAnnotimeMeasure(newAnno)
+        this.setState({
+            annos: [...this.state.annos, newAnno],
+            selectedAnnoId: newAnno.id,
+            showSingleAnno: newAnno.id,
+            annoToolBarVisible: false
+        })
+
+        console.log("Annotation recreated")
     }
 
     putSelectedOnTop(prevState){
