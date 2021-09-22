@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCogs, faInfoCircle, faUsers, faCubes, faDatabase } from '@fortawesome/free-solid-svg-icons'
+import { faCogs, faInfoCircle, faUsers, faCubes, faDatabase, faTags, faRobot, faTasks } from '@fortawesome/free-solid-svg-icons'
 
 import {
     CCol,
@@ -68,6 +68,24 @@ const AdminArea = () => {
                         { active === 4 && ' Global Datasources'}
                     </CNavLink>
                     </CNavItem>
+                    <CNavItem>
+                    <CNavLink>
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
+                        { active === 5 && ' Global Labels'}
+                    </CNavLink>
+                    </CNavItem>
+                    <CNavItem>
+                    <CNavLink>
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTasks} />
+                        { active === 6 && ' Global Pipelines'}
+                    </CNavLink>
+                    </CNavItem>
+                    <CNavItem>
+                    <CNavLink>
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
+                        { active === 7 && ' JupyterLab'}
+                    </CNavLink>
+                    </CNavItem>
                 </CNav>
                 <CTabContent>
                     <CTabPane  style={{marginTop: 30}}>
@@ -81,6 +99,12 @@ const AdminArea = () => {
                     </CTabPane>
                     <CTabPane  style={{marginTop: 30}}>
                     <WorkersTable></WorkersTable>
+                    </CTabPane>
+                    <CTabPane  style={{marginTop: 30}}>
+                    <div>{renderSystemInfo()}</div>
+                    </CTabPane>
+                    <CTabPane  style={{marginTop: 30}}>
+                    <div>{renderSystemInfo()}</div>
                     </CTabPane>
                     <CTabPane  style={{marginTop: 30}}>
                     <div>{renderSystemInfo()}</div>

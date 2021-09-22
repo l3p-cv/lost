@@ -39,8 +39,8 @@ i18n.use(initReactI18next) // passes i18n down to react-i18next
 const TheLayout = React.lazy(() => import('./coreui_containers/TheLayout'))
 
 // Pages
-const Login = React.lazy(() => import('./containers/Login'))
-const Logout = React.lazy(() => import('./containers/Logout'))
+const Login = React.lazy(() => import('./containers/Login/Login'))
+const Logout = React.lazy(() => import('./containers/Logout/Logout'))
 
 const loading = () => {
     return <div>Loading</div>
