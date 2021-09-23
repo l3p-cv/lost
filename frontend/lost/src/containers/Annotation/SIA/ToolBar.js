@@ -309,6 +309,11 @@ class ToolBar extends Component{
                         <Card.Content description='Press DELETE or BACKSPACE'/>
                     </Card>
                     <Card>
+                        <Card.Content header='Edit Line/Polygon' />
+                        <Card.Content description='1.) Click on the Annotation you want to edit.'/>
+                        <Card.Content description='2.) Press "e". New nodes can now be added using right click'/>
+                    </Card>
+                    <Card>
                         <Card.Content header='Zoom/ Move Canvas' />
                         <Card.Content description='Zoom: Use MOUSE WHEEL to zoom in/out'/>
                         <Card.Content description='Move: Hold MOUSE WHEEL and move mouse. Or Use W/A/S/D keys to move camera up/left/down/right'/>
