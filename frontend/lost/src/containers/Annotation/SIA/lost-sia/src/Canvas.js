@@ -364,16 +364,8 @@ class Canvas extends Component{
                 this.editAnnoLabel(myAnno)
                 break
             case keyActions.DELETE_ANNO:
-                if (anno){
-                    if (anno.mode === modes.CREATE){
-                        const ar = this.findAnnoRef(this.state.selectedAnnoId)
-                        if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
-
-                    } else {
-                        this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
-                    }
-                }
-               break
+                this.deleteAnnotation(anno)
+                break
             case keyActions.ENTER_ANNO_ADD_MODE:
                 if (anno){
                     this.updateSelectedAnno(
@@ -802,6 +794,18 @@ class Canvas extends Component{
         }
     }
 
+    deleteAnnotation(anno) {
+        if (anno){
+            if (anno.mode === modes.CREATE){
+                const ar = this.findAnnoRef(this.state.selectedAnnoId)
+                if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
+    
+            } else {
+                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+            }
+        }
+    }
+
     deleteAllAnnos(){
         let newAnnos = []
         this.state.annos.forEach( e => {
@@ -1033,7 +1037,7 @@ class Canvas extends Component{
                     newAnno.id
                 )
             }
-        } 
+        }
     }
 
     /**
@@ -1041,6 +1045,7 @@ class Canvas extends Component{
      * @param {string} id of annotation
      */
     recreateAnnotation(annoID) {
+
         let annos = this.state.annos
 
         // search for id of selected anno in all annos (should normally be last item in list, but to be sure)
@@ -1051,11 +1056,11 @@ class Canvas extends Component{
             annoIndex = k
             anno = annos[k]
             break
-        } 
+        }
 
         // editing is only allowed on line and polygon
         if(!['line', 'polygon'].includes(anno.type)) return console.log("Cant recreate annotation: Type " +  anno.type + " is forbidden")
-        
+
         // remove the old annotation
         this.state.annos.splice(annoIndex, 1)
 
@@ -1065,7 +1070,7 @@ class Canvas extends Component{
             type: anno.type,
             data: anno.data,
             mode: modes.CREATE,
-            status: annoStatus.NEW,
+            status: (anno.status == 'database' ? annoStatus.CHANGED : annoStatus.NEW),
             labelIds: anno.labelIds,
             selectedNode: anno.data.length - 1,
             annoTime: anno.annoTime
