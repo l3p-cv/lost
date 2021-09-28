@@ -130,7 +130,7 @@ const guiSetup = {
         Sia,
         Mia
     ],
-    Designer: {
+    Administrator: {
         redirect: '/dashboard',
         navItems: [
             DesignerDashboard,
@@ -142,6 +142,18 @@ const guiSetup = {
             Annotation,
             TitleAdmin,
             AdminArea
+        ]
+    },
+    Designer: {
+        redirect: '/dashboard',
+        navItems: [
+            DesignerDashboard,
+            TitleProject,
+            Pipelines,
+            Labels,
+            DataSources,
+            TitleAnnotation,
+            Annotation,
         ]
     },
     Annotator: {

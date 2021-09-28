@@ -25,7 +25,7 @@ class UserList(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
+        if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
@@ -44,7 +44,7 @@ class UserList(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
+        if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
             return "You are not authorized.", 401
         # get data from parser
@@ -72,6 +72,9 @@ class UserList(Resource):
             
             if data['roles']:
                 for role_name in data['roles']:
+                    if role_name == 'Administrator':
+                        designer_role = dbm.get_role_by_name(roles.ADMINISTRATOR)
+                        user.roles.append(designer_role)        
                     if role_name == 'Designer':
                         designer_role = dbm.get_role_by_name(roles.DESIGNER)
                         user.roles.append(designer_role)        
@@ -102,7 +105,7 @@ class User(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
+        if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
             return "You are not authorized.", 401
 
@@ -118,7 +121,7 @@ class User(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
+        if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
             return "You are not authorized.", 401
 
@@ -148,7 +151,7 @@ class User(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
+        if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
             return "You are not authorized.", 401
 
@@ -162,9 +165,9 @@ class User(Resource):
 
     
 
-            if roles.DESIGNER not in args.get('roles'):
+            if roles.ADMINISTRATOR not in args.get('roles'):
                 for user_role in dbm.get_user_roles_by_user_id(id):
-                    if user_role.role.name == roles.DESIGNER and requesteduser.user_name != 'admin': 
+                    if user_role.role.name == roles.ADMINISTRATOR and requesteduser.user_name != 'admin': 
                         dbm.delete(user_role) 
                         dbm.commit()   
 
@@ -172,7 +175,10 @@ class User(Resource):
                 for role_name in args.get('roles'):
                     if role_name == 'Designer':
                         designer_role = dbm.get_role_by_name(roles.DESIGNER)
-                        requesteduser.roles.append(designer_role)        
+                        requesteduser.roles.append(designer_role)
+                    if role_name == 'Administrator':
+                        admin_role = dbm.get_role_by_name(roles.ADMINISTRATOR)
+                        requesteduser.roles.append(admin_role)   
             
             for user_group in dbm.get_user_groups_by_user_id(id):
                 if user_group.group.is_user_default:
@@ -297,7 +303,7 @@ class UserLogin(Resource):
         dbm.close_session()
         return response
 
-@namespace.route('/token')
+@namespace.route('/token') 
 class Token(Resource):
     @api.expect(user_login)
     def post(self):

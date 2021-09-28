@@ -22,9 +22,10 @@ def main():
     dbm.create_database()
     create_first_user(dbm)
     create_lost_filesystem_entry(dbm, lostconfig)
+    create_project_config(dbm)
     dbm.close_session()
 
-def create_first_user(dbm):
+def create_first_user(dbm): 
     if not dbm.find_user_by_user_name('admin'):
         user = User(
             user_name = 'admin',
@@ -34,6 +35,7 @@ def create_first_user(dbm):
             first_name= 'LOST',
             last_name='Admin'
         )
+        user.roles.append(Role(name=roles.ADMINISTRATOR))
         user.roles.append(Role(name=roles.DESIGNER))
         user.roles.append(Role(name=roles.ANNOTATOR))
         user.groups.append(Group(name=user.user_name, is_user_default=True))

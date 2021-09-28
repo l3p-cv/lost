@@ -16,8 +16,6 @@ from lost.api.label.endpoint import namespace as label_namespace
 from lost.api.worker.endpoint import namespace as worker_namespace
 from lost.api.filebrowser.endpoint import namespace as filebrowser_namespace
 from lost.logic import dask_session
-#from lost.database.db import db
-from lost.db.model import User, Role, UserRoles
 from lost.db import access
 
 from flaskapp import app
