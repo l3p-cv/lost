@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRocket, faTasks, faPlus, faFileImport } from '@fortawesome/free-solid-svg-icons'
+import { faTags, faFileImport } from '@fortawesome/free-solid-svg-icons'
 
 import {
     CCol,
@@ -16,12 +16,9 @@ import {
   } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
-import RunningPipeline from '../pipeline/running/RunningPipeline'
-import StartPipeline from '../pipeline/start/StartPipeline'
+import Labels from './Labels'
 
-import LOSTPipelines from './LOSTPipelines'
-
-const Pipelines = () => {
+const LabelDashboard = () => {
     const dispatch = useDispatch()
     const [active, setActive] = useState(0)
     useEffect(() => {
@@ -42,38 +39,20 @@ const Pipelines = () => {
                 <CNav variant="tabs">
                     <CNavItem>
                     <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faRocket} />
-                        { active === 0 && ' LOST Pipelines'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTasks} />
-                        { active === 1 && ' Running Pipelines'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faPlus} />
-                        { active === 2 && ' Start Pipeline'}
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
+                        { active === 0 && ' Labels'}
                     </CNavLink>
                     </CNavItem>
                     <CNavItem>
                     <CNavLink>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faFileImport} />
-                        { active === 3 && ' Import / Update'}
+                        { active === 1 && ' Import'}
                     </CNavLink>
                     </CNavItem>
                 </CNav>
                 <CTabContent>
                     <CTabPane  style={{marginTop: 30}}>
-                    <LOSTPipelines></LOSTPipelines>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <RunningPipeline></RunningPipeline>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <StartPipeline></StartPipeline>
+                    <Labels></Labels>
                     </CTabPane>
                     <CTabPane  style={{marginTop: 30}}>
                     <div>{renderSystemInfo()}</div>
@@ -84,4 +63,4 @@ const Pipelines = () => {
         </BaseContainer>
     )
 }
-export default Pipelines
+export default LabelDashboard

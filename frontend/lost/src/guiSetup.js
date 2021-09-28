@@ -1,6 +1,6 @@
 import DesignerDashboardComponent from './containers/DesignerDashboard/DesignerDashboard'
 import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
-import LabelsComponent from './containers/Labels/Labels'
+import LabelsComponent from './containers/Labels/LabelDashboard'
 import WorkersComponent from './containers/Workers/WorkersTable'
 import UsersComponent from './containers/Users/UsersAndGroups'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
