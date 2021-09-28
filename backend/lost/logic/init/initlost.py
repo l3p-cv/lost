@@ -8,6 +8,7 @@ from lost.db.model import User, Role, Group
 from lost.db import model
 import json
 from datetime import datetime
+from lost.logic.project_config import ProjectConfigMan
 
 def main():
     lostconfig = config.LOSTConfig()
@@ -55,6 +56,16 @@ def create_lost_filesystem_entry(dbm, lostconfig):
         lost_fs.root_path = lostconfig.data_path
         lost_fs.fs_type = lostconfig.data_fs_type 
     dbm.save_obj(lost_fs)
+
+def create_project_config(dbm):
+    pc = ProjectConfigMan(dbm)
+    print ('Try to create default project config!')
+    try:
+        pc.create_entry('default_language', 'en', description='Default selected language.')
+    except:
+        print('Project config already exists!')
+    dbm.close_session()
+
 
 if __name__ == '__main__':
     main()
