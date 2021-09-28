@@ -364,16 +364,8 @@ class Canvas extends Component{
                 this.editAnnoLabel(myAnno)
                 break
             case keyActions.DELETE_ANNO:
-                if (anno){
-                    if (anno.mode === modes.CREATE){
-                        const ar = this.findAnnoRef(this.state.selectedAnnoId)
-                        if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
-
-                    } else {
-                        this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
-                    }
-                }
-               break
+                this.deleteAnnotation(anno)
+                break
             case keyActions.ENTER_ANNO_ADD_MODE:
                 if (anno){
                     this.updateSelectedAnno(
@@ -420,6 +412,10 @@ class Canvas extends Component{
                 break
             case keyActions.PASTE_ANNOTATION:
                 this.pasteAnnotation(0)
+                break
+            case keyActions.RECREATE_ANNO:
+                // recreate selected annotation using the anno id
+                if(this.state.selectedAnnoId) this.recreateAnnotation(this.state.selectedAnnoId)
                 break
             default:
                 console.warn('Unknown key action', action)
@@ -798,6 +794,18 @@ class Canvas extends Component{
         }
     }
 
+    deleteAnnotation(anno) {
+        if (anno){
+            if (anno.mode === modes.CREATE){
+                const ar = this.findAnnoRef(this.state.selectedAnnoId)
+                if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
+    
+            } else {
+                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+            }
+        }
+    }
+
     deleteAllAnnos(){
         let newAnnos = []
         this.state.annos.forEach( e => {
@@ -1029,7 +1037,54 @@ class Canvas extends Component{
                     newAnno.id
                 )
             }
-        } 
+        }
+    }
+
+    /**
+     * recreate an existing annotation in case the creation process was not finished
+     * @param {string} id of annotation
+     */
+    recreateAnnotation(annoID) {
+
+        let annos = this.state.annos
+
+        // search for id of selected anno in all annos (should normally be last item in list, but to be sure)
+        let annoIndex
+        let anno
+        
+        for(var k in annos) if(annos[k].id == annoID) {
+            annoIndex = k
+            anno = annos[k]
+            break
+        }
+
+        // editing is only allowed on line and polygon
+        if(!['line', 'polygon'].includes(anno.type)) return console.log("Cant recreate annotation: Type " +  anno.type + " is forbidden")
+
+        // remove the old annotation
+        this.state.annos.splice(annoIndex, 1)
+
+        // create a new annotation based on the datapoints of the old annotation
+        let newAnno = {
+            id: anno.id,
+            type: anno.type,
+            data: anno.data,
+            mode: modes.CREATE,
+            status: (anno.status == 'database' ? annoStatus.CHANGED : annoStatus.NEW),
+            labelIds: anno.labelIds,
+            selectedNode: anno.data.length - 1,
+            annoTime: anno.annoTime
+        }
+
+        newAnno = this.startAnnotimeMeasure(newAnno)
+        this.setState({
+            annos: [...this.state.annos, newAnno],
+            selectedAnnoId: newAnno.id,
+            showSingleAnno: newAnno.id,
+            annoToolBarVisible: false
+        })
+
+        console.log("Annotation recreated")
     }
 
     putSelectedOnTop(prevState){
