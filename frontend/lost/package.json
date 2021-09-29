@@ -26,7 +26,7 @@
     "jwt-decode": "^3.1.2",
     "l3p-frontend": "^3.2.12",
     "lodash": "^4.17.15",
-    "node-sass": "^4.14.1",
+    "node-sass": "^6.0.1",
     "prop-types": "^15.7.2",
     "react": "^16.11.0",
     "react-autocomplete": "^1.8.1",
