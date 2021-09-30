@@ -62,7 +62,7 @@ const TheFooter = () => {
         <CFooter fixed={false}>
             <div>
                 <span className="ml-1">
-                    Powered by <a href="https://lost.com">LOST</a>
+                    Powered by <a href="https://github.com/l3p-cv/lost" target="_blank">LOST Community</a>
                 </span>
             </div>
             {renderAutologoutTimerFooter()}
@@ -73,7 +73,7 @@ const TheFooter = () => {
                         {isDevMode ? 'React Development Mode' : ''}
                     </span>
                     <b>Version </b>
-                    <small>LOST@{version}</small>
+                    <small>{version}</small>
                 </span>
             </div>
         </CFooter>

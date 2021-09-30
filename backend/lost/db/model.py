@@ -31,8 +31,6 @@ class User(Base, UserMixin):
     __tablename__ = 'user'
 
     idx = Column(Integer, primary_key=True)
-    is_active = Column('is_active', Boolean(),
-                       nullable=False, server_default='1')
     user_name = Column(String(100), nullable=False, unique=True)
     email = Column(String(255), unique=True)
     email_confirmed_at = Column(DateTime())
@@ -42,17 +40,17 @@ class User(Base, UserMixin):
     first_name = Column(String(100), server_default='')
     last_name = Column(String(100),  server_default='')
 
-    confidence_level = Column(Integer)
-    photo_path = Column(String(4096))
 
     roles = relationship('Role', secondary='user_roles', lazy='joined')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
     choosen_anno_task = relationship(
         'AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
+    
     api_token = Column(String(4096))
     is_external = Column(Boolean)
+    is_online = Column(Boolean)
 
-    def __init__(self, user_name, password=None, email=None, first_name=None, last_name=None, email_confirmed_at=None, api_token=None, is_external=False):
+    def __init__(self, user_name, password=None, email=None, first_name=None, last_name=None, email_confirmed_at=None, api_token=None, is_external=False, is_online=False):
         self.user_name = user_name
         self.email = email
         self.email_confirmed_at = email_confirmed_at
@@ -62,6 +60,7 @@ class User(Base, UserMixin):
         self.last_name = last_name
         self.api_token = api_token
         self.is_external = is_external
+        self.is_online = is_online
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -1079,19 +1078,24 @@ class PipeTemplate(Base):
         json_template (Text): A json sting that defines a pipeline template.
         timestamp (DateTime): Date and Time this Template was created or imported.
         is_debug_mode (Boolean): DebugMode shows weather this pipe is viewable for normal users or only for developers
+        group_id (int): Group this template belongs to
+    Note:
+        group_id is None if this filesystem is available for all users!
     """
     __tablename__ = "pipe_template"
     idx = Column(Integer, primary_key=True)
     json_template = Column(Text)
     timestamp = Column(DateTime())
     is_debug_mode = Column(Boolean)
+    group_id = Column(Integer, ForeignKey('group.idx'))
 
     def __init__(self, idx=None, json_template=None, timestamp=None,
-                 is_debug_mode=None):
+                 is_debug_mode=None, group_id=None):
         self.idx = idx
         self.json_template = json_template
         self.timestamp = timestamp
         self.debug_mode = is_debug_mode
+        self.group_id = group_id
 
 
 class Script(Base):
@@ -1438,7 +1442,11 @@ class LabelLeaf(Base):
         is_deleted (Boolean): 
         is_root (Boolean): Indicates if this leaf is the root of a tree.
         parent_leaf_id (Integer): Reference to parent LabelLeaf.
+        group_id (int): Group this Label Leaf belongs to
         label_leafs (list of :class:`LabelLeaf`):
+    
+    Note:
+        group_id is None if this filesystem is available for all users!
     '''
     __tablename__ = "label_leaf"
     idx = Column(Integer, primary_key=True)
@@ -1450,11 +1458,13 @@ class LabelLeaf(Base):
     is_deleted = Column(Boolean)
     is_root = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
+    group_id = Column(Integer, ForeignKey('group.idx'))
+
     label_leaves = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
                  timestamp=None, external_id=None, label_tree_id=None, is_deleted=None,
-                 parent_leaf_id=None, is_root=None):
+                 parent_leaf_id=None, is_root=None, group_id=None):
         self.idx = idx
         self.name = name
         self.abbreviation = abbreviation
@@ -1464,6 +1474,7 @@ class LabelLeaf(Base):
         self.is_deleted = is_deleted
         self.parent_leaf_id = parent_leaf_id
         self.is_root = is_root
+        self.group_id = group_id
 
     def to_dict(self):
         '''Transform this object to a dict.
@@ -1679,3 +1690,36 @@ class FileSystem(Base):
         self.root_path = root_path
         self.name = name
         self.timestamp = timestamp
+
+class Config(Base):
+    __tablename__ = "config"
+    idx = Column(Integer, primary_key=True)
+    key = Column(String(3072), unique=True)
+    default_value = Column(Text)
+    value = Column(Text)
+    description = Column(Text) 
+    timestamp = Column(DateTime())
+    user_id = Column(Integer, ForeignKey('user.idx'))
+    is_user_specific = Column(Boolean)
+
+    def __init__(self, idx=None, key=None, default_value=None,
+                 value=None, timestamp=None, user_id=None, description=None, is_user_specific=False):
+        self.idx = idx
+        self.key = key
+        self.default_value = default_value
+        self.value = value
+        self.timestamp = timestamp
+        self.user_id = user_id
+        self.description = description
+        self.is_user_specific = is_user_specific
+
+    def to_dict(self):
+        return {
+            'idx': self.idx,
+            'key': self.key,
+            'value': self.value,
+            'default_value': self.default_value,
+            'timestamp': self.timestamp,
+            'user_id': self.user_id,
+            'description': self.description
+        }

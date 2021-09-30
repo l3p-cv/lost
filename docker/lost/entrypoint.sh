@@ -1,11 +1,6 @@
 #!/bin/bash
  /bin/bash -c "source /opt/mambaforge/bin/activate lost"
 source /opt/mambaforge/bin/activate lost
-pip install psycopg2 pyarrow fastparquet
-# conda install pyarrow fastparquet
-
-# clean celery lock
-rm -rf /tmp/celerybeat.pid
 
 # init env vars 
 export LOST_HOME="/home/lost"
@@ -16,10 +11,6 @@ fi
 
 if [ -z "${LOST_DB_PORT}" ]; then
   export LOST_DB_PORT=3306
-fi
-
-if [ -z "${RABBITMQ_IP}" ]; then
-  export RABBITMQ_IP="rabbitmqlost"
 fi
 
 if [ -z "${RABBITMQ_PORT}" ]; then
@@ -38,11 +29,11 @@ done
 
 mkdir -p ${LOST_HOME}/logs
 
-python3 /code/backend/lost/logic/init/initlost.py
-cd /code/backend/lost/cli && bash import_examples.sh && cd -
+python3 /code/src/backend/lost/logic/init/initlost.py
+cd /code/src/backend/lost/cli && bash import_examples.sh && cd -
 # cd /code/docs/sphinx &&  make html && cd -
-python3 /code/backend/lost/logic/init/initworker.py
-python3 /code/backend/lost/logic/init/init_patchsystem.py
+python3 /code/src/backend/lost/logic/init/initworker.py
+python3 /code/src/backend/lost/logic/init/init_patchsystem.py
 
 
 # start scheduler.
@@ -53,27 +44,33 @@ eval $daskscheduler &
 worker="dask-worker localhost:8786 --name $ENV_NAME"
 eval $worker &
 
-cron_jobs="python3 /code/backend/lost/logic/jobs/cron_jobs.py"
+cron_jobs="python3 /code/src/backend/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &
+
+# remove config in case debug mode changed
+if [ -f "/etc/nginx/conf.d/lost.conf" ]; then
+  rm /etc/nginx/conf.d/lost.conf
+fi
 
 if [ ${LOST_DEBUG_MODE} = "True" ]; then
   if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
-	cp /code/docker/lost/nginx/dev.conf /etc/nginx/conf.d/default.conf
+    cp /code/src/docker/lost/nginx/dev.conf /etc/nginx/conf.d/default.conf
   fi
   # start nginx web server
   nginx="service nginx start"
   eval $nginx &
   # start flask dev server
-  endpoint="python3 /code/backend/lost/app.py"
+  endpoint="python3 /code/src/backend/lost/app.py"
   eval $endpoint 
 else
   if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
-	cp /code/docker/lost/nginx/prod.conf /etc/nginx/conf.d/default.conf
+	  cp /code/src/docker/lost/nginx/dev.conf/prod.conf /etc/nginx/conf.d/default.conf
   fi
   # start nginx web server
   nginx="service nginx start"
   eval $nginx &
   # start uswgi server
-  endpoint="cd /code/backend/lost/ && uwsgi --ini wsgi.ini --logto ${LOST_HOME}/logs/uswgi.log"
+  #endpoint="cd /code/src/backend/lost/ && uwsgi --ini wsgi.ini --logto ${LOST_HOME}/logs/uswgi.log"
+  endpoint="cd /code/ && bash start.sh"
   eval $endpoint 
 fi

@@ -1,5 +1,8 @@
 FROM nginx:latest
 
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
 # Install Backend Dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends wget curl bzip2 python3.5 \
     python3-pip python3-setuptools python3-dev build-essential libigraph0-dev netcat nano \
@@ -21,4 +24,4 @@ ADD /docker/lost-base/mamba_env.sh .
 RUN /bin/bash -c "source /opt/mambaforge/bin/activate && source mamba_env.sh && conda clean -ay"
 # RUN /bin/bash -c "source /opt/conda/bin/activate lost && pip install --no-cache-dir python-igraph"
 # Change to CLI
-WORKDIR /code/backend/lost/cli
+WORKDIR /code/src/backend/lost/cli

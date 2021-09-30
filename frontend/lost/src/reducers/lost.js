@@ -5,7 +5,7 @@ console.log('initIsNavBarVisible')
 console.log(initIsNavBarVisible)
 const INITIAL_STATE = {
     isNavBarVisible: initIsNavBarVisible === undefined? true: initIsNavBarVisible,
-    version: '0.0.0',
+    version: '',
     settings: {
         autoLogoutWarnTime: 300,
         autoLogoutTime: 3600,
@@ -30,6 +30,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 roles: action.payload
+            }
+        case TYPES.SET_VERSION:
+            return {
+                ...state,
+                version: action.payload
             }
         default:
             return state

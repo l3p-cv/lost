@@ -4,11 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import actions from '../../actions/user'
 import IconButton from '../../components/IconButton'
 import {
-    faUserEdit,
-    faTrash,
     faUserPlus,
     faEdit,
-    faCopy
 } from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
 import { useCopyToClipboard } from 'react-use'
@@ -16,18 +13,8 @@ import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
 import {getFSList, getPossibleFsTypes} from '../../access/fb'
 
-const EMPTY_USER = [
-    {
-        email: '',
-        groups: [],
-        password: '',
-        roles: [],
-        userName: ''
-    }
-]
 
 export const DSTable = () => {
-    let users = useSelector((state) => state.user.users)
     const [copiedObj, copyToClipboard] = useCopyToClipboard()
     const deleteUserStatus = useSelector((state) => state.user.deleteUserStatus)
     const [isNewDS, setIsNewDS] = useState(false)
@@ -41,8 +28,6 @@ export const DSTable = () => {
         }
         const interval = setInterval(fetchData, 1000)
         return () => clearInterval(interval)
-        // fetchData()
-        // console.log('IN DSTABLE: ', await getFSList())
     }, [])
 
     useEffect(() => {

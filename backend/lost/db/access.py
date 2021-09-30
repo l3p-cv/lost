@@ -883,3 +883,19 @@ class DBMan(object):
                 GROUP BY YEAR(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), DAY(two_d_anno.timestamp)".format(pipe_element_id, between_str, exclude_current_iteration_str)
 
         return self.session.execute(sql)
+    
+    def get_project_config(self, key=None):
+        '''Get all :class:`model.Config` objects in LOST.
+
+        Args:
+            key (str): Get project config by key
+
+        Returns:
+            list: A list of :class:`model.Config` objects
+            Config object: A single config object
+        '''
+        if key is None:
+            return self.session.query(model.Config).filter(model.Config.is_user_specific==False).all()
+        else:
+            return self.session.query(model.Config)\
+                .filter(model.Config.key == key, model.Config.is_user_specific==False).first()

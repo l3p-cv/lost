@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   not first element in pipeline graph
 - Fixed raw sql in access to be compatible with postgresql
 
+## Removed
+- removed lost-cv images. This is now integrated into the lost image
+
 ## [1.4.2] - 2021-03-12
 ## Changed 
 - ImgBlacklist: 

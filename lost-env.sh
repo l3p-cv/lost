@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # lost will store filed needed to run the application in this directory
-export LOST_BASE_DIR=/usr/local/src/lost
+export LOST_BASE_DIR=/code
 
 # lost will log files into this directory
 export LOST_LOG_DIR=/var/log/lost/
@@ -16,9 +16,12 @@ export LOST_WORKER_MANAGEMENT=dynamic
 export LOST_APP_PATH=
 export LOST_DATA_PATH=
 
-export LOST_DB_CONNECTOR=mysql
-export LOST_DB_IP=127.0.0.1
-export LOST_DB_PORT=3306
-export LOST_DB_NAME=lost
-export LOST_DB_USER=lost
-export LOST_DB_PASSWORD=pleaseChangeIt
+# database is already configured in docker env file when using docker
+if [ -z ${IS_USING_DOCKER+x} ] || [ "$IS_USING_DOCKER" != "true" ]; then
+    export LOST_DB_CONNECTOR=mysql
+    export LOST_DB_IP=127.0.0.1
+    export LOST_DB_PORT=3306
+    export LOST_DB_NAME=lost
+    export LOST_DB_USER=lost
+    export LOST_DB_PASSWORD=pleaseChangeIt
+fi

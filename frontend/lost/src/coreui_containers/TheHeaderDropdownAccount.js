@@ -1,12 +1,12 @@
 import React from 'react'
 import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
-import { FaLock } from 'react-icons/fa'
+import { FaLock, FaUser } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 import userPng from '../assets/img/avatars/user.png'
 
 const TheHeaderDropdown = () => {
-    const username = useSelector((state) => state.user.ownUser.userName)
+    const username = useSelector((state) => state.user.ownUser.user_name)
     const history = useHistory()
 
     return (
@@ -25,6 +25,10 @@ const TheHeaderDropdown = () => {
             <CDropdownMenu className="pt-0" placement="bottom-end">
                 <CDropdownItem header tag="div" color="light" className="text-center">
                     <strong>Account</strong>
+                </CDropdownItem>
+                <CDropdownItem onClick={() => history.push('/my_profile')}>
+                    <FaUser style={{ marginRight: 10 }} />
+                    My Profile
                 </CDropdownItem>
                 <CDropdownItem onClick={() => history.push('/logout')}>
                     <FaLock style={{ marginRight: 10 }} />

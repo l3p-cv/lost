@@ -1,13 +1,16 @@
-import DashboardComponent from './containers/pipeline//running/RunningPipeline'
+import DesignerDashboardComponent from './containers/DesignerDashboard/DesignerDashboard'
 import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
-import LabelsComponent from './containers/Labels/Labels'
+import LabelsComponent from './containers/Labels/LabelDashboard'
 import WorkersComponent from './containers/Workers/WorkersTable'
-import UsersComponent from './containers/Users/Users'
+import UsersComponent from './containers/Users/UsersAndGroups'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
-import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import DataSourcesComponent from './containers/DataSources/DataSources'
+import MyProfileComponent from './containers/Profile/Profile'
+
+import PipelinesComponent from './containers/Pipelines/Pipelines'
+import AdminAreaComponent from './containers/AdminArea/AdminArea'
 
 import {
     FaTachometerAlt,
@@ -16,9 +19,10 @@ import {
     FaCubes,
     FaUsers,
     FaPaintBrush,
-    FaDatabase
+    FaDatabase,
+    FaTools,
+    FaTasks
 } from 'react-icons/fa'
-// import SIAReviewAnnotation from './containers/Annotation/SIAReviewAnnotation'
 
 const iconProps = {
     size: 20,
@@ -28,24 +32,11 @@ const iconProps = {
         }
 }
 
-
-const Dashboard = {
+const DesignerDashboard = {
     name: 'Dashboard',
     to: '/dashboard',
-    component: DashboardComponent,
+    component: DesignerDashboardComponent,
     icon: <FaTachometerAlt {...iconProps} />,
-}
-
-const TitlePipeline = {
-    title: true,
-    name: 'Pipelines'
-}
-
-const StartPipeline = {
-    name: 'Start Pipeline',
-    to: '/start_pipeline',
-    component: StartPipelineComponent,
-    icon: <FaPlay {...iconProps} />,
 }
 
 const TitleProject = {
@@ -53,28 +44,21 @@ const TitleProject = {
     name: 'Project'
 }
 
+const TitleAdmin = {
+    title: true,
+    name: 'Administration'
+}
+
+const TitleAnnotation = {
+    title: true,
+    name: 'Annotation'
+}
+
 const Labels = {
     name: 'Labels',
     to: '/labels',
     component: LabelsComponent,
     icon: <FaTag {...iconProps} />,
-}
-
-const Workers = {
-    name: 'Workers',
-    to: '/workers',
-    component: WorkersComponent,
-    icon: <FaCubes {...iconProps} />,
-
-}
-
-
-const Users = {
-    name: 'Users',
-    to: '/users',
-    component: UsersComponent,
-    icon: <FaUsers {...iconProps} />,
-
 }
 
 const DataSources = {
@@ -85,20 +69,12 @@ const DataSources = {
 
 }
 
-const SIAReview = {
-    name: 'SIAReview',
-    to: '/sia-review',
-    component: SiaReviewComponent,
-    icon: <FaDatabase {...iconProps} />,
-
-}
 const Annotation = {
     name: 'Annotation',
     to: '/annotation',
     component: AnnotationTableComponent,
     icon: <FaPaintBrush {...iconProps} />
 }
-
 
 const Sia = {
     path: '/sia',
@@ -111,24 +87,57 @@ const Mia = {
     exact: false,
     component: MiaComponent
 }
+
+const Pipelines = {
+    name: 'Pipelines',
+    to: '/pipelines',
+    component: PipelinesComponent,
+    icon: <FaTasks {...iconProps} />,
+}
+
+const AdminArea = {
+    name: 'Admin Area',
+    to: '/admin_area',
+    component: AdminAreaComponent,
+    icon: <FaTools {...iconProps} />,
+}
+
+const MyProfile = {
+    path: '/my_profile',
+    exact: false,
+    component: MyProfileComponent
+}
+
 const guiSetup = {
     additionalRoutes: [
         Sia,
-        Mia
+        Mia,
+        MyProfile
     ],
+    Administrator: {
+        redirect: '/dashboard',
+        navItems: [
+            DesignerDashboard,
+            TitleProject,
+            Pipelines,
+            Labels,
+            DataSources,
+            TitleAnnotation,
+            Annotation,
+            TitleAdmin,
+            AdminArea
+        ]
+    },
     Designer: {
         redirect: '/dashboard',
         navItems: [
-            Dashboard,
-            TitlePipeline,
-            StartPipeline,
+            DesignerDashboard,
             TitleProject,
+            Pipelines,
             Labels,
-            Workers,
-            Users,
-            Annotation,
             DataSources,
-            SIAReview
+            TitleAnnotation,
+            Annotation,
         ]
     },
     Annotator: {

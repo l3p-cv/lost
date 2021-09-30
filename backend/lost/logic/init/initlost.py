@@ -8,6 +8,7 @@ from lost.db.model import User, Role, Group
 from lost.db import model
 import json
 from datetime import datetime
+from lost.logic.project_config import ProjectConfigMan
 
 def main():
     lostconfig = config.LOSTConfig()
@@ -21,9 +22,10 @@ def main():
     dbm.create_database()
     create_first_user(dbm)
     create_lost_filesystem_entry(dbm, lostconfig)
+    create_project_config(dbm)
     dbm.close_session()
 
-def create_first_user(dbm):
+def create_first_user(dbm): 
     if not dbm.find_user_by_user_name('admin'):
         user = User(
             user_name = 'admin',
@@ -33,6 +35,7 @@ def create_first_user(dbm):
             first_name= 'LOST',
             last_name='Admin'
         )
+        user.roles.append(Role(name=roles.ADMINISTRATOR))
         user.roles.append(Role(name=roles.DESIGNER))
         user.roles.append(Role(name=roles.ANNOTATOR))
         user.groups.append(Group(name=user.user_name, is_user_default=True))
@@ -55,6 +58,16 @@ def create_lost_filesystem_entry(dbm, lostconfig):
         lost_fs.root_path = lostconfig.data_path
         lost_fs.fs_type = lostconfig.data_fs_type 
     dbm.save_obj(lost_fs)
+
+def create_project_config(dbm):
+    pc = ProjectConfigMan(dbm)
+    print ('Try to create default project config!')
+    try:
+        pc.create_entry('default_language', 'en', description='Default selected language.')
+    except:
+        print('Project config already exists!')
+    dbm.close_session()
+
 
 if __name__ == '__main__':
     main()

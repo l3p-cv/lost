@@ -74,7 +74,7 @@ cp $LOST_SETUP_LOCATION_DIR/wsgi.ini $LOST_BASE_DIR/src/backend/lost
 
 # copy documentation
 mkdir -p $LOST_LOG_DIR
-cp -r $LOST_REPO_LOCATION_DIR/docs $LOST_LOG_DIR
+cp -r $LOST_REPO_LOCATION_DIR/docs $LOST_DOCUMENTATION_DIR
 
 echo
 echo 🛠️  setting up nginx
@@ -89,17 +89,22 @@ sed -i "s/--socket-port-inserted-by-installation-script--/$LOST_UWSGI_PORT/" $LO
 sed -i "s/--nginx-base-alias-inserted-by-installation-script--/$ESCAPED_LOST_BASE_DIR\/src\/frontend\/lost\/build\//" $LOST_SETUP_LOCATION_DIR/nginx.conf
 sed -i "s/--nginx-docs-alias-inserted-by-installation-script--/$ESCAPED_LOST_DOCUMENTATION_DIR\/build\/html\//" $LOST_SETUP_LOCATION_DIR/nginx.conf
 
-# copy & activate nginx config
-cp $LOST_SETUP_LOCATION_DIR/nginx.conf $LOST_NGINX_SITES_DIR/lost.conf
-service nginx restart
+# skip initialisation when installing with Dockerfile (will be done in entrypoint because of DB access)
+if [ -z ${IS_USING_DOCKER+x} ] || [ "$IS_USING_DOCKER" != "true" ]; then
 
-echo
-echo 🛠️  initializing application
+    # copy & activate nginx config
+    cp $LOST_SETUP_LOCATION_DIR/nginx.conf $LOST_NGINX_SITES_DIR/lost.conf
+    service nginx restart
 
-# finally initialize python environment (install database tables etc..)
-python3 $LOST_BASE_DIR/src/backend/lost/logic/init/initlost.py
-cd $LOST_BASE_DIR/src/backend/lost/cli && bash import_examples.sh
-cd $LOST_REPO_LOCATION_DIR
+    echo
+    echo 🛠️  initializing application
+    # finally initialize python environment (install database tables etc..)
+    python3 $LOST_BASE_DIR/src/backend/lost/logic/init/initlost.py
+    cd $LOST_BASE_DIR/src/backend/lost/cli && bash import_examples.sh
+    cd $LOST_REPO_LOCATION_DIR
+else
+    mkdir -p $LOST_BASE_DIR/src/backend/lost/media
+fi
 
 # prepare startup script
 cp $LOST_SETUP_LOCATION_DIR/start.sh $LOST_BASE_DIR/start.sh

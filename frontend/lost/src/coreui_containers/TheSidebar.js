@@ -13,6 +13,7 @@ import {
 } from '@coreui/react'
 
 import actions from '../actions'
+import lostLogoPng from '../assets/img/brand/lost_logo.png'
 
 const TheSidebar = ({ navItems }) => {
     const dispatch = useDispatch()
@@ -27,6 +28,7 @@ const TheSidebar = ({ navItems }) => {
                 <CSidebarBrand className="d-md-down-none" to="/">
                     <img
                         alt=""
+                        src={lostLogoPng}
                         style={{ maxWidth: '60%', maxHeight: '60%' }}
                         className="img-avatar"
                     />

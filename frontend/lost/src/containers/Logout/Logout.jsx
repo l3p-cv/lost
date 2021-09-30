@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { Button, Card, CardBody, CardGroup, Col, Container, Row } from 'reactstrap'
+import { useDispatch, useSelector } from 'react-redux'
+import { Button, Card, CardBody, CardGroup, Container, Row } from 'reactstrap'
 import { useHistory } from 'react-router-dom'
-import actions from '../actions'
+import actions from '../../actions'
+import lostLogoColor from '../../assets/img/brand/lost_logo.png'
+import backgroundImage from '../../assets/img/background.svg'
 
 const Logout = () => {
     const dispatch = useDispatch()
@@ -12,14 +14,16 @@ const Logout = () => {
         dispatch(actions.logout())
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+    useEffect(()=>{
+        document.body.style.backgroundImage = `url(${backgroundImage})`
+    })
     return (
         <div className="app flex-row align-items-center">
             <Container>
-                <Row style={{ margin: '10% 0% 7% 0%' }} className="justify-content-center">
-                    <img width="400px"  alt="" />
+                <Row style={{ margin: '10% 0% 5% 0%' }} className="justify-content-center">
+                    <img width="500px" src={lostLogoColor} alt="" />
                 </Row>
                 <Row className="justify-content-center">
-                    <Col md="8">
                         <CardGroup>
                             <Card className="p-4">
                                 <CardBody>
@@ -28,21 +32,23 @@ const Logout = () => {
                                             ? 'Your session has expired due to inactivity'
                                             : 'You have been successfully logged out.'}
                                         &nbsp;
+                                    </div>
+                                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                         <Button
-                                            className="btn-info"
+                                            style={{marginTop: '5%'}}
+                                            color='primary'
                                             onClick={() => history.push('/login')}
                                         >
-                                            Take me back to the login page !
+                                            Back to login page!
                                         </Button>
                                     </div>
                                 </CardBody>
                             </Card>
                         </CardGroup>
-                    </Col>
                 </Row>
             </Container>
         </div>
     )
 }
 
-export default Logout
+export default Logout;
