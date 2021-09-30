@@ -42,14 +42,14 @@ const Pipelines = () => {
                 <CNav variant="tabs">
                     <CNavItem>
                     <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faRocket} />
-                        { active === 0 && ' LOST Pipelines'}
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTasks} />
+                        { active === 0 && ' Running Pipelines'}
                     </CNavLink>
                     </CNavItem>
                     <CNavItem>
                     <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTasks} />
-                        { active === 1 && ' Running Pipelines'}
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faRocket} />
+                        { active === 1 && ' LOST Pipelines'}
                     </CNavLink>
                     </CNavItem>
                     <CNavItem>
@@ -67,10 +67,10 @@ const Pipelines = () => {
                 </CNav>
                 <CTabContent>
                     <CTabPane  style={{marginTop: 30}}>
-                    <LOSTPipelines></LOSTPipelines>
+                    <RunningPipeline></RunningPipeline>
                     </CTabPane>
                     <CTabPane  style={{marginTop: 30}}>
-                    <RunningPipeline></RunningPipeline>
+                    <LOSTPipelines></LOSTPipelines>
                     </CTabPane>
                     <CTabPane  style={{marginTop: 30}}>
                     <StartPipeline></StartPipeline>

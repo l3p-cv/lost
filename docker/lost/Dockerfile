@@ -1,6 +1,8 @@
 ARG base_image=l3pcv/lost-base:latest
 FROM $base_image
 
+ARG LOST_VERSION
+
 RUN mkdir /home/user
 WORKDIR /home/user/lost-setup
 COPY . .
@@ -15,5 +17,7 @@ RUN rm -r /home/user/lost-setup
 
 ADD /docker/lost/entrypoint.sh /
 ADD /docker/lost/pytest.sh /
+
+RUN echo "__version__='${CI_COMMIT_TAG}'" > /code/src/backend/lost/__init__.py
 RUN echo "export PATH=$PATH:/code/src/backend/lost/cli" >> ~/.bashrc
 RUN echo "conda activate lost" >> ~/.bashrc
