@@ -46,6 +46,7 @@ const TheLayout = () => {
                 const newRoutes = [...newRoutes1, ...newRoutes2]
                 setRoutes(newRoutes)
                 dispatch(actions.setOwnUser())
+                dispatch(actions.getVersion())
                 if(history.location.pathname === '/'){
                     history.push(guiSetup[role.current].redirect)
                 }

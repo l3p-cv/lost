@@ -7,6 +7,7 @@ import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
 import DataSourcesComponent from './containers/DataSources/DataSources'
+import MyProfileComponent from './containers/Profile/Profile'
 
 import PipelinesComponent from './containers/Pipelines/Pipelines'
 import AdminAreaComponent from './containers/AdminArea/AdminArea'
@@ -22,7 +23,6 @@ import {
     FaTools,
     FaTasks
 } from 'react-icons/fa'
-// import SIAReviewAnnotation from './containers/Annotation/SIAReviewAnnotation'
 
 const iconProps = {
     size: 20,
@@ -37,13 +37,6 @@ const DesignerDashboard = {
     to: '/dashboard',
     component: DesignerDashboardComponent,
     icon: <FaTachometerAlt {...iconProps} />,
-}
-
-const StartPipeline = {
-    name: 'Start Pipeline',
-    to: '/start_pipeline',
-    component: StartPipelineComponent,
-    icon: <FaPlay {...iconProps} />,
 }
 
 const TitleProject = {
@@ -66,22 +59,6 @@ const Labels = {
     to: '/labels',
     component: LabelsComponent,
     icon: <FaTag {...iconProps} />,
-}
-
-const Workers = {
-    name: 'Workers',
-    to: '/workers',
-    component: WorkersComponent,
-    icon: <FaCubes {...iconProps} />,
-
-}
-
-const Users = {
-    name: 'Users',
-    to: '/users',
-    component: UsersComponent,
-    icon: <FaUsers {...iconProps} />,
-
 }
 
 const DataSources = {
@@ -125,10 +102,17 @@ const AdminArea = {
     icon: <FaTools {...iconProps} />,
 }
 
+const MyProfile = {
+    path: '/my_profile',
+    exact: false,
+    component: MyProfileComponent
+}
+
 const guiSetup = {
     additionalRoutes: [
         Sia,
-        Mia
+        Mia,
+        MyProfile
     ],
     Administrator: {
         redirect: '/dashboard',

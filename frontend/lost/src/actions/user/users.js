@@ -67,28 +67,17 @@ export const setOwnUser = () => async (dispatch) => {
     return null
 }
 
+
 export const updateOwnUser = (payload) => async (dispatch) => {
+    const TYPE = TYPES.UPDATE_OWN_USER_STATUS
+    dispatchRequestLoading(dispatch, TYPE)
     try {
         await axios.patch(API_URL + '/user/self', payload)
-        dispatch({ type: TYPES.UPDATE_OWN_USER_SUCCESS })
-        const newOwnUser = await axios.get(API_URL + '/user/self')
+        const newOwnUser = await axios.get(API_URL+ '/user/self')
         dispatch({ type: TYPES.SET_OWN_USER, payload: newOwnUser.data })
+        dispatchRequestSuccess(dispatch, TYPE, 'User updated successfully')
     } catch (e) {
-        dispatch({
-            type: TYPES.UPDATE_OWN_USER_FAILED,
-            payload: e.response.data
-        })
+        dispatchRequestError(dispatch, TYPE, e.message)
     }
-}
-
-
-
-export const getOwnUser = (callback) => async dispatch => {
-    try{
-        const response = await axios.get(API_URL + '/user/self')
-        dispatch({type: TYPES.GET_OWN_USER, payload: response.data})
-        callback()
-    }
-    catch(e) {
-    }
+    dispatchRequestReset(dispatch, TYPE)
 }

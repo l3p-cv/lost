@@ -1,10 +1,10 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { CHeader, CToggler, CHeaderBrand, CHeaderNav } from '@coreui/react'
-import { useTranslation } from 'react-i18next'
+// import { useTranslation } from 'react-i18next'
 // routes config
 
-import TheHeaderDropdownLanguageSelector from './TheHeaderDropdownLanguageSelector'
+// import TheHeaderDropdownLanguageSelector from './TheHeaderDropdownLanguageSelector'
 import TheHeaderDropdownAccount from './TheHeaderDropdownAccount'
 
 import actions from '../actions'
@@ -33,7 +33,7 @@ const TheHeader = ({numNavItems}) => {
         return null
     }
 
-    const { t } = useTranslation()
+    // const { t } = useTranslation()
     return (
         <CHeader withSubheader>
             {renderSidebarToggler()}
@@ -44,8 +44,8 @@ const TheHeader = ({numNavItems}) => {
             <CHeaderNav className="d-md-down-none mr-auto" />
 
             <CHeaderNav className="px-3">
-                <div>{t('general.selectedLanguage')}</div>
-                <TheHeaderDropdownLanguageSelector />
+                {/* <div>{t('general.selectedLanguage')}</div>
+                <TheHeaderDropdownLanguageSelector /> */}
                 <TheHeaderDropdownAccount />
             </CHeaderNav>
         </CHeader>
