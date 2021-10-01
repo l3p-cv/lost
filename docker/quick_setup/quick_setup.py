@@ -44,7 +44,6 @@ class DockerComposeBuilder(object):
             '        PY3_INIT: "source /opt/conda/bin/activate lost"\n'
             '      links:\n'
             '        - db-lost\n'
-            '        - rabbitmqlost\n\n'
         )
 
     def get_lostdb(self):
