@@ -5,6 +5,7 @@ import WorkersComponent from './containers/Workers/WorkersTable'
 import UsersComponent from './containers/Users/UsersAndGroups'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
+import SiaReviwComponent from './containers/Annotation/SIAReviewAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import MyProfileComponent from './containers/Profile/Profile'
@@ -82,6 +83,12 @@ const Sia = {
     component: SiaComponent
 }
 
+const SiaReview = {
+    path: '/sia-review',
+    exact: false,
+    component: SiaReviwComponent
+}
+
 const Mia = {
     path: '/mia',
     exact: false,
@@ -112,7 +119,8 @@ const guiSetup = {
     additionalRoutes: [
         Sia,
         Mia,
-        MyProfile
+        MyProfile,
+        SiaReview
     ],
     Administrator: {
         redirect: '/dashboard',

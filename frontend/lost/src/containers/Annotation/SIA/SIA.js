@@ -14,7 +14,7 @@ import './sia-container.scss';
 
 import ToolBar from './ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
-import { createHashHistory } from 'history'
+import { withRouter } from 'react-router-dom';
 import InfoBoxArea from './InfoBoxes/InfoBoxArea'
 import 'react-notifications/lib/notifications.css';
 
@@ -58,7 +58,6 @@ class SIA extends Component {
             currentRotation: 0,
             blockCanvas: false
         }
-        this.siteHistory = createHashHistory()
         
         this.container = React.createRef()
         this.canvas = React.createRef()
@@ -138,7 +137,7 @@ class SIA extends Component {
             const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
             this.props.siaUpdateAnnos(newAnnos).then(()=>{
                 this.props.siaSendFinishToBackend().then(()=>{
-                    this.siteHistory.push('/dashboard')
+                    this.props.history.push('dashboard')
 
                 })
             })
@@ -490,4 +489,4 @@ export default connect(
         siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }
     , null,
-    {})(SIA)
+    {})(withRouter((SIA)))

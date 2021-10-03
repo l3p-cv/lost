@@ -4,7 +4,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../../src/actions'
 import 'semantic-ui-css/semantic.min.css'
-import { createHashHistory } from 'history'
 import Canvas from '../SIA/lost-sia/src/Canvas'
 import '../SIA/lost-sia/src/SIA.scss';
 import FilterInfoBox from './FilterInfoBox'
@@ -43,7 +42,6 @@ class SIAReview extends Component {
             image:{id:null, data:null},
             iteration: null
         }
-        this.siteHistory = createHashHistory()
         this.container = React.createRef()
         this.canvas = React.createRef()
 
@@ -328,7 +326,7 @@ class SIAReview extends Component {
                 layoutOffset={this.state.layoutOffset}
                 isJunk={this.props.isJunk}
                 onImgLabelInputClose={() => this.handleToggleImgLabelInput()}
-                centerCanvasInContainer={false}
+                centerCanvasInContainer={true}
                 onNotification={(messageObj) => this.handleNotification(messageObj)}
                 onKeyDown={ e => this.handleCanvasKeyDown(e)}
                 // defaultLabel='no label'
