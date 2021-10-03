@@ -23,7 +23,7 @@ class LostScript(script.Script):
                 if len(boxes)>0:
                     self.outp.request_bbox_annos(img.img_path, 
                         boxes=boxes, 
-                        sim_classes=sim_class_list) 
+                        sim_classes=sim_class_list, fs=img.fs) 
         self.logger.info("Requested the following annos: \n{}".format(
             self.outp.to_vec(['anno.data', 'anno.sim_class', 'img.img_path'])))
 

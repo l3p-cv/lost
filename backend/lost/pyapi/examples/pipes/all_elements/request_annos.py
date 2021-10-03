@@ -10,9 +10,10 @@ class RequestAnnos(script.Script):
     def main(self):
         for ds in self.inp.datasources:
             media_path = ds.path
+            fs = ds.get_fs()
             for img_file in os.listdir(media_path):
                 img_path = os.path.join(media_path, img_file)
-                self.outp.request_annos(img_path)
+                self.outp.request_annos(img_path, fs=fs)
                 self.logger.info('Requested annos for {}'.format(img_path))
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ class LostScript(script.Script):
     def main(self):
         for ds in self.inp.datasources:
             media_path = ds.path
+            fs = ds.get_fs()
             annos = []
             anno_types = []
             lbls = []
@@ -51,7 +52,7 @@ class LostScript(script.Script):
                 for file in filenames:
                     if any(file.endswith(filter) for filter in imgfile_filter):
                         img_path = os.path.join(media_path, dirpath, file)
-                        self.outp.request_annos(img_path=img_path, annos=annos, anno_types=anno_types, anno_labels=lbls)
+                        self.outp.request_annos(img_path=img_path, annos=annos, anno_types=anno_types, anno_labels=lbls, fs=fs)
                         self.logger.info('Requested annos for: {}'.format(img_path))
 
 if __name__ == "__main__":
