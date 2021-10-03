@@ -2,8 +2,10 @@ from lost.pyapi import script
 import os
 
 ENVS = ['lost']
-ARGUMENTS = {'file_name' : { 'value':'annos.parquet',
-                            'help': 'Name of the file with exported bbox annotations.'}
+ARGUMENTS = {'file_name_parquet' : { 'value':'annos.parquet',
+                            'help': 'Name of the file with exported bbox annotations in parquet format.'},
+            'file_name_csv' : { 'value':'annos.csv',
+                            'help': 'Name of the file with exported bbox annotations in csv format.'},
             }
 
 class LostScript(script.Script):
@@ -14,12 +16,24 @@ class LostScript(script.Script):
         df = self.inp.to_df()
         fs = self.get_filesystem()
         
-        file_path = self.get_path(self.get_arg('file_name'), context='instance')
-        self.logger.info('File path: {}'.format(file_path))
-        with fs.open(file_path, 'wb') as f:
+        file_path_parquet = self.get_path(self.get_arg('file_name_parquet'), context='instance')
+        file_path_csv = self.get_path(self.get_arg('file_name_csv'), context='instance')
+        self.logger.info('File path parquet: {}'.format(file_path_parquet))
+        self.logger.info('File path csv: {}'.format(file_path_csv))
+        
+        with fs.open(file_path_parquet, 'wb') as f:
             df.to_parquet(f)
-        self.logger.info('Wrote file: {}'.format(fs.ls(os.path.split(file_path)[0])))
-        self.outp.add_data_export(file_path=file_path, fs=fs)
+        
+        with fs.open(file_path_csv, 'wb') as f:
+            df.to_csv(f,sep=',',
+                      header=True,
+                      index=False)
+        
+        self.logger.info('Wrote file: {}'.format(fs.ls(os.path.split(file_path_parquet)[0])))
+        self.outp.add_data_export(file_path=file_path_parquet, fs=fs)
+    
+        self.logger.info('Wrote file: {}'.format(fs.ls(os.path.split(file_path_csv)[0])))
+        self.outp.add_data_export(file_path=file_path_csv, fs=fs)
 
 if __name__ == "__main__":
     my_script = LostScript()

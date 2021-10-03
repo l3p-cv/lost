@@ -1,10 +1,11 @@
 from lost.pyapi import script
 import os
-import pandas as pd
 
 ENVS = ['lost']
-ARGUMENTS = {'file_name' : { 'value':'annos.csv',
-                            'help': 'Name of the file with exported bbox annotations.'}
+ARGUMENTS = {'file_name_parquet' : { 'value':'annos.parquet',
+                            'help': 'Name of the file with exported bbox annotations in parquet format.'},
+            'file_name_csv' : { 'value':'annos.csv',
+                            'help': 'Name of the file with exported bbox annotations in csv format.'},
             }
 
 class LostScript(script.Script):
@@ -13,13 +14,26 @@ class LostScript(script.Script):
     '''
     def main(self):
         df = self.inp.to_df()
-        csv_path = self.get_path(self.get_arg('file_name'), context='instance')
-        df.to_csv(path_or_buf=csv_path,
-                      sep=',',
+        fs = self.get_filesystem()
+        
+        file_path_parquet = self.get_path(self.get_arg('file_name_parquet'), context='instance')
+        file_path_csv = self.get_path(self.get_arg('file_name_csv'), context='instance')
+        self.logger.info('File path parquet: {}'.format(file_path_parquet))
+        self.logger.info('File path csv: {}'.format(file_path_csv))
+        
+        with fs.open(file_path_parquet, 'wb') as f:
+            df.to_parquet(f)
+        
+        with fs.open(file_path_csv, 'wb') as f:
+            df.to_csv(f,sep=',',
                       header=True,
                       index=False)
-        self.outp.add_data_export(file_path=csv_path)
-        self.logger.info('Stored export to: {}'.format(csv_path))
         
+        self.logger.info('Wrote file: {}'.format(fs.ls(os.path.split(file_path_parquet)[0])))
+        self.outp.add_data_export(file_path=file_path_parquet, fs=fs)
+    
+        self.logger.info('Wrote file: {}'.format(fs.ls(os.path.split(file_path_csv)[0])))
+        self.outp.add_data_export(file_path=file_path_csv, fs=fs)
+
 if __name__ == "__main__":
     my_script = LostScript()
