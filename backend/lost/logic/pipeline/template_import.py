@@ -174,8 +174,8 @@ class PipeImporter(object):
             # Do everything relative from pipeline definition file path.
             oldwd = os.getcwd()
             os.chdir(self.src_pipe_template_path)
-            for db_pipe in self.dbm.get_all_pipeline_templates():
-                db_json = json.loads(db_pipe.json_template)
+            # for db_pipe in self.dbm.get_all_pipeline_templates():
+            #     db_json = json.loads(db_pipe.json_template)
                 # if db_json['name'].lower() == pipe['name'].lower():
                 #     logging.warning("PipeTemplate in database.")
                 #     logging.warning("Name of this template is: %s"%(pipe['name'],))
@@ -226,13 +226,21 @@ class PipeImporter(object):
                         db_script.extra_packages = _dump_extra_packages(extra_pip, extra_conda)
                         self.dbm.save_obj(db_script)
                         logging.warning((str(db_script.idx), db_script.name, db_script.path))
-                # self._fix_sia_config(pe_j)
-            pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
-                                            timestamp=datetime.now())
-            self.dbm.save_obj(pipe_temp)
-            logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
+
             os.chdir(oldwd) # Change dir back to old working directory.
-            return pipe_temp.idx
+            pipe_in_db = False
+            for db_pipe in self.dbm.get_all_pipeline_templates():
+                db_json = json.loads(db_pipe.json_template)
+                if db_json['name'].lower() == pipe['name'].lower():
+                    pipe_in_db = True
+                    logging.warning(f"PipeTemplate already in database: {db_json['name'].lower()}")
+                    return db_pipe.idx
+            if not pipe_in_db:
+                pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
+                                                timestamp=datetime.now())
+                self.dbm.save_obj(pipe_temp)
+                logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
+                return pipe_temp.idx
         except Exception as e:
             logging.error(e, exc_info=True)
             if not self.forTest:
