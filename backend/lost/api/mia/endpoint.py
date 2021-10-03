@@ -14,6 +14,7 @@ import base64
 from lost.logic.file_man import FileMan
 from lost.pyapi.utils import anno_helper
 from lost.logic import mia
+from lost.logic import dask_session
 
 namespace = api.namespace('mia', description='MIA Annotation API.')
 
@@ -99,6 +100,12 @@ class Special(Resource):
             dbm.close_session()
             return re
 
+def load_img(db_img, fm, user):
+    if LOST_CONFIG.worker_management != 'dynamic':
+        img = fm.load_img(db_img.img_path)
+    else:
+        img = dask_session.ds_man.read_fs_img(user, db_img.fs, db_img.img_path)
+    return img
 @namespace.route('/getimage')
 class GetImage(Resource):
 
@@ -113,16 +120,19 @@ class GetImage(Resource):
 
         else:
             #TODO: Check if user is permitted to load this image
-            fm = FileMan(LOST_CONFIG)
             data = json.loads(request.data)
             #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
             if data['type'] == 'imageBased':
                 db_img = dbm.get_image_anno(data['id'])
-                img = fm.load_img(db_img.img_path)
+                fm = FileMan(fs_db=db_img.fs)
+                img = load_img(db_img, fm, user)
             elif data['type'] == 'annoBased':
                 db_anno = dbm.get_two_d_anno(two_d_anno_id=data['id'])
                 db_img = dbm.get_image_anno(db_anno.img_anno_id)
-                image = fm.load_img(db_img.img_path)
+                fm = FileMan(fs_db=db_img.fs)
+                # image = fm.load_img(db_img.img_path)
+                image = load_img(db_img, fm, user)
+                
                 # get annotation_task config
                 config = mia.get_config(dbm, user.idx)
                 draw_anno = False
