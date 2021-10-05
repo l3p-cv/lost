@@ -29,3 +29,13 @@ export const getVersion = () => async (dispatch) => {
     }
     return null
 }
+
+export const getJupyterLabUrl = () => async (dispatch) => {
+    try {
+        const response = await axios.get(API_URL + '/system/jupyter')
+        dispatch({ type: TYPES.SET_JUPYTER_LAB_URL, payload: response.data })
+    } catch (e) {
+        return null
+    }
+    return null
+}

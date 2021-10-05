@@ -10,7 +10,8 @@ const INITIAL_STATE = {
         autoLogoutWarnTime: 300,
         autoLogoutTime: 3600,
         isDevMode: true
-    }
+    },
+    jupyterLabUrl: '',
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -35,6 +36,11 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 version: action.payload
+            }
+        case TYPES.SET_JUPYTER_LAB_URL:
+            return {
+                ...state,
+                jupyterLabUrl: action.payload
             }
         default:
             return state

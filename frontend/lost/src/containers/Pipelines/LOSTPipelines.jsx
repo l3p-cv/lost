@@ -6,23 +6,10 @@ import { Row, Col, Card, CardBody } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlayCircle } from '@fortawesome/free-solid-svg-icons'
 
-import {
-    CCol,
-    CNav,
-    CNavItem,
-    CNavLink,
-    CTabContent,
-    CTabPane,
-    CTabs,
-  } from '@coreui/react'
-import BaseContainer from '../../components/BaseContainer'
-
-import RunningPipeline from '../pipeline/running/RunningPipeline'
-import StartPipeline from '../pipeline/start/StartPipeline'
 import vanStripes from '../../assets/img/background.svg'
 import proSquares from '../../assets/img/protruding-squares.svg'
 
-const LOSTPipelines = () => {
+const LOSTPipelines = (jupyterLabUrl) => {
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(actions.setNavbarVisible(true))

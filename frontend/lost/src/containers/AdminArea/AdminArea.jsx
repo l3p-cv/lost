@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import actions from '../../actions'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -18,20 +18,43 @@ import BaseContainer from '../../components/BaseContainer'
 
 import WorkersTable from '../Workers/WorkersTable'
 import UsersAndGroups from '../Users/UsersAndGroups'
+import TabJupyterLab from './TabJupyterLab'
 
 const AdminArea = () => {
     const dispatch = useDispatch()
     const [active, setActive] = useState(0)
+    const jupyterLabUrl = useSelector((state) => state.lost.jupyterLabUrl)
     useEffect(() => {
         dispatch(actions.setNavbarVisible(true))
+        dispatch(actions.getJupyterLabUrl(true))
     }, [])
-
 
     const renderSystemInfo = () => (
         <div>
             ToDo.
         </div>
     )
+    const renderJupyterLabNav = () => {
+        if(jupyterLabUrl !== ''){
+            return(
+                <CNavItem>
+                    <CNavLink>
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
+                        { active === 7 && ' JupyterLab'}
+                    </CNavLink>
+                </CNavItem>
+                )
+        }
+    }
+    const renderJupyterLabTab = () => {
+        if(jupyterLabUrl !== ''){
+            return(
+                <CTabPane  style={{marginTop: 30}}>
+                    <TabJupyterLab jupyterLabUrl={jupyterLabUrl}></TabJupyterLab>
+                </CTabPane>
+            )
+        }
+    }
 
     return (
         <BaseContainer>
@@ -80,12 +103,7 @@ const AdminArea = () => {
                         { active === 6 && ' Global Pipelines'}
                     </CNavLink>
                     </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
-                        { active === 7 && ' JupyterLab'}
-                    </CNavLink>
-                    </CNavItem>
+                    {renderJupyterLabNav()}
                 </CNav>
                 <CTabContent>
                     <CTabPane  style={{marginTop: 30}}>
@@ -109,6 +127,7 @@ const AdminArea = () => {
                     <CTabPane  style={{marginTop: 30}}>
                     <div>{renderSystemInfo()}</div>
                     </CTabPane>
+                    {renderJupyterLabTab()}
                 </CTabContent>
                 </CTabs>
             </CCol>

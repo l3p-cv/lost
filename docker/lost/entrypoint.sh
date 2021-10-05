@@ -47,6 +47,23 @@ eval $worker &
 cron_jobs="python3 /code/src/backend/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &
 
+# start jupyter-lab instance if configured
+if [ ${JUPYTER_LAB_ACTIVE} = "True" ]; then
+  if [ -z "${JUPYTER_LAB_ROOT_PATH}" ]; then
+    export JUPYTER_LAB_ROOT_PATH='/code/src'
+  fi
+  if [ -z "${JUPYTER_LAB_TOKEN}" ]; then
+    export JUPYTER_LAB_TOKEN='lostdevelopment'
+  fi
+  if [ -z "${JUPYTER_LAB_PORT}" ]; then
+    export JUPYTER_LAB_PORT=8888
+  fi
+  cd $JUPYTER_LAB_ROOT_PATH
+  jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=$JUPYTER_LAB_TOKEN"
+  eval $jupyter
+fi
+
+
 # remove config in case debug mode changed
 if [ -f "/etc/nginx/conf.d/lost.conf" ]; then
   rm /etc/nginx/conf.d/lost.conf

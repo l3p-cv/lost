@@ -144,3 +144,9 @@ class LOSTConfig(object):
         self.mail_password = ge('LOST_MAIL_PASSWORD', "")
         self.mail_default_sender = ge('LOST_MAIL_DEFAULT_SENDER', "")
         self.mail_lost_url = ge('LOST_MAIL_LOST_URL', "")
+
+        # JupyterLab configuration
+        self.jupyter_lab_active = ge('JUPYTER_LAB_ACTIVE', False)
+        self.jupyter_lab_root_path = ge('JUPYTER_LAB_ROOT_PATH', '/code/src')
+        self.jupyter_lab_token = ge('JUPYTER_LAB_TOKEN', "")
+        self.jupyter_lab_port = ge('JUPYTER_LAB_PORT', "")

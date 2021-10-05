@@ -12,6 +12,7 @@ services:
       restart: always
       ports:
         - "${LOST_FRONTEND_PORT}:8080"
+        #- "${JUPYTER_LAB_PORT:-8888}:8888"
       environment:
         PYTHONPATH: "/code/src/backend"
         ENV_NAME: "lost"
