@@ -58,9 +58,8 @@ if [ ${JUPYTER_LAB_ACTIVE} = "True" ]; then
   if [ -z "${JUPYTER_LAB_PORT}" ]; then
     export JUPYTER_LAB_PORT=8888
   fi
-  cd $JUPYTER_LAB_ROOT_PATH
-  jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=$JUPYTER_LAB_TOKEN"
-  eval $jupyter
+  jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=$JUPYTER_LAB_TOKEN --ServerApp.notebook_dir=$JUPYTER_LAB_ROOT_PATH"
+  eval $jupyter &
 fi
 
 
