@@ -22,11 +22,14 @@ echo -e ' \t ' 🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍🔍
 echo
 echo 🛠️  installing backend dependencies
 
-# create mamba env named lost with all needed dependencies
-$LOST_MAMBA_BASE_DIR/bin/mamba create -n lost adlfs bokeh dask distributed \
-    flask==1.1.2 flask-jwt-extended==3.13.1 flask-cors flask-ldap3-login flask-mail flask-restx flask-sqlalchemy flask-user flask-wtf jupyterlab \
-    fsspec imagesize mysqlclient numpy opencv pandas pyjwt=1.7.1 pytest python python-devtools python-igraph sphinx sk-video sqlalchemy scikit-image \
-    uwsgi nodejs==14.17.1 $LOST_MAMBA_ADDITIONAL_PACKAGES
+# mamba env is created in lost-base when using docker 
+if [ -z ${IS_USING_DOCKER+x} ] || [ "$IS_USING_DOCKER" != "true" ]; then
+    # create mamba env named lost with all needed dependencies
+    $LOST_MAMBA_BASE_DIR/bin/mamba create -n lost adlfs bokeh dask distributed \
+        flask==1.1.2 flask-jwt-extended==3.13.1 flask-cors flask-ldap3-login flask-mail flask-restx flask-sqlalchemy flask-user flask-wtf jupyterlab \
+        fsspec imagesize mysqlclient numpy opencv pandas pyjwt=1.7.1 pytest python python-devtools python-igraph sphinx sk-video sqlalchemy scikit-image \
+        uwsgi nodejs==14.17.1 $LOST_MAMBA_ADDITIONAL_PACKAGES
+fi
 
 # make conda available inside bash shell scripts
 eval "$($LOST_MAMBA_BASE_DIR/bin/conda shell.bash hook)"
