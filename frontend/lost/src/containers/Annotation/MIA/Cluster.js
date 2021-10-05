@@ -8,10 +8,9 @@ import {
     Alert,
     Button
 } from 'reactstrap'
-import { createHashHistory } from 'history'
+import { withRouter } from 'react-router-dom';
 
 const {getMiaAnnos,getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia} = actions
-const history = createHashHistory()
 
 class Cluster extends Component{
 
@@ -43,7 +42,7 @@ class Cluster extends Component{
                        <Alert color="success">
                             No more images available. Please press finish in order to continue the pipeline.
                         </Alert>
-                        <Button color="primary" size="lg" onClick={()=>this.props.finishMia(history.push('/dashboard'),this.props.getWorkingOnAnnoTask)}><i className="fa fa-check"></i> Finish Task</Button>{' '}
+                        <Button color="primary" size="lg" onClick={()=>this.props.finishMia(this.props.history.push('dashboard'),this.props.getWorkingOnAnnoTask)}><i className="fa fa-check"></i> Finish Task</Button>{' '}
                     </div>
                 </div>
                 )
@@ -81,4 +80,4 @@ class Cluster extends Component{
 function mapStateToProps(state){
     return({images: state.mia.images, maxAmount: state.mia.maxAmount, zoom: state.mia.zoom, workingOnAnnoTask: state.annoTask.workingOnAnnoTask,})
 }
-export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia})(Cluster)
+export default connect(mapStateToProps, {getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia})(withRouter((Cluster)))
