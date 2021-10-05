@@ -24,7 +24,7 @@ echo 🛠️  installing backend dependencies
 
 # create mamba env named lost with all needed dependencies
 $LOST_MAMBA_BASE_DIR/bin/mamba create -n lost adlfs bokeh dask distributed \
-    flask==1.1.2 flask-jwt-extended==3.13.1 flask-cors flask-ldap3-login flask-mail flask-restx flask-sqlalchemy flask-user flask-wtf \
+    flask==1.1.2 flask-jwt-extended==3.13.1 flask-cors flask-ldap3-login flask-mail flask-restx flask-sqlalchemy flask-user flask-wtf jupyterlab \
     fsspec imagesize mysqlclient numpy opencv pandas pyjwt=1.7.1 pytest python python-devtools python-igraph sphinx sk-video sqlalchemy scikit-image \
     uwsgi nodejs==14.17.1 $LOST_MAMBA_ADDITIONAL_PACKAGES
 
