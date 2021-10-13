@@ -223,7 +223,7 @@ class Annotation extends Component{
     }
     
     getColor(){
-        if (this.state.anno.labelIds.length > 0){
+        if (this.state.anno.labelIds && this.state.anno.labelIds.length > 0){
             return this.getLabel(this.state.anno.labelIds[0]).color
         }
         else {

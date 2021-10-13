@@ -1,6 +1,36 @@
 import * as transform from './transform'
 import * as annoStatus from '../types/annoStatus'
 import * as modes from '../types/modes'
+import _ from 'lodash'
+
+function _fixBackendAnnoElement(element){
+    return {...element, 
+        id : element.id ? element.id : _.uniqueId('new'),
+        annoTime: element.annoTime ? element.annoTime : 0.0,
+        mode: element.mode ? element.mode : modes.VIEW, 
+        status: element.status ? element.status : annoStatus.DATABASE,
+        labelIds: element.labelIds ? element.labelIds : []
+    }
+}
+
+export function fixBackendAnnos(backendAnnos){
+    let annos =  { 
+        bBoxes: [...backendAnnos.bBoxes.map((element) => {
+            return _fixBackendAnnoElement(element)
+        })],
+        lines: [...backendAnnos.lines.map((element) => {
+            return _fixBackendAnnoElement(element)
+        })],
+        polygons: [...backendAnnos.polygons.map((element) => {
+            return _fixBackendAnnoElement(element)
+        })],
+        points: [...backendAnnos.points.map((element) => {
+            return _fixBackendAnnoElement(element)
+        })],
+     }
+    console.log('fixBackendAnnos', annos)
+    return annos
+}
 
 export function backendAnnosToCanvas(backendAnnos, imgSize){
     let annos = [
@@ -22,7 +52,7 @@ export function backendAnnosToCanvas(backendAnnos, imgSize){
         ...backendAnnos.points.map((element) => {
             return {...element, type:'point', 
             mode: element.mode ? element.mode : modes.VIEW, 
-                status: element.status ? element.status : annoStatus.DATABASE
+            status: element.status ? element.status : annoStatus.DATABASE
             }
         })
     ]

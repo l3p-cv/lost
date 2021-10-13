@@ -43,9 +43,11 @@ import './SIA.scss'
  *          },
  *          annotations: {
  *              bBoxes: [{
- *                  id: int,
- *                  labelIds: list of int,
- *                  data: {}
+ *                  id: int, // -> Not required if status === annoStatus.NEW
+ *                  data: {},
+ *                  labelIds: list of int, // -> optional
+ *                  status: see annoStatus, // -> optional
+ *                  annoTime: float, // -> optional
  *              },...],
  *              points: []
  *              lines: []
@@ -183,6 +185,11 @@ class Canvas extends Component{
                 imgLoadTimestamp: performance.now()
                 // isJunk: this.props.annos.image.isJunk
             })
+            if (this.state.imageData) { 
+                this.updateCanvasView(
+                    annoConversion.fixBackendAnnos(this.props.annos.annotations) 
+                ) 
+            }
             // this.setState({
             //     imageLoaded: false,
             //     // imageData: undefined
@@ -230,7 +237,9 @@ class Canvas extends Component{
             // Selected annotation should be on top
             this.putSelectedOnTop(prevState)
             if (prevState.imgLoadCount !== this.state.imgLoadCount){
-                this.updateCanvasView(this.props.annos.annotations)
+                this.updateCanvasView(
+                    annoConversion.fixBackendAnnos(this.props.annos.annotations)
+                )
                 this.setImageLabels(this.props.annos.image.labelIds)
                 this.setState({
                     performedImageInit:true
