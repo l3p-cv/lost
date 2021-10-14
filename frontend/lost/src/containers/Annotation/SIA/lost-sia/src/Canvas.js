@@ -105,6 +105,8 @@ import './SIA.scss'
  *      when no label was selected by the annotator. If not set "no label" will be used.
  *      If ID is used, it needs to be one of the possible label ids.
  * @param {bool} blocked Block canvas view with loading dimmer.
+ * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
+ *      Such annos can not be edited in any way.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
  *      args: {width: int, height: int, scale: float, translateX: float,
  *      translateY:float}
@@ -846,7 +848,24 @@ class Canvas extends Component{
         this.setState({showSingleAnno: showSingleAnno})
     }
 
+    isLocked(annoId){
+        if (this.props.lockedAnnos){
+            if (this.props.lockedAnnos.includes(annoId)){
+                return true
+            }
+        }
+        return false
+    }
+
     selectAnnotation(annoId){
+        if (this.isLocked(annoId)) {
+            this.handleNotification({
+                title: "Annotation locked",
+                message: `Annotation with id ${annoId} is locked and can not be edited`,
+                type: notificationType.WARNING
+            })
+            return
+        } 
         if (annoId){
             const anno = this.findAnno(annoId)
             this.setState({
@@ -880,7 +899,7 @@ class Canvas extends Component{
     traverseAnnos(){
         if (this.state.annos.length > 0){
             const myAnnos = this.state.annos.filter(e => {
-                return e.status !== annoStatus.DELETED
+                return e.status !== annoStatus.DELETED && !this.isLocked(e.id)
             })
             if (myAnnos.length > 0){
                 if (!this.state.selectedAnnoId){
