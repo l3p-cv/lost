@@ -19,17 +19,7 @@ class Personal(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            
-            response = {
-                'test1': {
-                    'x': [1,2,3],
-                    'y': [4,5,6]
-                },
-                'test2': {
-                    'x': [1,2,3],
-                    'y': [4,5,6]
-                },
-            }
+            from lost.api.statistics.example_data import example_stats
             dbm.close_session()
-            return response
+            return example_stats
          
