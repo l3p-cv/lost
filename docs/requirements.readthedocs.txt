@@ -2,7 +2,7 @@ aniso8601==4.0.1
 asn1crypto==0.24.0
 bcrypt==3.1.4
 blinker==1.4
-cffi==1.11.5
+cffi
 celery==4.2.1
 click==7.0
 cryptography==3.4.6
