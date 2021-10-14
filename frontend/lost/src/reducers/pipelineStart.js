@@ -3,41 +3,41 @@ const INITITAL_STATE = {
     stepper: {
         style: {
             container: {
-              paddingTop: 24,          //pixel
-              paddingBottom: 40,       //pixel
+                paddingTop: 24, //pixel
+                paddingBottom: 40, //pixel
             },
             shape: {
-              size: 60,
-              borderWidth: 4,
-              borderRadius: '50%',
+                size: 60,
+                borderWidth: 4,
+                borderRadius: '50%',
             },
             line: {
-              borderWidth: 3,
-              borderColor: 'gray',
-              padding: 0
-            }
-          },
+                borderWidth: 3,
+                borderColor: 'gray',
+                padding: 0,
+            },
+        },
         steps: [
             {
-              text: '1',
-              icon: 'fa-puzzle-piece',
-              shapeBorderColor: '#092F38',
-              shapeBackgroundColor: 'white',
-              shapeContentColor: '#092F38',
-              verified: false,
+                text: '1',
+                icon: 'fa-puzzle-piece',
+                shapeBorderColor: '#092F38',
+                shapeBackgroundColor: 'white',
+                shapeContentColor: '#092F38',
+                verified: false,
             },
             {
-              text: '2',
-              icon: 'fa-pencil',
-              shapeBorderColor: '#092F38',
-              shapeBackgroundColor: 'white',
-              shapeContentColor: '#092F38',
-              verified: false,
-              modalOpened: false,
-              modalClickedId: 0,
-              svgStyle: {
-                width: "100%"
-            }
+                text: '2',
+                icon: 'fa-pencil',
+                shapeBorderColor: '#092F38',
+                shapeBackgroundColor: 'white',
+                shapeContentColor: '#092F38',
+                verified: false,
+                modalOpened: false,
+                modalClickedId: 0,
+                svgStyle: {
+                    width: '100%',
+                },
             },
             {
                 text: '3',
@@ -54,53 +54,52 @@ const INITITAL_STATE = {
                 shapeBackgroundColor: 'white',
                 shapeContentColor: '#092F38',
                 verified: false,
-             }
+            },
         ],
-        currentStep: 0
+        currentStep: 0,
     },
     step2Data: {
         name: '',
-        description: ''
-    }
+        description: '',
+    },
 }
-
 
 const INITITAL_STATE_ANNO_TASK_MODAL = {
     style: {
         container: {
-          paddingTop: 24,          //pixel
-          paddingBottom: 24,       //pixel
+            paddingTop: 24, //pixel
+            paddingBottom: 24, //pixel
         },
         shape: {
-          size: 60,
-          borderWidth: 4,
-          borderRadius: '50%',
+            size: 60,
+            borderWidth: 4,
+            borderRadius: '50%',
         },
         line: {
-          borderWidth: 3,
-          borderColor: 'gray',
-          padding: 0
-        }
-      },
+            borderWidth: 3,
+            borderColor: 'gray',
+            padding: 0,
+        },
+    },
     steps: [
         {
-          text: '1',
-          icon: 'fa-info',
-          shapeBorderColor: '#147289',
-          shapeBackgroundColor: 'white',
-          shapeContentColor: '#147289',
-          verified: true,
+            text: '1',
+            icon: 'fa-info',
+            shapeBorderColor: '#147289',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#147289',
+            verified: true,
         },
         {
-          text: '2',
-          icon: 'fa-user',
-          shapeBorderColor: '#147289',
-          shapeBackgroundColor: 'white',
-          shapeContentColor: '#147289',
-          verified: false,
-          svgStyle: {
-            width: "800px"
-        }
+            text: '2',
+            icon: 'fa-user',
+            shapeBorderColor: '#147289',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#147289',
+            verified: false,
+            svgStyle: {
+                width: '800px',
+            },
         },
         {
             text: '3',
@@ -117,337 +116,335 @@ const INITITAL_STATE_ANNO_TASK_MODAL = {
             shapeBackgroundColor: 'white',
             shapeContentColor: '#147289',
             verified: false,
-         }
+        },
     ],
-    currentStep: 0
+    currentStep: 0,
 }
 
-export default (state = INITITAL_STATE, action)=>{
-    switch(action.type){
+export default (state = INITITAL_STATE, action) => {
+    switch (action.type) {
         case 'PIPELINE_START_SELECT_TAB':
-        return {
-            ...state,
-            stepper: {
-                ...state.stepper,
-                currentStep: action.payload.tabId
+            return {
+                ...state,
+                stepper: {
+                    ...state.stepper,
+                    currentStep: action.payload.tabId,
+                },
             }
-        }
         case 'PIPELINE_START_VERIFY_TAB':
-        return {
-            ...state,
-            stepper: {
-                ...state.stepper,
-                steps: state.stepper.steps.map((el,i)=>{
-                    if(i === action.payload.tabId){
-                        return {
-                            ...el,
-                            verified: action.payload.verified
+            return {
+                ...state,
+                stepper: {
+                    ...state.stepper,
+                    steps: state.stepper.steps.map((el, i) => {
+                        if (i === action.payload.tabId) {
+                            return {
+                                ...el,
+                                verified: action.payload.verified,
+                            }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
 
         // DATASOURCE START
         case 'PIPELINE_START_DATASOURCE_SELECT_DROPDOWN':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('datasource' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                datasource: {
-                                    ...el.exportData.datasource,
-                                    selectedPath: action.payload.path,
-                                    fs_id: action.payload.fs_id
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('datasource' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    datasource: {
+                                        ...el.exportData.datasource,
+                                        selectedPath: action.payload.path,
+                                        fs_id: action.payload.fs_id,
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         case 'PIPELINE_START_DATASOURCE_UPDATE':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('datasource' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                datasource: {
-                                    ...el.exportData.datasource,
-                                    fs_name: action.payload.value
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('datasource' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    datasource: {
+                                        ...el.exportData.datasource,
+                                        fs_name: action.payload.value,
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         // DATASOURCE END
         // LOOP START
         case 'PIPELINE_START_LOOP_INPUT_MAXITERATION':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('loop' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                loop: {
-                                    ...el.exportData.loop,
-                                    maxIteration: action.payload.value
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('loop' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    loop: {
+                                        ...el.exportData.loop,
+                                        maxIteration: action.payload.value,
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         // LOOP END
         //SCRIPT START
         case 'PIPELINE_START_SCRIPT_UPDATE_ARGUMENTS':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('script' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                datasource: {
-                                    ...el.exportData.annoTask,
-                                    rawFilePath: action.payload.value
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('script' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    datasource: {
+                                        ...el.exportData.annoTask,
+                                        rawFilePath: action.payload.value,
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         //SCRIPT END
         // ANNO TASK START
 
         case 'PIPELINE_START_ANNO_TASK_SELECT_TAB':
             return {
                 ...state,
-                step1Data:{
+                step1Data: {
                     ...state.step1Data,
-                    elements: state.step1Data.elements.map((el)=>{
-                        if('annoTask' in el && (el.peN === action.payload.elementId)){
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
                             return {
                                 ...el,
                                 stepper: {
                                     ...el.stepper,
-                                    currentStep: action.payload.tabId
-                                }
+                                    currentStep: action.payload.tabId,
+                                },
                             }
                         }
                         return el
-                    })
-                }
+                    }),
+                },
             }
         case 'PIPELINE_START_ANNO_TASK_VERIFY_TAB':
             return {
                 ...state,
                 step1Data: {
                     ...state.step1Data,
-                    elements: state.step1Data.elements.map((el)=> {
-                        if('annoTask' in el && (el.peN === action.payload.elementId)){
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
                             return {
                                 ...el,
                                 stepper: {
                                     ...el.stepper,
-                                    steps: el.stepper.steps.map((el,i )=>{
-                                        if(i === action.payload.tabId){
+                                    steps: el.stepper.steps.map((el, i) => {
+                                        if (i === action.payload.tabId) {
                                             return {
                                                 ...el,
-                                                verified: action.payload.verified
+                                                verified: action.payload.verified,
                                             }
                                         }
                                         return el
-                                    })
-                                }
+                                    }),
+                                },
                             }
                         }
                         return el
-                    })
-                }
+                    }),
+                },
             }
         case 'PIPELINE_START_ANNO_TASK_NAME_INPUT':
-            return{
+            return {
                 ...state,
-                step1Data:{
+                step1Data: {
                     ...state.step1Data,
-                    elements: state.step1Data.elements.map((el)=>{
-                        if('annoTask' in el && (el.peN === action.payload.elementId)){
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
                             return {
                                 ...el,
                                 exportData: {
                                     ...el.exportData,
                                     annoTask: {
                                         ...el.exportData.annoTask,
-                                        name: action.payload.value
-                                    }
-                                }
+                                        name: action.payload.value,
+                                    },
+                                },
                             }
                         }
                         return el
-                    })
-                }
+                    }),
+                },
             }
         case 'PIPELINE_START_ANNO_TASK_INSTRUCTIONS_INPUT':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                annoTask: {
-                                    ...el.exportData.annoTask,
-                                    instructions: action.payload.value
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        instructions: action.payload.value,
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         case 'PIPELINE_START_ANNO_TASK_SELECT_USER':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                annoTask: {
-                                    ...el.exportData.annoTask,
-                                    assignee: action.payload.assignee,
-                                    workerId: parseInt(action.payload.workerId)
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        assignee: action.payload.assignee,
+                                        workerId: parseInt(action.payload.workerId),
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         case 'PIPELINE_START_ANNO_TASK_SELECT_TREE':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                annoTask: {
-                                    ...el.exportData.annoTask,
-                                    selectedLabelTree: parseInt(action.payload.value),
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        selectedLabelTree: parseInt(action.payload.value),
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         case 'PIPELINE_START_ANNO_TASK_UPDATE_LABELS':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if('annoTask' in el && (el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            exportData: {
-                                ...el.exportData,
-                                annoTask: {
-                                    ...el.exportData.annoTask,
-                                    labelLeaves: action.payload.lableArr
-                                }
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        labelLeaves: action.payload.lableArr,
+                                    },
+                                },
                             }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
 
         // ANNO TASK END
 
         case 'PIPELINE_START_VERIFY_NODE':
-        return{
-            ...state,
-            step1Data:{
-                ...state.step1Data,
-                elements: state.step1Data.elements.map((el)=>{
-                    if((el.peN === action.payload.elementId)){
-                        return {
-                            ...el,
-                            verified: action.payload.verified
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if (el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                verified: action.payload.verified,
+                            }
                         }
-                    }
-                    return el
-                })
+                        return el
+                    }),
+                },
             }
-        }
         case 'PIPELINE_START_GET_TEMPLATES':
             return {
                 ...state,
-                step0Data: action.payload
-
+                step0Data: action.payload,
             }
         case 'PIPELINE_START_GET_TEMPLATE':
-
             return {
                 ...state,
                 step0Data: {
                     ...state.step0Data,
-                    templateId: parseInt(action.payload.templateId)
+                    templateId: parseInt(action.payload.templateId),
                 },
                 step1Data: {
                     ...action.payload.response,
-                    elements: action.payload.response.elements.map((el) =>{
+                    elements: action.payload.response.elements.map((el) => {
                         let connection = []
-                        if(el.peOut){
-                            connection = el.peOut.map(el => {
-                               return {
-                                   id: el
-                               }
-                           })
-                       }
-                        if('datasource' in el){
+                        if (el.peOut) {
+                            connection = el.peOut.map((el) => {
+                                return {
+                                    id: el,
+                                }
+                            })
+                        }
+                        if ('datasource' in el) {
                             return {
                                 ...el,
                                 id: el.peN,
@@ -459,14 +456,18 @@ export default (state = INITITAL_STATE, action)=>{
                                     peN: el.peN,
                                     datasource: {
                                         rawFilePath: null,
-                                    }
-                                }
+                                    },
+                                },
                             }
-                        }else if('script' in el){
+                        } else if ('script' in el) {
                             return {
                                 ...el,
                                 id: el.peN,
-                                verified: el.script.arguments?Object.keys(el.script.arguments).filter(el2=>!el.script.arguments[el2].value).length === 0: true,
+                                verified: el.script.arguments
+                                    ? Object.keys(el.script.arguments).filter(
+                                          (el2) => !el.script.arguments[el2].value,
+                                      ).length === 0
+                                    : true,
                                 type: 'script',
                                 title: 'Script',
                                 connection: connection,
@@ -479,12 +480,11 @@ export default (state = INITITAL_STATE, action)=>{
                                         id: el.script.id,
                                         name: el.script.name,
                                         path: el.script.path,
-                                        isDebug: false
-                                    }
-                                }
+                                        isDebug: false,
+                                    },
+                                },
                             }
-                        }
-                        else if('annoTask' in el){
+                        } else if ('annoTask' in el) {
                             return {
                                 ...el,
                                 id: el.peN,
@@ -495,7 +495,7 @@ export default (state = INITITAL_STATE, action)=>{
                                 connection: connection,
                                 exportData: {
                                     peN: el.peN,
-                                    annoTask:{
+                                    annoTask: {
                                         name: el.annoTask.name,
                                         type: el.annoTask.type,
                                         instructions: el.annoTask.instructions,
@@ -503,54 +503,52 @@ export default (state = INITITAL_STATE, action)=>{
                                         assignee: null,
                                         workerId: null,
                                         labelLeaves: [],
-                                        selectedLabelTree: null
-
-
-                                    }
-                                }
+                                        selectedLabelTree: null,
+                                    },
+                                },
                             }
-                        }else if('dataExport' in el){
-                            return{
+                        } else if ('dataExport' in el) {
+                            return {
                                 ...el,
                                 id: el.peN,
                                 exportData: {
                                     dataExport: {},
-                                    peN: el.peN
+                                    peN: el.peN,
                                 },
-                                verified:true,
+                                verified: true,
                                 type: 'dataExport',
                                 title: 'Data Export',
-                                connection: connection
+                                connection: connection,
                             }
-                        }else if('loop' in el){
-                            if(el.loop.peJumpId){
+                        } else if ('loop' in el) {
+                            if (el.loop.peJumpId) {
                                 connection.push({
                                     id: el.loop.peJumpId,
                                     lineStyle: {
                                         stroke: 'red',
                                         strokeWidth: '1.8px',
                                         fill: 'white',
-                                        strokeDasharray: '5, 5'
+                                        strokeDasharray: '5, 5',
                                     },
                                     arrowheadStyle: {
                                         fill: 'red',
-                                        stroke: 'none'
-                                    }
+                                        stroke: 'none',
+                                    },
                                 })
                             }
-                            return{
+                            return {
                                 ...el,
                                 id: el.peN,
                                 verified: true,
                                 exportData: {
                                     loop: el.loop,
-                                    peN: el.peN
+                                    peN: el.peN,
                                 },
                                 type: 'loop',
                                 title: 'Loop',
-                                connection: connection
+                                connection: connection,
                             }
-                        }else if ('visualOutput' in el) {
+                        } else if ('visualOutput' in el) {
                             return {
                                 ...el,
                                 id: el.peN,
@@ -560,45 +558,42 @@ export default (state = INITITAL_STATE, action)=>{
                                 title: 'Visualization',
                                 exportData: {
                                     peN: el.peN,
-                                    visualOutput: el.visualOutput
-                                }
+                                    visualOutput: el.visualOutput,
+                                },
                             }
-
-                        }
-                        
-                        else{
+                        } else {
                             throw new Error(`Unknown Node Type: ${el}`)
-                        }                        
-                    })
-                }
+                        }
+                    }),
+                },
             }
         case 'PIPELINE_START_TOGGLE_MODAL':
             return {
                 ...state,
                 stepper: {
                     ...state.stepper,
-                    steps: state.stepper.steps.map((el,i)=>{
+                    steps: state.stepper.steps.map((el, i) => {
                         // Graph Data
-                        if(i === 1){
+                        if (i === 1) {
                             return {
                                 ...el,
-                                modalOpened : !state.stepper.steps[1].modalOpened,
-                                modalClickedId: action.payload.id
+                                modalOpened: !state.stepper.steps[1].modalOpened,
+                                modalClickedId: action.payload.id,
                             }
                         }
                         return el
-                    })
-                }
+                    }),
+                },
             }
 
-            // TAB2
+        // TAB2
         case 'PIPELINE_START_NAME_INPUT':
             return {
                 ...state,
                 step2Data: {
                     ...state.step2Data,
                     name: action.payload.value,
-                }
+                },
             }
         case 'PIPELINE_START_DESCRIPTION_INPUT':
             return {
@@ -606,19 +601,18 @@ export default (state = INITITAL_STATE, action)=>{
                 step2Data: {
                     ...state.step2Data,
                     description: action.payload.value,
-                }
+                },
             }
 
         // TAB 3
         case 'PIPELINE_START_POST_PIPE':
-            return{
+            return {
                 ...state,
                 step3Data: {
-                    response: action.payload
-                }
+                    response: action.payload,
+                },
             }
         default:
             return state
     }
-
 }
