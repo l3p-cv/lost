@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
   not first element in pipeline graph
 - Fixed raw sql in access to be compatible with postgresql
+- Fixed copy bug in import script -> Copied to wrong location, when path had tailing '/'
 ## Removed
 - removed lost-cv images. This is now integrated into the lost image
 
