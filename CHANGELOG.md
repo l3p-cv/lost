@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added
 - Install script
 - JupyterLab for Admins
+- pyAPI:
+  - Allow to request annotations via LOSTDataframes (see #144)
+  - Allow to request annotation labels via label_name (see #144) 
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

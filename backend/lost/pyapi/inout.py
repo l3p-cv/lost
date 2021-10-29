@@ -1,12 +1,12 @@
+from shutil import ExecError
 from lost.logic import file_man
 from lost.pyapi import pipe_elements
 from lost.logic.file_man import DummyFileMan
 from lost.db import access, dtype
 from lost.db import model
 from lost.db import state
-import os
-import json
 import pandas as pd
+import numpy as np
 
 class Input(object):
     '''Class that represants an input of a pipeline element.
@@ -371,7 +371,7 @@ class ScriptOutput(Output):
 
     def request_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fs=None):
+        video_path=None, fs=None, lds=None):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
@@ -398,6 +398,8 @@ class ScriptOutput(Output):
                 User lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fs method.
+            lds (LOSTDataset): A lost dataset object. Request all annotation in this 
+                dataset again.
         
         Example:
             Request human annotations for an image with annotation proposals::
@@ -433,18 +435,124 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fs=fs)
+                    fs=fs, lds=lds)
+
+    def _get_lds_fm(self, df, fm_cache=dict()):
+        if 'img_fs_name' in df:
+            fs_name = df['img_fs_name'].values[0]
+            if not fs_name:
+                fs_name = 'lost_data'
+        else:
+            fs_name = 'lost_data'
+        if fs_name in fm_cache:
+            return fm_cache[fs_name]
+        else:
+            fs_db = self._script._dbm.get_fs(name=fs_name)
+            # fs = DummyFileMan(fs_db)
+            fm = file_man.FileMan(fs_db=fs_db)
+            fm_cache[fs_name] = fm
+            return fm
+
+    def request_lds_annos(self, lds):
+        '''Request annos from LOSTDataset.
+        
+        Args:
+            lds (LOSTDataset): A lost dataset object. Request all annotation in this 
+                dataset again.
+        '''
+        for pe in self._connected_pes:
+            if pe.dtype == dtype.PipeElement.ANNO_TASK:
+                self._request_lds(pe, lds)
+
+    def _request_lds(self, pe, lds):
+        '''Request annos from LOSTDataset.
+        
+        Args:
+            lds (LOSTDataset): A lost dataset object. Request all annotation in this 
+                dataset again.
+            pe (PipelineElement): PipelineElement of the annotations task where 
+                annotations should be requested for.
+        '''
+        if 'anno_format' in lds.df:
+            if len( lds.df[lds.df['anno_format'] != 'rel'] ) > 0:
+                raise Exception('All anno in LOSTDataset need to be in rel format!')
+        else:
+            self._script.logger.warning('anno_format column is missing in lds')
+        if 'anno_style' in lds.df:
+            bb_df =  lds.df[lds.df['anno_dtype'] == 'bbox']
+            if len(bb_df[bb_df['anno_style'] != 'xcycwh']) > 0:
+                raise Exception('All anno in bboxes need to be in xcycwh anno_style!')
+        else:
+            self._script.logger.warning('anno_style column is missing in lds')
+        fm_cache = dict()
+        # db_anno_task = self._script._dbm.get_anno_task(anno_task_id=anno_task_id)
+        anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
+        lbl_map = anno_task.lbl_map
+        for img_path, df in lds.df.groupby('img_path'):
+            fm = self._get_lds_fm(df, fm_cache)
+            if 'img_sim_class' in df:
+                if df['img_sim_class'].values[0]:
+                    img_sim_class = df['img_sim_class'].values[0]
+                else:
+                    img_sim_class = 1
+            else:
+                img_sim_class = 1
+            rel_img_path = fm.make_path_relative(img_path)
+            anno_task_id = pe.anno_task.idx
+            img_anno = model.ImageAnno(anno_task_id=anno_task_id,
+                                    img_path=rel_img_path,
+                                    state=state.Anno.UNLOCKED,
+                                    result_id=self._result_map[pe.idx],
+                                    iteration=self._script._pipe_element.iteration,
+                                    # frame_n=df['img_frame_n'].values[0],
+                                    sim_class=img_sim_class,
+                                    fs_id=fm.fs.lost_fs.idx)
+            self._script._dbm.add(img_anno)
+            # if img_labels is not None:
+            if 'img_lbl' in df:
+                img_lbls = df['img_lbl'].values[0]
+                if len(img_lbls) > 0:
+                    self._update_labels(img_lbls, img_anno, lbl_map)
+            if 'anno_data' in df:
+                anno_df = df[~df['anno_data'].isnull()]
+                if len(anno_df) > 0:
+                    # for i, vec in enumerate(annos):
+                    for idx, row in anno_df.iterrows():
+                        anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
+                            anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
+                        if row['anno_dtype'] == 'point':
+                            anno.point = row['anno_data']
+                        elif row['anno_dtype'] == 'bbox':
+                            anno.bbox = row['anno_data']
+                        elif row['anno_dtype'] == 'line':
+                            anno.line = row['anno_data']
+                        elif row['anno_dtype'] == 'polygon':
+                            anno.polygon = row['anno_data']
+                        if 'anno_lbl' in row:
+                            if len(row['anno_lbl']) > 0 :
+                                # if len(anno_labels) != len(annos):
+                                #     raise ValueError('*anno_labels* and *annos* need to be of same size!')
+                                # label_leaf_ids = anno_labels[i]
+                                self._update_labels(row['anno_lbl'], anno, lbl_map)
+                        if 'anno_sim_class' in row:
+                            if row['anno_sim_class']:
+                                # if len(anno_sim_classes) != len(annos):
+                                #     raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
+                                anno.sim_class = row['anno_sim_class']
+                        else:
+                            anno.sim_class = 1
+                        img_anno.twod_annos.append(anno)
 
     def _add_annos(self, pe, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, anno_task_id=None, fs=None):
+        video_path=None, anno_task_id=None, fs=None, lds=None):
         '''Add annos in list style to an image.
         
         Args:
             pe (PipeElement): The connected PipeElement where annotation should be provided for.
             img_path (str): Path to the image where annotations are added for.
-            img_labels (list of int): Labels that will be assigned to the image. The label should
-                represented by a label_leaf_id.
+            img_labels (list of int or str): Labels that will be assigned to the image. The label should
+                represented by a label_leaf_id or label_name.
             img_sim_class (int): A culster id that will be used to cluster this image
                 in the MIA annotation tool.
             annos (list of list): A list of
@@ -466,6 +574,8 @@ class ScriptOutput(Output):
                 User lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fs method. 
+            lds (LOSTDataset): A lost dataset object. Request all annotation in this 
+                dataset again.
         '''
         if img_sim_class is None:
             img_sim_class = 1
@@ -514,14 +624,28 @@ class ScriptOutput(Output):
                 anno.sim_class = 1
             img_anno.twod_annos.append(anno)
     
-    def _update_labels(self, ll_ids, anno):
-        if isinstance(ll_ids, list):
+    def _lbl_name_to_id(self, lbl, lbl_map=None):
+        if isinstance(lbl, str):
+            lbl_name = lbl.lower()
+            if lbl_map is None:
+                raise Exception(f'Cannot transform label_name: {lbl_name} to label_idx. No lbl_map provided!')
+            if lbl_name in lbl_map:
+                return lbl_map[lbl_name]
+            else:
+                self._script.logger.warning(f'{lbl_name} is no valid label for subsequent annotation task. Will ignore label.')
+        else:
+            return lbl
+
+    def _update_labels(self, ll_ids, anno, lbl_map=None):
+        if isinstance(ll_ids, list) or isinstance(ll_ids, np.ndarray):
             if len(ll_ids) > 0:
                 for ll_id in ll_ids:
                     if ll_id is not None:
+                        ll_id = self._lbl_name_to_id(ll_id, lbl_map)
                         anno.labels.append(model.Label(label_leaf_id=ll_id))
         else:
             if ll_ids is not None:
+                ll_ids = self._lbl_name_to_id(ll_ids, lbl_map)
                 anno.labels.append(model.Label(label_leaf_id=ll_ids))
 
     def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
