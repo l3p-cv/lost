@@ -117,13 +117,13 @@ class ExportLabelTree(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            re = dbm.get_label_leaf(label_leaf_id)
-            ldf = re.to_df()
+            label_tree = LabelTree(dbm, root_id=label_leaf_id)
+            ldf = label_tree.to_df()
             dbm.close_session()
             f = BytesIO()
             ldf.to_csv(f)
             f.seek(0)
             resp = make_response(f.read())
-            resp.headers["Content-Disposition"] = f"attachment; filename={re.name}.csv"
+            resp.headers["Content-Disposition"] = f"attachment; filename={label_tree.root.name}.csv"
             resp.headers["Content-Type"] = "blob"
             return resp
