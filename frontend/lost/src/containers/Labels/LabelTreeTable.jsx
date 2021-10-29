@@ -5,6 +5,8 @@ import IconButton from '../../components/IconButton'
 import Datatable from '../../components/Datatable'
 import BaseModal from '../../components/BaseModal'
 import LabelTree from './LabelTree'
+import { API_URL } from '../../lost_settings'
+import { saveAs } from 'file-saver'
 
 var amountOfLabels = 0
 
@@ -30,7 +32,16 @@ const LabelTreeTable = ({ labelTrees }) => {
         })
         return amountOfLabels
     }
-
+    function handleLabelTreeExport(label_leaf_id) {
+        fetch(`${API_URL}/label/export/${label_leaf_id}`, {
+            method: 'get',
+            headers: new Headers({
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            }),
+        })
+            .then((res) => res.blob())
+            .then((blob) => saveAs(blob, `${getLabelTreeById(label_leaf_id).name}.csv`))
+    }
     return (
         <>
             <BaseModal
@@ -89,7 +100,7 @@ const LabelTreeTable = ({ labelTrees }) => {
                                     text="Export"
                                     color="primary"
                                     isOutline={false}
-                                    onClick={() => console.log('Export')}
+                                    onClick={() => handleLabelTreeExport(d.idx)}
                                 />
                             )
                         },

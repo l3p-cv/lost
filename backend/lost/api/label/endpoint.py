@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, make_response
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
@@ -7,6 +7,7 @@ from lost.api.label.parsers import update_label_parser, create_label_parser
 from lost.db import model, roles, access
 from lost.settings import LOST_CONFIG
 from lost.logic.label import LabelTree
+from io import BytesIO
 
 namespace = api.namespace('label', description='Label API.')
 
@@ -105,3 +106,24 @@ class Label(Resource):
             dbm.close_session()
             return "success"
 
+@namespace.route('/export/<int:label_leaf_id>')
+class ExportLabelTree(Resource):
+    @jwt_required 
+    def get(self,label_leaf_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            re = dbm.get_label_leaf(label_leaf_id)
+            ldf = re.to_df()
+            dbm.close_session()
+            f = BytesIO()
+            ldf.to_csv(f)
+            f.seek(0)
+            resp = make_response(f.read())
+            resp.headers["Content-Disposition"] = f"attachment; filename={re.name}.csv"
+            resp.headers["Content-Type"] = "blob"
+            return resp
