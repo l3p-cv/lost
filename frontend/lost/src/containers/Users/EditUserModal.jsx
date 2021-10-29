@@ -10,20 +10,33 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
 // import { roles } from '../../lost_settings'
+
+const CenteredCell = ({ children, key }) => {
+    return (
+        <div
+            key={key}
+            style={{
+                textAlign: 'center',
+                position: 'relative',
+                top: '50%',
+                transform: 'translateY(-50%)',
+            }}
+        >
+            {children}
+        </div>
+    )
+}
+
 const ErrorLabel = ({ text }) => (
-    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>
-        {text}
-    </p>
+    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>{text}</p>
 )
 
 const ExternalUserLabel = ({ text }) => (
-    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'blue' }}>
-        {text}
-    </p>
+    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'blue' }}>{text}</p>
 )
 
-const EditUserModal  = (props) => {
-    const roles = useSelector(state=>state.lost.roles)
+const EditUserModal = (props) => {
+    const roles = useSelector((state) => state.lost.roles)
     const dispatch = useDispatch()
     const userRaw = props.user[0]
     // userModified.roles = userModified.roles.map(el=>el.name)
@@ -45,7 +58,7 @@ const EditUserModal  = (props) => {
     const userNameField = () => {
         return (
             <>
-                <Datatable.centeredCell>
+                <CenteredCell>
                     <Input
                         autoFocus={focusedField == 0}
                         placeholder="Username"
@@ -55,12 +68,11 @@ const EditUserModal  = (props) => {
                             setFocusedFieled(0)
                             setUser({
                                 ...user,
-                                user_name: e.currentTarget.value
+                                user_name: e.currentTarget.value,
                             })
-                        }
-                        }
+                        }}
                     />
-                </Datatable.centeredCell>
+                </CenteredCell>
                 {usernameError ? <ErrorLabel text={usernameError} /> : null}
             </>
         )
@@ -68,7 +80,7 @@ const EditUserModal  = (props) => {
 
     const emailField = () => (
         <>
-            <Datatable.centeredCell>
+            <CenteredCell>
                 <Input
                     autoFocus={focusedField == 1}
                     placeholder="example@example.com"
@@ -79,15 +91,15 @@ const EditUserModal  = (props) => {
                         setUser({ ...user, email: e.currentTarget.value })
                     }}
                 />
-            </Datatable.centeredCell>
-            {user.is_external ? <ExternalUserLabel text="External user" />: null}
+            </CenteredCell>
+            {user.is_external ? <ExternalUserLabel text="External user" /> : null}
             {emailError ? <ErrorLabel text="Email is not valid" /> : null}
         </>
     )
 
     const passwordField = () => (
         <>
-            <Datatable.centeredCell>
+            <CenteredCell>
                 <Input
                     autoFocus={focusedField == 2}
                     placeholder="*******"
@@ -99,56 +111,52 @@ const EditUserModal  = (props) => {
                         setUser({ ...user, password: e.currentTarget.value })
                     }}
                 />
-            </Datatable.centeredCell>
-            {user.is_external ? <ExternalUserLabel text="External user" />: null}
+            </CenteredCell>
+            {user.is_external ? <ExternalUserLabel text="External user" /> : null}
             {passwordError ? <ErrorLabel text={passwordError} /> : null}
         </>
     )
 
     const confirmPasswordField = () => (
         <>
-            <Datatable.centeredCell>
+            <CenteredCell>
                 <Input
                     autoFocus={focusedField == 3}
                     placeholder="*******"
                     type="password"
                     defaultValue={user.confirmPassword}
                     disabled={user.is_external}
-                    onChange={(e) =>{
+                    onChange={(e) => {
                         setFocusedFieled(3)
                         setUser({
                             ...user,
-                            confirmPassword: e.currentTarget.value
+                            confirmPassword: e.currentTarget.value,
                         })
-                    }
-                    }
+                    }}
                 />
-            </Datatable.centeredCell>
-            {passwordConfirmError ? (
-                <ErrorLabel text="Passwords do not match" />
-            ) : null}
+            </CenteredCell>
+            {passwordConfirmError ? <ErrorLabel text="Passwords do not match" /> : null}
         </>
     )
 
     const rolesField = () => {
         return roles.map((guiSetupRole) => {
             const isActive =
-                user.roles.filter((role) => role.name === guiSetupRole).length >
-                0
-            return Datatable.renderBadge(
-                `user-${user.idx}-role-${guiSetupRole}`,
-                guiSetupRole,
-                isActive ? 'success' : 'secondary',
-                () => {
-                    setUser({
-                        ...user,
-                        roles: isActive
-                            ? user.roles.filter(
-                                (role) => role.name !== guiSetupRole
-                            )
-                            : [...user.roles, { name: guiSetupRole }]
-                    })
-                }
+                user.roles.filter((role) => role.name === guiSetupRole).length > 0
+            return (
+                <Datatable.RenderBadge
+                    key={`user-${user.idx}-role-${guiSetupRole}`}
+                    text={guiSetupRole}
+                    color={isActive ? 'success' : 'secondary'}
+                    onClick={() => {
+                        setUser({
+                            ...user,
+                            roles: isActive
+                                ? user.roles.filter((role) => role.name !== guiSetupRole)
+                                : [...user.roles, { name: guiSetupRole }],
+                        })
+                    }}
+                />
             )
         })
     }
@@ -157,20 +165,20 @@ const EditUserModal  = (props) => {
         return groups.map((el) => {
             const isActive =
                 user.groups.filter((group) => group.idx === el.idx).length > 0
-            return Datatable.renderBadge(
-                `user-${user.idx}-group-${el.idx}`,
-                el.name,
-                isActive ? 'success' : 'secondary',
-                () => {
-                    setUser({
-                        ...user,
-                        groups: isActive
-                            ? user.groups.filter(
-                                (group) => group.idx !== el.idx
-                            )
-                            : [...user.groups, el]
-                    })
-                }
+            return (
+                <Datatable.RenderBadge
+                    key={`user-${user.idx}-group-${el.idx}`}
+                    text={el.name}
+                    color={isActive ? 'success' : 'secondary'}
+                    onClick={() => {
+                        setUser({
+                            ...user,
+                            groups: isActive
+                                ? user.groups.filter((group) => group.idx !== el.idx)
+                                : [...user.groups, el],
+                        })
+                    }}
+                />
             )
         })
     }
@@ -256,38 +264,37 @@ const EditUserModal  = (props) => {
                     {
                         Header: 'Username',
                         accessor: 'userName',
-                        Cell: userNameField
+                        Cell: userNameField,
                     },
                     {
                         Header: 'Email',
                         accessor: 'email',
-                        Cell: emailField
+                        Cell: emailField,
                     },
                     {
                         Header: 'Password',
                         accessor: 'password',
-                        Cell: passwordField
+                        Cell: passwordField,
                     },
                     {
                         Header: 'Confirm Password',
                         accessor: 'confirmPassword',
-                        Cell: confirmPasswordField
+                        Cell: confirmPasswordField,
                     },
                     {
                         Header: 'Roles',
                         accessor: 'roles',
-                        Cell: rolesField
+                        Cell: rolesField,
                     },
                     {
                         Header: 'Groups',
                         accessor: 'groups',
-                        Cell: groupField
-                    }
+                        Cell: groupField,
+                    },
                 ]}
             />
         </BaseModal>
     )
 }
-
 
 export default EditUserModal

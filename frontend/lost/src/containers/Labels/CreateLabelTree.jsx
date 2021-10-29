@@ -6,6 +6,7 @@ import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 
 import 'react-notifications/lib/notifications.css'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 const { cleanLabelMessages, createLabelTree } = actions
 
@@ -22,15 +23,6 @@ class CreateLabelTree extends Component {
         this.handleCreateLabelName = this.handleCreateLabelName.bind(this)
         this.handleCreateLabelDescription = this.handleCreateLabelDescription.bind(this)
         this.handleCreateSave = this.handleCreateSave.bind(this)
-        this.handleCreateClear = this.handleCreateClear.bind(this)
-    }
-    handleCreateClear() {
-        this.setState({
-            createLabelname: '',
-            createLabeldescription: '',
-            createLabelabbreviation: '',
-            createLabelextID: '',
-        })
     }
     handleCreateLabelName(e) {
         this.setState({ createLabelname: e.target.value })
@@ -49,7 +41,6 @@ class CreateLabelTree extends Component {
             parent_leaf_id: this.state.editLabelid,
         }
         this.props.createLabelTree(saveData)
-        this.handleCreateClear()
     }
 
     componentDidUpdate() {
@@ -63,12 +54,6 @@ class CreateLabelTree extends Component {
     render() {
         return (
             <>
-                <div
-                    className="flex flex-row justify-center"
-                    style={{ fontSize: '1.5em' }}
-                >
-                    <b>Create</b>
-                </div>
                 <InputGroup style={{ marginBottom: '10px', marginTop: '10px' }}>
                     <Input
                         type="text"
@@ -86,12 +71,8 @@ class CreateLabelTree extends Component {
                         <IconButton
                             color="primary"
                             onClick={this.handleCreateSave}
-                            text="Save"
-                        />
-                        <IconButton
-                            color="danger"
-                            onClick={this.handleCreateClear}
-                            text="Clear"
+                            icon={faPlus}
+                            text="Add"
                         />
                     </InputGroupAddon>
                 </InputGroup>

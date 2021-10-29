@@ -5,6 +5,7 @@ import { Alert, Input, InputGroup, InputGroupAddon } from 'reactstrap'
 import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
+import { faCheck, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 const { updateLabel, deleteLabel, createLabel, cleanLabelMessages } = actions
 
@@ -130,14 +131,9 @@ class EditLabel extends Component {
     }
     render() {
         if (this.props.label) {
+            console.log(this.props.label)
             return (
                 <>
-                    <div
-                        className="flex flex-row justify-center"
-                        style={{ fontSize: '1.5em', marginBottom: 10 }}
-                    >
-                        <b>Edit</b>
-                    </div>
                     Edit Parent
                     <InputGroup>
                         <Input
@@ -166,14 +162,19 @@ class EditLabel extends Component {
                         ></Input>
                         <InputGroupAddon addonType="append">
                             <IconButton
-                                color="primary"
-                                onClick={this.handleEditSave}
-                                text="Save"
-                            />
-                            <IconButton
                                 color="danger"
                                 onClick={this.handleEditDelete}
+                                icon={faTrash}
+                                isOutline={false}
                                 text="Delete"
+                                disabled={this.props.label.children.length > 0}
+                            />
+                            <IconButton
+                                color="primary"
+                                isOutline={false}
+                                icon={faCheck}
+                                onClick={this.handleEditSave}
+                                text="Save"
                             />
                         </InputGroupAddon>
                     </InputGroup>
@@ -207,12 +208,9 @@ class EditLabel extends Component {
                             <IconButton
                                 color="primary"
                                 onClick={this.handleCreateSave}
-                                text="Save"
-                            />
-                            <IconButton
-                                color="danger"
-                                onClick={this.handleCreateClear}
-                                text="Clear"
+                                text="Add"
+                                icon={faPlus}
+                                isOutline={false}
                             />
                         </InputGroupAddon>
                     </InputGroup>

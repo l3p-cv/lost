@@ -7,7 +7,7 @@ import {
     faUserEdit,
     faTrash,
     faUserPlus,
-    faCopy
+    faCopy,
 } from '@fortawesome/free-solid-svg-icons'
 import EditUserModal from './EditUserModal'
 import { useCopyToClipboard } from 'react-use'
@@ -20,8 +20,8 @@ const EMPTY_USER = [
         groups: [],
         password: '',
         roles: [],
-        userName: ''
-    }
+        userName: '',
+    },
 ]
 
 export const Users = () => {
@@ -42,14 +42,11 @@ export const Users = () => {
     useEffect(() => {
         if (copiedObj.error) {
             Notification.showError(
-                'Unable to copy to clipboard. API TOKEN was logged in console log'
+                'Unable to copy to clipboard. API TOKEN was logged in console log',
             )
         } else if (copiedObj.value) {
             Notification.showSuccess(
-                `API TOKEN: ${copiedObj.value.substr(
-                    0,
-                    8
-                )}... copied to clipboard`
+                `API TOKEN: ${copiedObj.value.substr(0, 8)}... copied to clipboard`,
             )
         }
     }, [copiedObj])
@@ -126,85 +123,80 @@ export const Users = () => {
                     {
                         Header: 'Username',
                         accessor: 'user_name',
-                        Cell: (row) =>
-                            Datatable.centeredCell({ children: row.value })
+                        Cell: function customCell(row) {
+                            return row.value
+                        },
                     },
                     {
                         Header: 'API Token',
                         accessor: 'apiToken',
-                        Cell: (row) => {
+                        Cell: function customCell(row) {
                             if (row.original.apiToken) {
                                 return (
-                                    <Datatable.centeredCell>
-                                        <IconButton
-                                            color="primary"
-                                            icon={faCopy}
-                                            onClick={() => {
-                                                copyToClipboard(
-                                                    row.original.apiToken
-                                                )
-                                            }}
-                                        />
-                                    </Datatable.centeredCell>
+                                    <IconButton
+                                        color="primary"
+                                        icon={faCopy}
+                                        onClick={() => {
+                                            copyToClipboard(row.original.apiToken)
+                                        }}
+                                    />
                                 )
                             }
                             return null
-                        }
+                        },
                     },
                     {
                         Header: 'Roles',
                         accessor: 'roles',
-                        Cell: (row) => {
-                            return row.value.map((el) => {
-                                return Datatable.renderBadge(
-                                    el.idx,
-                                    el.name,
-                                    'success'
-                                )
-                            })
-                        }
+                        Cell: function customCell(row) {
+                            return row.value.map((el) => (
+                                <Datatable.RenderBadge
+                                    key={el.idx}
+                                    text={el.name}
+                                    color="success"
+                                />
+                            ))
+                        },
                     },
                     {
                         Header: 'Groups',
                         accessor: 'groups',
-                        Cell: (row) => {
-                            return row.value.map((el) => {
-                                return Datatable.renderBadge(
-                                    el.idx,
-                                    el.name,
-                                    'primary'
-                                )
-                            })
-                        }
+                        Cell: function customCell(row) {
+                            return row.value.map((el) => (
+                                <Datatable.RenderBadge
+                                    key={el.idx}
+                                    text={el.name}
+                                    color="primary"
+                                />
+                            ))
+                        },
                     },
                     {
                         Header: 'Edit',
-                        Cell: (row) =>
-                            Datatable.centeredCell({
-                                children: (
-                                    <IconButton
-                                        icon={faUserEdit}
-                                        color="warning"
-                                        onClick={() => editClick(row)}
-                                    />
-                                )
-                            })
+                        Cell: function customCell(row) {
+                            return (
+                                <IconButton
+                                    icon={faUserEdit}
+                                    color="warning"
+                                    onClick={() => editClick(row)}
+                                />
+                            )
+                        },
                     },
                     {
                         Header: 'Delete',
-                        Cell: (row) =>
-                            Datatable.centeredCell({
-                                children: (
-                                    <IconButton
-                                        icon={faTrash}
-                                        color="danger"
-                                        onClick={() => {
-                                            deleteClick(row)
-                                        }}
-                                    />
-                                )
-                            })
-                    }
+                        Cell: function customCell(row) {
+                            return (
+                                <IconButton
+                                    icon={faTrash}
+                                    color="danger"
+                                    onClick={() => {
+                                        deleteClick(row)
+                                    }}
+                                />
+                            )
+                        },
+                    },
                 ]}
             />
         </div>
