@@ -51,6 +51,10 @@ class Datasource(Element):
         # fs.lost_fs = ds.fs
         return self.file_man.fs
 
+    def get_fm(self):
+        '''Get FileMan object'''
+        return self.file_man
+
 
 class AnnoTask(Element):
 

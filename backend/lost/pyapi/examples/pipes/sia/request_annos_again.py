@@ -20,7 +20,7 @@ class LostScript(script.Script):
     def main(self):
         for ds in self.inp.datasources:
             anno_file_path = ds.path
-            # fs = ds.get_fs()
+            fm = ds.get_fm()
             lds = LOSTDataset(anno_file_path)
             if self.get_arg('img_path_key') is not None:
                 lds.df.drop(columns=['img_path'], inplace=True)
@@ -29,7 +29,7 @@ class LostScript(script.Script):
                 lds.ignore_labels(self.get_arg('ignore_lbls'), col='anno_lbl', inplace=True)
             if self.get_arg('remap_path') is not None:
                 lds.remap_img_path(self.get_arg('remap_path'), inplace=True)
-            self.outp.request_lds_annos(lds)
+            self.outp.request_lds_annos(lds, fm)
 
 if __name__ == "__main__":
     my_script = LostScript() 

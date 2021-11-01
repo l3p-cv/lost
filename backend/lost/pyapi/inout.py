@@ -437,12 +437,16 @@ class ScriptOutput(Output):
                     anno_task_id=pe.anno_task.idx,
                     fs=fs, lds=lds)
 
-    def _get_lds_fm(self, df, fm_cache=dict()):
+    def _get_lds_fm(self, df, fm_cache=dict(), fm=None):
         if 'img_fs_name' in df:
             fs_name = df['img_fs_name'].values[0]
             if not fs_name:
+                if fm is not None:
+                    return fm
                 fs_name = 'lost_data'
         else:
+            if fm is not None:
+                return fm
             fs_name = 'lost_data'
         if fs_name in fm_cache:
             return fm_cache[fs_name]
@@ -453,7 +457,7 @@ class ScriptOutput(Output):
             fm_cache[fs_name] = fm
             return fm
 
-    def request_lds_annos(self, lds):
+    def request_lds_annos(self, lds, fm=None):
         '''Request annos from LOSTDataset.
         
         Args:
@@ -462,9 +466,9 @@ class ScriptOutput(Output):
         '''
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                self._request_lds(pe, lds)
+                self._request_lds(pe, lds, fm)
 
-    def _request_lds(self, pe, lds):
+    def _request_lds(self, pe, lds, fm=None):
         '''Request annos from LOSTDataset.
         
         Args:
@@ -489,7 +493,7 @@ class ScriptOutput(Output):
         anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
         lbl_map = anno_task.lbl_map
         for img_path, df in lds.df.groupby('img_path'):
-            fm = self._get_lds_fm(df, fm_cache)
+            fm = self._get_lds_fm(df, fm_cache, fm)
             if 'img_sim_class' in df:
                 if df['img_sim_class'].values[0]:
                     img_sim_class = df['img_sim_class'].values[0]
@@ -511,8 +515,9 @@ class ScriptOutput(Output):
             # if img_labels is not None:
             if 'img_lbl' in df:
                 img_lbls = df['img_lbl'].values[0]
-                if len(img_lbls) > 0:
-                    self._update_labels(img_lbls, img_anno, lbl_map)
+                if img_lbls:
+                    if len(img_lbls) > 0:
+                        self._update_labels(img_lbls, img_anno, lbl_map)
             if 'anno_data' in df:
                 anno_df = df[~df['anno_data'].isnull()]
                 if len(anno_df) > 0:
@@ -633,6 +638,7 @@ class ScriptOutput(Output):
                 return lbl_map[lbl_name]
             else:
                 self._script.logger.warning(f'{lbl_name} is no valid label for subsequent annotation task. Will ignore label.')
+                return None
         else:
             return lbl
 
@@ -642,11 +648,13 @@ class ScriptOutput(Output):
                 for ll_id in ll_ids:
                     if ll_id is not None:
                         ll_id = self._lbl_name_to_id(ll_id, lbl_map)
-                        anno.labels.append(model.Label(label_leaf_id=ll_id))
+                        if ll_id is not None:
+                            anno.labels.append(model.Label(label_leaf_id=ll_id))
         else:
             if ll_ids is not None:
                 ll_ids = self._lbl_name_to_id(ll_ids, lbl_map)
-                anno.labels.append(model.Label(label_leaf_id=ll_ids))
+                if ll_ids is not None:
+                    anno.labels.append(model.Label(label_leaf_id=ll_ids))
 
     def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
