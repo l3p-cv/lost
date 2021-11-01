@@ -7,6 +7,7 @@ from lost.db import model
 from lost.db import state
 import pandas as pd
 import numpy as np
+import json
 
 class Input(object):
     '''Class that represants an input of a pipeline element.
@@ -457,18 +458,20 @@ class ScriptOutput(Output):
             fm_cache[fs_name] = fm
             return fm
 
-    def request_lds_annos(self, lds, fm=None):
+    def request_lds_annos(self, lds, fm=None, anno_meta_keys=[], img_meta_keys=[], img_path_key=None):
         '''Request annos from LOSTDataset.
         
         Args:
             lds (LOSTDataset): A lost dataset object. Request all annotation in this 
                 dataset again.
+            img_meta_keys (list): Keys that should be used for img_anno meta information
+            anno_meta_keys (list): Keys that should be used for two_d_anno meta information
         '''
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                self._request_lds(pe, lds, fm)
+                self._request_lds(pe, lds, fm, anno_meta_keys, img_meta_keys, img_path_key)
 
-    def _request_lds(self, pe, lds, fm=None):
+    def _request_lds(self, pe, lds, fm=None, anno_meta_keys=[], img_meta_keys=[], img_path_key='img_path'):
         '''Request annos from LOSTDataset.
         
         Args:
@@ -476,6 +479,10 @@ class ScriptOutput(Output):
                 dataset again.
             pe (PipelineElement): PipelineElement of the annotations task where 
                 annotations should be requested for.
+            fm (FileMan): A file_man object.
+            img_meta_keys (list): Keys that should be used for img_anno meta information
+            anno_meta_keys (list): Keys that should be used for two_d_anno meta information
+            img_path_key (str): Column that should be used as img_path
         '''
         if 'anno_format' in lds.df:
             if len( lds.df[lds.df['anno_format'] != 'rel'] ) > 0:
@@ -492,7 +499,7 @@ class ScriptOutput(Output):
         # db_anno_task = self._script._dbm.get_anno_task(anno_task_id=anno_task_id)
         anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
         lbl_map = anno_task.lbl_map
-        for img_path, df in lds.df.groupby('img_path'):
+        for img_path, df in lds.df.groupby(img_path_key):
             fm = self._get_lds_fm(df, fm_cache, fm)
             if 'img_sim_class' in df:
                 if df['img_sim_class'].values[0]:
@@ -511,6 +518,8 @@ class ScriptOutput(Output):
                                     # frame_n=df['img_frame_n'].values[0],
                                     sim_class=img_sim_class,
                                     fs_id=fm.fs.lost_fs.idx)
+            if len(img_meta_keys) > 0:
+                anno.meta = json.dumps(row[img_meta_keys].to_dict())
             self._script._dbm.add(img_anno)
             # if img_labels is not None:
             if 'img_lbl' in df:
@@ -525,6 +534,8 @@ class ScriptOutput(Output):
                     for idx, row in anno_df.iterrows():
                         anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
                             anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
+                        if len(anno_meta_keys) > 0:
+                            anno.meta = json.dumps(row[anno_meta_keys].to_dict())
                         if row['anno_dtype'] == 'point':
                             anno.point = row['anno_data']
                         elif row['anno_dtype'] == 'bbox':

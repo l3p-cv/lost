@@ -139,6 +139,7 @@ class TwoDAnno(Base):
         anno_time: Overall Annotation Time in ms.
         description (str): Description for this annotation. Assigned by an 
             annotator or algorithm.
+        meta (str): A field for meta information added by a script
     """
     __tablename__ = "two_d_anno"
 
@@ -159,6 +160,7 @@ class TwoDAnno(Base):
     confidence = Column(Float)
     anno_time = Column(Float)
     description = Column(Text)
+    meta = Column(Text)
 
     def __init__(self, anno_task_id=None,
                  user_id=None, timestamp=None, state=None,
@@ -166,7 +168,7 @@ class TwoDAnno(Base):
                  img_anno_id=None, timestamp_lock=None,
                  iteration=0, data=None, dtype=None,
                  confidence=None, anno_time=None,
-                 description=None
+                 description=None, meta=None
                  ):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
@@ -182,6 +184,7 @@ class TwoDAnno(Base):
         self.confidence = confidence
         self.anno_time = anno_time
         self.description = description
+        self.meta = meta
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -269,6 +272,12 @@ class TwoDAnno(Base):
             'anno_style': self.get_anno_style(),
             'anno_format':'rel'
         }
+        try:
+            if self.meta is not None:
+                for key, val in json.loads(self.meta).items():
+                    anno_dict[f'meta_{key}'] = val
+        except:
+            pass
         try:
             anno_dict['anno_dtype'] = dtype.TwoDAnno.TYPE_TO_STR[self.dtype]
         except:
@@ -648,6 +657,7 @@ class ImageAnno(Base):
         description (str): Description for this annotation. Assigned by an 
             annotator or algorithm.
         fs_id (int): Id of the filesystem where image is located
+        meta (str): A field for meta information added by a script
     """
     __tablename__ = "image_anno"
 
@@ -671,6 +681,7 @@ class ImageAnno(Base):
     description = Column(Text)
     fs_id = Column(Integer, ForeignKey('filesystem.idx'))
     fs = relationship('FileSystem', uselist=False)
+    meta = Column(Text)
 
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
@@ -678,7 +689,7 @@ class ImageAnno(Base):
                  frame_n=None,
                  video_path=None,
                  iteration=0, anno_time=None, is_junk=None,
-                 description=None, fs_id=None):
+                 description=None, fs_id=None, meta=None):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
         self.timestamp = timestamp
@@ -693,6 +704,7 @@ class ImageAnno(Base):
         self.is_junk = is_junk
         self.description = description
         self.fs_id = fs_id
+        self.meta = meta
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -791,6 +803,12 @@ class ImageAnno(Base):
             'img_is_junk': self.is_junk,
             'img_fs_name': self.fs.name
         }
+        try:
+            if self.meta is not None:
+                for key, val in json.loads(self.meta).items():
+                    img_dict[f'meta_{key}'] = val
+        except:
+            pass
         try:
             img_dict['img_lbl'] = [
                 lbl.label_leaf.name for lbl in self.labels]
