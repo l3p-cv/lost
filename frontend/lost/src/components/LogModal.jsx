@@ -1,90 +1,92 @@
 import React, { useEffect, useState, useRef } from 'react'
+import BaseModal from './BaseModal'
 import PropTypes from 'prop-types'
 import { Input } from 'reactstrap'
+import actions from '../actions'
 import { useDispatch } from 'react-redux'
-import { useWindowSize, useInterval } from 'react-use'
-
+import { useWindowSize } from 'react-use'
+import { useInterval } from 'react-use'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
-import actions from '../actions/index'
-import BaseModal from './BaseModal'
 import IconButton from './IconButton'
-
-export const TextArea = ({ textArea, isRedBorder, log }) => {
+import * as Notification from './Notification'
+const TextArea = (props) => {
     const size = useWindowSize()
     return (
         <Input
             color="secondary"
             readOnly
-            innerRef={textArea}
+            innerRef={props.textArea}
             style={{
                 height: 0.7 * size.height,
-                border: `2px solid rgba(255, 0, 0, ${isRedBorder ? 1 : 0})`,
+                border: `2px solid rgba(255, 0, 0, ${props.isRedBorder ? 1 : 0})`,
             }}
             type="textarea"
-            value={log}
+            defaultValue={props.log}
         />
     )
 }
 
-const LogModal = ({
-    logPath,
-    actionType,
-    message,
-    wiLogId,
-    daemonIdx,
-    workflowId,
-    isDownloadable,
-    isOpen,
-    toggle,
-}) => {
+const LogModal = (props) => {
     const textArea = useRef(null)
     const dispatch = useDispatch()
     const [log, setLog] = useState('')
     const [isRedBorder, setIsRedBorder] = useState(false)
+    const [firstRequest, setFirstRequest] = useState(true)
     const getLog = async () => {
         let logResponse
         setIsRedBorder(true)
-        if (logPath || message) {
-            switch (actionType) {
-                case LogModal.TYPES.WORKFLOW_INSTANCE:
-                    logResponse = await actions.getWorflowInstanceLog(wiLogId)
+        if (props.logPath || props.message) {
+            switch (props.actionType) {
+                case LogModal.TYPES.PIPELINE:
+                    logResponse = await actions.getLog(props.logPath)
                     break
                 case LogModal.TYPES.WORKERS:
-                    logResponse = await actions.getWorkerLog(logPath)
-                    break
-                case LogModal.TYPES.DAEMONS:
-                    logResponse = await actions.getDaemonLog(daemonIdx)
-                    break
-                case LogModal.TYPES.WORKFLOW_ARM:
-                    logResponse = await actions.getWorkflowArmLog(workflowId)
+                    if (firstRequest) {
+                        Notification.showLoading()
+                    }
+                    logResponse = await actions.getWorkerLogFile(props.logPath)
                     break
                 default:
                     throw new Error('Unknown type')
             }
         }
+        let isAtBottom = false
+        if (textArea.current) {
+            isAtBottom =
+                textArea.current.scrollHeight <=
+                textArea.current.scrollTop + textArea.current.clientHeight
+        }
         setLog(logResponse)
-        setTimeout(() => {
+        if (textArea.current && (isAtBottom || firstRequest)) {
+            textArea.current.scrollTop = textArea.current.scrollHeight
+        }
+        if (firstRequest) {
+            Notification.close()
+            setFirstRequest(false)
+        }
+        setTimeout(function () {
             setIsRedBorder(false)
         }, 100)
     }
     useEffect(() => {
-        if (logPath || message) {
+        if ((props.logPath || props.message) && props.isOpen) {
             getLog()
         }
-    }, [logPath])
+    }, [props.logPath])
 
     useInterval(() => {
-        getLog()
+        if (props.isOpen) {
+            getLog()
+        }
     }, 2000)
 
     const downloadLogfile = () => {
-        switch (actionType) {
-            case LogModal.TYPES.WORKFLOW_INSTANCE:
-                dispatch(actions.downloadWorkflowInstanceLog(logPath, wiLogId))
+        switch (props.actionType) {
+            case LogModal.TYPES.PIPELINE:
+                dispatch(actions.downloadLogfile(props.logPath, props.wiLogId))
                 break
             case LogModal.TYPES.WORKERS:
-                break
-            case LogModal.TYPES.DAEMONS:
+                dispatch(actions.downloadWorkerLogfile(props.logPath, props.wiLogId))
                 break
             default:
                 throw new Error('Unknown type')
@@ -92,7 +94,7 @@ const LogModal = ({
     }
 
     const renderFooter = () => {
-        if (isDownloadable) {
+        if (props.isDownloadable) {
             return (
                 <IconButton
                     color="primary"
@@ -102,32 +104,18 @@ const LogModal = ({
                 />
             )
         }
-        return null
     }
 
-    useEffect(() => {
-        if (log && textArea.current) {
-            textArea.current.scrollTop = textArea.current.scrollHeight
-        }
-    }, [log])
-
     return (
-        <BaseModal isOpen={isOpen} toggle={toggle} title="Log" footer={renderFooter()}>
-            <TextArea
-                textArea={textArea}
-                log={log}
-                isRedBorder={isRedBorder}
-                // borderOpacity={borderAnimation.borderOpacity}
-            />
+        <BaseModal {...props} title="Log" footer={renderFooter()}>
+            <TextArea textArea={textArea} log={log} isRedBorder={isRedBorder} />
         </BaseModal>
     )
 }
 
 LogModal.TYPES = {
-    WORKFLOW_INSTANCE: 'WI',
+    PIPELINE: 'PIPELINE',
     WORKERS: 'WORKERS',
-    DAEMONS: 'DAEMONS',
-    WORKFLOW_ARM: 'WORKFLOW_ARM',
 }
 
 LogModal.propTypes = {
@@ -138,12 +126,6 @@ LogModal.propTypes = {
     logPath: PropTypes.string,
     wiLogId: PropTypes.number,
     actionType: PropTypes.string.isRequired,
-}
-LogModal.defaultProps = {
-    isDownloadable: false,
-    message: '',
-    logPath: '',
-    wiLogId: 0,
 }
 
 export default LogModal
