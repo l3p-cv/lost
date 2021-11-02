@@ -37,3 +37,4 @@ wtforms==2.2.1
 python-igraph
 pandas
 numpy
+docutils<0.18
