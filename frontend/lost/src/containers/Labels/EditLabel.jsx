@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
+import { CTooltip } from '@coreui/react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
 import { Alert, Input, InputGroup, InputGroupAddon } from 'reactstrap'
 import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
-import { faCheck, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faPalette, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { ChromePicker } from 'react-color'
 
 const { updateLabel, deleteLabel, createLabel, cleanLabelMessages } = actions
 
@@ -22,6 +24,10 @@ class EditLabel extends Component {
             createLabeldescription: '',
             createLabelabbreviation: '',
             createLabelextID: '',
+            selectedCreateColor: '',
+            selectedEditColor: '',
+            invalidCreateColor: false,
+            invalidEditColor: false,
         }
         this.handleEditLabelName = this.handleEditLabelName.bind(this)
         this.handleEditLabelDescription = this.handleEditLabelDescription.bind(this)
@@ -35,6 +41,9 @@ class EditLabel extends Component {
         this.handleEditDelete = this.handleEditDelete.bind(this)
         this.handleCreateSave = this.handleCreateSave.bind(this)
         this.handleCreateClear = this.handleCreateClear.bind(this)
+        this.handleChangeComplete = this.handleChangeComplete.bind(this)
+        this.handleCreateLabelColor = this.handleCreateLabelColor.bind(this)
+        this.handleEditLabelColor = this.handleEditLabelColor.bind(this)
     }
 
     componentDidUpdate() {
@@ -82,15 +91,34 @@ class EditLabel extends Component {
     handleCreateLabelExtID(e) {
         this.setState({ createLabelextID: e.target.value })
     }
+    handleCreateLabelColor(e) {
+        if (/^#[0-9A-F]{6}$/i.test(e.target.value) || e.target.value === '') {
+            this.setState({ invalidCreateColor: false })
+        } else {
+            this.setState({ invalidCreateColor: true })
+        }
+        this.setState({ selectedCreateColor: e.target.value })
+    }
+
+    handleEditLabelColor(e) {
+        if (/^#[0-9A-F]{6}$/i.test(e.target.value) || e.target.value === '') {
+            this.setState({ invalidEditColor: false })
+        } else {
+            this.setState({ invalidEditColor: true })
+        }
+        this.setState({ selectedEditColor: e.target.value })
+    }
     componentWillReceiveProps(props) {
         if (props.label) {
-            const { idx, name, description, abbreviation, external_id } = props.label
+            const { idx, name, description, abbreviation, external_id, color } =
+                props.label
             this.setState({
                 editLabelid: idx,
                 editLabelname: name ? name : '',
                 editLabeldescription: description ? description : '',
                 editLabelabbreviation: abbreviation ? abbreviation : '',
                 editLabelextID: external_id ? external_id : '',
+                selectedEditColor: color ? color : '',
             })
         }
     }
@@ -102,6 +130,7 @@ class EditLabel extends Component {
             description: this.state.editLabeldescription,
             abbreviation: this.state.editLabelabbreviation,
             external_id: this.state.editLabelextID,
+            color: this.state.selectedEditColor,
         }
         this.props.updateLabel(updateData)
     }
@@ -117,6 +146,7 @@ class EditLabel extends Component {
             abbreviation: this.state.createLabelabbreviation,
             external_id: this.state.createLabelextID,
             parent_leaf_id: this.state.editLabelid,
+            color: this.state.selectedCreateColor,
         }
         this.props.createLabel(saveData)
         this.handleCreateClear()
@@ -127,14 +157,31 @@ class EditLabel extends Component {
             createLabeldescription: '',
             createLabelabbreviation: '',
             createLabelextID: '',
+            selectedCreateColor: '',
         })
+    }
+    handleChangeComplete(color, event) {
+        this.setState({
+            ...this.state,
+            selectedColor: color,
+        })
+    }
+    renderColorPicker() {
+        return (
+            <ChromePicker
+                color={this.state.selectedColor}
+                onChange={this.handleChangeComplete}
+            ></ChromePicker>
+        )
     }
     render() {
         if (this.props.label) {
             console.log(this.props.label)
             return (
                 <>
-                    Edit Parent
+                    <b>
+                        <div style={{ marginBottom: 10 }}>Edit Parent</div>
+                    </b>
                     <InputGroup>
                         <Input
                             type="text"
@@ -160,13 +207,19 @@ class EditLabel extends Component {
                             value={this.state.editLabelextID}
                             onChange={this.handleEditLabelExtID}
                         ></Input>
+                        <Input
+                            type="text"
+                            placeholder="color"
+                            value={this.state.selectedEditColor}
+                            onChange={this.handleEditLabelColor}
+                            invalid={this.state.invalidEditColor}
+                        ></Input>
                         <InputGroupAddon addonType="append">
                             <IconButton
                                 color="danger"
                                 onClick={this.handleEditDelete}
                                 icon={faTrash}
                                 isOutline={false}
-                                text="Delete"
                                 disabled={this.props.label.children.length > 0}
                             />
                             <IconButton
@@ -178,7 +231,10 @@ class EditLabel extends Component {
                             />
                         </InputGroupAddon>
                     </InputGroup>
-                    Add Child
+                    <hr></hr>
+                    <b>
+                        <div style={{ marginBottom: 10 }}>Add Child</div>
+                    </b>
                     <InputGroup>
                         <Input
                             type="text"
@@ -204,6 +260,13 @@ class EditLabel extends Component {
                             value={this.state.createLabelextID}
                             onChange={this.handleCreateLabelExtID}
                         ></Input>
+                        <Input
+                            type="text"
+                            placeholder="color"
+                            value={this.state.selectedCreateColor}
+                            onChange={this.handleCreateLabelColor}
+                            invalid={this.state.invalidCreateColor}
+                        ></Input>
                         <InputGroupAddon addonType="append">
                             <IconButton
                                 color="primary"
@@ -211,6 +274,7 @@ class EditLabel extends Component {
                                 text="Add"
                                 icon={faPlus}
                                 isOutline={false}
+                                disabled={this.state.invalidCreateColor}
                             />
                         </InputGroupAddon>
                     </InputGroup>

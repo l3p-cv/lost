@@ -22,19 +22,19 @@ class LostScript(script.Script):
             fs = ds.get_fs()
             annos = []
             anno_types = []
-            if self.get_arg('polygon').lower() == 'true':
+            if self.get_arg('polygon'):
                 polygon= [[0.1,0.1],[0.4,0.1],[0.2,0.3]]
                 annos.append(polygon)
                 anno_types.append('polygon')
-            if self.get_arg('line').lower() == 'true':
+            if self.get_arg('line'):
                 line= [[0.5,0.5],[0.7,0.7]]
                 annos.append(line)
                 anno_types.append('line')
-            if self.get_arg('point').lower() == 'true':
+            if self.get_arg('point'):
                 point= [0.8,0.1]
                 annos.append(point)
                 anno_types.append('point')
-            if self.get_arg('bbox').lower() == 'true':
+            if self.get_arg('bbox'):
                 box= [0.6,0.6,0.1,0.05]
                 annos.append(box)
                 anno_types.append('bbox')

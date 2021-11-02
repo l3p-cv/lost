@@ -1,28 +1,28 @@
-idx,name,description,external_id,parent_leaf_id,is_root
-0,VOC2012,Labels of PascalVOC 2012 dataset,,,True
-1,Aeroplane,Includes gliders but not hang gliders or helicopters,6,0,
-2,Bicycle,"Includes tricycles, unicycles",2,0,
-3,Bird,All birds,13,0,
-4,Boat,"Ships, rowing boats, pedaloes but not jet skis",19,0,
-5,Bottle,"Plastic, glass or feeding bottles",8,0,
-6,Bus,Includes minibus but not trams,3,0,
+idx,name,description,external_id,parent_leaf_id,is_root,color
+0,VOC2012,Labels of PascalVOC 2012 dataset,,,True,
+1,Aeroplane,Includes gliders but not hang gliders or helicopters,6,0,,#46aed7
+2,Bicycle,"Includes tricycles, unicycles",2,0,,#e28f81
+3,Bird,All birds,13,0,,#50b897
+4,Boat,"Ships, rowing boats, pedaloes but not jet skis",19,0,,#88712f
+5,Bottle,"Plastic, glass or feeding bottles",8,0,,#9cb067
+6,Bus,Includes minibus but not trams,3,0,,#a4527d
 7,Car,"Includes cars, vans, large family cars for 6-8 people etc.
 Excludes go-carts, tractors, emergency vehicles, lorries/trucks etc.
 Do not label where only the vehicle interior is shown.
-Include toys that look just like real cars, but not 'cartoony' toys.",1,0,
-8,Cat,Domestic cats (not lions etc.),14,0,
+Include toys that look just like real cars, but not 'cartoony' toys.",1,0,,#a55046
+8,Cat,Domestic cats (not lions etc.),14,0,,#6e90da
 9,Chair,"Includes armchairs, deckchairs but not stools or benches.
 Excludes seats in buses, cars etc.
-Excludes wheelchairs.",7,0,
-10,Cow,All cows,15,0,
+Excludes wheelchairs.",7,0,,#487b3b
+10,Cow,All cows,15,0,,#6360a7
 11,Dining table,"Only tables for eating at.
-Not coffee tables, desks, side tables or picnic benches",9,0,
-12,Dog,Domestic dogs (not wolves etc.),16,0,
-13,Horse,"Includes ponies, donkeys, mules etc.",17,0,
-14,Motorbike,"Includes mopeds, scooters, sidecars",4,0,
-15,Person,"Includes babies, faces (i.e. truncated people)",0,0,
-16,Potted plant,"Indoor plants excluding flowers in vases, or outdoor plants clearly in a pot. ",10,0,
-17,Sheep,"Sheep, not goats",18,0,
-18,Sofa,Excludes sofas made up as sofa-beds,12,0,
-19,Train,"Includes train carriages, excludes trams",5,0,
-20,TV/monitor,"Standalone screens (not laptops), not advertising displays",11,0,
+Not coffee tables, desks, side tables or picnic benches",9,0,,#cd8fd3
+12,Dog,Domestic dogs (not wolves etc.),16,0,,#d5a442
+13,Horse,"Includes ponies, donkeys, mules etc.",17,0,,#cf7635
+14,Motorbike,"Includes mopeds, scooters, sidecars",4,0,,#da4971
+15,Person,"Includes babies, faces (i.e. truncated people)",0,0,,#a4b137
+16,Potted plant,"Indoor plants excluding flowers in vases, or outdoor plants clearly in a pot. ",10,0,,#d44da4
+17,Sheep,"Sheep, not goats",18,0,,#aa54be
+18,Sofa,Excludes sofas made up as sofa-beds,12,0,,#5ab74d
+19,Train,"Includes train carriages, excludes trams",5,0,,#7166d9
+20,TV/monitor,"Standalone screens (not laptops), not advertising displays",11,0,,#d14734

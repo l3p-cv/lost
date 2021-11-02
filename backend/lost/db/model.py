@@ -1461,6 +1461,7 @@ class LabelLeaf(Base):
         is_root (Boolean): Indicates if this leaf is the root of a tree.
         parent_leaf_id (Integer): Reference to parent LabelLeaf.
         group_id (int): Group this Label Leaf belongs to
+        color (str): Color of the label in Hex format.
         label_leafs (list of :class:`LabelLeaf`):
     
     Note:
@@ -1477,12 +1478,13 @@ class LabelLeaf(Base):
     is_root = Column(Boolean)
     parent_leaf_id = Column(Integer, ForeignKey('label_leaf.idx'))
     group_id = Column(Integer, ForeignKey('group.idx'))
+    color = Column(String(100))
 
     label_leaves = relationship('LabelLeaf')
 
     def __init__(self, idx=None, name=None, abbreviation=None, description=None,
                  timestamp=None, external_id=None, label_tree_id=None, is_deleted=None,
-                 parent_leaf_id=None, is_root=None, group_id=None):
+                 parent_leaf_id=None, is_root=None, group_id=None, color=None):
         self.idx = idx
         self.name = name
         self.abbreviation = abbreviation
@@ -1493,6 +1495,7 @@ class LabelLeaf(Base):
         self.parent_leaf_id = parent_leaf_id
         self.is_root = is_root
         self.group_id = group_id
+        self.color = color
 
     def to_dict(self):
         '''Transform this object to a dict.
@@ -1509,7 +1512,8 @@ class LabelLeaf(Base):
             'external_id': self.external_id,
             'is_deleted': self.is_deleted,
             'parent_leaf_id': self.parent_leaf_id,
-            'is_root': self.is_root
+            'is_root': self.is_root,
+            'color': self.color,
         }
 
     def to_df(self):

@@ -17,7 +17,16 @@ const options = {
     },
     nodes: {
         color: {
-            border: '#092F38',
+            border: '#00FF00',
+            background: '#97C2FC',
+            highlight: {
+                border: '#00FF00',
+                background: '#D2E5FF',
+            },
+            hover: {
+                border: '#00FF00',
+                background: '#D2E5FF',
+            },
         },
     },
 }

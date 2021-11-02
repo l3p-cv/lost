@@ -49,6 +49,7 @@ class LabelEditNew(Resource):
             label.description = args.get('description')
             label.abbreviation = args.get('abbreviation')
             label.external_id = args.get('external_id')
+            label.color = args.get('color')
             dbm.save_obj(label)
             dbm.close_session()
             return 'success'
@@ -66,7 +67,7 @@ class LabelEditNew(Resource):
         else:
             label = model.LabelLeaf(name=args.get('name'),abbreviation=args.get('abbreviation'), \
             description=args.get('description'),external_id=args.get('external_id'), 
-            is_root=args.get('is_root'))
+            is_root=args.get('is_root'),color=args.get('color'))
             if args.get('parent_leaf_id'):
                 label.parent_leaf_id = args.get('parent_leaf_id'),
             dbm.save_obj(label)
