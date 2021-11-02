@@ -13,8 +13,7 @@ class LostScript(script.Script):
         for ds in self.inp.datasources:
             media_path = ds.path
             fs = ds.get_fs()
-            for img_file in os.listdir(media_path):
-                img_path = os.path.join(media_path, img_file)
+            for img_path in fs.ls(media_path):
                 self.outp.request_image_anno(img_path=img_path, fs=fs)
                 self.logger.debug(img_path)
 
