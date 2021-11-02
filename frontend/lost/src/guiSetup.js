@@ -22,37 +22,38 @@ import {
     FaPaintBrush,
     FaDatabase,
     FaTools,
-    FaTasks
+    FaTasks,
 } from 'react-icons/fa'
 
 const iconProps = {
     size: 20,
     className: 'c-sidebar-nav-icon',
     style: {
-        marginRight: 10
-        }
+        marginRight: 10,
+    },
 }
 
 const DesignerDashboard = {
     name: 'Dashboard',
     to: '/dashboard',
-    component: DesignerDashboardComponent,
+    // component: DesignerDashboardComponent,
+    component: PipelinesComponent,
     icon: <FaTachometerAlt {...iconProps} />,
 }
 
 const TitleProject = {
     title: true,
-    name: 'Project'
+    name: 'Project',
 }
 
 const TitleAdmin = {
     title: true,
-    name: 'Administration'
+    name: 'Administration',
 }
 
 const TitleAnnotation = {
     title: true,
-    name: 'Annotation'
+    name: 'Annotation',
 }
 
 const Labels = {
@@ -67,32 +68,31 @@ const DataSources = {
     to: '/datasources',
     component: DataSourcesComponent,
     icon: <FaDatabase {...iconProps} />,
-
 }
 
 const Annotation = {
     name: 'Annotation',
     to: '/annotation',
     component: AnnotationTableComponent,
-    icon: <FaPaintBrush {...iconProps} />
+    icon: <FaPaintBrush {...iconProps} />,
 }
 
 const Sia = {
     path: '/sia',
     exact: false,
-    component: SiaComponent
+    component: SiaComponent,
 }
 
 const SiaReview = {
     path: '/sia-review',
     exact: false,
-    component: SiaReviwComponent
+    component: SiaReviwComponent,
 }
 
 const Mia = {
     path: '/mia',
     exact: false,
-    component: MiaComponent
+    component: MiaComponent,
 }
 
 const Pipelines = {
@@ -112,16 +112,11 @@ const AdminArea = {
 const MyProfile = {
     path: '/my_profile',
     exact: false,
-    component: MyProfileComponent
+    component: MyProfileComponent,
 }
 
 const guiSetup = {
-    additionalRoutes: [
-        Sia,
-        Mia,
-        MyProfile,
-        SiaReview
-    ],
+    additionalRoutes: [Sia, Mia, MyProfile, SiaReview],
     Administrator: {
         redirect: '/dashboard',
         navItems: [
@@ -133,8 +128,8 @@ const guiSetup = {
             TitleAnnotation,
             Annotation,
             TitleAdmin,
-            AdminArea
-        ]
+            AdminArea,
+        ],
     },
     Designer: {
         redirect: '/dashboard',
@@ -146,15 +141,12 @@ const guiSetup = {
             DataSources,
             TitleAnnotation,
             Annotation,
-        ]
+        ],
     },
     Annotator: {
         redirect: '/annotation',
-        navItems: [
-            Annotation
-        ]
-    }
+        navItems: [Annotation],
+    },
 }
-
 
 export default guiSetup
