@@ -8,7 +8,16 @@ from lost.db import state
 import pandas as pd
 import numpy as np
 import json
+from datetime import date, datetime
 
+def _json_default(obj):
+    """Try to serialize dates to isoformat"""
+
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    raise TypeError ("Type %s not serializable" % type(obj))
 class Input(object):
     '''Class that represants an input of a pipeline element.
 
@@ -372,7 +381,7 @@ class ScriptOutput(Output):
 
     def request_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fs=None, lds=None):
+        video_path=None, fs=None, img_meta=None, anno_meta=None):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
@@ -399,8 +408,12 @@ class ScriptOutput(Output):
                 User lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fs method.
-            lds (LOSTDataset): A lost dataset object. Request all annotation in this 
-                dataset again.
+            img_meta (dict): Dictionary with meta information that should be added to the
+                image annotation. Each meta key will be added as column during annotation export. 
+                the dict-value will be row content.
+            anno_meta (list of dict): List of dictionaries with meta information that 
+                should be added to a specific annotation. Each meta key will be 
+                added as column during annotation export. The dict-value will be row content.
         
         Example:
             Request human annotations for an image with annotation proposals::
@@ -436,7 +449,7 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fs=fs, lds=lds)
+                    fs=fs, img_meta=img_meta, anno_meta=anno_meta)
 
     def _get_lds_fm(self, df, fm_cache=dict(), fm=None):
         if 'img_fs_name' in df:
@@ -471,6 +484,7 @@ class ScriptOutput(Output):
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
                 self._request_lds(pe, lds, fm, anno_meta_keys, img_meta_keys, img_path_key)
 
+
     def _request_lds(self, pe, lds, fm=None, anno_meta_keys=[], img_meta_keys=[], img_path_key='img_path'):
         '''Request annos from LOSTDataset.
         
@@ -481,7 +495,8 @@ class ScriptOutput(Output):
                 annotations should be requested for.
             fm (FileMan): A file_man object.
             img_meta_keys (list): Keys that should be used for img_anno meta information
-            anno_meta_keys (list): Keys that should be used for two_d_anno meta information
+            anno_meta_keys (list or *all*): Keys that should be used for two_d_anno meta information.
+                If all, all keys of lds will be added as meta information.
             img_path_key (str): Column that should be used as img_path
         '''
         if 'anno_format' in lds.df:
@@ -519,7 +534,8 @@ class ScriptOutput(Output):
                                     sim_class=img_sim_class,
                                     fs_id=fm.fs.lost_fs.idx)
             if len(img_meta_keys) > 0:
-                anno.meta = json.dumps(row[img_meta_keys].to_dict())
+                # anno.meta = json.dumps(row[img_meta_keys].to_dict())
+                img_anno.meta = json.dumps(df.iloc[0][img_meta_keys].to_dict(), default=_json_default)
             self._script._dbm.add(img_anno)
             # if img_labels is not None:
             if 'img_lbl' in df:
@@ -535,7 +551,10 @@ class ScriptOutput(Output):
                         anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
                             anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
                         if len(anno_meta_keys) > 0:
-                            anno.meta = json.dumps(row[anno_meta_keys].to_dict())
+                            if anno_meta_keys == 'all':
+                                anno.meta = json.dumps(row.to_dict(), default=_json_default)
+                            else:
+                                anno.meta = json.dumps(row[anno_meta_keys].to_dict(), default=_json_default)
                         if row['anno_dtype'] == 'point':
                             anno.point = row['anno_data']
                         elif row['anno_dtype'] == 'bbox':
@@ -561,7 +580,7 @@ class ScriptOutput(Output):
 
     def _add_annos(self, pe, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, anno_task_id=None, fs=None, lds=None):
+        video_path=None, anno_task_id=None, fs=None, img_meta=None, anno_meta=None):
         '''Add annos in list style to an image.
         
         Args:
@@ -590,8 +609,12 @@ class ScriptOutput(Output):
                 User lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fs method. 
-            lds (LOSTDataset): A lost dataset object. Request all annotation in this 
-                dataset again.
+            img_meta (dict): Dictionary with meta information that should be added to the
+                image annotation. Each meta key will be added as column during annotation export. 
+                the dict-value will be row content.
+            anno_meta (list of dict): List of dictionaries with meta information that 
+                should be added to a specific annotation. Each meta key will be 
+                added as column during annotation export. The dict-value will be row content.
         '''
         if img_sim_class is None:
             img_sim_class = 1
@@ -611,6 +634,8 @@ class ScriptOutput(Output):
                                 video_path=video_path,
                                 sim_class=img_sim_class,
                                 fs_id=fs.lost_fs.idx)
+        if img_meta is not None:
+            img_anno.meta = json.dumps(img_meta, default=_json_default)
         self._script._dbm.add(img_anno)
         if img_labels is not None:
             self._update_labels(img_labels, img_anno)
@@ -619,6 +644,10 @@ class ScriptOutput(Output):
         for i, vec in enumerate(annos):
             anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
                 anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
+            if anno_meta is not None:
+                if len(annos) != len(anno_meta):
+                    raise ValueError('*anno_meta* and *annos* need to be of same size!')            
+                anno.meta = json.dumps(anno_meta[i], default=_json_default)
             if anno_types[i] == 'point':
                 anno.point = vec
             elif anno_types[i] == 'bbox':
