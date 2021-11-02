@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pyAPI:
   - Allow to request annotations via LOSTDataframes (see #144)
   - Allow to request annotation labels via label_name (see #144) 
+  - Allow to add meta information to annotations via pyAPI
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
