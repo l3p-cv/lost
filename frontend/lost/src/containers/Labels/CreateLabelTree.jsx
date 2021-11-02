@@ -40,7 +40,7 @@ class CreateLabelTree extends Component {
             external_id: this.state.createLabelextID,
             parent_leaf_id: this.state.editLabelid,
         }
-        this.props.createLabelTree(saveData)
+        this.props.createLabelTree(saveData, this.props.visLevel)
     }
 
     componentDidUpdate() {

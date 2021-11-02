@@ -64,6 +64,7 @@ class LabelTree extends Component {
                     <EditLabel
                         label={this.state.selectedLabel}
                         clearSelectedLabel={this.clearSelectedLabel}
+                        visLevel={this.props.visLevel}
                     ></EditLabel>
                     <Graph graph={graph} options={options} events={events} />
                 </React.Fragment>

@@ -566,10 +566,22 @@ class DBMan(object):
          %(anno_task_id, iteration, user_id)
         return self.session.execute(sql).first()
     
-    def get_all_label_trees(self):
+    def get_all_label_trees(self, group_id=None, global_only=False, add_global=False):
         '''Get all label trees in lost'''
-        return self.session.query(model.LabelLeaf)\
-            .filter(model.LabelLeaf.is_root == True).all()
+        if group_id:
+            if add_global:
+                return self.session.query(model.LabelLeaf)\
+                    .filter(model.LabelLeaf.is_root == True, \
+                            or_(model.LabelLeaf.group_id==group_id, model.LabelLeaf.group_id == None)).all()
+            else:
+                return self.session.query(model.LabelLeaf)\
+                    .filter(model.LabelLeaf.is_root == True, \
+                            model.LabelLeaf.group_id==group_id).all()
+        if global_only:
+            return self.session.query(model.LabelLeaf)\
+                .filter(model.LabelLeaf.is_root == True, \
+                        model.LabelLeaf.group_id==None).all()
+
 
     def get_available_users(self):
         ''' Get all available users

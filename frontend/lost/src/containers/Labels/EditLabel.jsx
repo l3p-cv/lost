@@ -132,10 +132,10 @@ class EditLabel extends Component {
             external_id: this.state.editLabelextID,
             color: this.state.selectedEditColor,
         }
-        this.props.updateLabel(updateData)
+        this.props.updateLabel(updateData, this.props.visLevel)
     }
     handleEditDelete() {
-        this.props.deleteLabel({ id: this.state.editLabelid })
+        this.props.deleteLabel({ id: this.state.editLabelid }, this.props.visLevel)
         this.props.clearSelectedLabel()
     }
     handleCreateSave() {
@@ -148,7 +148,7 @@ class EditLabel extends Component {
             parent_leaf_id: this.state.editLabelid,
             color: this.state.selectedCreateColor,
         }
-        this.props.createLabel(saveData)
+        this.props.createLabel(saveData, this.props.visLevel)
         this.handleCreateClear()
     }
     handleCreateClear() {

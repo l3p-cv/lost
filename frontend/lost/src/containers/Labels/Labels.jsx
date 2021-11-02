@@ -1,27 +1,21 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import actions from '../../actions'
 import LabelTreeTable from './LabelTreeTable'
 import CreateLabelTree from './CreateLabelTree'
 
-const { getLabelTrees } = actions
-
-class Label extends Component {
-    componentDidMount() {
-        this.props.getLabelTrees()
-    }
-    render() {
-        return (
-            <>
-                <CreateLabelTree />
-                <LabelTreeTable labelTrees={this.props.trees}></LabelTreeTable>
-            </>
-        )
-    }
+const Labels = ({ visLevel }) => {
+    const dispatch = useDispatch()
+    const labelTrees = useSelector((state) => state.label.trees)
+    useEffect(() => {
+        dispatch(actions.getLabelTrees(visLevel))
+    }, [])
+    return (
+        <>
+            <CreateLabelTree visLevel={visLevel} />
+            <LabelTreeTable labelTrees={labelTrees} visLevel={visLevel}></LabelTreeTable>
+        </>
+    )
 }
 
-function mapStateToProps(state) {
-    return { trees: state.label.trees }
-}
-
-export default connect(mapStateToProps, { getLabelTrees })(Label)
+export default Labels

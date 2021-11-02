@@ -10,7 +10,7 @@ import { saveAs } from 'file-saver'
 
 var amountOfLabels = 0
 
-const LabelTreeTable = ({ labelTrees }) => {
+const LabelTreeTable = ({ labelTrees, visLevel }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedTreeId, setSelectedTreeId] = useState(null)
 
@@ -51,7 +51,10 @@ const LabelTreeTable = ({ labelTrees }) => {
                 toggle={() => setIsEditModalOpen(false)}
                 onClosed={() => {}}
             >
-                <LabelTree labelTree={getLabelTreeById(selectedTreeId)}></LabelTree>
+                <LabelTree
+                    labelTree={getLabelTreeById(selectedTreeId)}
+                    visLevel={visLevel}
+                ></LabelTree>
             </BaseModal>
 
             <Datatable
