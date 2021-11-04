@@ -88,9 +88,10 @@ class LabelTree(object):
                 name is already present in database.
         '''
         root_leafs = self.dbm.get_all_label_trees()
-        for leaf in root_leafs:
-            if name == leaf.name:
-                return None
+        if root_leafs is not None:
+            for leaf in root_leafs:
+                if name == leaf.name:
+                    return None
         self.root = model.LabelLeaf(name=name, 
             external_id=external_id, is_root=True)
         self.dbm.add(self.root)
