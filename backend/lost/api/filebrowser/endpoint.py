@@ -8,6 +8,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.db import model, roles, access
 from lost.logic.file_man import FileMan, chonkyfy
 from fsspec.registry import known_implementations
+import os
 
 namespace = api.namespace('fb', description='Lost Filebrowser API')
 
@@ -25,9 +26,14 @@ class LS(Resource):
             data = json.loads(request.data)
             fs_db = dbm.get_fs(name=data['fs']['name'])
             fm = FileMan(fs_db=fs_db)
-            res = fm.ls(data['path'], detail=True)
+            commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
+            if commonprefix != fs_db.root_path:
+                path = fs_db.root_path
+            else:
+                path = data['path']
+            res = fm.ls(path, detail=True)
             dbm.close_session()
-            return chonkyfy(res, data['path'], fm)
+            return chonkyfy(res, path, fm)
 
 @namespace.route('/fslist')
 class FsList(Resource):
