@@ -49,12 +49,6 @@ Datasource
     :members:
     :inherited-members:
     
-RawFile
-------------
-.. autoclass:: lost.pyapi.pipe_elements.RawFile
-    :members:
-    :inherited-members:
-
 AnnoTask
 ------------
 .. autoclass:: lost.pyapi.pipe_elements.AnnoTask
