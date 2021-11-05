@@ -147,7 +147,8 @@ class Script(pe_base.Element):
                 If a label tree with the given name exists 
                 it will be returned. Otherwise None
                 will be returned'''
-        root_list = self._dbm.get_all_label_trees()
+        group_id = self._pipe.group_id
+        root_list = self._dbm.get_all_label_trees(group_id, add_global=True)
         root = next(filter(lambda x: x.name==name, root_list), None)
         if root is None:
             return None
