@@ -37,8 +37,8 @@ const iconProps = {
 const DesignerDashboard = {
     name: 'Dashboard',
     to: '/dashboard',
-    // component: DesignerDashboardComponent,
-    component: PipelinesComponent,
+    component: DesignerDashboardComponent,
+    //component: PipelinesComponent,
     icon: <FaTachometerAlt {...iconProps} />,
 }
 
