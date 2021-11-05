@@ -70,7 +70,7 @@ fi
 
 if [ ${LOST_DEBUG_MODE} = "True" ]; then
   if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
-    cp /code/src/docker/lost/nginx/dev.conf /etc/nginx/conf.d/default.conf
+    cp /etc/nginx/sites-available/dev.conf /etc/nginx/conf.d/default.conf
   fi
   # start nginx web server
   nginx="service nginx start"
@@ -80,7 +80,7 @@ if [ ${LOST_DEBUG_MODE} = "True" ]; then
   eval $endpoint 
 else
   if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
-	  cp /code/src/docker/lost/nginx/dev.conf/prod.conf /etc/nginx/conf.d/default.conf
+	  cp /etc/nginx/sites-available/prod.conf /etc/nginx/conf.d/default.conf
   fi
   # start nginx web server
   nginx="service nginx start"
