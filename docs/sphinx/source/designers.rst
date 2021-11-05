@@ -102,7 +102,7 @@ the **DataExport** element with *peN: 4*.
 A **DataExport** element may serve an arbitrary file from the LOST
 filesystem for download.
 
-.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/sia_all_tools.json
+.. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/all_tools.json
     :language: json
     :linenos:
 
@@ -137,7 +137,7 @@ Later on you need to instantiate it and your LOST script is done.
 
 .. literalinclude:: ../../../backend/lost/pyapi/examples/pipes/sia/request_annos.py
    :language: python
-   :lines: 46-47   
+   :lines: 45-46   
 
 In the *request_annos.py* script you can also see some special variables
 **ENVS** and **ARGUMENTS**.
