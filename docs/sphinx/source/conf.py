@@ -31,9 +31,9 @@ copyright = '2021, Jonas Jäger, Gereon Reus'
 author = 'Jonas Jäger, Gereon Reus'
 
 # The short X.Y version
-version = '1.x'
+version = '2.x'
 # The full version, including alpha/beta/rc tags
-release = '1.x.x'
+release = '2.x.x'
 
 
 # -- General configuration ---------------------------------------------------

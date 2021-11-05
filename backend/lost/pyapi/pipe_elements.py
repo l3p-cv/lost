@@ -51,6 +51,10 @@ class Datasource(Element):
         # fs.lost_fs = ds.fs
         return self.file_man.fs
 
+    def get_fm(self):
+        '''Get FileMan object'''
+        return self.file_man
+
 
 class AnnoTask(Element):
 
@@ -80,6 +84,19 @@ class AnnoTask(Element):
         lbl_df = pd.concat(lbl_list)
         return lbl_df
 
+    @property
+    def lbl_map(self):
+        '''dict: Map lbl_name to idx
+
+        Note:
+            All label names will be mapped to lower case!
+        '''
+        df = self.possible_label_df
+        my_map = dict()
+        def create_map(x):
+            my_map[x['name'].lower()] = x['idx'] 
+        df.apply(lambda x: create_map(x),axis=1)
+        return my_map
     
     @property
     def instructions(self):

@@ -57,7 +57,7 @@ Standard Setup
 3. Clone LOST:
     .. code-block:: bash
 
-        git clone https://github.com/l3p-cv/lost.git
+        git clone -b 1.x https://github.com/l3p-cv/lost.git
 4. Run quick_setup script:
     .. code-block:: bash
 
@@ -86,7 +86,7 @@ Minimum Setup (LOST only)
 3. Clone LOST:
     .. code-block:: bash
 
-        git clone https://github.com/l3p-cv/lost.git
+        git clone -b 1.x https://github.com/l3p-cv/lost.git
 4. Run quick_setup script:
     .. code-block:: bash
 
@@ -124,7 +124,7 @@ LOST + GPU Worker
 5. Clone LOST:
     .. code-block:: bash
 
-        git clone https://github.com/l3p-cv/lost.git
+        git clone -b 1.x https://github.com/l3p-cv/lost.git
 6. Run quick_setup script:
     .. code-block:: bash
 

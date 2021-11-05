@@ -3,6 +3,7 @@ import json
 from lost.db import model
 from datetime import datetime
 import pandas as pd
+import numpy as np
 __author__ = "Jonas Jaeger"
 
 
@@ -87,9 +88,10 @@ class LabelTree(object):
                 name is already present in database.
         '''
         root_leafs = self.dbm.get_all_label_trees()
-        for leaf in root_leafs:
-            if name == leaf.name:
-                return None
+        if root_leafs is not None:
+            for leaf in root_leafs:
+                if name == leaf.name:
+                    return None
         self.root = model.LabelLeaf(name=name, 
             external_id=external_id, is_root=True)
         self.dbm.add(self.root)
@@ -203,8 +205,9 @@ class LabelTree(object):
         except KeyError:
             self.logger.info('\tNo timestamp provided.')
         try:
-            leaf.external_id = row['external_id']
-            self.logger.info('\texternal_id: {}'.format(leaf.external_id))
+            if not np.isnan(row['external_id']):
+                leaf.external_id = row['external_id']
+                self.logger.info('\texternal_id: {}'.format(leaf.external_id))
         except KeyError:
             self.logger.info('\tNo external_id provided.')
         try:
@@ -212,6 +215,11 @@ class LabelTree(object):
             self.logger.info('\tis_deleted: {}'.format(leaf.is_deleted))
         except KeyError:
             self.logger.info('\tNo is_deleted provided.')
+        try:
+            leaf.color = row['color']
+            self.logger.info('\tcolor: {}'.format(leaf.color))
+        except KeyError:
+            self.logger.info('\tNo color provided.')
 
     def __create_childs_from_df(self, child_dict, parent, parent_row):
         '''Create child leafs from a df.

@@ -9,6 +9,8 @@ sys.path.append('../../backend')
 import lost
 logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
 
+DEFAULT_RELEASE = '1.4.2'
+
 def gen_rand_string(n):
     return ''.join(
         random.SystemRandom().choice(
@@ -79,7 +81,8 @@ class QuickSetup(object):
         self.dst_data_dir = os.path.join(args.install_path, 'data')
         self.dst_docker_dir = os.path.join(args.install_path, 'docker')
         if args.release is None:
-            self.release = lost.__version__
+            self.release = DEFAULT_RELEASE
+            # self.release = lost.__version__
         else:
             self.release = args.release
     

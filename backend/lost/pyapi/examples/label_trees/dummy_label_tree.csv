@@ -1,13 +1,13 @@
-idx,name,description,external_id,parent_leaf_id,is_root
-0,dummy tree,A dummy LabelTree,,,True
-1,mammals,Some mammals,,0,
-2,plant,Some plants,,0,
-3,birds,Some birds,,0,
-4,trees,Some trees,,2,
-5,beech,A beech ,,4,
-6,human,A human,,1,
-7,cat,A cat,,1,
-8,cow,A cow,,1,
-9,oak,An oak,,4,
-10,eagle,An eagle,,3,
-11,blackbird,A blackbird,,3,
+idx,name,description,external_id,parent_leaf_id,is_root,color
+0,dummy tree,A dummy LabelTree,,,True,
+1,mammals,Some mammals,,0,,#46aed7
+2,plant,Some plants,,0,,#e28f81
+3,birds,Some birds,,0,,#50b897
+4,trees,Some trees,,2,,#88712f
+5,beech,A beech ,,4,,#9cb067
+6,human,A human,,1,,#a4527d
+7,cat,A cat,,1,,#a55046
+8,cow,A cow,,1,,#6e90da
+9,oak,An oak,,4,,#487b3b
+10,eagle,An eagle,,3,,#6360a7
+11,blackbird,A blackbird,,3,,#cd8fd3

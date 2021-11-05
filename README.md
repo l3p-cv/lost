@@ -46,7 +46,8 @@ tested for Ubuntu):
     https://docs.docker.com/compose/install/
 3. Clone LOST:
     ```
-    git clone https://github.com/l3p-cv/lost.git
+    # Clone 1.x since it contains the current stable version
+    git clone -b 1.x https://github.com/l3p-cv/lost.git
     ```
 4. Run quick_setup script:
     ```
@@ -80,7 +81,7 @@ Find our paper on [arXiv](https://arxiv.org/abs/1910.07486)
 If you are using LOST and like to share your project, please contact [@jaeger-j](https://github.com/jaeger-j).
 
 # Roadmap
-See our [Roadmap](ROADMAP.md)
+See our [Roadmap](https://github.com/l3p-cv/lost/milestone/1)
 
 # Creators
 ## People

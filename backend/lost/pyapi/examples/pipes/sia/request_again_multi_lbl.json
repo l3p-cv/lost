@@ -1,5 +1,5 @@
 {
-  "description": "This pipeline selects all images of an rawFile and request annotations.",
+  "description": "This pipeline request all annos from a dataset file in lost format again",
   "author": "Jonas Jaeger",
   "pipe-schema-version" : 1.0,
   "elements": [{
@@ -13,13 +13,13 @@
       "peN": 1,
       "peOut": [2],
       "script": {
-        "path": "request_yolo_annos.py",
-        "description": "Request annotations and yolo bbox proposals for all images in a folder"
+        "path": "request_annos_again.py",
+        "description": "Request all annotations from an anno file again"
       }
     },
     {
       "peN": 2,
-      "peOut": [3],
+      "peOut": null,
       "annoTask": {
         "name": "Single Image Annotation Task",
         "type": "sia",
@@ -33,13 +33,13 @@
               "junk": true
           },
           "annos":{
-              "multilabels": false,
+              "multilabels": true,
               "actions": {
                   "draw": true,
                   "label": true,
                   "edit": true
               },
-              "minArea": 250
+              "minArea": 50
           },
           "img": {
               "multilabels": false,
@@ -49,19 +49,6 @@
           }
         }
       }
-    },
-    {
-      "peN": 3,
-      "peOut": [4],
-      "script": {
-        "path": "export_csv.py",
-        "description": "Export all annotations to a csv file."
-      }
-    },
-    {
-      "peN": 4,
-      "peOut": null,
-      "dataExport": {}
     }
   ]
 }

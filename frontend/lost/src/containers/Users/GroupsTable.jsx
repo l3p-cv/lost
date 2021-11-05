@@ -13,23 +13,23 @@ export const Groups = () => {
     const dispatch = useDispatch()
     const groups = useSelector((state) => state.group.groups)
     const [newGroup, setNewGroup] = useState('')
-    const addGroupStatus = useSelector(state=>state.group.createGroupStatus)
-    const deleteGroupStatus = useSelector(state=>state.group.deleteGroupStatus)
+    const addGroupStatus = useSelector((state) => state.group.createGroupStatus)
+    const deleteGroupStatus = useSelector((state) => state.group.deleteGroupStatus)
 
-    useEffect(()=>{
-        if(addGroupStatus.status) {
+    useEffect(() => {
+        if (addGroupStatus.status) {
             Notification.networkRequest(addGroupStatus)
-            if(addGroupStatus.status === REQUEST_STATUS.SUCCESS) {
+            if (addGroupStatus.status === REQUEST_STATUS.SUCCESS) {
                 dispatch(actions.getGroups())
                 setNewGroup('')
             }
         }
     }, [addGroupStatus])
 
-    useEffect(()=>{
-        if(deleteGroupStatus.status) {
+    useEffect(() => {
+        if (deleteGroupStatus.status) {
             Notification.networkRequest(deleteGroupStatus)
-            if(deleteGroupStatus.status === REQUEST_STATUS.SUCCESS) {
+            if (deleteGroupStatus.status === REQUEST_STATUS.SUCCESS) {
                 dispatch(actions.getGroups())
                 dispatch(userActions.getUsers())
             }
@@ -43,18 +43,18 @@ export const Groups = () => {
     const addGroup = () => {
         if (newGroup.length < 3) {
             Notification.showError('Minimum 3 character')
-        } else if(newGroup.length > 25) {
+        } else if (newGroup.length > 25) {
             Notification.showError('Maximum 25 character')
         } else {
             dispatch(
                 actions.createGroup({
-                    group_name: newGroup
-                })
+                    group_name: newGroup,
+                }),
             )
         }
     }
 
-    const deleteGroup = id =>{
+    const deleteGroup = (id) => {
         dispatch(actions.deleteGroup(id))
     }
 
@@ -62,16 +62,12 @@ export const Groups = () => {
         <div>
             <InputGroup style={{ marginBottom: 20 }}>
                 <Input
-                    placeholder='groupname'
+                    placeholder="groupname"
                     value={newGroup}
                     onChange={(e) => setNewGroup(e.currentTarget.value)}
                 />
                 <InputGroupAddon addonType="append">
-                    <IconButton
-                        color="primary"
-                        icon={faPlus}
-                        onClick={addGroup}
-                    />
+                    <IconButton color="primary" icon={faPlus} onClick={addGroup} />
                 </InputGroupAddon>
             </InputGroup>
             <Datatable
@@ -80,22 +76,23 @@ export const Groups = () => {
                 columns={[
                     {
                         Header: 'Group',
-                        accessor: 'name'
+                        accessor: 'name',
                     },
                     {
                         Header: '',
                         width: 50,
-                        Cell: row=> (Datatable.centeredCell({children: (
-                            <IconButton
-                                icon={faTrash}
-                                color='danger'
-                                onClick={()=>{
-                                    deleteGroup(row.original.idx)
-                                }}
-                            />
-
-                        )}))
-                    }
+                        Cell: function customCell(row) {
+                            return (
+                                <IconButton
+                                    icon={faTrash}
+                                    color="danger"
+                                    onClick={() => {
+                                        deleteGroup(row.original.idx)
+                                    }}
+                                />
+                            )
+                        },
+                    },
                 ]}
             />
         </div>

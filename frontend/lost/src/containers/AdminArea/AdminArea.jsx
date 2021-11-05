@@ -3,7 +3,16 @@ import { useSelector, useDispatch } from 'react-redux'
 import actions from '../../actions'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCogs, faInfoCircle, faUsers, faCubes, faDatabase, faTags, faRobot, faTasks } from '@fortawesome/free-solid-svg-icons'
+import {
+    faCogs,
+    faInfoCircle,
+    faUsers,
+    faCubes,
+    faDatabase,
+    faTags,
+    faRobot,
+    faTasks,
+} from '@fortawesome/free-solid-svg-icons'
 
 import {
     CCol,
@@ -13,12 +22,13 @@ import {
     CTabContent,
     CTabPane,
     CTabs,
-  } from '@coreui/react'
+} from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
 import WorkersTable from '../Workers/WorkersTable'
 import UsersAndGroups from '../Users/UsersAndGroups'
 import TabJupyterLab from './TabJupyterLab'
+import Labels from '../Labels/Labels'
 
 const AdminArea = () => {
     const dispatch = useDispatch()
@@ -29,27 +39,23 @@ const AdminArea = () => {
         dispatch(actions.getJupyterLabUrl(true))
     }, [])
 
-    const renderSystemInfo = () => (
-        <div>
-            ToDo.
-        </div>
-    )
+    const renderSystemInfo = () => <div>ToDo.</div>
     const renderJupyterLabNav = () => {
-        if(jupyterLabUrl !== ''){
-            return(
+        if (jupyterLabUrl !== '') {
+            return (
                 <CNavItem>
                     <CNavLink>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
-                        { active === 7 && ' JupyterLab'}
+                        {active === 7 && ' JupyterLab'}
                     </CNavLink>
                 </CNavItem>
-                )
+            )
         }
     }
     const renderJupyterLabTab = () => {
-        if(jupyterLabUrl !== ''){
-            return(
-                <CTabPane  style={{marginTop: 30}}>
+        if (jupyterLabUrl !== '') {
+            return (
+                <CTabPane style={{ marginTop: 30 }}>
                     <TabJupyterLab jupyterLabUrl={jupyterLabUrl}></TabJupyterLab>
                 </CTabPane>
             )
@@ -58,77 +64,105 @@ const AdminArea = () => {
 
     return (
         <BaseContainer>
-            <CCol xs="12" md="12" className="mb-4">       
-                <CTabs activeTab={active} onActiveTabChange={idx => setActive(idx)}>
-                <CNav variant="tabs">
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faInfoCircle} />
-                        { active === 0 && ' System Information'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faUsers} />
-                        { active === 1 && ' Users & Groups'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faCogs} />
-                        { active === 2 && ' Settings'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faCubes} />
-                        { active === 3 && ' Worker'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faDatabase} />
-                        { active === 4 && ' Global Datasources'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
-                        { active === 5 && ' Global Labels'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTasks} />
-                        { active === 6 && ' Global Pipelines'}
-                    </CNavLink>
-                    </CNavItem>
-                    {renderJupyterLabNav()}
-                </CNav>
-                <CTabContent>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <div>{renderSystemInfo()}</div>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <UsersAndGroups></UsersAndGroups>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <div>{renderSystemInfo()}</div>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <WorkersTable></WorkersTable>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <div>{renderSystemInfo()}</div>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <div>{renderSystemInfo()}</div>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <div>{renderSystemInfo()}</div>
-                    </CTabPane>
-                    {renderJupyterLabTab()}
-                </CTabContent>
+            <CCol xs="12" md="12" className="mb-4">
+                <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
+                    <CNav variant="tabs">
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faInfoCircle}
+                                />
+                                {active === 0 && ' System Information'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faUsers}
+                                />
+                                {active === 1 && ' Users & Groups'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faCogs}
+                                />
+                                {active === 2 && ' Settings'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faCubes}
+                                />
+                                {active === 3 && ' Worker'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faDatabase}
+                                />
+                                {active === 4 && ' Global Datasources'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faTags}
+                                />
+                                {active === 5 && ' Global Labels'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faTasks}
+                                />
+                                {active === 6 && ' Global Pipelines'}
+                            </CNavLink>
+                        </CNavItem>
+                        {renderJupyterLabNav()}
+                    </CNav>
+                    <CTabContent>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <div>{renderSystemInfo()}</div>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <UsersAndGroups></UsersAndGroups>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <div>{renderSystemInfo()}</div>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <WorkersTable></WorkersTable>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <div>{renderSystemInfo()}</div>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <Labels visLevel="global"></Labels>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <div>{renderSystemInfo()}</div>
+                        </CTabPane>
+                        {renderJupyterLabTab()}
+                    </CTabContent>
                 </CTabs>
             </CCol>
         </BaseContainer>

@@ -3,16 +3,12 @@ import Datatable from '../../components/Datatable'
 import { useDispatch, useSelector } from 'react-redux'
 import actions from '../../actions/user'
 import IconButton from '../../components/IconButton'
-import {
-    faUserPlus,
-    faEdit,
-} from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faEdit } from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
 import { useCopyToClipboard } from 'react-use'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
-import {getFSList, getPossibleFsTypes} from '../../access/fb'
-
+import { getFSList, getPossibleFsTypes } from '../../access/fb'
 
 export const DSTable = () => {
     const [copiedObj, copyToClipboard] = useCopyToClipboard()
@@ -21,8 +17,8 @@ export const DSTable = () => {
     const [fsList, setFSList] = useState([])
     const [possibleFsTypes, setPossibleFsTypes] = useState([])
 
-    useEffect( () => {
-        async function fetchData(){
+    useEffect(() => {
+        async function fetchData() {
             setFSList(await getFSList())
             setPossibleFsTypes(await getPossibleFsTypes())
         }
@@ -42,14 +38,11 @@ export const DSTable = () => {
     useEffect(() => {
         if (copiedObj.error) {
             Notification.showError(
-                'Unable to copy to clipboard. API TOKEN was logged in console log'
+                'Unable to copy to clipboard. API TOKEN was logged in console log',
             )
         } else if (copiedObj.value) {
             Notification.showSuccess(
-                `API TOKEN: ${copiedObj.value.substr(
-                    0,
-                    8
-                )}... copied to clipboard`
+                `API TOKEN: ${copiedObj.value.substr(0, 8)}... copied to clipboard`,
             )
         }
     }, [copiedObj])
@@ -132,38 +125,33 @@ export const DSTable = () => {
                 columns={[
                     {
                         Header: 'Edit',
-                        accessor: 'id',
-                        Cell: (row) =>
-                            Datatable.centeredCell({
-                                children: (
-                                    <IconButton
-                                        icon={faEdit}
-                                        color="warning"
-                                        onClick={() => handleEditDs(row)}
-                                    />
-                                )
-                            })
-                    },{
+                        id: 'edit',
+                        accessor: (row) => {
+                            return (
+                                <IconButton
+                                    icon={faEdit}
+                                    color="warning"
+                                    onClick={() => handleEditDs(row)}
+                                />
+                            )
+                        },
+                    },
+                    {
                         Header: 'Name',
                         accessor: 'name',
-                        Cell: (row) =>
-                            Datatable.centeredCell({ children: row.value })
-                    },{
+                    },
+                    {
                         Header: 'Type',
                         accessor: 'fsType',
-                        Cell: (row) =>
-                            Datatable.centeredCell({ children: row.value })
-                    },{
+                    },
+                    {
                         Header: 'Root Path',
                         accessor: 'rootPath',
-                        Cell: (row) =>
-                            Datatable.centeredCell({ children: row.value })
-                    },{
+                    },
+                    {
                         Header: 'Connection',
                         accessor: 'connection',
-                        Cell: (row) =>
-                            Datatable.centeredCell({ children: row.value })
-                    }
+                    },
                 ]}
             />
         </div>

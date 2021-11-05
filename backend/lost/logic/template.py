@@ -83,7 +83,8 @@ def get_template(db_man, template_id ,user):
     file_man = FileMan(db_man.lostconfig)
     available_raw_files = file_man.get_media_rel_path_tree()
     available_groups = db_man.get_groups()
-    available_label_trees = db_man.get_all_label_trees()
+    default_group = db_man.get_group_by_name(user.user_name)
+    available_label_trees = db_man.get_all_label_trees(group_id=default_group.idx, add_global=True)
     available_scripts = db_man.get_all_scripts()
     available_fs = list(db_man.get_public_fs())
     for user_group in db_man.get_user_groups_by_user_id(user.idx):

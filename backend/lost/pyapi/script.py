@@ -18,6 +18,7 @@ import pickle
 from lost.pyapi import pe_base
 from lost.logic.label import LabelTree
 from lost.pyapi import pipe_elements
+import ast 
 
 def report_script_err(pipe_element, task, dbm, msg):
     '''Report an error for a script to portal
@@ -146,7 +147,8 @@ class Script(pe_base.Element):
                 If a label tree with the given name exists 
                 it will be returned. Otherwise None
                 will be returned'''
-        root_list = self._dbm.get_all_label_trees()
+        group_id = self._pipe.group_id
+        root_list = self._dbm.get_all_label_trees(group_id, add_global=True)
         root = next(filter(lambda x: x.name==name, root_list), None)
         if root is None:
             return None
@@ -207,7 +209,19 @@ class Script(pe_base.Element):
         '''
         if self._pipe_element.arguments:
             args = json.loads(self._pipe_element.arguments)
-            return args[arg_name]['value']
+            # args = ast.literal_eval(self._pipe_element.arguments)
+            my_arg = args[arg_name]['value']
+            if my_arg in ['t', 'true', 'yes']:
+                return True
+            if my_arg in ['f', 'false', 'no']:
+                return False
+            if my_arg in ['-', '', '[]']:
+                return None
+            try:
+                return ast.literal_eval(my_arg)
+            except:
+                return my_arg
+                
         else:
             return None
 

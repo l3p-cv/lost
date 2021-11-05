@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added
 - Install script
 - JupyterLab for Admins
+- pyAPI:
+  - Allow to request annotations via LOSTDataframes (see #144)
+  - Allow to request annotation labels via label_name (see #144) 
+  - Allow to add meta information to annotations via pyAPI
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
@@ -27,17 +31,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
   not first element in pipeline graph
 - Fixed raw sql in access to be compatible with postgresql
-
+- Fixed copy bug in import script -> Copied to wrong location, when path had tailing '/'
 ## Removed
-- removed lost-cv images. This is now integrated into the lost image
+- removed lost-cv images. This is now integrated into the lost image 
+
+## [1.5.0] - unreleased
+### Added
+- Added user and password to amqp url if set in .env file (see https://github.com/l3p-cv/lost/issues/133)
 
 ## [1.4.2] - 2021-03-12
-## Changed 
+### Changed 
 - ImgBlacklist: 
   * Do not log every blacklist load
   * Warn for other argument types than lists in blacklist add method
   * Return always lists in get_whitelist method
-## Fixed
+### Fixed
 - Version in lost backend init
 
 ## [1.4.1] - 2021-03-10

@@ -13,7 +13,7 @@ import {
     CTabContent,
     CTabPane,
     CTabs,
-  } from '@coreui/react'
+} from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
 import Labels from './Labels'
@@ -25,39 +25,42 @@ const LabelDashboard = () => {
         dispatch(actions.setNavbarVisible(true))
     }, [])
 
-
-    const renderSystemInfo = () => (
-        <div>
-            ToDo.
-        </div>
-    )
+    const renderSystemInfo = () => <div>ToDo.</div>
 
     return (
         <BaseContainer>
-            <CCol xs="12" md="12" className="mb-4">       
-                <CTabs activeTab={active} onActiveTabChange={idx => setActive(idx)}>
-                <CNav variant="tabs">
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
-                        { active === 0 && ' Labels'}
-                    </CNavLink>
-                    </CNavItem>
-                    <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faFileImport} />
-                        { active === 1 && ' Import'}
-                    </CNavLink>
-                    </CNavItem>
-                </CNav>
-                <CTabContent>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <Labels></Labels>
-                    </CTabPane>
-                    <CTabPane  style={{marginTop: 30}}>
-                    <div>{renderSystemInfo()}</div>
-                    </CTabPane>
-                </CTabContent>
+            <CCol xs="12" md="12" className="mb-4">
+                <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
+                    <CNav variant="tabs">
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faTags}
+                                />
+                                {active === 0 && ' Labels'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faFileImport}
+                                />
+                                {active === 1 && ' Import'}
+                            </CNavLink>
+                        </CNavItem>
+                    </CNav>
+                    <CTabContent>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <Labels visLevel="user"></Labels>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <div>{renderSystemInfo()}</div>
+                        </CTabPane>
+                    </CTabContent>
                 </CTabs>
             </CCol>
         </BaseContainer>

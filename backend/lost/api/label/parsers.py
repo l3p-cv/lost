@@ -24,7 +24,9 @@ update_label_parser.add_argument('abbreviation',
 update_label_parser.add_argument('external_id',
                            type=str,
                            help="External Label Leaf ID.")
-
+update_label_parser.add_argument('color',
+                           type=str,
+                           help="Color of Label Leaf.")
 
 create_label_parser = reqparse.RequestParser()
 create_label_parser.add_argument('is_root',
@@ -52,3 +54,6 @@ create_label_parser.add_argument('abbreviation',
 create_label_parser.add_argument('external_id',
                            type=str,
                            help="External Label Leaf ID.")
+create_label_parser.add_argument('color',
+                           type=str,
+                           help="Color of Label Leaf.")

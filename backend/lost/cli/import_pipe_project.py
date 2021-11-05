@@ -23,7 +23,10 @@ if __name__ == "__main__":
     if args.copy:
         fm = AppFileMan(lostconfig)
         pp_path = fm.get_pipe_project_path()
-        dst_path = os.path.join(pp_path, os.path.basename(args.pipe_dir))
+        pipe_dir = args.pipe_dir
+        if pipe_dir.endswith('/'):
+            pipe_dir = pipe_dir[:-1]
+        dst_path = os.path.join(pp_path, os.path.basename(pipe_dir))
         shutil.copytree(args.pipe_dir, dst_path, dirs_exist_ok=True)
     else:
         dst_path = args.pipe_dir
