@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 import * as statistics_api from '../../actions/statistics/statistics_api'
@@ -7,17 +7,11 @@ import {
     CWidgetDropdown,
     CRow,
     CCol,
-    CDropdown,
-    CDropdownMenu,
-    CDropdownItem,
-    CDropdownToggle,
     CWidgetBrand
 } from '@coreui/react'
 
 import {CChart} from '@coreui/react-chartjs'
-import CIcon from '@coreui/icons-react'
 import ChartLineSimple from './ChartLineSimple'
-import ChartBarSimple from './ChartBarSimple'
 import BaseContainer from '../../components/BaseContainer'
 
 const DesignerDashboard = () => {
@@ -29,37 +23,71 @@ const DesignerDashboard = () => {
         getPersonalStatistics()
     }, [])
 
-    console.log(personalStatistics)
+    const [labels, setLabels] = useState({keys:[], values:[]})
+    const [types, setTypes] = useState({keys:[], values:[]})
+    
+    useEffect(()=> {
+        /// only when data from request is available
+        if(personalStatistics === undefined) return;
 
-    if(personalStatistics === undefined){
-        return(<div>Loading...</div>)
-    }
+        // update data for annotation labels chart
+        let _labels = {
+            keys: [],
+            values: [],
+            colors: []
+        }
+
+        for(var k in personalStatistics.labels) {
+            _labels.keys.push(k)
+            _labels.values.push(personalStatistics.labels[k]['value'])
+            let _lblColor = personalStatistics.labels[k]['color'];
+            _labels.colors.push((_lblColor ? _lblColor : 'rgb(16, 81, 95,0.8)'))
+        }
+
+        setLabels(_labels)
+
+        // update data for annotation types chart
+        let _types = {
+            keys: [],
+            values: []
+        }
+
+        for(var k in personalStatistics.types) {
+            _types.keys.push(k)
+            _types.values.push(personalStatistics.types[k])
+        }
+
+        setTypes(_types)
+    }, [personalStatistics])
+
+    /// do not render component if required data is not available
+    if(personalStatistics === undefined) return(<div>Loading...</div>)
 
     const chartColors = {
         background: 'rgb(16, 81, 95,0.8)',
         borderColor: 'rgb(16, 81, 95,0.8)',
         borderWidth: 0,
         hoverBackgroundColor:'rgb(16, 81, 95,0.4)',
-        hoverBorderColor: 'twitter'
+        hoverBorderColor: 'rgb(16, 81, 95,0.4)'
     }
 
     const annoLabels = {
-        labels: ['Cat', 'Dog', 'Monkey', 'Giraffe', 'Gereon', 'Lizard', 'Lama'],
+        labels: labels.keys,
         datasets: [
             {
                 label: 'Annotated Labels',
-                backgroundColor: chartColors.background,
+                backgroundColor: labels.colors,
                 borderColor: chartColors.borderColor,
                 borderWidth: chartColors.borderWidth,
                 hoverBackgroundColor: chartColors.hoverBackgroundColor,
                 hoverBorderColor: chartColors.hoverBorderColor,
-                data: [30, 59, 80, 81, 56, 55, 40],
+                data: labels.values,
             }
-        ],
-    };
+        ]
+    }
 
     const annoTypes = {
-        labels: ['bbox', 'line', 'point', 'image', 'polygon'],
+        labels: types.keys,
         datasets: [
             {
                 label: 'Annotation Types',
@@ -68,12 +96,12 @@ const DesignerDashboard = () => {
                 borderWidth: chartColors.borderWidth,
                 hoverBackgroundColor: chartColors.hoverBackgroundColor,
                 hoverBorderColor: chartColors.hoverBorderColor,
-                data: [59, 80, 56, 55, 40],
-            },
-        ],
-    };
+                data: types.values,
+            }
+        ]
+    }
 
-    const options = {
+    const chartOptions = {
         maintainAspectRatio: true
     }
 
@@ -83,9 +111,9 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader="20"
+                        rightHeader={personalStatistics.annos.today}
                         rightFooter="Today"
-                        leftHeader="1.100"
+                        leftHeader={personalStatistics.annos.allTime}
                         leftFooter="All time"
                     >
                     <h2>Annotations</h2>
@@ -95,9 +123,9 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader="21"
+                        rightHeader={personalStatistics.annotasks.today}
                         rightFooter="Today"
-                        leftHeader="1.101"
+                        leftHeader={personalStatistics.annotasks.allTime}
                         leftFooter="All time"
                     >
                     <h2>Annotasks</h2>
@@ -107,9 +135,9 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader="22"
+                        rightHeader={personalStatistics.annotime.today}
                         rightFooter="Today"
-                        leftHeader="1.102"
+                        leftHeader={personalStatistics.annotime.allTime}
                         leftFooter="All time"
                     >
                     <h2>Time per Annotation</h2>
@@ -119,9 +147,9 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader="350"
+                        rightHeader={personalStatistics.processedImages.today}
                         rightFooter="Today"
-                        leftHeader="1.103"
+                        leftHeader={personalStatistics.processedImages.allTime}
                         leftFooter="All time"
                     >
                     <h2>Processed images</h2>
@@ -133,14 +161,14 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header="Ø 9.823"
+                        header={"Ø " + personalStatistics.annos.avg}
                         text="Annos / Day"
                         footerSlot={
                             <ChartLineSimple
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={[78, 81, 80, 45, 34, 12, 40]}
+                                dataPoints={personalStatistics.annos.history.week}
                                 options={{ elements: { line: { borderWidth: 2.5 } } }}
                                 pointHoverBackgroundColor="primary"
                                 label="Annotations"
@@ -154,14 +182,14 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header="Ø 500"
+                        header={"Ø " + personalStatistics.annotasks.avg}
                         text="Annotasks / Day"
                         footerSlot={
                             <ChartLineSimple
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={[4,0,4]}
+                                dataPoints={personalStatistics.annotasks.history.week}
                                 options={{ elements: { line: { borderWidth: 2.5 } } }}
                                 pointHoverBackgroundColor="primary"
                                 label="Annotasks"
@@ -175,14 +203,14 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header="Ø 534"
+                        header={"Ø " + personalStatistics.annotime.avg}
                         text="Time per Annotation / Day"
                         footerSlot={
                             <ChartLineSimple
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={[998,569,332,998,200,569,332]}
+                                dataPoints={personalStatistics.annotime.history.week}
                                 options={{ elements: { line: { borderWidth: 2.5 } } }}
                                 pointHoverBackgroundColor="primary"
                                 label="Seconds"
@@ -195,42 +223,31 @@ const DesignerDashboard = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header="Ø 500"
+                        header={"Ø " + personalStatistics.processedImages.avg}
                         text="Processed Images / Day"
                         footerSlot={
                             <ChartLineSimple
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={[50,400,300,150,800,600,350]}
+                                dataPoints={personalStatistics.processedImages.history.week}
                                 options={{ elements: { line: { borderWidth: 2.5 } } }}
                                 pointHoverBackgroundColor="primary"
                                 label="Images"
                             />
                         }
                     >
-                        {/* <CDropdown>
-                            <CDropdownToggle caret={false} color="transparent">
-                                <CIcon name="cil-location-pin" />
-                            </CDropdownToggle>
-                            <CDropdownMenu className="pt-0" placement="bottom-end" backgroundColor="red">
-                                <CDropdownItem>Action</CDropdownItem>
-                                <CDropdownItem>Another action</CDropdownItem>
-                                <CDropdownItem>Something else here...</CDropdownItem>
-                                <CDropdownItem disabled>Disabled action</CDropdownItem>
-                            </CDropdownMenu>
-                        </CDropdown> */}
                     </CWidgetDropdown>
                 </CCol>
             </CRow>
 
             <CRow>
                 <CCol sm="12" lg="6">
-                    <CChart type="bar" datasets={annoLabels.datasets} options={options} labels={annoLabels.labels}/>
+                    <CChart type="bar" datasets={annoLabels.datasets} options={chartOptions} labels={annoLabels.labels}/>
                 </CCol>
 
                 <CCol sm="12" lg="6">
-                    <CChart type="bar" datasets={annoTypes.datasets} options={options} labels={annoTypes.labels}/>
+                    <CChart type="bar" datasets={annoTypes.datasets} options={chartOptions} labels={annoTypes.labels}/>
                 </CCol>
             </CRow>
         </BaseContainer>
