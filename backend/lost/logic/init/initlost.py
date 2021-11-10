@@ -66,7 +66,6 @@ def create_project_config(dbm):
         pc.create_entry('default_language', 'en', description='Default selected language.')
     except:
         print('Project config already exists!')
-    dbm.close_session()
 
 
 if __name__ == '__main__':
