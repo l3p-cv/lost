@@ -29,7 +29,7 @@ class DockerComposeBuilder(object):
     def get_lost(self):
         return (
             '    lost:\n'
-            '      image: l3pcv/lost:${LOST_VERSION}\n'
+            '      image: l3pcv/lost' + self.dockerImageSlug + ':${LOST_VERSION}\n'
             '      container_name: lost\n'
             '      command: bash /entrypoint.sh\n'
             '      env_file:\n'
@@ -85,9 +85,14 @@ class QuickSetup(object):
             # self.release = lost.__version__
         else:
             self.release = args.release
+        if args.testing == "True":
+            self.dockerImageSlug = '-test'
+        else:
+            self.dockerImageSlug = ''
     
     def write_docker_compose(self, store_path):
         builder = DockerComposeBuilder()
+        builder.dockerImageSlug = self.dockerImageSlug
         builder.write_production_file(store_path)
         logging.info('Wrote docker-compose config to: {}'.format(store_path))
         
@@ -189,6 +194,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Quick setup for lost on linux')
     parser.add_argument('install_path', help='Specify path to install lost.')
     parser.add_argument('--release', help='LOST release you want to install.', default=None)
+    parser.add_argument('--testing', help='use the LOST images from testing stage.', default=None)
     parser.add_argument('-noai', '--no_ai', help='Do not add ai examples and no lost-cv worker', action='store_true')
     args = parser.parse_args()
     qs = QuickSetup(args)
