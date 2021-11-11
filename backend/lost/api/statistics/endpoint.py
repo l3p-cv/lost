@@ -24,7 +24,8 @@ class Personal(Resource):
             from lost.api.statistics.example_data import example_stats
             example_stats['annos'] = personal.get_annotation_stats(dbm, user.idx)
             example_stats['labels'] = personal.get_annos_per_label(dbm, user.idx)
-            
+            example_stats['types'] = personal.get_annos_per_type(dbm, user.idx)
+            example_stats['annotime'] = personal.get_anno_times(dbm, user.idx)
             dbm.close_session()
             return example_stats
          

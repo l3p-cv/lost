@@ -933,3 +933,20 @@ class DBMan(object):
                 WHERE two_d_anno.user_id = {} \
                 {} GROUP BY label.label_leaf_id".format(user_id, between_str)
         return self.session.execute(sql)
+    
+    def count_two_d_annos_per_type_by_user(self, user_id, start=None, end=None):
+        between_str = ""
+        if start and end:
+            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+
+        sql = "SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
+                FROM two_d_anno WHERE two_d_anno.user_id = {} {} GROUP BY two_d_anno.dtype".format(user_id, between_str)
+        return self.session.execute(sql)
+    
+    def mean_anno_time_by_user(self, user_id, anno_type='twodBased'):
+        if anno_type == 'imageBased':
+            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            return self.session.execute(sql).first()
+        else:
+            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            return self.session.execute(sql).first()
