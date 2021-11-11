@@ -229,7 +229,8 @@ def __get_amount_per_label(dbm, pipeelement, finished, anno_type):
         if result > 0: 
             dist.append({
                 'label': row['name'],
-                'amount': result
+                'amount': result,
+                'color': row['color']
             })
     return dist 
 
