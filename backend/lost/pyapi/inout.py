@@ -5,6 +5,7 @@ from lost.logic.file_man import DummyFileMan
 from lost.db import access, dtype
 from lost.db import model
 from lost.db import state
+import os
 import pandas as pd
 import numpy as np
 import json
@@ -527,6 +528,7 @@ class ScriptOutput(Output):
             anno_task_id = pe.anno_task.idx
             img_anno = model.ImageAnno(anno_task_id=anno_task_id,
                                     img_path=rel_img_path,
+                                    abs_path=os.path.join(fm.fs.root_path, rel_img_path),
                                     state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
                                     iteration=self._script._pipe_element.iteration,
@@ -627,6 +629,7 @@ class ScriptOutput(Output):
         rel_img_path = fm.make_path_relative(img_path)
         img_anno = model.ImageAnno(anno_task_id=anno_task_id,
                                 img_path=rel_img_path,
+                                abs_path=os.path.join(fm.fs.root_path, rel_img_path),
                                 state=state.Anno.UNLOCKED,
                                 result_id=self._result_map[pe.idx],
                                 iteration=self._script._pipe_element.iteration,
