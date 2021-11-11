@@ -87,7 +87,7 @@ class LabelTree(object):
                 The created root leaf or None if a root leaf with same
                 name is already present in database.
         '''
-        root_leafs = self.dbm.get_all_label_trees()
+        root_leafs = self.dbm.get_all_label_trees(global_only=True)
         if root_leafs is not None:
             for leaf in root_leafs:
                 if name == leaf.name:
