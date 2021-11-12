@@ -17,13 +17,15 @@ export const DSTable = () => {
     const [fsList, setFSList] = useState([])
     const [possibleFsTypes, setPossibleFsTypes] = useState([])
 
+    async function fetchData() {
+        setFSList(await getFSList())
+        setPossibleFsTypes(await getPossibleFsTypes())
+    }
+
     useEffect(() => {
-        async function fetchData() {
-            setFSList(await getFSList())
-            setPossibleFsTypes(await getPossibleFsTypes())
-        }
-        const interval = setInterval(fetchData, 1000)
-        return () => clearInterval(interval)
+        fetchData()
+        // const interval = setInterval(fetchData, 1000)
+        // return () => clearInterval(interval)
     }, [])
 
     useEffect(() => {
@@ -67,7 +69,8 @@ export const DSTable = () => {
 
     const handleEditDs = (row) => {
         console.log('handleEditDs', row)
-        setSelectedDs(row.value)
+        console.log('row.value', row.id)
+        setSelectedDs(row.id)
         openEditDSModal()
     }
 
@@ -97,6 +100,7 @@ export const DSTable = () => {
     }
     const onClosedModal = () => {
         setIsDsEditOpenView(false)
+        fetchData()
     }
     return (
         <div>

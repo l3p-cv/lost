@@ -39,6 +39,10 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
         }
     }, [fsList, selectedId])
 
+    useEffect(() => {
+        console.log('fs changed', fs)
+    }, [fs])
+
     const save = () => {
        saveFs(fs) 
        Notification.showSuccess('Saved datasource')
@@ -79,7 +83,7 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
                     <Input id="name" valid={false} invalid={false} 
                         defaultValue={''} 
                         placeholder={'DS name'} 
-                        onChange={(e) => {setFs({...fs,'name':e.target.value})}} 
+                        onChange={(e) => {setFs({...fs,name:e.target.value})}} 
                         defaultValue={fs.name}
                     />
                     <FormFeedback>You will not be able to see this</FormFeedback>
