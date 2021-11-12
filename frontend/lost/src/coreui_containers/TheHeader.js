@@ -37,7 +37,7 @@ const TheHeader = ({numNavItems}) => {
     return (
         <CHeader withSubheader>
             {renderSidebarToggler()}
-            <CHeaderBrand className="mx-auto d-lg-none" to="/">
+            <CHeaderBrand className="mx-auto d-lg-none" to="/dashboard">
                 <img alt=""  style={{ height: 40 }} className="img-avatar" />
             </CHeaderBrand>
 
