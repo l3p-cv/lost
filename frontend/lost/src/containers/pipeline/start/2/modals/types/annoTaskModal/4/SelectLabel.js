@@ -41,6 +41,20 @@ const options = {
     physics: {
         enabled: false,
     },
+    nodes: {
+        color: {
+            border: '#00FF00',
+            background: '#10515F',
+            highlight: {
+                border: '#00FF00',
+                background: '#D2E5FF',
+            },
+            hover: {
+                border: '#00FF00',
+                background: '#D2E5FF',
+            },
+        },
+    },
 }
 
 class SelectLabel extends Component {
@@ -122,7 +136,7 @@ class SelectLabel extends Component {
             let nodeObj = {
                 id: el.idx,
                 label: String(el.name),
-                color: el.color ? el.color : '#20a8d8',
+                color: el.color ? el.color : '#10515F',
             }
             if (el.children.length) {
                 this.mapTreeToGraph(el, el.idx)
@@ -146,6 +160,7 @@ class SelectLabel extends Component {
             id: this.tree.idx,
             label: this.tree.name,
             chosen: true,
+            color: this.tree.color ? this.tree.color : '#10515F',
         })
 
         this.mapTreeToGraph(this.tree, this.tree.idx)

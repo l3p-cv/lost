@@ -20,7 +20,11 @@ const AmountPerLabel = ({ stats }) => {
             return d.amount
         })
         const colors = stats.map((d) => {
-            return d.color
+            console.log(d.color)
+            if (d.color !== '') {
+                return d.color
+            }
+            return '#10515F'
         })
         const bar = {
             labels: labels,

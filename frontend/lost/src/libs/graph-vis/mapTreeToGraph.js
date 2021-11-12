@@ -20,7 +20,7 @@ export default function mapTreeToGraph(tree, options) {
 
     let nodes = [
         Object.assign({}, styles.nodes, {
-            color: tree.color ? tree.color : '#20a8d8',
+            color: tree.color ? tree.color : '#10515F',
             id: tree.idx,
             label: tree.name,
         }),
@@ -41,7 +41,7 @@ export default function mapTreeToGraph(tree, options) {
                         id: c.idx,
                         label: c.name,
                         isLeaf: c.children.length === 0,
-                        color: c.color ? c.color : '#20a8d8',
+                        color: c.color ? c.color : '#10515F',
                     }),
                 )
                 edges.push(

@@ -18,7 +18,7 @@ const options = {
     nodes: {
         color: {
             border: '#00FF00',
-            background: '#97C2FC',
+            background: '#10515F',
             highlight: {
                 border: '#00FF00',
                 background: '#D2E5FF',
