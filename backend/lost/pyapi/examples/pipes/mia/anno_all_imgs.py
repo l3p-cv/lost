@@ -12,9 +12,9 @@ class LostScript(script.Script):
         self.logger.info("Request image annotations for:")
         for ds in self.inp.datasources:
             media_path = ds.path
-            fs = ds.get_fs()
-            for img_path in fs.ls(media_path):
-                self.outp.request_image_anno(img_path=img_path, fs=fs)
+            fm = ds.get_fm()
+            for img_path in fm.fs.ls(media_path):
+                self.outp.request_image_anno(img_path=img_path, fm=fm)
                 self.logger.debug(img_path)
 
 if __name__ == "__main__":
