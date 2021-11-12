@@ -841,7 +841,7 @@ class DBMan(object):
         else:
             return None
     
-    def count_two_d_annos_per_label(self, pipe_element_id, user_id=None, iteration=None, date_from=None, date_to=None, exclude_current_iteration=False):
+    def count_two_d_annos_per_label_by_pe(self, pipe_element_id, user_id=None, iteration=None, date_from=None, date_to=None, exclude_current_iteration=False):
         user_id_str = ""
         if user_id:
             user_id_str ='AND two_d_anno.user_id = {}'.format(user_id)
@@ -911,3 +911,42 @@ class DBMan(object):
         else:
             return self.session.query(model.Config)\
                 .filter(model.Config.key == key, model.Config.is_user_specific==False).first()
+
+    def get_number_twod_annos_in_time(self, user_id, start=None, end=None):
+        if start and end:
+            return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx))\
+            .filter(model.TwoDAnno.user_id == user_id, \
+                model.TwoDAnno.timestamp >= start, 
+                model.TwoDAnno.timestamp <= end)
+        else:
+            return self.session.query(sqlalchemy.func.count(model.TwoDAnno.idx))\
+            .filter(model.TwoDAnno.user_id == user_id)
+
+    def count_two_d_annos_per_label_by_user(self, user_id, start=None, end=None):
+        between_str = ""
+        if start and end:
+            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+
+        sql = "SELECT label.label_leaf_id, label_leaf.name, label_leaf.color, COUNT(label.idx) AS num_items \
+                FROM label INNER JOIN two_d_anno ON two_d_anno.idx = label.two_d_anno_id \
+                INNER JOIN label_leaf ON label_leaf.idx = label.label_leaf_id \
+                WHERE two_d_anno.user_id = {} \
+                {} GROUP BY label.label_leaf_id".format(user_id, between_str)
+        return self.session.execute(sql)
+    
+    def count_two_d_annos_per_type_by_user(self, user_id, start=None, end=None):
+        between_str = ""
+        if start and end:
+            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+
+        sql = "SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
+                FROM two_d_anno WHERE two_d_anno.user_id = {} {} GROUP BY two_d_anno.dtype".format(user_id, between_str)
+        return self.session.execute(sql)
+    
+    def mean_anno_time_by_user(self, user_id, anno_type='twodBased'):
+        if anno_type == 'imageBased':
+            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            return self.session.execute(sql).first()
+        else:
+            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            return self.session.execute(sql).first()

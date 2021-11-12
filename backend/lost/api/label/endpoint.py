@@ -21,7 +21,6 @@ class LabelTrees(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        flask.current_app.logger.info(visibility)
         default_group = dbm.get_group_by_name(user.user_name)
         if visibility == VisLevel().USER:
             if not user.has_role(roles.DESIGNER):

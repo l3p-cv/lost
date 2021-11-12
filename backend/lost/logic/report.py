@@ -39,7 +39,7 @@ class Report():
     def __get_annos_per_label(self):
         data = []
         labels = []
-        two_d_anno_counts = self.dbm.count_two_d_annos_per_label(self.pe_id, self.user_id, self.iteration, self.date_from, self.date_to, exclude_current_iteration=True)
+        two_d_anno_counts = self.dbm.count_two_d_annos_per_label_by_pe(self.pe_id, self.user_id, self.iteration, self.date_from, self.date_to, exclude_current_iteration=True)
         for row in two_d_anno_counts:
             data.append(row[2])
             labels.append(row[1])

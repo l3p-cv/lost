@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import { Progress } from 'reactstrap'
-// import { getColor } from '../../../../../components/AnnoTask/utils'
+import { getColor } from '../../../../containers/Annotation/AnnoTask/utils'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
 class SelectPipeline extends Component {
@@ -94,12 +94,16 @@ class SelectPipeline extends Component {
                                     )
                                 }
                                 return (
-                                    // <Progress className='progress-xs rt-progress' color={getColor(progress)} value={progress} />
                                     <Progress
                                         className="progress-xs rt-progress"
-                                        color="warning"
+                                        color={getColor(progress)}
                                         value={progress}
                                     />
+                                    // <Progress
+                                    //     className="progress-xs rt-progress"
+                                    //     color="warning"
+                                    //     value={progress}
+                                    // />
                                 )
                             },
                         },
