@@ -110,39 +110,30 @@ def delete_local_fs(dbm, fs):
 class TestImageAnnos(object):
     
     def test_to_dict_flat(self, full_img_anno):
-        assert True
-        return True
-        my_dict = full_img_anno.to_dict()[0]
+        print('full_img_anno.to_dict()', full_img_anno.to_dict()[1])
+        my_dict = full_img_anno.to_dict()[1]
         bbox = full_img_anno.twod_annos[0]
         print('bbox.data', type(bbox.data))
-        print('flat_dict', type(my_dict['anno.data']))
-        assert my_dict['anno.data'] == bbox.data
-        assert json.loads(my_dict['anno.lbl.name'])[0] == bbox.labels[0].label_leaf.name
-        assert json.loads(my_dict['anno.lbl.idx'])[0] == bbox.labels[0].label_leaf.idx
-        assert json.loads(my_dict['anno.lbl.external_id'])[0] == bbox.labels[0].label_leaf.external_id
-        assert my_dict['img.img_path'] == full_img_anno.img_path
-        assert json.loads(my_dict['img.lbl.idx'])[0] == full_img_anno.labels[0].label_leaf.idx
+        print('flat_dict', type(my_dict['anno_data']))
+        assert my_dict['anno_data'] == bbox.get_anno_serialization_format()#bbox.data
+        assert my_dict['anno_lbl'][0] == bbox.labels[0].label_leaf.name
+        assert my_dict['img_path'] == full_img_anno.img_path
         # print(full_img_anno.to_dict()[0].keys())
         # for d in full_img_anno.to_dict():
         #      print(d['img.img_path'], d['anno.lbl.name'], d['anno.dtype'])
         # assert False
 
     def test_to_dict_hierarchical(self, full_img_anno):
-        assert True
-        return True
         img_dict = full_img_anno.to_dict(style='hierarchical')
         bbox = full_img_anno.twod_annos[0]
-        bbox_dict = img_dict['img.twod_annos'][0]
+        bbox_dict = img_dict['img_2d_annos'][0]
         print(img_dict)
-        assert bbox_dict['anno.lbl.name'][0] == bbox.labels[0].label_leaf.name
-        assert bbox_dict['anno.lbl.idx'][0] == bbox.labels[0].label_leaf.idx
-        assert bbox_dict['anno.lbl.external_id'][0] == bbox.labels[0].label_leaf.external_id
-        assert bbox_dict['anno.data']['x'] == REF_BBOX[0]
-        assert bbox_dict['anno.data']['y'] == REF_BBOX[1]
-        assert bbox_dict['anno.data']['w'] == REF_BBOX[2]
-        assert bbox_dict['anno.data']['h'] == REF_BBOX[3]
-        assert img_dict['img.img_path'] == full_img_anno.img_path
-        assert img_dict['img.lbl.idx'][0] == full_img_anno.labels[0].label_leaf.idx
+        assert bbox_dict['anno_lbl'][0] == bbox.labels[0].label_leaf.name
+        assert bbox_dict['anno_data'][0][0] == REF_BBOX[0]
+        assert bbox_dict['anno_data'][0][1] == REF_BBOX[1]
+        assert bbox_dict['anno_data'][0][2] == REF_BBOX[2]
+        assert bbox_dict['anno_data'][0][3] == REF_BBOX[3]
+        assert img_dict['img_path'] == full_img_anno.img_path
         
         # h_dict = full_img_anno.to_dict(style='hierarchical')
         # print(h_dict.keys())
@@ -152,49 +143,36 @@ class TestImageAnnos(object):
         # assert False
 
     def test_to_vec(self, full_img_anno):
-        assert True
-        return True
         img_anno = full_img_anno
         bbox = full_img_anno.twod_annos[0]
         print('img_anno.to_vec()', img_anno.to_vec())
-        assert check_bbox(REF_BBOX, img_anno.to_vec('anno.data')[0])
+        assert check_bbox(REF_BBOX, img_anno.to_vec('anno_data')[1][0])
         # print(img_anno.to_vec(['img.lbl.name','img.lbl.idx']))
         # print(img_anno.to_df()[['img.lbl.name','img.lbl.idx']])
         # print(img_anno.to_df().info())
         print(img_anno.to_vec())
-        assert json.loads(img_anno.to_vec('anno.lbl.idx')[0])[0] == bbox.labels[0].label_leaf_id
-        vec = img_anno.to_vec(['anno.lbl.name','anno.lbl.idx', 'anno.lbl.external_id'])[0]
+        vec = img_anno.to_vec(['anno_lbl'])[1]
         print(vec)
-        assert json.loads(vec[0])[0] == bbox.labels[0].label_leaf.name
-        assert json.loads(vec[1])[0] == bbox.labels[0].label_leaf.idx
+        assert vec[0][0] == bbox.labels[0].label_leaf.name
+        # assert json.loads(vec[1])[0] == bbox.labels[0].label_leaf.idx
         # assert vec[2][0] == bbox.labels[0].label_leaf.external_id
 
-        vec = img_anno.to_vec(['img.lbl.name','img.lbl.idx', 
-            'img.lbl.external_id', 'img.img_path'])[0]
-        assert json.loads(vec[0])[0] == img_anno.labels[0].label_leaf.name
-        assert json.loads(vec[1])[0] == img_anno.labels[0].label_leaf.idx
-        assert json.loads(vec[2])[0] == img_anno.labels[0].label_leaf.external_id
-        assert vec[3] == img_anno.img_path
+        vec = img_anno.to_vec(['img_lbl', 'img_path'])[1]
+        assert vec[0][0] == img_anno.labels[0].label_leaf.name
+        assert vec[1] == img_anno.img_path
 
         # print(img_anno.to_vec('anno.lbl.name'))
         # print(img_anno.to_vec(['img.img_path', 'anno.lbl.name', 'anno.data', 'anno.dtype']))
         # assert False
         
     def test_to_vec_empty_image(self, empty_img_anno):
-        assert True
-        return True
         img_anno = empty_img_anno
 
-        vec = img_anno.to_vec(['anno.lbl.name','anno.lbl.idx', 'anno.lbl.external_id'])[0]
+        vec = img_anno.to_vec(['anno_lbl'])[0]
         print(vec)
-        assert len(json.loads(vec[0])) == 0
-        assert len(json.loads(vec[1])) == 0
-        assert len(json.loads(vec[2])) == 0
+        assert len(vec[0]) == 0
 
-        vec2 = img_anno.to_vec(['img.lbl.name','img.lbl.idx', 
-            'img.lbl.external_id', 'img.img_path'])[0]
+        vec2 = img_anno.to_vec(['img_lbl', 'img_path'])[0]
         print(vec2)
-        assert len(json.loads(vec2[0])) == 0
-        assert len(json.loads(vec2[1])) == 0
-        assert len(json.loads(vec2[2])) == 0
-        assert vec2[3] == img_anno.img_path
+        assert len(vec2[0]) == 0
+        assert vec2[1] == img_anno.img_path

@@ -53,8 +53,6 @@ class TempFSDummy(object):
 class TestScriptApi(object):
 
     def test_request_annos(self, script_element, tree, local_fs):
-        assert True
-        return True
         s = Script(pe_id=script_element.idx)
         fs = TempFSDummy(local_fs)
         # pudb.set_trace()
@@ -63,8 +61,7 @@ class TestScriptApi(object):
             img_labels=[lbl_vec[1]],
             annos=REF_BBOXES,
             anno_types=['bbox']*len(REF_BBOXES),
-            anno_labels=[[lbl_vec[1]]]*len(REF_BBOXES),
-            fs=fs
+            anno_labels=[[lbl_vec[1]]]*len(REF_BBOXES)
             )
         s.outp.request_annos(IMG_PATH2,
             img_labels=[lbl_vec[2]],
@@ -74,17 +71,16 @@ class TestScriptApi(object):
             anno_types=['bbox'],
             anno_labels=[
                 [lbl_vec[2]]
-            ],
-            fs=fs
+            ]
             )
         df = s.outp.to_df()
-        df1 = df[df['img.img_path']==IMG_PATH1]
-        assert len(df1) == len(REF_BBOXES)
-        df2 = df[df['img.img_path']==IMG_PATH2]
-        assert len(df2) == 1
+        df1 = df[df['img_path']==IMG_PATH1]
+        assert len(df1)-1 == len(REF_BBOXES)
+        df2 = df[df['img_path']==IMG_PATH2]
+        assert len(df2)-1 == 1
 
-        assert json.loads(df2['img.lbl.idx'].values[0])[0] == lbl_vec[2]
+        assert df2['img_lbl'].values[0][0] == 'Bird'
         for img_anno in s.outp.img_annos:
             if img_anno.img_path == IMG_PATH2:
-                bbox2 = img_anno.to_vec('anno.data')[0]
-                assert check_bbox(REF_BBOXES[0], bbox2)
+                bbox2 = img_anno.to_vec('anno_data')[1]
+                assert check_bbox(REF_BBOXES[0], bbox2[0])
