@@ -145,7 +145,7 @@ const AdminArea = () => {
                             <UsersAndGroups></UsersAndGroups>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
-                            <DSTable></DSTable>
+                            <DSTable visLevel="global"></DSTable>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
                             <Labels visLevel="global"></Labels>

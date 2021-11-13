@@ -52,6 +52,16 @@ class LabelTree extends Component {
             selectedLabel: null,
         })
     }
+    renderEditLabel(tree) {
+        if (!(tree.group_id === null ? this.props.visLevel !== 'global' : false))
+            return (
+                <EditLabel
+                    label={this.state.selectedLabel}
+                    clearSelectedLabel={this.clearSelectedLabel}
+                    visLevel={this.props.visLevel}
+                ></EditLabel>
+            )
+    }
     render() {
         const events = {
             select: (event) => this.selectLabel(event.nodes[0]),
@@ -61,11 +71,8 @@ class LabelTree extends Component {
             const graph = mapTreeToGraph(tree)
             return (
                 <React.Fragment>
-                    <EditLabel
-                        label={this.state.selectedLabel}
-                        clearSelectedLabel={this.clearSelectedLabel}
-                        visLevel={this.props.visLevel}
-                    ></EditLabel>
+                    {this.renderEditLabel(tree)}
+
                     <Graph graph={graph} options={options} events={events} />
                 </React.Fragment>
             )

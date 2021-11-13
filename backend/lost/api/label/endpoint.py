@@ -44,6 +44,17 @@ class LabelTrees(Resource):
                     trees.append(LabelTree(dbm, root_leaf.idx).to_hierarchical_dict())
                 dbm.close_session()
                 return trees
+        if visibility == VisLevel().ALL:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You are not authorized.", 401
+            else:
+                root_leaves = dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
+                trees = list()
+                for root_leaf in root_leaves:
+                    trees.append(LabelTree(dbm, root_leaf.idx).to_hierarchical_dict())
+                dbm.close_session()
+                return trees
         dbm.close_session()
         return "You are not authorized.", 401 
 
@@ -79,7 +90,7 @@ class LabelEditNew(Resource):
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         default_group = dbm.get_group_by_name(user.user_name)
-        if visibility == VisLevel().USER:
+        if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
                 return "You are not authorized.", 401

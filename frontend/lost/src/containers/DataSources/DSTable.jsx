@@ -5,20 +5,19 @@ import actions from '../../actions/user'
 import IconButton from '../../components/IconButton'
 import { faUserPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
-import { useCopyToClipboard } from 'react-use'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
 import { getFSList, getPossibleFsTypes, deleteFs } from '../../access/fb'
+import { CBadge } from '@coreui/react'
 
-export const DSTable = () => {
-    const [copiedObj, copyToClipboard] = useCopyToClipboard()
+export const DSTable = ({ visLevel }) => {
     const deleteUserStatus = useSelector((state) => state.user.deleteUserStatus)
     const [isNewDS, setIsNewDS] = useState(false)
     const [fsList, setFSList] = useState([])
     const [possibleFsTypes, setPossibleFsTypes] = useState([])
 
     async function fetchData() {
-        setFSList(await getFSList())
+        setFSList(await getFSList(visLevel))
         setPossibleFsTypes(await getPossibleFsTypes())
     }
 
@@ -40,18 +39,6 @@ export const DSTable = () => {
             }
         }
     }, [deleteUserStatus])
-
-    useEffect(() => {
-        if (copiedObj.error) {
-            Notification.showError(
-                'Unable to copy to clipboard. API TOKEN was logged in console log',
-            )
-        } else if (copiedObj.value) {
-            Notification.showSuccess(
-                `API TOKEN: ${copiedObj.value.substr(0, 8)}... copied to clipboard`,
-            )
-        }
-    }, [copiedObj])
 
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
@@ -109,35 +96,35 @@ export const DSTable = () => {
 
     const onDeleteDs = (row) => {
         Notification.showDecision({
-                    title: 'Do you really want to delete datasource?',
-                    option1: {
-                        text: 'YES',
-                        callback: () => {
-                            console.log('Delete', row)
-                            deleteSelectedFs(row)
-                        },
-                    },
-                    option2: {
-                        text: 'NO!',
-                        callback: () => {},
-                    },
-                })
+            title: 'Do you really want to delete datasource?',
+            option1: {
+                text: 'YES',
+                callback: () => {
+                    console.log('Delete', row)
+                    deleteSelectedFs(row)
+                },
+            },
+            option2: {
+                text: 'NO!',
+                callback: () => {},
+            },
+        })
     }
 
     const onEditDs = (row) => {
         Notification.showDecision({
-                    title: 'Editing datasources can lead to data inconsistency. Take care!',
-                    option1: {
-                        text: 'Ok',
-                        callback: () => {
-                            handleEditDs(row)
-                        },
-                    },
-                    option2: {
-                        text: 'Cancel',
-                        callback: () => {},
-                    },
-                })
+            title: 'Editing datasources can lead to data inconsistency. Take care!',
+            option1: {
+                text: 'Ok',
+                callback: () => {
+                    handleEditDs(row)
+                },
+            },
+            option2: {
+                text: 'Cancel',
+                callback: () => {},
+            },
+        })
     }
 
     return (
@@ -151,6 +138,7 @@ export const DSTable = () => {
                     closeModal={closeModal}
                     onClosed={onClosedModal}
                     possibleFsTypes={possibleFsTypes}
+                    visLevel={visLevel}
                 />
             )}
 
@@ -182,14 +170,31 @@ export const DSTable = () => {
                         accessor: 'connection',
                     },
                     {
+                        Header: 'Global',
+                        id: 'groupId',
+                        accessor: (d) => {
+                            if (d.groupId) {
+                                return <CBadge color="success">User</CBadge>
+                            }
+                            return <CBadge color="primary">Global</CBadge>
+                        },
+                    },
+                    {
                         Header: 'Edit',
                         id: 'edit',
                         accessor: (row) => {
                             return (
                                 <IconButton
                                     icon={faEdit}
-                                    color="warning"
+                                    color="primary"
                                     onClick={() => onEditDs(row)}
+                                    disabled={
+                                        row.groupId === null
+                                            ? visLevel !== 'global'
+                                            : false
+                                    }
+                                    text="Edit"
+                                    // isOutline={false}
                                 />
                             )
                         },
@@ -203,6 +208,12 @@ export const DSTable = () => {
                                     icon={faTrash}
                                     color="danger"
                                     onClick={() => onDeleteDs(row)}
+                                    disabled={
+                                        row.groupId === null
+                                            ? visLevel !== 'global'
+                                            : false
+                                    }
+                                    text="Delete"
                                 />
                             )
                         },

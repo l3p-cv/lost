@@ -9,29 +9,36 @@ import validator from 'validator'
 import { useDispatch, useSelector } from 'react-redux'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
-import {saveFs} from '../../access/fb'
+import { saveFs } from '../../access/fb'
 // import { roles } from '../../lost_settings'
 const ErrorLabel = ({ text }) => (
-    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>
-        {text}
-    </p>
+    <p style={{ marginTop: 30, marginBottom: 0, padding: 0, color: 'red' }}>{text}</p>
 )
 
-const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClosed, possibleFsTypes}) => {
-
+const EditDSModal = ({
+    isNewDs,
+    fsList,
+    selectedId,
+    modalOpen,
+    closeModal,
+    onClosed,
+    possibleFsTypes,
+    visLevel,
+}) => {
     const DUMMY_FS = {
         id: undefined,
         name: undefined,
         connection: '{}',
         fsType: 'file',
         rootPath: undefined,
-        timestamp: undefined
+        timestamp: undefined,
+        visLevel: visLevel,
     }
     const [fs, setFs] = useState(DUMMY_FS)
 
     useEffect(() => {
-        if (fsList && selectedId){
-            const sel = fsList.find(el => {
+        if (fsList && selectedId) {
+            const sel = fsList.find((el) => {
                 return el.id == selectedId
             })
             console.log('selectedFS: ', sel)
@@ -44,9 +51,9 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
     }, [fs])
 
     const save = () => {
-       saveFs(fs) 
-       Notification.showSuccess('Saved datasource')
-       closeModal()
+        saveFs(fs)
+        Notification.showSuccess('Saved datasource')
+        closeModal()
     }
 
     const cancel = () => {
@@ -56,7 +63,7 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
     return (
         // console.log()
         <BaseModal
-            isOpen={modalOpen?true:false}
+            isOpen={modalOpen ? true : false}
             title="Edit Datasource"
             toggle={closeModal}
             onClosed={onClosed}
@@ -80,10 +87,15 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
             <Form>
                 <FormGroup>
                     <Label for="name">Datasource name</Label>
-                    <Input id="name" valid={false} invalid={false} 
-                        defaultValue={''} 
-                        placeholder={'DS name'} 
-                        onChange={(e) => {setFs({...fs,name:e.target.value})}} 
+                    <Input
+                        id="name"
+                        valid={false}
+                        invalid={false}
+                        defaultValue={''}
+                        placeholder={'DS name'}
+                        onChange={(e) => {
+                            setFs({ ...fs, name: e.target.value })
+                        }}
                         defaultValue={fs.name}
                     />
                     <FormFeedback>You will not be able to see this</FormFeedback>
@@ -91,10 +103,15 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
                 </FormGroup>
                 <FormGroup>
                     <Label for="rootPath">Root path</Label>
-                    <Input id="rootPath" valid={false} invalid={false} 
-                        defaultValue={''} 
-                        placeholder={'Root path'} 
-                        onChange={(e) => {setFs({...fs, 'rootPath':e.target.value})}} 
+                    <Input
+                        id="rootPath"
+                        valid={false}
+                        invalid={false}
+                        defaultValue={''}
+                        placeholder={'Root path'}
+                        onChange={(e) => {
+                            setFs({ ...fs, rootPath: e.target.value })
+                        }}
                         defaultValue={fs.rootPath}
                     />
                     <FormFeedback>You will not be able to see this</FormFeedback>
@@ -102,28 +119,34 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
                 </FormGroup>
                 <FormGroup>
                     <Label for="dsType">Datasource type</Label>
-                    <Input type="select" 
-                        name="dsType" 
-                        id="dsType" 
-                        onChange={e => {setFs({...fs,'fsType':e.target.value})}}
+                    <Input
+                        type="select"
+                        name="dsType"
+                        id="dsType"
+                        onChange={(e) => {
+                            setFs({ ...fs, fsType: e.target.value })
+                        }}
                         defaultValue={fs.fsType}
                     >
-                        {
-                        (() => {
+                        {(() => {
                             if (!possibleFsTypes) return null
-                            return possibleFsTypes.map(el => {
+                            return possibleFsTypes.map((el) => {
                                 return <option key={el}>{el}</option>
                             })
-                        })()
-                        }
+                        })()}
                     </Input>
                     <FormFeedback>You will not be able to see this</FormFeedback>
                     <FormText>Example help text that remains unchanged.</FormText>
                 </FormGroup>
                 <FormGroup>
                     <Label for="connection">Connection String</Label>
-                    <Input type="textarea" name="connection" id="connection"
-                        onChange={e => {setFs({...fs,'connection':e.target.value})}}
+                    <Input
+                        type="textarea"
+                        name="connection"
+                        id="connection"
+                        onChange={(e) => {
+                            setFs({ ...fs, connection: e.target.value })
+                        }}
                         defaultValue={fs.connection}
                         // value={fs.connection}
                         placeholder={fs.connection}
@@ -133,6 +156,5 @@ const EditDSModal  = ({isNewDs, fsList, selectedId, modalOpen, closeModal, onClo
         </BaseModal>
     )
 }
-
 
 export default EditDSModal

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { faEdit, faFileExport } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faFileExport, faEye } from '@fortawesome/free-solid-svg-icons'
 
 import IconButton from '../../components/IconButton'
 import Datatable from '../../components/Datatable'
@@ -7,6 +7,7 @@ import BaseModal from '../../components/BaseModal'
 import LabelTree from './LabelTree'
 import { API_URL } from '../../lost_settings'
 import { saveAs } from 'file-saver'
+import { CBadge } from '@coreui/react'
 
 var amountOfLabels = 0
 
@@ -77,13 +78,35 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                         },
                     },
                     {
+                        Header: 'Global',
+                        id: 'group_id',
+                        accessor: (d) => {
+                            if (d.group_id) {
+                                return <CBadge color="success">User</CBadge>
+                            }
+                            return <CBadge color="primary">Global</CBadge>
+                        },
+                    },
+                    {
                         Header: 'Edit',
                         id: 'edit',
                         accessor: (d) => {
                             return (
                                 <IconButton
-                                    icon={faEdit}
-                                    text="Edit"
+                                    icon={
+                                        d.group_id === null
+                                            ? visLevel !== 'global'
+                                                ? faEye
+                                                : faEdit
+                                            : faEdit
+                                    }
+                                    text={
+                                        d.group_id === null
+                                            ? visLevel !== 'global'
+                                                ? 'Show'
+                                                : 'Edit'
+                                            : 'Edit'
+                                    }
                                     color="primary"
                                     onClick={() => {
                                         setIsEditModalOpen(true)

@@ -4,6 +4,7 @@ from flask import request
 from flask_restx import Resource
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, DATA_URL
+from lost.db.vis_level import VisLevel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.db import model, roles, access
 from lost.logic.file_man import FileMan, chonkyfy
@@ -51,10 +52,10 @@ class Delete(Resource):
             raise NotImplementedError()
             return {'deleted': 'mu ha ha!'}
 
-@namespace.route('/fslist')
+@namespace.route('/fslist/<string:visibility>')
 class FsList(Resource):
     @jwt_required 
-    def get(self):
+    def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -65,8 +66,13 @@ class FsList(Resource):
             for user_group in dbm.get_user_groups_by_user_id(identity):
                 if user_group.group.is_user_default:
                     group_id = user_group.group.idx
-            fs_list = list(dbm.get_public_fs())
-            fs_list += list(dbm.get_fs(group_id=group_id))
+            if visibility == VisLevel().USER:
+                fs_list = list(dbm.get_fs(group_id=group_id))
+            elif visibility == VisLevel().GLOBAL:
+                fs_list = list(dbm.get_public_fs())
+            elif visibility == VisLevel().ALL:
+                fs_list = list(dbm.get_public_fs())
+                fs_list += list(dbm.get_fs(group_id=group_id))
             ret = []
             for fs in fs_list:
                 ret.append({
@@ -113,6 +119,8 @@ class SaveFs(Resource):
                     if user_group.group.is_user_default:
                         group_id = user_group.group.idx
                 # raise Exception('group_id: {}'.format(group_id))
+                if data['visLevel'] == VisLevel().GLOBAL:
+                    group_id = None
                 new_fs_db = model.FileSystem(
                     group_id=group_id,
                     connection=data['connection'],
