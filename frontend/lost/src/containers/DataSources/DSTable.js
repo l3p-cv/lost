@@ -3,12 +3,12 @@ import Datatable from '../../components/Datatable'
 import { useDispatch, useSelector } from 'react-redux'
 import actions from '../../actions/user'
 import IconButton from '../../components/IconButton'
-import { faUserPlus, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faUserPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
 import { useCopyToClipboard } from 'react-use'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
-import { getFSList, getPossibleFsTypes } from '../../access/fb'
+import { getFSList, getPossibleFsTypes, deleteFs } from '../../access/fb'
 
 export const DSTable = () => {
     const [copiedObj, copyToClipboard] = useCopyToClipboard()
@@ -20,6 +20,10 @@ export const DSTable = () => {
     async function fetchData() {
         setFSList(await getFSList())
         setPossibleFsTypes(await getPossibleFsTypes())
+    }
+
+    async function deleteSelectedFs(row) {
+        await deleteFs(row)
     }
 
     useEffect(() => {
@@ -102,6 +106,40 @@ export const DSTable = () => {
         setIsDsEditOpenView(false)
         fetchData()
     }
+
+    const onDeleteDs = (row) => {
+        Notification.showDecision({
+                    title: 'Do you really want to delete datasource?',
+                    option1: {
+                        text: 'YES',
+                        callback: () => {
+                            console.log('Delete', row)
+                            deleteSelectedFs(row)
+                        },
+                    },
+                    option2: {
+                        text: 'NO!',
+                        callback: () => {},
+                    },
+                })
+    }
+
+    const onEditDs = (row) => {
+        Notification.showDecision({
+                    title: 'Editing datasources can lead to data inconsistency. Take care!',
+                    option1: {
+                        text: 'Ok',
+                        callback: () => {
+                            handleEditDs(row)
+                        },
+                    },
+                    option2: {
+                        text: 'Cancel',
+                        callback: () => {},
+                    },
+                })
+    }
+
     return (
         <div>
             {isDsEditOpenView && (
@@ -128,19 +166,6 @@ export const DSTable = () => {
                 data={fsList}
                 columns={[
                     {
-                        Header: 'Edit',
-                        id: 'edit',
-                        accessor: (row) => {
-                            return (
-                                <IconButton
-                                    icon={faEdit}
-                                    color="warning"
-                                    onClick={() => handleEditDs(row)}
-                                />
-                            )
-                        },
-                    },
-                    {
                         Header: 'Name',
                         accessor: 'name',
                     },
@@ -155,6 +180,32 @@ export const DSTable = () => {
                     {
                         Header: 'Connection',
                         accessor: 'connection',
+                    },
+                    {
+                        Header: 'Edit',
+                        id: 'edit',
+                        accessor: (row) => {
+                            return (
+                                <IconButton
+                                    icon={faEdit}
+                                    color="warning"
+                                    onClick={() => onEditDs(row)}
+                                />
+                            )
+                        },
+                    },
+                    {
+                        Header: 'Delete',
+                        id: 'delete',
+                        accessor: (row) => {
+                            return (
+                                <IconButton
+                                    icon={faTrash}
+                                    color="danger"
+                                    onClick={() => onDeleteDs(row)}
+                                />
+                            )
+                        },
                     },
                 ]}
             />

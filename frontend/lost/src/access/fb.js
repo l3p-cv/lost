@@ -23,6 +23,13 @@ export async function ls(fs, path){
     return res.data
 }
 
+export async function deleteFs(fs){
+    const res = await axios.post(API_URL+'/fb/delete', 
+        {'fs':fs}
+    )
+    return res.data
+}
+
 export async function saveFs(fs){
     const res = await axios.post(API_URL+'/fb/savefs', fs)
 }

@@ -35,6 +35,22 @@ class LS(Resource):
             dbm.close_session()
             return chonkyfy(res, path, fm)
 
+@namespace.route('/delete')
+class Delete(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            data = json.loads(request.data)
+            fs_db = dbm.get_fs(name=data['fs']['name'])
+            raise NotImplementedError()
+            return {'deleted': 'mu ha ha!'}
+
 @namespace.route('/fslist')
 class FsList(Resource):
     @jwt_required 
