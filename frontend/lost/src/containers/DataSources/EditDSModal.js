@@ -166,6 +166,40 @@ const EditDSModal = ({
             </>
         )
     }
+
+    const renderBrowseModal = () => {
+        if (!browseOpen) return null
+        return (
+            <BaseModal
+                isOpen={browseOpen}
+                title="Test Connection"
+                toggle={() => setBrowseOpen(!browseOpen)}
+                // onClosed={onClosed}
+                footer={
+                    <>
+                        <IconButton
+                            icon={faBan}
+                            color="warning"
+                            text="Cancel"
+                            onClick={cancelBrowse}
+                        />
+                        <IconButton
+                            icon={faSave}
+                            color="success"
+                            text="Save Root Path"
+                            onClick={saveBrowse}
+                        />
+                    </>
+                }
+            >
+            <LostFileBrowser fs={fs} 
+                onPathSelected={path => setBrowsePath(path)} 
+                mode='lsTest'
+            />
+            </BaseModal>
+        )
+    }
+
     return (
         // console.log()
         <div>
@@ -266,33 +300,8 @@ const EditDSModal = ({
                 </FormGroup>
             </Form>
         </BaseModal>
-        <BaseModal
-            isOpen={browseOpen}
-            title="Test Connection"
-            toggle={() => setBrowseOpen(!browseOpen)}
-            // onClosed={onClosed}
-            footer={
-                <>
-                    <IconButton
-                        icon={faBan}
-                        color="warning"
-                        text="Cancel"
-                        onClick={cancelBrowse}
-                    />
-                    <IconButton
-                        icon={faSave}
-                        color="success"
-                        text="Save Root Path"
-                        onClick={saveBrowse}
-                    />
-                </>
-            }
-        >
-        <LostFileBrowser fs={fs} 
-            onPathSelected={path => setBrowsePath(path)} 
-            mode='lsTest'
-        />
-        </BaseModal></div>
+        {renderBrowseModal()}
+        </div>
     )
 }
 

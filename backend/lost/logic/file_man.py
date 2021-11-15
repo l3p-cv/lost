@@ -36,10 +36,11 @@ def chonkyfy(fs_list, root, fs):
     body = root
     for idx in range((len(root.split('/')))):
         body, head = os.path.split(body)
-        folder_chain.insert(0,{
-            'id': os.path.join(body, head),
-            'name': head 
-        })
+        if head != '':
+            folder_chain.insert(0,{
+                'id': os.path.join(body, head),
+                'name': head 
+            })
     for el in fs_list:
         res = {
             'id':el['name'],
