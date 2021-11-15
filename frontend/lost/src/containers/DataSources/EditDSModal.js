@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Form, FormGroup, Label, Input, FormFeedback, FormText } from 'reactstrap'
+import { Form, FormGroup, Label, Input, FormFeedback, FormText, Button, InputGroup } from 'reactstrap'
 import BaseModal from '../../components/BaseModal'
 import IconButton from '../../components/IconButton'
-import { faSave, faBan, faFile } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faBan, faFile, faNetworkWired } from '@fortawesome/free-solid-svg-icons'
+import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 import {
     faAws,
     faDropbox,
@@ -34,6 +35,9 @@ const EditDSModal = ({
     }
     const [fs, setFs] = useState(DUMMY_FS)
 
+    const [browseOpen, setBrowseOpen] = useState(false)
+    const [browsePath, setBrowsePath] = useState(fs.rootPath)
+
     useEffect(() => {
         if (fsList && selectedId) {
             const sel = fsList.find((el) => {
@@ -58,6 +62,20 @@ const EditDSModal = ({
         closeModal()
     }
 
+    const saveBrowse = () => {
+        setFs({
+            ...fs,
+            rootPath: browsePath
+        })
+        console.log('Saved Root Path', browsePath)
+        setBrowseOpen(false)
+
+    }
+
+    const cancelBrowse = () => {
+        setBrowseOpen(false)
+    }
+
     const loadPreset = (type) => {
         setFs({ ...fs, fsType: type })
         switch (type) {
@@ -65,6 +83,7 @@ const EditDSModal = ({
                 setFs({ ...fs, fsType: type, connection: '{}' })
                 break
             case 'abfs':
+            case 'az':
                 setFs({
                     ...fs,
                     fsType: type,
@@ -72,6 +91,37 @@ const EditDSModal = ({
                         '{"connection_string": "DefaultEndpointsProtocol=https;AccountName=myAccountName;AccountKey=myAccountKey;EndpointSuffix=core.windows.net"}',
                 })
                 break
+            case 's3a':
+            case 's3':
+                setFs({
+                    ...fs,
+                    fsType: type,
+                    connection:
+`{
+    'anon': False,
+    'client_kwargs': {
+        'endpoint_url': 'http://172.17.0.2:9000',
+        'aws_access_key_id': 'jjaeger',
+        'aws_secret_access_key': 'test123456789'
+    }
+}`
+
+                })
+                break
+            case 'ssh':
+            case 'sftp':
+                setFs({
+                    ...fs,
+                    fsType: type,
+                    connection:
+`{
+    'host': 'IP-Address',
+    'username': 'my_user_name',
+    'port': 22,
+    'password': 'My-Secret-PW'
+}`
+                })
+                break 
             default:
                 setFs({ ...fs, connection: '{}' })
         }
@@ -105,18 +155,11 @@ const EditDSModal = ({
                         onClick={() => loadPreset('abfs')}
                     />
                     <IconButton
-                        text="Dropbox"
+                        text="SSH/ SFTP"
                         isOutline={false}
-                        icon={faDropbox}
+                        icon={faNetworkWired}
                         style={{ marginRight: 8 }}
-                        onClick={() => loadPreset('dropbox')}
-                    />
-                    <IconButton
-                        text="Google Drive"
-                        isOutline={false}
-                        icon={faGoogleDrive}
-                        style={{ marginRight: 8 }}
-                        onClick={() => loadPreset('gdrive')}
+                        onClick={() => loadPreset('ssh')}
                     />
                 </CRow>
                 {/* <hr></hr> */}
@@ -125,6 +168,7 @@ const EditDSModal = ({
     }
     return (
         // console.log()
+        <div>
         <BaseModal
             isOpen={modalOpen ? true : false}
             title="Edit Datasource"
@@ -163,21 +207,24 @@ const EditDSModal = ({
                         value={fs.name}
                     />
                     <FormFeedback>You will not be able to see this</FormFeedback>
-                    <FormText>Example help text that remains unchanged.</FormText>
+                    <FormText>Name of the datasource</FormText>
                 </FormGroup>
                 <FormGroup>
                     <Label for="rootPath">Root path</Label>
-                    <Input
-                        id="rootPath"
-                        valid={false}
-                        invalid={false}
-                        defaultValue={''}
-                        placeholder={'Root path'}
-                        onChange={(e) => {
-                            setFs({ ...fs, rootPath: e.target.value })
-                        }}
-                        value={fs.rootPath}
-                    />
+                    <InputGroup>
+                        <Input
+                            id="rootPath"
+                            valid={false}
+                            invalid={false}
+                            defaultValue={''}
+                            placeholder={'Root path'}
+                            onChange={(e) => {
+                                setFs({ ...fs, rootPath: e.target.value })
+                            }}
+                            value={fs.rootPath}
+                        />
+                        <Button color='info' onClick={()  => {setBrowseOpen(true); console.log('fs', fs)}}>Test</Button>
+                    </InputGroup>
                     <FormFeedback>You will not be able to see this</FormFeedback>
                     <FormText>Example help text that remains unchanged.</FormText>
                 </FormGroup>
@@ -219,6 +266,33 @@ const EditDSModal = ({
                 </FormGroup>
             </Form>
         </BaseModal>
+        <BaseModal
+            isOpen={browseOpen}
+            title="Test Connection"
+            toggle={() => setBrowseOpen(!browseOpen)}
+            // onClosed={onClosed}
+            footer={
+                <>
+                    <IconButton
+                        icon={faBan}
+                        color="warning"
+                        text="Cancel"
+                        onClick={cancelBrowse}
+                    />
+                    <IconButton
+                        icon={faSave}
+                        color="success"
+                        text="Save Root Path"
+                        onClick={saveBrowse}
+                    />
+                </>
+            }
+        >
+        <LostFileBrowser fs={fs} 
+            onPathSelected={path => setBrowsePath(path)} 
+            mode='lsTest'
+        />
+        </BaseModal></div>
     )
 }
 

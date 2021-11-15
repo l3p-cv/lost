@@ -7,7 +7,7 @@ from lost.settings import LOST_CONFIG, DATA_URL
 from lost.db.vis_level import VisLevel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.db import model, roles, access
-from lost.logic.file_man import FileMan, chonkyfy
+from lost.logic.file_man import FileMan, chonkyfy, DummyFileMan
 from fsspec.registry import known_implementations
 import os
 
@@ -33,6 +33,43 @@ class LS(Resource):
             else:
                 path = data['path']
             res = fm.ls(path, detail=True)
+            # raise Exception(res)
+            dbm.close_session()
+            return chonkyfy(res, path, fm)
+
+@namespace.route('/lsTest')
+class LS(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            data = json.loads(request.data)
+            if data['fs']['fsType'] == 'file':
+                if not user.has_role(roles.ADMINISTRATOR):
+                    dbm.close_session()
+                    return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+            db_fs = model.FileSystem(
+                connection=data['fs']['connection'],
+                root_path=data['fs']['rootPath'],
+                fs_type=data['fs']['fsType']
+            )
+            fm = FileMan(fs_db=db_fs)
+
+            # fs_db = dbm.get_fs(name=data['fs']['name'])
+            # fm = FileMan(fs_db=fs_db)
+            # commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
+            # if commonprefix != fs_db.root_path:
+            #     path = fs_db.root_path
+            # else:
+            #     path = data['path']
+            path = data['path']
+            res = fm.ls(path, detail=True)
+            # raise Exception(res)
             dbm.close_session()
             return chonkyfy(res, path, fm)
 

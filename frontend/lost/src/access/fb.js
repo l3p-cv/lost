@@ -16,6 +16,11 @@ export async function ls(fs, path) {
     return res.data
 }
 
+export async function lsTest(fs, path) {
+    const res = await axios.post(API_URL + '/fb/lsTest', { fs: fs, path: path })
+    return res.data
+}
+
 export async function deleteFs(fs) {
     const res = await axios.post(API_URL + '/fb/delete', { fs: fs })
     return res.data
