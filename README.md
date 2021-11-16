@@ -60,6 +60,28 @@ tested for Ubuntu):
     Follow instructions of the quick_setup script, 
     printed in the command line.
 
+## !!! Experimental !!! LOST 2.x QuickSetup - use it wisely !
+Lost 2.x is still in development. 
+In the backend most of the work packages are finished, currently we are finalizing the version and expect a first official release soon. 
+You are welcome to test the current version anyway:
+
+1. Install docker on your machine or server:
+    https://docs.docker.com/install/
+2. Install docker-compose:
+    https://docs.docker.com/compose/install/
+3. Clone LOST:
+    ```
+    git clone https://github.com/l3p-cv/lost.git
+    ```
+4. Run quick_setup script:
+    ```
+    cd lost/docker/quick_setup/
+    python3 quick_setup.py /path/to/install/lost --release 2.0.0-alpha.2
+    ```
+5. Run LOST:
+
+    Follow instructions of the quick_setup script, 
+    printed in the command line.
 
 ## Citing LOST
 ```
