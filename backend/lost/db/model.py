@@ -1725,21 +1725,21 @@ class Config(Base):
     key = Column(String(3072), unique=True)
     default_value = Column(Text)
     value = Column(Text)
-    description = Column(Text) 
-    timestamp = Column(DateTime())
+    config = Column(Text)
+    description = Column(Text)
+    timestamp = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.idx'))
-    is_user_specific = Column(Boolean)
 
     def __init__(self, idx=None, key=None, default_value=None,
-                 value=None, timestamp=None, user_id=None, description=None, is_user_specific=False):
+                 value=None, timestamp=None, user_id=None, description=None, config=None):
         self.idx = idx
         self.key = key
         self.default_value = default_value
         self.value = value
+        self.config = config
         self.timestamp = timestamp
         self.user_id = user_id
         self.description = description
-        self.is_user_specific = is_user_specific
 
     def to_dict(self):
         return {
@@ -1747,6 +1747,7 @@ class Config(Base):
             'key': self.key,
             'value': self.value,
             'default_value': self.default_value,
+            'config': self.config,
             'timestamp': self.timestamp,
             'user_id': self.user_id,
             'description': self.description
