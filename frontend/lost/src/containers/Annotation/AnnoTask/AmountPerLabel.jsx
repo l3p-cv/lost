@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { CChart } from '@coreui/react-chartjs'
 
-const chartOptions = {
+let chartOptions = {
     maintainAspectRatio: true,
 }
 
-const AmountPerLabel = ({ stats }) => {
+const AmountPerLabel = ({ stats, options }) => {
     const [barData, setBarData] = useState({ datasets: [], labels: [], colors: [] })
+
+    if(options !== undefined) chartOptions = options;
 
     useEffect(() => {
         getBarData()
@@ -20,7 +22,6 @@ const AmountPerLabel = ({ stats }) => {
             return d.amount
         })
         const colors = stats.map((d) => {
-            console.log(d.color)
             if (d.color !== '') {
                 return d.color
             }
