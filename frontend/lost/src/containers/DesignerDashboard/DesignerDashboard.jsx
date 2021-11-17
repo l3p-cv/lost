@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 import * as statistics_api from '../../actions/statistics/statistics_api'
-import * as annotask_api from '../../actions/annoTask/annotask_api'
 
 import {
     CWidgetDropdown,
@@ -13,10 +12,8 @@ import {
 
 import {CChart} from '@coreui/react-chartjs'
 import ChartLineSimple from './ChartLineSimple'
-import WorkingOn from '../Annotation/AnnoTask/WorkingOn'
-import { Row, Col, Card, CardHeader, CardBody, Progress } from 'reactstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlay } from '@fortawesome/free-solid-svg-icons'
+import { Card, CardHeader, CardBody, Progress } from 'reactstrap'
+import HeaderRow from './HeaderRow'
 
 const DesignerDashboard = () => {
     const dispatch = useDispatch()
@@ -27,37 +24,10 @@ const DesignerDashboard = () => {
             getPersonalStatistics()
     }, [])
 
-    // get working on annotask data
-    const { mutate: getWorkingOnAnnoTask, data: workingAnnoTaskResult } =
-        annotask_api.useWorkingAnnotask()
-        useEffect(() => {
-            getWorkingOnAnnoTask()
-    }, [])
-
-    const [workingAnnoTask, setWorkingAnnoTask] = useState({
-        isWorkinOnAnno: false,
-        id: 0,
-        pipelineName: "loading...",
-        finished: 0,
-        linkToAnno: ''
-    })
-
     const [labels, setLabels] = useState({keys:[], values:[]})
     const [types, setTypes] = useState({keys:[], values:[]})
 
     useEffect(()=> {
-
-        /// @TODO check if no anno task available
-        
-        /// only when data from working anno request is available
-        if(workingAnnoTaskResult !== undefined) setWorkingAnnoTask({
-            isWorkinOnAnno: true,
-            pipelineName: workingAnnoTaskResult.pipelineName,
-            id: workingAnnoTaskResult.id,
-            finished: workingAnnoTaskResult.finished,
-            link: workingAnnoTaskResult.type.toLowerCase()
-        })
-
         /// only when data from statistics  request is available
         if(personalStatistics !== undefined) {
             // update data for annotation labels chart
@@ -139,40 +109,7 @@ const DesignerDashboard = () => {
 
     return (
         <div>
-            <Card className={false ? 'col-sm-6' : 'col-sm-12'}>
-                <CardHeader>Continue annotating</CardHeader>
-                <CardBody>
-                    {workingAnnoTask.isWorkinOnAnno ? (
-                        <CRow>
-                            <div className="col-sm-6 col-xl-3">
-                                <a href={workingAnnoTask.link} style={{ 'color': 'primary' }}>
-                                    <Card>
-                                        <CardBody>
-                                            <CRow>
-                                                <CCol xs="9">
-                                                    <div className="text-value-lg">{workingAnnoTask.pipelineName}</div></CCol>
-                                                <CCol xs="3">
-                                                    <FontAwesomeIcon
-                                                        className="mr-3"
-                                                        size={'2x'}
-                                                        icon={faPlay}
-                                                    />
-                                                </CCol>
-                                            </CRow>
-                                            <p>ID: {workingAnnoTask.id}</p>
-
-                                            
-                                            <Progress value="50" color="primary"></Progress>
-                                        </CardBody>
-                                    </Card>
-                                </a>
-                            </div>
-                        </CRow>
-                    ) : (
-                        <h3>Currently there are no active annotation tasks</h3>
-                    )}
-                </CardBody>
-            </Card>
+            <HeaderRow></HeaderRow>
             <Card>
                 <CardHeader>Annotation Statistics</CardHeader>
                 <CardBody>
