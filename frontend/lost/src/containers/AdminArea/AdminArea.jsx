@@ -29,6 +29,7 @@ import WorkersTable from '../Workers/WorkersTable'
 import UsersAndGroups from '../Users/UsersAndGroups'
 import TabJupyterLab from './TabJupyterLab'
 import Labels from '../Labels/Labels'
+import DSTable from '../DataSources/DSTable'
 
 const AdminArea = () => {
     const dispatch = useDispatch()
@@ -46,7 +47,7 @@ const AdminArea = () => {
                 <CNavItem>
                     <CNavLink>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
-                        {active === 7 && ' JupyterLab'}
+                        {active === 4 && ' JupyterLab'}
                     </CNavLink>
                 </CNavItem>
             )
@@ -67,7 +68,7 @@ const AdminArea = () => {
             <CCol xs="12" md="12" className="mb-4">
                 <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
                     <CNav variant="tabs">
-                        <CNavItem>
+                        {/* <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
                                     color="#092F38"
@@ -76,7 +77,7 @@ const AdminArea = () => {
                                 />
                                 {active === 0 && ' System Information'}
                             </CNavLink>
-                        </CNavItem>
+                        </CNavItem> */}
                         <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
@@ -84,10 +85,10 @@ const AdminArea = () => {
                                     size="1x"
                                     icon={faUsers}
                                 />
-                                {active === 1 && ' Users & Groups'}
+                                {active === 0 && ' Users & Groups'}
                             </CNavLink>
                         </CNavItem>
-                        <CNavItem>
+                        {/* <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
                                     color="#092F38"
@@ -96,7 +97,37 @@ const AdminArea = () => {
                                 />
                                 {active === 2 && ' Settings'}
                             </CNavLink>
+                        </CNavItem> */}
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faDatabase}
+                                />
+                                {active === 1 && ' Global Datasources'}
+                            </CNavLink>
                         </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faTags}
+                                />
+                                {active === 2 && ' Global Labels'}
+                            </CNavLink>
+                        </CNavItem>
+                        {/* <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faTasks}
+                                />
+                                {active === 6 && ' Global Pipelines'}
+                            </CNavLink>
+                        </CNavItem> */}
                         <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
@@ -107,60 +138,24 @@ const AdminArea = () => {
                                 {active === 3 && ' Worker'}
                             </CNavLink>
                         </CNavItem>
-                        <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faDatabase}
-                                />
-                                {active === 4 && ' Global Datasources'}
-                            </CNavLink>
-                        </CNavItem>
-                        <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faTags}
-                                />
-                                {active === 5 && ' Global Labels'}
-                            </CNavLink>
-                        </CNavItem>
-                        <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faTasks}
-                                />
-                                {active === 6 && ' Global Pipelines'}
-                            </CNavLink>
-                        </CNavItem>
                         {renderJupyterLabNav()}
                     </CNav>
                     <CTabContent>
                         <CTabPane style={{ marginTop: 30 }}>
-                            <div>{renderSystemInfo()}</div>
-                        </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
                             <UsersAndGroups></UsersAndGroups>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
-                            <div>{renderSystemInfo()}</div>
-                        </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
-                            <WorkersTable></WorkersTable>
-                        </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
-                            <div>{renderSystemInfo()}</div>
+                            <DSTable visLevel="global"></DSTable>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
                             <Labels visLevel="global"></Labels>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
-                            <div>{renderSystemInfo()}</div>
+                            <WorkersTable></WorkersTable>
                         </CTabPane>
+                        {/* <CTabPane style={{ marginTop: 30 }}>
+                            <div>{renderSystemInfo()}</div>
+                        </CTabPane> */}
                         {renderJupyterLabTab()}
                     </CTabContent>
                 </CTabs>

@@ -16,9 +16,10 @@ class LabelTree(object):
         root_leaf (:class:`lost.db.model.LabelLeaf`): Root leaf of the tree.
         name (str): Name of a label tree.
         logger (logger): A logger.
+        group_id (int): Id of the group where the LabelTree belongs to.
     '''
 
-    def __init__(self, dbm, root_id=None, root_leaf=None, name=None, logger=None):
+    def __init__(self, dbm, root_id=None, root_leaf=None, name=None, logger=None, group_id=None):
         self.dbm = dbm # type: lost.db.access.DBMan
         self.root = None # type: lost.db.model.LabelLeaf
         self.tree = {}
@@ -34,7 +35,10 @@ class LabelTree(object):
             self.root = self.dbm.get_label_leaf(root_id)
             self.__collect_tree(self.root, self.tree)
         elif name is not None:
-            root_list = self.dbm.get_all_label_trees()
+            if group_id is None:
+                root_list = self.dbm.get_all_label_trees(global_only=True)
+            else:
+                root_list = self.dbm.get_all_label_trees(group_id=group_id, add_global=True)
             for leaf in root_list:
                 print(leaf.name)
             root = next(filter(lambda x: x.name==name, root_list), None)

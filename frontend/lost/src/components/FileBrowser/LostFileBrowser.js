@@ -23,7 +23,7 @@ import * as fbaccess from '../../access/fb'
 // }
 
 
-const LostFileBrowser = ({fs, onPathSelected}) => {
+const LostFileBrowser = ({fs, onPathSelected, mode}) => {
   // Declare a new state variable, which we'll call "count"
   const [count, setCount] = useState(0)
   const [files, setFiles] = useState([])
@@ -33,14 +33,25 @@ const LostFileBrowser = ({fs, onPathSelected}) => {
     setChonkyDefaults({ iconComponent: ChonkyIconFA })
   }, [])
   useEffect(() => {
-    console.log('FS', fs)
+    console.log('FS in LostFileBrowser', fs)
     if (fs) {
       ls(fs, fs.rootPath)
     }
   }, [fs])
 
   const ls = async (fs, path) => {
-    const res_data = await fbaccess.ls(fs, path)
+    let res_data
+    if (mode){
+      if ( mode === 'lsTest' ){
+        console.log('LostFileBrowser -> fs, path', fs, path)
+        res_data = await fbaccess.lsTest(fs, path)
+
+      } else {
+        res_data = await fbaccess.ls(fs, path)
+      }
+    } else {
+      res_data = await fbaccess.ls(fs, path)
+    }
     // console.log('Async ls', res_data)
     setFiles(res_data['files'])
     setFolderChain(res_data['folderChain'])
@@ -63,6 +74,9 @@ const LostFileBrowser = ({fs, onPathSelected}) => {
         if (data){
           console.log('OpenFiles: ', data.payload.targetFile.id)
           ls(fs, data.payload.targetFile.id)
+          if (onPathSelected){
+            onPathSelected(data.payload.targetFile.id)
+          }
         }
         break
       case ChonkyActions.MouseClickFile.id:
@@ -105,6 +119,7 @@ const LostFileBrowser = ({fs, onPathSelected}) => {
   //     { id: 'fgh', name: 'My Documents' },
   // ];
   return (
+    <div style={{height:500}}>
     <FileBrowser defaultFileViewActionId={ChonkyActions.EnableListView.id} 
       files={files} 
       folderChain={folderChain}
@@ -114,6 +129,7 @@ const LostFileBrowser = ({fs, onPathSelected}) => {
         <FileList />
         <FileContextMenu />
     </FileBrowser>
+    </ div>
   );
 }
 

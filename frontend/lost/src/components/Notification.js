@@ -57,3 +57,33 @@ export const networkRequest = (requestStatus) => {
         }
     }
 }
+
+export const showDecision = ({
+    title = '',
+    icon = 'info',
+    html = '',
+    option1,
+    option2,
+    target = document.getElementById('popup-root'),
+}) => {
+    Swal.fire({
+        target,
+        title,
+        icon,
+        html,
+        showDenyButton: false,
+        showCancelButton: true,
+        confirmButtonText: option1.text,
+        cancelButtonText: option2.text,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            option1.callback()
+        } else if (
+            !result.isConfirmed &&
+            result.dismiss === 'cancel' &&
+            option2.callback
+        ) {
+            option2.callback()
+        }
+    })
+}
