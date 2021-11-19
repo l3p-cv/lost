@@ -89,8 +89,6 @@ def full_bbox_anno():
 class TestTwoDAnnos(object):
 
     def test_bbox_property(self):
-        assert True
-        return True
         bbox_anno = model.TwoDAnno()
         bbox_anno.bbox = REF_BBOX
         for i, ref in enumerate(REF_BBOX):
@@ -98,8 +96,6 @@ class TestTwoDAnnos(object):
             assert ref == bbox_anno.bbox[i]
 
     def test_point_property(self):
-        assert True
-        return True
         anno = model.TwoDAnno()
         anno.point = REF_POINT
         for i, ref in enumerate(REF_POINT):
@@ -107,8 +103,6 @@ class TestTwoDAnnos(object):
             assert ref == anno.point[i]
 
     def test_line_property(self):
-        assert True
-        return True
         anno = model.TwoDAnno()
         anno.line = REF_LINE
         print('REF_LINE', REF_LINE)
@@ -118,8 +112,6 @@ class TestTwoDAnnos(object):
                 assert ref == anno.line[i][j]
 
     def test_polygon_property(self):
-        assert True
-        return True
         anno = model.TwoDAnno()
         anno.polygon = REF_POLYGON
         print('REF_POLYGON', REF_POLYGON)
@@ -129,8 +121,6 @@ class TestTwoDAnnos(object):
                 assert ref == anno.polygon[i][j]
 
     def test_get_anno_vec(self):
-        assert True
-        return True
         img_anno = model.ImageAnno()
         anno = model.TwoDAnno()
         anno.bbox = REF_BBOX
@@ -163,45 +153,27 @@ class TestTwoDAnnos(object):
         check_polygon(REF_POLYGON, polygon_list[0])
     
     def test_to_dict_flat(self, full_bbox_anno):
-        assert True
-        return True
         bbox = full_bbox_anno
         my_dict = bbox.to_dict()
-        assert my_dict['anno.data'] == bbox.data
-        assert json.loads(my_dict['anno.lbl.name'])[0] == bbox.labels[0].label_leaf.name
-        assert json.loads(my_dict['anno.lbl.idx'])[0] == bbox.labels[0].label_leaf.idx
-        assert json.loads(my_dict['anno.lbl.external_id'])[0] == bbox.labels[0].label_leaf.external_id
+        assert my_dict['anno_data'] == bbox.get_anno_serialization_format()
+        assert my_dict['anno_lbl'][0] == bbox.labels[0].label_leaf.name
 
     def test_to_dict_hierarchical(self, full_bbox_anno):
-        assert True
-        return True
         bbox = full_bbox_anno
         my_dict = bbox.to_dict(style='hierarchical')
-        assert my_dict['anno.lbl.name'][0] == bbox.labels[0].label_leaf.name
-        assert my_dict['anno.lbl.idx'][0] == bbox.labels[0].label_leaf.idx
-        assert my_dict['anno.lbl.external_id'][0] == bbox.labels[0].label_leaf.external_id
-        assert my_dict['anno.data']['x'] == REF_BBOX[0]
-        assert my_dict['anno.data']['y'] == REF_BBOX[1]
-        assert my_dict['anno.data']['w'] == REF_BBOX[2]
-        assert my_dict['anno.data']['h'] == REF_BBOX[3]
+        assert my_dict['anno_lbl'][0] == bbox.labels[0].label_leaf.name
+        assert my_dict['anno_data'][0][0] == REF_BBOX[0]
+        assert my_dict['anno_data'][0][1] == REF_BBOX[1]
+        assert my_dict['anno_data'][0][2] == REF_BBOX[2]
+        assert my_dict['anno_data'][0][3] == REF_BBOX[3]
         
     def test_to_df(self, full_bbox_anno):
-        assert True
-        return True
         bbox = full_bbox_anno
         df = bbox.to_df()
-        assert df['anno.data'].values[0] == bbox.data
-        assert json.loads(df['anno.lbl.name'].values[0])[0] == bbox.labels[0].label_leaf.name
-        assert json.loads(df['anno.lbl.idx'].values[0])[0] == bbox.labels[0].label_leaf.idx
-        assert json.loads(df['anno.lbl.external_id'].values[0])[0] == bbox.labels[0].label_leaf.external_id
+        assert df['anno_data'].values[0] == bbox.get_anno_serialization_format()[0]
+        assert df['anno_lbl'].values[0] == bbox.labels[0].label_leaf.name
 
     def test_to_vec(self, full_bbox_anno):
-        assert True
-        return True
         bbox = full_bbox_anno
-        assert check_bbox(REF_BBOX, bbox.to_vec('anno.data'))
-        assert json.loads(bbox.to_vec('anno.lbl.idx'))[0] == full_bbox_anno.labels[0].label_leaf_id
-        vec = bbox.to_vec(['anno.lbl.name','anno.lbl.idx', 'anno.lbl.external_id'])
-        assert json.loads(vec[0])[0] == bbox.labels[0].label_leaf.name
-        assert json.loads(vec[1])[0] == bbox.labels[0].label_leaf.idx
-        assert json.loads(vec[2])[0] == bbox.labels[0].label_leaf.external_id
+        assert check_bbox(REF_BBOX, bbox.to_vec('anno_data'))
+        assert bbox.to_vec('anno_lbl') == full_bbox_anno.labels[0].label_leaf.name

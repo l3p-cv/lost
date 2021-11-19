@@ -321,7 +321,7 @@ class ScriptOutput(Output):
             raise Exception('If video_path is provided a frame_n is also required!')
 
     def request_bbox_annos(self, img_path, boxes=[], labels=[],
-                    frame_n=None, video_path=None, sim_classes=[], fs=None):
+                    frame_n=None, video_path=None, sim_classes=[], fm=None):
         '''Request BBox annotations for a subsequent annotaiton task.
 
         Args:
@@ -335,10 +335,10 @@ class ScriptOutput(Output):
             sim_classes (list): [sim_class1, sim_class2,...] 
                 A list of similarity classes that is used to 
                 cluster BBoxes when using MIA for annotation.
-            fs (obj): The filesystem where image is located. 
-                User lost standard filesystem if no filesystem was given.
+            fm (obj): The FileSystemManager for the filesystem where image is located. 
+                Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
-                get_fs method.
+                get_fm method.
 
         Note:
             There are three cases when you request a bbox annotation.
@@ -377,12 +377,12 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fs=fs)
+                    fm=fm)
                 
 
     def request_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fs=None, img_meta=None, anno_meta=None):
+        video_path=None, fm=None, img_meta=None, anno_meta=None):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
@@ -405,10 +405,10 @@ class ScriptOutput(Output):
                 the framenumber.
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
-            fs (obj): The filesystem where image is located. 
-                User lost standard filesystem if no filesystem was given.
+            fm (obj): The FileSystemManager for the filesystem where image is located. 
+                Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
-                get_fs method.
+                get_fm method.
             img_meta (dict): Dictionary with meta information that should be added to the
                 image annotation. Each meta key will be added as column during annotation export. 
                 the dict-value will be row content.
@@ -450,7 +450,7 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fs=fs, img_meta=img_meta, anno_meta=anno_meta)
+                    fm=fm, img_meta=img_meta, anno_meta=anno_meta)
 
     def _get_lds_fm(self, df, fm_cache=dict(), fm=None):
         if 'img_fs_name' in df:
@@ -582,7 +582,7 @@ class ScriptOutput(Output):
 
     def _add_annos(self, pe, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, anno_task_id=None, fs=None, img_meta=None, anno_meta=None):
+        video_path=None, anno_task_id=None, fm=None, img_meta=None, anno_meta=None):
         '''Add annos in list style to an image.
         
         Args:
@@ -607,10 +607,10 @@ class ScriptOutput(Output):
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
             anno_task_id (int): Id of the assigned annotation task.
-            fs (obj): The filesystem where image is located. 
-                User lost standard filesystem if no filesystem was given.
+            fm (obj): The FileSystemManager for the filesystem where image is located. 
+                Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
-                get_fs method. 
+                get_fm method.
             img_meta (dict): Dictionary with meta information that should be added to the
                 image annotation. Each meta key will be added as column during annotation export. 
                 the dict-value will be row content.
@@ -622,10 +622,10 @@ class ScriptOutput(Output):
             img_sim_class = 1
         if video_path is not None:
             video_path = self._script.get_rel_path(video_path)
-        if fs is None:
+        if fm is None:
             fs_db = self._script._dbm.get_fs(name='lost_data')
             fs = DummyFileMan(fs_db)
-        fm = file_man.FileMan(fs_db=fs.lost_fs)
+            fm = file_man.FileMan(fs_db=fs.lost_fs)
         rel_img_path = fm.make_path_relative(img_path)
         img_anno = model.ImageAnno(anno_task_id=anno_task_id,
                                 img_path=rel_img_path,
@@ -636,7 +636,7 @@ class ScriptOutput(Output):
                                 frame_n=frame_n,
                                 video_path=video_path,
                                 sim_class=img_sim_class,
-                                fs_id=fs.lost_fs.idx)
+                                fs_id=fm.fs.lost_fs.idx)
         if img_meta is not None:
             img_anno.meta = json.dumps(img_meta, default=_json_default)
         self._script._dbm.add(img_anno)
@@ -701,7 +701,7 @@ class ScriptOutput(Output):
 
     def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fs=None):
+        video_path=None, fm=None):
         '''Add annos in list style to an image.
         
         Args:
@@ -724,10 +724,10 @@ class ScriptOutput(Output):
                 the framenumber.
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
-            fs (obj): The filesystem where image is located. 
-                User lost standard filesystem if no filesystem was given.
+            fm (obj): The FileSystemManager for the filesystem where image is located. 
+                Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
-                get_fs method.
+                get_fm method.
 
         Example:
             Add annotations to an::
@@ -766,10 +766,10 @@ class ScriptOutput(Output):
                 frame_n=frame_n,
                 video_path=video_path,
                 anno_task_id=pe.anno_task.idx,
-                fs=fs)
+                fm=fm)
 
     def request_image_anno(self, img_path, sim_class=None, labels=None, 
-        frame_n=None, video_path=None, fs=None):
+        frame_n=None, video_path=None, fm=None):
         '''Request a class label annotation for an image.
 
         Args:
@@ -784,10 +784,10 @@ class ScriptOutput(Output):
                 the framenumber.
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video. 
-            fs (obj): The filesystem where image is located. 
-                User lost standard filesystem if no filesystem was given.
+            fm (obj): The FileSystemManager for the filesystem where image is located. 
+                Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
-                get_fs method.
+                get_fm method.
         Example:
             Request image annotation::
                 >>> self.request_image_anno('path/to/image', sim_class=2)
@@ -800,4 +800,4 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fs=fs)
+                    fm=fm)

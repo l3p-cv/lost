@@ -50,7 +50,7 @@ const Pipelines = () => {
                                 {active === 0 && ' Running Pipelines'}
                             </CNavLink>
                         </CNavItem>
-                        <CNavItem>
+                        {/* <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
                                     color="#092F38"
@@ -59,7 +59,7 @@ const Pipelines = () => {
                                 />
                                 {active === 1 && ' LOST Pipelines'}
                             </CNavLink>
-                        </CNavItem>
+                        </CNavItem> */}
                         <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
@@ -67,10 +67,10 @@ const Pipelines = () => {
                                     size="1x"
                                     icon={faPlus}
                                 />
-                                {active === 2 && ' Start Pipeline'}
+                                {active === 1 && ' Start Pipeline'}
                             </CNavLink>
                         </CNavItem>
-                        <CNavItem>
+                        {/* <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
                                     color="#092F38"
@@ -79,21 +79,21 @@ const Pipelines = () => {
                                 />
                                 {active === 3 && ' Import / Update'}
                             </CNavLink>
-                        </CNavItem>
+                        </CNavItem> */}
                     </CNav>
                     <CTabContent>
                         <CTabPane style={{ marginTop: 30 }}>
                             <RunningPipeline></RunningPipeline>
                         </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
+                        {/* <CTabPane style={{ marginTop: 30 }}>
                             <LOSTPipelines></LOSTPipelines>
-                        </CTabPane>
+                        </CTabPane> */}
                         <CTabPane style={{ marginTop: 30 }}>
                             <StartPipeline></StartPipeline>
                         </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
+                        {/* <CTabPane style={{ marginTop: 30 }}>
                             <div>{renderSystemInfo()}</div>
-                        </CTabPane>
+                        </CTabPane> */}
                     </CTabContent>
                 </CTabs>
             </CCol>

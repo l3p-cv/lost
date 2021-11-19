@@ -19,7 +19,7 @@ class LostScript(script.Script):
     def main(self):
         for ds in self.inp.datasources:
             media_path = ds.path
-            fs = ds.get_fs()
+            fm = ds.get_fm()
             annos = []
             anno_types = []
             if self.get_arg('polygon'):
@@ -38,8 +38,8 @@ class LostScript(script.Script):
                 box= [0.6,0.6,0.1,0.05]
                 annos.append(box)
                 anno_types.append('bbox')
-            for img_path in fs.ls(media_path):
-                self.outp.request_annos(img_path=img_path, annos=annos, anno_types=anno_types, fs=fs)
+            for img_path in fm.fs.ls(media_path):
+                self.outp.request_annos(img_path=img_path, annos=annos, anno_types=anno_types, fm=fm)
                 self.logger.info('Requested annos for: {}'.format(img_path))
 
 if __name__ == "__main__":
