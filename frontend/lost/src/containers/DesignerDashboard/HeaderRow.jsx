@@ -100,7 +100,21 @@ const HeaderRow = () => {
                                 </div>
                             </CRow>
                         ) : (
-                            <h3>Currently there are no active annotation tasks</h3>
+                                
+                            <CRow>
+                                <Col xs="12" sm="6" lg="6">
+                                    <a href="/annotation">
+                                        <Card className="text-white" style={{backgroundImage: `url(${vanStripes})`, marginBottom: '0px'}}>
+                                            <CardBody className="pb-0">
+                                                <h3>Go to annotation tasks</h3>
+                                                <div style= {{display:'flex', fontSize: '5em', justifyContent: 'center', paddingBottom: '15px'}}>
+                                                    <FontAwesomeIcon size='sm' icon={faPlayCircle} />
+                                                </div>
+                                            </CardBody>
+                                        </Card>
+                                    </a>
+                                </Col>
+                            </CRow>
                         )}
                     </CardBody>
                 </Card>
@@ -146,7 +160,7 @@ const HeaderRow = () => {
                                         options={{maintainAspectRatio: false}}
                                     ></AmountPerLabel>
                                 ) : (
-                                    <h3>You can ask a Designer to create a new pipeline.</h3>
+                                    <h3>You are currently not working on a task</h3>
                                 )
                             }
                         </CardBody>
