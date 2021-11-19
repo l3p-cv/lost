@@ -24,6 +24,8 @@ const HeaderRow = () => {
         amountPerLabel: []
     })
 
+    const [canCreatePipelines, setCanCreatePipelines] = useState(false)
+
     const { mutate: getWorkingOnAnnoTask, data: workingAnnoTaskResult } = annotask_api.useWorkingAnnotask()
     const { mutate: getSelfUserInformation, data: selfUserInformation } = user_api.useSelfUserInformation()
     useEffect(() => {
@@ -57,19 +59,12 @@ const HeaderRow = () => {
         }
     }, [workingAnnoTaskResult])
 
-    /// if user can create pipelines
-    /// this will be updated to true if http response available and user in right group
-    let canCreatePipelines = false;
-
     useEffect(()=> {
         /// only when data from request is available
         if(selfUserInformation === undefined) return
 
-        /**
-         * @TODO trigger component re-rendering when changing value
-         */
         /// get through all roles of user. if user has matching role set canCreatePipelines to true
-        for(var k in selfUserInformation.roles) if(["Designer", "Administrator"].includes(selfUserInformation.roles[k].name)) canCreatePipelines = true
+        for(var k in selfUserInformation.roles) if(["Designer", "Administrator"].includes(selfUserInformation.roles[k].name)) setCanCreatePipelines(true)
     }, [selfUserInformation])
 
     return (
