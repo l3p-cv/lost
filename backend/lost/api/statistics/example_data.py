@@ -9,8 +9,8 @@ example_stats = {
         }
     },
     'annotasks': {
-        'today': '41', # TODO
-        'allTime': '401', # TODO
+        'today': '51', # TODO
+        'allTime': '451', # TODO
         'avg': '2004', # TODO
         'history': { # TODO
             'week': [17,16,15,14,11,12,11],
@@ -27,12 +27,12 @@ example_stats = {
         }
     },
     'processedImages': {
-        'today': '61', # TODO
-        'allTime': '6001', # TODO
-        'avg': '2006', # TODO
+        'today': 'no data', # TODO
+        'allTime': 'no data', # TODO
+        'avg': 'no data', # TODO
         'history': { # TODO
-            'week': [38,33,25,33,27,36,35],
-            'month': [40,39,38,37,36,35,34,33,32,31,40,39,38,37,36,35,34,33,32,31,40,39,38,37,36,35,34,33,32,31]
+            'week': [],
+            'month': []
         }
     },
     'labels': {
