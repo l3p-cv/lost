@@ -26,6 +26,7 @@ import {
 import BaseContainer from '../../components/BaseContainer'
 
 import WorkersTable from '../Workers/WorkersTable'
+import ConfigPage from '../Config/Config'
 import UsersAndGroups from '../Users/UsersAndGroups'
 import TabJupyterLab from './TabJupyterLab'
 import Labels from '../Labels/Labels'
@@ -88,16 +89,6 @@ const AdminArea = () => {
                                 {active === 0 && ' Users & Groups'}
                             </CNavLink>
                         </CNavItem>
-                        {/* <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faCogs}
-                                />
-                                {active === 2 && ' Settings'}
-                            </CNavLink>
-                        </CNavItem> */}
                         <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
@@ -138,6 +129,16 @@ const AdminArea = () => {
                                 {active === 3 && ' Worker'}
                             </CNavLink>
                         </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faCogs}
+                                />
+                                {active === 4 && ' Settings'}
+                            </CNavLink>
+                        </CNavItem>
                         {renderJupyterLabNav()}
                     </CNav>
                     <CTabContent>
@@ -153,9 +154,11 @@ const AdminArea = () => {
                         <CTabPane style={{ marginTop: 30 }}>
                             <WorkersTable></WorkersTable>
                         </CTabPane>
-                        {/* <CTabPane style={{ marginTop: 30 }}>
-                            <div>{renderSystemInfo()}</div>
-                        </CTabPane> */}
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <div>
+                                <ConfigPage />
+                            </div>
+                        </CTabPane>
                         {renderJupyterLabTab()}
                     </CTabContent>
                 </CTabs>
