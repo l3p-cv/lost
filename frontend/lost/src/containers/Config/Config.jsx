@@ -78,8 +78,9 @@ const Config = () => {
                 toggle={() => setIsListModalOpen(false)}
             >
                 <div>
-                    <div className="flex justify-center">
+                    <div style={{display: 'flex', justifyContent: 'center'}} >
                         <IconButton
+                            style={{marginBottom: 20}}
                             left={<FaPlusCircle />}
                             onClick={() => {
                                 let newItem = ''
@@ -99,7 +100,7 @@ const Config = () => {
                         />
                     </div>
                     {modalData.values.map((el, i) => (
-                        <div className="flex justify-center mt-3">
+                        <div style={{display: 'flex', justifyContent: 'center', marginTop: 3}} >
                             <Input
                                 style={{
                                     width: 150,
@@ -121,7 +122,7 @@ const Config = () => {
                                 }}
                                 value={el}
                             />
-                            <div className="flex flex-col justify-center ml-2">
+                            <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 2}}>
                                 <IconButton
                                     onClick={() => {
                                         setModalData({
@@ -132,7 +133,7 @@ const Config = () => {
                                         })
                                     }}
                                     color="danger"
-                                    className="p-1"
+                                    style={{padding: 1}}
                                     left={<FaTimes />}
                                 />
                             </div>
@@ -140,9 +141,9 @@ const Config = () => {
                     ))}
                 </div>
             </BaseModal>
-            <div className="flex justify-center mb-10">
+            <div style={{display: 'flex', justifyContent: 'center', marginBottom: 10}} >
                 <h2>Configuration</h2>
-                <FaCogs className="ml-4" size={36} />
+                <FaCogs style={{marginLeft: 15}}  size={36} />
             </div>
             <SimpleTable
                 elements={data.map((el) => {
@@ -208,8 +209,9 @@ const Config = () => {
                     }
                 })}
             />
-            <div className="flex justify-center mt-8">
+            <div style={{display: 'flex', justifyContent: 'center', marginBottom: 8}}>
                 <IconButton
+                    style={{marginTop: 30}}
                     onClick={() => saveConfig(data)}
                     right="Save"
                     left={<FaSave />}

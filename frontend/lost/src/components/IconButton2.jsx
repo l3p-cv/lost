@@ -40,9 +40,9 @@ const IconButton2 = ({
             outline
             onClick={onClick}
         >
-            <div className="flex justify-center items-center">
+            <div style={{display: 'flex', justifyContent: 'center'}} >
                 <div>{leftComp}</div>
-                {rightComp && <div className="ml-1">{rightComp}</div>}
+                {rightComp && <div style={{marginLeft: 8}} >{rightComp}</div>}
             </div>
         </Button>
     )
