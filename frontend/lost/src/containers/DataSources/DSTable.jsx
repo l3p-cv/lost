@@ -23,6 +23,7 @@ export const DSTable = ({ visLevel }) => {
 
     async function deleteSelectedFs(row) {
         await deleteFs(row)
+        fetchData()
     }
 
     useEffect(() => {

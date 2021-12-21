@@ -86,8 +86,19 @@ class Delete(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
             data = json.loads(request.data)
-            fs_db = dbm.get_fs(name=data['fs']['name'])
-            raise NotImplementedError()
+            fs_db = dbm.get_fs(fs_id=data['fs']['id'])
+            try:
+                dbm.delete(fs_db)
+                dbm.commit()
+            except:
+                dbm.close_session()
+                dbm = access.DBMan(LOST_CONFIG)
+                fs_db = dbm.get_fs(fs_id=data['fs']['id'])
+                fs_db.deleted = True
+                dbm.add(fs_db)
+                dbm.commit()
+            dbm.close_session()
+            # raise NotImplementedError()
             return {'deleted': 'mu ha ha!'}
 
 @namespace.route('/fslist/<string:visibility>')
@@ -161,7 +172,7 @@ class SaveFs(Resource):
                     group_id = None
                 new_fs_db = model.FileSystem(
                     group_id=group_id,
-                    connection=Crypt().encrypt(data['connection']),
+                    connection=Crypt().decrypt(data['connection']) if data['fsType'] != 'file' else data['connection'],
                     root_path=data['rootPath'],
                     fs_type=data['fsType'],
                     name=data['name'],
@@ -170,7 +181,7 @@ class SaveFs(Resource):
                 dbm.save_obj(new_fs_db)
             else:
                 # fs_db.group_id = 'change?'
-                fs_db.connection=Crypt().encrypt(data['connection'])#data['connection']
+                fs_db.connection=Crypt().decrypt(data['connection']) if data['fsType'] != 'file' else data['connection']
                 fs_db.root_path=data['rootPath']
                 fs_db.fs_type=data['fsType']
                 fs_db.name=data['name']
