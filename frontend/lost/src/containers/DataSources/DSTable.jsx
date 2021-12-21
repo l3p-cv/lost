@@ -165,10 +165,10 @@ export const DSTable = ({ visLevel }) => {
                         Header: 'Root Path',
                         accessor: 'rootPath',
                     },
-                    {
-                        Header: 'Connection',
-                        accessor: 'connection',
-                    },
+                    // {
+                    //     Header: 'Connection',
+                    //     accessor: 'connection',
+                    // },
                     {
                         Header: 'Global',
                         id: 'groupId',

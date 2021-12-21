@@ -12,7 +12,7 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 import * as Notification from '../../components/Notification'
 import { CRow } from '@coreui/react'
-import { saveFs } from '../../access/fb'
+import { saveFs, getFullFs } from '../../access/fb'
 
 const EditDSModal = ({
     isNewDs,
@@ -38,18 +38,24 @@ const EditDSModal = ({
     const [browseOpen, setBrowseOpen] = useState(false)
     const [browsePath, setBrowsePath] = useState(fs.rootPath)
 
+    async function callGetFullFs(fs) {
+        const fullFs = await getFullFs(fs)
+        setFs(fullFs)
+    }
+
     useEffect(() => {
         if (fsList && selectedId) {
             const sel = fsList.find((el) => {
                 return el.id == selectedId
             })
             console.log('selectedFS: ', sel)
-            setFs(sel)
+            callGetFullFs(sel)
         }
     }, [fsList, selectedId])
 
     useEffect(() => {
         console.log('fs changed', fs)
+        setBrowsePath(fs.rootPath)
     }, [fs])
 
     const save = () => {
