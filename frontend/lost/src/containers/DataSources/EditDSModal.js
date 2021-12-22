@@ -6,13 +6,12 @@ import { faSave, faBan, faFile, faNetworkWired } from '@fortawesome/free-solid-s
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 import {
     faAws,
-    faDropbox,
-    faGoogleDrive,
     faMicrosoft,
 } from '@fortawesome/free-brands-svg-icons'
 import * as Notification from '../../components/Notification'
 import { CRow } from '@coreui/react'
-import { saveFs } from '../../access/fb'
+// import { saveFs } from '../../access/fb'
+import * as fbAPI from '../../actions/fb/fb_api'
 
 const EditDSModal = ({
     isNewDs,
@@ -26,17 +25,38 @@ const EditDSModal = ({
 }) => {
     const DUMMY_FS = {
         id: undefined,
-        name: undefined,
+        name: '',
         connection: '{}',
         fsType: 'file',
-        rootPath: undefined,
-        timestamp: undefined,
+        rootPath: '',
+        timestamp: '',
         visLevel: visLevel,
     }
     const [fs, setFs] = useState(DUMMY_FS)
 
     const [browseOpen, setBrowseOpen] = useState(false)
     const [browsePath, setBrowsePath] = useState(fs.rootPath)
+    const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
+    const { mutate: saveFs, status: saveFsStatus, error: saveFsError } = fbAPI.useSaveFs()
+
+    // async function callGetFullFs(fs) {
+    //     const fullFs = await getFullFs(fs)
+    //     setFs(fullFs)
+    // }
+
+    useEffect(() => {
+        if (fullFs) setFs(fullFs)
+    }, [fullFs])
+
+    useEffect(() => {
+        console.log('saveFsStatus', saveFsStatus)
+        if (saveFsStatus === 'success') {
+            closeModal()
+            Notification.showSuccess('Saved datasource')
+        } else if (saveFsStatus === 'error') {
+            Notification.showError(`Error while saving datasource!\n${saveFsError}`)
+        }
+    }, [saveFsStatus])
 
     useEffect(() => {
         if (fsList && selectedId) {
@@ -44,18 +64,18 @@ const EditDSModal = ({
                 return el.id == selectedId
             })
             console.log('selectedFS: ', sel)
-            setFs(sel)
+            // callGetFullFs(sel)
+            getFullFs(sel)
         }
     }, [fsList, selectedId])
 
     useEffect(() => {
         console.log('fs changed', fs)
+        setBrowsePath(fs.rootPath)
     }, [fs])
 
     const save = () => {
         saveFs(fs)
-        Notification.showSuccess('Saved datasource')
-        closeModal()
     }
 
     const cancel = () => {
@@ -231,9 +251,9 @@ const EditDSModal = ({
                     <Label for="name">Datasource name</Label>
                     <Input
                         id="name"
-                        valid={false}
-                        invalid={false}
-                        defaultValue={''}
+                        // valid={false}
+                        // invalid={false}
+                        // defaultValue={''}
                         placeholder={'DS name'}
                         onChange={(e) => {
                             setFs({ ...fs, name: e.target.value })
@@ -250,7 +270,7 @@ const EditDSModal = ({
                             id="rootPath"
                             valid={false}
                             invalid={false}
-                            defaultValue={''}
+                            // defaultValue={''}
                             placeholder={'Root path'}
                             onChange={(e) => {
                                 setFs({ ...fs, rootPath: e.target.value })
@@ -271,7 +291,7 @@ const EditDSModal = ({
                         onChange={(e) => {
                             setFs({ ...fs, fsType: e.target.value })
                         }}
-                        defaultValue={fs.fsType}
+                        // defaultValue={fs.fsType}
                         value={fs.fsType}
                     >
                         {(() => {
@@ -293,7 +313,7 @@ const EditDSModal = ({
                         onChange={(e) => {
                             setFs({ ...fs, connection: e.target.value })
                         }}
-                        defaultValue={fs.connection}
+                        // defaultValue={fs.connection}
                         value={fs.connection}
                         placeholder={fs.connection}
                     />

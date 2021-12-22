@@ -9,6 +9,7 @@ $borderRadius: 15px;
 .graph-node{
     border: $borderWidth solid gray;
     border-radius: $borderRadius ;
+    cursor: pointer;
     .graph-node-title{
         color: white;
         font-size: large;

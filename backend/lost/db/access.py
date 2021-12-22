@@ -758,15 +758,18 @@ class DBMan(object):
         '''
         if name is not None:
             return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.deleted==False)\
                 .filter(model.FileSystem.name==name).first()
         elif group_id is not None:
             return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.deleted==False)\
                 .filter(model.FileSystem.group_id==group_id).all()
         elif fs_id is not None:
             return self.session.query(model.FileSystem)\
                 .filter(model.FileSystem.idx==fs_id).first()
         else:
-            return self.session.query(model.FileSystem).all()
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.deleted==False).all()
     
     def get_public_fs(self):
         '''Get all public available filesystem entries

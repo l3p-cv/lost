@@ -1696,6 +1696,8 @@ class FileSystem(Base):
         fs_type (int): Filesystem type.
         timestamp (DateTime): Timestamp when filesystem was added to data base.
         name (str): Name of the filesystem
+        deleted (bool): Indicates wether this datasource was deleted by a user, 
+            but needs to be keept for data consistency.
     
     Note:
         group_id is None if this filesystem is available for all users!
@@ -1709,15 +1711,17 @@ class FileSystem(Base):
     fs_type = Column(String(20))
     timestamp = Column(DateTime())
     name = Column(String(200))
+    deleted = Column(Boolean())
 
     def __init__(self, group_id=None, connection=None,
-                 root_path=None, fs_type=None, name=None, timestamp=None):
+                 root_path=None, fs_type=None, name=None, timestamp=None, deleted=False):
         self.group_id = group_id
         self.fs_type = fs_type
         self.connection = connection
         self.root_path = root_path
         self.name = name
         self.timestamp = timestamp
+        self.deleted = deleted
 
 class Config(Base):
     __tablename__ = "config"
