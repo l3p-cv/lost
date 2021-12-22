@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ModalHeader, ModalBody } from 'reactstrap'
+import { Badge, ModalHeader, ModalBody } from 'reactstrap'
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 import { alertSuccess } from '../../../../globalComponents/Sweetalert'
@@ -16,7 +16,6 @@ import {
 // import axios from 'axios'
 import { API_URL } from '../../../../../../lost_settings'
 import { saveAs } from 'file-saver'
-
 // import { createHashHistory } from 'history'
 import { useHistory } from 'react-router-dom'
 import actions from '../../../../../../actions'
@@ -182,7 +181,16 @@ const AnnoTaskModal = (props) => {
                 </CollapseCard>
 
                 <CollapseCard icon={faTag} buttonText="Show Labels">
-                    Labels here
+                    <div>
+                        <b>All children of the label tree(s):</b>
+                    </div>
+                    <h5>
+                        <Badge color="primary" pill>
+                            {props.annoTask.labelLeaves.map((l) => {
+                                return l.name
+                            })}
+                        </Badge>
+                    </h5>
                 </CollapseCard>
                 <IconButton
                     icon={faDownload}
