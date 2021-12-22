@@ -377,6 +377,9 @@ class Canvas extends Component{
             case keyActions.DELETE_ANNO:
                 this.deleteAnnotation(anno)
                 break
+            case keyActions.DELETE_ANNO_IN_CREATION:
+                this.deleteAnnoInCreationMode(anno)
+                break
             case keyActions.ENTER_ANNO_ADD_MODE:
                 if (anno){
                     this.updateSelectedAnno(
@@ -723,12 +726,14 @@ class Canvas extends Component{
         if (!this.props.possibleLabels) return
         if (this.props.possibleLabels.length <= 0) return
         let lbls = this.props.possibleLabels
-        if (!('color' in lbls[0])){
-            lbls = lbls.map(e => {
+        lbls = lbls.map(e => {
+            if (!('color' in e)){
                 return {
                     ...e, color: colorlut.getColor(e.id)}
-            })
-        }
+            } else {
+                return {...e}
+            }
+        })
         this.setState({
             possibleLabels: [...lbls]
         })
@@ -813,6 +818,18 @@ class Canvas extends Component{
     
             } else {
                 this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+            }
+        }
+    }
+
+    deleteAnnoInCreationMode(anno) {
+        if (anno){
+            if (anno.mode === modes.CREATE){
+                // const ar = this.findAnnoRef(this.state.selectedAnnoId)
+                // if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
+                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+    
+            } else {
             }
         }
     }

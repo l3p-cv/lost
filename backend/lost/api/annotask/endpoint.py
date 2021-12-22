@@ -118,3 +118,27 @@ class ForceRelease(Resource):
             force_anno_release(dbm, annotask_id)
             dbm.close_session()
             return "Success", 200
+
+@namespace.route('/change_user/<int:annotask_id>/<int:group_id>')
+@namespace.param('annotask_id', 'The id of the annotation task.')
+@namespace.param('group_id', 'The id of the annotation task should belong to.')
+class ChangeUser(Resource):
+    @jwt_required 
+    def get(self, annotask_id, group_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            anno_task = dbm.get_anno_task(annotask_id)
+            pipe_manager_id = anno_task.pipe_element.pipe.manager_id
+            if pipe_manager_id == user.idx:
+                anno_task.group_id = group_id
+                dbm.save_obj(anno_task)
+                dbm.close_session()
+                return "Success", 200
+    
+            dbm.close_session()
+            return "You are not authorized.", 401

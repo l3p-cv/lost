@@ -536,8 +536,8 @@ class PipeSerialize(object):
             leaf_json = dict()
             leaf_json['id'] = leaf.idx
             leaf_json['name'] = leaf.name
+            leaf_json['color'] = leaf.color
             anno_task_json['labelLeaves'].append(leaf_json)
-
         pe_json['annoTask'] = anno_task_json
         self.append_pe_json(pe_json)
 
