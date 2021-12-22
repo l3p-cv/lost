@@ -8,7 +8,7 @@ from lost.db.vis_level import VisLevel
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.db import model, roles, access
 from lost.logic.file_man import FileMan, chonkyfy, DummyFileMan
-from lost.logic.crypt import Crypt
+from lost.logic.crypt import encrypt_fs_connection, decrypt_fs_connection
 from fsspec.registry import known_implementations
 import os
 
@@ -26,7 +26,7 @@ class LS(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
             data = json.loads(request.data)
-            fs_db = dbm.get_fs(name=data['fs']['name'])
+            fs_db = dbm.get_fs(fs_id=data['fs']['id'])
             fm = FileMan(fs_db=fs_db)
             commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
             if commonprefix != fs_db.root_path:
@@ -59,7 +59,7 @@ class LS(Resource):
                 root_path=data['fs']['rootPath'],
                 fs_type=data['fs']['fsType']
             )
-            fm = FileMan(fs_db=db_fs)
+            fm = FileMan(fs_db=db_fs, decrypt=False)
 
             # fs_db = dbm.get_fs(name=data['fs']['name'])
             # fm = FileMan(fs_db=fs_db)
@@ -170,9 +170,10 @@ class SaveFs(Resource):
                 # raise Exception('group_id: {}'.format(group_id))
                 if data['visLevel'] == VisLevel().GLOBAL:
                     group_id = None
+                # raise Exception(f'data connection:\n{data["connection"]}')
                 new_fs_db = model.FileSystem(
                     group_id=group_id,
-                    connection=Crypt().decrypt(data['connection']) if data['fsType'] != 'file' else data['connection'],
+                    connection=encrypt_fs_connection(data['connection']) if data['fsType'] != 'file' else data['connection'],
                     root_path=data['rootPath'],
                     fs_type=data['fsType'],
                     name=data['name'],
@@ -181,14 +182,14 @@ class SaveFs(Resource):
                 dbm.save_obj(new_fs_db)
             else:
                 # fs_db.group_id = 'change?'
-                fs_db.connection=Crypt().decrypt(data['connection']) if data['fsType'] != 'file' else data['connection']
+                fs_db.connection=encrypt_fs_connection(data['connection']) if data['fsType'] != 'file' else data['connection']
                 fs_db.root_path=data['rootPath']
                 fs_db.fs_type=data['fsType']
                 fs_db.name=data['name']
                 fs_db.timestamp=datetime.utcnow()
                 dbm.save_obj(fs_db)
             dbm.close_session()
-            return 200, 'success'
+            return 'success', 200 
 
 @namespace.route('/fullfs')
 class FullFs(Resource):
@@ -208,10 +209,11 @@ class FullFs(Resource):
             fs = dbm.get_fs(fs_id=data['id'])
             dbm.close_session()
             if fs.group_id == group_id or (user.has_role(roles.ADMINISTRATOR) and fs.group_id is None):
+                # connection = Crypt().decrypt(fs.connection) if fs.fs_type != 'file' else fs.connection
                 return {
                         'id': fs.idx,
                         'groupId': fs.group_id,
-                        'connection': Crypt().decrypt(fs.connection) if fs.fs_type != 'file' else fs.connection,
+                        'connection': decrypt_fs_connection(fs),
                         'rootPath': fs.root_path,
                         'fsType': fs.fs_type,
                         'name' : fs.name,

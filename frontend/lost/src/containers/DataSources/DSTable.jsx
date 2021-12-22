@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from 'react'
 import Datatable from '../../components/Datatable'
-import { useDispatch, useSelector } from 'react-redux'
-import actions from '../../actions/user'
 import IconButton from '../../components/IconButton'
 import { faUserPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
 import * as Notification from '../../components/Notification'
-import * as REQUEST_STATUS from '../../types/requestStatus'
-import { getFSList, getPossibleFsTypes, deleteFs } from '../../access/fb'
+// import { deleteFs } from '../../access/fb'
+import * as fbAPI from '../../actions/fb/fb_api'
 import { CBadge } from '@coreui/react'
 
 export const DSTable = ({ visLevel }) => {
-    const deleteUserStatus = useSelector((state) => state.user.deleteUserStatus)
     const [isNewDS, setIsNewDS] = useState(false)
-    const [fsList, setFSList] = useState([])
-    const [possibleFsTypes, setPossibleFsTypes] = useState([])
+    // const [fsList, setFSList] = useState([])
+    // const [possibleFsTypes, setPossibleFsTypes] = useState([])
+    const { mutate: getFSListNew, data: fsList } = fbAPI.useGetFSList()
+    const { mutate: getPossibleFsTypes, data: possibleFsTypes } = fbAPI.useGetPossibleFsTypes()
+    const { mutate: deleteFs, status: deleteStatus, error: deleteErrorData} = fbAPI.useDeleteFs()
 
-    async function fetchData() {
-        setFSList(await getFSList(visLevel))
-        setPossibleFsTypes(await getPossibleFsTypes())
+    function fetchData() {
+        // setFSList(await getFSList(visLevel))
+        getFSListNew(visLevel)
+        // setPossibleFsTypes(await getPossibleFsTypes())
+        getPossibleFsTypes()
     }
 
-    async function deleteSelectedFs(row) {
-        await deleteFs(row)
-        fetchData()
+    function deleteSelectedFs(row) {
+        deleteFs(row)
     }
 
     useEffect(() => {
@@ -33,25 +34,23 @@ export const DSTable = ({ visLevel }) => {
     }, [])
 
     useEffect(() => {
-        if (deleteUserStatus.status) {
-            Notification.networkRequest(deleteUserStatus)
-            if ((deleteUserStatus.status = REQUEST_STATUS.SUCCESS)) {
-                dispatch(actions.getUsers())
-            }
+        console.log('deleteStatus', deleteStatus)
+        if (deleteStatus === 'success'){
+            fetchData()
+            Notification.showSuccess('Deletion successfull!')
+        } else if (deleteStatus === 'error'){
+            Notification.showError(`Error while deleting Datasource!\n${deleteErrorData}`)
         }
-    }, [deleteUserStatus])
+    }, [deleteStatus])
 
+    useEffect(() => {
+        console.log('possibleFsTypes: ', possibleFsTypes)
+    }, [possibleFsTypes])
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
     const [selectedDs, setSelectedDs] = useState()
     // only close modal when animation finished
     const [isDsEditOpenView, setIsDsEditOpenView] = useState(false)
-
-    const dispatch = useDispatch()
-
-    // const getUsers = () => {
-    //     dispatch(actions.getUsers())
-    // }
 
     const createNewDS = () => {
         setIsNewDS(true)
