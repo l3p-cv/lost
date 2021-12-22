@@ -726,12 +726,14 @@ class Canvas extends Component{
         if (!this.props.possibleLabels) return
         if (this.props.possibleLabels.length <= 0) return
         let lbls = this.props.possibleLabels
-        if (!('color' in lbls[0])){
-            lbls = lbls.map(e => {
+        lbls = lbls.map(e => {
+            if (!('color' in e)){
                 return {
                     ...e, color: colorlut.getColor(e.id)}
-            })
-        }
+            } else {
+                return {...e}
+            }
+        })
         this.setState({
             possibleLabels: [...lbls]
         })

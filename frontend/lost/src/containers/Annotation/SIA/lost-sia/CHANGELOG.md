@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Delete annotation in creation mode when hitting *Escape*-Key
+### Changed
+- Be able to deal with mixed color possible labels -> where a part of labels 
+  will have a specified color and the other part has no provided color
 
 ## [0.8.0] - 2021-10-14
 ### Added
