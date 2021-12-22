@@ -11,6 +11,7 @@ import fsspec
 import numpy as np
 import cv2
 import ast
+from lost.logic.crypt import decrypt_fs_connection
 #import ptvsd
 
 
@@ -159,9 +160,13 @@ class AppFileMan(object):
         pipe_path = os.path.join(root_path, PIPE_ROOT_PATH)
         return pipe_path
 class FileMan(object):
-    def __init__(self, lostconfig=None, fs_db=None):
+    def __init__(self, lostconfig=None, fs_db=None, decrypt=True):
         if fs_db is not None:
-            fs_args = ast.literal_eval(fs_db.connection)
+            if decrypt:
+                fs_connection = decrypt_fs_connection(fs_db)
+            else:
+                fs_connection = fs_db.connection
+            fs_args = ast.literal_eval(fs_connection)
             fs = fsspec.filesystem(fs_db.fs_type, **fs_args)
             fs.lost_fs = fs_db
             self.fs = fs

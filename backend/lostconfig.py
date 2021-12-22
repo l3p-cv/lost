@@ -53,6 +53,7 @@ class LOSTConfig(object):
 
     def __init__(self):
 
+        self.secret_key = env['SECRET_KEY']
         self.use_docker = ge('LOST_USE_DOCKER', True)
         self.debug = ge('LOST_DEBUG_MODE', True)
 
