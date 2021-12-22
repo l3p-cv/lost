@@ -5,83 +5,68 @@ import AnnoTaskModal from './types/AnnoTaskModal'
 import LoopModal from './types/LoopModal'
 import VisualOutputModal from './types/VisualOutputModal'
 import DataExportModal from './types/DataExportModal'
-import { Button, Modal, ModalFooter } from 'reactstrap';
-import {connect} from 'react-redux'
+import { Button, Modal, ModalFooter } from 'reactstrap'
+import { connect } from 'react-redux'
 import actions from '../../../../../actions/pipeline/pipelineRunning'
 import actionsAll from '../../../../../actions'
 
-
-const {toggleModal} = actions
-const {siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease} = actionsAll
+const { toggleModal } = actions
+const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
+    actionsAll
 
 class BaseModal extends Component {
     constructor() {
         super()
         this.toggleModal = this.toggleModal.bind(this)
     }
-    
+
     selectModal() {
         if (this.props.data && this.props.step.modalOpened) {
             if ('datasource' in this.props.data) {
-                return (
-                    <DatasourceModal
-                        {...this.props.data} />
-                )
+                return <DatasourceModal {...this.props.data} />
             } else if ('script' in this.props.data) {
-                return (
-                    <ScriptModal
-                        {...this.props.data} />
-                )
-            } else if('annoTask' in this.props.data){
+                return <ScriptModal {...this.props.data} />
+            } else if ('annoTask' in this.props.data) {
                 return (
                     <AnnoTaskModal
-                    siaReviewSetElement={this.props.siaReviewSetElement}
-                    chooseAnnoTask={this.props.chooseAnnoTask}
-                    forceAnnotationRelease={this.props.forceAnnotationRelease}
-                    {...this.props.data}
+                        siaReviewSetElement={this.props.siaReviewSetElement}
+                        chooseAnnoTask={this.props.chooseAnnoTask}
+                        forceAnnotationRelease={this.props.forceAnnotationRelease}
+                        changeUser={this.props.changeUser}
+                        {...this.props.data}
                     />
                 )
-            }else if('dataExport' in this.props.data){
-                return (
-                    <DataExportModal
-                    {...this.props.data}
-                    />
-                )
-            }else if('loop' in this.props.data){
-                return(
-                    <LoopModal
-                    {...this.props.data}
-                    />
-                )
-            }else if('visualOutput' in this.props.data){
-                return(
-                    <VisualOutputModal
-                    {...this.props.data}
-                    />
-                )
+            } else if ('dataExport' in this.props.data) {
+                return <DataExportModal {...this.props.data} />
+            } else if ('loop' in this.props.data) {
+                return <LoopModal {...this.props.data} />
+            } else if ('visualOutput' in this.props.data) {
+                return <VisualOutputModal {...this.props.data} />
             }
         }
     }
-    toggleModal(){
+    toggleModal() {
         this.props.toggleModal(this.props.step.modalClickedId)
     }
     renderModals() {
         return (
-            <Modal size='lg' isOpen={this.props.step.modalOpened} toggle={this.toggleModal}>
+            <Modal
+                size="lg"
+                isOpen={this.props.step.modalOpened}
+                toggle={this.toggleModal}
+            >
                 {this.selectModal()}
                 <ModalFooter>
-                    <Button color="secondary" onClick={this.toggleModal}>Okay</Button>
+                    <Button color="secondary" onClick={this.toggleModal}>
+                        Okay
+                    </Button>
                 </ModalFooter>
             </Modal>
         )
     }
 
     render() {
-        return (
-            <div>
-                {this.renderModals()}
-            </div>
-        )
+        return <div>{this.renderModals()}</div>
     }
 }
 
@@ -91,7 +76,10 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(
-    mapStateToProps,
-    {toggleModal, siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease}
-)(BaseModal)
+export default connect(mapStateToProps, {
+    toggleModal,
+    siaReviewSetElement,
+    chooseAnnoTask,
+    forceAnnotationRelease,
+    changeUser,
+})(BaseModal)
