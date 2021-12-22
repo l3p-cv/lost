@@ -377,6 +377,9 @@ class Canvas extends Component{
             case keyActions.DELETE_ANNO:
                 this.deleteAnnotation(anno)
                 break
+            case keyActions.DELETE_ANNO_IN_CREATION:
+                this.deleteAnnoInCreationMode(anno)
+                break
             case keyActions.ENTER_ANNO_ADD_MODE:
                 if (anno){
                     this.updateSelectedAnno(
@@ -813,6 +816,18 @@ class Canvas extends Component{
     
             } else {
                 this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+            }
+        }
+    }
+
+    deleteAnnoInCreationMode(anno) {
+        if (anno){
+            if (anno.mode === modes.CREATE){
+                // const ar = this.findAnnoRef(this.state.selectedAnnoId)
+                // if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
+                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+    
+            } else {
             }
         }
     }

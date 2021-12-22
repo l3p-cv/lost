@@ -13,6 +13,7 @@ export const CAM_MOVE_STOP='camMoveStop'
 export const COPY_ANNOTATION='copyAnnotation'
 export const PASTE_ANNOTATION='pasteAnnotation'
 export const RECREATE_ANNO='recreateAnnotation'
+export const DELETE_ANNO_IN_CREATION='deleteAnnoInCreation'
 
 class KeyMapper{
     constructor(keyActionHandler=undefined){
@@ -72,6 +73,9 @@ class KeyMapper{
                 if (this.controlDown){
                     this.triggerKeyAction(PASTE_ANNOTATION)
                 }
+                break
+            case 'Escape':
+                this.triggerKeyAction(DELETE_ANNO_IN_CREATION)
                 break
             default:
                 break
