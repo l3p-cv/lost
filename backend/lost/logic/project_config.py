@@ -3,20 +3,26 @@ from lost.db import model
 from datetime import datetime
 import pandas as pd
 import json
+import time
+
 
 def try_dump(data):
+    if data is None:
+        return None
     if type(data) != str:
         try:
             return json.dumps(data)
         except:
-            pass
+            return None
     return data
+
+
 class ProjectConfigMan(object):
 
     def __init__(self, dbm):
         self.dbm = dbm
         self.df = self._load_from_db()
-    
+
     def _load_from_db(self):
         d_list = [c.to_dict() for c in self.dbm.get_project_config()]
         return pd.DataFrame(d_list)
@@ -24,10 +30,10 @@ class ProjectConfigMan(object):
     def _get_by_key(self, key, entry):
         '''Get entry for a specific key'''
         try:
-            return ast.literal_eval(self.df[self.df['key']==key][entry].values[0])
+            return ast.literal_eval(self.df[self.df['key'] == key][entry].values[0])
         except:
             try:
-                return self.df[self.df['key']==key][entry].values[0]
+                return self.df[self.df['key'] == key][entry].values[0]
             except:
                 raise KeyError('Wrong key: {}'.format(key))
 
@@ -42,7 +48,7 @@ class ProjectConfigMan(object):
 
         Args:
             key (str): Config key
-        
+
         Retruns:
             python object
         '''
@@ -53,7 +59,7 @@ class ProjectConfigMan(object):
 
         Args:
             key (str): Config key
-        
+
         Retruns:
             python object
         '''
@@ -64,13 +70,21 @@ class ProjectConfigMan(object):
 
         Args:
             key (str): Config key
-        
+
         Retruns:
             str: Description for this config entry.
         '''
         return self._get_by_key(key, 'description')
 
-    def update_entry(self, key, value=None, user_id=None, default=None, description=None):
+    def update_all(self, new_values):
+        '''Update all entrys
+
+        Args: 
+            new_values: new values
+        '''
+        return "Not implemented"
+
+    def update_entry(self, key, value=None, user_id=None, default=None, description=None, config=None):
         '''Update config entry.
 
         Args:
@@ -92,9 +106,11 @@ class ProjectConfigMan(object):
                 entry.default_value = try_dump(default)
             if description is not None:
                 entry.description = description
+            if config is not None:
+                entry.conifg = config
             self.dbm.save_obj(entry)
 
-    def create_entry(self, key, value, user_id=None, default=None, description=None):
+    def create_entry(self, key, value, user_id=None, default=None, description=None, config=None):
         '''Create config entry.
 
         Args:
@@ -112,8 +128,9 @@ class ProjectConfigMan(object):
             if default is None:
                 default = value
             entry = model.Config(key=key, default_value=try_dump(default), value=try_dump(value),
-                user_id=user_id, timestamp=datetime.utcnow(), description=description
-            )
+                                 user_id=user_id, timestamp=int(time.time()), description=description, config=config
+                                 )
             self.dbm.save_obj(entry)
         else:
-            raise Exception('Config entry already exists! Can not create key: {}!'.format(key))
+            raise Exception(
+                'Config entry already exists! Can not create key: {}!'.format(key))
