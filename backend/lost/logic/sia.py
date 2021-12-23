@@ -488,6 +488,7 @@ class SiaSerialize(object):
         self.sia_json['image']['amount'] = self.total_image_amount
         self.sia_json['image']['isJunk'] = self.image_anno.is_junk
         self.sia_json['image']['annoTime'] = self.image_anno.anno_time
+        self.sia_json['image']['description'] = self.image_anno.description
         if self.image_anno.labels is None:
             self.sia_json['image']['labelIds'] = []
         else:

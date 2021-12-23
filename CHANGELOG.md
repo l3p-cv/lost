@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow to request annotation labels via label_name (see #144) 
   - Allow to add meta information to annotations via pyAPI
 - Configurations for LOST via database
+- pyAPI: Allow to add a image comment via api. This comment will be shown in ImgBar in SIA
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

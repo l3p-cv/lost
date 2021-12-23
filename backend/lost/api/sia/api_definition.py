@@ -1,3 +1,4 @@
+from sqlalchemy.sql.sqltypes import Text
 from flask_restx import fields
 
 from lost.api.api import api
@@ -12,7 +13,8 @@ image = api.model('Image', {
     'isLast': fields.Boolean(readOnly=True, description='Weather the image is the last one of the annotation process.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to this image.'),
     'isJunk': fields.Boolean(readOnly=True, description='Indicates if the image was marked as Junk.'),
-    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'description': fields.String(readOnly=True, description='Description comment for this image')
 })
 
 bbox_data = api.model('BBox Data',{

@@ -35,11 +35,11 @@ import './SIA.scss'
  *      {
  *          image : {
  *              id: int, 
- *              url: string, 
  *              number: int, 
  *              amount: int, 
  *              isFirst: bool, 
- *              isLast: bool
+ *              isLast: bool,
+ *              description: string, // -> optional
  *          },
  *          annotations: {
  *              bBoxes: [{
