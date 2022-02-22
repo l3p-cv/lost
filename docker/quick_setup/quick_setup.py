@@ -75,15 +75,15 @@ class dockercomposebuilder(object):
         content += self.get_lostdb()
         self._write_file(store_path, content)
 
-class quicksetup(object):
+class QuickSetup(object):
     
     def __init__(self, args):
         self.args = args
         self.secret_key = gen_rand_string(16)
         self.dst_data_dir = os.path.join(args.install_path, 'data')
         self.dst_docker_dir = os.path.join(args.install_path, 'docker')
-        if args.release is none:
-            self.release = default_release
+        if args.release is None:
+            self.release = DEFAULT_RELEASE
             # self.release = lost.__version__
         else:
             self.release = args.release
@@ -193,7 +193,7 @@ class quicksetup(object):
 
 
 if __name__ == "__main__":
-    parser = argparse.argumentparser(description='quick setup for lost on linux')
+    parser = argparse.ArgumentParser(description='quick setup for lost on linux')
     parser.add_argument('install_path', help='Specify path to install lost.')
     parser.add_argument('--release', help='LOST release you want to install.', default=None)
     parser.add_argument('--testing', help='use the LOST images from testing stage.', default=None)
