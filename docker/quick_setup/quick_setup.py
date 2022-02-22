@@ -5,7 +5,6 @@ import shutil
 import random
 import string 
 import sys
-from cryptography.fernet import Fernet
 sys.path.append('../../backend')
 import lost
 logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
@@ -13,13 +12,12 @@ logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
 DEFAULT_RELEASE = '1.4.2'
 
 def gen_rand_string(n):
-    # return ''.join(
-    #     random.systemrandom().choice(
-    #         string.ascii_uppercase + string.digits
-    #     ) for _ in range(n))
-    return Fernet.generate_key().decode()
+    return ''.join(
+        random.SystemRandom().choice(
+            string.ascii_uppercase + string.digits
+        ) for _ in range(n))
 
-class dockercomposebuilder(object):
+class DockerComposeBuilder(object):
 
     def get_header(self):
         return (
@@ -31,21 +29,21 @@ class dockercomposebuilder(object):
     def get_lost(self):
         return (
             '    lost:\n'
-            '      image: l3pcv/lost' + self.dockerimageslug + ':${lost_version}\n'
+            '      image: l3pcv/lost' + self.dockerImageSlug + ':${LOST_VERSION}\n'
             '      container_name: lost\n'
             '      command: bash /entrypoint.sh\n'
             '      env_file:\n'
             '        - .env\n'
             '      volumes:\n'
-            '        - ${lost_data}:/home/lost\n'
+            '        - ${LOST_DATA}:/home/lost\n'
             '      restart: always\n'
             '      ports:\n'
-            '        - "${lost_frontend_port}:8080"\n'
+            '        - "${LOST_FRONTEND_PORT}:8080"\n'
             '      environment:\n'
-            '        pythonpath: "/code/src/backend"\n'
-            '        env_name: "lost"\n'
-            '        worker_name: "lost-0"\n'
-            '        py3_init: "source /opt/conda/bin/activate lost"\n'
+            '        PYTHONPATH: "/code/src/backend"\n'
+            '        ENV_NAME: "lost"\n'
+            '        WORKER_NAME: "lost-0"\n'
+            '        PY3_INIT: "source /opt/conda/bin/activate lost"\n'
             '      links:\n'
             '        - db-lost\n'
         )
@@ -56,13 +54,13 @@ class dockercomposebuilder(object):
             '      image: mysql:5.7\n'
             '      container_name: db-lost\n'
             '      volumes:\n'
-            '          - ${lost_data}/mysql:/var/lib/mysql\n'
+            '          - ${LOST_DATA}/mysql:/var/lib/mysql\n'
             '      restart: always\n'
             '      environment:\n'
-            '          mysql_database: ${lost_db_name}\n'
-            '          mysql_user: ${lost_db_user}\n'
-            '          mysql_password: ${lost_db_password}\n'
-            '          mysql_root_password: ${lost_db_root_password}\n\n'
+            '          MYSQL_DATABASE: ${LOST_DB_NAME}\n'
+            '          MYSQL_USER: ${LOST_DB_USER}\n'
+            '          MYSQL_PASSWORD: ${LOST_DB_PASSWORD}\n'
+            '          MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}\n\n'
         )
 
     def _write_file(self, sotre_path, content):
@@ -87,74 +85,73 @@ class QuickSetup(object):
             # self.release = lost.__version__
         else:
             self.release = args.release
-        if args.testing == "true":
-            self.dockerimageslug = '-test'
+        if args.testing == "True":
+            self.dockerImageSlug = '-test'
         else:
-            self.dockerimageslug = ''
+            self.dockerImageSlug = ''
     
     def write_docker_compose(self, store_path):
-        builder = dockercomposebuilder()
-        builder.dockerimageslug = self.dockerimageslug
+        builder = DockerComposeBuilder()
+        builder.dockerImageSlug = self.dockerImageSlug
         builder.write_production_file(store_path)
-        logging.info('wrote docker-compose config to: {}'.format(store_path))
+        logging.info('Wrote docker-compose config to: {}'.format(store_path))
         
 
     def write_env_config(self, env_path):
-        '''write env file to filesystem
-
-        args:
-            env_path (str): path to store env file
+        '''Write env file to filesystem
+        Args:
+            env_path (str): Path to store env file
         '''
         if self.args.no_ai:
-            ai_examples = 'false'
+            ai_examples = 'False'
         else:
-            ai_examples = 'true'
+            ai_examples = 'True'
 
         config = [
             ['#======================','#'],
-            ['#=   lost basic config  ','#'],
+            ['#=   LOST Basic config  ','#'],
             ['#======================','#'],
-            ['debug','false'],
-            ['# add example pipelines and example images ','#'],
-            ['lost_add_examples','true'],
-            ['#= add also ai pipelines if true. you will need the lost-cv worker to execute these pipelines.',' #'],
-            ['lost_add_ai_examples', ai_examples],
-            ['lost_version', self.release],
-            ['#= lost port binding to host machine',' #'],
-            ['lost_frontend_port', 80],
-            ['secret_key', self.secret_key],
-            ['#= path to lost data in host filesystem',' #'],
-            ['lost_data', self.dst_data_dir],
+            ['DEBUG','False'],
+            ['# Add example pipelines and example images ','#'],
+            ['LOST_ADD_EXAMPLES','True'],
+            ['#= Add also ai pipelines if true. You will need the lost-cv worker to execute these pipelines.',' #'],
+            ['LOST_ADD_AI_EXAMPLES', ai_examples],
+            ['LOST_VERSION', self.release],
+            ['#= LOST port binding to host machine',' #'],
+            ['LOST_FRONTEND_PORT', 80],
+            ['SECRET_KEY', self.secret_key],
+            ['#= Path to LOST data in host filesystem',' #'],
+            ['LOST_DATA', self.dst_data_dir],
             ['#======================','#'],
-            ['#= lost database config ','#'],
+            ['#= LOST Database config ','#'],
             ['#======================','#'],
-            ['lost_db_name', 'lost'],
-            ['lost_db_user', 'lost'],
-            ['lost_db_password', 'lostdblost'],
-            ['lost_db_root_password', 'lostrootlost'],
+            ['LOST_DB_NAME', 'lost'],
+            ['LOST_DB_USER', 'lost'],
+            ['LOST_DB_PASSWORD', 'LostDbLost'],
+            ['LOST_DB_ROOT_PASSWORD', 'LostRootLost'],
             ['#======================','#'],
-            ['#=   pipeengine config  ','#'],
+            ['#=   PipeEngine config  ','#'],
             ['#======================','#'],
-            ['# interval in seconds for the cronjob to update the pipeline',' #'],
-            ['pipe_schedule', '5'],
-            ['# intervall in seconds in which a worker should give a lifesign',' #'],
-            ['worker_beat', 10],
-            ['# timeout in seconds when a worker is considered to be dead',' #'],
-            ['worker_timeout',30],
-            ['# session timout in minutes - timespan when an inactive user is logged out',' #'],
-            ['# also used to schedule a background job that releases locked annotations ',' #'],
-            ['session_timeout',30],
+            ['# Interval in seconds for the cronjob to update the pipeline',' #'],
+            ['PIPE_SCHEDULE', '5'],
+            ['# Intervall in seconds in which a worker should give a lifesign',' #'],
+            ['WORKER_BEAT', 10],
+            ['# Timeout in seconds when a worker is considered to be dead',' #'],
+            ['WORKER_TIMEOUT',30],
+            ['# Session timout in minutes - timespan when an inactive user is logged out',' #'],
+            ['# Also used to schedule a background job that releases locked annotations ',' #'],
+            ['SESSION_TIMEOUT',30],
             ['#========================','#'],
-            ['#= your mail config here ','#'],
+            ['#= Your Mail config here ','#'],
             ['#========================','#'],
-            ['#mail_server','mailserver.com'],
-            ['#mail_port','465'],
-            ['#mail_use_ssl','true'],
-            ['#mail_use_tls','true'],
-            ['#mail_username','email@email.com'],
-            ['#mail_password','password'],
-            ['#mail_default_sender','lost notification system <email@email.com>'],
-            ['#mail_lost_url','http://mylostinstance.url/']
+            ['#MAIL_SERVER','mailserver.com'],
+            ['#MAIL_PORT','465'],
+            ['#MAIL_USE_SSL','True'],
+            ['#MAIL_USE_TLS','True'],
+            ['#MAIL_USERNAME','email@email.com'],
+            ['#MAIL_PASSWORD','password'],
+            ['#MAIL_DEFAULT_SENDER','LOST Notification System <email@email.com>'],
+            ['#MAIL_LOST_URL','http://mylostinstance.url/']
         ]
         with open(env_path, 'w') as f:
             for key, val in config:
@@ -164,36 +161,36 @@ class QuickSetup(object):
     def main(self):
         try:
             os.makedirs(args.install_path)
-            logging.info('created: {}'.format(args.install_path))
-        except oserror:
-            logging.warning('path already exists: {}'.format(args.install_path))
+            logging.info('Created: {}'.format(args.install_path))
+        except OSError:
+            logging.warning('Path already exists: {}'.format(args.install_path))
             return
         os.makedirs(self.dst_data_dir)
-        logging.info('created: {}'.format(self.dst_data_dir))
+        logging.info('Created: {}'.format(self.dst_data_dir))
         os.makedirs(self.dst_docker_dir)
-        logging.info('created: {}'.format(self.dst_docker_dir))
+        logging.info('Created: {}'.format(self.dst_docker_dir))
         # example_config_path = '../compose/prod-docker-compose.yml'
         dst_config = os.path.join(self.dst_docker_dir, 'docker-compose.yml')
         # shutil.copy(example_config_path, dst_config)
         self.write_docker_compose(dst_config)
         env_path = os.path.join(self.dst_docker_dir,'.env')
         self.write_env_config(env_path)
-        logging.info('created {}'.format(env_path))
+        logging.info('Created {}'.format(env_path))
         logging.info('')
-        logging.info('finished setup! to test lost run:')
+        logging.info('Finished setup! To test LOST run:')
         logging.info('======================================================')
-        logging.info('1) type the command below into your command line:')
+        logging.info('1) Type the command below into your command line:')
         logging.info('   cd {}; docker-compose up'.format(self.dst_docker_dir))
         n = 2
-        logging.info('{}) open your browser and navigate to: http://localhost'.format(n))
-        logging.info('    login user:     admin')
-        logging.info('    login password: admin')
+        logging.info('{}) Open your browser and navigate to: http://localhost'.format(n))
+        logging.info('    Login user:     admin')
+        logging.info('    Login password: admin')
         logging.info('======================================================')
 
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='quick setup for lost on linux')
+    parser = argparse.ArgumentParser(description='Quick setup for lost on linux')
     parser.add_argument('install_path', help='Specify path to install lost.')
     parser.add_argument('--release', help='LOST release you want to install.', default=None)
     parser.add_argument('--testing', help='use the LOST images from testing stage.', default=None)
