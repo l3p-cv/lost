@@ -5,6 +5,7 @@ import shutil
 import random
 import string 
 import sys
+from cryptography.fernet import Fernet
 sys.path.append('../../backend')
 import lost
 logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
@@ -12,11 +13,7 @@ logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
 DEFAULT_RELEASE = '1.4.2'
 
 def gen_rand_string(n):
-    return ''.join(
-        random.SystemRandom().choice(
-            string.ascii_uppercase + string.digits
-        ) for _ in range(n))
-
+    return Fernet.generate_key().decode()
 class DockerComposeBuilder(object):
 
     def get_header(self):
