@@ -5,6 +5,7 @@ import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch, useSelector } from 'react-redux'
+import SelectFileButton from '../../components/SelectFileButton'
 
 const CreateLabelTree = ({visLevel}) =>{
     const [createLabelName, setCreateLabelName] = useState("")
@@ -45,12 +46,6 @@ const CreateLabelTree = ({visLevel}) =>{
 
     }
 
-    const handleImport = (e)=>{
-
-    }
-
-
-
     return (
             <>
                 <InputGroup style={{ marginBottom: '10px', marginTop: '10px' }}>
@@ -75,10 +70,10 @@ const CreateLabelTree = ({visLevel}) =>{
                         />
                     </InputGroupAddon>
                     <InputGroupAddon addonType="append">
-                        <IconButton
-                            color="primary"
-                            onClick={handleImport}
-                            icon={faPlus}
+                        <SelectFileButton
+                            accept='.csv'
+                            onSelect={(file)=>{
+                            }}
                             text="Import"
                         />
                     </InputGroupAddon>
