@@ -1,91 +1,91 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
+import React, { useEffect, useState } from 'react'
 import actions from '../../actions'
-import { Input, InputGroup, InputGroupAddon } from 'reactstrap'
+import {Input, InputGroup, InputGroupAddon} from 'reactstrap'
 import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
-
-import 'react-notifications/lib/notifications.css'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { useDispatch, useSelector } from 'react-redux'
 
-const { cleanLabelMessages, createLabelTree } = actions
-
-class CreateLabelTree extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            createLabelname: '',
-            createLabeldescription: '',
-            createLabelabbreviation: '',
-            createLabelextID: '',
-        }
-
-        this.handleCreateLabelName = this.handleCreateLabelName.bind(this)
-        this.handleCreateLabelDescription = this.handleCreateLabelDescription.bind(this)
-        this.handleCreateSave = this.handleCreateSave.bind(this)
-    }
-    handleCreateLabelName(e) {
-        this.setState({ createLabelname: e.target.value })
-    }
-    handleCreateLabelDescription(e) {
-        this.setState({ createLabeldescription: e.target.value })
-    }
-
-    handleCreateSave(e) {
-        const saveData = {
-            is_root: true,
-            name: this.state.createLabelname,
-            description: this.state.createLabeldescription,
-            abbreviation: this.state.createLabelabbreviation,
-            external_id: this.state.createLabelextID,
-            parent_leaf_id: this.state.editLabelid,
-        }
-        this.props.createLabelTree(saveData, this.props.visLevel)
-    }
-
-    componentDidUpdate() {
-        if (this.props.createMessage === 'success') {
+const CreateLabelTree = ({visLevel}) =>{
+    const [createLabelName, setCreateLabelName] = useState("")
+    const dispatch = useDispatch()
+    const [createLabelDescription, setCreateLabelDescription] = useState("")
+    const [createLabelAbbreviation, setCreateLabelAbbreviation] = useState("")
+    const [createLabelExtId, setCreateLabelExtId] = useState("")
+    const createMessage = useSelector(state => state.label.createLabelTreeMessage)
+    useEffect(()=>{
+        if (createMessage === 'success') {
             NotificationManager.success(`LabelTree created.`)
-        } else if (this.props.createMessage !== '') {
-            NotificationManager.error(this.props.createMessage)
+        } else if (createMessage !== '') {
+            NotificationManager.error(createMessage)
         }
-        this.props.cleanLabelMessages()
+        dispatch(actions.cleanLabelMessages())
+    }, [createMessage])
+
+    const handleCreateLabelName = (e) => {
+        setCreateLabelName(e.target.value)
     }
-    render() {
-        return (
+    const handleCreateLabelDescription = (e) =>{
+        setCreateLabelDescription(e.target.value)
+    }
+
+    const handleCreateSave = (e)=> {
+        if(createLabelName && createLabelDescription){
+            const saveData = {
+                is_root: true,
+                name: createLabelName,
+                description: createLabelDescription,
+                abbreviation: createLabelAbbreviation,
+                external_id: createLabelExtId,
+                parent_leaf_id: undefined,
+            }
+    
+            dispatch(actions.createLabelTree(saveData, visLevel))
+        }
+
+    }
+
+    const handleImport = (e)=>{
+
+    }
+
+
+
+    return (
             <>
                 <InputGroup style={{ marginBottom: '10px', marginTop: '10px' }}>
                     <Input
                         type="text"
                         placeholder="name"
-                        value={this.state.createLabelname}
-                        onChange={this.handleCreateLabelName}
+                        value={createLabelName}
+                        onChange={handleCreateLabelName}
                     ></Input>
                     <Input
                         type="text"
                         placeholder="description"
-                        value={this.state.createLabeldescription}
-                        onChange={this.handleCreateLabelDescription}
+                        value={createLabelDescription}
+                        onChange={handleCreateLabelDescription}
                     ></Input>
                     <InputGroupAddon addonType="append">
                         <IconButton
                             color="primary"
-                            onClick={this.handleCreateSave}
+                            onClick={handleCreateSave}
                             icon={faPlus}
                             text="Add"
+                        />
+                    </InputGroupAddon>
+                    <InputGroupAddon addonType="append">
+                        <IconButton
+                            color="primary"
+                            onClick={handleImport}
+                            icon={faPlus}
+                            text="Import"
                         />
                     </InputGroupAddon>
                 </InputGroup>
                 <NotificationContainer />
             </>
-        )
-    }
+    )
 }
 
-function mapStateToProps(state) {
-    return { createMessage: state.label.createLabelTreeMessage }
-}
-
-export default connect(mapStateToProps, { cleanLabelMessages, createLabelTree })(
-    CreateLabelTree,
-)
+export default CreateLabelTree
