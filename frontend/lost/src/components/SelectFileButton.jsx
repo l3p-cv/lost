@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import IconButton from './IconButton2'
 
-const SelectFileButton = ({ text, className, accept, onSelect }) => {
+const SelectFileButton = ({ text, className, accept, onSelect, disabled }) => {
     const inputRef = useRef()
     const selectVideoFaker = () => {
         inputRef.current.click()
@@ -29,7 +29,7 @@ const SelectFileButton = ({ text, className, accept, onSelect }) => {
                 style={{ display: 'none' }}
             />
             <IconButton
-
+                disabled={disabled}
                 left={<FaUpload />}
                 right={text}
                 className={className}
@@ -46,6 +46,7 @@ SelectFileButton.propTypes = {
     className: PropTypes.string,
     accept: PropTypes.string,
     onSelect: PropTypes.func,
+    disabled: false
 }
 
 SelectFileButton.defaultProps = {

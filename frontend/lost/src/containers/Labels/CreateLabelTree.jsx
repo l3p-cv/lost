@@ -65,12 +65,14 @@ const CreateLabelTree = ({visLevel}) =>{
                         <IconButton
                             color="primary"
                             onClick={handleCreateSave}
+                            disabled={createLabelName == "" || createLabelDescription == ""}
                             icon={faPlus}
                             text="Add"
                         />
                     </InputGroupAddon>
                     <InputGroupAddon addonType="append">
                         <SelectFileButton
+                            disabled={createLabelName == "" || createLabelDescription == ""}
                             accept='.csv'
                             onSelect={(file)=>{
                             }}
