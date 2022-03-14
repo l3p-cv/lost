@@ -4,7 +4,7 @@ import {Input, InputGroup, InputGroupAddon} from 'reactstrap'
 import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { connectAdvanced, useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import SelectFileButton from '../../components/SelectFileButton'
 
 // Source: https://stackoverflow.com/a/1293163/9310154
@@ -80,8 +80,6 @@ function csvToArray( strData, strDelimiter = "," ){
             strMatchedValue = arrMatches[ 3 ];
 
         }
-
-
         // Now that we have our value string, let's add
         // it to the data array.
         arrData[ arrData.length - 1 ].push( strMatchedValue );
@@ -90,20 +88,29 @@ function csvToArray( strData, strDelimiter = "," ){
     // Return the parsed data.
     return( arrData );
 }
-  const parseElement = (element)=>{
+  const parseElement = (element, header)=>{
+    const colorIndex = header.indexOf("color")
+    const abbreviationIndex = header.indexOf("abbreviation")
+    const descriptionIndex = header.indexOf("description")
+    const externalIdIndex = header.indexOf("external_id")
+    const groupIdIndex = header.indexOf("group_id")
+    const isDeletedIndex = header.indexOf("is_deleted")
+    const isRootIndex = header.indexOf("is_root")
+    const nameIndex = header.indexOf("name")
+    const timestampIndex = header.indexOf("timestamp")
     return {
-        abbreviation: element[3] === "" ? null: element[3],
-        color: element[11] === "" ? null: element[11],
-        description: element[4],
-        external_id: element[6] === "" ? null : parseInt(element[6]),
-        group_id: element[10] === "" ? null : parseInt(element[10]),
+        abbreviation: element[abbreviationIndex] === "" ? null: element[abbreviationIndex],
+        color: element[colorIndex] === "" ? null: element[colorIndex],
+        description: element[descriptionIndex],
+        external_id: element[externalIdIndex] === "" ? null : parseInt(element[externalIdIndex]),
+        group_id: element[groupIdIndex] === "" ? null : parseInt(element[groupIdIndex]),
         // idx: parseInt(element.idx),
         children: [],
-        is_deleted: element[7] == "True" || element[7] == "true" ,
-        is_root: element[9] == "True" || element[9] == "true",
-        name: element[2],
+        is_deleted: element[isDeletedIndex] == "True" || element[isDeletedIndex] == "true" ,
+        is_root: element[isRootIndex] == "True" || element[isRootIndex] == "true",
+        name: element[nameIndex],
         // parent_leaf_id: element.parent_leaf_id === "" ? null : parseInt(element.parent_leaf_id),
-        timestamp: element[5] === "" ? null : element[5]
+        timestamp: element[timestampIndex] === "" ? null : element[timestampIndex]
     }
   }
 
@@ -125,6 +132,7 @@ const CreateLabelTree = ({visLevel}) =>{
     const [createLabelDescription, setCreateLabelDescription] = useState("")
     const [createLabelAbbreviation, setCreateLabelAbbreviation] = useState("")
     const labelsToAdd = useRef([])
+    const header = useRef()
     const enableNotify = useRef(true)
     const [createLabelExtId, setCreateLabelExtId] = useState("")
     const createMessage = useSelector(state => state.label.createLabelTreeMessage)
@@ -172,12 +180,13 @@ const CreateLabelTree = ({visLevel}) =>{
             while (labelsToAdd.current.length > 0){
 
                 const next = labelsToAdd.current.shift()
+                const parentLeafIdIndex = header.current.indexOf("parent_leaf_id")
                 if(!offset){
-                    offset =  parseInt(next[8])
+                    offset =  parseInt(next[parentLeafIdIndex])
                 }
-                const parsed = parseElement(next)
+                const parsed = parseElement(next, header.current)
 
-                parsed.parent_leaf_id = lastTree.idx +  parseInt(next[8]) - offset
+                parsed.parent_leaf_id = lastTree.idx +  parseInt(next[parentLeafIdIndex]) - offset
                 if(!Number.isInteger(parsed.parent_leaf_id)){
                     labelsToAdd.current = []
                 }
@@ -219,9 +228,11 @@ const CreateLabelTree = ({visLevel}) =>{
                                     const text = event.target.result
                                     const arr = csvToArray(text)
                                     // delete header
-                                    arr.shift()
+                                    header.current = arr.shift()
+                                    // add Id to the start of the array because pandas.df export
+                                    header.current.unshift("id")
                                     const first = arr.shift()
-                                    const parsed = parseElement(first)
+                                    const parsed = parseElement(first, header.current)
                                     // The Id from the tree is needed. The remaining Labels were added afterwards in useEffect hook. 
                                     dispatch(actions.createLabelTree(parsed, visLevel))
                                     labelsToAdd.current =  arr
