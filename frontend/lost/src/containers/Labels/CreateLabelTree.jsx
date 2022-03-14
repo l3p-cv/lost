@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import actions from '../../actions'
 import {Input, InputGroup, InputGroupAddon} from 'reactstrap'
 import IconButton from '../../components/IconButton'
@@ -7,51 +7,107 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { connectAdvanced, useDispatch, useSelector } from 'react-redux'
 import SelectFileButton from '../../components/SelectFileButton'
 
+// Source: https://stackoverflow.com/a/1293163/9310154
+function csvToArray( strData, strDelimiter = "," ){
+    // Check to see if the delimiter is defined. If not,
+    // then default to comma.
+    strDelimiter = (strDelimiter || ",");
 
-const csvToArray = (str, delimiter = ",") => {
-    // slice from start of text to the first \n index
-    // use split to create an array from string by delimiter
-    const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
-  
-    // slice from \n index + 1 to the end of the text
-    // use split to create an array of each csv value row
-    const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-  
-    // Map the rows
-    // split values from each row into an array
-    // use headers.reduce to create an object
-    // object properties derived from headers:values
-    // the object passed as an element of the array
-    const arr = rows.map(function (row) {
-      const values = row.split(delimiter);
-      const el = headers.reduce(function (object, header, index) {
-        object[header] = values[index];
-        return object;
-      }, {});
-      return el;
-    });
-  
-    // return the array
-    return arr;
-  }
+    // Create a regular expression to parse the CSV values.
+    var objPattern = new RegExp(
+        (
+            // Delimiters.
+            "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
 
+            // Quoted fields.
+            "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+
+            // Standard fields.
+            "([^\"\\" + strDelimiter + "\\r\\n]*))"
+        ),
+        "gi"
+        );
+
+
+    // Create an array to hold our data. Give the array
+    // a default empty first row.
+    var arrData = [[]];
+
+    // Create an array to hold our individual pattern
+    // matching groups.
+    var arrMatches = null;
+
+
+    // Keep looping over the regular expression matches
+    // until we can no longer find a match.
+    while (arrMatches = objPattern.exec( strData )){
+
+        // Get the delimiter that was found.
+        var strMatchedDelimiter = arrMatches[ 1 ];
+
+        // Check to see if the given delimiter has a length
+        // (is not the start of string) and if it matches
+        // field delimiter. If id does not, then we know
+        // that this delimiter is a row delimiter.
+        if (
+            strMatchedDelimiter.length &&
+            strMatchedDelimiter !== strDelimiter
+            ){
+
+            // Since we have reached a new row of data,
+            // add an empty row to our data array.
+            arrData.push( [] );
+
+        }
+
+        var strMatchedValue;
+
+        // Now that we have our delimiter out of the way,
+        // let's check to see which kind of value we
+        // captured (quoted or unquoted).
+        if (arrMatches[ 2 ]){
+
+            // We found a quoted value. When we capture
+            // this value, unescape any double quotes.
+            strMatchedValue = arrMatches[ 2 ].replace(
+                new RegExp( "\"\"", "g" ),
+                "\""
+                );
+
+        } else {
+
+            // We found a non-quoted value.
+            strMatchedValue = arrMatches[ 3 ];
+
+        }
+
+
+        // Now that we have our value string, let's add
+        // it to the data array.
+        arrData[ arrData.length - 1 ].push( strMatchedValue );
+    }
+
+    // Return the parsed data.
+    return( arrData );
+}
   const parseElement = (element)=>{
     return {
-        abbreviation: element.abbreviation === "" ? null: element.abbreviation,
-        color: element.color === "" ? null: element.color,
-        description: element.description,
-        external_id: element.external_id === "" ? null : parseInt(element.external_id),
-        group_id: element.group_id === "" ? null : parseInt(element.group_id),
-        idx: parseInt(element.idx),
+        abbreviation: element[3] === "" ? null: element[3],
+        color: element[11] === "" ? null: element[11],
+        description: element[4],
+        external_id: element[6] === "" ? null : parseInt(element[6]),
+        group_id: element[10] === "" ? null : parseInt(element[10]),
+        // idx: parseInt(element.idx),
         children: [],
-        is_deleted: element.is_deleted == "True" || element.is_root == "true" ,
-        is_root: element.is_root == "True" || element.is_root == "true",
-        name: element.name,
-        parent_leaf_id: element.parent_leaf_id === "" ? null : parseInt(element.parent_leaf_id),
-        timestamp: element.timestamp === "" ? null : element.timpstamp
+        is_deleted: element[7] == "True" || element[7] == "true" ,
+        is_root: element[9] == "True" || element[9] == "true",
+        name: element[2],
+        // parent_leaf_id: element.parent_leaf_id === "" ? null : parseInt(element.parent_leaf_id),
+        timestamp: element[5] === "" ? null : element[5]
     }
   }
 
+  // is no longer needed. Converting from flat structure to tree structure will be done in backend. 
   const treeFindAndAdd = (elementToInsert, element) =>{
       if (elementToInsert.parent_leaf_id === element.idx){
           element.children.push(parseElement(elementToInsert))
@@ -68,15 +124,21 @@ const CreateLabelTree = ({visLevel}) =>{
     const dispatch = useDispatch()
     const [createLabelDescription, setCreateLabelDescription] = useState("")
     const [createLabelAbbreviation, setCreateLabelAbbreviation] = useState("")
+    const labelsToAdd = useRef([])
+    const enableNotify = useRef(true)
     const [createLabelExtId, setCreateLabelExtId] = useState("")
     const createMessage = useSelector(state => state.label.createLabelTreeMessage)
+    const lastTree = useSelector(state=> state.label.trees.slice(-1)[0])
     useEffect(()=>{
-        if (createMessage === 'success') {
-            NotificationManager.success(`LabelTree created.`)
-        } else if (createMessage !== '') {
-            NotificationManager.error(createMessage)
+        if(enableNotify.current){
+            if (createMessage === 'success') {
+                NotificationManager.success(`LabelTree created.`)
+            } else if (createMessage !== '') {
+                NotificationManager.error(createMessage)
+            }
+            dispatch(actions.cleanLabelMessages())
         }
-        dispatch(actions.cleanLabelMessages())
+
     }, [createMessage])
 
     const handleCreateLabelName = (e) => {
@@ -87,6 +149,7 @@ const CreateLabelTree = ({visLevel}) =>{
     }
 
     const handleCreateSave = (e)=> {
+        enableNotify.current = true
         if(createLabelName && createLabelDescription){
             const saveData = {
                 is_root: true,
@@ -101,6 +164,27 @@ const CreateLabelTree = ({visLevel}) =>{
         }
 
     }
+
+    useEffect(()=>{
+        if(lastTree){
+            let offset
+            enableNotify.current = false
+            while (labelsToAdd.current.length > 0){
+
+                const next = labelsToAdd.current.shift()
+                if(!offset){
+                    offset =  parseInt(next[8])
+                }
+                const parsed = parseElement(next)
+
+                parsed.parent_leaf_id = lastTree.idx +  parseInt(next[8]) - offset
+                if(!Number.isInteger(parsed.parent_leaf_id)){
+                    labelsToAdd.current = []
+                }
+                dispatch(actions.createLabelTree(parsed, visLevel))
+            }
+        }
+    }, [lastTree])
 
     return (
             <>
@@ -128,30 +212,19 @@ const CreateLabelTree = ({visLevel}) =>{
                     </InputGroupAddon>
                     <InputGroupAddon addonType="append">
                         <SelectFileButton
-                            disabled={createLabelName == "" || createLabelDescription == ""}
                             accept='.csv'
                             onSelect={(file)=>{
                                 const reader = new FileReader();
                                 reader.onload = function (event) {
                                     const text = event.target.result
                                     const arr = csvToArray(text)
+                                    // delete header
+                                    arr.shift()
                                     const first = arr.shift()
-                                    console.log("first")
-                                    console.log(first)
-
-                                    if(first.is_root == "True" || first.is_root == "true"){
-                                        let obj = parseElement(first)
-                                        arr.forEach(el => {
-                                            treeFindAndAdd(parseElement(el), obj)
-                                        })
-                                        console.log("obj")
-                                        console.log(obj)
-                                        
-                                    }else{
-                                        throw new Error("Failed Parsing Csv File")
-                                    }
-                                    console.log("arr")
-                                    console.log(arr)
+                                    const parsed = parseElement(first)
+                                    // The Id from the tree is needed. The remaining Labels were added afterwards in useEffect hook. 
+                                    dispatch(actions.createLabelTree(parsed, visLevel))
+                                    labelsToAdd.current =  arr
                                   };
                                 reader.readAsText(file);
                             }}
