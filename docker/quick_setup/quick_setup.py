@@ -57,17 +57,36 @@ class DockerComposeBuilder(object):
             '          MYSQL_DATABASE: ${LOST_DB_NAME}\n'
             '          MYSQL_USER: ${LOST_DB_USER}\n'
             '          MYSQL_PASSWORD: ${LOST_DB_PASSWORD}\n'
-            '          MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}\n\n'
+            '          MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}\n'
+        )
+
+    def get_phpmyadmin(self):
+        return (
+            '    phpmyadmin:\n'
+            '      image: phpmyadmin/phpmyadmin\n'
+            '      container_name: phpmyadmin\n'
+            '      restart: always\n'
+            '      environment:\n'
+            '          PMA_ARBITRARY: 1\n'
+            '          MYSQL_USER: ${LOST_DB_USER}\n'
+            '          MYSQL_PASSWORD: ${LOST_DB_PASSWORD}\n'
+            '          MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}\n'
+            '      links:\n'
+            '          - "db-lost:db"\n'
+            '      ports:\n'
+            '          - "${PHP_MYADMIN_PORT}:80"\n'
         )
 
     def _write_file(self, sotre_path, content):
         with open(sotre_path, 'w') as f:
             f.write(content)
 
-    def write_production_file(self, store_path):
+    def write_production_file(self, store_path, phpmyadmin):
         content = self.get_header()
         content += self.get_lost()
         content += self.get_lostdb()
+        if phpmyadmin:
+            content += self.get_phpmyadmin()
         self._write_file(store_path, content)
 
 class QuickSetup(object):
@@ -90,7 +109,7 @@ class QuickSetup(object):
     def write_docker_compose(self, store_path):
         builder = DockerComposeBuilder()
         builder.dockerImageSlug = self.dockerImageSlug
-        builder.write_production_file(store_path)
+        builder.write_production_file(store_path, self.args.phpmyadmin)
         logging.info('Wrote docker-compose config to: {}'.format(store_path))
         
 
@@ -126,6 +145,7 @@ class QuickSetup(object):
             ['LOST_DB_USER', 'lost'],
             ['LOST_DB_PASSWORD', 'LostDbLost'],
             ['LOST_DB_ROOT_PASSWORD', 'LostRootLost'],
+            ['PHP_MYADMIN_PORT', 8081], 
             ['#======================','#'],
             ['#=   PipeEngine config  ','#'],
             ['#======================','#'],
@@ -192,6 +212,7 @@ if __name__ == "__main__":
     parser.add_argument('--release', help='LOST release you want to install.', default=None)
     parser.add_argument('--testing', help='use the LOST images from testing stage.', default=None)
     parser.add_argument('-noai', '--no_ai', help='Do not add ai examples and no lost-cv worker', action='store_true')
+    parser.add_argument('--phpmyadmin', help='Add phpmyadmin to docker compose file', action='store_true')
     args = parser.parse_args()
     qs = QuickSetup(args)
     qs.main()
