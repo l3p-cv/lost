@@ -176,7 +176,6 @@ class EditLabel extends Component {
     }
     render() {
         if (this.props.label) {
-            console.log(this.props.label)
             return (
                 <>
                     <b>

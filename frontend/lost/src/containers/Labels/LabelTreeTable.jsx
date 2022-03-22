@@ -18,7 +18,6 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
     const getLabelTreeById = (id) => {
         const lT = labelTrees.find((labelTree) => {
             if (labelTree.idx === id) {
-                console.log(labelTree)
                 return labelTree
             }
         })
