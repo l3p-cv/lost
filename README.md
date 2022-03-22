@@ -78,6 +78,11 @@ You are welcome to test the current version anyway:
     cd lost/docker/quick_setup/
     python3 quick_setup.py /path/to/install/lost --release 2.0.0-alpha.2
     ```
+    If you want to use phpmyadmin, you can set it via argument
+    ```
+    python3 quick_setup.py /path/to/install/lost --release 2.0.0-alpha.2 --phpmyadmin
+    ```
+
 5. Run LOST:
 
     Follow instructions of the quick_setup script, 

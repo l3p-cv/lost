@@ -15,6 +15,9 @@ const options = {
     edges: {
         color: '#000000',
     },
+    physics: {
+        enabled: false,
+    },
     nodes: {
         color: {
             border: '#00FF00',
@@ -73,7 +76,7 @@ class LabelTree extends Component {
                 <React.Fragment>
                     {this.renderEditLabel(tree)}
 
-                    <Graph graph={graph} options={options} events={events} />
+                    <Graph  graph={graph} options={options} events={events} />
                 </React.Fragment>
             )
         } else {

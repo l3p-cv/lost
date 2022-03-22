@@ -1,10 +1,10 @@
-export function toSia(data, image, type){
+export function toSia(data, image, type, imgOffset){
     switch(type) {
         case 'bBox':
             const w = image.width * data.w
             const h = image.height * data.h
-            const x0 = image.width * data.x - w/2.0
-            const y0 = image.height * data.y - h/2.0
+            const x0 = imgOffset.x + image.width * data.x - w/2.0
+            const y0 = imgOffset.y + image.height * data.y - h/2.0
             return [
                 {
                     x: x0,
@@ -25,15 +25,15 @@ export function toSia(data, image, type){
             ]
         case 'point':
             return [{
-                x: image.width * data.x,
-                y: image.height * data.y
+                x: imgOffset.x + image.width * data.x,
+                y: imgOffset.y + image.height * data.y
             }]
         case 'line':
         case 'polygon':
             return data.map((e) => {
                 return {
-                    x: image.width * e.x,
-                    y: image.height * e.y
+                    x: imgOffset.x + image.width * e.x,
+                    y: imgOffset.y + image.height * e.y
                 }
             })
         default:
@@ -45,45 +45,47 @@ export function toSia(data, image, type){
  * Transform a sia annotation to backend format.
  * 
  * @param {Array} data Annotation data
- * @param {*} image Image object {width, height}
+ * @param {*} svg Image object {width, height}
  * @param {String} type Type of the annotation bBox, point, line, polygon
  * @returns Annotation data in backend style (relative, centered)
  */
-export function toBackend(data, image, type){
+export function toBackend(data, svg, type, imgOffset={x:0,y:0}){
+    const imgWidth = svg.width - 2*imgOffset.x
+    const imgHeight = svg.height - 2*imgOffset.y
     switch(type) {
         case 'bBox':
-            // const w = image.width * data.w
-            // const h = image.height * data.h
-            // const x0 = image.width * data.x - w/2.0
-            // const y0 = image.height * data.y - h/2.0
+            // const w = svg.width * data.w
+            // const h = svg.height * data.h
+            // const x0 = svg.width * data.x - w/2.0
+            // const y0 = svg.height * data.y - h/2.0
 
             // console.error('GO On Here! w = max_x - min_x; h = max_y - min_y')
             const xList = data.map(e => {return e.x})
             const yList = data.map(e => {return e.y})
-            const minX = Math.min(...xList)
-            const maxX = Math.max(...xList)
-            const minY = Math.min(...yList)
-            const maxY = Math.max(...yList)
+            const minX = Math.min(...xList) - imgOffset.x
+            const maxX = Math.max(...xList) - imgOffset.x
+            const minY = Math.min(...yList) - imgOffset.y
+            const maxY = Math.max(...yList) - imgOffset.y
             const w = maxX - minX
             const h = maxY - minY
             const x = minX + w/2.0
             const y = minY + h/2.0
             return {
-                x:x/image.width,
-                y:y/image.height,
-                w:w/image.width,
-                h:h/image.height}
+                x:x/imgWidth,
+                y:y/imgHeight,
+                w:w/imgWidth,
+                h:h/imgHeight}
         case 'point':
             return {
-                x: data[0].x/image.width,
-                y: data[0].y/image.height
+                x: (data[0].x - imgOffset.x)/imgWidth,
+                y: (data[0].y - imgOffset.y)/imgHeight
             }
         case 'line':
         case 'polygon':
             return data.map((e) => {
                 return {
-                    x: e.x/ image.width,
-                    y: e.y/ image.height
+                    x: (e.x - imgOffset.x)/ imgWidth,
+                    y: (e.y - imgOffset.y)/ imgHeight
                 }
             })
         default:

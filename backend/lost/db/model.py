@@ -41,12 +41,11 @@ class User(Base, UserMixin):
     first_name = Column(String(100), server_default='')
     last_name = Column(String(100),  server_default='')
 
-
     roles = relationship('Role', secondary='user_roles', lazy='joined')
     groups = relationship('Group', secondary='user_groups', lazy='joined')
     choosen_anno_task = relationship(
         'AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
-    
+
     api_token = Column(String(4096))
     is_external = Column(Boolean)
     is_online = Column(Boolean)
@@ -271,7 +270,7 @@ class TwoDAnno(Base):
             'anno_anno_time': self.anno_time,
             'anno_lbl': None,
             'anno_style': self.get_anno_style(),
-            'anno_format':'rel'
+            'anno_format': 'rel'
         }
         try:
             if self.meta is not None:
@@ -295,11 +294,13 @@ class TwoDAnno(Base):
             pass
 
         if style == 'flat':
-            anno_dict['anno_data'] = self.get_anno_serialization_format()#self.data
+            # self.data
+            anno_dict['anno_data'] = self.get_anno_serialization_format()
             # anno_dict['anno.lbl.name'] = json.dumps(anno_dict['anno.lbl.name'])
             return anno_dict
         elif style == 'hierarchical':
-            anno_dict['anno_data'] = self.get_anno_serialization_format() #self.data
+            # self.data
+            anno_dict['anno_data'] = self.get_anno_serialization_format()
             return anno_dict
         else:
             raise ValueError(
@@ -513,9 +514,9 @@ class TwoDAnno(Base):
             data = json.loads(self.data)
         # data = self.data
         if self.dtype == dtype.TwoDAnno.BBOX:
-            return [[ data['x'], data['y'], data['w'], data['h'] ]]
+            return [[data['x'], data['y'], data['w'], data['h']]]
         elif self.dtype == dtype.TwoDAnno.POINT:
-            return [[ data['x'], data['y'] ]]
+            return [[data['x'], data['y']]]
         elif self.dtype == dtype.TwoDAnno.LINE:
             return [[e['x'], e['y']] for e in data]
         elif self.dtype == dtype.TwoDAnno.POLYGON:
@@ -1341,7 +1342,7 @@ class Datasource(Base):
     fs_id = Column(Integer, ForeignKey('filesystem.idx'))
     fs = relationship("FileSystem", uselist=False)
 
-    def __init__(self, selected_path=None, 
+    def __init__(self, selected_path=None,
                  pipe_element_id=None, fs_id=None):
         self.pipe_element_id = pipe_element_id
         self.fs_id = fs_id
@@ -1468,7 +1469,7 @@ class LabelLeaf(Base):
         group_id (int): Group this Label Leaf belongs to
         color (str): Color of the label in Hex format.
         label_leafs (list of :class:`LabelLeaf`):
-    
+
     Note:
         group_id is None if this filesystem is available for all users!
     '''
@@ -1597,7 +1598,7 @@ class Track(Base):
     __tablename__ = "track"
     idx = Column(Integer, primary_key=True)
     track_n = Column(Integer)
-    anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))    
+    anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
     name = Column(String(100))
     timestamp = Column(DateTime())
     user_id = Column(Integer, ForeignKey('user.idx'))
@@ -1607,11 +1608,11 @@ class Track(Base):
     twod_annos = relationship('TwoDAnno')
     annotator = relationship('User', uselist=False)
 
-    def __init__(self, idx=None, track_n=None, 
-                anno_task_id=None, name=None, timestamp=None,
-                user_id=None, iteration=None,
-                confidence=None, anno_time=None
-                ):
+    def __init__(self, idx=None, track_n=None,
+                 anno_task_id=None, name=None, timestamp=None,
+                 user_id=None, iteration=None,
+                 confidence=None, anno_time=None
+                 ):
         self.idx = idx
         self.track_n = track_n
         self.anno_task_id = anno_task_id
@@ -1723,6 +1724,7 @@ class FileSystem(Base):
         self.timestamp = timestamp
         self.deleted = deleted
 
+
 class Config(Base):
     __tablename__ = "config"
     idx = Column(Integer, primary_key=True)
@@ -1733,9 +1735,10 @@ class Config(Base):
     description = Column(Text)
     timestamp = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.idx'))
+    is_user_specific = Column(Boolean)
 
     def __init__(self, idx=None, key=None, default_value=None,
-                 value=None, timestamp=None, user_id=None, description=None, config=None):
+                 value=None, timestamp=None, user_id=None, description=None,  config=None, is_user_specific=False,):
         self.idx = idx
         self.key = key
         self.default_value = default_value
@@ -1744,6 +1747,7 @@ class Config(Base):
         self.timestamp = timestamp
         self.user_id = user_id
         self.description = description
+        self.is_user_specific = is_user_specific
 
     def to_dict(self):
         return {
@@ -1754,5 +1758,7 @@ class Config(Base):
             'config': self.config,
             'timestamp': self.timestamp,
             'user_id': self.user_id,
-            'description': self.description
+            'description': self.description,
+            'is_user_specific': self.is_user_specific
+
         }

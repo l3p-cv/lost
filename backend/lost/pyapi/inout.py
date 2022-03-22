@@ -321,7 +321,8 @@ class ScriptOutput(Output):
             raise Exception('If video_path is provided a frame_n is also required!')
 
     def request_bbox_annos(self, img_path, boxes=[], labels=[],
-                    frame_n=None, video_path=None, sim_classes=[], fm=None):
+                    frame_n=None, video_path=None, sim_classes=[], fm=None, 
+                    img_comment=None):
         '''Request BBox annotations for a subsequent annotaiton task.
 
         Args:
@@ -339,6 +340,7 @@ class ScriptOutput(Output):
                 Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fm method.
+            img_comment (str): A comment that will be added to this image.
 
         Note:
             There are three cases when you request a bbox annotation.
@@ -377,12 +379,12 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fm=fm)
+                    fm=fm, img_comment=img_comment)
                 
 
     def request_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fm=None, img_meta=None, anno_meta=None):
+        video_path=None, fm=None, img_meta=None, anno_meta=None, img_comment=None):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
@@ -415,6 +417,7 @@ class ScriptOutput(Output):
             anno_meta (list of dict): List of dictionaries with meta information that 
                 should be added to a specific annotation. Each meta key will be 
                 added as column during annotation export. The dict-value will be row content.
+            img_comment (str): A comment that will be added to this image.
         
         Example:
             Request human annotations for an image with annotation proposals::
@@ -450,7 +453,8 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fm=fm, img_meta=img_meta, anno_meta=anno_meta)
+                    fm=fm, img_meta=img_meta, anno_meta=anno_meta,
+                    img_comment=img_comment)
 
     def _get_lds_fm(self, df, fm_cache=dict(), fm=None):
         if 'img_fs_name' in df:
@@ -582,7 +586,8 @@ class ScriptOutput(Output):
 
     def _add_annos(self, pe, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, anno_task_id=None, fm=None, img_meta=None, anno_meta=None):
+        video_path=None, anno_task_id=None, fm=None, img_meta=None, anno_meta=None, 
+        img_comment=None):
         '''Add annos in list style to an image.
         
         Args:
@@ -617,6 +622,7 @@ class ScriptOutput(Output):
             anno_meta (list of dict): List of dictionaries with meta information that 
                 should be added to a specific annotation. Each meta key will be 
                 added as column during annotation export. The dict-value will be row content.
+            img_comment (str): A comment that will be added to this image.
         '''
         if img_sim_class is None:
             img_sim_class = 1
@@ -636,7 +642,8 @@ class ScriptOutput(Output):
                                 frame_n=frame_n,
                                 video_path=video_path,
                                 sim_class=img_sim_class,
-                                fs_id=fm.fs.lost_fs.idx)
+                                fs_id=fm.fs.lost_fs.idx,
+                                description=img_comment)
         if img_meta is not None:
             img_anno.meta = json.dumps(img_meta, default=_json_default)
         self._script._dbm.add(img_anno)
@@ -701,7 +708,7 @@ class ScriptOutput(Output):
 
     def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fm=None):
+        video_path=None, fm=None, img_comment=None):
         '''Add annos in list style to an image.
         
         Args:
@@ -728,6 +735,8 @@ class ScriptOutput(Output):
                 Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fm method.
+            img_comment (str): A comment that will be added to this image.
+
 
         Example:
             Add annotations to an::
@@ -766,10 +775,10 @@ class ScriptOutput(Output):
                 frame_n=frame_n,
                 video_path=video_path,
                 anno_task_id=pe.anno_task.idx,
-                fm=fm)
+                fm=fm, img_comment=img_comment)
 
     def request_image_anno(self, img_path, sim_class=None, labels=None, 
-        frame_n=None, video_path=None, fm=None):
+        frame_n=None, video_path=None, fm=None, comment=None):
         '''Request a class label annotation for an image.
 
         Args:
@@ -788,6 +797,7 @@ class ScriptOutput(Output):
                 Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fm method.
+            comment (str): A comment that will be added to this image.
         Example:
             Request image annotation::
                 >>> self.request_image_anno('path/to/image', sim_class=2)
@@ -800,4 +810,4 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fm=fm)
+                    fm=fm, img_comment=comment)

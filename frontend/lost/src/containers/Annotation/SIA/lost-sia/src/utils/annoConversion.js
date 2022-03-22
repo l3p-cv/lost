@@ -32,7 +32,7 @@ export function fixBackendAnnos(backendAnnos){
     return annos
 }
 
-export function backendAnnosToCanvas(backendAnnos, imgSize){
+export function backendAnnosToCanvas(backendAnnos, imgSize, imgOffset){
     let annos = [
         ...backendAnnos.bBoxes.map((element) => {
             return {...element, type:'bBox', 
@@ -58,13 +58,13 @@ export function backendAnnosToCanvas(backendAnnos, imgSize){
     ]
     annos = annos.map((el) => {
         return {...el, 
-            data: transform.toSia(el.data, imgSize, el.type)}
+            data: transform.toSia(el.data, imgSize, el.type, imgOffset)}
         })
     // this.setState({annos: [...annos]})
     return annos
 }
 
-export function canvasToBackendAnnos(annos, imgSize, forBackendPost=false){
+export function canvasToBackendAnnos(annos, imgSize, forBackendPost=false, imgOffset={x:0,y:0}){
     let myAnnos = annos
     const bAnnos = myAnnos.map( el => {
         var annoId 
@@ -80,7 +80,7 @@ export function canvasToBackendAnnos(annos, imgSize, forBackendPost=false){
             ...el,
             id: annoId,
             mode: modes.VIEW,
-            data: transform.toBackend(el.data, imgSize, el.type)
+            data: transform.toBackend(el.data, imgSize, el.type, imgOffset)
         }
     })
 
