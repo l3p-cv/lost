@@ -2,4 +2,5 @@
 backend/lost/cli/dask-worker-space/
 frontend/lost/src/settings.js
 node_modules
+package-lock.json
 __pycache__

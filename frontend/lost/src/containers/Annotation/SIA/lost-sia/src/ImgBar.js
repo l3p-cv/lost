@@ -87,10 +87,20 @@ class ImgBar extends Component{
             return null
         }
     }
+
+    renderImgDescription(){
+        if(this.props.annos.image.description){
+           return <Menu.Item>
+               {this.props.annos.image.description}
+            </Menu.Item>
+        } else {
+            return null
+        }
+    }
     render(){
         if (!this.props.visible) return null
         if (!this.props.annos.image) return null
-        if (!this.props.annos.image.url) return null
+        // if (!this.props.annos.image.url) return null
         return(
         <div style={{
             position:'fixed', 
@@ -103,9 +113,11 @@ class ImgBar extends Component{
         >
             <Menu inverted style={{opacity:0.9, justifyContent:'center', alignItems:'center'}}>
                     {/* {this.renderImgLabelInput()} */}
+                    {this.renderImgDescription()}
                     <Menu.Item
                     >
-                    {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"}
+                    {/* {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"} */}
+                    {"ID: "+this.props.annos.image.id}
                     </Menu.Item>
                     <Menu.Item  
                     >

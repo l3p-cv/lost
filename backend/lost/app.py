@@ -17,6 +17,7 @@ from lost.api.worker.endpoint import namespace as worker_namespace
 from lost.api.filebrowser.endpoint import namespace as filebrowser_namespace
 from lost.api.statistics.endpoint import namespace as statistics_namespace
 from lost.api.system.endpoint import namespace as system_namespace
+from lost.api.config.endpoint import namespace as config_namespace
 from lost.logic import dask_session
 from lost.db import access
 
@@ -32,15 +33,15 @@ app.config['USER_ENABLE_USERNAME'] = settings.USER_ENABLE_USERNAME
 app.config['USER_EMAIL_SENDER_NAME'] = settings.USER_EMAIL_SENDER_NAME
 app.config['USER_EMAIL_SENDER_EMAIL'] = settings.USER_EMAIL_SENDER_EMAIL
 app.config['CORS_HEADERS'] = settings.CORS_HEADERS
-   
-jwt = JWTManager(app)
 
+jwt = JWTManager(app)
 
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     jti = decrypted_token['jti']
     return jti in blacklist
+
 
 @jwt.user_claims_loader
 def add_claims_to_jwt(identity):
@@ -50,12 +51,13 @@ def add_claims_to_jwt(identity):
         roles.append(dbm.get_role(role_id=role.role_id).name)
     dbm.close_session()
     return {"roles": roles}
-    
+
+
 # blueprint = Blueprint('api', __name__, url_prefix='/api', static_folder='/home/lost/data/static')
 blueprint = Blueprint('api', __name__, url_prefix='/api')
 
 api.init_app(blueprint)
-#register endpoints here
+# register endpoints here
 api.add_namespace(user_namespace)
 api.add_namespace(group_namespace)
 api.add_namespace(sia_namespace)
@@ -68,18 +70,21 @@ api.add_namespace(worker_namespace)
 api.add_namespace(filebrowser_namespace)
 api.add_namespace(system_namespace)
 api.add_namespace(statistics_namespace)
+api.add_namespace(config_namespace)
 app.register_blueprint(blueprint)
 CORS(app)
 
+
 def main():
-    if settings.LOST_CONFIG.worker_management=='dynamic':
+    if settings.LOST_CONFIG.worker_management == 'dynamic':
         t = threading.Thread(
-            target=dask_session.release_client_by_timeout_loop, 
+            target=dask_session.release_client_by_timeout_loop,
             args=(app.logger.name,),
             daemon=True
         )
         t.start()
     app.run(debug=settings.FLASK_DEBUG, threaded=settings.FLASK_THREADED)
+
 
 if __name__ == "__main__":
     main()

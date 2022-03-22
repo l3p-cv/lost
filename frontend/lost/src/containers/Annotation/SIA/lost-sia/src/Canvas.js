@@ -35,11 +35,11 @@ import './SIA.scss'
  *      {
  *          image : {
  *              id: int, 
- *              url: string, 
  *              number: int, 
  *              amount: int, 
  *              isFirst: bool, 
- *              isLast: bool
+ *              isLast: bool,
+ *              description: string, // -> optional
  *          },
  *          annotations: {
  *              bBoxes: [{
@@ -101,6 +101,7 @@ import './SIA.scss'
  *      {left:int, top:int, right:int, bottom:int} values in pixels.
  * @param {bool} centerCanvasInContainer - Center the canvas in the 
  *      middle of the container.
+ * @param {bool} maxCanvas - Maximize Canvas Size. Do not fit canvas to image size
  * @param {str or int} defaultLabel (optional) - Name or ID of the default label that is used
  *      when no label was selected by the annotator. If not set "no label" will be used.
  *      If ID is used, it needs to be one of the possible label ids.
@@ -138,6 +139,10 @@ class Canvas extends Component{
             image: {
                 width: undefined,
                 height: undefined
+            },
+            imageOffset: {
+                x: 0,
+                y: 0
             },
             annos: [],
             mode: modes.VIEW,
@@ -250,8 +255,9 @@ class Canvas extends Component{
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
                 // this.updateCanvasView(this.getAnnoBackendFormat())
+                // const {imageOffset} = this.updateImageSize()
                 this.updateCanvasView(annoConversion.canvasToBackendAnnos(
-                    this.state.annos, this.state.svg
+                    this.state.annos, this.state.svg, false, this.state.imageOffset
                 ))
             }
             
@@ -938,7 +944,8 @@ class Canvas extends Component{
     getAnnos(annos=undefined, removeFrontedIds=true){
         const myAnnos = annos ? annos : this.state.annos
         // const backendFormat = this.getAnnoBackendFormat(removeFrontedIds, myAnnos)
-        const backendFormat = annoConversion.canvasToBackendAnnos(myAnnos, this.state.svg, removeFrontedIds)
+        const backendFormat = annoConversion.canvasToBackendAnnos(myAnnos, 
+            this.state.svg, removeFrontedIds, this.state.imageOffset)
         const finalData = {
             imgId: this.props.annos.image.id,
             imgLabelIds: this.state.imgLabelIds,
@@ -1268,29 +1275,42 @@ class Canvas extends Component{
             imgWidth = maxImgHeight * ratio
             imgHeight = maxImgHeight
         }
-        if (this.props.centerCanvasInContainer){
-            const resSpaceX = maxImgWidth - imgWidth
-            if (resSpaceX > 2){
-                canvasLeft = canvasLeft + resSpaceX / 2
+        var svg 
+        const imgOffset = {x: 0, y:0}
+        if (this.props.maxCanvas){
+            imgOffset.x = (maxImgWidth - imgWidth)/2
+            imgOffset.y = (maxImgHeight - imgHeight)/2
+            console.log(`imgOffset: `, imgOffset)
+            svg = {
+                ...this.state.svg, width: maxImgWidth, height: maxImgHeight,
+                left: canvasLeft, top: canvasTop
             }
-            const resSpaceY = maxImgHeight - imgHeight
-            if (resSpaceY > 2){
-                canvasTop = canvasTop + resSpaceY / 2
+        } else {
+            if (this.props.centerCanvasInContainer){
+                const resSpaceX = maxImgWidth - imgWidth
+                if (resSpaceX > 2){
+                    canvasLeft = canvasLeft + resSpaceX / 2
+                }
+                const resSpaceY = maxImgHeight - imgHeight
+                if (resSpaceY > 2){
+                    canvasTop = canvasTop + resSpaceY / 2
+                }
             }
-        }
-        const svg = {
-            ...this.state.svg, width : imgWidth, height: imgHeight,
-            left: canvasLeft, top: canvasTop
+            svg = {
+                ...this.state.svg, width : imgWidth, height: imgHeight,
+                left: canvasLeft, top: canvasTop
+            }
         }
         this.setState({
             svg,
             image:{
                 width: this.img.current.naturalWidth,
                 height: this.img.current.naturalHeight,
-            }
+            },
+            imageOffset: imgOffset
         })
         this.svgUpdate(svg)
-        return {imgWidth, imgHeight}
+        return {imgWidth, imgHeight, imgOffset}
     }
 
     svgUpdate(svg){
@@ -1315,7 +1335,7 @@ class Canvas extends Component{
         //for svg should be calculated
         if(annotations){
             const imgSize = this.updateImageSize()
-            this.setState({annos: [...annoConversion.backendAnnosToCanvas(annotations, {width: imgSize.imgWidth, height:imgSize.imgHeight})]})
+            this.setState({annos: [...annoConversion.backendAnnosToCanvas(annotations, {width: imgSize.imgWidth, height:imgSize.imgHeight}, imgSize.imgOffset)]})
         }
     }
 

@@ -435,7 +435,8 @@ class SIA extends Component {
                     layoutOffset={this.state.layoutOffset}
                     isJunk={this.props.isJunk}
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
-                    centerCanvasInContainer={true}
+                    centerCanvasInContainer={false}
+                    maxCanvas={true}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     blocked={this.state.blockCanvas}
