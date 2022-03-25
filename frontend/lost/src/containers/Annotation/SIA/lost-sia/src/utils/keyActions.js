@@ -14,6 +14,7 @@ export const COPY_ANNOTATION='copyAnnotation'
 export const PASTE_ANNOTATION='pasteAnnotation'
 export const RECREATE_ANNO='recreateAnnotation'
 export const DELETE_ANNO_IN_CREATION='deleteAnnoInCreation'
+export const TOGGLE_ANNO_COMMENT_INPUT='toggleAnnoCommentInput'
 
 class KeyMapper{
     constructor(keyActionHandler=undefined){
@@ -67,6 +68,8 @@ class KeyMapper{
             case 'c':
                 if (this.controlDown){
                     this.triggerKeyAction(COPY_ANNOTATION)
+                } else {
+                    this.triggerKeyAction(TOGGLE_ANNO_COMMENT_INPUT)
                 }
                 break
             case 'v':

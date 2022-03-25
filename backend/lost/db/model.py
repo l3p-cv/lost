@@ -270,7 +270,8 @@ class TwoDAnno(Base):
             'anno_anno_time': self.anno_time,
             'anno_lbl': None,
             'anno_style': self.get_anno_style(),
-            'anno_format': 'rel'
+            'anno_format': 'rel',
+            'anno_comment': self.description
         }
         try:
             if self.meta is not None:

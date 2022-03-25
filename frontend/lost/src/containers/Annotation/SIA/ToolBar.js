@@ -335,6 +335,10 @@ class ToolBar extends Component{
                         <Card.Content header='Mark image as junk' />
                         <Card.Content description='1.) Press J key'/>
                     </Card>
+                    <Card>
+                        <Card.Content header='Assign a comment to a 2D annoation' />
+                        <Card.Content description='1.) Select annotation 2.) Hit C key'/>
+                    </Card>
                     </Card.Group>
                 </div>}
             />

@@ -356,6 +356,8 @@ class SiaUpdate(object):
                                     iteration=self.iteration,
                                     dtype=two_d_type,
                                     state=state.Anno.LABELED)
+                if 'comment' in annotation:
+                    two_d.description = annotation['comment']
                 self.db_man.save_obj(two_d)
                 for l_id in annotation['labelIds']:
                     label = model.Label(two_d_anno_id=two_d.idx,
@@ -386,6 +388,8 @@ class SiaUpdate(object):
                     two_d.anno_time = 0.0
                 two_d.anno_time = annotation['annoTime']
                 two_d.state = state.Anno.LABELED
+                if 'comment' in annotation:
+                    two_d.description = annotation['comment']
 
                 l_id_list = list()
                 # get all labels of that two_d_anno.
@@ -507,6 +511,7 @@ class SiaSerialize(object):
                     bbox_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 bbox_json['data'] = json.loads(two_d_anno.data)
                 bbox_json['annoTime'] = two_d_anno.anno_time
+                bbox_json['comment'] = two_d_anno.description
                 self.sia_json['annotations']['bBoxes'].append(bbox_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POINT:
                 point_json = dict()
@@ -516,6 +521,7 @@ class SiaSerialize(object):
                     point_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 point_json['data'] = json.loads(two_d_anno.data)
                 point_json['annoTime'] = two_d_anno.anno_time
+                point_json['comment'] = two_d_anno.description
                 self.sia_json['annotations']['points'].append(point_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.LINE:
                 line_json = dict()
@@ -525,6 +531,7 @@ class SiaSerialize(object):
                     line_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 line_json['data'] = json.loads(two_d_anno.data)
                 line_json['annoTime'] = two_d_anno.anno_time
+                line_json['comment'] = two_d_anno.description
                 self.sia_json['annotations']['lines'].append(line_json)
             elif two_d_anno.dtype == dtype.TwoDAnno.POLYGON:
                 polygon_json = dict()
@@ -534,6 +541,7 @@ class SiaSerialize(object):
                     polygon_json['labelIds'] = [lbl.label_leaf_id for lbl in two_d_anno.labels]
                 polygon_json['data'] = json.loads(two_d_anno.data)
                 polygon_json['annoTime'] = two_d_anno.anno_time
+                polygon_json['comment'] = two_d_anno.description
                 self.sia_json['annotations']['polygons'].append(polygon_json)
         return self.sia_json
 class SiaStatusNotFoundError(Exception):

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pyAPI: Allow to add a image comment via api. This comment will be shown in ImgBar in SIA
 - SIA: Added max canvas size mode. Where canvas takes the maximum container size and is not 
   image oriented as before.
+- SIA: Added comment support for 2d annotations
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

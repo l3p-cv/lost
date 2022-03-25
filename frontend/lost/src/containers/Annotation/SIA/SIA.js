@@ -22,6 +22,7 @@ import * as notificationType from './lost-sia/src/types/notificationType'
 import * as transform from './lost-sia/src/utils/transform'
 import * as filterTools from './filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
+import AnnoCommentInput from './lost-sia/src/AnnoCommentInput'
 
 
 const { 

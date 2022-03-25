@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import { Card, Icon, Statistic, Divider } from 'semantic-ui-react'
+import { Card, Icon, Statistic, Divider, Message } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import actions from '../../../../actions'
 import * as transform from '../lost-sia/src/utils/transform'
@@ -76,6 +76,13 @@ class AnnoDetails extends Component{
                         </Statistic.Label>
                     </Statistic>
                 </Statistic.Group>
+                <Divider horizontal> Comment </Divider>
+                <Card>
+                    <Card.Content>
+                        {this.props.anno.comment ? this.props.anno.comment : 'No comment'}
+                    </Card.Content>
+                </Card>
+                
                 </div>
             )
         } else {

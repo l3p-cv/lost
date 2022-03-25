@@ -6,6 +6,7 @@ import ImgBar from './ImgBar'
 import Prompt from './Prompt'
 import LabelInput from './LabelInput'
 import AnnoToolBar from './AnnoToolBar'
+import AnnoCommentInput from './AnnoCommentInput'
 
 
 import * as annoConversion from './utils/annoConversion'
@@ -16,7 +17,7 @@ import * as modes from './types/modes'
 import UndoRedo from './utils/hist'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
-import { Loader, Dimmer, Icon, Header, Button } from 'semantic-ui-react';
+import { Loader, Dimmer, Icon, Header, Button, Form, TextArea} from 'semantic-ui-react';
 import * as mouse from './utils/mouse';
 import * as colorlut from './utils/colorlut'
 import * as notificationType from './types/notificationType'
@@ -162,7 +163,9 @@ class Canvas extends Component{
             isJunk: false,
             imgBarVisible:false,
             annoToolBarVisible: false,
-            possibleLabels: undefined
+            possibleLabels: undefined,
+            annoCommentInputTrigger: 0,
+            // showAnnoCommentInput: false
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -363,6 +366,16 @@ class Canvas extends Component{
         }
     }
 
+    handleAnnoCommentInputClose(comment){
+        const anno = this.findAnno(this.state.selectedAnnoId)
+        anno.comment = comment
+        this.stopAnnotimeMeasure(anno)
+        this.updateSelectedAnno(anno, modes.VIEW)
+        console.log('handleAnnoCommentInputClose', comment)
+
+
+    }
+
     handleKeyAction(action){
         const anno = this.findAnno(this.state.selectedAnnoId)
         const camKeyStepSize = 20 * this.state.svg.scale
@@ -382,6 +395,13 @@ class Canvas extends Component{
                 break
             case keyActions.DELETE_ANNO:
                 this.deleteAnnotation(anno)
+                break
+            case keyActions.TOGGLE_ANNO_COMMENT_INPUT:
+                if (this.state.selectedAnnoId) {
+                    this.setState({annoCommentInputTrigger: this.state.annoCommentInputTrigger+1})
+                    this.startAnnotimeMeasure(anno)
+                    // this.showSingleAnno(this.state.selectedAnnoId)
+                }
                 break
             case keyActions.DELETE_ANNO_IN_CREATION:
                 this.deleteAnnoInCreationMode(anno)
@@ -645,6 +665,10 @@ class Canvas extends Component{
             this.props.onImgLabelInputClose()
         }
     }
+
+    // handleAnnoCommentInputClose(e){
+    //     this.showAnnoCommentInputField(false)
+    // }
 
     handleSvgMouseMove(e){
         this.mousePosAbs = mouse.getMousePositionAbs(e, this.state.svg)
@@ -1430,6 +1454,15 @@ class Canvas extends Component{
                     // multilabels={true}
         />
     }
+
+    renderAnnoCommentInput(selectedAnno){
+        return <AnnoCommentInput 
+            triggerInput={this.state.annoCommentInputTrigger}
+            onClose={comment => this.handleAnnoCommentInputClose(comment)}
+            iniComment={selectedAnno ? selectedAnno.comment : ''}
+        />
+    }
+
     render(){
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
         return(
@@ -1437,6 +1470,7 @@ class Canvas extends Component{
             <div height={this.state.svg.height} 
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
+            {this.renderAnnoCommentInput(selectedAnno)}
             {this.renderImgLabelInput()}
             <ImgBar container={this.container} 
                 visible={this.state.imgBarVisible}

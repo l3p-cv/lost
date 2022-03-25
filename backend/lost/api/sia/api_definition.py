@@ -28,7 +28,8 @@ bbox = api.model('BBox',{
     'id': fields.Integer(readOnly=True, description='The identifier of the bbox.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
     'data': fields.Nested(bbox_data, description='2-D data of that box.'),
-    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
 
@@ -42,7 +43,8 @@ point = api.model('Point',{
     'id': fields.Integer(readOnly=True, description='The identifier of the point.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that point.'),
     'data': fields.Nested(point_data, description='2-D data of that point.'),
-    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
 
@@ -50,7 +52,8 @@ line = api.model('Line',{
     'id': fields.Integer(readOnly=True, description='The identifier of the line.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that line.'),
     'data': fields.List(fields.Nested(point_data, description='2-D data of that line.')),
-    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
 
@@ -58,7 +61,8 @@ polygon = api.model('Polygon',{
     'id': fields.Integer(readOnly=True, description='The identifier of the polygon.'),
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
     'data': fields.List(fields.Nested(point_data, description='2-D data of that polygon.')),
-    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
 annotations = api.model('Annotations',{
