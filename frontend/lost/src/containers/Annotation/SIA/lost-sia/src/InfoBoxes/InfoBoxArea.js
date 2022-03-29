@@ -99,8 +99,8 @@ class InfoBoxes extends Component{
         <AnnoDetails anno={this.props.selectedAnno} 
             possibleLabels={this.props.possibleLabels}
             defaultPos={{
-                left: this.state.position.left - 255,
-                top: this.state.position.top
+                left: this.state.position.left,
+                top: this.state.position.top + 150
             }}
             onDismiss={() => this.onDismiss('AnnoDetails')}
             onCommentUpdate={(comment) => this.onCommentUpdate(comment)}

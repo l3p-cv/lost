@@ -98,6 +98,7 @@ const AnnoDetails = (props) => {
                 <TextArea placeholder='Write a comment' 
                     ref={tARef}
                     value={comment}
+                    rows={2}
                     onBlur={() => onCommentUpdate()}
                     onFocus={() => setShowSaveBtn(true)}
                     onChange={(e) => setComment(e.target.value)} >
