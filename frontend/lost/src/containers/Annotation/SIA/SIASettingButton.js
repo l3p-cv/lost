@@ -36,6 +36,17 @@ class SIASettingButton extends Component{
         )
     }
 
+    toggleAnnoStats(){
+        this.props.siaSetUIConfig(
+            {...this.props.uiConfig,
+                annoStats: {
+                    ...this.props.uiConfig.annoStats,
+                    visible: !this.props.uiConfig.annoStats.visible
+                }
+            }
+        )
+    }
+
     handleStrokeWidthChange(e){
         this.props.siaSetUIConfig({
             ...this.props.uiConfig,
@@ -63,6 +74,11 @@ class SIASettingButton extends Component{
                 checked={this.props.uiConfig.labelInfo.visible} 
                 label="Label Info" toggle
                 onClick={() => this.toggleLabelInfo()}
+                />
+            <Checkbox 
+                checked={this.props.uiConfig.annoStats.visible} 
+                label="Anno Stats" toggle
+                onClick={() => this.toggleAnnoStats()}
                 />
             <Divider horizontal>Anno Appearance</Divider>
             <div>Stroke width: {this.props.uiConfig.strokeWidth}</div>

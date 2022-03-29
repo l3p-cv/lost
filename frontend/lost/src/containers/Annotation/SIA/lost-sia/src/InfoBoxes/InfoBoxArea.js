@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 // import {connect} from 'react-redux'
 import AnnoDetails from './AnnoDetails'
+import AnnoStats from './AnnoStats'
 import LabelInfo from './LabelInfo'
 // import actions from '../../../../actions'
 // const { siaShowImgBar, siaSetUIConfig } = actions
@@ -73,6 +74,16 @@ class InfoBoxes extends Component{
                         }
                     )
                     break
+                case 'AnnoStats':
+                    this.props.onUiConfigUpdate(
+                        {...this.props.uiConfig,
+                            annoStats: {
+                                ...this.props.uiConfig.annoStats,
+                                visible: false
+                            }
+                        }
+                    )
+                    break
                 default:
                     break
             }
@@ -106,6 +117,17 @@ class InfoBoxes extends Component{
             onCommentUpdate={(comment) => this.onCommentUpdate(comment)}
             commentInputTrigger={this.props.commentInputTrigger}
             visible={this.props.uiConfig.annoDetails.visible}
+        />
+        <AnnoStats selectedAnno={this.props.selectedAnno}
+            annos={this.props.annos}
+            possibleLabels={this.props.possibleLabels}
+            defaultPos={{
+                left: this.state.position.left,
+                top: this.state.position.top + 400
+            }}
+            // defaultPos={this.state.position}
+            onDismiss={() => this.onDismiss('AnnoStats')}
+            visible={this.props.uiConfig.annoStats.visible}
         />
         </div>
         )

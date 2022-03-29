@@ -6,6 +6,9 @@ export const SIA_INITIAL_UI_CONFIG = {
     },
     labelInfo:{
         visible: false
+    },
+    annoStats:{
+        visible: false
     }
 }
 
