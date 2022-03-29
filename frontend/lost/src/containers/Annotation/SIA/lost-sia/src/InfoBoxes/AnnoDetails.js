@@ -81,12 +81,12 @@ const AnnoDetails = (props) => {
                         >
                         {/* Unsaved */}
                     </Label>
-            return <Button color='green' basic animated='vertical' onClick={()=> onCommentUpdate()}>
-                <Button.Content hidden>Save</Button.Content>
-                <Button.Content visible>
-                    <Icon name='save' />
-                </Button.Content>
-                </Button>
+            // return <Button color='green' basic animated='vertical' onClick={()=> onCommentUpdate()}>
+            //     <Button.Content hidden>Save</Button.Content>
+            //     <Button.Content visible>
+            //         <Icon name='save' />
+            //     </Button.Content>
+            //     </Button>
         }
     }
 
@@ -164,7 +164,7 @@ const AnnoDetails = (props) => {
 
     
     return <InfoBox
-        header={'AnnoDetails'}
+        header={'Annotation Details'}
         content={renderDescription()}
         visible={props.visible}
         defaultPos={props.defaultPos}

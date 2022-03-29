@@ -510,6 +510,10 @@ class Canvas extends Component{
         switch(pAction){
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno.id)
+                // this.pushHist(
+                //     this.state.annos, anno.id,
+                //     pAction, this.state.showSingleAnno
+                // )
                 break
             case canvasActions.ANNO_START_CREATING:
                 newAnnos = this.updateSelectedAnno(anno)
@@ -596,6 +600,11 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
+                this.handleNotification({
+                    title: "Saved comment",
+                    message: `Saved comment: ${anno.comment}`,
+                    type: notificationType.SUCCESS
+                })
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 anno = this.stopAnnotimeMeasure(anno)
