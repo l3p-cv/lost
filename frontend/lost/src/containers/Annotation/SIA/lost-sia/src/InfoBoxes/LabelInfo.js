@@ -31,9 +31,11 @@ class LabelInfo extends Component{
         }
     }
     renderDescription(){
-        if (this.props.selectedLabelIds){
+        if (this.props.selectedAnno){
+            const selectedLabelIds = this.props.selectedAnno.labelIds
+            if (!selectedLabelIds) return 'No Label'
             const lbl = this.props.possibleLabels.find( e => {
-                return this.props.selectedLabelIds[0] === e.id
+                return selectedLabelIds[0] === e.id
             })
             if (!lbl) return "No Label"
             return <div>
@@ -42,6 +44,8 @@ class LabelInfo extends Component{
                 }</Header>
               <div dangerouslySetInnerHTML={{__html: lbl.description}} />
             </div>
+        } else {
+            return 'No Label'
         }
     }
 

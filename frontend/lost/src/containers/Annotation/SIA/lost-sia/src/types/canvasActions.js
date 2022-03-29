@@ -12,6 +12,7 @@ export const ANNO_LABEL_UPDATE='annoLabelUpdate'
 export const ANNO_CREATED_NODE='annoCreatedNode'
 export const ANNO_CREATED_FINAL_NODE='annoCreatedFinalNode'
 export const ANNO_START_CREATING='annoStartCreating'
+export const ANNO_COMMENT_UPDATE='annoCommentUpdate'
 
 //Image actions
 export const IMG_LABEL_UPDATE='imgLabelUpdate'

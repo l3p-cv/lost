@@ -15,20 +15,20 @@ import './sia-container.scss';
 import ToolBar from './ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import { withRouter } from 'react-router-dom';
-import InfoBoxArea from './InfoBoxes/InfoBoxArea'
+import InfoBoxArea from './lost-sia/src/InfoBoxes/InfoBoxArea'
 import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
 import * as transform from './lost-sia/src/utils/transform'
 import * as filterTools from './filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
-import AnnoCommentInput from './lost-sia/src/AnnoCommentInput'
 
 
 const { 
     siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
+    siaSetUIConfig,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
     siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
 } = actions
@@ -441,6 +441,7 @@ class SIA extends Component {
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     blocked={this.state.blockCanvas}
+                    onUiConfigUpdate={e => this.props.siaSetUIConfig(e)}
                     // defaultLabel='no label'
                     />
                 <ToolBar 
@@ -486,7 +487,7 @@ export default connect(
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
         siaShowImgLabelInput,
-        siaImgIsJunk,
+        siaImgIsJunk, siaSetUIConfig,
         getWorkingOnAnnoTask,
         siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }

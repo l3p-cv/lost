@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Icon, Button, Input, Form, TextArea} from 'semantic-ui-react'
 import Prompt from "./Prompt"
 
@@ -20,6 +20,7 @@ const AnnoCommentInput = ({triggerInput, iniComment, onClose}) => {
         setShow(false)
         if (onClose){
             onClose(comment)
+
         }
 
     }

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased]
 ### Added
 - Possibility to assign comments to 2D-Annotations
+### Changed
+- Move InfoBoxes to Canvas
 
 ## [0.9.0] - 2021-12-23
 ### Added

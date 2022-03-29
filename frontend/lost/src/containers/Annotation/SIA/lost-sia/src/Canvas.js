@@ -24,6 +24,7 @@ import * as notificationType from './types/notificationType'
 import * as wv from './utils/windowViewport'
 
 import './SIA.scss'
+import InfoBoxes from './InfoBoxes/InfoBoxArea'
 
 
 /**
@@ -121,6 +122,7 @@ import './SIA.scss'
  *      args: {title: str, message: str, type: str}
  * @event onKeyDown - Fires for keyDown on canvas 
  * @event onKeyUp - Fires for keyUp on canvas 
+ * @event onUiConfigUpdate - Fires when ui config should be updated
  * @event onAnnoPerformedAction - Fires when an anno performed an action
  *      args: {annoId: int, newAnnos: list of annoObjects, pAction: str}
  */
@@ -366,14 +368,20 @@ class Canvas extends Component{
         }
     }
 
-    handleAnnoCommentInputClose(comment){
+    // handleAnnoCommentInputClose(comment){
+    //     const anno = this.findAnno(this.state.selectedAnnoId)
+    //     anno.comment = comment
+    //     this.stopAnnotimeMeasure(anno)
+    //     this.updateSelectedAnno(anno, modes.VIEW)
+    //     console.log('handleAnnoCommentInputClose', comment)
+    // }
+    
+    updateAnnoComment(comment){
         const anno = this.findAnno(this.state.selectedAnnoId)
         anno.comment = comment
-        this.stopAnnotimeMeasure(anno)
-        this.updateSelectedAnno(anno, modes.VIEW)
-        console.log('handleAnnoCommentInputClose', comment)
-
-
+        this.onAnnoPerformedAction(anno, canvasActions.ANNO_COMMENT_UPDATE)
+        // this.stopAnnotimeMeasure(anno)
+        // console.log('updateAnnoComment', comment)
     }
 
     handleKeyAction(action){
@@ -399,7 +407,7 @@ class Canvas extends Component{
             case keyActions.TOGGLE_ANNO_COMMENT_INPUT:
                 if (this.state.selectedAnnoId) {
                     this.setState({annoCommentInputTrigger: this.state.annoCommentInputTrigger+1})
-                    this.startAnnotimeMeasure(anno)
+                    // this.startAnnotimeMeasure(anno)
                     // this.showSingleAnno(this.state.selectedAnnoId)
                 }
                 break
@@ -576,6 +584,16 @@ class Canvas extends Component{
                 this.showSingleAnno(undefined)
                 this.pushHist(
                     newAnnos, undefined,
+                    pAction, this.state.showSingleAnno
+                )
+                break
+            case canvasActions.ANNO_COMMENT_UPDATE:
+                newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                // newAnnos = this.updateSelectedAnno(anno, modes.DELETED) 
+                // this.selectAnnotation(undefined)
+                // this.showSingleAnno(undefined)
+                this.pushHist(
+                    newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
                 break
@@ -1455,13 +1473,13 @@ class Canvas extends Component{
         />
     }
 
-    renderAnnoCommentInput(selectedAnno){
-        return <AnnoCommentInput 
-            triggerInput={this.state.annoCommentInputTrigger}
-            onClose={comment => this.handleAnnoCommentInputClose(comment)}
-            iniComment={selectedAnno ? selectedAnno.comment : ''}
-        />
-    }
+    // renderAnnoCommentInput(selectedAnno){
+    //     return <AnnoCommentInput 
+    //         triggerInput={this.state.annoCommentInputTrigger}
+    //         onClose={comment => this.handleAnnoCommentInputClose(comment)}
+    //         iniComment={selectedAnno ? selectedAnno.comment : ''}
+    //     />
+    // }
 
     render(){
         const selectedAnno = this.findAnno(this.state.selectedAnnoId)
@@ -1470,7 +1488,7 @@ class Canvas extends Component{
             <div height={this.state.svg.height} 
             style={{position: 'fixed', top: this.state.svg.top, left: this.state.svg.left}}
             >
-            {this.renderAnnoCommentInput(selectedAnno)}
+            {/* {this.renderAnnoCommentInput(selectedAnno)} */}
             {this.renderImgLabelInput()}
             <ImgBar container={this.container} 
                 visible={this.state.imgBarVisible}
@@ -1495,6 +1513,16 @@ class Canvas extends Component{
                 {this.renderAnnoToolBar(selectedAnno)}
                 {/* <div style={{position: 'fixed', top: this.props.container.top, left: this.props.container.left}}> */}
                 {this.renderAnnoLabelInpput(selectedAnno)}
+                <InfoBoxes container={this.props.container} 
+                    layoutUpdate={this.props.layoutUpdate} 
+                    annos={this.state.annos}
+                    selectedAnno={selectedAnno}
+                    possibleLabels={this.state.possibleLabels}
+                    uiConfig={this.props.uiConfig}
+                    onCommentUpdate={comment => this.updateAnnoComment(comment)}
+                    onUiConfigUpdate={e => this.props.onUiConfigUpdate(e)}
+                    commentInputTrigger={this.state.annoCommentInputTrigger}
+                />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
                     onKeyDown={e => this.onKeyDown(e)}
@@ -1506,6 +1534,7 @@ class Canvas extends Component{
                     <g 
                         transform={`scale(${this.state.svg.scale}) translate(${this.state.svg.translateX}, ${this.state.svg.translateY})`}
                         onMouseOver={() => {this.onMouseOver()}}
+                        // onMouseEnter={() => this.svg.current.focus()}
                         onMouseUp={(e) => {this.onMouseUp(e)}}
                         onWheel={(e) => this.onWheel(e)}
                         onMouseMove={(e) => {this.onMouseMove(e)}}

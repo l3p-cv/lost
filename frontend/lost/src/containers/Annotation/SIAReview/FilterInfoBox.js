@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import { Card, Dropdown } from 'semantic-ui-react'
 import _ from 'lodash'
-import InfoBox from '../SIA/InfoBoxes/InfoBox'
+import InfoBox from '../SIA/lost-sia/src/InfoBoxes/InfoBox'
 
 const getOptions = (number, prefix = 'Iteration ') =>
   _.times(number, (index) => ({
