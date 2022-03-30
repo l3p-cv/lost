@@ -108,6 +108,7 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *      when no label was selected by the annotator. If not set "no label" will be used.
  *      If ID is used, it needs to be one of the possible label ids.
  * @param {bool} blocked Block canvas view with loading dimmer.
+ * @param {int} autoSaveInterval Interval in seconds when an autosave will be requested by canvas
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
  * @event onSVGUpdate - Fires when the svg in canvas changed.
@@ -123,6 +124,7 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  * @event onKeyDown - Fires for keyDown on canvas 
  * @event onKeyUp - Fires for keyUp on canvas 
  * @event onUiConfigUpdate - Fires when ui config should be updated
+ * @event onAutoSave - Fires when SIA request an auto save based on autoSaveInterval
  * @event onAnnoPerformedAction - Fires when an anno performed an action
  *      args: {annoId: int, newAnnos: list of annoObjects, pAction: str}
  */
@@ -176,6 +178,7 @@ class Canvas extends Component{
         this.keyMapper = new KeyMapper((keyAction) => this.handleKeyAction(keyAction))
         this.mousePosAbs = undefined
         this.clipboard = undefined
+        this.autoSaveI = undefined
     }
 
     componentDidMount(){
@@ -185,11 +188,16 @@ class Canvas extends Component{
             this.setState({prevLabel:[this.props.defaultLabel]})
         }
         if (this.props.autoSaveInterval){
-            setInterval(() => {
+            this.autoSaveI = setInterval(() => {
                 console.log('AutoSave')
                 this.props.onAutoSave()
             }, this.props.autoSaveInterval*1000)
         }
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.autoSaveI)
+        console.log('Cleard auto save interval!')
     }
 
     componentDidUpdate(prevProps, prevState){
