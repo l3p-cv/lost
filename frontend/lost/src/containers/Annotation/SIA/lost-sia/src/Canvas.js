@@ -708,21 +708,27 @@ class Canvas extends Component{
     }
 
     handleHideLbl(lbl, hide){
-        console.log('hide lbl', lbl, hide)
+        // console.log('hide lbl', lbl, hide)
+        let hiddenSelected = false
         const newAnnos = this.state.annos.map(anno => {
             // console.log('map annos', anno)
             const newAnno = {...anno}
             if (anno.labelIds.includes(lbl.id)){
                 newAnno.visible = !hide
+                if (anno.id === this.state.selectedAnnoId) hiddenSelected=true
             } else if (anno.labelIds.length === 0){ // no label case
                 if (lbl.id === -1){ // -1 indicates no label
                     newAnno.visible = !hide
+                    if (anno.id === this.state.selectedAnnoId) hiddenSelected=true
                 }
             }
             return newAnno
         })
-        console.log('newAnnos', newAnnos)
+        // console.log('newAnnos', newAnnos)
         this.setState({annos: newAnnos})
+        if (hiddenSelected){
+            this.selectAnnotation(undefined)
+        }
     }
 
     /*************
