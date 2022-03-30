@@ -31,7 +31,7 @@ class Prompt extends Component{
         return (
             <Dimmer page 
                 active={this.state.active} 
-                style={{zIndex:2000}}
+                style={{zIndex:7000}}
                 onClick={e => this.handleClick(e)}
             >
                 <Header as="h3" inverted>
