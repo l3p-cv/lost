@@ -707,6 +707,24 @@ class Canvas extends Component{
         }
     }
 
+    handleHideLbl(lbl, hide){
+        console.log('hide lbl', lbl, hide)
+        const newAnnos = this.state.annos.map(anno => {
+            // console.log('map annos', anno)
+            const newAnno = {...anno}
+            if (anno.labelIds.includes(lbl.id)){
+                newAnno.visible = !hide
+            } else if (anno.labelIds.length === 0){ // no label case
+                if (lbl.id === -1){ // -1 indicates no label
+                    newAnno.visible = !hide
+                }
+            }
+            return newAnno
+        })
+        console.log('newAnnos', newAnnos)
+        this.setState({annos: newAnnos})
+    }
+
     /*************
      * LOGIC     *
     **************/
@@ -1530,6 +1548,7 @@ class Canvas extends Component{
                     uiConfig={this.props.uiConfig}
                     onCommentUpdate={comment => this.updateAnnoComment(comment)}
                     onUiConfigUpdate={e => this.props.onUiConfigUpdate(e)}
+                    onHideLbl={(lbl, hide) => this.handleHideLbl(lbl, hide)}
                     commentInputTrigger={this.state.annoCommentInputTrigger}
                 />
                 <svg ref={this.svg} width={this.state.svg.width} 

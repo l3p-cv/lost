@@ -46,6 +46,16 @@ class Annotation extends Component{
                 }
             }
         }
+        if (this.props.showSingleAnno === undefined){
+            if (this.state.anno.visible !== undefined){
+                if (this.state.anno.visible){
+                    this.setVisible(true)
+                } else {
+                    this.setVisible(false)
+                }
+            }
+        } 
+           
     }
     
     /*************

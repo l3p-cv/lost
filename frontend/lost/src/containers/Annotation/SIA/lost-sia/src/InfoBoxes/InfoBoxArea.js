@@ -96,6 +96,12 @@ class InfoBoxes extends Component{
         }
     }
 
+    onHideLbl(lbl, hide){
+        if(this.props.onHideLbl){
+            this.props.onHideLbl(lbl, hide)
+        }
+    }
+
     render(){
         if (!this.props.annos) return null
         // if (!this.props.selectedAnno) return null
@@ -127,6 +133,7 @@ class InfoBoxes extends Component{
             }}
             // defaultPos={this.state.position}
             onDismiss={() => this.onDismiss('AnnoStats')}
+            onHideLbl={(lbl, hide) => this.onHideLbl(lbl, hide)}
             visible={this.props.uiConfig.annoStats.visible}
         />
         </div>
