@@ -147,22 +147,15 @@ def remove_empty_annos_by_timeout(dbm, timeout):
 
     Args:
         dbm (DBMan): Database manager
-        timeout (int): Timeout in seconds when empty annotations should be removed
+        timeout (int): Timeout in minutes when empty annotations should be removed
     '''
     c_2dannos = 0
     present = datetime.now()
-    unlock_time = present - timedelta(seconds=timeout)
+    unlock_time = present - timedelta(minutes=timeout)
     anno_list = dbm.get_lonely_two_d_annos()
-    logger = logging.getLogger('cron_jobs')
-    logger.info(f'timeout: {timeout}')
-    logger.info(f'unlock_time: {unlock_time}')
     for anno in anno_list:
-        logger.info(f'anno.idx: {anno.idx}')
-        logger.info(f'anno.timestamp: {anno.timestamp}')
         if anno.timestamp is not None:
             if anno.timestamp < unlock_time:
-                
-                logger.info(f'delete_anno: {anno.idx}')
                 dbm.delete(anno)
                 c_2dannos += 1
     dbm.commit()

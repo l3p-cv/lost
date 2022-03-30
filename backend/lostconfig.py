@@ -112,14 +112,14 @@ class LOSTConfig(object):
             self.extra_cron_jobs.append(keytab_renewer_loop)
 
         # Cron job stuff
-        # Timeout when a worker is considered to be dead
+        # Timeout in seconds when a worker is considered to be dead
         self.worker_timeout = ge('LOST_WORKER_TIMEOUT',30)
         # Intervall in seconds in which a worker should give a lifesign
         self.worker_beat = ge('LOST_WORKER_BEAT',10)
         self.pipe_schedule = ge('LOST_PIPE_SCHEDULE',5)
 
-        # Timout when a user get automatically logged out
-        self.session_timeout = ge('LOST_SESSION_TIMEOUT',30*60)
+        # Timout in minutes when a user get automatically logged out
+        self.session_timeout = ge('LOST_SESSION_TIMEOUT',30)
 
         # LDAP Configuation
         self.ldap_config = dict()

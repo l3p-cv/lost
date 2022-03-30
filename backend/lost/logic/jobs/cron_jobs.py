@@ -69,7 +69,7 @@ def remove_empty_annos(log_name):
 
 def remove_empty_annos_loop(log_name):
     lostconfig = config.LOSTConfig()
-    run_loop(remove_empty_annos, lostconfig.session_timeout*2, log_name=log_name)
+    run_loop(remove_empty_annos, lostconfig.session_timeout*60, log_name=log_name)
 
 def main():
     parser = argparse.ArgumentParser(description='Run LOST cronjobs')
