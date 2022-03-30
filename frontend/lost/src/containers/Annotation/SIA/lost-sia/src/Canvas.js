@@ -6,8 +6,6 @@ import ImgBar from './ImgBar'
 import Prompt from './Prompt'
 import LabelInput from './LabelInput'
 import AnnoToolBar from './AnnoToolBar'
-import AnnoCommentInput from './AnnoCommentInput'
-
 
 import * as annoConversion from './utils/annoConversion'
 import * as keyActions from './utils/keyActions'
@@ -1146,7 +1144,7 @@ class Canvas extends Component{
             const mousePos = this.getMousePosition(e)
             // const selAnno = this.findAnno(this.state.selectedAnnoId)
             let newAnno = {
-                id: _.uniqueId('new'),
+                id: this.props.nextAnnoId ? this.props.nextAnnoId : _.uniqueId('new'),
                 type: this.props.selectedTool,
                 data: [{
                     x: mousePos.x, 

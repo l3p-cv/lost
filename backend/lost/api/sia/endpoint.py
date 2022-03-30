@@ -203,6 +203,23 @@ class Update(Resource):
             dbm.close_session()
             return re
 
+@namespace.route('/nextAnnoId')
+class Update(Resource):
+    # @api.expect(sia_update)
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+
+        else:
+            re = sia.get_next_anno_id(dbm)
+            dbm.close_session()
+            return re
+
 @namespace.route('/finish')
 class Finish(Resource):
     @jwt_required 

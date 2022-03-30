@@ -218,6 +218,11 @@ def junk(db_man, user_id, img_id):
     else:
         return "error: image_anno not found"
 
+def get_next_anno_id(dbman):
+    anno = model.TwoDAnno()
+    dbman.save_obj(anno)
+    return anno.idx
+
 class SiaUpdate(object):
     def __init__(self, db_man, data, user_id, anno_task, sia_type='sia'):
         """
@@ -348,16 +353,24 @@ class SiaUpdate(object):
                     annotation_data.pop('bottom')
                 except:
                     pass
-                two_d = model.TwoDAnno(anno_task_id=self.at.idx,
-                                    img_anno_id=self.image_anno.idx,
-                                    timestamp=self.timestamp,
-                                    timestamp_lock=self.image_anno.timestamp_lock,
-                                    anno_time=annotation['annoTime'],
-                                    data=json.dumps(annotation_data),
-                                    user_id=self.user_id,
-                                    iteration=self.iteration,
-                                    dtype=two_d_type,
-                                    state=state.Anno.LABELED)
+                
+                if 'id' in annotation:
+                    two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
+                else:
+                    two_d = model.TwoDAnno()
+                
+                two_d.anno_task_id=self.at.idx
+                two_d.img_anno_id=self.image_anno.idx
+                two_d.timestamp=self.timestamp
+                two_d.timestamp_lock=self.image_anno.timestamp_lock
+                two_d.anno_time=annotation['annoTime']
+                two_d.data=json.dumps(annotation_data)
+                two_d.user_id=self.user_id
+                two_d.iteration=self.iteration
+                two_d.dtype=two_d_type
+                two_d.state=state.Anno.LABELED
+                for lbl in two_d.labels:
+                    self.db_man.delete(lbl)
                 if 'comment' in annotation:
                     two_d.description = annotation['comment']
                 self.db_man.save_obj(two_d)

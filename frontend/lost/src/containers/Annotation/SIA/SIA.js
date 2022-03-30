@@ -22,13 +22,15 @@ import * as notificationType from './lost-sia/src/types/notificationType'
 import * as transform from './lost-sia/src/utils/transform'
 import * as filterTools from './filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
+import AnnoDetails from './lost-sia/src/InfoBoxes/AnnoDetails'
+import * as annoActions from './lost-sia/src/types/canvasActions'
 
 
 const { 
     siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
-    siaSetUIConfig,
+    siaSetUIConfig, siaGetNextAnnoId,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
     siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
 } = actions
@@ -57,7 +59,8 @@ class SIA extends Component {
             notification: undefined,
             filteredData: undefined,
             currentRotation: 0,
-            blockCanvas: false
+            blockCanvas: false,
+            nextAnnoId: undefined
         }
         
         this.container = React.createRef()
@@ -71,6 +74,7 @@ class SIA extends Component {
         this.props.getSiaAnnos(-1)
         this.props.getSiaLabels()
         this.props.getSiaConfig()
+        this.getNextAnnoId()
         // console.warn('We are not using real SIA config')
     }
     componentWillUnmount() {
@@ -168,6 +172,12 @@ class SIA extends Component {
         }
     }
 
+    getNextAnnoId(){
+        this.props.siaGetNextAnnoId().then(response => {
+            console.log('nextAnnoId', response)
+            this.setState({nextAnnoId: response.data})
+        })
+    }
     getNewImage(imageId, direction){
         this.canvas.current.resetZoom()
         const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
@@ -241,6 +251,19 @@ class SIA extends Component {
                 message: "Saved SIA annotations",
                 type: notificationType.INFO
             })
+        }
+    }
+
+    handleAnnoPerformedAction(annoId, annos, action){
+        console.log('annoPerformedAction', annoId, annos, action)
+        switch(action){
+            case annoActions.ANNO_CREATED:
+            case annoActions.ANNO_CREATED_FINAL_NODE:
+                // console.log('ANNO CREATED!')
+                this.getNextAnnoId()
+                break
+            default:
+                break
         }
     }
 
@@ -458,6 +481,8 @@ class SIA extends Component {
                     onUiConfigUpdate={e => this.props.siaSetUIConfig(e)}
                     onAutoSave={() => this.handleAutoSave()}
                     autoSaveInterval={60}
+                    nextAnnoId={this.state.nextAnnoId}
+                    onAnnoPerformedAction={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
                     // defaultLabel='no label'
                     />
                 <ToolBar 
@@ -504,7 +529,7 @@ export default connect(
         selectAnnotation,
         siaShowImgLabelInput,
         siaImgIsJunk, siaSetUIConfig,
-        getWorkingOnAnnoTask,
+        getWorkingOnAnnoTask, siaGetNextAnnoId,
         siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }
     , null,
