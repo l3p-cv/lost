@@ -1003,7 +1003,7 @@ class Canvas extends Component{
     traverseAnnos(){
         if (this.state.annos.length > 0){
             const myAnnos = this.state.annos.filter(e => {
-                return e.status !== annoStatus.DELETED && !this.isLocked(e.id)
+                return e.status !== annoStatus.DELETED && !this.isLocked(e.id) && !(e.visible === false)
             })
             if (myAnnos.length > 0){
                 if (!this.state.selectedAnnoId){
