@@ -184,6 +184,12 @@ class Canvas extends Component{
 
             this.setState({prevLabel:[this.props.defaultLabel]})
         }
+        if (this.props.autoSaveInterval){
+            setInterval(() => {
+                console.log('AutoSave')
+                this.props.onAutoSave()
+            }, this.props.autoSaveInterval*1000)
+        }
     }
 
     componentDidUpdate(prevProps, prevState){

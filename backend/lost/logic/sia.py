@@ -1,3 +1,4 @@
+from enum import auto
 import lost
 import json
 import os
@@ -182,13 +183,13 @@ def __is_last_image__(db_man, user_id, at_id, iteration, img_id):
     else:
         return True
 
-def update(db_man, data, user_id):
+def update(db_man, data, user_id, auto_save=False):
     """ Update Image and TwoDAnnotation from SIA
     :type db_man: lost.db.access.DBMan
     """
     anno_task = get_sia_anno_task(db_man, user_id)
     sia_update = SiaUpdate(db_man, data, user_id, anno_task)
-    return sia_update.update()
+    return sia_update.update(auto_save)
 
 def review_update(db_man, data, user_id, pe_id):
     """ Update Image and TwoDAnnotation from SIA
@@ -280,7 +281,7 @@ class SiaUpdate(object):
             for ll_id in to_add:
                 self.image_anno.labels.append(model.Label(label_leaf_id=ll_id))
 
-    def update(self):
+    def update(self, auto_save=False):
         if self.at.pipe_element.pipe.state == state.Pipe.PAUSED:
             return "pipe is paused"
         if self.b_boxes is not None:
@@ -291,7 +292,8 @@ class SiaUpdate(object):
             self.__update_annotations(self.lines, dtype.TwoDAnno.LINE)
         if self.polygons is not None:
             self.__update_annotations(self.polygons, dtype.TwoDAnno.POLYGON)
-        self.image_anno.state = state.Anno.LABELED
+        if not auto_save:
+            self.image_anno.state = state.Anno.LABELED
         # Update Image Label
         # self.image_anno.labels = self.img_labels
         self.db_man.add(self.image_anno)

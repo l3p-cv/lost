@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added an InfoBox (AnnoStats) that shows the number of annotation per label in an image
     - This box allows also to hide annotations of a specific label
     - See #86, #160 and #161
+  - Added sia auto save feature
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

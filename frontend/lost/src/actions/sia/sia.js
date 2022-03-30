@@ -10,9 +10,10 @@ export const getSiaAnnos = (imageId, type='next') => async dispatch => {
     } catch (e) {console.error(e)}
 }
 
-export const siaUpdateAnnos = (data) => async dispatch => {
+export const siaUpdateAnnos = (data, isAutoSave=false) => async dispatch => {
+    const sendData = {...data, isAutoSave}
     try {
-        const response = await axios.post(API_URL + '/sia/update', data)
+        const response = await axios.post(API_URL + '/sia/update', sendData)
         console.log('REQUEST: siaUpdateAnnos: wrongLoad ', response)
     } catch (e) {console.error(e)}
 }

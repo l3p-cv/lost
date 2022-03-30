@@ -155,5 +155,6 @@ sia_update = api.model('SIA Update',{
     'annotations': fields.Nested(sia_update_annotations, required=True, description='All annotations which should be updated.'),
     'imgLabelIds': fields.List(fields.Integer(description='A list of label ids for the image'), required=True),
     'imgLabelChanged': fields.Boolean(description='Indicates of the labels for the image have been changed by the annotator', required=True),
-    'isJunk': fields.Boolean(description='Indicates wether the image was marked as Junk by the annotator.', required=True)
+    'isJunk': fields.Boolean(description='Indicates wether the image was marked as Junk by the annotator.', required=True),
+    'isAutoSave': fields.Boolean(description='Indicates wether this update is an auto save request', required=True)
 })

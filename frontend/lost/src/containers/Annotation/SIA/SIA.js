@@ -231,12 +231,24 @@ class SIA extends Component {
                 break
         }
     }
+    
+    handleAutoSave(){
+        if (this.canvas.current){
+            const newAnnos = this.undoAnnoRotationForUpdate(false)
+            this.props.siaUpdateAnnos(newAnnos, true)
+            this.handleNotification({
+                title: "Performed AutoSave",
+                message: "Saved SIA annotations",
+                type: notificationType.INFO
+            })
+        }
+    }
 
-    undoAnnoRotationForUpdate(){
+    undoAnnoRotationForUpdate(saveState=true){
         if (this.state.currentRotation!== 0){
             // const currentRotation = this.state.currentRotation
             // this.setState({currentRotation:0})
-            return this.rotateAnnos(0, true)
+            return this.rotateAnnos(0, true, saveState)
         }
         // if (currentFilter){
         //     if (currentFilter.rotate){
@@ -248,7 +260,7 @@ class SIA extends Component {
         return this.canvas.current.getAnnos(undefined, true)
     }
 
-    rotateAnnos(absAngle, removeFrontendIds=false){
+    rotateAnnos(absAngle, removeFrontendIds=false, saveState=true){
         const angle = absAngle - this.state.currentRotation
         const bAnnos = this.canvas.current.getAnnos(undefined, removeFrontendIds)
         const svg = this.canvas.current.state.image
@@ -305,7 +317,9 @@ class SIA extends Component {
             ...bAnnos,
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize)
         }
-        this.setState({currentRotation:absAngle})
+        if (saveState){
+            this.setState({currentRotation:absAngle})
+        }
         // this.setState({
         //     annos: {
         //         image: {...this.state.image},
@@ -442,6 +456,8 @@ class SIA extends Component {
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     blocked={this.state.blockCanvas}
                     onUiConfigUpdate={e => this.props.siaSetUIConfig(e)}
+                    onAutoSave={() => this.handleAutoSave()}
+                    autoSaveInterval={60}
                     // defaultLabel='no label'
                     />
                 <ToolBar 
