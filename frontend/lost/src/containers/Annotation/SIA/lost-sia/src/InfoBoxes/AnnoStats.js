@@ -93,7 +93,7 @@ const AnnoStats = (props) => {
     }
     
     return <InfoBox
-        header={'Annoations per Label'}
+        header={'Annotations per Label'}
         content={renderDescription()}
         visible={props.visible}
         defaultPos={props.defaultPos}
