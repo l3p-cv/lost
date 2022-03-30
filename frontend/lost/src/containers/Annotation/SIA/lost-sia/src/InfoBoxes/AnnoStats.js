@@ -10,29 +10,10 @@ import * as colorlut from '../utils/colorlut'
 const AnnoStats = (props) => {
 
     const [hideList, setHideList] = useState([])
-    // const [idToColor, setIdToColor] = useState({})
-
-    // useEffect(() => {
-    //     if (props.possibleLabels){
-    //         // console.log('possibleLabels', props.possibleLabels)
-    //         const temp = {}
-    //         const color = {}
-    //         console.log('possibleLabels', props.possibleLabels)
-    //         props.possibleLabels.forEach(lbl => {
-    //             temp[lbl.id] = lbl.label
-    //             if (lbl.color){
-    //                 color[lbl.id] = lbl.color
-    //             }
-    //         })
-    //         temp[-1] = 'No Label'
-    //         setIdToLbl(temp)
-    //         setIdToColor(color)
-    //     }
-    // }, [props.possibleLabels])
 
     useEffect(() => {
-        // console.log('annos changed', props.annos)
-    }, [props.annos])
+        setHideList([])
+    }, [props.imgLoadCount])
 
     const onDismiss = () => {
         if (props.onDismiss){

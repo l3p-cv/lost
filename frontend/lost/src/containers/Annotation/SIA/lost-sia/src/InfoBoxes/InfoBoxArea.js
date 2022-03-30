@@ -135,6 +135,7 @@ class InfoBoxes extends Component{
             onDismiss={() => this.onDismiss('AnnoStats')}
             onHideLbl={(lbl, hide) => this.onHideLbl(lbl, hide)}
             visible={this.props.uiConfig.annoStats.visible}
+            imgLoadCount={this.props.imgLoadCount}
         />
         </div>
         )

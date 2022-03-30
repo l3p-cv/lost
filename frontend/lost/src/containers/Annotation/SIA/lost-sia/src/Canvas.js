@@ -1552,6 +1552,7 @@ class Canvas extends Component{
                     selectedAnno={selectedAnno}
                     possibleLabels={this.state.possibleLabels}
                     uiConfig={this.props.uiConfig}
+                    imgLoadCount={this.state.imgLoadCount}
                     onCommentUpdate={comment => this.updateAnnoComment(comment)}
                     onUiConfigUpdate={e => this.props.onUiConfigUpdate(e)}
                     onHideLbl={(lbl, hide) => this.handleHideLbl(lbl, hide)}
