@@ -62,6 +62,15 @@ def release_annos_loop(log_name):
     lostconfig = config.LOSTConfig()
     run_loop(release_annos, lostconfig.session_timeout*60, log_name=log_name)
 
+def remove_empty_annos(log_name):
+    logger = logging.getLogger(log_name)
+    c_annos = jobs.remove_empty_annos()
+    logger.info('Removed {} empty 2d annos'.format(c_annos))
+
+def remove_empty_annos_loop(log_name):
+    lostconfig = config.LOSTConfig()
+    run_loop(remove_empty_annos, lostconfig.session_timeout*2, log_name=log_name)
+
 def main():
     parser = argparse.ArgumentParser(description='Run LOST cronjobs')
     parser.add_argument('--debug', action='store_true',
@@ -87,7 +96,8 @@ def main():
         jobs = [
             process_pipes_loop,
             worker_lifesign_loop,
-            release_annos_loop
+            release_annos_loop, 
+            remove_empty_annos_loop
         ]
         if lostconfig.worker_management == 'dynamic':
             jobs.append(dask_session.release_client_by_timeout_loop)

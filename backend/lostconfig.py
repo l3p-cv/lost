@@ -117,7 +117,6 @@ class LOSTConfig(object):
         # Intervall in seconds in which a worker should give a lifesign
         self.worker_beat = ge('LOST_WORKER_BEAT',10)
         self.pipe_schedule = ge('LOST_PIPE_SCHEDULE',5)
-        self.session_timeout = ge('LOST_SESSION_TIME_OUT',30*60)
 
         # Timout when a user get automatically logged out
         self.session_timeout = ge('LOST_SESSION_TIMEOUT',30*60)

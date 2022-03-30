@@ -219,7 +219,7 @@ def junk(db_man, user_id, img_id):
         return "error: image_anno not found"
 
 def get_next_anno_id(dbman):
-    anno = model.TwoDAnno()
+    anno = model.TwoDAnno(timestamp=datetime.now())
     dbman.save_obj(anno)
     return anno.idx
 

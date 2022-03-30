@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - This box allows also to hide annotations of a specific label
     - See #86, #160 and #161
   - Added sia auto save feature
+- Cronjob that removes annotations that are not assigned to any image
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

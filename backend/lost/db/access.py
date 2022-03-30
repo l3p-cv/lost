@@ -499,6 +499,11 @@ class DBMan(object):
         return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id==img_anno_id,\
                                                             model.TwoDAnno.iteration==iteration).all()
 
+    def get_lonely_two_d_annos(self):
+        ''' Get all two_d annotation that are not assigned to an image
+        '''
+        return self.session.query(model.TwoDAnno).filter(model.TwoDAnno.img_anno_id==None).all()
+
     def get_previous_sia_anno(self, anno_task_id, user_id, img_anno_id, iteration):
         ''' Get a previous image annotation by current annotation id
         '''

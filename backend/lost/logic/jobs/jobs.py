@@ -135,3 +135,42 @@ def release_annos_on_session_timeout():
     c_imgs, c_2dannos = release_annos_by_timeout(dbm, lostconfig.session_timeout)
     dbm.close_session()
     return c_imgs, c_2dannos
+
+def remove_empty_annos_by_timeout(dbm, timeout):
+    '''Remove empty annotations based on timeout
+
+    When new annotations are created in SIA, empty annotations will be created
+    in oder to get an two_d_anno ID for db, which avoids db synchronisation
+    problems. If SIA will not send an annotation with the created id back to
+    the backend a zombie annotation is present in db. 
+    This method will take care of such zombies :-) 
+
+    Args:
+        dbm (DBMan): Database manager
+        timeout (int): Timeout in seconds when empty annotations should be removed
+    '''
+    c_2dannos = 0
+    present = datetime.now()
+    unlock_time = present - timedelta(seconds=timeout)
+    anno_list = dbm.get_lonely_two_d_annos()
+    logger = logging.getLogger('cron_jobs')
+    logger.info(f'timeout: {timeout}')
+    logger.info(f'unlock_time: {unlock_time}')
+    for anno in anno_list:
+        logger.info(f'anno.idx: {anno.idx}')
+        logger.info(f'anno.timestamp: {anno.timestamp}')
+        if anno.timestamp is not None:
+            if anno.timestamp < unlock_time:
+                
+                logger.info(f'delete_anno: {anno.idx}')
+                dbm.delete(anno)
+                c_2dannos += 1
+    dbm.commit()
+    return c_2dannos
+
+def remove_empty_annos():
+    lostconfig = config.LOSTConfig()
+    dbm = DBMan(lostconfig)
+    c_2dannos = remove_empty_annos_by_timeout(dbm, lostconfig.session_timeout)
+    dbm.close_session()
+    return c_2dannos
