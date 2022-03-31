@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Message, Divider } from 'semantic-ui-react'
+import { Header, Message, Divider } from 'semantic-ui-react'
 import Draggable from 'react-draggable';
 
 class InfoBox extends Component{
@@ -59,7 +59,8 @@ class InfoBox extends Component{
                 onDismiss={e => {this.onDismiss(e)}}
                 size="small"
             >
-                <Message.Header className="handle" style={{cursor: 'grab'}}>{this.props.header}</Message.Header>
+                <Header textAlign='center' as='h5' className="handle" style={{cursor: 'grab'}}>{this.props.header}</Header>
+                {/* <Message.Header textAlign='center' className="handle" style={{cursor: 'grab'}}>{this.props.header}</Message.Header> */}
                 <Divider></Divider>
                 <Message.Content>
                     {this.props.content}

@@ -204,7 +204,7 @@ class Update(Resource):
             return re
 
 @namespace.route('/nextAnnoId')
-class Update(Resource):
+class NextAnnoId(Resource):
     # @api.expect(sia_update)
     @jwt_required 
     def get(self):

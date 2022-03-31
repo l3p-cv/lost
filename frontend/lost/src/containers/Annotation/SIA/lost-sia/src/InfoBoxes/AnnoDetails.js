@@ -1,10 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react'
-import { Button, Icon, Divider, Header, TextArea, Form, Label} from 'semantic-ui-react'
+import { List, Divider, Button, TextArea, Form, Label, Icon} from 'semantic-ui-react'
 import InfoBox from './InfoBox'
+import PopUp from '../SiaPopup'
 
 const AnnoDetails = (props) => {
 
     const [comment, setComment] = useState('')
+    const [example, setExample] = useState(false)
     const [showSaveBtn, setShowSaveBtn] = useState(false)
     const tARef = useRef()
     useEffect(() => {
@@ -34,6 +36,13 @@ const AnnoDetails = (props) => {
             props.onCommentUpdate(comment)
         }
         setShowSaveBtn(false)
+    }
+
+    const onMarkExampleClick = () => {
+        // setExample(!example)
+        if (props.onMarkExample) {
+            props.onMarkExample(props.anno)
+        }
     }
 
     const renderSaveBtn = () => {
@@ -81,17 +90,44 @@ const AnnoDetails = (props) => {
         }
     }
 
+    const renderExampleMark = () => {
+        if (!props.allowedToMarkExample) return null
+        let color = 'grey'
+        let iconName = 'bookmark outline'
+        if (props.anno){
+            if (props.anno.isExample){
+                color = 'yellow'
+                iconName = 'bookmark'
+            } 
+        }
+        const mark =  <Label as='a' color={color} style={{opacity:0.8}} size='medium' corner='left' onClick={() => {onMarkExampleClick()}}>
+            <Icon name={iconName}/>
+        </Label>
+        return <PopUp content='Mark this annotation as example for other annotators' trigger={mark} />
+
+    }
+
     const renderDescription = () => {
         if (props.anno){
             return (
                 <div>
-                        <Header> 
+                    {renderExampleMark()}
+                        {/* <Header> 
                             Labels
                         </Header>
                         <div>
                             {renderLabels()}
-                        </div>
-                <Divider horizontal> Comment </Divider>
+                        </div> */}
+                <List>
+                    <List.Item icon='at' content={props.anno.id}/>
+                    <List.Item icon='tag' content={renderLabels()}/>
+                    <List.Item icon='time' content={
+                        `${props.anno.annoTime.toLocaleString(undefined, 
+                            {minimumFractionDigits:2, maximumFractionDigits:2})} seconds`
+                        } />
+                    {/* <List.Item icon='time' content={props.anno.annoTime} /> */}
+                </List>
+                {/* <Divider horizontal> Comment </Divider> */}
                 {renderComment()}
                 </div>
             )

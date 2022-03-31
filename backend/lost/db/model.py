@@ -140,6 +140,8 @@ class TwoDAnno(Base):
         description (str): Description for this annotation. Assigned by an 
             annotator or algorithm.
         meta (str): A field for meta information added by a script
+        is_example (bool): Indicates wether this annotation is an example for
+            the selected label.
     """
     __tablename__ = "two_d_anno"
 
@@ -161,6 +163,7 @@ class TwoDAnno(Base):
     anno_time = Column(Float)
     description = Column(Text)
     meta = Column(Text)
+    is_example = Column(Boolean)
 
     def __init__(self, anno_task_id=None,
                  user_id=None, timestamp=None, state=None,
@@ -168,7 +171,7 @@ class TwoDAnno(Base):
                  img_anno_id=None, timestamp_lock=None,
                  iteration=0, data=None, dtype=None,
                  confidence=None, anno_time=None,
-                 description=None, meta=None
+                 description=None, meta=None, is_example=False
                  ):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
@@ -185,6 +188,7 @@ class TwoDAnno(Base):
         self.anno_time = anno_time
         self.description = description
         self.meta = meta
+        self.is_example = is_example
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 

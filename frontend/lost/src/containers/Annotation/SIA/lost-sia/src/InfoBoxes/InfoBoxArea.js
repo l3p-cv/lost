@@ -96,6 +96,12 @@ class InfoBoxes extends Component{
         }
     }
 
+    onMarkExample(anno){
+        if (this.props.onMarkExample){
+            this.props.onMarkExample(anno)
+        }
+    }
+
     onHideLbl(lbl, hide){
         if(this.props.onHideLbl){
             this.props.onHideLbl(lbl, hide)
@@ -121,6 +127,8 @@ class InfoBoxes extends Component{
             }}
             onDismiss={() => this.onDismiss('AnnoDetails')}
             onCommentUpdate={(comment) => this.onCommentUpdate(comment)}
+            onMarkExample={(anno) => this.onMarkExample(anno)}
+            allowedToMarkExample={this.props.allowedToMarkExample}
             commentInputTrigger={this.props.commentInputTrigger}
             visible={this.props.uiConfig.annoDetails.visible}
         />
@@ -142,18 +150,4 @@ class InfoBoxes extends Component{
     }
 }
 
-// function mapStateToProps(state) {
-//     return ({
-//         annos: state.sia.annos,
-//         selectedAnno: state.sia.selectedAnno,
-//         layoutUpdate: state.sia.layoutUpdate,
-//         uiConfig: state.sia.uiConfig,
-//         imgBar: state.sia.imgBar,
-//         svg: state.sia.svg,
-//         possibleLabels: state.sia.possibleLabels
-//     })
-// }
-// export default connect(mapStateToProps, 
-//     {siaShowImgBar, siaSetUIConfig}
-// )(InfoBoxes)
 export default InfoBoxes

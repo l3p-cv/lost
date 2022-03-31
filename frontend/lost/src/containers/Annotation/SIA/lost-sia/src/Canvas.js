@@ -520,6 +520,13 @@ class Canvas extends Component{
     onAnnoPerformedAction(anno, pAction){
         let newAnnos = undefined
         switch(pAction){
+            case canvasActions.ANNO_MARK_EXAMPLE:
+                newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                this.pushHist(
+                    newAnnos, anno.id,
+                    pAction, this.state.showSingleAnno
+                )
+                break
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno.id)
                 // this.pushHist(
@@ -741,6 +748,19 @@ class Canvas extends Component{
         if (hiddenSelected){
             this.selectAnnotation(undefined)
         }
+    }
+
+    handleMarkExample(anno){
+        const newAnno = {...anno}
+        if (newAnno.isExample == undefined){
+           newAnno.isExample = true 
+        } else if (newAnno.isExample){
+            newAnno.isExample = false
+        } else {
+            newAnno.isExample = true
+        }
+        this.onAnnoPerformedAction(newAnno, canvasActions.ANNO_MARK_EXAMPLE)
+
     }
 
     /*************
@@ -1563,11 +1583,13 @@ class Canvas extends Component{
                     annos={this.state.annos}
                     selectedAnno={selectedAnno}
                     possibleLabels={this.state.possibleLabels}
+                    allowedToMarkExample={true}
                     uiConfig={this.props.uiConfig}
                     imgLoadCount={this.state.imgLoadCount}
                     onCommentUpdate={comment => this.updateAnnoComment(comment)}
                     onUiConfigUpdate={e => this.props.onUiConfigUpdate(e)}
                     onHideLbl={(lbl, hide) => this.handleHideLbl(lbl, hide)}
+                    onMarkExample={anno => this.handleMarkExample(anno)}
                     commentInputTrigger={this.state.annoCommentInputTrigger}
                 />
                 <svg ref={this.svg} width={this.state.svg.width} 

@@ -29,6 +29,7 @@ bbox = api.model('BBox',{
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
     'data': fields.Nested(bbox_data, description='2-D data of that box.'),
     'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True),
     'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
@@ -44,6 +45,7 @@ point = api.model('Point',{
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that point.'),
     'data': fields.Nested(point_data, description='2-D data of that point.'),
     'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True),
     'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
@@ -53,6 +55,7 @@ line = api.model('Line',{
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that line.'),
     'data': fields.List(fields.Nested(point_data, description='2-D data of that line.')),
     'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True),
     'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
@@ -62,6 +65,7 @@ polygon = api.model('Polygon',{
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
     'data': fields.List(fields.Nested(point_data, description='2-D data of that polygon.')),
     'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True),
     'comment': fields.String(readOnly=True, description='A comment for this 2D annoation')
 })
 
@@ -117,6 +121,7 @@ sia_update_bbox = api.model('SIA update bbox', {
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that bbox.'),
     'status': fields.String(required=True, description='Status of that bbox can be "new", "changed" and "deleted".'),
     'data': fields.Nested(bbox_data),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True),
     'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
@@ -125,6 +130,7 @@ sia_update_point = api.model('SIA update point', {
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that point.'),
     'status': fields.String(required=True, description='Status of that point can be "new", "changed" and "deleted".'),
     'data': fields.Nested(point_data,required=True,),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True),
     'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
 })
 
@@ -133,7 +139,8 @@ sia_update_line = api.model('SIA update line', {
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that line.'),
     'status': fields.String(required=True, description='Status of that line can be "new", "changed" and "deleted".'),
     'data': fields.List(fields.Nested(point_data),required=True,),
-    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True)
 })
 
 sia_update_polygon = api.model('SIA update polygon', {
@@ -141,7 +148,8 @@ sia_update_polygon = api.model('SIA update polygon', {
     'labelIds': fields.List(fields.Integer(required=True, description='Label id.'), description='All label ids which belongs to that polygon.'),
     'status': fields.String(required=True, description='Status of that polygon can be "new", "changed" and "deleted".'),
     'data': fields.List(fields.Nested(point_data),required=True),
-    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds')
+    'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
+    'isExample': fields.Boolean(description='Indicates wether annotation is an example', required=True)
 })
 
 sia_update_annotations = api.model('SIA update annotations',{
