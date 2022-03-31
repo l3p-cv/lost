@@ -176,14 +176,16 @@ class SIA extends Component {
 
     getNextAnnoId(){
         this.props.siaGetNextAnnoId().then(response => {
-            console.log('nextAnnoId', response)
             this.setState({nextAnnoId: response.data})
         })
     }
     allowedToMarkExample(){
         this.props.siaAllowedToMarkExample().then(response => {
-            console.log('allowedToMarkExample', response)
-            this.setState({allowedToMark: response.data})
+            if (response !== undefined){
+                this.setState({allowedToMark: response.data})
+            } else {
+                console.warn('Failed to call AllowedToMarkExample webservice!')
+            }
         })
     }
     getNewImage(imageId, direction){
