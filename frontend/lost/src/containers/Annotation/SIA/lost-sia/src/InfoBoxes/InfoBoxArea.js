@@ -118,6 +118,7 @@ class InfoBoxes extends Component{
             defaultPos={this.state.position}
             onDismiss={() => this.onDismiss('LabelInfo')}
             visible={this.props.uiConfig.labelInfo.visible}
+            exampleImg={this.props.exampleImg}
         />
         <AnnoDetails anno={this.props.selectedAnno} 
             possibleLabels={this.props.possibleLabels}

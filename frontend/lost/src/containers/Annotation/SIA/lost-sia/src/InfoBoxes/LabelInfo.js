@@ -1,48 +1,51 @@
-import React, {Component} from 'react'
-import { Card, Header } from 'semantic-ui-react'
+import React, {useState} from 'react'
+import { Divider, Image, Card, Header } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
+import SiaPopup from '../SiaPopup'
+import LabelExampleViewer from '../LabelExampleViewer'
+import * as exampleApi from '../../../../../../actions/annoExample/annoExample_api'
+const LabelInfo = (props) => {
 
-class LabelInfo extends Component{
-
-    constructor(props) {
-        super(props)
-        this.state = {
+    const [showExampleViewer, setShowExampleViewer] = useState(false)
+    const { data: dataRaw, mutate: getAnnoExample } = exampleApi.useGetAnnoExampleImg({})
+    const onDismiss = () => {
+        if (props.onDismiss){
+            props.onDismiss()
         }
     }
 
-    componentDidMount(){
-
-    }
-    componentDidUpdate(prevProps){
-
-    }
-
-    renderMeta(){
-        if (this.props.anno.id){
-            return (
-                <Card.Meta>Type: {this.props.anno.type} </Card.Meta>
-            )
-        }
+    const handleImgClick = () => {
+        console.log('clicked img')
+        // setShowExampleViewer(true)
+        getAnnoExample({id:1})
     }
 
-    onDismiss(){
-        if (this.props.onDismiss){
-            this.props.onDismiss()
-        }
+    const renderExampleImg = () => {
+        return <div>
+              <Divider horizontal> Example </Divider>
+              <SiaPopup trigger={<Image src={props.exampleImg} rounded
+                onClick={() => handleImgClick()}
+              />}
+                content={'Click on image to view more examples'} />
+              {/* <Image src='https://www.gstatic.com/webp/gallery3/1.png'/> */}
+        </div>
     }
-    renderDescription(){
-        if (this.props.selectedAnno){
-            const selectedLabelIds = this.props.selectedAnno.labelIds
+
+    const renderDescription = () => {
+        if (props.selectedAnno){
+            const selectedLabelIds = props.selectedAnno.labelIds
             if (!selectedLabelIds) return 'No Label'
-            const lbl = this.props.possibleLabels.find( e => {
+            const lbl = props.possibleLabels.find( e => {
                 return selectedLabelIds[0] === e.id
             })
             if (!lbl) return "No Label"
             return <div>
+                <LabelExampleViewer active={showExampleViewer} />
                 <Header>{
                     lbl.label
                 }</Header>
               <div dangerouslySetInnerHTML={{__html: lbl.description}} />
+              {renderExampleImg()}
             </div>
         } else {
             return 'No Label'
@@ -50,15 +53,13 @@ class LabelInfo extends Component{
     }
 
 
-    render(){
-        return <InfoBox
-            header="Label Info"
-            content={this.renderDescription()}
-            visible={this.props.visible}
-            defaultPos={this.props.defaultPos}
-            onDismiss={() => this.onDismiss()}
-        />
-    }
+    return <InfoBox
+        header="Label Info"
+        content={renderDescription()}
+        visible={props.visible}
+        defaultPos={props.defaultPos}
+        onDismiss={() => onDismiss()}
+    />
 }
 
 

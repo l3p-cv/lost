@@ -1595,6 +1595,7 @@ class Canvas extends Component{
                     onHideLbl={(lbl, hide) => this.handleHideLbl(lbl, hide)}
                     onMarkExample={anno => this.handleMarkExample(anno)}
                     commentInputTrigger={this.state.annoCommentInputTrigger}
+                    exampleImg={this.props.image.data}
                 />
                 <svg ref={this.svg} width={this.state.svg.width} 
                     height={this.state.svg.height}
