@@ -9,6 +9,7 @@ from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
+from lost.logic.permissions import UserPermissions
 import json
 import PIL
 import base64
@@ -202,6 +203,21 @@ class Update(Resource):
             re = sia.update(dbm, data, user.idx)
             dbm.close_session()
             return re
+
+@namespace.route('/allowedExampler')
+class AllowedExampler(Resource):
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+
+        else:
+            up = UserPermissions(dbm, user)
+            return up.allowed_to_mark_example()
 
 @namespace.route('/nextAnnoId')
 class NextAnnoId(Resource):

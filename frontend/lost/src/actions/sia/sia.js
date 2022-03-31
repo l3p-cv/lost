@@ -26,6 +26,14 @@ export const siaGetNextAnnoId = () => async dispatch => {
     } catch (e) {console.error(e)}
 }
 
+export const siaAllowedToMarkExample = () => async dispatch => {
+    try {
+        const response = await axios.get(API_URL + '/sia/allowedExampler')
+        // console.log('SIA REQUEST: ', response)
+        return response
+    } catch (e) {console.error(e)}
+}
+
 export const getSiaImage = (imgId) => async dispatch =>{
     try {
         const response = await axios.post(API_URL + '/sia/getimage', {imgId:imgId})

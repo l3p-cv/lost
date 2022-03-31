@@ -30,7 +30,7 @@ const {
     siaLayoutUpdate, getSiaAnnos,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend,
-    siaSetUIConfig, siaGetNextAnnoId,
+    siaSetUIConfig, siaGetNextAnnoId, siaAllowedToMarkExample,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
     siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
 } = actions
@@ -60,7 +60,8 @@ class SIA extends Component {
             filteredData: undefined,
             currentRotation: 0,
             blockCanvas: false,
-            nextAnnoId: undefined
+            nextAnnoId: undefined,
+            allowedToMark: false
         }
         
         this.container = React.createRef()
@@ -75,6 +76,7 @@ class SIA extends Component {
         this.props.getSiaLabels()
         this.props.getSiaConfig()
         this.getNextAnnoId()
+        this.allowedToMarkExample()
         // console.warn('We are not using real SIA config')
     }
     componentWillUnmount() {
@@ -176,6 +178,12 @@ class SIA extends Component {
         this.props.siaGetNextAnnoId().then(response => {
             console.log('nextAnnoId', response)
             this.setState({nextAnnoId: response.data})
+        })
+    }
+    allowedToMarkExample(){
+        this.props.siaAllowedToMarkExample().then(response => {
+            console.log('allowedToMarkExample', response)
+            this.setState({allowedToMark: response.data})
         })
     }
     getNewImage(imageId, direction){
@@ -483,6 +491,7 @@ class SIA extends Component {
                     autoSaveInterval={60}
                     nextAnnoId={this.state.nextAnnoId}
                     onAnnoPerformedAction={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
+                    allowedToMarkExample={this.state.allowedToMark}
                     // defaultLabel='no label'
                     />
                 <ToolBar 
@@ -528,7 +537,7 @@ export default connect(
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
         siaShowImgLabelInput,
-        siaImgIsJunk, siaSetUIConfig,
+        siaImgIsJunk, siaSetUIConfig, siaAllowedToMarkExample,
         getWorkingOnAnnoTask, siaGetNextAnnoId,
         siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }
