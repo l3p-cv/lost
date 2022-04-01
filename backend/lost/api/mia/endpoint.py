@@ -146,8 +146,8 @@ class GetImage(Resource):
                 except:
                     pass
                 crops, _ = anno_helper.crop_boxes(
-                    [db_anno.to_vec('anno.data')],
-                    [db_anno.to_vec('anno.dtype')], 
+                    [db_anno.to_vec('anno_data')],
+                    [db_anno.to_vec('anno_dtype')], 
                     image, context=context, 
                     draw_annotations=draw_anno
                 )

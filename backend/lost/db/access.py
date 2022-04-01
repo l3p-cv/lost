@@ -685,6 +685,14 @@ class DBMan(object):
         return self.session.query(model.TwoDAnno)\
             .filter(model.TwoDAnno.anno_task_id==anno_task_id, model.TwoDAnno.user_id==user_id, model.TwoDAnno.idx.in_(ids)).all()
 
+    def get_example_annotation_by_ll_id(self, label_leaf_id):
+        ''' Get list of two_d annotation by label leaf id
+        '''
+        return self.session.query(model.TwoDAnno).join(model.Label)\
+            .filter(model.Label.two_d_anno_id == model.TwoDAnno.idx,
+                    model.Label.label_leaf_id == label_leaf_id,
+                    model.TwoDAnno.is_example==True).all()
+
     def find_user_by_email(self, email):
         return self.session.query(model.User).filter(model.User.email==email).first()
     
