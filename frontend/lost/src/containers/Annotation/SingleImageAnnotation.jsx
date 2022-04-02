@@ -14,15 +14,7 @@ import * as dataApi from '../../actions/data/data_api'
 
 const { getWorkingOnAnnoTask } = actions
 
-
-// class SingleImageAnnotation extends Component {
 const SingleImageAnnotation = (props) => {
-	// constructor(props){
-	// 	super(props)
-	// 	this.state = {
-	// 		image: undefined
-	// 	}
-	// }
 	const [exampleImg, setExampleImg] = useState()
 
     const { data: exampleAnnoId, mutate: getAnnoExample } = exampleApi.useGetAnnoExample({})
@@ -56,12 +48,6 @@ const SingleImageAnnotation = (props) => {
 		}
 
 	}
-	// componentDidMount(){
-	// 	this.props.getWorkingOnAnnoTask()
-	// }
-
-	// render(){
-	// 	console.log(this.props.annos)
 		return (
 			<Row>
 				<Col>
@@ -78,7 +64,6 @@ const SingleImageAnnotation = (props) => {
 				</Col>
 			</Row>
 		)
-	// }
 }
 
 function mapStateToProps(state) {
