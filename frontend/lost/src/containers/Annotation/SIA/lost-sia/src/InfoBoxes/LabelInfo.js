@@ -40,6 +40,7 @@ const LabelInfo = (props) => {
 
     const handleImgClick = () => {
         console.log('clicked img')
+        // setShowExampleViewer(true)
         requestImg(myLbl, props.selectedAnno)
 
         // setShowExampleViewer(true)
@@ -68,12 +69,12 @@ const LabelInfo = (props) => {
             // })
             if (!myLbl) return "No Label"
             return <div>
-                <LabelExampleViewer active={showExampleViewer} />
                 <Header>{
                     myLbl.label
                 }</Header>
               <div dangerouslySetInnerHTML={{__html: myLbl.description}} />
               {renderExampleImg()}
+              <LabelExampleViewer active={showExampleViewer} lbl={myLbl} exampleImg={props.exampleImg} />
             </div>
         // } else {
         //     return 'No Label'
