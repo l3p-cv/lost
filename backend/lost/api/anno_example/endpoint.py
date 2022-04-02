@@ -10,6 +10,8 @@ from lost.pyapi.utils import anno_helper
 from lost.logic.file_man import FileMan
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.db import model, roles, access
+import lost_ds as lds
+import numpy as np
 import cv2
 import base64
 import random
@@ -78,8 +80,22 @@ class GetImage(Resource):
                     context = float(data['addContext'])
                 except:
                     pass
+                
+                # df = db_img.to_df()
+                # df = df[df['anno_uid'] == db_anno.idx]
+                # df.loc[:,'anno_data'] = df['anno_data'].apply(lambda x: np.asarray(x))
+                
+
+                # raise Exception(df.anno_data)
+                    
+                
+                # df = lds.crop_anno(db_img.img_path, crop_pos, df)
+                # crops = lds.vis_sample(image, df)
                 crops, _ = anno_helper.crop_boxes(
                     [db_anno.to_vec('anno_data')],
+                # anno_helper.calc_box_for_anno(
+                #     [db_anno.to_vec('anno_data')],
+                #     [db_anno.to_vec('anno_dtype')])
                     [db_anno.to_vec('anno_dtype')], 
                     image, context=context, 
                     draw_annotations=draw_anno

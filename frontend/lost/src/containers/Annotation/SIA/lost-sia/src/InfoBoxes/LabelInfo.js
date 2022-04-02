@@ -8,7 +8,7 @@ const LabelInfo = (props) => {
 
     const [showExampleViewer, setShowExampleViewer] = useState(false)
     const [myLbl, setMyLbl] = useState(undefined)
-    const { data: exampleImg, mutate: getAnnoExample } = exampleApi.useGetAnnoExampleImg({})
+    // const { data: exampleImg, mutate: getAnnoExample } = exampleApi.useGetAnnoExampleImg({})
     useEffect(() => {
         if (props.selectedAnno){
             const selectedLabelIds = props.selectedAnno.labelIds
@@ -20,7 +20,8 @@ const LabelInfo = (props) => {
                     if (lbl !== myLbl){
                         setMyLbl(lbl)
                         if (props.visible)
-                            getAnnoExample({llId:lbl.id, type:'annoBased', drawAnno: true, addContext:0.05})
+                            // getAnnoExample({llId:lbl.id, type:'annoBased', drawAnno: true, addContext:0.05})
+                            requestImg(lbl, props.selectedAnno)
                     }
                 }
             }
@@ -32,17 +33,25 @@ const LabelInfo = (props) => {
         }
     }
 
+    const requestImg = (lbl, anno) => {
+        if (props.onGetAnnoExample){
+            props.onGetAnnoExample({lbl:lbl, anno:anno})
+        }
+    }
+
     const handleImgClick = () => {
         console.log('clicked img')
+        requestImg(myLbl, props.selectedAnno)
+
         // setShowExampleViewer(true)
-        getAnnoExample({llId:myLbl.id, type:'annoBased', drawAnno: true, addContext:0.05})
+        // getAnnoExample({llId:myLbl.id, type:'annoBased', drawAnno: true, addContext:0.05})
     }
 
     const renderExampleImg = () => {
-        if (!exampleImg) return null
+        if (!props.exampleImg) return null
         return <div>
               <Divider onClick={() => handleImgClick()} horizontal> Example </Divider>
-              <SiaPopup trigger={<Image src={exampleImg} rounded centered size='medium'
+              <SiaPopup trigger={<Image src={props.exampleImg} rounded centered size='medium'
                 onClick={() => handleImgClick()}
               />}
                 content={'Click on image to view more examples'} />

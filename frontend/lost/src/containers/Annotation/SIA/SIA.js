@@ -174,6 +174,7 @@ class SIA extends Component {
         }
     }
 
+
     getNextAnnoId(){
         this.props.siaGetNextAnnoId().then(response => {
             this.setState({nextAnnoId: response.data})
@@ -494,6 +495,8 @@ class SIA extends Component {
                     nextAnnoId={this.state.nextAnnoId}
                     onAnnoPerformedAction={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
                     allowedToMarkExample={this.state.allowedToMark}
+                    onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
+                    exampleImg={this.props.exampleImg}
                     // defaultLabel='no label'
                     />
                 <ToolBar 
