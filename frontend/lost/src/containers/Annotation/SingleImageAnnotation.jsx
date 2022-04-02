@@ -10,6 +10,7 @@ import SIA from './SIA/SIA'
 
 import actions from '../../actions'
 import * as exampleApi from '../../actions/annoExample/annoExample_api'
+import * as dataApi from '../../actions/data/data_api'
 
 const { getWorkingOnAnnoTask } = actions
 
@@ -22,21 +23,36 @@ const SingleImageAnnotation = (props) => {
 	// 		image: undefined
 	// 	}
 	// }
-	const [image, setImage] = useState()
+	const [exampleImg, setExampleImg] = useState()
 
-    const { data: exampleImg, mutate: getAnnoExample } = exampleApi.useGetAnnoExampleImg({})
+    const { data: exampleAnnoId, mutate: getAnnoExample } = exampleApi.useGetAnnoExample({})
+    const { data: requestedImg, mutate: getExampleImg } = dataApi.useGetImg({})
 
 	useEffect(() => {
 		props.getWorkingOnAnnoTask()
 	}, [])
 
+	useEffect(() => {
+		setExampleImg(requestedImg)
+		
+	}, [requestedImg])
+
+	useEffect(() => {
+		if (exampleAnnoId){
+			getExampleImg({
+				id:exampleAnnoId, type:'annoBased', 
+				drawAnno: true, addContext:0.05}
+			)
+		} else {
+			setExampleImg(undefined)
+		}
+		
+	}, [exampleAnnoId])
+
 	const handleGetAnnoExample = (exampleArgs) => {
 		console.log('SingleImageAnnotation', exampleArgs)
 		if (exampleArgs.lbl){
-			getAnnoExample({
-				llId:exampleArgs.lbl.id, type:'annoBased', 
-				drawAnno: true, addContext:0.05}
-			)
+			getAnnoExample({llId:exampleArgs.lbl.id})
 		}
 
 	}

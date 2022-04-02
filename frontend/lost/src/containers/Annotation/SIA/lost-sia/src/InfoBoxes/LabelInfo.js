@@ -3,7 +3,6 @@ import { Divider, Image, Card, Header } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import SiaPopup from '../SiaPopup'
 import LabelExampleViewer from '../LabelExampleViewer'
-import * as exampleApi from '../../../../../../actions/annoExample/annoExample_api'
 const LabelInfo = (props) => {
 
     const [showExampleViewer, setShowExampleViewer] = useState(false)

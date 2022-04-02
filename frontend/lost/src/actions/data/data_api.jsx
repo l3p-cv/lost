@@ -16,8 +16,8 @@ import { useMutation } from 'react-query'
 //         // return await http.get(config)
 // }
 
-export const useGetAnnoExample = () => {
-    return useMutation((example) => 
-        axios.post(API_URL + `/annoExample/getAnnoExample`, example).then(res => res.data),
+export const useGetImg = () => {
+    return useMutation((args) => 
+        axios.post(API_URL + `/data/getImage`, args).then(res => res.data),
     )
 }
