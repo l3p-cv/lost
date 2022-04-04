@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { Divider, Image, Card, Header } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import SiaPopup from '../SiaPopup'
-import LabelExampleViewer from '../LabelExampleViewer'
+import AnnoExampleViewer from '../AnnoExampleViewer'
 const LabelInfo = (props) => {
 
     const [showExampleViewer, setShowExampleViewer] = useState(false)
@@ -41,9 +41,9 @@ const LabelInfo = (props) => {
     const handleImgClick = () => {
         console.log('clicked img')
         // setShowExampleViewer(true)
-        requestImg(myLbl, props.selectedAnno)
+        // requestImg(myLbl, props.selectedAnno)
 
-        // setShowExampleViewer(true)
+        setShowExampleViewer(true)
         // getAnnoExample({llId:myLbl.id, type:'annoBased', drawAnno: true, addContext:0.05})
     }
 
@@ -51,7 +51,7 @@ const LabelInfo = (props) => {
         if (!props.exampleImg) return null
         return <div>
               <Divider onClick={() => handleImgClick()} horizontal> Example </Divider>
-              <SiaPopup trigger={<Image src={props.exampleImg} rounded centered size='medium'
+              <SiaPopup trigger={<Image src={props.exampleImg.img} rounded centered size='medium'
                 onClick={() => handleImgClick()}
               />}
                 content={'Click on image to view more examples'} />
@@ -74,7 +74,7 @@ const LabelInfo = (props) => {
                 }</Header>
               <div dangerouslySetInnerHTML={{__html: myLbl.description}} />
               {renderExampleImg()}
-              <LabelExampleViewer active={showExampleViewer} lbl={myLbl} exampleImg={props.exampleImg} />
+              <AnnoExampleViewer onRequestExample={() => requestImg(myLbl, props.selectedAnno)} onClose={() => {setShowExampleViewer(false)}} active={showExampleViewer} lbl={myLbl} exampleImg={props.exampleImg} />
             </div>
         // } else {
         //     return 'No Label'

@@ -32,8 +32,19 @@ class GetAnnoExample(Resource):
         else:
             #TODO: Check if user is permitted to load this image
             data = json.loads(request.data)
+            
+            # raise Exception(f'{data["prevExamples"]}')
             try:
-                db_anno = random.sample(dbm.get_example_annotation_by_ll_id(data['llId']), 1)[0]
+                db_annos = dbm.get_example_annotation_by_ll_id(data['llId'])
+                anno_ids = {a.idx: a for a in db_annos}
+                prev_ids = data['prevExamples']
+                res = set(anno_ids.keys()) - set(prev_ids)
+                if len(res) > 0:
+                    db_anno = anno_ids[res.pop()]
+                else:
+                    db_anno = random.sample(db_annos, 1)[0]
+
+                # db_anno = random.sample(dbm.get_example_annotation_by_ll_id(data['llId']), 1)[0]
             except:
                 return None
-            return db_anno.idx
+            return {'id': db_anno.idx, 'comment': db_anno.description}

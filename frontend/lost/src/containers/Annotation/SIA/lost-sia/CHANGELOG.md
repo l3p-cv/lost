@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - InfoBox (AnnoStats) that shows the number of annotations per label (see https://github.com/l3p-cv/lost/issues/86 and https://github.com/l3p-cv/lost/issues/160)
   - When clicking on a label in the InfoBox all annotations of this label will be hidden. Anothter click will show the annotations again. (see also https://github.com/l3p-cv/lost/issues/161)
 - Added auto save feature
+- Anno Example Viewer + Image Example in LabelInfo box
 ### Changed
 - Move InfoBoxes to Canvas
 

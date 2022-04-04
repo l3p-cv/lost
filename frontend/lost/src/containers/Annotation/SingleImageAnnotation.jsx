@@ -16,8 +16,9 @@ const { getWorkingOnAnnoTask } = actions
 
 const SingleImageAnnotation = (props) => {
 	const [exampleImg, setExampleImg] = useState()
+	const [prevExamples, setPrevExamples] = useState([])
 
-    const { data: exampleAnnoId, mutate: getAnnoExample } = exampleApi.useGetAnnoExample({})
+    const { data: exampleAnno, mutate: getAnnoExample } = exampleApi.useGetAnnoExample({})
     const { data: requestedImg, mutate: getExampleImg } = dataApi.useGetImg({})
 
 	useEffect(() => {
@@ -25,26 +26,27 @@ const SingleImageAnnotation = (props) => {
 	}, [])
 
 	useEffect(() => {
-		setExampleImg(requestedImg)
+		setExampleImg({anno:exampleAnno, img:requestedImg})
 		
 	}, [requestedImg])
 
 	useEffect(() => {
-		if (exampleAnnoId){
+		if (exampleAnno){
 			getExampleImg({
-				id:exampleAnnoId, type:'annoBased', 
+				id:exampleAnno.id, type:'annoBased', 
 				drawAnno: true, addContext:0.05}
 			)
+			setPrevExamples([...prevExamples, exampleAnno.id])
 		} else {
 			setExampleImg(undefined)
 		}
 		
-	}, [exampleAnnoId])
+	}, [exampleAnno])
 
 	const handleGetAnnoExample = (exampleArgs) => {
 		console.log('SingleImageAnnotation', exampleArgs)
 		if (exampleArgs.lbl){
-			getAnnoExample({llId:exampleArgs.lbl.id})
+			getAnnoExample({llId:exampleArgs.lbl.id,  prevExamples})
 		}
 
 	}
