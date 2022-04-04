@@ -210,7 +210,7 @@ class GetImage(Resource):
 
                 
                 ds.df.anno_lbl = ""
-                image = lds.vis_sample(image, ds.df, radius=3)
+                image = lds.vis_sample(image, ds.df, radius=10)
                 # lds.crop_components()
                 # crops, _ = anno_helper.crop_boxes(
                 #     [db_anno.to_vec('anno_data')],

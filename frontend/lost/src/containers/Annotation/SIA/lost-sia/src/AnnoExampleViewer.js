@@ -17,7 +17,7 @@ const LabelExampleViewer = (props) => {
               {/* <Divider horizontal> Description </Divider> */}
             {props.lbl.description}
               <Divider horizontal> comment </Divider>
-            { props.exampleImg.anno.comment ? props.exampleImg.anno.comment : "no comment" }
+            { props.exampleImg.anno ? props.exampleImg.anno.comment : "no comment" }
         </div>
         return <div>
             <Card 
