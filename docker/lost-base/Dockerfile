@@ -5,7 +5,7 @@ ENV LC_ALL C.UTF-8
 
 # Install Backend Dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends wget curl bzip2 python3.5 \
-    python3-pip python3-setuptools python3-dev build-essential libigraph0-dev netcat nano \
+    python3-pip python3-setuptools python3-dev build-essential netcat nano \
     htop libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y --no-install-recommends gnupg gnupg2 gnupg1 && rm -rf /var/lib/apt/lists/*
 
