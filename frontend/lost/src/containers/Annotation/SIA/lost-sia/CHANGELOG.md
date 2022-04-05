@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Anno Example Viewer + Image Example in LabelInfo box
 ### Changed
 - Move InfoBoxes to Canvas
+### Fixed 
+- Fixed correctAnnotation method to work correctly in maxCanvas mode
+  - Will prevent annotations from being created outside of the image
 
 ## [0.9.0] - 2021-12-23
 ### Added

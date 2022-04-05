@@ -121,7 +121,7 @@ class Annotation extends Component{
             case canvasActions.ANNO_MOVED:
             case canvasActions.ANNO_CREATED:
                 // Check if annoation is within image bounds
-                const corrected = transform.correctAnnotation(anno.data, this.props.svg)
+                const corrected = transform.correctAnnotation(anno.data, this.props.svg, this.props.imageOffset)
                 let newAnno = {...anno, data: corrected}
                 const area = transform.getArea(corrected, this.props.svg, anno.type, this.props.image)
                 if (area!==undefined){

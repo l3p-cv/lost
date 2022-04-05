@@ -1458,6 +1458,7 @@ class Canvas extends Component{
                 this.annoRefs.push(React.createRef())
                 return <Annotation type={el.type} 
                         data={el} key={el.id} svg={{...this.state.svg}}
+                        imageOffset={this.state.imageOffset}
                         ref={this.annoRefs[this.annoRefs.length - 1]}
                         onMouseDown={e => this.onAnnoMouseDown(e)}
                         onAction={(anno, pAction) => this.onAnnoPerformedAction(anno, pAction)}
