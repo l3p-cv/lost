@@ -225,13 +225,18 @@ class Script(pe_base.Element):
         else:
             return None
 
-    def get_filesystem(self):
-        '''Get current filesystem.
+    def get_filesystem(self, name=None):
+        '''Get default lost filesystem or a specific filesystem by name.
 
         Returns:
             fsspec.spec.AbstractFileSystem: See https://filesystem-spec.readthedocs.io/en/latest/api.html#fsspec.spec.AbstractFileSystem
         '''
-        return self.file_man.fs
+        if name is None:
+            return self.file_man.fs
+        #TODO: Check if pipeline user is permitted to load fs
+        fs_db = self._dbm.get_fs(name=name)
+        fm = FileMan(fs_db=fs_db)
+        return fm.fs
 
     def get_path(self, file_name, context='instance', ptype='abs'):
         '''Get path for the filename in a specific context in filesystem.
