@@ -191,36 +191,19 @@ class GetImage(Resource):
                 
                 df = db_img.to_df()
                 df = df[df['anno_uid'] == db_anno.idx]
-                ds = lds.LOSTDataset(df, filesystem=fm.fs)
-                ds.df.img_path = ds.df.abs_path
-                ds.transform_bbox_style('x1y1x2y2', inplace=True)
-                ds.to_abs(inplace=True)
-                anno = ds.df.anno_data.iloc[0].reshape((-1, 2))
-                anno_min = np.min(ds.df.anno_data.iloc[0], axis=0)
-                anno_max = np.max(ds.df.anno_data.iloc[0], axis=0)
-                # raise Exception(f'{anno}, {anno_min}, {anno_max}')
-                
-                # df.loc[:,'anno_data'] = df['anno_data'].apply(lambda x: np.asarray(x))
-                
-
-                # raise Exception(f'{data["prevExamples"]}')
-                    
-                
-                # df = lds.crop_anno(db_img.img_path, crop_pos, df)
-
-                
-                ds.df.anno_lbl = ""
-                image = lds.vis_sample(image, ds.df, radius=10)
-                # lds.crop_components()
-                # crops, _ = anno_helper.crop_boxes(
-                #     [db_anno.to_vec('anno_data')],
-                # # anno_helper.calc_box_for_anno(
-                # #     [db_anno.to_vec('anno_data')],
-                # #     [db_anno.to_vec('anno_dtype')])
-                #     [db_anno.to_vec('anno_dtype')], 
-                #     image, context=context 
-                # )
-                img = image
+                # ds = lds.LOSTDataset(df, filesystem=fm.fs)
+                # ds.df.img_path = ds.df.abs_path
+                # ds.transform_bbox_style('x1y1x2y2', inplace=True)
+                # ds.to_abs(inplace=True)
+                # ds.df.anno_lbl = ""
+                # image = lds.vis_sample(image, ds.df, radius=10)
+                crops, _ = anno_helper.crop_boxes(
+                    df['anno_data'].values,
+                    df['anno_dtype'].values,
+                    image, context=context, draw_annotations=draw_anno 
+                )
+                # img = image
+                img = crops[0]
             else:
                 raise Exception('Unknown mia image type')
             _, data = cv2.imencode('.jpg', img)

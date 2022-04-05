@@ -21,6 +21,7 @@ def trans_boxes_to(boxes, convert_to='minmax'):
     new = old.copy()
 
     if convert_to == 'minmax':
+        # raise Exception(old)
         new[:,[0,1]] = old[:,[0,1]] - old[:,[2,3]] / 2.0
         new[:,[2,3]] = old[:,[0,1]] + old[:,[2,3]] / 2.0
         new[new < 0.0] = 0.0
@@ -76,8 +77,17 @@ def calc_box_for_anno(annos, types, point_padding=0.05):
         if np.max(anno) > 1.0:
             raise ValueError('Annotation are expected to be in relative format! But found: {}'.format(anno))
         if t == 'bbox':
-            new.append(anno)
+            # raise Exception(np.asarray(anno).reshape(4))
+            # raise Exception(anno.tolist())
+            # raise Exception(np.asarray(anno).reshape(4).tolist())
+            new.append(np.asarray(anno).reshape(4).tolist())
+            # try:
+            #     new.append(anno.tolist())
+            # except:
+            #     new.append(anno)
         elif t== 'point':
+            # raise Exception(anno)
+            anno = np.asarray(anno).reshape(2)
             new.append([anno[0], anno[1], point_padding, point_padding])
         else:
             lp = np.array(anno)
@@ -138,8 +148,9 @@ def draw_annos(annos, types, img, color=(255,0,0), point_r=2):
         img_h, img_w, _ = img.shape
         for anno, t in zip(annos, types):
             if t == 'bbox':
-                anno = trans_boxes_to([anno])[0]
-                anno = to_abs([anno], [t], (img_w, img_h))[0]
+                anno = np.asarray(anno).reshape((1,4))
+                anno = trans_boxes_to(anno)
+                anno = to_abs(anno, [t], (img_w, img_h))[0]
                 xmin, ymin, xmax, ymax = anno
                 rr, cc = polygon_perimeter([ymin, ymin, ymax, ymax],
                     [xmin, xmax, xmax, xmin ], shape=img.shape)
@@ -149,7 +160,8 @@ def draw_annos(annos, types, img, color=(255,0,0), point_r=2):
                 rr, cc = polygon_perimeter(anno[:,1].tolist(),
                     anno[:,0].tolist(), shape=img.shape)
             elif t == 'point':
-                anno = to_abs([anno], [t], (img_w, img_h))[0]
+                anno = np.asarray(anno).reshape((1,2))
+                anno = to_abs(anno, [t], (img_w, img_h))[0]
                 rr, cc = circle(anno[1], anno[0], point_r, shape=img.shape)
             elif t == 'line':
                 anno = to_abs([anno], [t], (img_w, img_h))[0]
@@ -182,7 +194,7 @@ def crop_boxes(annos, types, img, context=0.0, draw_annotations=False):
             A tuple that contains a list of image crops and a 
             list of bboxes [[xc,yc,w,h],...]
     '''
-    if annos:
+    if len(annos) > 0:
         crops = []
         new_img = img
         anno_boxes = calc_box_for_anno(annos, types)
@@ -198,7 +210,6 @@ def crop_boxes(annos, types, img, context=0.0, draw_annotations=False):
             if draw_annotations:
                 new_img = img.copy()
                 draw_annos([annos[idx]], [types[idx]], new_img)
-            # image[y_min:y_max, x_min:x_max]
             crops.append(new_img[box[1]:box[3], box[0]:box[2]])
         return crops, anno_boxes
     else:

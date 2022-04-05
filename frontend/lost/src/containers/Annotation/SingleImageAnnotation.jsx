@@ -38,7 +38,7 @@ const SingleImageAnnotation = (props) => {
 			)
 			setPrevExamples([...prevExamples, exampleAnno.id])
 		} else {
-			// setExampleImg(undefined)
+			setExampleImg(undefined)
 		}
 		
 	}, [exampleAnno])
