@@ -248,11 +248,9 @@ export function getTopPoint(data){
  * @param {object} imageOffset 
  */
 export function correctAnnotation(data, image, imageOffset){
-    console.log('correctAnnotation', image, imageOffset)
     const imgWidth = image.width - 2*imageOffset.x
     const imgHeight = image.height - 2*imageOffset.y
     const corrected = data.map(el => {
-            console.log('correctAnnoation', el)
             let x = el.x
             let y = el.y
             if (el.x <= imageOffset.x ){
