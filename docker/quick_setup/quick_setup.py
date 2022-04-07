@@ -177,6 +177,8 @@ class QuickSetup(object):
             ['#========================','#'],
             ['#= Jupyter Lab Config    ','#'],
             ['#========================','#'],
+            ['# In order to enable Jupyter-Lab integration you have to uncomment the following lines','#'],
+            ['# Please watch out: You have to uncomment the port export of JUPYTER_LAB_PORT in your .docker-compose.yml as well','#'],
             ['#JUPYTER_LAB_ACTIVE','True'],
             ['#JUPYTER_LAB_ROOT_PATH','/code/src'],
             ['#JUPYTER_LAB_TOKEN','mysecrettoken'],
