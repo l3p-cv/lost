@@ -127,7 +127,7 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  * @event onKeyUp - Fires for keyUp on canvas 
  * @event onUiConfigUpdate - Fires when ui config should be updated
  * @event onAutoSave - Fires when SIA request an auto save based on autoSaveInterval
- * @event onAnnoPerformedAction - Fires when an anno performed an action
+ * @event onAnnoEvent - Fires when an anno performed an action
  *      args: {annoId: int, newAnnos: list of annoObjects, pAction: str}
  */
 class Canvas extends Component{
@@ -395,7 +395,7 @@ class Canvas extends Component{
     updateAnnoComment(comment){
         const anno = this.findAnno(this.state.selectedAnnoId)
         anno.comment = comment
-        this.onAnnoPerformedAction(anno, canvasActions.ANNO_COMMENT_UPDATE)
+        this.handleAnnoEvent(anno, canvasActions.ANNO_COMMENT_UPDATE)
         // this.stopAnnotimeMeasure(anno)
         // console.log('updateAnnoComment', comment)
     }
@@ -521,7 +521,7 @@ class Canvas extends Component{
      * @param {Number} anno Id of the annotation
      * @param {String} pAction Action that was performed
      */
-    onAnnoPerformedAction(anno, pAction){
+    handleAnnoEvent(anno, pAction){
         let newAnnos = undefined
         switch(pAction){
             case canvasActions.ANNO_MARK_EXAMPLE:
@@ -664,8 +664,8 @@ class Canvas extends Component{
                 console.warn('Action not handeled', pAction)
                 break
         }
-        if (this.props.onAnnoPerformedAction){
-            this.props.onAnnoPerformedAction(anno.id, newAnnos, pAction)
+        if (this.props.onAnnoEvent){
+            this.props.onAnnoEvent(anno.id, newAnnos, pAction)
         }
     }
 
@@ -678,7 +678,7 @@ class Canvas extends Component{
         this.showLabelInput(false)
         this.showSingleAnno(undefined)
         const anno = this.findAnno(this.state.selectedAnnoId)
-        this.onAnnoPerformedAction(anno, canvasActions.ANNO_LABEL_UPDATE)
+        this.handleAnnoEvent(anno, canvasActions.ANNO_LABEL_UPDATE)
     }
 
     handleImgBarClose(){
@@ -763,7 +763,7 @@ class Canvas extends Component{
         } else {
             newAnno.isExample = true
         }
-        this.onAnnoPerformedAction(newAnno, canvasActions.ANNO_MARK_EXAMPLE)
+        this.handleAnnoEvent(newAnno, canvasActions.ANNO_MARK_EXAMPLE)
 
     }
 
@@ -934,7 +934,7 @@ class Canvas extends Component{
                 if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
     
             } else {
-                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+                this.handleAnnoEvent(anno, canvasActions.ANNO_DELETED)
             }
         }
     }
@@ -944,7 +944,7 @@ class Canvas extends Component{
             if (anno.mode === modes.CREATE){
                 // const ar = this.findAnnoRef(this.state.selectedAnnoId)
                 // if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
-                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+                this.handleAnnoEvent(anno, canvasActions.ANNO_DELETED)
     
             } else {
             }
@@ -1461,7 +1461,7 @@ class Canvas extends Component{
                         imageOffset={this.state.imageOffset}
                         ref={this.annoRefs[this.annoRefs.length - 1]}
                         onMouseDown={e => this.onAnnoMouseDown(e)}
-                        onAction={(anno, pAction) => this.onAnnoPerformedAction(anno, pAction)}
+                        onAction={(anno, pAction) => this.handleAnnoEvent(anno, pAction)}
                         selectedAnno={this.state.selectedAnnoId}
                         // onModeChange={(anno) => this.onAnnoModeChange(anno)}
                         showSingleAnno={this.state.showSingleAnno}

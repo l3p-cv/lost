@@ -493,7 +493,7 @@ class SiaWrapper extends Component {
                     onAutoSave={() => this.handleAutoSave()}
                     autoSaveInterval={60}
                     nextAnnoId={this.state.nextAnnoId}
-                    onAnnoPerformedAction={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
+                    onAnnoEvent={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
                     allowedToMarkExample={this.state.allowedToMark}
                     onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
                     exampleImg={this.props.exampleImg}
