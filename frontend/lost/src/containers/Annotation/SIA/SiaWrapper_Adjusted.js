@@ -23,7 +23,8 @@ import * as transform from './lost-sia/src/utils/transform'
 import * as filterTools from './filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
 import AnnoDetails from './lost-sia/src/InfoBoxes/AnnoDetails'
-import * as annoActions from './lost-sia/src/types/canvasActions'
+import * as canvasEvent from './lost-sia/src/types/canvasActions'
+import Sia from './lost-sia/src/Sia'
 
 
 const { 
@@ -35,7 +36,7 @@ const {
     siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
 } = actions
 
-class SIA extends Component {
+class SiaWrapper extends Component {
 
     constructor(props) {
         super(props)
@@ -265,13 +266,25 @@ class SIA extends Component {
         }
     }
 
-    handleAnnoPerformedAction(annoId, annos, action){
+    handleAnnoEvent(annoId, annos, action){
         console.log('annoPerformedAction', annoId, annos, action)
         switch(action){
-            case annoActions.ANNO_CREATED:
-            case annoActions.ANNO_CREATED_FINAL_NODE:
+            case canvasEvent.ANNO_CREATED:
+            case canvasEvent.ANNO_CREATED_FINAL_NODE:
                 // console.log('ANNO CREATED!')
                 this.getNextAnnoId()
+                break
+            default:
+                break
+        }
+    }
+
+    handleCanvasEvent(action, data){
+        console.log('handleCanvasEvent', action, data)
+        switch(action){
+            case canvasEvent.CANVAS_AUTO_SAVE:
+            case canvasEvent.CANVAS_SVG_UPDATE:
+                // console.log('ANNO CREATED!')
                 break
             default:
                 break
@@ -463,12 +476,15 @@ class SIA extends Component {
 
     render() {
         return (
-            <div className={this.state.fullscreenCSS} ref={this.container}>
-                <Canvas
+            <div>
+                <Sia
                     ref={this.canvas} 
+                    onNotification={(messageObj) => this.handleNotification(messageObj)}
+                    onCanvasEvent={(e, data) => this.handleCanvasEvent(e, data)}
+                    onAnnoEvent={(annoId, annos, action) => this.handleAnnoEvent(annoId, annos, action)}
+                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     imgBarVisible={true}
                     imgLabelInputVisible={this.props.imgLabelInput.show}
-                    container={this.container}
                     annos={this.state.annos}
                     image={this.state.image}
                     uiConfig={this.props.uiConfig}
@@ -486,24 +502,21 @@ class SIA extends Component {
                     onImgLabelInputClose={() => this.handleImgLabelInputClose()}
                     centerCanvasInContainer={false}
                     maxCanvas={true}
-                    onNotification={(messageObj) => this.handleNotification(messageObj)}
-                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
                     blocked={this.state.blockCanvas}
                     onUiConfigUpdate={e => this.props.siaSetUIConfig(e)}
                     onAutoSave={() => this.handleAutoSave()}
                     autoSaveInterval={60}
                     nextAnnoId={this.state.nextAnnoId}
-                    onAnnoPerformedAction={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
                     allowedToMarkExample={this.state.allowedToMark}
                     onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
                     exampleImg={this.props.exampleImg}
                     // defaultLabel='no label'
                     />
-                <ToolBar 
+                {/* <ToolBar 
                     ref={this.toolbar} 
                     onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
-                    />
-                <InfoBoxArea container={this.container}></InfoBoxArea>
+                    /> */}
+                {/* <InfoBoxArea container={this.container}></InfoBoxArea> */}
                 <NotificationContainer/>
              </div>
         )
@@ -547,4 +560,4 @@ export default connect(
         siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }
     , null,
-    {})(withRouter((SIA)))
+    {})(withRouter((SiaWrapper)))

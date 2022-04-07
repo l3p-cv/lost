@@ -15,5 +15,9 @@ export const ANNO_START_CREATING='annoStartCreating'
 export const ANNO_COMMENT_UPDATE='annoCommentUpdate'
 export const ANNO_MARK_EXAMPLE='annoMarkExample'
 
+export const CANVAS_SVG_UPDATE='canvasSvgUpdate'
+export const CANVAS_UI_CONFIG_UPDATE='canvasUiConfigUpdate'
+export const CANVAS_AUTO_SAVE='canvasAutoSave'
+
 //Image actions
 export const IMG_LABEL_UPDATE='imgLabelUpdate'
