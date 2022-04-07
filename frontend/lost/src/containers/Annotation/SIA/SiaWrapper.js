@@ -265,17 +265,42 @@ class SiaWrapper extends Component {
         }
     }
 
-    handleAnnoPerformedAction(annoId, annos, action){
-        console.log('annoPerformedAction', annoId, annos, action)
+    handleAnnoPerformedAction(anno, annos, action){
+        console.log('annoPerformedAction', anno, annos, action)
         switch(action){
             case annoActions.ANNO_CREATED:
             case annoActions.ANNO_CREATED_FINAL_NODE:
                 // console.log('ANNO CREATED!')
                 this.getNextAnnoId()
                 break
+            case annoActions.ANNO_SELECTED:
+                console.log('anno selected')
+                this.props.selectAnnotation(anno)
+                break
             default:
                 break
         }
+    }
+
+    handleCanvasEvent(action, data){
+        console.log('Handle canvas event', action, data)
+        switch(action){
+            case annoActions.CANVAS_AUTO_SAVE:
+                this.handleAutoSave()
+                break
+            case annoActions.CANVAS_SVG_UPDATE:
+                this.props.siaSetSVG(data)
+                break
+            case annoActions.CANVAS_UI_CONFIG_UPDATE:
+                this.props.siaSetUIConfig(data)
+                break
+            case annoActions.CANVAS_LABEL_INPUT_CLOSE:
+                this.handleImgLabelInputClose()
+                break
+            default:
+                break
+        }
+
     }
 
     undoAnnoRotationForUpdate(saveState=true){
@@ -466,37 +491,37 @@ class SiaWrapper extends Component {
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas
                     ref={this.canvas} 
-                    imgBarVisible={true}
-                    imgLabelInputVisible={this.props.imgLabelInput.show}
                     container={this.container}
-                    annos={this.state.annos}
-                    image={this.state.image}
-                    uiConfig={this.props.uiConfig}
-                    layoutUpdate={this.props.layoutUpdate}
-                    selectedTool={this.props.selectedTool}
+
+                    onAnnoEvent={(anno, annos, action) => this.handleAnnoPerformedAction(anno, annos, action)}
+                    onNotification={(messageObj) => this.handleNotification(messageObj)}
+                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
+                    onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
+                    onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
+
                     canvasConfig={{
                         ...this.props.canvasConfig,
                         annos: {...this.props.canvasConfig.annos, maxAnnos:null}
                     }}
-                    possibleLabels={this.props.possibleLabels}
-                    onSVGUpdate={svg => this.props.siaSetSVG(svg)}
-                    onAnnoSelect={anno => this.props.selectAnnotation(anno)}
+                    allowedToMarkExample={this.state.allowedToMark}
+
+                    uiConfig={this.props.uiConfig}
                     layoutOffset={this.state.layoutOffset}
-                    isJunk={this.props.isJunk}
-                    onImgLabelInputClose={() => this.handleImgLabelInputClose()}
+                    imgBarVisible={true}
+                    imgLabelInputVisible={this.props.imgLabelInput.show}
                     centerCanvasInContainer={false}
                     maxCanvas={true}
-                    onNotification={(messageObj) => this.handleNotification(messageObj)}
-                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
-                    blocked={this.state.blockCanvas}
-                    onUiConfigUpdate={e => this.props.siaSetUIConfig(e)}
-                    onAutoSave={() => this.handleAutoSave()}
                     autoSaveInterval={60}
+
+                    annos={this.state.annos}
+                    image={this.state.image}
                     nextAnnoId={this.state.nextAnnoId}
-                    onAnnoEvent={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
-                    allowedToMarkExample={this.state.allowedToMark}
-                    onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
+                    possibleLabels={this.props.possibleLabels}
                     exampleImg={this.props.exampleImg}
+                    layoutUpdate={this.props.layoutUpdate}
+                    selectedTool={this.props.selectedTool}
+                    isJunk={this.props.isJunk}
+                    blocked={this.state.blockCanvas}
                     // defaultLabel='no label'
                     />
                 <ToolBar 

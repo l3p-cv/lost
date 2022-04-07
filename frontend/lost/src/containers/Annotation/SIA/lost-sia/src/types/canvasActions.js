@@ -18,6 +18,9 @@ export const ANNO_MARK_EXAMPLE='annoMarkExample'
 export const CANVAS_SVG_UPDATE='canvasSvgUpdate'
 export const CANVAS_UI_CONFIG_UPDATE='canvasUiConfigUpdate'
 export const CANVAS_AUTO_SAVE='canvasAutoSave'
+export const CANVAS_LABEL_INPUT_CLOSE='canvasLabelInputClose'
+export const CANVAS_IMG_LOADED='canvasImgLoaded'
+export const CANVAS_IMGBAR_CLOSE='canvasImgbarClose'
 
 //Image actions
 export const IMG_LABEL_UPDATE='imgLabelUpdate'

@@ -113,22 +113,22 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *        will be created. If undefined, the canvas will create its own ids.
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
- * @event onSVGUpdate - Fires when the svg in canvas changed.
- *      args: {width: int, height: int, scale: float, translateX: float,
- *      translateY:float}
- * @event onImageLoaded - Fires when an image was loaded into the canvas
- * @event onAnnoSelect - Fires when an annotation was selected or if the
- *      selected annotation was updated.
- * @event onImgBarClose - Fires when close button on ImgBar was hit.
- * @event onImgLabelInputClose - ImgLabelInput requests to be closed.
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
  * @event onKeyDown - Fires for keyDown on canvas 
  * @event onKeyUp - Fires for keyUp on canvas 
- * @event onUiConfigUpdate - Fires when ui config should be updated
- * @event onAutoSave - Fires when SIA request an auto save based on autoSaveInterval
  * @event onAnnoEvent - Fires when an anno performed an action
- *      args: {annoId: int, newAnnos: list of annoObjects, pAction: str}
+ *      args: {anno: annoObject, newAnnos: list of annoObjects, pAction: str}
+ * @event onCanvasEvent - Fires on canvas event
+ *      args: {action: action, data: dataObject}
+ *      action -> CANVAS_SVG_UPDATE 
+ *          data: {width: int, height: int, scale: float, translateX: float,
+ *          translateY:float}
+ *      action -> CANVAS_UI_CONFIG_UPDATE
+ *      action -> CANVAS_LABEL_INPUT_CLOSE 
+ *      action -> CANVAS_IMG_LOADED
+ *      action -> CANVAS_IMGBAR_CLOSE
+ * @event onImgBarClose - Fires when close button on ImgBar was hit.
  */
 class Canvas extends Component{
 
@@ -191,8 +191,9 @@ class Canvas extends Component{
         }
         if (this.props.autoSaveInterval){
             this.autoSaveI = setInterval(() => {
-                console.log('AutoSave')
-                this.props.onAutoSave()
+                // console.log('AutoSave')
+                // this.props.onAutoSave()
+                this.triggerCanvasEvent(canvasActions.CANVAS_AUTO_SAVE)
             }, this.props.autoSaveInterval*1000)
         }
     }
@@ -293,9 +294,10 @@ class Canvas extends Component{
             showSingleAnno: undefined,
             selectedAnnoId: undefined
         })
-        if (this.props.onImageLoaded){
-            this.props.onImageLoaded()
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_IMG_LOADED)
+        // if (this.props.onImageLoaded){
+        //     this.props.onImageLoaded()
+        // }
     }
 
     onMouseOver(){
@@ -515,6 +517,16 @@ class Canvas extends Component{
     }
     
     
+    /**
+     * Trigger canvas event
+     * @param {String} action Action that was performed
+     * @param {Object} data Data object of the action
+     */
+    triggerCanvasEvent(action, data){
+        if (this.props.onCanvasEvent){
+            this.props.onCanvasEvent(action, data)
+        }
+    }
 
     /**
      * Handle actions that have been performed by an annotation 
@@ -665,7 +677,7 @@ class Canvas extends Component{
                 break
         }
         if (this.props.onAnnoEvent){
-            this.props.onAnnoEvent(anno.id, newAnnos, pAction)
+            this.props.onAnnoEvent(anno, newAnnos, pAction)
         }
     }
 
@@ -682,9 +694,10 @@ class Canvas extends Component{
     }
 
     handleImgBarClose(){
-        if (this.props.onImgBarClose){
-            this.props.onImgBarClose()
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_IMGBAR_CLOSE)
+        // if (this.props.onImgBarClose){
+        //     this.props.onImgBarClose()
+        // }
     }
 
     handleImgLabelUpdate(label){
@@ -711,9 +724,10 @@ class Canvas extends Component{
     }
 
     handleImgLabelInputClose(){
-        if (this.props.onImgLabelInputClose){
-            this.props.onImgLabelInputClose()
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_LABEL_INPUT_CLOSE)
+        // if (this.props.onImgLabelInputClose){
+        //     this.props.onImgLabelInputClose()
+        // }
     }
 
     // handleAnnoCommentInputClose(e){
@@ -1021,10 +1035,10 @@ class Canvas extends Component{
                 this.onAnnoLabelInputClose()
             }
         }
-        if(this.props.onAnnoSelect){
-            const anno = this.findAnno(annoId)
-            this.props.onAnnoSelect(anno)
-        }
+        // if(this.props.onAnnoSelect){
+        //     const anno = this.findAnno(annoId)
+        //     this.props.onAnnoSelect(anno)
+        // }
     }
 
     /**
@@ -1303,11 +1317,11 @@ class Canvas extends Component{
             selectedAnnoId: anno.id,
             prevLabel: anno.labelIds, 
         })
-        if(this.props.onAnnoSelect){
-            if (newAnno !== null){
-                this.props.onAnnoSelect(newAnno)
-            }
-        }
+        // if(this.props.onAnnoSelect){
+        //     if (newAnno !== null){
+        //         this.props.onAnnoSelect(newAnno)
+        //     }
+        // }
         return newAnnos
     }
 
@@ -1425,9 +1439,10 @@ class Canvas extends Component{
     }
 
     svgUpdate(svg){
-        if(this.props.onSVGUpdate){
-            this.props.onSVGUpdate(svg)
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_SVG_UPDATE, svg)
+        // if(this.props.onSVGUpdate){
+        //     this.props.onSVGUpdate(svg)
+        // }
     }
 
     setImageLabels(labelIds){
@@ -1592,7 +1607,7 @@ class Canvas extends Component{
                     uiConfig={this.props.uiConfig}
                     imgLoadCount={this.state.imgLoadCount}
                     onCommentUpdate={comment => this.updateAnnoComment(comment)}
-                    onUiConfigUpdate={e => this.props.onUiConfigUpdate(e)}
+                    onUiConfigUpdate={e => this.triggerCanvasEvent(canvasActions.CANVAS_UI_CONFIG_UPDATE, e)}
                     onHideLbl={(lbl, hide) => this.handleHideLbl(lbl, hide)}
                     onMarkExample={anno => this.handleMarkExample(anno)}
                     commentInputTrigger={this.state.annoCommentInputTrigger}
