@@ -1,143 +1,143 @@
-// import React, { Component } from 'react'
-// import { connect } from 'react-redux'
-// import actions from '../../../actions'
-// import 'semantic-ui-css/semantic.min.css'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import actions from '../../../actions'
+import 'semantic-ui-css/semantic.min.css'
 
-// // import from npm package
-// //import Canvas from 'lost-sia'
-// //import 'lost-sia/dist/index.css'
+// import from npm package
+//import Canvas from 'lost-sia'
+//import 'lost-sia/dist/index.css'
 
-// // import from source code
-// import Canvas from './lost-sia/src/Canvas'
+// import from source code
+import Canvas from './lost-sia/src/Canvas'
 
-// import './sia-container.scss';
+import './sia-container.scss';
 
-// import ToolBar from './ToolBar'
-// import {NotificationManager, NotificationContainer } from 'react-notifications'
-// import { withRouter } from 'react-router-dom';
-// import InfoBoxArea from './lost-sia/src/InfoBoxes/InfoBoxArea'
-// import 'react-notifications/lib/notifications.css';
+import ToolBar from './ToolBar'
+import {NotificationManager, NotificationContainer } from 'react-notifications'
+import { withRouter } from 'react-router-dom';
+import InfoBoxArea from './lost-sia/src/InfoBoxes/InfoBoxArea'
+import 'react-notifications/lib/notifications.css';
 
-// import * as notificationType from './lost-sia/src/types/notificationType'
-// import * as transform from './lost-sia/src/utils/transform'
-// import * as filterTools from './filterTools'
-// import * as annoConversion from './lost-sia/src/utils/annoConversion'
-// import AnnoDetails from './lost-sia/src/InfoBoxes/AnnoDetails'
-// import * as annoActions from './lost-sia/src/types/canvasActions'
+import * as notificationType from './lost-sia/src/types/notificationType'
+import * as transform from './lost-sia/src/utils/transform'
+import * as filterTools from './filterTools'
+import * as annoConversion from './lost-sia/src/utils/annoConversion'
+import AnnoDetails from './lost-sia/src/InfoBoxes/AnnoDetails'
+import * as annoActions from './lost-sia/src/types/canvasActions'
 
-// const Sia = (props) => {
+const Sia = (props) => {
 
-//     constructor(props) {
-//         super(props)
-//         this.state = {
-//             fullscreenCSS: '',
-//             didMount: false,
-//             image: {
-//                 id: undefined,
-//                 data: undefined,
-//             },
-//             annos: {
-//                 image: undefined,
-//                 annotations: undefined
-//             },
-//             layoutOffset: {
-//                 left: 20,
-//                 top: 0,
-//                 bottom: 5,
-//                 right: 5
-//             },
-//             notification: undefined,
-//             filteredData: undefined,
-//             currentRotation: 0,
-//             blockCanvas: false,
-//             nextAnnoId: undefined,
-//             allowedToMark: false
-//         }
+    constructor(props) {
+        super(props)
+        this.state = {
+            fullscreenCSS: '',
+            didMount: false,
+            image: {
+                id: undefined,
+                data: undefined,
+            },
+            annos: {
+                image: undefined,
+                annotations: undefined
+            },
+            layoutOffset: {
+                left: 20,
+                top: 0,
+                bottom: 5,
+                right: 5
+            },
+            notification: undefined,
+            filteredData: undefined,
+            currentRotation: 0,
+            blockCanvas: false,
+            nextAnnoId: undefined,
+            allowedToMark: false
+        }
         
-//         this.container = React.createRef()
-//         this.canvas = React.createRef()
-//     }
+        this.container = React.createRef()
+        this.canvas = React.createRef()
+    }
 
-//     componentDidMount() {
-//         document.body.style.overflow = "hidden"
-//         this.setState({didMount:true})
-//         window.addEventListener("resize", this.props.siaLayoutUpdate);
-//         this.props.getSiaAnnos(-1)
-//         this.props.getSiaLabels()
-//         this.props.getSiaConfig()
-//         this.getNextAnnoId()
-//         this.allowedToMarkExample()
-//         // console.warn('We are not using real SIA config')
-//     }
-//     componentWillUnmount() {
-//         document.body.style.overflow = ""
-//         window.removeEventListener("resize", this.props.siaLayoutUpdate);
-//     }
+    componentDidMount() {
+        document.body.style.overflow = "hidden"
+        this.setState({didMount:true})
+        window.addEventListener("resize", this.props.siaLayoutUpdate);
+        this.props.getSiaAnnos(-1)
+        this.props.getSiaLabels()
+        this.props.getSiaConfig()
+        this.getNextAnnoId()
+        this.allowedToMarkExample()
+        // console.warn('We are not using real SIA config')
+    }
+    componentWillUnmount() {
+        document.body.style.overflow = ""
+        window.removeEventListener("resize", this.props.siaLayoutUpdate);
+    }
 
-//     componentDidUpdate(prevProps, prevState) {
-//         this.setFullscreen(this.props.fullscreenMode)
-//         if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
-//             // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
-//             this.props.siaLayoutUpdate()
-//         }
-//         if (prevState.notification !== this.state.notification){
-//             const notifyTimeOut = 5000
-//             if (this.state.notification){
-//                 switch(this.state.notification.type){
-//                     case notificationType.WARNING:
-//                         NotificationManager.warning(
-//                             this.state.notification.message,
-//                             this.state.notification.title,
-//                             notifyTimeOut
-//                         )
-//                         break
-//                     case notificationType.INFO:
-//                         NotificationManager.info(
-//                             this.state.notification.message,
-//                             this.state.notification.title,
-//                             notifyTimeOut
-//                         )
-//                         break
-//                     case notificationType.ERROR:
-//                         NotificationManager.error(
-//                             this.state.notification.message,
-//                             this.state.notification.title,
-//                             notifyTimeOut
-//                         )
-//                         break
-//                     case notificationType.SUCCESS:
-//                         NotificationManager.success(
-//                             this.state.notification.message,
-//                             this.state.notification.title,
-//                             notifyTimeOut
-//                         )
-//                         break
-//                     default:
-//                         break
-//                 }
-//             }
-//         }
-//         if (prevProps.getNextImage !== this.props.getNextImage){
-//             if (this.props.getNextImage){
-//                 this.getNewImage(this.props.getNextImage, 'next')
-//             }
-//         }
-//         if (prevProps.getPrevImage !== this.props.getPrevImage){
-//             if (this.props.getPrevImage){
-//                 this.getNewImage(this.props.getPrevImage, 'prev')
-//             }
-//         }
-//         if (prevProps.annos !== this.props.annos){
-//             this.props.siaImgIsJunk(this.props.annos.image.isJunk)
-//         }
-//         if (prevProps.taskFinished !== this.props.taskFinished){
-//             const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
-//             this.props.siaUpdateAnnos(newAnnos).then(()=>{
-//                 this.props.siaSendFinishToBackend().then(()=>{
-//                     this.props.history.push('dashboard')
+    componentDidUpdate(prevProps, prevState) {
+        this.setFullscreen(this.props.fullscreenMode)
+        if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
+            // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
+            this.props.siaLayoutUpdate()
+        }
+        if (prevState.notification !== this.state.notification){
+            const notifyTimeOut = 5000
+            if (this.state.notification){
+                switch(this.state.notification.type){
+                    case notificationType.WARNING:
+                        NotificationManager.warning(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                    case notificationType.INFO:
+                        NotificationManager.info(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                    case notificationType.ERROR:
+                        NotificationManager.error(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                    case notificationType.SUCCESS:
+                        NotificationManager.success(
+                            this.state.notification.message,
+                            this.state.notification.title,
+                            notifyTimeOut
+                        )
+                        break
+                    default:
+                        break
+                }
+            }
+        }
+        if (prevProps.getNextImage !== this.props.getNextImage){
+            if (this.props.getNextImage){
+                this.getNewImage(this.props.getNextImage, 'next')
+            }
+        }
+        if (prevProps.getPrevImage !== this.props.getPrevImage){
+            if (this.props.getPrevImage){
+                this.getNewImage(this.props.getPrevImage, 'prev')
+            }
+        }
+        if (prevProps.annos !== this.props.annos){
+            this.props.siaImgIsJunk(this.props.annos.image.isJunk)
+        }
+        if (prevProps.taskFinished !== this.props.taskFinished){
+            const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
+            this.props.siaUpdateAnnos(newAnnos).then(()=>{
+                this.props.siaSendFinishToBackend().then(()=>{
+                    this.props.history.push('dashboard')
 
-//                 })
-//             })
+                })
+            })
         }
         if(this.props.annos.image){
             if (prevProps.annos.image){
@@ -499,7 +499,7 @@
                     ref={this.toolbar} 
                     onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
                     />
-                {/* <InfoBoxArea container={this.container}></InfoBoxArea> */}
+                <InfoBoxArea container={this.container}></InfoBoxArea>
              </div>
         )
 }
