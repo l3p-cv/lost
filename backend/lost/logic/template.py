@@ -156,7 +156,8 @@ class TemplateSerialize(object):
     def __label_trees(self):
         label_trees_json = list()
         for label_tree in self.available_label_trees:
-            label_trees_json.append(LabelTree(self.dbm, label_tree.idx).to_hierarchical_dict())
+            if len(label_tree.label_leaves) > 0:
+                label_trees_json.append(LabelTree(self.dbm, label_tree.idx).to_hierarchical_dict())
         return label_trees_json
 
     def __groups(self):
