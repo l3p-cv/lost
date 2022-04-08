@@ -501,29 +501,32 @@ class SiaWrapper extends Component {
 
                     canvasConfig={{
                         ...this.props.canvasConfig,
-                        annos: {...this.props.canvasConfig.annos, maxAnnos:null}
+                        annos: {...this.props.canvasConfig.annos, maxAnnos:null},
+                        autoSaveInterval:60,
+                        allowedToMarkExample:this.state.allowedToMark
                     }}
-                    allowedToMarkExample={this.state.allowedToMark}
 
-                    uiConfig={this.props.uiConfig}
-                    layoutOffset={this.state.layoutOffset}
-                    imgBarVisible={true}
-                    imgLabelInputVisible={this.props.imgLabelInput.show}
-                    centerCanvasInContainer={false}
-                    maxCanvas={true}
-                    autoSaveInterval={60}
+                    uiConfig={{...this.props.uiConfig,
+                        layoutOffset:this.state.layoutOffset,
+                        imgBarVisible: true,
+                        imgLabelInputVisible: this.props.imgLabelInput.show,
+                        centerCanvasInContainer: true,
+                        maxCanvas: true
+                    }}
 
-                    annos={this.state.annos}
-                    image={this.state.image}
                     nextAnnoId={this.state.nextAnnoId}
+                    annos={this.state.annos.annotations}
+                    imageMeta={this.state.annos.image}
+                    imageBlob={this.state.image.data}
                     possibleLabels={this.props.possibleLabels}
                     exampleImg={this.props.exampleImg}
+
                     layoutUpdate={this.props.layoutUpdate}
                     selectedTool={this.props.selectedTool}
                     isJunk={this.props.isJunk}
                     blocked={this.state.blockCanvas}
                     // defaultLabel='no label'
-                    />
+                />
                 <ToolBar 
                     ref={this.toolbar} 
                     onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
