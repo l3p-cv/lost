@@ -1,6 +1,7 @@
 from flask import request
 from flask_restx import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
 from lost.api.api import api
 from lost.api.pipeline.api_definition import templates, template, pipelines, pipeline
 from lost.api.pipeline import tasks
@@ -180,3 +181,22 @@ class PipelinePlay(Resource):
             pipeline_service.play(dbm, pipeline_id)
             dbm.close_session()
             return "success"
+
+@namespace.route('/template/import')
+class TemplateImport(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+
+        else:
+            now = datetime.now()
+            uploaded_file = request.files['zip_file']
+            zip_file_name = f'{now.strftime("%m_%d_%Y_%H_%M_%S")}_{uploaded_file.filename}'
+            data = request.form
+            dbm.close_session()
+            return "success", 200
