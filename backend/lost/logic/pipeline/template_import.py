@@ -45,6 +45,7 @@ class PipeImporter(object):
         '''
         self.forTest = forTest
         self.dbm = dbm
+        self.user_id = user_id
         self.file_man = AppFileMan(self.dbm.lostconfig)
         if pipe_template_dir.endswith('/'):
             pipe_template_dir = pipe_template_dir[:-1]
@@ -53,7 +54,7 @@ class PipeImporter(object):
             os.path.basename(self.src_pipe_template_path))
         self.json_files = glob(os.path.join(pipe_template_dir,'*.json'))
         self.pipes = []
-        self.namespace = self._get_namespace(user_id)
+        self.namespace = self._get_namespace()
         for json_path in self.json_files:
             with open(json_path) as jfile:
                 pipe = json.load(jfile)
@@ -69,10 +70,10 @@ class PipeImporter(object):
                         pe['script']['path'])
         self.checker = PipeDefChecker(logging)
 
-    def _get_namespace(self, user_id):
+    def _get_namespace(self):
         name_space = os.path.basename(self.src_pipe_template_path).strip('/')
-        if user_id is not None:
-            name_space = f'{user_id}_{name_space}'
+        if self.user_id is not None:
+            name_space = f'{self.user_id}_{name_space}'
         return name_space
 
     def _namespaced_name(self, name):
@@ -169,7 +170,8 @@ class PipeImporter(object):
                     return db_pipe.idx
             if not pipe_in_db:
                 pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
-                                                timestamp=datetime.now())
+                                                timestamp=datetime.now(),
+                                                group_id=self.user_id)
                 self.dbm.save_obj(pipe_temp)
                 logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
                 return pipe_temp.idx

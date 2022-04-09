@@ -19,7 +19,7 @@ from io import BytesIO
 import lost_ds as lds
 import numpy as np
 import cv2
-import base64
+import base64 
 import random
 namespace = api.namespace('data', description='Data API.')
 

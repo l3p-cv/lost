@@ -11,7 +11,7 @@ class SelectPipeline extends Component {
         this.selectRow = this.selectRow.bind(this)
     }
     async componentDidMount() {
-        await this.props.getTemplates()
+        await this.props.getTemplates('all')
     }
 
     async selectRow(id) {
