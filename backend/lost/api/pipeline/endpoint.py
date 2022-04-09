@@ -291,7 +291,12 @@ class TemplateDelete(Resource):
 
         else:
             data = json.loads(request.data)
-            pipeline_template_id = data['pipeline_template_id']
+            fm = AppFileMan(LOST_CONFIG)
+            # pipe_project = data['pipe_project']
+            pipe_project = 'sia2'
+            importer = template_import.PipeImporter(fm.get_pipe_project_path(pp_name=pipe_project), dbm)
+            importer.remove_pipe_project()
+
             #TODO Delete here
            
             dbm.close_session()
