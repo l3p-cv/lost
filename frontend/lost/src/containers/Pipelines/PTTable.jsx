@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { useInterval } from 'react-use'
 import IconButton from '../../components/IconButton'
 import Datatable from '../../components/Datatable'
 import { API_URL } from '../../lost_settings'
@@ -11,7 +12,7 @@ import * as pipelineTemplatesApi from '../../actions/pipeline/pipeline_templates
 
 const PTTable = ({ visLevel }) => {
     const [tableData, setTableData] = useState([])
-    const { data: pipelineTemplates } =
+    const { data: pipelineTemplates, refetch } =
         pipelineTemplatesApi.usePipelineTemplates(visLevel)
 
     const { mutate: deletePipelineTemplate, status: deletePipelineTemplateStatus } =
@@ -40,7 +41,9 @@ const PTTable = ({ visLevel }) => {
             }
         }
     }, [pipelineTemplates])
-
+    useInterval(() => {
+        refetch()
+    }, 1000)
     useEffect(() => {
         if (deletePipelineTemplateStatus === 'success') {
             Notification.showSuccess('Deletion succeeded.')
