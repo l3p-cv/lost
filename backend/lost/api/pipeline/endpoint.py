@@ -257,6 +257,17 @@ class PipelineTemplateExport(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
         else:
             # TODO Export here !
+            pipe_template = dbm.get_pipe_template(pipeline_template_id)
+            content = json.loads(pipe_template.json_template)
+            fm = AppFileMan(LOST_CONFIG)
+            src = fm.get_pipe_project_path(content['namespace'])
+            
+            # f = BytesIO()
+            # ldf.to_csv(f)
+            # f.seek(0)
+            # resp = make_response(f.read())
+            # resp.headers["Content-Disposition"] = f"attachment; filename={label_tree.root.name}.csv"
+            # resp.headers["Content-Type"] = "blob"
             dbm.close_session()
             return "success", 200
 
@@ -275,11 +286,6 @@ class TemplateDelete(Resource):
             data = json.loads(request.data)
             pipeline_template_id = data['pipeline_template_id']
             #TODO Delete here
-            # f = BytesIO()
-            # ldf.to_csv(f)
-            # f.seek(0)
-            # resp = make_response(f.read())
-            # resp.headers["Content-Disposition"] = f"attachment; filename={label_tree.root.name}.csv"
-            # resp.headers["Content-Type"] = "blob"
+           
             dbm.close_session()
             return "success", 200

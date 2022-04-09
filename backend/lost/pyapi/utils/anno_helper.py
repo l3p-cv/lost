@@ -4,7 +4,7 @@ formats and to crop annotations from an image.
 
 from lost.db import model
 import numpy as np
-from skimage.draw import polygon_perimeter, circle, line
+from skimage.draw import polygon_perimeter, circle_perimeter, line
 from skimage.color import gray2rgb
 
 def trans_boxes_to(boxes, convert_to='minmax'):
@@ -162,7 +162,7 @@ def draw_annos(annos, types, img, color=(255,0,0), point_r=2):
             elif t == 'point':
                 anno = np.asarray(anno).reshape((1,2))
                 anno = to_abs(anno, [t], (img_w, img_h))[0]
-                rr, cc = circle(anno[1], anno[0], point_r, shape=img.shape)
+                rr, cc = circle_perimeter(anno[1], anno[0], point_r, shape=img.shape)
             elif t == 'line':
                 anno = to_abs([anno], [t], (img_w, img_h))[0]
                 for i, point in enumerate(anno):
