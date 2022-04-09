@@ -200,8 +200,7 @@ class TemplateImport(Resource):
             now = datetime.now()
             fm = AppFileMan(LOST_CONFIG)
             uploaded_file = request.files['zip_file']
-            # stream = uploaded_file.read()
-            upload_path = fm.get_upload_path(uploaded_file.filename)
+            upload_path = fm.get_upload_path(identity, uploaded_file.filename)
             uploaded_file.save(upload_path)
 
             pp_path = fm.get_pipe_project_path()
@@ -213,10 +212,6 @@ class TemplateImport(Resource):
             dbm = access.DBMan(LOST_CONFIG)
             importer = template_import.PipeImporter(dst_path, dbm)
             importer.start_import()
-
             fm.fs.rm(upload_path, recursive=True)
-
-            # zip_file_name = f'{now.strftime("%m_%d_%Y_%H_%M_%S")}_{uploaded_file.filename}'
-            # data = request.form
             dbm.close_session()
             return "success", 200

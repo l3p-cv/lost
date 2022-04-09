@@ -72,11 +72,14 @@ class AppFileMan(object):
     def get_version_log_path(self):
         return os.path.join(self.lostconfig.app_path, 'version-log.json')
 
-    def get_upload_path(self, file_name):
+    def get_upload_path(self, user_id, file_name):
         u_path = os.path.join(self.lostconfig.app_path, UPLOAD_PATH)
-        if not self.fs.exists(u_path):
-            self.fs.mkdirs(u_path)
-        return os.path.join(u_path, file_name)
+        user_upload_path = os.path.join(u_path,str(user_id))
+        if not self.fs.exists(user_upload_path):
+            self.fs.mkdirs(user_upload_path)
+        # if not self.fs.exists(u_path):
+        #     self.fs.mkdirs(u_path)
+        return os.path.join(user_upload_path, file_name)
 
     def get_app_log_path(self, log_file_name):
         base_path = os.path.join(self.lostconfig.app_path, APP_LOG_PATH)
