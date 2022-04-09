@@ -114,8 +114,19 @@ class Control extends Component {
 
     componentDidMount() {
         this.props.getMiaLabel()
-        console.log(this.props.proposedLabel)
         this.props.setMiaSelectedLabel(undefined)
+    }
+
+    componentDidUpdate() {
+        if (!this.props.selectedLabel) {
+            if (this.props.proposedLabel) {
+                this.handleAddLabel(
+                    this.props.labels.find(
+                        (value) => value.id === this.props.proposedLabel,
+                    ),
+                )
+            }
+        }
     }
     renderSelectedLabel() {
         if (this.props.selectedLabel) {
@@ -127,6 +138,7 @@ class Control extends Component {
                         background: this.props.selectedLabel.color,
                         marginLeft: 30,
                         opacity: 1,
+                        cursor: 'default',
                     }}
                 >
                     {this.props.selectedLabel.label}
@@ -175,6 +187,7 @@ class Control extends Component {
                             onChange={(e) => this.setState({ value: e.target.value })}
                             onSelect={(value, label) => {
                                 this.setState({ value: value })
+                                console.log(label)
                                 this.handleAddLabel(label)
                             }}
                         />
