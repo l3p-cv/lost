@@ -189,6 +189,7 @@ class DBMan(object):
             return self.session.query(model.PipeTemplate)\
                 .filter(model.PipeTemplate.group_id==None).all()
 
+        return self.session.query(model.PipeTemplate).all()
 
     def get_pipe_template(self, pipe_template_id=None):
         '''Get a single PipeTemplate.

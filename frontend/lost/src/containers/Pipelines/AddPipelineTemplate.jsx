@@ -47,6 +47,8 @@ const AddPipelineTemplate = ({ visLevel }) => {
     }, [acceptedFiles])
 
     useEffect(() => {
+        console.log(submitNewPipelineTemplateData)
+
         if (submitNewPipelineTemplateData === 'success') {
             Notification.showSuccess('Import succeeded.')
         }
@@ -106,7 +108,7 @@ const AddPipelineTemplate = ({ visLevel }) => {
             </BaseModal>
             <IconButton
                 icon={faPlus}
-                text="Import pipeline template"
+                text="Import pipeline project"
                 onClick={() => setIsModalOpen(true)}
             />
         </>

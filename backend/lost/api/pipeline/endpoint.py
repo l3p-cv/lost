@@ -1,5 +1,5 @@
 from tkinter.tix import Tree
-from flask import request
+from flask import request, make_response
 from flask_restx import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
@@ -17,6 +17,7 @@ from lost.db.vis_level import VisLevel
 from lost.utils.dump import dump
 import json 
 import os
+from io import BytesIO
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
 import flask
@@ -260,16 +261,18 @@ class PipelineTemplateExport(Resource):
             pipe_template = dbm.get_pipe_template(pipeline_template_id)
             content = json.loads(pipe_template.json_template)
             fm = AppFileMan(LOST_CONFIG)
-            src = fm.get_pipe_project_path(content['namespace'])
+            # src = fm.get_pipe_project_path(content['namespace'])
+            src = os.path.join(fm.get_pipe_project_path(), content['namespace'])
+            f = BytesIO()
+            # f = open('/home/lost/app/test.zip', 'wb')
+            template_import.pack_pipe_project_to_stream(f, src)
             
-            # f = BytesIO()
-            # ldf.to_csv(f)
-            # f.seek(0)
-            # resp = make_response(f.read())
-            # resp.headers["Content-Disposition"] = f"attachment; filename={label_tree.root.name}.csv"
-            # resp.headers["Content-Type"] = "blob"
+            f.seek(0)
+            resp = make_response(f.read())
+            resp.headers["Content-Disposition"] = f"attachment; filename={content['namespace']}.zip"
+            resp.headers["Content-Type"] = "blob"
             dbm.close_session()
-            return "success", 200
+            return resp
 
 @namespace.route('/template/delete')
 class TemplateDelete(Resource):
