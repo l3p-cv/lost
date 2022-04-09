@@ -5,6 +5,7 @@ from flask_restx import Resource
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.db.vis_level import VisLevel
+from lost.logic.user import get_user_default_group
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.db import model, roles, access
 from lost.logic.file_man import FileMan, chonkyfy, DummyFileMan
@@ -112,9 +113,10 @@ class FsList(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            for user_group in dbm.get_user_groups_by_user_id(identity):
-                if user_group.group.is_user_default:
-                    group_id = user_group.group.idx
+            group_id = get_user_default_group(dbm, identity)
+            # for user_group in dbm.get_user_groups_by_user_id(identity):
+            #     if user_group.group.is_user_default:
+            #         group_id = user_group.group.idx
             if visibility == VisLevel().USER:
                 fs_list = list(dbm.get_fs(group_id=group_id))
             elif visibility == VisLevel().GLOBAL:
