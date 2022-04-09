@@ -36,7 +36,7 @@ def _dump_extra_packages(extra_pip, extra_conda):
 
 class PipeImporter(object):
 
-    def __init__(self, pipe_template_dir, dbm, forTest=False):
+    def __init__(self, pipe_template_dir, dbm, user_id=None, forTest=False):
         '''Load json file.
 
         Args:
@@ -52,7 +52,7 @@ class PipeImporter(object):
             os.path.basename(self.src_pipe_template_path))
         self.json_files = glob(os.path.join(pipe_template_dir,'*.json'))
         self.pipes = []
-        self.namespace = os.path.basename(self.src_pipe_template_path).strip('/')
+        self.namespace = self._get_namespace(user_id)
         for json_path in self.json_files:
             with open(json_path) as jfile:
                 pipe = json.load(jfile)
@@ -67,6 +67,12 @@ class PipeImporter(object):
                     pe['script']['name'] = self._namespaced_name(
                         pe['script']['path'])
         self.checker = PipeDefChecker(logging)
+
+    def _get_namespace(self, user_id):
+        name_space = os.path.basename(self.src_pipe_template_path).strip('/')
+        if user_id is not None:
+            name_space = f'{user_id}_{name_space}'
+        return name_space
 
     def _namespaced_name(self, name):
         return '{}.{}'.format(self.namespace, name)

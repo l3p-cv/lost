@@ -1,3 +1,4 @@
+from tkinter.tix import Tree
 from flask import request
 from flask_restx import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -195,22 +196,28 @@ class TemplateImport(Resource):
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
-
         else:
-            now = datetime.now()
             fm = AppFileMan(LOST_CONFIG)
             uploaded_file = request.files['zip_file']
             upload_path = fm.get_upload_path(identity, uploaded_file.filename)
+            USER_NAMESPACE = False
+            if USER_NAMESPACE:
+                head, tail = os.path.split(upload_path)
+                upload_path = os.path.join(head, f'{identity}_{tail}')
             uploaded_file.save(upload_path)
 
             pp_path = fm.get_pipe_project_path()
             dst_dir = os.path.basename(upload_path)
             dst_dir = os.path.splitext(dst_dir)[0]
             dst_path = os.path.join(pp_path, dst_dir)
+                
 
             template_import.unpack_pipe_project(upload_path, dst_path)
             dbm = access.DBMan(LOST_CONFIG)
-            importer = template_import.PipeImporter(dst_path, dbm)
+            if not USER_NAMESPACE:
+                importer = template_import.PipeImporter(dst_path, dbm)
+            else:
+                importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
             importer.start_import()
             fm.fs.rm(upload_path, recursive=True)
             dbm.close_session()
