@@ -42,7 +42,7 @@ test-lost:
     - pip install --quiet docker-compose~=1.23.0
   script:
     - cd docker/compose && docker-compose run -e LOST_VERSION=$LOST_VERSION lost bash /pytest.sh
-
+ 
 release-lost:
   stage: release-lost
   script:
