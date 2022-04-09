@@ -1,4 +1,5 @@
 from datetime import datetime
+from zipfile import ZipFile
 import json
 import logging
 import os
@@ -474,60 +475,26 @@ def pack_pipe_project(project_path, dst_path):
     archive_format = archive_format.replace('.', '')
     shutil.make_archive(dst, archive_format, project_path)
 
+def pack_pipe_project_to_stream(f, project_path):
+    def rel_path(root, path):
+        rel = path.replace(root, '')
+        if rel.startswith('/'):
+            rel = rel[1:]
+        return rel
+    def read_stream(path):
+        with open(path, 'rb') as f:
+            return f.read()
+        
+    with ZipFile(f, 'w') as zip_file:
+        for root, dir_list, file_list in os.walk(project_path):
+            # print(root, d, file_list)
+            for my_file in file_list:
+                rel = rel_path(project_path, os.path.join(root, my_file))
+                print(rel)
+                zip_file.writestr(rel, read_stream(os.path.join(root, my_file)))
+
 def unpack_pipe_project(zip_project, dst_path):
-    res_dir = os.path.basename(dst_path)
-    res_dir = os.path.splitext(res_dir)[0]
-    dst = os.path.join(dst_path, res_dir)
+    # res_dir = os.path.basename(dst_path)
+    # res_dir = os.path.splitext(res_dir)[0]
+    # dst = os.path.join(dst_path, res_dir)
     shutil.unpack_archive(zip_project, dst_path)
-
-# class PipePacker(object):
-
-#     def __init__(self, pipe_template_file):
-#         '''Load json file.
-
-#         Args:
-#             pipe_template_file: Pipeline definition file.
-#         '''
-#         self.json_path = os.path.abspath(pipe_template_file)
-#         self.pipe_template_path = os.path.split(pipe_template_file)[0]
-#         with open(self.json_path) as jfile:
-#             self.pipe = json.load(jfile)
-
-#     def pack(self, dst_path):
-#         '''Pack pipeline to zip file.
-
-#         Args:
-#             dst_path: Path to store zipfile. E.g 'test/my_cool_pipe.zip'
-#         '''
-#         # Do everything relative from pipeline definition file path.
-#         tmp = dict()
-#         used_lib_paths = dict()
-#         used_static_paths = dict()
-#         tmp_path = os.path.abspath('tmp_pipe_packer')
-#         tmp['root'] = os.path.join(tmp_path, self.pipe['name'])
-#         dst = os.path.abspath(dst_path)
-#         oldwd = os.getcwd()
-#         os.chdir(self.pipe_template_path)
-#         for pe_j in self.pipe['elements']:
-#             if 'script' in pe_j:
-#                 element_j = pe_j['script']
-#                 script = parse_script(element_j)
-#                 src_script_dir_path = os.path.split(script.path)[0]
-#                 # Calculate all paths
-#                 tmp['script.rel'] = os.path.splitext(os.path.basename(script.path))[0]
-#                 tmp['script.abs'] = os.path.join(tmp['root'], tmp['script.rel'])
-#                 # Create folder structure
-#                 if not os.path.exists(tmp['script.abs']):
-#                     dir_util.mkpath(tmp['script.abs'])
-#                 # Copy files
-#                 dir_util.copy_tree(src_script_dir_path, tmp['script.abs'])
-#                 logging.info("Copyed script from %s to %s"%(src_script_dir_path,
-#                                                             tmp['script.abs']))
-#                 script_name = os.path.basename(script.path)
-#                 # Write new paths to back to json dict
-#                 element_j['path'] = script_name
-#         with open(join(tmp['root'], os.path.basename(self.json_path)), 'w') as outfile:
-#             json.dump(self.pipe, outfile)
-#         fm.zipdir(src=tmp['root'], dst=dst)
-#         dir_util.remove_tree(tmp_path)
-#         os.chdir(oldwd) # Change dir back to old working directory.
