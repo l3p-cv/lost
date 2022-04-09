@@ -171,7 +171,8 @@ class PipeImporter(object):
             if not pipe_in_db:
                 pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
                                                 timestamp=datetime.now(),
-                                                group_id=self.user_id)
+                                                group_id=self.user_id,
+                                                pipe_project=self.namespace)
                 self.dbm.save_obj(pipe_temp)
                 logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
                 return pipe_temp.idx

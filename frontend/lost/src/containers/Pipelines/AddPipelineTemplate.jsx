@@ -47,12 +47,10 @@ const AddPipelineTemplate = ({ visLevel }) => {
     }, [acceptedFiles])
 
     useEffect(() => {
-        console.log(submitNewPipelineTemplateData)
-
         if (submitNewPipelineTemplateData.isSuccess) {
             Notification.showSuccess('Import succeeded.')
         }
-        if (!submitNewPipelineTemplateData.isSuccess) {
+        if (submitNewPipelineTemplateData.isSuccess === false) {
             Notification.showError('Import failed.')
         }
     }, [submitNewPipelineTemplateData])

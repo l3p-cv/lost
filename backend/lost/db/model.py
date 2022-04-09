@@ -1108,6 +1108,7 @@ class PipeTemplate(Base):
         timestamp (DateTime): Date and Time this Template was created or imported.
         is_debug_mode (Boolean): DebugMode shows weather this pipe is viewable for normal users or only for developers
         group_id (int): Group this template belongs to
+        pipe_project (str): Pipe project, where this pipeline belongs to
     Note:
         group_id is None if this filesystem is available for all users!
     """
@@ -1117,14 +1118,16 @@ class PipeTemplate(Base):
     timestamp = Column(DateTime())
     is_debug_mode = Column(Boolean)
     group_id = Column(Integer, ForeignKey('group.idx'))
+    pipe_project = Column(Text)
 
     def __init__(self, idx=None, json_template=None, timestamp=None,
-                 is_debug_mode=None, group_id=None):
+                 is_debug_mode=None, group_id=None, pipe_project=None):
         self.idx = idx
         self.json_template = json_template
         self.timestamp = timestamp
         self.debug_mode = is_debug_mode
         self.group_id = group_id
+        self.pipe_project = pipe_project
 
 
 class Script(Base):
