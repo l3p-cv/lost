@@ -36,6 +36,7 @@ class DockerComposeBuilder(object):
             '      restart: always\n'
             '      ports:\n'
             '        - "${LOST_FRONTEND_PORT}:8080"\n'
+            '        #- "${JUPYTER_LAB_PORT:-8888}:8888"\n'
             '      environment:\n'
             '        PYTHONPATH: "/code/src/backend"\n'
             '        ENV_NAME: "lost"\n'
@@ -94,7 +95,8 @@ class QuickSetup(object):
     def __init__(self, args):
         self.args = args
         self.secret_key = gen_rand_string(16)
-        self.dst_data_dir = os.path.join(args.install_path, 'data')
+        self.dst_app_data_dir = os.path.join(args.install_path, 'data', 'app_data')
+        self.dst_project_data_dir = os.path.join(args.install_path, 'data', 'project_data')
         self.dst_docker_dir = os.path.join(args.install_path, 'docker')
         if args.release is None:
             self.release = DEFAULT_RELEASE
@@ -118,10 +120,10 @@ class QuickSetup(object):
         Args:
             env_path (str): Path to store env file
         '''
-        if self.args.no_ai:
-            ai_examples = 'False'
-        else:
-            ai_examples = 'True'
+        # if self.args.no_ai:
+        #     ai_examples = 'False'
+        # else:
+        #     ai_examples = 'True'
 
         config = [
             ['#======================','#'],
@@ -130,14 +132,17 @@ class QuickSetup(object):
             ['DEBUG','False'],
             ['# Add example pipelines and example images ','#'],
             ['LOST_ADD_EXAMPLES','True'],
-            ['#= Add also ai pipelines if true. You will need the lost-cv worker to execute these pipelines.',' #'],
-            ['LOST_ADD_AI_EXAMPLES', ai_examples],
+            # ['#= Add also ai pipelines if true. You will need the lost-cv worker to execute these pipelines.',' #'],
+            # ['LOST_ADD_AI_EXAMPLES', ai_examples],
             ['LOST_VERSION', self.release],
             ['#= LOST port binding to host machine',' #'],
             ['LOST_FRONTEND_PORT', 80],
             ['SECRET_KEY', self.secret_key],
             ['#= Path to LOST data in host filesystem',' #'],
-            ['LOST_DATA', self.dst_data_dir],
+            ['LOST_DATA', self.dst_project_data_dir],
+            ['LOST_APP', self.dst_app_data_dir],
+            ['LOST_DATA_FS_TYPE', 'file'],
+            ['LOST_DATA_FS_ARGS', '{}'],
             ['#======================','#'],
             ['#= LOST Database config ','#'],
             ['#======================','#'],
@@ -168,7 +173,16 @@ class QuickSetup(object):
             ['#MAIL_USERNAME','email@email.com'],
             ['#MAIL_PASSWORD','password'],
             ['#MAIL_DEFAULT_SENDER','LOST Notification System <email@email.com>'],
-            ['#MAIL_LOST_URL','http://mylostinstance.url/']
+            ['#MAIL_LOST_URL','http://mylostinstance.url/'],
+            ['#========================','#'],
+            ['#= Jupyter Lab Config    ','#'],
+            ['#========================','#'],
+            ['# In order to enable Jupyter-Lab integration you have to uncomment the following lines','#'],
+            ['# Please watch out: You have to uncomment the port export of JUPYTER_LAB_PORT in your .docker-compose.yml as well','#'],
+            ['#JUPYTER_LAB_ACTIVE','True'],
+            ['#JUPYTER_LAB_ROOT_PATH','/code/src'],
+            ['#JUPYTER_LAB_TOKEN','mysecrettoken'],
+            ['#JUPYTER_LAB_PORT','8888']
         ]
         with open(env_path, 'w') as f:
             for key, val in config:
@@ -182,8 +196,10 @@ class QuickSetup(object):
         except OSError:
             logging.warning('Path already exists: {}'.format(args.install_path))
             return
-        os.makedirs(self.dst_data_dir)
-        logging.info('Created: {}'.format(self.dst_data_dir))
+        os.makedirs(self.dst_app_data_dir)
+        logging.info('Created: {}'.format(self.dst_app_data_dir))
+        os.makedirs(self.dst_project_data_dir)
+        logging.info('Created: {}'.format(self.dst_project_data_dir))
         os.makedirs(self.dst_docker_dir)
         logging.info('Created: {}'.format(self.dst_docker_dir))
         # example_config_path = '../compose/prod-docker-compose.yml'
@@ -211,7 +227,7 @@ if __name__ == "__main__":
     parser.add_argument('install_path', help='Specify path to install lost.')
     parser.add_argument('--release', help='LOST release you want to install.', default=None)
     parser.add_argument('--testing', help='use the LOST images from testing stage.', default=None)
-    parser.add_argument('-noai', '--no_ai', help='Do not add ai examples and no lost-cv worker', action='store_true')
+    # parser.add_argument('-noai', '--no_ai', help='Do not add ai examples and no lost-cv worker', action='store_true')
     parser.add_argument('--phpmyadmin', help='Add phpmyadmin to docker compose file', action='store_true')
     args = parser.parse_args()
     qs = QuickSetup(args)
