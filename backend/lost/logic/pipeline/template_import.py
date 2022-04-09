@@ -7,15 +7,12 @@ from lost.logic.file_man import AppFileMan
 from lost.logic import file_man as fm
 from distutils import dir_util
 from lost.db import model
-import importlib
 from lost.logic.script import get_default_script_arguments
 from lost.logic.script import get_default_script_envs
 from lost.logic.script import get_default_script_resources
 from lost.logic.script import get_script_args
-from lost.logic.pipeline import cron
 from distutils import dir_util
 from os.path import join
-from lost.db import dtype
 from glob import glob
 from lost.logic import script as script_man
 import copy
@@ -70,81 +67,9 @@ class PipeImporter(object):
                     pe['script']['name'] = self._namespaced_name(
                         pe['script']['path'])
         self.checker = PipeDefChecker(logging)
-        
 
     def _namespaced_name(self, name):
         return '{}.{}'.format(self.namespace, name)
-
-    # def update_pipe_project(self):
-
-    #     if os.path.exists(self.dst_pipe_template_path):
-    #         logging.info('\n\n++++++++++++++++++++++\n\n')
-    #         for pipe in self.pipes:
-    #             if not self.checker.check(pipe):
-    #                 logging.error('Pipeline was not updated!')
-    #                 return False
-    #         for pipe in self.pipes:
-    #             self.update_pipe(pipe)
-    #         # dir_util.copy_tree(self.src_pipe_template_path, self.dst_pipe_template_path)
-    #         # logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
-    #         #                                         self.dst_pipe_template_path))
-    #     else:
-    #         logging.warning(('Cannot update. No such pipe project: *{}*. '
-    #                         'Maybe you want to import a pipeline instead ' 
-    #                         'of updating it.').format(self.namespace))
-    
-    # def update_pipe(self, pipe):
-    #     for db_pipe in self.dbm.get_all_pipeline_templates():
-    #         db_json = json.loads(db_pipe.json_template)
-    #         # update pipeline if already present in db
-    #         if db_json['name'].lower() == pipe['name'].lower():
-    #             # Do everything relative from pipeline definition file path.
-    #             oldwd = os.getcwd()
-    #             os.chdir(self.src_pipe_template_path)
-    #             logging.info('Updated pipeline: {}'.format(db_json['name']))           
-    #             for pe_j in pipe['elements']:
-    #                 if 'script' in pe_j:
-    #                     element_j = pe_j['script']
-    #                     script = parse_script(element_j)
-    #                     db_script = self.dbm.get_script(name=self._get_script_name(script))
-    #                     script_arguments = get_default_script_arguments(script.path)
-    #                     script_envs = get_default_script_envs(script.path)
-    #                     script_resources = get_default_script_resources(script.path)
-    #                     if 'arguments' in element_j:
-    #                         for arg in element_j['arguments']:
-    #                             if arg not in script_arguments:
-    #                                 logging.error("Invalid argument >> {} << in pipeline definition json".format(arg))
-    #                                 valid_args = ""
-    #                                 for v_arg in script_arguments:
-    #                                     valid_args += ">> {} <<\n".format(v_arg)
-    #                                 logging.error("Valid arguments are: \n{}".format(valid_args[:-1]))
-    #                                 raise Exception('Invalid arguments. Start Cleanup')
-    #                     if db_script is None:
-    #                         self.dbm.add(script)
-    #                         self.dbm.commit()
-    #                         script_out_path = os.path.join(self.src_pipe_template_path, script.path)
-    #                         script.path = self.file_man.make_path_relative(script_out_path)
-    #                         script.arguments = json.dumps(script_arguments)
-    #                         script.envs = json.dumps(script_envs)
-    #                         script.resources = json.dumps(script_resources)
-    #                         self.dbm.save_obj(script)
-    #                         logging.info("Added script to database")
-    #                     else: 
-    #                         script_out_path = os.path.join(self.src_pipe_template_path, script.path)
-    #                         db_script.path = self.file_man.make_path_relative(script_out_path)
-    #                         db_script.arguments = json.dumps(script_arguments)
-    #                         db_script.envs = json.dumps(script_envs)
-    #                         db_script.description = script.description
-    #                         db_script.resources = json.dumps(script_resources)
-    #                         self.dbm.save_obj(db_script)
-    #                         logging.info('Updated script: {}'.format(db_script.name))
-    #                 # self._fix_sia_config(pe_j)
-    #             db_pipe.json_template = json.dumps(pipe)
-    #             self.dbm.save_obj(db_pipe)
-    #             os.chdir(oldwd) # Change dir back to old working directory.                
-    #             return True
-    #     # import pipe if not already present in database    
-    #     self.import_pipe(pipe)
 
     def _get_script_name(self, script):
         return self._namespaced_name(os.path.basename(script.path))
@@ -254,19 +179,9 @@ class PipeImporter(object):
             Pipeline folder in LOST filesystem and all related db
             entrys will be deleted.
         '''
-        # clean_filesystem = True
         for pipe in self.pipes:
             if not self.remove_pipeline(pipe):
                 pass
-                # clean_filesystem = False
-        # if clean_filesystem:
-        #     shutil.rmtree(self.dst_pipe_template_path)
-        #     logging.info('Removed pipeline project from lost filesystem {}'.format(
-        #         self.dst_pipe_template_path
-        #     ))
-        #     logging.info('Whole pipeline project {} was successfull removed'.format(
-        #         self.namespace
-        #     ))
         else:
             logging.info('''Pipeline project {} was not completely removed 
                 since some pipes are still in use'''.format(self.namespace))
@@ -295,24 +210,6 @@ class PipeImporter(object):
                 return True
         return True
     
-    # def _fix_sia_config(self, pe):
-    #     '''A quick fix to clean up pipeline definition file and keep SIA running.
-        
-    #     Due to changes in SIA constraints on drawables are not longer
-    #     supported but still need to be defined in SIA config to keep SIA
-    #     running.
-    #     ''' 
-    #     if 'annoTask' in pe:
-    #         if pe['annoTask']['type'].lower() == 'sia':
-    #             if 'drawables' not in pe['annoTask']['configuration']:
-    #                 pe['annoTask']['configuration']['drawables'] = {
-    #                     'bbox' : {
-    #                         "minArea": 25,
-    #                         "minAreaType": "abs"
-    #                     }
-    #                 }
-    #     return pe
-
 class PipeDefChecker():
     '''Checks if a pipeline definition file is correct'''
 
@@ -332,7 +229,7 @@ class PipeDefChecker():
             Bool: True if key is present.
         '''
         # If dict_element is root element, do to not clutter
-            # error message with all element entries!
+        # error message with all element entries!
         if 'elements' in dict_element:
             my_element = copy.deepcopy(dict_element)
             my_element['elements'] = '[...]'
@@ -566,56 +463,65 @@ class PipeDefChecker():
                     pe['peN']))
         return ret
 
+def pack_pipe_project(project_path, dst_path):
+    dst, archive_format = os.path.splitext(dst_path)
+    archive_format = archive_format.replace('.', '')
+    shutil.make_archive(dst, archive_format, project_path)
 
+def unpack_pipe_project(zip_project, dst_path):
+    res_dir = os.path.basename(dst_path)
+    res_dir = os.path.splitext(res_dir)[0]
+    dst = os.path.join(dst_path, res_dir)
+    shutil.unpack_archive(zip_project, dst_path)
 
-class PipePacker(object):
+# class PipePacker(object):
 
-    def __init__(self, pipe_template_file):
-        '''Load json file.
+#     def __init__(self, pipe_template_file):
+#         '''Load json file.
 
-        Args:
-            pipe_template_file: Pipeline definition file.
-        '''
-        self.json_path = os.path.abspath(pipe_template_file)
-        self.pipe_template_path = os.path.split(pipe_template_file)[0]
-        with open(self.json_path) as jfile:
-            self.pipe = json.load(jfile)
+#         Args:
+#             pipe_template_file: Pipeline definition file.
+#         '''
+#         self.json_path = os.path.abspath(pipe_template_file)
+#         self.pipe_template_path = os.path.split(pipe_template_file)[0]
+#         with open(self.json_path) as jfile:
+#             self.pipe = json.load(jfile)
 
-    def pack(self, dst_path):
-        '''Pack pipeline to zip file.
+#     def pack(self, dst_path):
+#         '''Pack pipeline to zip file.
 
-        Args:
-            dst_path: Path to store zipfile. E.g 'test/my_cool_pipe.zip'
-        '''
-        # Do everything relative from pipeline definition file path.
-        tmp = dict()
-        used_lib_paths = dict()
-        used_static_paths = dict()
-        tmp_path = os.path.abspath('tmp_pipe_packer')
-        tmp['root'] = os.path.join(tmp_path, self.pipe['name'])
-        dst = os.path.abspath(dst_path)
-        oldwd = os.getcwd()
-        os.chdir(self.pipe_template_path)
-        for pe_j in self.pipe['elements']:
-            if 'script' in pe_j:
-                element_j = pe_j['script']
-                script = parse_script(element_j)
-                src_script_dir_path = os.path.split(script.path)[0]
-                # Calculate all paths
-                tmp['script.rel'] = os.path.splitext(os.path.basename(script.path))[0]
-                tmp['script.abs'] = os.path.join(tmp['root'], tmp['script.rel'])
-                # Create folder structure
-                if not os.path.exists(tmp['script.abs']):
-                    dir_util.mkpath(tmp['script.abs'])
-                # Copy files
-                dir_util.copy_tree(src_script_dir_path, tmp['script.abs'])
-                logging.info("Copyed script from %s to %s"%(src_script_dir_path,
-                                                            tmp['script.abs']))
-                script_name = os.path.basename(script.path)
-                # Write new paths to back to json dict
-                element_j['path'] = script_name
-        with open(join(tmp['root'], os.path.basename(self.json_path)), 'w') as outfile:
-            json.dump(self.pipe, outfile)
-        fm.zipdir(src=tmp['root'], dst=dst)
-        dir_util.remove_tree(tmp_path)
-        os.chdir(oldwd) # Change dir back to old working directory.
+#         Args:
+#             dst_path: Path to store zipfile. E.g 'test/my_cool_pipe.zip'
+#         '''
+#         # Do everything relative from pipeline definition file path.
+#         tmp = dict()
+#         used_lib_paths = dict()
+#         used_static_paths = dict()
+#         tmp_path = os.path.abspath('tmp_pipe_packer')
+#         tmp['root'] = os.path.join(tmp_path, self.pipe['name'])
+#         dst = os.path.abspath(dst_path)
+#         oldwd = os.getcwd()
+#         os.chdir(self.pipe_template_path)
+#         for pe_j in self.pipe['elements']:
+#             if 'script' in pe_j:
+#                 element_j = pe_j['script']
+#                 script = parse_script(element_j)
+#                 src_script_dir_path = os.path.split(script.path)[0]
+#                 # Calculate all paths
+#                 tmp['script.rel'] = os.path.splitext(os.path.basename(script.path))[0]
+#                 tmp['script.abs'] = os.path.join(tmp['root'], tmp['script.rel'])
+#                 # Create folder structure
+#                 if not os.path.exists(tmp['script.abs']):
+#                     dir_util.mkpath(tmp['script.abs'])
+#                 # Copy files
+#                 dir_util.copy_tree(src_script_dir_path, tmp['script.abs'])
+#                 logging.info("Copyed script from %s to %s"%(src_script_dir_path,
+#                                                             tmp['script.abs']))
+#                 script_name = os.path.basename(script.path)
+#                 # Write new paths to back to json dict
+#                 element_j['path'] = script_name
+#         with open(join(tmp['root'], os.path.basename(self.json_path)), 'w') as outfile:
+#             json.dump(self.pipe, outfile)
+#         fm.zipdir(src=tmp['root'], dst=dst)
+#         dir_util.remove_tree(tmp_path)
+#         os.chdir(oldwd) # Change dir back to old working directory.
