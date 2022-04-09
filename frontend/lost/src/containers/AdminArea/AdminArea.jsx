@@ -5,7 +5,7 @@ import actions from '../../actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     faCogs,
-    faInfoCircle,
+    faWandMagicSparkles,
     faUsers,
     faCubes,
     faDatabase,
@@ -31,6 +31,7 @@ import UsersAndGroups from '../Users/UsersAndGroups'
 import TabJupyterLab from './TabJupyterLab'
 import Labels from '../Labels/Labels'
 import DSTable from '../DataSources/DSTable'
+import PipelineTemplate from '../Pipelines/PipelineTemplates'
 
 const AdminArea = () => {
     const dispatch = useDispatch()
@@ -94,9 +95,19 @@ const AdminArea = () => {
                                 <FontAwesomeIcon
                                     color="#092F38"
                                     size="1x"
+                                    icon={faWandMagicSparkles}
+                                />
+                                {active === 1 && ' Pipeline Templates'}
+                            </CNavLink>
+                        </CNavItem>
+                        <CNavItem>
+                            <CNavLink>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
                                     icon={faDatabase}
                                 />
-                                {active === 1 && ' Global Datasources'}
+                                {active === 2 && ' Global Datasources'}
                             </CNavLink>
                         </CNavItem>
                         <CNavItem>
@@ -106,7 +117,7 @@ const AdminArea = () => {
                                     size="1x"
                                     icon={faTags}
                                 />
-                                {active === 2 && ' Global Labels'}
+                                {active === 3 && ' Global Labels'}
                             </CNavLink>
                         </CNavItem>
                         {/* <CNavItem>
@@ -126,7 +137,7 @@ const AdminArea = () => {
                                     size="1x"
                                     icon={faCubes}
                                 />
-                                {active === 3 && ' Worker'}
+                                {active === 4 && ' Worker'}
                             </CNavLink>
                         </CNavItem>
                         <CNavItem>
@@ -136,7 +147,7 @@ const AdminArea = () => {
                                     size="1x"
                                     icon={faCogs}
                                 />
-                                {active === 4 && ' Settings'}
+                                {active === 5 && ' Settings'}
                             </CNavLink>
                         </CNavItem>
                         {renderJupyterLabNav()}
@@ -144,6 +155,9 @@ const AdminArea = () => {
                     <CTabContent>
                         <CTabPane style={{ marginTop: 30 }}>
                             <UsersAndGroups></UsersAndGroups>
+                        </CTabPane>
+                        <CTabPane style={{ marginTop: 30 }}>
+                            <PipelineTemplate visLevel="global"></PipelineTemplate>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
                             <DSTable visLevel="global"></DSTable>
