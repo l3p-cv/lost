@@ -3,14 +3,17 @@ from flask_restx import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from lost.api.api import api
+from lost.logic.file_man import AppFileMan
 from lost.api.pipeline.api_definition import templates, template, pipelines, pipeline
 from lost.api.pipeline import tasks
 from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic.pipeline import service as pipeline_service
+from lost.logic.pipeline import template_import
 from lost.logic import template as template_service
 from lost.utils.dump import dump
+import os
 namespace = api.namespace('pipeline', description='Pipeline API.')
 import flask
 
@@ -195,8 +198,25 @@ class TemplateImport(Resource):
 
         else:
             now = datetime.now()
+            fm = AppFileMan(LOST_CONFIG)
             uploaded_file = request.files['zip_file']
-            zip_file_name = f'{now.strftime("%m_%d_%Y_%H_%M_%S")}_{uploaded_file.filename}'
-            data = request.form
+            # stream = uploaded_file.read()
+            upload_path = fm.get_upload_path(uploaded_file.filename)
+            uploaded_file.save(upload_path)
+
+            pp_path = fm.get_pipe_project_path()
+            dst_dir = os.path.basename(upload_path)
+            dst_dir = os.path.splitext(dst_dir)[0]
+            dst_path = os.path.join(pp_path, dst_dir)
+
+            template_import.unpack_pipe_project(upload_path, dst_path)
+            dbm = access.DBMan(LOST_CONFIG)
+            importer = template_import.PipeImporter(dst_path, dbm)
+            importer.start_import()
+
+            fm.fs.rm(upload_path, recursive=True)
+
+            # zip_file_name = f'{now.strftime("%m_%d_%Y_%H_%M_%S")}_{uploaded_file.filename}'
+            # data = request.form
             dbm.close_session()
             return "success", 200

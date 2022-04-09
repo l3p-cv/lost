@@ -28,6 +28,7 @@ SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
 APP_LOG_PATH = DATA_ROOT_PATH + "logs/"
+UPLOAD_PATH = DATA_ROOT_PATH + "uploads"
 # MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
 # JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
 # MY_DATA_PATH = "my_data/"
@@ -70,6 +71,12 @@ class AppFileMan(object):
 
     def get_version_log_path(self):
         return os.path.join(self.lostconfig.app_path, 'version-log.json')
+
+    def get_upload_path(self, file_name):
+        u_path = os.path.join(self.lostconfig.app_path, UPLOAD_PATH)
+        if not self.fs.exists(u_path):
+            self.fs.mkdirs(u_path)
+        return os.path.join(u_path, file_name)
 
     def get_app_log_path(self, log_file_name):
         base_path = os.path.join(self.lostconfig.app_path, APP_LOG_PATH)
