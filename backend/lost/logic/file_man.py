@@ -116,9 +116,11 @@ class AppFileMan(object):
             my_path = f'{head}_{timestamp}{ext}'
             return my_path
 
-    def get_pipe_project_path(self, scr=None):
+    def get_pipe_project_path(self, scr=None, pp_name=None):
         if scr is not None:
             pp_name = scr.name.split('.')[0]
+            return os.path.join(self.lostconfig.app_path, PIPE_ROOT_PATH, pp_name)
+        elif pp_name is not None:
             return os.path.join(self.lostconfig.app_path, PIPE_ROOT_PATH, pp_name)
         else:
             return (os.path.join(self.lostconfig.app_path, PIPE_ROOT_PATH))

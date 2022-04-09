@@ -185,16 +185,23 @@ class PipeImporter(object):
     def remove_pipe_project(self):
         '''Remove an imported pipeline project from lost system.
 
+        Returns:
+            list of dict: Empty list if all pipe of a project could be deleted,
+                a list of pipe that could not be deleted otherwise.
+
         Note:
             Pipeline folder in LOST filesystem and all related db
             entrys will be deleted.
         '''
+        not_deleted_pipes = []
         for pipe in self.pipes:
-            if not self.remove_pipeline(pipe):
+            if self.remove_pipeline(pipe):
                 pass
-        else:
-            logging.info('''Pipeline project {} was not completely removed 
-                since some pipes are still in use'''.format(self.namespace))
+            else:
+                not_deleted_pipes.append(pipe)
+                logging.info('''Pipeline project {} was not completely removed 
+                    since some pipes are still in use'''.format(self.namespace))
+        return not_deleted_pipes
 
     def remove_pipeline(self, pipe):
         '''Remove all related db entrys of a pipeline from lost database.
