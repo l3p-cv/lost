@@ -18,21 +18,20 @@ const PTTable = ({ visLevel }) => {
     const { mutate: deletePipelineProject, status: deletePipelineProjectStatus } =
         pipelineProjectsApi.useDeletePipelineProject()
 
-    function handlePipelineProjectExport(pipeline_template_name, pipeline_template_id) {
-        console.log('Export', pipeline_template_id)
-        fetch(`${API_URL}/pipeline/template/export/${pipeline_template_id}`, {
+    function handlePipelineProjectExport(pipeProject) {
+        fetch(`${API_URL}/pipeline/project/export/${pipeProject}`, {
             method: 'get',
             headers: new Headers({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             }),
         })
             .then((res) => res.blob())
-            .then((blob) => saveAs(blob, `${pipeline_template_name}.zip`))
+            .then((blob) => saveAs(blob, `${pipeProject}.zip`))
     }
 
-    function handlePipelineProjectDelete(pipeline_template_id) {
-        console.log('Delete', pipeline_template_id)
-        deletePipelineProject({ pipeline_template_id })
+    function handlePipelineProjectDelete(pipeProject) {
+        console.log('Delete', pipeProject)
+        deletePipelineProject({ pipeProject })
     }
     useEffect(() => {
         if (pipelineProjects) {
@@ -49,7 +48,7 @@ const PTTable = ({ visLevel }) => {
             Notification.showSuccess('Deletion succeeded.')
         }
         if (deletePipelineProjectStatus === 'error') {
-            Notification.showSuccess('Deletion failed.')
+            Notification.showError('Deletion failed.')
         }
     }, [deletePipelineProjectStatus])
 
@@ -60,12 +59,8 @@ const PTTable = ({ visLevel }) => {
                     data={tableData}
                     columns={[
                         {
-                            Header: 'Name',
-                            accessor: 'name',
-                        },
-                        {
-                            Header: 'Description',
-                            accessor: 'description',
+                            Header: 'Project',
+                            accessor: 'pipeProject',
                         },
                         {
                             Header: 'Global',
@@ -99,7 +94,9 @@ const PTTable = ({ visLevel }) => {
                                         icon={faTrash}
                                         text="Delete"
                                         color="danger"
-                                        onClick={() => handlePipelineProjectDelete(d.id)}
+                                        onClick={() =>
+                                            handlePipelineProjectDelete(d.pipeProject)
+                                        }
                                     />
                                 )
                             },
@@ -115,7 +112,7 @@ const PTTable = ({ visLevel }) => {
                                         color="primary"
                                         isOutline={false}
                                         onClick={() =>
-                                            handlePipelineProjectExport(d.name, d.id)
+                                            handlePipelineProjectExport(d.pipeProject)
                                         }
                                     />
                                 )

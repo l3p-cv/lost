@@ -39,6 +39,7 @@ def get_templates(db_man, group_id=None, add_global=False, debug_mode=False):
         pipe_template_json['id'] = temp.idx
         pipe_template_json['date'] = temp.timestamp
         pipe_template_json['group_id'] = temp.group_id
+        pipe_template_json['pipeProject'] = temp.pipe_project
         content = json.loads(temp.json_template)
         # --------------- name  ------------------------------
         try:

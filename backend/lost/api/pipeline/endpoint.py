@@ -248,12 +248,12 @@ class TemplateImport(Resource):
                 dbm.close_session()
                 return "error", 200
 
-@namespace.route('/project/export/<int:pipeline_template_id>')
+@namespace.route('/project/export/<string:pipe_project>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
 class PipelineTemplateExport(Resource):
     # @api.marshal_with(pipeline)
     @jwt_required
-    def get(self, pipeline_template_id):
+    def get(self, pipe_project):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -262,18 +262,16 @@ class PipelineTemplateExport(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
         else:
             # TODO Export here !
-            pipe_template = dbm.get_pipe_template(pipeline_template_id)
-            content = json.loads(pipe_template.json_template)
             fm = AppFileMan(LOST_CONFIG)
             # src = fm.get_pipe_project_path(content['namespace'])
-            src = os.path.join(fm.get_pipe_project_path(), content['namespace'])
+            src = os.path.join(fm.get_pipe_project_path(), pipe_project)
             f = BytesIO()
             # f = open('/home/lost/app/test.zip', 'wb')
             template_import.pack_pipe_project_to_stream(f, src)
             
             f.seek(0)
             resp = make_response(f.read())
-            resp.headers["Content-Disposition"] = f"attachment; filename={content['namespace']}.zip"
+            resp.headers["Content-Disposition"] = f"attachment; filename={pipe_project}.zip"
             resp.headers["Content-Type"] = "blob"
             dbm.close_session()
             return resp
@@ -292,8 +290,7 @@ class TemplateDelete(Resource):
         else:
             data = json.loads(request.data)
             fm = AppFileMan(LOST_CONFIG)
-            # pipe_project = data['pipe_project']
-            pipe_project = 'sia2'
+            pipe_project = data['pipeProject']
             importer = template_import.PipeImporter(fm.get_pipe_project_path(pp_name=pipe_project), dbm)
             importer.remove_pipe_project()
 
@@ -301,3 +298,47 @@ class TemplateDelete(Resource):
            
             dbm.close_session()
             return "success", 200
+@namespace.route('/project/<string:visibility>')
+class ProjectList(Resource):
+    @api.marshal_with(templates)
+    @jwt_required
+    def get(self, visibility):
+        def filter_by_pipe_project(re):
+            pipeProjects = list()
+            unique = list()
+            for x in re['templates']:
+                if x['pipeProject'] not in pipeProjects:
+                    unique.append(x)
+                    pipeProjects.append(x['pipeProject'])
+            return {"templates": unique}
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        default_group = dbm.get_group_by_name(user.user_name)
+        if visibility == VisLevel().USER:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx)
+                re = filter_by_pipe_project(re)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().GLOBAL:
+            if not user.has_role(roles.ADMINISTRATOR):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm)
+                re = filter_by_pipe_project(re)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().ALL:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
+                re = filter_by_pipe_project(re)
+                dbm.close_session()
+                return re

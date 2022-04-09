@@ -39,7 +39,6 @@ export const useSubmitNewPipelineProject = () => {
             })
             setState({
                 isSuccess: response.data === 'success',
-                pipelineTemplateId: response.data.idx,
             })
         } catch (error) {
             setState({ error })
@@ -55,7 +54,7 @@ export const usePipelineProjects = (visLevel) => {
     return useQuery(
         ['pipeProjects'],
         () =>
-            axios.get(`${API_URL}/pipeline/template/${visLevel}`).then((res) => res.data),
+            axios.get(`${API_URL}/pipeline/project/${visLevel}`).then((res) => res.data),
         {
             initialData: null,
         },

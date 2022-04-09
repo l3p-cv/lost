@@ -51,8 +51,9 @@ const AddPipelineProject = ({ visLevel }) => {
 
         if (submitNewPipelineProjectData.isSuccess) {
             Notification.showSuccess('Import succeeded.')
+            setIsModalOpen(false)
         }
-        if (submitNewPipelineProjectData.isSuccess) {
+        if (submitNewPipelineProjectData.isSuccess === false) {
             Notification.showError('Import failed.')
         }
     }, [submitNewPipelineProjectData])
@@ -60,9 +61,17 @@ const AddPipelineProject = ({ visLevel }) => {
     const renderModalFooter = () => {
         return (
             <IconButton
-                icon={faTimes}
-                color={submitNewPipelineProjectData.isSuccess ? 'success' : 'danger'}
-                text={submitNewPipelineProjectData.isSuccess ? 'Close' : 'Cancel'}
+                icon={
+                    submitNewPipelineProjectData.isSuccess === false ? faTimes : faCheck
+                }
+                color={
+                    submitNewPipelineProjectData.isSuccess === false
+                        ? 'danger'
+                        : 'success'
+                }
+                text={
+                    submitNewPipelineProjectData.isSuccess === false ? 'Cancel' : 'Close'
+                }
                 onClick={() => setIsModalOpen(false)}
             />
         )
