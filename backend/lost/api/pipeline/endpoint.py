@@ -207,7 +207,7 @@ class PipelinePlay(Resource):
             dbm.close_session()
             return "success"
 
-@namespace.route('/template/import')
+@namespace.route('/project/import')
 class TemplateImport(Resource):
     @jwt_required
     def post(self):
@@ -248,7 +248,7 @@ class TemplateImport(Resource):
                 dbm.close_session()
                 return "error", 200
 
-@namespace.route('/template/export/<int:pipeline_template_id>')
+@namespace.route('/project/export/<int:pipeline_template_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
 class PipelineTemplateExport(Resource):
     # @api.marshal_with(pipeline)
@@ -278,7 +278,7 @@ class PipelineTemplateExport(Resource):
             dbm.close_session()
             return resp
 
-@namespace.route('/template/delete')
+@namespace.route('/project/delete')
 class TemplateDelete(Resource):
     @jwt_required
     def post(self):

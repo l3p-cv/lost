@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react'
-import PTTable from './PTTable'
-import AddPipelineTemplate from './AddPipelineTemplate'
+import PTTable from './PipelineProjectsTable'
+import AddPipelineProject from './AddPipelineProject'
 import { CRow } from '@coreui/react'
 
-const PipelineTemplates = ({ visLevel }) => {
+const PipelineProjects = ({ visLevel }) => {
     return (
         <>
             <CRow style={{ marginBottom: 10, marginLeft: 3 }}>
-                <AddPipelineTemplate visLevel={visLevel} />
+                <AddPipelineProject visLevel={visLevel} />
             </CRow>
             <PTTable visLevel={visLevel}></PTTable>
         </>
     )
 }
 
-export default PipelineTemplates
+export default PipelineProjects

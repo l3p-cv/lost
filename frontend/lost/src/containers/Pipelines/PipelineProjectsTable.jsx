@@ -8,17 +8,17 @@ import { saveAs } from 'file-saver'
 import { CBadge } from '@coreui/react'
 import * as Notification from '../../components/Notification'
 
-import * as pipelineTemplatesApi from '../../actions/pipeline/pipeline_templates_api'
+import * as pipelineProjectsApi from '../../actions/pipeline/pipeline_projects_api'
 
 const PTTable = ({ visLevel }) => {
     const [tableData, setTableData] = useState([])
-    const { data: pipelineTemplates, refetch } =
-        pipelineTemplatesApi.usePipelineTemplates(visLevel)
+    const { data: pipelineProjects, refetch } =
+        pipelineProjectsApi.usePipelineProjects(visLevel)
 
-    const { mutate: deletePipelineTemplate, status: deletePipelineTemplateStatus } =
-        pipelineTemplatesApi.useDeletePipelineTemplate()
+    const { mutate: deletePipelineProject, status: deletePipelineProjectStatus } =
+        pipelineProjectsApi.useDeletePipelineProject()
 
-    function handlePipelineTemplateExport(pipeline_template_name, pipeline_template_id) {
+    function handlePipelineProjectExport(pipeline_template_name, pipeline_template_id) {
         console.log('Export', pipeline_template_id)
         fetch(`${API_URL}/pipeline/template/export/${pipeline_template_id}`, {
             method: 'get',
@@ -30,28 +30,28 @@ const PTTable = ({ visLevel }) => {
             .then((blob) => saveAs(blob, `${pipeline_template_name}.zip`))
     }
 
-    function handlePipelineTemplateDelete(pipeline_template_id) {
+    function handlePipelineProjectDelete(pipeline_template_id) {
         console.log('Delete', pipeline_template_id)
-        deletePipelineTemplate({ pipeline_template_id })
+        deletePipelineProject({ pipeline_template_id })
     }
     useEffect(() => {
-        if (pipelineTemplates) {
-            if (pipelineTemplates.templates) {
-                setTableData(pipelineTemplates.templates)
+        if (pipelineProjects) {
+            if (pipelineProjects.templates) {
+                setTableData(pipelineProjects.templates)
             }
         }
-    }, [pipelineTemplates])
+    }, [pipelineProjects])
     useInterval(() => {
         refetch()
     }, 1000)
     useEffect(() => {
-        if (deletePipelineTemplateStatus === 'success') {
+        if (deletePipelineProjectStatus === 'success') {
             Notification.showSuccess('Deletion succeeded.')
         }
-        if (deletePipelineTemplateStatus === 'error') {
+        if (deletePipelineProjectStatus === 'error') {
             Notification.showSuccess('Deletion failed.')
         }
-    }, [deletePipelineTemplateStatus])
+    }, [deletePipelineProjectStatus])
 
     return (
         <>
@@ -99,7 +99,7 @@ const PTTable = ({ visLevel }) => {
                                         icon={faTrash}
                                         text="Delete"
                                         color="danger"
-                                        onClick={() => handlePipelineTemplateDelete(d.id)}
+                                        onClick={() => handlePipelineProjectDelete(d.id)}
                                     />
                                 )
                             },
@@ -115,7 +115,7 @@ const PTTable = ({ visLevel }) => {
                                         color="primary"
                                         isOutline={false}
                                         onClick={() =>
-                                            handlePipelineTemplateExport(d.name, d.id)
+                                            handlePipelineProjectExport(d.name, d.id)
                                         }
                                     />
                                 )

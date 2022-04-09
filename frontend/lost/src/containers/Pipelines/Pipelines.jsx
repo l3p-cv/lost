@@ -3,12 +3,7 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faRocket,
-    faTasks,
-    faPlus,
-    faFileImport,
-} from '@fortawesome/free-solid-svg-icons'
+import { faTasks, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import {
     CCol,
@@ -23,8 +18,6 @@ import BaseContainer from '../../components/BaseContainer'
 
 import RunningPipeline from '../pipeline/running/RunningPipeline'
 import StartPipeline from '../pipeline/start/StartPipeline'
-
-import LOSTPipelines from './LOSTPipelines'
 
 const Pipelines = () => {
     const dispatch = useDispatch()

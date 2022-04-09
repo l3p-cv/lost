@@ -26,12 +26,11 @@ import {
 import BaseContainer from '../../components/BaseContainer'
 
 import WorkersTable from '../Workers/WorkersTable'
-import ConfigPage from '../Config/Config'
 import UsersAndGroups from '../Users/UsersAndGroups'
 import TabJupyterLab from './TabJupyterLab'
 import Labels from '../Labels/Labels'
 import DSTable from '../DataSources/DSTable'
-import PipelineTemplate from '../Pipelines/PipelineTemplates'
+import PipelineProjects from '../Pipelines/PipelineProjects'
 
 const AdminArea = () => {
     const dispatch = useDispatch()
@@ -42,7 +41,6 @@ const AdminArea = () => {
         dispatch(actions.getJupyterLabUrl(true))
     }, [])
 
-    const renderSystemInfo = () => <div>ToDo.</div>
     const renderJupyterLabNav = () => {
         if (jupyterLabUrl !== '') {
             return (
@@ -97,7 +95,7 @@ const AdminArea = () => {
                                     size="1x"
                                     icon={faWandMagicSparkles}
                                 />
-                                {active === 1 && ' Pipeline Templates'}
+                                {active === 1 && ' Pipeline Projects'}
                             </CNavLink>
                         </CNavItem>
                         <CNavItem>
@@ -157,7 +155,7 @@ const AdminArea = () => {
                             <UsersAndGroups></UsersAndGroups>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
-                            <PipelineTemplate visLevel="global"></PipelineTemplate>
+                            <PipelineProjects visLevel="global"></PipelineProjects>
                         </CTabPane>
                         <CTabPane style={{ marginTop: 30 }}>
                             <DSTable visLevel="global"></DSTable>

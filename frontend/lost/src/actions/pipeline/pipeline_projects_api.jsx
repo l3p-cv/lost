@@ -5,7 +5,7 @@ import { useQuery, useMutation } from 'react-query'
 
 // axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
 
-export const useSubmitNewPipelineTemplate = () => {
+export const useSubmitNewPipelineProject = () => {
     const isUploadBreaked = useRef()
     isUploadBreaked.current = false
     const [state, setState] = useState({
@@ -26,7 +26,7 @@ export const useSubmitNewPipelineTemplate = () => {
             const response = await axios.request({
                 method: 'post',
                 cancelToken: cancelTokenSource.token,
-                url: `${API_URL}/pipeline/template/import`,
+                url: `${API_URL}/pipeline/project/import`,
                 data: formData,
                 onUploadProgress: (p) => {
                     if (isUploadBreaked.current) {
@@ -51,9 +51,9 @@ export const useSubmitNewPipelineTemplate = () => {
     return [state, mutate, breakUpload]
 }
 
-export const usePipelineTemplates = (visLevel) => {
+export const usePipelineProjects = (visLevel) => {
     return useQuery(
-        ['pipeTemplates'],
+        ['pipeProjects'],
         () =>
             axios.get(`${API_URL}/pipeline/template/${visLevel}`).then((res) => res.data),
         {
@@ -62,8 +62,8 @@ export const usePipelineTemplates = (visLevel) => {
     )
 }
 
-export const useDeletePipelineTemplate = () => {
+export const useDeletePipelineProject = () => {
     return useMutation((data) =>
-        axios.post(`${API_URL}/pipeline/template/delete`, data).then((res) => res.data),
+        axios.post(`${API_URL}/pipeline/project/delete`, data).then((res) => res.data),
     )
 }
