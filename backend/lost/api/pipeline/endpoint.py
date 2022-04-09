@@ -218,31 +218,35 @@ class TemplateImport(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
         else:
-            fm = AppFileMan(LOST_CONFIG)
-            uploaded_file = request.files['zip_file']
-            upload_path = fm.get_upload_path(identity, uploaded_file.filename)
-            USER_NAMESPACE = False
-            if USER_NAMESPACE:
-                head, tail = os.path.split(upload_path)
-                upload_path = os.path.join(head, f'{identity}_{tail}')
-            uploaded_file.save(upload_path)
+            try:
+                fm = AppFileMan(LOST_CONFIG)
+                uploaded_file = request.files['zip_file']
+                upload_path = fm.get_upload_path(identity, uploaded_file.filename)
+                USER_NAMESPACE = False
+                if USER_NAMESPACE:
+                    head, tail = os.path.split(upload_path)
+                    upload_path = os.path.join(head, f'{identity}_{tail}')
+                uploaded_file.save(upload_path)
 
-            pp_path = fm.get_pipe_project_path()
-            dst_dir = os.path.basename(upload_path)
-            dst_dir = os.path.splitext(dst_dir)[0]
-            dst_path = os.path.join(pp_path, dst_dir)
-                
+                pp_path = fm.get_pipe_project_path()
+                dst_dir = os.path.basename(upload_path)
+                dst_dir = os.path.splitext(dst_dir)[0]
+                dst_path = os.path.join(pp_path, dst_dir)
+                    
 
-            template_import.unpack_pipe_project(upload_path, dst_path)
-            dbm = access.DBMan(LOST_CONFIG)
-            if not USER_NAMESPACE:
-                importer = template_import.PipeImporter(dst_path, dbm)
-            else:
-                importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
-            importer.start_import()
-            fm.fs.rm(upload_path, recursive=True)
-            dbm.close_session()
-            return "success", 200
+                template_import.unpack_pipe_project(upload_path, dst_path)
+                dbm = access.DBMan(LOST_CONFIG)
+                if not USER_NAMESPACE:
+                    importer = template_import.PipeImporter(dst_path, dbm)
+                else:
+                    importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
+                importer.start_import()
+                fm.fs.rm(upload_path, recursive=True)
+                dbm.close_session()
+                return "success", 200
+            except:
+                dbm.close_session()
+                return "error", 200
 
 @namespace.route('/template/export/<int:pipeline_template_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import IconButton from '../../components/IconButton'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import BaseModal from '../../components/BaseModal'
 import { useDropzone } from 'react-dropzone'
 import * as pipelineTemplatesApi from '../../actions/pipeline/pipeline_templates_api'
@@ -49,20 +49,31 @@ const AddPipelineTemplate = ({ visLevel }) => {
     useEffect(() => {
         console.log(submitNewPipelineTemplateData)
 
-        if (submitNewPipelineTemplateData === 'success') {
+        if (submitNewPipelineTemplateData.isSuccess) {
             Notification.showSuccess('Import succeeded.')
         }
-        if (submitNewPipelineTemplateData === 'error') {
-            Notification.showSuccess('Import failed.')
+        if (!submitNewPipelineTemplateData.isSuccess) {
+            Notification.showError('Import failed.')
         }
     }, [submitNewPipelineTemplateData])
 
+    const renderModalFooter = () => {
+        return (
+            <IconButton
+                icon={faTimes}
+                color={submitNewPipelineTemplateData.isSuccess ? 'success' : 'danger'}
+                text={submitNewPipelineTemplateData.isSuccess ? 'Close' : 'Cancel'}
+                onClick={() => setIsModalOpen(false)}
+            />
+        )
+    }
     return (
         <>
             <BaseModal
+                title="Import pipe project"
                 isOpen={isModalOpen}
                 toggle={() => setIsModalOpen(false)}
-                isShowCancelButton
+                footer={renderModalFooter()}
             >
                 <section
                     style={{
