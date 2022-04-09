@@ -14,6 +14,12 @@ class PipeInfo(object):
         return self._pipe.name
 
     @property
+    def user(self):
+        '''User object: User who started this pipe
+        '''
+        return self._pipe.manager
+
+    @property
     def timestamp(self):
         '''str: Timestamp when pipeline was started.
         '''

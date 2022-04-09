@@ -1,5 +1,6 @@
 from shutil import ExecError
 from lost.logic import file_man
+from lost.logic.user import get_user_default_group
 from lost.pyapi import pipe_elements
 from lost.logic.file_man import DummyFileMan
 from lost.db import access, dtype
@@ -470,11 +471,18 @@ class ScriptOutput(Output):
         if fs_name in fm_cache:
             return fm_cache[fs_name]
         else:
-            fs_db = self._script._dbm.get_fs(name=fs_name)
-            # fs = DummyFileMan(fs_db)
-            fm = file_man.FileMan(fs_db=fs_db)
-            fm_cache[fs_name] = fm
-            return fm
+            dbm = self._script._dbm
+            group_id = get_user_default_group(dbm, self._script.pipe_info.user.idx)
+            fs_db_list = dbm.get_fs(group_id=group_id)
+            fs_db_list += dbm.get_public_fs()
+            res = list(filter(lambda x: x.name == fs_name, fs_db_list))
+            if len(res) > 0:
+                fs_db = res[0]
+                fm = file_man.FileMan(fs_db=fs_db)
+                fm_cache[fs_name] = fm
+                return fm
+            else:
+                raise Exception('No possible filesystem found')
 
     def request_lds_annos(self, lds, fm=None, anno_meta_keys=[], img_meta_keys=[], img_path_key=None):
         '''Request annos from LOSTDataset.
