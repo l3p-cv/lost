@@ -447,7 +447,7 @@ class SiaWrapper extends Component {
                     image: {
                         // ...this.state.image, 
                         id: this.props.annos.image.id, 
-                        data:response.data,
+                        data:response ? response.data : this.failedToLoadImage(),
                         // data:window.URL.createObjectURL(response),
                     },
                     blockCanvas: filterTools.active(this.props.filter)
@@ -458,6 +458,17 @@ class SiaWrapper extends Component {
         if (filterTools.active(this.props.filter)){
             this.filterImage(this.props.filter)
         }       
+    }
+
+    failedToLoadImage(){
+        const message = 
+                        {
+                            title: "Load image error",
+                            message: 'Failed to load image',
+                            type: notificationType.ERROR
+                        }
+        this.handleNotification(message)
+        return undefined
     }
 
     setFullscreen(fullscreen = true) {
