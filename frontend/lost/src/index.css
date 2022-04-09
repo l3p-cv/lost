@@ -9,7 +9,7 @@ body {
 
 @font-face {
   font-family: 'IndieFlower';
-  src: local('IndieFlower'), url('./assets/fonts/IndieFlower-Regular.ttf') format('tff')
+  src: local('IndieFlower'), url(./assets/fonts/IndieFlower-Regular.ttf) format('woff')
 }
 
 code {
