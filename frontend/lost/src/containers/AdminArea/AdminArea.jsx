@@ -49,7 +49,7 @@ const AdminArea = () => {
                 <CNavItem>
                     <CNavLink>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
-                        {active === 4 && ' JupyterLab'}
+                        {active === 5 && ' JupyterLab'}
                     </CNavLink>
                 </CNavItem>
             )
@@ -140,7 +140,7 @@ const AdminArea = () => {
                                 {active === 4 && ' Worker'}
                             </CNavLink>
                         </CNavItem>
-                        <CNavItem>
+                        {/* <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
                                     color="#092F38"
@@ -149,7 +149,7 @@ const AdminArea = () => {
                                 />
                                 {active === 5 && ' Settings'}
                             </CNavLink>
-                        </CNavItem>
+                        </CNavItem> */}
                         {renderJupyterLabNav()}
                     </CNav>
                     <CTabContent>
@@ -168,11 +168,11 @@ const AdminArea = () => {
                         <CTabPane style={{ marginTop: 30 }}>
                             <WorkersTable></WorkersTable>
                         </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
+                        {/* <CTabPane style={{ marginTop: 30 }}>
                             <div>
                                 <ConfigPage />
                             </div>
-                        </CTabPane>
+                        </CTabPane> */}
                         {renderJupyterLabTab()}
                     </CTabContent>
                 </CTabs>
