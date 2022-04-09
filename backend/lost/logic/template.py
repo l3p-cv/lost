@@ -8,17 +8,24 @@ __author__ = "Gereon Reus"
 ############################ get_templates ########################
 #                                                                 #
 ###################################################################
-def get_templates(db_man, debug_mode=False):
+def get_templates(db_man, group_id=None, add_global=False, debug_mode=False):
     '''Read out all templates.
 
     Args:
         db_man:
+        visibility: Visibility level
         debug_mode (Boolean): Weather to load PipeTemplate in debug too
     
     Returns: 
         JSON with all meta info about the pipe templates.
     '''
-    pipe_templates = db_man.get_all_pipeline_templates()
+    if not group_id:
+        pipe_templates = db_man.get_all_pipeline_templates(global_only=True)
+    elif group_id:
+        if add_global:
+            pipe_templates = db_man.get_all_pipeline_templates(group_id=group_id, add_global=True)
+        else:
+            pipe_templates = db_man.get_all_pipeline_templates(group_id=group_id)
     pipe_templates_json = dict()
     pipe_templates_json["templates"] = list()
 
@@ -31,6 +38,7 @@ def get_templates(db_man, debug_mode=False):
         pipe_template_json['isDebug'] = temp.is_debug_mode
         pipe_template_json['id'] = temp.idx
         pipe_template_json['date'] = temp.timestamp
+        pipe_template_json['group_id'] = temp.group_id
         content = json.loads(temp.json_template)
         # --------------- name  ------------------------------
         try:

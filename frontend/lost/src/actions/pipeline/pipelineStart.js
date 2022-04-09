@@ -28,12 +28,12 @@ const verifyTab = (tabId, verified) => {
 
 // TAB0
 
-const getTemplates = () => async (dispatch) => {
+const getTemplates = (visLevel) => async (dispatch) => {
     let response = {}
     let error
     alertLoading()
     try {
-        response = await axios.get(`${API_URL}/pipeline/template`)
+        response = await axios.get(`${API_URL}/pipeline/template/${visLevel}`)
     } catch (err) {
         error = err.message
     }

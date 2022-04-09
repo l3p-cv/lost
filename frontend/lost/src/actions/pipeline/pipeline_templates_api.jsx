@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import axios from 'axios'
 import { API_URL } from '../../lost_settings'
+import { useQuery, useMutation } from 'react-query'
 
 // axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
 
@@ -38,7 +39,7 @@ export const useSubmitNewPipelineTemplate = () => {
             })
             setState({
                 isSuccess: response.data === 'success',
-                productId: response.data.idx,
+                pipelineTemplateId: response.data.idx,
             })
         } catch (error) {
             setState({ error })
@@ -48,4 +49,21 @@ export const useSubmitNewPipelineTemplate = () => {
         })
     })
     return [state, mutate, breakUpload]
+}
+
+export const usePipelineTemplates = (visLevel) => {
+    return useQuery(
+        ['pipeTemplates'],
+        () =>
+            axios.get(`${API_URL}/pipeline/template/${visLevel}`).then((res) => res.data),
+        {
+            initialData: null,
+        },
+    )
+}
+
+export const useDeletePipelineTemplate = () => {
+    return useMutation((data) =>
+        axios.post(`${API_URL}/pipeline/template/delete`, data).then((res) => res.data),
+    )
 }

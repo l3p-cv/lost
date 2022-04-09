@@ -10,27 +10,47 @@ from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic.pipeline import service as pipeline_service
 from lost.logic import template as template_service
+from lost.db.vis_level import VisLevel
 from lost.utils.dump import dump
+import json 
+
 namespace = api.namespace('pipeline', description='Pipeline API.')
 import flask
 
 
-@namespace.route('/template')
+@namespace.route('/template/<string:visibility>')
 class TemplateList(Resource):
     @api.marshal_with(templates)
     @jwt_required
-    def get(self):
+    def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        else:
-            re = template_service.get_templates(dbm)
-            dbm.close_session()
-            return re
-
+        default_group = dbm.get_group_by_name(user.user_name)
+        if visibility == VisLevel().USER:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().GLOBAL:
+            if not user.has_role(roles.ADMINISTRATOR):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().ALL:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
+                dbm.close_session()
+                return re
 
 @namespace.route('/template/<int:template_id>')
 @namespace.param('template_id', 'The id of the template.')
@@ -198,5 +218,46 @@ class TemplateImport(Resource):
             uploaded_file = request.files['zip_file']
             zip_file_name = f'{now.strftime("%m_%d_%Y_%H_%M_%S")}_{uploaded_file.filename}'
             data = request.form
+            dbm.close_session()
+            return "success", 200
+
+@namespace.route('/template/export/<int:pipeline_template_id>')
+@namespace.param('pipeline_id', 'The id of the pipeline.')
+class PipelineTemplateExport(Resource):
+    # @api.marshal_with(pipeline)
+    @jwt_required
+    def get(self, pipeline_template_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+        else:
+            # TODO Export here !
+            dbm.close_session()
+            return "success", 200
+
+@namespace.route('/template/delete')
+class TemplateDelete(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+
+        else:
+            data = json.loads(request.data)
+            pipeline_template_id = data['pipeline_template_id']
+            #TODO Delete here
+            # f = BytesIO()
+            # ldf.to_csv(f)
+            # f.seek(0)
+            # resp = make_response(f.read())
+            # resp.headers["Content-Disposition"] = f"attachment; filename={label_tree.root.name}.csv"
+            # resp.headers["Content-Type"] = "blob"
             dbm.close_session()
             return "success", 200

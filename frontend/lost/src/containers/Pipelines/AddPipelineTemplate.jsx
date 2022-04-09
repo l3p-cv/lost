@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import actions from '../../actions'
 import IconButton from '../../components/IconButton'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import BaseModal from '../../components/BaseModal'
 import { useDropzone } from 'react-dropzone'
-import { CCol } from '@coreui/react'
 import * as pipelineTemplatesApi from '../../actions/pipeline/pipeline_templates_api'
+import * as Notification from '../../components/Notification'
 
 const AddPipelineTemplate = ({ visLevel }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -47,6 +46,15 @@ const AddPipelineTemplate = ({ visLevel }) => {
         }
     }, [acceptedFiles])
 
+    useEffect(() => {
+        if (submitNewPipelineTemplateData === 'success') {
+            Notification.showSuccess('Import succeeded.')
+        }
+        if (submitNewPipelineTemplateData === 'error') {
+            Notification.showSuccess('Import failed.')
+        }
+    }, [submitNewPipelineTemplateData])
+
     return (
         <>
             <BaseModal
@@ -84,11 +92,9 @@ const AddPipelineTemplate = ({ visLevel }) => {
                                     <li key={acceptedFiles[0].path}>
                                         {acceptedFiles[0].path} -{' '}
                                         {Number(
-                                            (acceptedFiles[0].size / 1024 / 1024).toFixed(
-                                                2,
-                                            ),
+                                            (acceptedFiles[0].size / 1024).toFixed(2),
                                         )}{' '}
-                                        MBytes
+                                        KBytes
                                     </li>
                                 ) : (
                                     ''

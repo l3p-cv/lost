@@ -13,6 +13,7 @@ template_element = api.model('Template element',{
 })
 template  = api.model('Template', {
     'id': fields.Integer(readOnly=True, description="The identifier of the pipeline template."),
+    'group_id': fields.String(readOnly=True, description="Group id."),
     'description': fields.String(readOnly=True, description="The description of the pipeline template."),
     'author': fields.String(readOnly=True, description="The author of the pipeline template."),
     'namespace': fields.String(readOnly=True, description="The namespace of the pipeline template."),
