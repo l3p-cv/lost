@@ -15,6 +15,7 @@ $image-margin: 14px;
     grid-area: multiimage;
     margin: 2em 0;
 }
+
 .mia-image{
     cursor:pointer;
     margin-bottom: $image-margin;
@@ -25,7 +26,7 @@ $image-margin: 14px;
     width: auto;
     &-zoomed {
         position: relative;
-        z-index: 2;
+        z-index: 200000;
         border: $image-border-width solid #fff;
         margin-right: $image-margin - ($image-border-width * 2);
         margin-bottom: $image-margin - ($image-border-width * 2);

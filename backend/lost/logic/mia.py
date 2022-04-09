@@ -26,7 +26,7 @@ def get_next(db_man, default_user_id, max_amount):
     return images
 
 class ImageSerialize(object):
-    def __init__(self, db_man, annos, user_id,proposedLabel=True):
+    def __init__(self, db_man, annos, user_id, proposedLabel=True):
         self.mia_json = dict()
         self.db_man = db_man
         self.annos = annos
@@ -150,6 +150,7 @@ def get_label_trees(db_man, user_id):
                 label_leaf_json['label'] = label_leaf.name
                 label_leaf_json['nameAndClass'] = label_leaf.name + " (" + rll.label_leaf.name + ")"
                 label_leaf_json['description'] = label_leaf.description
+                label_leaf_json['color'] = label_leaf.color
                 label_trees_json['labels'].append(label_leaf_json)
         return label_trees_json
     else: 
@@ -260,8 +261,8 @@ def __get_next_image_anno(db_man, user_id, at, max_amount):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = ImageSerialize(db_man, annos, user_id, proposedLabel=False)
-        image_serialize.serialize()
+        image_serialize = ImageSerialize(db_man, annos, user_id)
+        image_serialize.serialize() 
         return image_serialize.mia_json
     # -- fill with new annos if size < max_amount
     # -- remove if size > max_amount
@@ -347,16 +348,18 @@ def __update_two_d_annotation(db_man, user_id, data):
 def get_proposed_label(db_man, anno, user_id):
     if anno:
         at = __get_mia_anno_task(db_man, user_id)
-        config = json.loads(at.configuration)
-        try:
+        config = json.loads(at.configuration) 
+        try: 
             if 'showProposedLabel' in config:
                 if config['showProposedLabel'] == True:
+                    print("####################################") 
+                    print(config)
                     label_trees = get_label_trees(db_man, user_id)
-                    for tree in label_trees['labelTrees']:
-                        for leaf in tree['labelLeaves']:
-                            if leaf['id'] == anno.sim_class:
-                                return leaf['nameAndClass']
-        except:
+                    # for tree in label_trees['labels']:
+                    for leaf in label_trees['labels']:
+                        if leaf['id'] == anno.sim_class:
+                            return leaf['id']
+        except: 
             return None
     return None
 
