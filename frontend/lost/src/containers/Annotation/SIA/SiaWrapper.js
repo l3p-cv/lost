@@ -8,7 +8,7 @@ import Canvas from './lost-sia/src/Canvas'
 
 import './sia-container.scss';
 
-import ToolBar from './ToolBar'
+import ToolBar from './lost-sia/src/ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import { withRouter } from 'react-router-dom';
 import InfoBoxArea from './lost-sia/src/InfoBoxes/InfoBoxArea'

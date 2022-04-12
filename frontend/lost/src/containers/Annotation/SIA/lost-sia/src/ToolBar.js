@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
 import { Icon, Menu, Button, Card } from 'semantic-ui-react'
-import SIASettingButton from './SIASettingButton'
-import SIAFilterButton from './SIAFilterButton'
-import Prompt from './lost-sia/src/Prompt'
+import SIASettingButton from '../../SIASettingButton'
+import SIAFilterButton from '../../SIAFilterButton'
+import Prompt from './Prompt'
 
-import * as TOOLS from './lost-sia/src/types/tools'
-import * as siaIcons from './lost-sia/src/utils/siaIcons'
-import * as tbe from './lost-sia/src/types/toolbarEvents'
+import * as TOOLS from './types/tools'
+import * as siaIcons from './utils/siaIcons'
+import * as tbe from './types/toolbarEvents'
 
 class ToolBar extends Component{
 
