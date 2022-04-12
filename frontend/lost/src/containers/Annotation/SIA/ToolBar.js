@@ -343,7 +343,9 @@ class ToolBar extends Component{
                 </Menu.Item>
                 {this.renderJunkButton()}
                 {this.renderDeleteAllAnnosButton()}
-                <SIASettingButton></SIASettingButton>
+                <SIASettingButton 
+                    uiConfig={this.props.uiConfig}
+                    onSettingEvent={(e,data) => this.triggerToolBarEvent(e, data)}/>
                 <SIAFilterButton/>
                 {this.renderHelpButton()}
             </Menu>

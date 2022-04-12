@@ -244,6 +244,48 @@ class SiaWrapper extends Component {
             case tbe.SET_FULLSCREEN:
                 this.props.siaSetFullscreen(!this.props.fullscreenMode)
                 break
+            case tbe.SHOW_ANNO_DETAILS:
+                this.props.siaSetUIConfig(
+                    {...this.props.uiConfig,
+                        annoDetails: {
+                            ...this.props.uiConfig.annoDetails,
+                            visible: !this.props.uiConfig.annoDetails.visible
+                        }
+                    }
+                )
+                break
+            case tbe.SHOW_LABEL_INFO:
+                this.props.siaSetUIConfig(
+                    {...this.props.uiConfig,
+                        labelInfo: {
+                            ...this.props.uiConfig.labelInfo,
+                            visible: !this.props.uiConfig.labelInfo.visible
+                        }
+                    }
+                )
+                break
+            case tbe.SHOW_ANNO_STATS:
+                this.props.siaSetUIConfig(
+                    {...this.props.uiConfig,
+                        annoStats: {
+                            ...this.props.uiConfig.annoStats,
+                            visible: !this.props.uiConfig.annoStats.visible
+                        }
+                    }
+                )
+                break
+            case tbe.EDIT_STROKE_WIDTH:
+                this.props.siaSetUIConfig({
+                    ...this.props.uiConfig,
+                    strokeWidth: data
+                })
+                break
+            case tbe.EDIT_NODE_RADIUS:
+                this.props.siaSetUIConfig({
+                    ...this.props.uiConfig,
+                    nodeRadius: data
+                })
+                break
             default:
                 break
         }
@@ -584,6 +626,7 @@ class SiaWrapper extends Component {
                         fullscreen: this.props.fullscreenMode
                     }}
                     canvasConfig={this.props.canvasConfig}
+                    uiConfig={this.props.uiConfig}
                     />
                 <NotificationContainer/>
              </div>
