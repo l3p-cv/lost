@@ -1,67 +1,104 @@
-import React, { Component } from 'react'
+import React, { useRef } from 'react'
+
+import ToolBar from './src/ToolBar'
+import Canvas from './src/Canvas'
 
 const Sia = (props) => {
 
+    const toolbarRef = useRef()
+    const containerRef = useRef()
+    const canvasRef = useRef()
+
+    const handleAnnoEvent = (anno, annos, action) => {
+        if (props.onAnnoEvent){
+            props.onAnnoEvent(anno, annos, action)
+        }
+
+    }
+
+    const handleNotification = (msg) => {
+        if (props.onNotification){
+            props.onNotification(msg)
+        }
+
+    }
+
+    const handleCanvasKeyDown = (e) => {
+        if (props.onCanvasKeyDown){
+            props.onCanvasKeyDown(e)
+        }
+
+    }
+
+    const handleCanvasEvent = (e, data) => {
+        if (props.onCanvasEvent){
+            props.onCanvasEvent(e, data)
+        }
+    }
+
+    const handleToolBarEvent = (e, data) => {
+        if (props.onToolBarEvent){
+            props.onToolBarEvent(e, data)
+        }
+    }
+
     return (
-        <div className={this.state.fullscreenCSS} ref={this.container}>
+        <div className={this.state.fullscreenCSS} ref={containerRef}>
             <Canvas
-                ref={this.canvas} 
-                container={this.container}
+                ref={canvasRef} 
+                container={containerRef}
 
-                onAnnoEvent={(anno, annos, action) => this.handleAnnoPerformedAction(anno, annos, action)}
-                onNotification={(messageObj) => this.handleNotification(messageObj)}
-                onKeyDown={ e => this.handleCanvasKeyDown(e)}
-                onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
-                onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
+                onAnnoEvent={
+                    (anno, annos, action) => handleAnnoEvent(anno, annos, action)
+                }
+                onNotification={
+                    (messageObj) => handleNotification(messageObj)
+                }
+                onKeyDown={
+                    e => handleCanvasKeyDown(e)
+                }
+                onCanvasEvent={
+                    (action, data) => handleCanvasEvent(action, data)
+                }
+                onGetAnnoExample={
+                    (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs):{} 
+                }
 
-                canvasConfig={{
-                    ...this.props.canvasConfig,
-                    annos: {...this.props.canvasConfig.annos, maxAnnos:null},
-                    autoSaveInterval:60,
-                    allowedToMarkExample:this.state.allowedToMark
-                }}
+                canvasConfig={props.canvasConfig}
+                uiConfig={props.uiConfig}
 
-                uiConfig={{...this.props.uiConfig,
-                    layoutOffset:this.state.layoutOffset,
-                    imgBarVisible: true,
-                    imgLabelInputVisible: this.props.imgLabelInput.show,
-                    centerCanvasInContainer: true,
-                    maxCanvas: true
-                }}
+                nextAnnoId={props.nextAnnoId}
+                annos={props.annos}
+                imageMeta={props.imageMeta}
+                imageBlob={props.imageBlob}
+                possibleLabels={props.possibleLabels}
+                exampleImg={props.exampleImg}
 
-                nextAnnoId={this.state.nextAnnoId}
-                annos={this.state.annos.annotations}
-                imageMeta={this.state.annos.image}
-                imageBlob={this.state.image.data}
-                possibleLabels={this.props.possibleLabels}
-                exampleImg={this.props.exampleImg}
-
-                layoutUpdate={this.props.layoutUpdate}
-                selectedTool={this.props.selectedTool}
-                isJunk={this.props.isJunk}
-                blocked={this.state.blockCanvas}
-                // defaultLabel='no label'
+                layoutUpdate={props.layoutUpdate}
+                selectedTool={props.selectedTool}
+                isJunk={props.isJunk}
+                blocked={props.blockCanvas}
+                defaultLabel={props.defaultLabel}
             />
             <ToolBar 
-                ref={this.toolbar} 
+                ref={toolbarRef} 
                 onToolBarEvent={
-                    (e, data) => this.handleToolBarEvent(e, data)
+                    (e, data) => handleToolBarEvent(e, data)
                 }
-                imageMeta={this.state.annos.image}
-                layoutUpdate={this.props.layoutUpdate}
+                imageMeta={props.imageMeta}
+                layoutUpdate={props.layoutUpdate}
 
-                svg={this.props.svg}
+                svg={props.svg}
                 active={{
-                    isJunk: this.props.isJunk,
-                    selectedTool: this.props.selectedTool,
-                    fullscreen: this.props.fullscreenMode
+                    isJunk: props.isJunk,
+                    selectedTool: props.selectedTool,
+                    fullscreen: props.fullscreenMode
                 }}
-                canvasConfig={this.props.canvasConfig}
-                uiConfig={this.props.uiConfig}
-                filter={this.props.filter}
-                />
-            <NotificationContainer/>
-            </div>
+                canvasConfig={props.canvasConfig}
+                uiConfig={props.uiConfig}
+                filter={props.filter}
+            />
+        </div>
     )
 
 }
