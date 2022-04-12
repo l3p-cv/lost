@@ -1,26 +1,19 @@
 import React, {Component} from 'react'
 import { Icon, Menu, Button, Card } from 'semantic-ui-react'
-import {connect} from 'react-redux'
 import SIASettingButton from './SIASettingButton'
 import SIAFilterButton from './SIAFilterButton'
 import Prompt from './lost-sia/src/Prompt'
 
-import actions from '../../../actions'
 import * as TOOLS from './lost-sia/src/types/tools'
 import * as siaIcons from './lost-sia/src/utils/siaIcons'
-
-const { 
-    siaSelectTool, siaGetNextImage, siaGetPrevImage, 
-    siaSetFullscreen, selectAnnotation, siaShowImgLabelInput, 
-    siaSetTaskFinished, siaLayoutUpdate, siaImgIsJunk
-} = actions
+import * as tbe from './lost-sia/src/types/toolbarEvents'
 
 class ToolBar extends Component{
 
     constructor(props) {
         super(props)
         this.state = {
-            fullscreenMode: false,
+            // fullscreenMode: false,
             position: {
                 left: 0,
                 top: 5,
@@ -36,9 +29,9 @@ class ToolBar extends Component{
         
     }
     componentDidUpdate(prevProps, prevState){
-        if (prevState.fullscreenMode !== this.state.fullscreenMode){
-            this.props.siaSetFullscreen(this.state.fullscreenMode)
-        }
+        // if (prevState.fullscreenMode !== this.state.fullscreenMode){
+        //     this.props.siaSetFullscreen(this.state.fullscreenMode)
+        // }
 
         if (this.props.layoutUpdate !== prevProps.layoutUpdate){
             this.calcPosition()
@@ -50,7 +43,7 @@ class ToolBar extends Component{
     }
 
     onClick(e, tool){
-        this.props.siaSelectTool(tool)
+        this.triggerToolBarEvent(tbe.TOOL_SELECTED, tool)
     }
 
     calcPosition(){
@@ -69,19 +62,18 @@ class ToolBar extends Component{
         }
     }
     getNextImg(){
-        // this.props.siaSetImageLoaded(false)
-        // this.props.selectAnnotation(undefined)
-        this.props.siaGetNextImage(this.props.currentImage.id)
+        // this.props.siaGetNextImage(this.props.imageMeta.id)
+        this.triggerToolBarEvent(tbe.GET_NEXT_IMAGE)
     }
 
     getPrevImg(){
-        // this.props.siaSetImageLoaded(false)
-        // this.props.selectAnnotation(undefined)
-        this.props.siaGetPrevImage(this.props.currentImage.id)
+        // this.props.siaGetPrevImage(this.props.imageMeta.id)
+        this.triggerToolBarEvent(tbe.GET_PREV_IMAGE)
     }
 
     setFinished(){
-        this.props.siaSetTaskFinished()
+        // this.props.siaSetTaskFinished()
+        this.triggerToolBarEvent(tbe.TASK_FINISHED)
         
     }
 
@@ -92,19 +84,20 @@ class ToolBar extends Component{
     }
 
     toggleFullscreen(){
-        // this.props.selectAnnotation(undefined)
-        this.setState({
-            fullscreenMode: !this.state.fullscreenMode
-        })
-        // this.props.siaSetFullscreen(!this.props.fullscreenMode)
+        // this.setState({
+        //     fullscreenMode: !this.state.fullscreenMode
+        // })
+        this.triggerToolBarEvent(tbe.SET_FULLSCREEN)
     }
 
     toggleImgLabelInput(){
-        this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
+        // this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
+        this.triggerToolBarEvent(tbe.SHOW_IMAGE_LABEL_INPUT)
     }
 
     toggleJunk(){
-        this.props.siaImgIsJunk(!this.props.isJunk)
+        // this.props.siaImgIsJunk(!this.props.isJunk)
+        this.triggerToolBarEvent(tbe.IMG_IS_JUNK)
     }
 
     toggleHelp(){
@@ -112,70 +105,57 @@ class ToolBar extends Component{
     }
 
     handleOnDeleteAllAnnos(){
-        if(this.props.onDeleteAllAnnos){
-            this.props.onDeleteAllAnnos()
+        this.triggerToolBarEvent(tbe.DELETE_ALL_ANNOS)
+    }
+
+    triggerToolBarEvent(event, data){
+        if (this.props.onToolBarEvent){
+            this.props.onToolBarEvent(event, data)
         }
     }
 
     renderToolButtons(){
-        if (!this.props.allowedActions.draw) return null
+        if (!this.props.canvasConfig) return null
+        if (!this.props.canvasConfig.annos.actions.draw) return null
         let btns = []
-        if (this.props.allowedTools.point){
+        if (this.props.canvasConfig.tools.point){
             btns.push(
                 <Menu.Item name='dot circle' key={TOOLS.POINT}
-                    active={this.props.selectedTool===TOOLS.POINT} 
+                    active={this.props.active.selectedTool===TOOLS.POINT} 
                     onClick={e => this.onClick(e, TOOLS.POINT)}
                 >
-                    {/* <Icon name='dot circle' /> */}
                     {siaIcons.pointIcon()}
                 </Menu.Item>
-                // <Button key={TOOLS.POINT} outline onClick={e => this.onClick(e, TOOLS.POINT)} color="primary">
-                //     <FontAwesomeIcon icon={faDotCircle} size='1x' />
-                // </Button>
             )
         }
-        if (this.props.allowedTools.line){
+        if (this.props.canvasConfig.tools.line){
             btns.push(
                 <Menu.Item name='paint brush' key={TOOLS.LINE}
-                    active={this.props.selectedTool===TOOLS.LINE} 
+                    active={this.props.active.selectedTool===TOOLS.LINE} 
                     onClick={e => this.onClick(e, TOOLS.LINE)}
                 >
-                    {/* <Icon name='paint brush' /> */}
-                    {/* <FontAwesomeIcon icon={faWaveSquare} size="1x"/> */}
                     {siaIcons.lineIcon()}
                 </Menu.Item>
-                // <Button key={TOOLS.LINE} outline onClick={e => this.onClick(e, TOOLS.LINE)} color="secondary">
-                //     <FontAwesomeIcon icon={faWaveSquare} size="1x"/>
-                // </Button>
             )
         }
-        if (this.props.allowedTools.bbox){
+        if (this.props.canvasConfig.tools.bbox){
             btns.push(
                 <Menu.Item name='square outline' key={TOOLS.BBOX}
-                    active={this.props.selectedTool===TOOLS.BBOX} 
+                    active={this.props.active.selectedTool===TOOLS.BBOX} 
                     onClick={e => this.onClick(e, TOOLS.BBOX)}
                 >
-                    {/* <Icon name='square outline' /> */}
                     {siaIcons.bBoxIcon()}
                 </Menu.Item>
-                // <Button key={TOOLS.BBOX} outline onClick={e => this.onClick(e, TOOLS.BBOX)} color="success">
-                //     <FontAwesomeIcon icon={faVectorSquare} size="1x"/>
-                // </Button>
             )
         }
-        if (this.props.allowedTools.polygon){
+        if (this.props.canvasConfig.tools.polygon){
             btns.push(
                 <Menu.Item name='pencil alternate' key={TOOLS.POLYGON}
-                    active={this.props.selectedTool===TOOLS.POLYGON} 
+                    active={this.props.active.selectedTool===TOOLS.POLYGON} 
                     onClick={e => this.onClick(e, TOOLS.POLYGON)}
                 >
-                    {/* <Icon name='pencil alternate' /> */}
-                    {/* <FontAwesomeIcon icon={faDrawPolygon} size="1x"/> */}
                     {siaIcons.polygonIcon()}
                 </Menu.Item>
-                // <Button key={TOOLS.POLYGON} outline onClick={e => this.onClick(e, TOOLS.POLYGON)} color="info">
-                //     <FontAwesomeIcon icon={faDrawPolygon} size="1x"/>
-                // </Button>
             )
         }
         return btns
@@ -210,8 +190,8 @@ class ToolBar extends Component{
      */
     renderNavigation(){
         let btns = []
-        if (this.props.currentImage){
-            if (this.props.currentImage.isLast){
+        if (this.props.imageMeta){
+            if (this.props.imageMeta.isLast){
                 btns.push(
                     <Menu.Item name='paper plane outline' key='finish'
                         active={false} 
@@ -220,9 +200,6 @@ class ToolBar extends Component{
                         <Icon name='paper plane outline' />
                         {this.renderFinishPrompt()}
                     </Menu.Item>
-                    // <Button key='finish' outline onClick={() => this.setFinished()} color="primary" >
-                    //     <FontAwesomeIcon icon={faPaperPlane} />
-                    // </Button>
                 )
             } else {
                 btns.push(
@@ -231,34 +208,25 @@ class ToolBar extends Component{
                         onClick={() => this.getNextImg()}
                     >
                         <Icon name='arrow right' />
-
                     </Menu.Item>
-                    // <Button key='next' outline onClick={() => this.getNextImg()} color="primary">
-                    //     <FontAwesomeIcon icon={faArrowRight} />
-                    // </Button>
                 )
             }
             btns.push(
                     <Menu.Item name='arrow left' key='prev'
                         active={false} 
                         onClick={() => this.getPrevImg()}
-                        disabled={this.props.currentImage.isFirst}
+                        disabled={this.props.imageMeta.isFirst}
                     >
                         <Icon name='arrow left' />
                     </Menu.Item>
-                // <Button key='prev' outline onClick={() => this.getPrevImg()} color="primary" disabled={!this.props.currentImage ? false : this.props.currentImage.isFirst}>
-                //     <FontAwesomeIcon icon={faArrowLeft} />
-                // </Button>
             )
         }
-           
-            
         return btns
     }
 
     renderJunkButton(){
         return <Menu.Item name='ban' key='junk'
-            active={this.props.isJunk} 
+            active={this.props.active.isJunk} 
             onClick={() => this.toggleJunk()}
         >
             <Icon name='ban' />
@@ -280,7 +248,6 @@ class ToolBar extends Component{
         >
             <Icon name='help' />
             <Prompt active={this.state.showHelp}
-                // header={<div><Icon name='help' /> Help</div>}
                 content={<div>
                     <Card.Group>
                     <Card>
@@ -349,7 +316,7 @@ class ToolBar extends Component{
     renderImgLabelInput(){
         if (this.props.canvasConfig.img.actions.label){
             return <Menu.Item name='img label input' 
-                active={this.props.imgLabelInput.show} 
+                // active={this.props.imgLabelInput.show} 
                 onClick={() => this.toggleImgLabelInput()}
             >
                 {/* <Icon name='pencil' /> */}
@@ -369,7 +336,7 @@ class ToolBar extends Component{
                 {this.renderNavigation()}
                 {this.renderToolButtons()}
                 <Menu.Item name='expand arrows alternate' 
-                    active={this.props.fullscreenMode} 
+                    active={this.props.active.fullscreen} 
                     onClick={() => this.toggleFullscreen()}
                 >
                     <Icon name='expand arrows alternate' />
@@ -385,27 +352,4 @@ class ToolBar extends Component{
     }
 }
 
-function mapStateToProps(state) {
-    return ({
-        currentImage: state.sia.annos.image,
-        fullscreenMode: state.sia.fullscreenMode,
-        annos: state.sia.annos,
-        appliedFullscreen: state.sia.appliedFullscreen,
-        layoutUpdate: state.sia.layoutUpdate,
-        imgLabelInput: state.sia.imgLabelInput,
-        allowedTools: state.sia.config.tools,
-        allowedActions: state.sia.config.annos.actions,
-        selectedTool: state.sia.selectedTool,
-        isJunk: state.sia.isJunk,
-        canvasConfig: state.sia.config,
-        svg: state.sia.svg,
-    })
-}
-export default connect(mapStateToProps, 
-    {siaSelectTool, siaGetNextImage, siaGetPrevImage, 
-        siaSetFullscreen, 
-        // siaSetImageLoaded, 
-        selectAnnotation, siaShowImgLabelInput, siaSetTaskFinished, siaLayoutUpdate,
-        siaImgIsJunk
-    }
-)(ToolBar)
+export default ToolBar

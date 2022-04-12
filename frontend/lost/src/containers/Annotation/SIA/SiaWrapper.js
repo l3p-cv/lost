@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
 import 'semantic-ui-css/semantic.min.css'
+import * as tbe from './lost-sia/src/types/toolbarEvents'
 
 // import from npm package
 //import Canvas from 'lost-sia'
@@ -27,9 +28,9 @@ import * as annoActions from './lost-sia/src/types/canvasActions'
 
 
 const { 
-    siaLayoutUpdate, getSiaAnnos,
+    siaLayoutUpdate, getSiaAnnos, siaSelectTool,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
-    siaUpdateAnnos, siaSendFinishToBackend,
+    siaUpdateAnnos, siaSendFinishToBackend, siaSetFullscreen,
     siaSetUIConfig, siaGetNextAnnoId, siaAllowedToMarkExample,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
     siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
@@ -214,6 +215,38 @@ class SiaWrapper extends Component {
         this.setState({
             notification: messageObj
         })
+    }
+
+    handleToolBarEvent(e, data){
+        console.log('handleToolBarEvent: ', e, data)
+        switch(e){
+            case tbe.DELETE_ALL_ANNOS:
+                this.canvas.current.deleteAllAnnos()
+                break
+            case tbe.TOOL_SELECTED:
+                this.props.siaSelectTool(data)
+                break
+            case tbe.GET_NEXT_IMAGE:
+                this.props.siaGetNextImage(this.props.currentImage.id)
+                break
+            case tbe.GET_PREV_IMAGE:
+                this.props.siaGetPrevImage(this.props.currentImage.id)
+                break
+            case tbe.TASK_FINISHED:
+                this.props.siaSetTaskFinished()
+                break
+            case tbe.SHOW_IMAGE_LABEL_INPUT:
+                this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
+                break
+            case tbe.IMG_IS_JUNK:
+                this.props.siaImgIsJunk(!this.props.isJunk)
+                break
+            case tbe.SET_FULLSCREEN:
+                this.props.siaSetFullscreen(!this.props.fullscreenMode)
+                break
+            default:
+                break
+        }
     }
 
     handleCanvasKeyDown(e){
@@ -540,9 +573,18 @@ class SiaWrapper extends Component {
                 />
                 <ToolBar 
                     ref={this.toolbar} 
-                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+                    onToolBarEvent={(e, data) => this.handleToolBarEvent(e, data)}
+                    imageMeta={this.state.annos.image}
+                    layoutUpdate={this.props.layoutUpdate}
+
+                    svg={this.props.svg}
+                    active={{
+                        isJunk: this.props.isJunk,
+                        selectedTool: this.props.selectedTool,
+                        fullscreen: this.props.fullscreenMode
+                    }}
+                    canvasConfig={this.props.canvasConfig}
                     />
-                <InfoBoxArea container={this.container}></InfoBoxArea>
                 <NotificationContainer/>
              </div>
         )
@@ -580,9 +622,9 @@ export default connect(
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
         siaUpdateAnnos, siaSendFinishToBackend,
         selectAnnotation,
-        siaShowImgLabelInput,
+        siaShowImgLabelInput, siaSetFullscreen,
         siaImgIsJunk, siaSetUIConfig, siaAllowedToMarkExample,
-        getWorkingOnAnnoTask, siaGetNextAnnoId,
+        getWorkingOnAnnoTask, siaGetNextAnnoId, siaSelectTool,
         siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }
     , null,

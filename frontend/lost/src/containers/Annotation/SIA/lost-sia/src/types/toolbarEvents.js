@@ -1,0 +1,8 @@
+export const TOOL_SELECTED='toolSelected'
+export const GET_NEXT_IMAGE='getNextImage'
+export const GET_PREV_IMAGE='getPrevImage'
+export const TASK_FINISHED='taskFinished'
+export const SHOW_IMAGE_LABEL_INPUT='showImageLabelInput'
+export const IMG_IS_JUNK='imageIsJunk'
+export const DELETE_ALL_ANNOS='deleteAllAnnos'
+export const SET_FULLSCREEN='setFullscreen'
