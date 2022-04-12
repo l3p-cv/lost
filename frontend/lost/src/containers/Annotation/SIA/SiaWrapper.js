@@ -4,11 +4,6 @@ import actions from '../../../actions'
 import 'semantic-ui-css/semantic.min.css'
 import * as tbe from './lost-sia/src/types/toolbarEvents'
 
-// import from npm package
-//import Canvas from 'lost-sia'
-//import 'lost-sia/dist/index.css'
-
-// import from source code
 import Canvas from './lost-sia/src/Canvas'
 
 import './sia-container.scss';
@@ -78,7 +73,6 @@ class SiaWrapper extends Component {
         this.props.getSiaConfig()
         this.getNextAnnoId()
         this.allowedToMarkExample()
-        // console.warn('We are not using real SIA config')
     }
     componentWillUnmount() {
         document.body.style.overflow = ""
@@ -88,7 +82,6 @@ class SiaWrapper extends Component {
     componentDidUpdate(prevProps, prevState) {
         this.setFullscreen(this.props.fullscreenMode)
         if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
-            // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
             this.props.siaLayoutUpdate()
         }
         if (prevState.notification !== this.state.notification){
@@ -203,9 +196,6 @@ class SiaWrapper extends Component {
             this.props.getSiaAnnos(imageId, direction)
         })
     }
-    // handleImgBarClose(){
-    //     this.props.siaShowImgBar(false)
-    // }
 
     handleImgLabelInputClose(){
         this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
@@ -218,7 +208,7 @@ class SiaWrapper extends Component {
     }
 
     handleToolBarEvent(e, data){
-        console.log('handleToolBarEvent: ', e, data)
+        // console.log('handleToolBarEvent: ', e, data)
         switch(e){
             case tbe.DELETE_ALL_ANNOS:
                 this.canvas.current.deleteAllAnnos()
@@ -245,7 +235,6 @@ class SiaWrapper extends Component {
                 this.props.siaSetFullscreen(!this.props.fullscreenMode)
                 break
             case tbe.APPLY_FILTER:
-                // this.props.siaSetFullscreen(!this.props.fullscreenMode)
                 this.props.siaApplyFilter(data)
                 break
             case tbe.SHOW_ANNO_DETAILS:
@@ -345,11 +334,10 @@ class SiaWrapper extends Component {
     }
 
     handleAnnoPerformedAction(anno, annos, action){
-        console.log('annoPerformedAction', anno, annos, action)
+        // console.log('annoPerformedAction', anno, annos, action)
         switch(action){
             case annoActions.ANNO_CREATED:
             case annoActions.ANNO_CREATED_FINAL_NODE:
-                // console.log('ANNO CREATED!')
                 this.getNextAnnoId()
                 break
             case annoActions.ANNO_SELECTED:
@@ -362,7 +350,7 @@ class SiaWrapper extends Component {
     }
 
     handleCanvasEvent(action, data){
-        console.log('Handle canvas event', action, data)
+        // console.log('Handle canvas event', action, data)
         switch(action){
             case annoActions.CANVAS_AUTO_SAVE:
                 this.handleAutoSave()
@@ -384,17 +372,8 @@ class SiaWrapper extends Component {
 
     undoAnnoRotationForUpdate(saveState=true){
         if (this.state.currentRotation!== 0){
-            // const currentRotation = this.state.currentRotation
-            // this.setState({currentRotation:0})
             return this.rotateAnnos(0, true, saveState)
         }
-        // if (currentFilter){
-        //     if (currentFilter.rotate){
-        //         if (currentFilter.rotate.angle !== 0){
-        //             return this.rotateAnnos(-currentFilter.rotate.angle, true)
-        //         }
-        //     } 
-        // }
         return this.canvas.current.getAnnos(undefined, true)
     }
 
@@ -410,11 +389,9 @@ class SiaWrapper extends Component {
                 data: transform.rotateAnnotation(
                     el.data, 
                     pivotPoint, 
-                    // {x:0.0,y:0.0},
                     angle)
             }
         })
-        // translate annotations into origin of new coordinate system
         let imageCorners = [
             {x:0, y:0},{x:0, y:svg.height}, 
             {x:svg.width,y:0}, {x:svg.width,y:svg.height}
@@ -425,12 +402,6 @@ class SiaWrapper extends Component {
             angle)
     
         let transPoint = transform.getMostLeftPoint(transform.getTopPoint(imageCorners))[0]
-        // let transPoint = transform.getTopPoint(transform.getMostLeftPoint(imageCorners))[0]
-        // if (angle==180 || angle===-180){
-        //     transPoint={x:0.0,y:0.0}
-        // }
-
-        // transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
         sAnnos = sAnnos.map(el => {
             return {
                 ...el,
@@ -438,19 +409,12 @@ class SiaWrapper extends Component {
             }
         })
 
-        // sAnnos = transform.rotateAnnotation(sAnnos, {x:svg.width/2, y:svg.height/2}, angle)
         let newSize, minCorner, maxCorner
         [minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
         newSize = {
             width: maxCorner.x - minCorner.x, 
             height: maxCorner.y - minCorner.y
         }
-        // newSize
-        // if (angle==90 || angle==-90){
-        //     newSize = {width:svg.height, height:svg.width}
-        // } else {
-        //     newSize = svg
-        // }
         let bAnnosNew = {
             ...bAnnos,
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize)
@@ -458,19 +422,8 @@ class SiaWrapper extends Component {
         if (saveState){
             this.setState({currentRotation:absAngle})
         }
-        // this.setState({
-        //     annos: {
-        //         image: {...this.state.image},
-        //         annotations: bAnnosNew.annotations
-        //     }
-        // })
         return bAnnosNew
     }
-
-    // {
-    //     'clahe' : {'clipLimit':2.0},
-    //     'rotate':{'angle':angle}
-    // }
 
     /**
      * Filter image via backend service
@@ -481,22 +434,12 @@ class SiaWrapper extends Component {
      * }
      */
     filterImage(filter){
-        // if (filterTools.active(filter)){
         const data = {
             ...filter,
             'imageId': this.props.annos.image.id
         }
         this.canvas.current.unloadImage()
         this.props.siaFilterImage(data).then(response => {
-            // var blob = new Blob([response.request.response], { type: response.headers['content-type'] });
-            // var url = URL.createObjectURL(blob);
-
-            // var blob = Buffer.from(response.data, 'binary').toString('base64')
-            // var url = blob
-
-            // var b64Response = btoa(response.data);
-            // var url = 'data:image/png;base64,'+b64Response;
-            
             let bAnnosNew
             if (filter.rotate !== undefined){
                 bAnnosNew = this.rotateAnnos(filter.rotate.angle, false)
@@ -511,12 +454,8 @@ class SiaWrapper extends Component {
                     annotations: bAnnosNew.annotations
                 }
         })
-        //     var img = new Image();
-        //     img.src = url;
-        //     document.body.appendChild(img);
         })
         this.canvas.current.resetZoom()
-        // }
     }
 
     requestImageFromBackend(){
@@ -524,10 +463,8 @@ class SiaWrapper extends Component {
             {
                 this.setState({
                     image: {
-                        // ...this.state.image, 
                         id: this.props.annos.image.id, 
                         data:response ? response.data : this.failedToLoadImage(),
-                        // data:window.URL.createObjectURL(response),
                     },
                     blockCanvas: filterTools.active(this.props.filter)
                 })
@@ -619,7 +556,9 @@ class SiaWrapper extends Component {
                 />
                 <ToolBar 
                     ref={this.toolbar} 
-                    onToolBarEvent={(e, data) => this.handleToolBarEvent(e, data)}
+                    onToolBarEvent={
+                        (e, data) => this.handleToolBarEvent(e, data)
+                    }
                     imageMeta={this.state.annos.image}
                     layoutUpdate={this.props.layoutUpdate}
 
