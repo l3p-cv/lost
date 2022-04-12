@@ -28,7 +28,7 @@ import * as annoActions from './lost-sia/src/types/canvasActions'
 
 
 const { 
-    siaLayoutUpdate, getSiaAnnos, siaSelectTool,
+    siaLayoutUpdate, getSiaAnnos, siaSelectTool, siaSetTaskFinished,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
     siaUpdateAnnos, siaSendFinishToBackend, siaSetFullscreen,
     siaSetUIConfig, siaGetNextAnnoId, siaAllowedToMarkExample,
@@ -244,6 +244,10 @@ class SiaWrapper extends Component {
             case tbe.SET_FULLSCREEN:
                 this.props.siaSetFullscreen(!this.props.fullscreenMode)
                 break
+            case tbe.APPLY_FILTER:
+                // this.props.siaSetFullscreen(!this.props.fullscreenMode)
+                this.props.siaApplyFilter(data)
+                break
             case tbe.SHOW_ANNO_DETAILS:
                 this.props.siaSetUIConfig(
                     {...this.props.uiConfig,
@@ -398,7 +402,7 @@ class SiaWrapper extends Component {
         const angle = absAngle - this.state.currentRotation
         const bAnnos = this.canvas.current.getAnnos(undefined, removeFrontendIds)
         const svg = this.canvas.current.state.image
-        let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg)
+        let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg, {x:0, y:0})
         let pivotPoint = {x:svg.width/2.0, y:svg.height/2.0}
         sAnnos = sAnnos.map(el => {
             return {
@@ -627,6 +631,7 @@ class SiaWrapper extends Component {
                     }}
                     canvasConfig={this.props.canvasConfig}
                     uiConfig={this.props.uiConfig}
+                    filter={this.props.filter}
                     />
                 <NotificationContainer/>
              </div>
@@ -664,7 +669,7 @@ export default connect(
         siaLayoutUpdate, getSiaAnnos,
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
         siaUpdateAnnos, siaSendFinishToBackend,
-        selectAnnotation,
+        selectAnnotation, siaSetTaskFinished,
         siaShowImgLabelInput, siaSetFullscreen,
         siaImgIsJunk, siaSetUIConfig, siaAllowedToMarkExample,
         getWorkingOnAnnoTask, siaGetNextAnnoId, siaSelectTool,

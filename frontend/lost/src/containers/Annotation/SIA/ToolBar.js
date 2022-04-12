@@ -346,7 +346,11 @@ class ToolBar extends Component{
                 <SIASettingButton 
                     uiConfig={this.props.uiConfig}
                     onSettingEvent={(e,data) => this.triggerToolBarEvent(e, data)}/>
-                <SIAFilterButton/>
+                <SIAFilterButton 
+                    onFilterEvent={(e, data) => this.triggerToolBarEvent(e, data)}
+                    filter={this.props.filter}
+                    imageMeta={this.props.imageMeta}
+                />
                 {this.renderHelpButton()}
             </Menu>
         </div>
