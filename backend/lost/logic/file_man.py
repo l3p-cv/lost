@@ -28,6 +28,7 @@ SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
 SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
 APP_LOG_PATH = DATA_ROOT_PATH + "logs/"
+UPLOAD_PATH = DATA_ROOT_PATH + "uploads"
 # MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
 # JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
 # MY_DATA_PATH = "my_data/"
@@ -71,6 +72,15 @@ class AppFileMan(object):
     def get_version_log_path(self):
         return os.path.join(self.lostconfig.app_path, 'version-log.json')
 
+    def get_upload_path(self, user_id, file_name):
+        u_path = os.path.join(self.lostconfig.app_path, UPLOAD_PATH)
+        user_upload_path = os.path.join(u_path,str(user_id))
+        if not self.fs.exists(user_upload_path):
+            self.fs.mkdirs(user_upload_path)
+        # if not self.fs.exists(u_path):
+        #     self.fs.mkdirs(u_path)
+        return os.path.join(user_upload_path, file_name)
+
     def get_app_log_path(self, log_file_name):
         base_path = os.path.join(self.lostconfig.app_path, APP_LOG_PATH)
         if not self.fs.exists(base_path):
@@ -106,9 +116,11 @@ class AppFileMan(object):
             my_path = f'{head}_{timestamp}{ext}'
             return my_path
 
-    def get_pipe_project_path(self, scr=None):
+    def get_pipe_project_path(self, scr=None, pp_name=None):
         if scr is not None:
             pp_name = scr.name.split('.')[0]
+            return os.path.join(self.lostconfig.app_path, PIPE_ROOT_PATH, pp_name)
+        elif pp_name is not None:
             return os.path.join(self.lostconfig.app_path, PIPE_ROOT_PATH, pp_name)
         else:
             return (os.path.join(self.lostconfig.app_path, PIPE_ROOT_PATH))

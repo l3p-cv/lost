@@ -1,35 +1,61 @@
-from flask import request
+from tkinter.tix import Tree
+from flask import request, make_response
 from flask_restx import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from datetime import datetime
 from lost.api.api import api
+from lost.logic.file_man import AppFileMan
 from lost.api.pipeline.api_definition import templates, template, pipelines, pipeline
 from lost.api.pipeline import tasks
 from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic.pipeline import service as pipeline_service
+from lost.logic.pipeline import template_import
 from lost.logic import template as template_service
+from lost.db.vis_level import VisLevel
 from lost.utils.dump import dump
+import json 
+import os
+from io import BytesIO
+
 namespace = api.namespace('pipeline', description='Pipeline API.')
 import flask
 
 
-@namespace.route('/template')
+@namespace.route('/template/<string:visibility>')
 class TemplateList(Resource):
     @api.marshal_with(templates)
     @jwt_required
-    def get(self):
+    def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        else:
-            re = template_service.get_templates(dbm)
-            dbm.close_session()
-            return re
-
+        default_group = dbm.get_group_by_name(user.user_name)
+        if visibility == VisLevel().USER:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().GLOBAL:
+            if not user.has_role(roles.ADMINISTRATOR):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().ALL:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
+                dbm.close_session()
+                return re
 
 @namespace.route('/template/<int:template_id>')
 @namespace.param('template_id', 'The id of the template.')
@@ -180,3 +206,139 @@ class PipelinePlay(Resource):
             pipeline_service.play(dbm, pipeline_id)
             dbm.close_session()
             return "success"
+
+@namespace.route('/project/import')
+class TemplateImport(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+        else:
+            try:
+                fm = AppFileMan(LOST_CONFIG)
+                uploaded_file = request.files['zip_file']
+                upload_path = fm.get_upload_path(identity, uploaded_file.filename)
+                USER_NAMESPACE = False
+                if USER_NAMESPACE:
+                    head, tail = os.path.split(upload_path)
+                    upload_path = os.path.join(head, f'{identity}_{tail}')
+                uploaded_file.save(upload_path)
+
+                pp_path = fm.get_pipe_project_path()
+                dst_dir = os.path.basename(upload_path)
+                dst_dir = os.path.splitext(dst_dir)[0]
+                dst_path = os.path.join(pp_path, dst_dir)
+                    
+
+                template_import.unpack_pipe_project(upload_path, dst_path)
+                dbm = access.DBMan(LOST_CONFIG)
+                if not USER_NAMESPACE:
+                    importer = template_import.PipeImporter(dst_path, dbm)
+                else:
+                    importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
+                importer.start_import()
+                fm.fs.rm(upload_path, recursive=True)
+                dbm.close_session()
+                return "success", 200
+            except:
+                dbm.close_session()
+                return "error", 200
+
+@namespace.route('/project/export/<string:pipe_project>')
+@namespace.param('pipeline_id', 'The id of the pipeline.')
+class PipelineTemplateExport(Resource):
+    # @api.marshal_with(pipeline)
+    @jwt_required
+    def get(self, pipe_project):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+        else:
+            # TODO Export here !
+            fm = AppFileMan(LOST_CONFIG)
+            # src = fm.get_pipe_project_path(content['namespace'])
+            src = os.path.join(fm.get_pipe_project_path(), pipe_project)
+            f = BytesIO()
+            # f = open('/home/lost/app/test.zip', 'wb')
+            template_import.pack_pipe_project_to_stream(f, src)
+            
+            f.seek(0)
+            resp = make_response(f.read())
+            resp.headers["Content-Disposition"] = f"attachment; filename={pipe_project}.zip"
+            resp.headers["Content-Type"] = "blob"
+            dbm.close_session()
+            return resp
+
+@namespace.route('/project/delete')
+class TemplateDelete(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+
+        else:
+            data = json.loads(request.data)
+            fm = AppFileMan(LOST_CONFIG)
+            pipe_project = data['pipeProject']
+            importer = template_import.PipeImporter(fm.get_pipe_project_path(pp_name=pipe_project), dbm)
+            importer.remove_pipe_project()
+
+            #TODO Delete here
+           
+            dbm.close_session()
+            return "success", 200
+@namespace.route('/project/<string:visibility>')
+class ProjectList(Resource):
+    @api.marshal_with(templates)
+    @jwt_required
+    def get(self, visibility):
+        def filter_by_pipe_project(re):
+            pipeProjects = list()
+            unique = list()
+            for x in re['templates']:
+                if x['pipeProject'] not in pipeProjects:
+                    unique.append(x)
+                    pipeProjects.append(x['pipeProject'])
+            return {"templates": unique}
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        default_group = dbm.get_group_by_name(user.user_name)
+        if visibility == VisLevel().USER:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx)
+                re = filter_by_pipe_project(re)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().GLOBAL:
+            if not user.has_role(roles.ADMINISTRATOR):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm)
+                re = filter_by_pipe_project(re)
+                dbm.close_session()
+                return re
+        if visibility == VisLevel().ALL:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            else:
+                re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
+                re = filter_by_pipe_project(re)
+                dbm.close_session()
+                return re

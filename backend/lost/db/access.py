@@ -172,12 +172,23 @@ class DBMan(object):
         return self.session.query(model.Pipe)\
             .filter((model.Pipe.group_id.in_(group_ids) &  (model.Pipe.state!=state.Pipe.DELETED) )).all()
                     
-    def get_all_pipeline_templates(self):
+    def get_all_pipeline_templates(self, group_id=None, global_only=False, add_global=False):
         '''Get all PipeTemplate objects in db.
 
         Returns:
             list: :class:`.project.PipeTemplate`
         '''
+        if group_id:
+            if add_global:
+                return self.session.query(model.PipeTemplate)\
+                    .filter(or_(model.PipeTemplate.group_id==group_id, model.PipeTemplate.group_id == None)).all()
+            else:
+                return self.session.query(model.PipeTemplate)\
+                    .filter(model.PipeTemplate.group_id==group_id).all()
+        if global_only:
+            return self.session.query(model.PipeTemplate)\
+                .filter(model.PipeTemplate.group_id==None).all()
+
         return self.session.query(model.PipeTemplate).all()
 
     def get_pipe_template(self, pipe_template_id=None):

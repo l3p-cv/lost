@@ -3,45 +3,41 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 import * as statistics_api from '../../actions/statistics/statistics_api'
 
-import {
-    CWidgetDropdown,
-    CRow,
-    CCol,
-    CWidgetBrand
-} from '@coreui/react'
+import { CWidgetDropdown, CRow, CCol, CWidgetBrand } from '@coreui/react'
 
-import {CChart} from '@coreui/react-chartjs'
+import { CChart } from '@coreui/react-chartjs'
 import ChartLineSimple from './ChartLineSimple'
 import BaseContainer from '../../components/BaseContainer'
+import Loading from '../../components/Loading'
 
 const DesignerDashboard = () => {
     const dispatch = useDispatch()
     const { mutate: getPersonalStatistics, data: personalStatistics } =
-    statistics_api.usePersonalStatistics()
+        statistics_api.usePersonalStatistics()
     useEffect(() => {
         dispatch(actions.setNavbarVisible(true))
         getPersonalStatistics()
     }, [])
 
-    const [labels, setLabels] = useState({keys:[], values:[]})
-    const [types, setTypes] = useState({keys:[], values:[]})
-    
-    useEffect(()=> {
+    const [labels, setLabels] = useState({ keys: [], values: [] })
+    const [types, setTypes] = useState({ keys: [], values: [] })
+
+    useEffect(() => {
         /// only when data from request is available
-        if(personalStatistics === undefined) return;
+        if (personalStatistics === undefined) return
 
         // update data for annotation labels chart
         let _labels = {
             keys: [],
             values: [],
-            colors: []
+            colors: [],
         }
 
-        for(var k in personalStatistics.labels) {
+        for (var k in personalStatistics.labels) {
             _labels.keys.push(k)
             _labels.values.push(personalStatistics.labels[k]['value'])
-            let _lblColor = personalStatistics.labels[k]['color'];
-            _labels.colors.push((_lblColor ? _lblColor : 'rgb(16, 81, 95,0.8)'))
+            let _lblColor = personalStatistics.labels[k]['color']
+            _labels.colors.push(_lblColor ? _lblColor : 'rgb(16, 81, 95,0.8)')
         }
 
         setLabels(_labels)
@@ -49,10 +45,10 @@ const DesignerDashboard = () => {
         // update data for annotation types chart
         let _types = {
             keys: [],
-            values: []
+            values: [],
         }
 
-        for(var k in personalStatistics.types) {
+        for (var k in personalStatistics.types) {
             _types.keys.push(k)
             _types.values.push(personalStatistics.types[k])
         }
@@ -61,14 +57,14 @@ const DesignerDashboard = () => {
     }, [personalStatistics])
 
     /// do not render component if required data is not available
-    if(personalStatistics === undefined) return(<div>Loading...</div>)
+    if (personalStatistics === undefined) return <Loading size="l" />
 
     const chartColors = {
         background: 'rgb(16, 81, 95,0.8)',
         borderColor: 'rgb(16, 81, 95,0.8)',
         borderWidth: 0,
-        hoverBackgroundColor:'rgb(16, 81, 95,0.4)',
-        hoverBorderColor: 'rgb(16, 81, 95,0.4)'
+        hoverBackgroundColor: 'rgb(16, 81, 95,0.4)',
+        hoverBorderColor: 'rgb(16, 81, 95,0.4)',
     }
 
     const annoLabels = {
@@ -82,8 +78,8 @@ const DesignerDashboard = () => {
                 hoverBackgroundColor: chartColors.hoverBackgroundColor,
                 hoverBorderColor: chartColors.hoverBorderColor,
                 data: labels.values,
-            }
-        ]
+            },
+        ],
     }
 
     const annoTypes = {
@@ -97,12 +93,12 @@ const DesignerDashboard = () => {
                 hoverBackgroundColor: chartColors.hoverBackgroundColor,
                 hoverBorderColor: chartColors.hoverBorderColor,
                 data: types.values,
-            }
-        ]
+            },
+        ],
     }
 
     const chartOptions = {
-        maintainAspectRatio: true
+        maintainAspectRatio: true,
     }
 
     return (
@@ -116,7 +112,7 @@ const DesignerDashboard = () => {
                         leftHeader={personalStatistics.annos.allTime}
                         leftFooter="All time"
                     >
-                    <h2>Annotations</h2>
+                        <h2>Annotations</h2>
                     </CWidgetBrand>
                 </CCol>
 
@@ -128,7 +124,7 @@ const DesignerDashboard = () => {
                         leftHeader={personalStatistics.annotasks.allTime}
                         leftFooter="All time"
                     >
-                    <h2>Annotasks</h2>
+                        <h2>Annotasks</h2>
                     </CWidgetBrand>
                 </CCol>
 
@@ -140,7 +136,7 @@ const DesignerDashboard = () => {
                         leftHeader={personalStatistics.annotime.allTime}
                         leftFooter="All time"
                     >
-                    <h2>Time per Annotation</h2>
+                        <h2>Time per Annotation</h2>
                     </CWidgetBrand>
                 </CCol>
 
@@ -152,16 +148,16 @@ const DesignerDashboard = () => {
                         leftHeader={personalStatistics.processedImages.allTime}
                         leftFooter="All time"
                     >
-                    <h2>Processed images</h2>
+                        <h2>Processed images</h2>
                     </CWidgetBrand>
                 </CCol>
             </CRow>
-            
+
             <CRow>
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header={"Ø " + personalStatistics.annos.avg}
+                        header={'Ø ' + personalStatistics.annos.avg}
                         text="Annos / Day"
                         footerSlot={
                             <ChartLineSimple
@@ -175,14 +171,13 @@ const DesignerDashboard = () => {
                                 labels="days"
                             />
                         }
-                    >
-                    </CWidgetDropdown>
+                    ></CWidgetDropdown>
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header={"Ø " + personalStatistics.annotasks.avg}
+                        header={'Ø ' + personalStatistics.annotasks.avg}
                         text="Annotasks / Day"
                         footerSlot={
                             <ChartLineSimple
@@ -196,14 +191,13 @@ const DesignerDashboard = () => {
                                 labels="days"
                             />
                         }
-                    >
-                    </CWidgetDropdown>
+                    ></CWidgetDropdown>
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header={"Ø " + personalStatistics.annotime.avg}
+                        header={'Ø ' + personalStatistics.annotime.avg}
                         text="Time per Annotation / Day"
                         footerSlot={
                             <ChartLineSimple
@@ -216,38 +210,48 @@ const DesignerDashboard = () => {
                                 label="Seconds"
                             />
                         }
-                    >
-                    </CWidgetDropdown>
+                    ></CWidgetDropdown>
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
-                        header={"Ø " + personalStatistics.processedImages.avg}
+                        header={'Ø ' + personalStatistics.processedImages.avg}
                         text="Processed Images / Day"
                         footerSlot={
                             <ChartLineSimple
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={personalStatistics.processedImages.history.week}
+                                dataPoints={
+                                    personalStatistics.processedImages.history.week
+                                }
                                 options={{ elements: { line: { borderWidth: 2.5 } } }}
                                 pointHoverBackgroundColor="primary"
                                 label="Images"
                             />
                         }
-                    >
-                    </CWidgetDropdown>
+                    ></CWidgetDropdown>
                 </CCol>
             </CRow>
 
             <CRow>
                 <CCol sm="12" lg="6">
-                    <CChart type="bar" datasets={annoLabels.datasets} options={chartOptions} labels={annoLabels.labels}/>
+                    <CChart
+                        type="bar"
+                        datasets={annoLabels.datasets}
+                        options={chartOptions}
+                        labels={annoLabels.labels}
+                    />
                 </CCol>
 
                 <CCol sm="12" lg="6">
-                    <CChart type="bar" datasets={annoTypes.datasets} options={chartOptions} labels={annoTypes.labels}/>
+                    <CChart
+                        type="bar"
+                        datasets={annoTypes.datasets}
+                        options={chartOptions}
+                        labels={annoTypes.labels}
+                    />
                 </CCol>
             </CRow>
         </BaseContainer>

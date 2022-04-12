@@ -16,7 +16,7 @@ const HelpButton = ({ text, id, disabled }) => {
                     style={{
                         paddingRight: 10,
                         paddingLeft: 10,
-                        marginLeft: 20,
+                        marginLeft: 10,
                         borderRadius: 40,
                     }}
                     disabled={disabled}
@@ -24,7 +24,7 @@ const HelpButton = ({ text, id, disabled }) => {
                     onMouseLeave={() => {
                         setIsToolTipOpen(false)
                     }}
-                    color="info"
+                    color="primary"
                 >
                     <FontAwesomeIcon
                         size="sm"

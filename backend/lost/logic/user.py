@@ -38,6 +38,13 @@ from lost.db import state
 
 #     data_man.save_obj(usermeta)
 
+def get_user_default_group(dbm, user_id):
+    for user_group in dbm.get_user_groups_by_user_id(user_id):
+        if user_group.group.is_user_default:
+            group_id = user_group.group.idx
+            return group_id
+    return None
+
 def release_user_annos(dbm, user_id):
     '''Release locked annos for a specific user.
 
