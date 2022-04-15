@@ -1,10 +1,8 @@
-import DesignerDashboardComponent from './containers/DesignerDashboard/DesignerDashboard'
-import AnnotatorDashboardComponent from './containers/AnnotatorDashboard/AnnotatorDashboard'
+import DesignerDashboardComponent from './containers/Dashboard/DesignerDashboard'
+import AnnotatorDashboardComponent from './containers/Dashboard/AnnotatorDashboard'
 import RunningPipelineComponent from './containers/pipeline/running/RunningPipeline'
 import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
 import LabelsComponent from './containers/Labels/LabelDashboard'
-import WorkersComponent from './containers/Workers/WorkersTable'
-import UsersComponent from './containers/Users/UsersAndGroups'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import SiaReviwComponent from './containers/Annotation/SIAReviewAnnotation'
@@ -15,6 +13,7 @@ import MyProfileComponent from './containers/Profile/Profile'
 // import PipelinesComponent from './containers/Pipelines/Pipelines'
 
 import AdminAreaComponent from './containers/AdminArea/AdminArea'
+import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
 
 import {
     FaTachometerAlt,
@@ -24,6 +23,7 @@ import {
     FaDatabase,
     FaTools,
     FaTasks,
+    FaChartLine,
 } from 'react-icons/fa'
 
 const iconProps = {
@@ -40,6 +40,22 @@ const DesignerDashboard = {
     component: DesignerDashboardComponent,
     //component: PipelinesComponent,
     icon: <FaTachometerAlt {...iconProps} />,
+}
+
+const AnnotatorDashboard = {
+    name: 'Dashboard',
+    to: '/dashboard',
+    component: AnnotatorDashboardComponent,
+    //component: PipelinesComponent,
+    icon: <FaTachometerAlt {...iconProps} />,
+}
+
+const DesignerStatistics = {
+    name: 'Statistics',
+    to: '/statistics',
+    component: DesignerStatisticsComponent,
+    //component: PipelinesComponent,
+    icon: <FaChartLine {...iconProps} />,
 }
 
 const TitleProject = {
@@ -96,13 +112,6 @@ const Mia = {
     component: MiaComponent,
 }
 
-// const Pipelines = {
-//     name: 'Pipelines',
-//     to: '/pipelines',
-//     component: PipelinesComponent,
-//     icon: <FaTasks {...iconProps} />,
-// }
-
 const RunningPipelines = {
     name: 'Pipelines',
     to: '/pipelines',
@@ -141,6 +150,7 @@ const guiSetup = {
             StartPipelines,
             Labels,
             DataSources,
+            DesignerStatistics,
             TitleAnnotation,
             Annotation,
             TitleAdmin,
@@ -156,13 +166,14 @@ const guiSetup = {
             StartPipelines,
             Labels,
             DataSources,
+            DesignerStatistics,
             TitleAnnotation,
             Annotation,
         ],
     },
     Annotator: {
         redirect: '/annotation',
-        navItems: [Annotation],
+        navItems: [AnnotatorDashboard, Annotation],
     },
 }
 

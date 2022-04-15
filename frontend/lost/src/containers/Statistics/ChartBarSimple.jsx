@@ -41,6 +41,9 @@ const ChartBarSimple = (props) => {
                 yAxes: [
                     {
                         display: false,
+                        ticks: {
+                            beginAtZero: true,
+                        },
                     },
                 ],
             },
