@@ -981,7 +981,6 @@ class DBMan(object):
             if start and end:
                 between_str ='AND timestamp BETWEEN "{}" AND "{}"'.format(start, end)
             sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
-            print(sql) 
             return self.session.execute(sql).first()
     
     def get_number_image_annos_in_time(self, user_id, start=None, end=None):
@@ -1004,18 +1003,26 @@ class DBMan(object):
             return self.session.execute(sql)
         else:
             sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
-            print(sql)
             return self.session.execute(sql)
     
 
     def get_number_twod_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
         between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
         sql = "SELECT COUNT(idx) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
-        print(sql)
         return self.session.execute(sql)
 
     def get_number_image_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
         between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
         sql = "SELECT COUNT(idx) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
-        print(sql)
         return self.session.execute(sql)
+    
+    def get_processed_anno_tasks_in_time(self, user_id, start, end, group_by='day'):
+        between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
+             image_anno.user_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql) 
+
+    def count_all_anno_tasks_by_user(self, user_id):
+        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
+             image_anno.user_id={} AND image_anno.anno_time IS NOT NULL".format(user_id)
+        return self.session.execute(sql) 

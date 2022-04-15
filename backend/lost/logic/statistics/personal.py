@@ -24,14 +24,14 @@ class PersonalStats():
             history_week.append(row[0])
             
         history_month = [] 
-        for row in self.dbm.get_number_twod_annos_in_time_group_by(self.user_id, start=self.last_month,end=self.today, group_by='month'):
+        for row in self.dbm.get_number_twod_annos_in_time_group_by(self.user_id, start=self.last_month,end=self.today, group_by='day'):
             history_month.append(row[0])
         stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
         stats['history'] = { 
             'week':   ['{:.2f}'.format(element) for element in history_week],
             'month':   ['{:.2f}'.format(element) for element in history_month]
         }
-        return stats
+        return stats 
 
     def get_annos_per_label(self):
         stats = dict()
@@ -67,7 +67,7 @@ class PersonalStats():
             history_week.append(row[0])
 
         history_month = []
-        for row in self.dbm.mean_anno_time_by_user_grouped_by(self.user_id, start=self.last_month,end=self.today, group_by='month'):
+        for row in self.dbm.mean_anno_time_by_user_grouped_by(self.user_id, start=self.last_month,end=self.today, group_by='day'):
             history_month.append(row[0])
         stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
         stats['history'] = { 
@@ -76,11 +76,28 @@ class PersonalStats():
         }
         return stats
 
-    def get_annotasks(self):
+    def get_annotasks(self): 
         stats = dict()
-        stats['today'] = '51'
-        stats['allTime'] = '5001'
-        stats['avg'] = '{:.2f}'.format(self.dbm.mean_anno_time_by_user(self.user_id)[0])
+        stats['today'] = 0
+        at_today = self.dbm.get_processed_anno_tasks_in_time(self.user_id, start=self.yesterday, end=self.today)
+        for row in at_today:
+            stats['today'] = row[0]
+        for row in self.dbm.count_all_anno_tasks_by_user(self.user_id):
+            stats['allTime'] = row[0]
+    
+        history_week = []
+        for row in self.dbm.get_processed_anno_tasks_in_time(self.user_id, start=self.last_week,end=self.today):
+            history_week.append(row[0])
+        history_month = []
+        for row in self.dbm.get_processed_anno_tasks_in_time(self.user_id, start=self.last_month,end=self.today, group_by='day'):
+            history_month.append(row[0])
+        stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        stats['history'] = { 
+            'week':   ['{:.2f}'.format(element) for element in history_week],
+            'month':   ['{:.2f}'.format(element) for element in history_month]
+        }
+        return stats
+
         stats['history'] = { 
             'week': [34,33,32,37,36,35,31],
             'month': [40,39,38,37,36,35,34,33,32,31,40,39,38,37,36,35,34,33,32,31,40,39,38,37,36,35,34,33,32,31]
