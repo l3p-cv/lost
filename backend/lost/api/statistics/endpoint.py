@@ -22,10 +22,15 @@ class Personal(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
             from lost.api.statistics.example_data import example_stats
-            example_stats['annos'] = personal.get_annotation_stats(dbm, user.idx)
-            example_stats['labels'] = personal.get_annos_per_label(dbm, user.idx)
-            example_stats['types'] = personal.get_annos_per_type(dbm, user.idx)
-            example_stats['annotime'] = personal.get_anno_times(dbm, user.idx)
+            personal_stats = personal.PersonalStats(dbm, user.idx)
+            example_stats['annos'] = personal_stats.get_annotation_stats()
+            example_stats['labels'] = personal_stats.get_annos_per_label()
+            example_stats['types'] = personal_stats.get_annos_per_type()
+            example_stats['annotime'] = personal_stats.get_anno_times()
+            example_stats['annotasks'] = personal_stats.get_annotasks()
+            example_stats['processedImages'] = personal_stats.get_processed_images()
+
+
             dbm.close_session()
             return example_stats
          

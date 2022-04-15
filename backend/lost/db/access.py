@@ -969,11 +969,53 @@ class DBMan(object):
         sql = "SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
                 FROM two_d_anno WHERE two_d_anno.user_id = {} {} GROUP BY two_d_anno.dtype".format(user_id, between_str)
         return self.session.execute(sql)
-    
-    def mean_anno_time_by_user(self, user_id, anno_type='twodBased'):
+     
+    def mean_anno_time_by_user(self, user_id, anno_type='twodBased', start=None, end=None):
+        between_str = ''
         if anno_type == 'imageBased':
-            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            if start and end:
+                between_str ='AND timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            if start and end:
+                between_str ='AND timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
+            print(sql) 
             return self.session.execute(sql).first()
+    
+    def get_number_image_annos_in_time(self, user_id, start=None, end=None):
+        if start and end:
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+            .filter(model.ImageAnno.user_id == user_id, \
+                model.ImageAnno.state == state.Anno.LABELED, 
+                model.ImageAnno.timestamp >= start, 
+                model.ImageAnno.timestamp <= end)
+        else:
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+            .filter(model.ImageAnno.user_id == user_id, \
+                model.ImageAnno.state == state.Anno.LABELED)
+    
+
+    def mean_anno_time_by_user_grouped_by(self, user_id, start, end, group_by='day', anno_type='twodBased'):
+        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
+        if anno_type == 'imageBased':
+            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+            return self.session.execute(sql)
+        else:
+            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
+            print(sql)
+            return self.session.execute(sql)
+    
+
+    def get_number_twod_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
+        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(idx) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+        print(sql)
+        return self.session.execute(sql)
+
+    def get_number_image_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
+        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(idx) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+        print(sql)
+        return self.session.execute(sql)
