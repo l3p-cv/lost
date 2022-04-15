@@ -25,7 +25,7 @@ const TheSidebar = ({ navItems }) => {
     if (navItems) {
         return (
             <CSidebar show={isNavBarVisible} onShowChange={onShowChange}>
-                <CSidebarBrand className="d-md-down-none" to="/">
+                <CSidebarBrand className="d-md-down-none" to="/dashboard">
                     <img
                         alt=""
                         src={lostLogoPng}
