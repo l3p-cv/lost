@@ -178,7 +178,10 @@ class FileMan(object):
                 fs_connection = decrypt_fs_connection(fs_db)
             else:
                 fs_connection = fs_db.connection
-            fs_args = ast.literal_eval(fs_connection)
+            if type(fs_connection) != dict:
+                fs_args = ast.literal_eval(fs_connection)
+            else:
+                fs_args = fs_connection
             fs = fsspec.filesystem(fs_db.fs_type, **fs_args)
             fs.lost_fs = fs_db
             self.fs = fs
