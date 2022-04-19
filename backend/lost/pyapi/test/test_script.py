@@ -24,7 +24,7 @@ IMG_NAME2 = '2008_002123.jpg'
 
 IMG_PATH1 = f'{LOST_EXAMPLE_IMG_DIR}/{IMG_NAME1}'
 IMG_PATH2 = f'{LOST_EXAMPLE_IMG_DIR}/{IMG_NAME2}'
-
+os.makedirs(f'/home/lost/data/{LOST_EXAMPLE_IMG_DIR}')
 shutil.copyfile(os.path.join(EXAMPLE_IMG_DIR, IMG_NAME1), os.path.join('/home/lost/data', LOST_EXAMPLE_IMG_DIR, IMG_NAME1))
 shutil.copyfile(os.path.join(EXAMPLE_IMG_DIR, IMG_NAME2), os.path.join('/home/lost/data', LOST_EXAMPLE_IMG_DIR, IMG_NAME2))
 
