@@ -641,51 +641,55 @@ class ScriptOutput(Output):
             fs = DummyFileMan(fs_db)
             fm = file_man.FileMan(fs_db=fs.lost_fs)
         rel_img_path = fm.make_path_relative(img_path)
-        img_anno = model.ImageAnno(anno_task_id=anno_task_id,
-                                img_path=rel_img_path,
-                                abs_path=os.path.join(fm.root_path, rel_img_path),
-                                state=state.Anno.UNLOCKED,
-                                result_id=self._result_map[pe.idx],
-                                iteration=self._script._pipe_element.iteration,
-                                frame_n=frame_n,
-                                video_path=video_path,
-                                sim_class=img_sim_class,
-                                fs_id=fm.fs.lost_fs.idx,
-                                description=img_comment)
-        if img_meta is not None:
-            img_anno.meta = json.dumps(img_meta, default=_json_default)
-        self._script._dbm.add(img_anno)
-        if img_labels is not None:
-            self._update_labels(img_labels, img_anno)
-        if len(annos) != len(anno_types):
-            raise ValueError('*anno_types* and *annos* need to be of same size!')            
-        for i, vec in enumerate(annos):
-            anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
-                anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
-            if anno_meta is not None:
-                if len(annos) != len(anno_meta):
-                    raise ValueError('*anno_meta* and *annos* need to be of same size!')            
-                anno.meta = json.dumps(anno_meta[i], default=_json_default)
-            if anno_types[i] == 'point':
-                anno.point = vec
-            elif anno_types[i] == 'bbox':
-                anno.bbox = vec
-            elif anno_types[i] == 'line':
-                anno.line = vec
-            elif anno_types[i] == 'polygon':
-                anno.polygon = vec
-            if anno_labels:
-                if len(anno_labels) != len(annos):
-                    raise ValueError('*anno_labels* and *annos* need to be of same size!')
-                label_leaf_ids = anno_labels[i]
-                self._update_labels(label_leaf_ids, anno)
-            if anno_sim_classes:
-                if len(anno_sim_classes) != len(annos):
-                    raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
-                anno.sim_class = anno_sim_classes[i]
-            else:
-                anno.sim_class = 1
-            img_anno.twod_annos.append(anno)
+        abs_path = fm.get_abs_path(img_path)
+        if fm.fs.isfile(abs_path):
+            img_anno = model.ImageAnno(anno_task_id=anno_task_id,
+                                    img_path=rel_img_path,
+                                    abs_path=abs_path,
+                                    state=state.Anno.UNLOCKED,
+                                    result_id=self._result_map[pe.idx],
+                                    iteration=self._script._pipe_element.iteration,
+                                    frame_n=frame_n,
+                                    video_path=video_path,
+                                    sim_class=img_sim_class,
+                                    fs_id=fm.fs.lost_fs.idx,
+                                    description=img_comment)
+            if img_meta is not None:
+                img_anno.meta = json.dumps(img_meta, default=_json_default)
+            self._script._dbm.add(img_anno)
+            if img_labels is not None:
+                self._update_labels(img_labels, img_anno)
+            if len(annos) != len(anno_types):
+                raise ValueError('*anno_types* and *annos* need to be of same size!')            
+            for i, vec in enumerate(annos):
+                anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
+                    anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
+                if anno_meta is not None:
+                    if len(annos) != len(anno_meta):
+                        raise ValueError('*anno_meta* and *annos* need to be of same size!')            
+                    anno.meta = json.dumps(anno_meta[i], default=_json_default)
+                if anno_types[i] == 'point':
+                    anno.point = vec
+                elif anno_types[i] == 'bbox':
+                    anno.bbox = vec
+                elif anno_types[i] == 'line':
+                    anno.line = vec
+                elif anno_types[i] == 'polygon':
+                    anno.polygon = vec
+                if anno_labels:
+                    if len(anno_labels) != len(annos):
+                        raise ValueError('*anno_labels* and *annos* need to be of same size!')
+                    label_leaf_ids = anno_labels[i]
+                    self._update_labels(label_leaf_ids, anno)
+                if anno_sim_classes:
+                    if len(anno_sim_classes) != len(annos):
+                        raise ValueError('*anno_sim_classes* and *annos* need to have same size!')
+                    anno.sim_class = anno_sim_classes[i]
+                else:
+                    anno.sim_class = 1
+                img_anno.twod_annos.append(anno)
+        else:
+            self._script.logger.warning(f'Will ignore {abs_path} since it is not a file!')
     
     def _lbl_name_to_id(self, lbl, lbl_map=None):
         if isinstance(lbl, str):
