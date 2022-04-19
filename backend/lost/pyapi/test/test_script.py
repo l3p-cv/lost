@@ -6,6 +6,8 @@ import json
 import datetime
 from lost.utils import testils
 from lost.pyapi.script import Script
+import shutil
+import os
 # import pudb
 
 REF_BBOXES = [
@@ -13,8 +15,18 @@ REF_BBOXES = [
     [0.2, 0.2, 0.3, 0.15],
     [0.3, 0.3, 0.3, 0.15]
 ]
-IMG_PATH1 = 'path/to/img1.jpg'
-IMG_PATH2 = 'path/to/img2.jpg'
+
+EXAMPLE_IMG_DIR = '/code/src/backend/lost/pyapi/examples/images/10_voc2012'
+LOST_EXAMPLE_IMG_DIR = 'test'
+
+IMG_NAME1 = '2007_008547.jpg'
+IMG_NAME2 = '2008_002123.jpg'
+
+IMG_PATH1 = f'{LOST_EXAMPLE_IMG_DIR}/{IMG_NAME1}'
+IMG_PATH2 = f'{LOST_EXAMPLE_IMG_DIR}/{IMG_NAME2}'
+
+shutil.copyfile(os.path.join(EXAMPLE_IMG_DIR, IMG_NAME1), os.path.join('/home/lost/data', LOST_EXAMPLE_IMG_DIR, IMG_NAME1))
+shutil.copyfile(os.path.join(EXAMPLE_IMG_DIR, IMG_NAME2), os.path.join('/home/lost/data', LOST_EXAMPLE_IMG_DIR, IMG_NAME2))
 
 def check_bbox(ref, to_check):
     '''Check if two boxes are equal'''
