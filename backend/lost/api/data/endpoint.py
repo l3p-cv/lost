@@ -27,7 +27,6 @@ namespace = api.namespace('data', description='Data API.')
 class Data(Resource): 
     @jwt_required 
     def get(self, path):
-        print(path)
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -65,7 +64,6 @@ class Data(Resource):
 class Logs(Resource):
     @jwt_required 
     def get(self, path):
-        print(path)
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -145,6 +143,8 @@ class Logs(Resource):
 
 def load_img(db_img, fm, user):
     if LOST_CONFIG.worker_management != 'dynamic':
+        # need to execute ls for s3fs (don't know why)
+        fm.fs.ls(db_img.img_path)
         img = fm.load_img(db_img.img_path)
     else:
         img = dask_session.ds_man.read_fs_img(user, db_img.fs, db_img.img_path)
@@ -168,7 +168,7 @@ class GetImage(Resource):
             #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
             if data['type'] == 'imageBased':
                 db_img = dbm.get_image_anno(data['id'])
-                fm = FileMan(fs_db=db_img.fs)
+                fm = FileMan(fs_db=db_img.fs) 
                 img = load_img(db_img, fm, user)
             elif data['type'] == 'annoBased':
                 db_anno = dbm.get_two_d_anno(two_d_anno_id=data['id'])
