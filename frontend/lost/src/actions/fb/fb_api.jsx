@@ -88,3 +88,9 @@ export const useUploadFiles = () => {
     })
     return [state, mutate, breakUpload]
 }
+
+export const useDeleteFiles = () => {
+    return useMutation(({ fs, files }) =>
+        axios.post(API_URL + '/fb/rm', { fsId: fs.id, files }).then((res) => res.data),
+    )
+}

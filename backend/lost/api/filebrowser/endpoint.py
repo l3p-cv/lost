@@ -88,14 +88,13 @@ class RM(Resource):
         else:
             # TODO: Permitted to rm?
             data = json.loads(request.data)
-            fs_db = dbm.get_fs(fs_id=data['fs']['id'])
+            fs_db = dbm.get_fs(fs_id=data['fsId'])
             fm = FileMan(fs_db=fs_db)
-            recursive = False
-            if 'recursive' in data:
-                if data['recursive']:
-                    recursive = True
-            path = data['path']
-            res = fm.rm(path, recursive)
+            for file in data['files']:
+                if 'isDir' in file:
+                    res = fm.rm(file['id'] , True)
+                else:
+                    res = fm.rm(file['id'] , False)
             dbm.close_session()
             return 'success', 200 
 

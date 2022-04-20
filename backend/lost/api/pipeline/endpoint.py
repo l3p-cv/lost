@@ -98,7 +98,7 @@ class PipelineList(Resource):
             # print("--- PipelineList result ---")
             # print(re) 
             return re
-
+ 
 
 @namespace.route('/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')

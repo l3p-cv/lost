@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { CRow, CCol } from '@coreui/react'
 import IconButton from '../../components/IconButton'
 import { faUpload } from '@fortawesome/free-solid-svg-icons'
@@ -17,15 +17,22 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
     const [folderChain, setFolderChain] = useState([])
     const [size, setSize] = useState(0)
     const [selectedPath, setSelectedPath] = useState('/')
+    const [selectedDir, setSelectedDir] = useState('/')
     const [copiedAccecptedFiles, setCopiedAcceptedFiles] = useState([])
     const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
         useDropzone({})
     const [uploadFilesData, uploadFiles, breakUpload] = fb_api.useUploadFiles()
+
+    const {
+        mutate: deleteFiles,
+        status: deleteFilesStatus,
+        error: deleteFilesErrorData,
+    } = fb_api.useDeleteFiles()
+
     useEffect(() => {
         setChonkyDefaults({ iconComponent: ChonkyIconFA })
     }, [])
     useEffect(() => {
-        console.log('FS in LostFileBrowser', fs)
         if (fs) {
             ls(fs, fs.rootPath)
         }
@@ -39,7 +46,10 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         setCopiedAcceptedFiles(acceptedFiles)
         setSize(newSize)
     }, [acceptedFiles])
-
+    const fileActions = useMemo(
+        () => [ChonkyActions.CreateFolder, ChonkyActions.DeleteFiles],
+        [],
+    )
     const ls = async (fs, path) => {
         let res_data
         if (mode) {
@@ -66,14 +76,20 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         }
     }, [uploadFilesData])
 
+    useEffect(() => {
+        if (deleteFilesStatus === 'success') {
+            ls(fs, selectedDir)
+        }
+    }, [deleteFilesStatus])
+
     const handleFileAction = (data) => {
-        console.log(data)
         switch (data.id) {
             case ChonkyActions.OpenFiles.id:
                 if (data) {
                     console.log('OpenFiles: ', data.payload.targetFile.id)
                     ls(fs, data.payload.targetFile.id)
                     setSelectedPath(data.payload.targetFile.id)
+                    setSelectedDir(data.payload.targetFile.id)
                     if (onPathSelected) {
                         onPathSelected(data.payload.targetFile.id)
                     }
@@ -82,12 +98,21 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
             case ChonkyActions.MouseClickFile.id:
                 if (data) {
                     console.log('MouseClickFile: ', data.payload.file.id)
-                    setSelectedPath(data.payload.file.id)
                     if (onPathSelected) {
                         onPathSelected(data.payload.file.id)
                     }
                 }
                 break
+            case ChonkyActions.CreateFolder.id:
+                const folderName = prompt('Provide the name for your new folder:')
+                console.log('CREATE FOLDER:', folderName)
+                break
+            case ChonkyActions.DeleteFiles.id:
+                // const folderName = prompt('Provide the name for your new folder:')
+                deleteFiles({ fs, files: data.state.selectedFiles })
+                console.log('Delete files:', data.state.selectedFiles)
+                break
+
             default:
                 console.log('Unknown action', data.id)
         }
@@ -100,6 +125,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
                     defaultFileViewActionId={ChonkyActions.EnableListView.id}
                     files={files}
                     folderChain={folderChain}
+                    fileActions={fileActions}
                     onFileAction={(e) => {
                         handleFileAction(e)
                     }}
