@@ -291,6 +291,14 @@ class MkDirs(Resource):
             if commonprefix != fs_db.root_path:
                 path = fs_db.root_path
             name = data['name']
-            res = fm.mkdirs(os.path.join(path, name), exist_ok=False)
+            path = os.path.join(path, name)
+            try:
+                # For filesystems without folder concept s3 bucket, blob storage,..
+                # we need to create an empty file to create a  "folder".
+                # See also https://github.com/fsspec/s3fs/issues/245
+                temp_file = os.path.join(path, 'empty.txt')
+                fm.fs.touch(temp_file)
+            except:
+                res = fm.mkdirs(path, exist_ok=False)
             dbm.close_session()
             return 'success', 200 
