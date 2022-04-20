@@ -141,10 +141,10 @@ const AnnoTaskModal = (props) => {
                         <Datatable
                             data={dataTableData}
                             columns={[
-                                {
-                                    Header: 'ID',
-                                    accessor: 'idx',
-                                },
+                                // {
+                                //     Header: 'ID',
+                                //     accessor: 'idx',
+                                // },
                                 {
                                     Header: 'Name',
                                     accessor: 'name',
