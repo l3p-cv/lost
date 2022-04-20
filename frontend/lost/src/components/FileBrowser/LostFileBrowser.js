@@ -99,7 +99,6 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         switch (data.id) {
             case ChonkyActions.OpenFiles.id:
                 if (data) {
-                    console.log('OpenFiles: ', data.payload.targetFile.id)
                     ls(fs, data.payload.targetFile.id)
                     setSelectedPath(data.payload.targetFile.id)
                     setSelectedDir(data.payload.targetFile.id)
@@ -122,8 +121,20 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
                 mkDir({ fs, path: selectedDir, name: folderName })
                 break
             case ChonkyActions.DeleteFiles.id:
-                // const folderName = prompt('Provide the name for your new folder:')
-                deleteFiles({ fs, files: data.state.selectedFiles })
+                Notification.showDecision({
+                    title: 'Do you really want to delete the selected files ?',
+                    option1: {
+                        text: 'YES',
+                        callback: () => {
+                            deleteFiles({ fs, files: data.state.selectedFiles })
+                        },
+                    },
+                    option2: {
+                        text: 'NO!',
+                        callback: () => {},
+                    },
+                })
+
                 break
 
             default:
