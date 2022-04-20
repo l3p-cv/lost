@@ -2,7 +2,6 @@ from datetime import date, datetime, timedelta
 import flask
 from lost.db.dtype import TwoDAnno
 
-
 class DesignerStats():
     def __init__(self, dbm, user_id):
         self.dbm = dbm

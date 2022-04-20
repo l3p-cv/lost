@@ -223,3 +223,31 @@ class FullFs(Resource):
                     }
             else:
                 return "You need to be the owner of this datasource in order to decrypt the connection string", 401
+@namespace.route('/upload')
+class Upload(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            # try:
+                # check if user is permitted to upload files to that datasource !
+                # fm = AppFileMan(LOST_CONFIG)
+            data = request.form
+            uploaded_files = request.files.getlist("file[]")
+            for file in uploaded_files:
+                pass
+            fsId = data['fsId'] 
+            path = data['path']
+
+ 
+            dbm.close_session() 
+            return "success", 200 
+            # except:
+                # dbm.close_session()
+                # return "error", 200
+            
