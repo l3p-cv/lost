@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import Datatable from '../../components/Datatable'
 import IconButton from '../../components/IconButton'
-import { faUserPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import BaseModal from '../../components/BaseModal'
+import {
+    faUserPlus,
+    faEdit,
+    faTrash,
+    faFolderOpen,
+    faTimes,
+    faSave,
+} from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
 import * as Notification from '../../components/Notification'
+import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 // import { deleteFs } from '../../access/fb'
 import * as fbAPI from '../../actions/fb/fb_api'
 import { CBadge } from '@coreui/react'
@@ -12,9 +21,17 @@ export const DSTable = ({ visLevel }) => {
     const [isNewDS, setIsNewDS] = useState(false)
     // const [fsList, setFSList] = useState([])
     // const [possibleFsTypes, setPossibleFsTypes] = useState([])
+    const [browseOpen, setBrowseOpen] = useState(false)
+    const [fs, setFs] = useState()
     const { mutate: getFSListNew, data: fsList } = fbAPI.useGetFSList()
-    const { mutate: getPossibleFsTypes, data: possibleFsTypes } = fbAPI.useGetPossibleFsTypes()
-    const { mutate: deleteFs, status: deleteStatus, error: deleteErrorData} = fbAPI.useDeleteFs()
+    const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
+    const { mutate: getPossibleFsTypes, data: possibleFsTypes } =
+        fbAPI.useGetPossibleFsTypes()
+    const {
+        mutate: deleteFs,
+        status: deleteStatus,
+        error: deleteErrorData,
+    } = fbAPI.useDeleteFs()
 
     function fetchData() {
         // setFSList(await getFSList(visLevel))
@@ -35,10 +52,10 @@ export const DSTable = ({ visLevel }) => {
 
     useEffect(() => {
         console.log('deleteStatus', deleteStatus)
-        if (deleteStatus === 'success'){
+        if (deleteStatus === 'success') {
             fetchData()
             Notification.showSuccess('Deletion successfull!')
-        } else if (deleteStatus === 'error'){
+        } else if (deleteStatus === 'error') {
             Notification.showError(`Error while deleting Datasource!\n${deleteErrorData}`)
         }
     }, [deleteStatus])
@@ -127,8 +144,34 @@ export const DSTable = ({ visLevel }) => {
         })
     }
 
+    const onOpenFileBrowser = (row) => {
+        console.log(row.id)
+        const fs = {
+            id: row.id,
+        }
+        getFullFs(fs)
+        setBrowseOpen(true)
+    }
     return (
         <div>
+            <BaseModal
+                isOpen={browseOpen}
+                title="Browse Files"
+                toggle={() => setBrowseOpen(!browseOpen)}
+                // onClosed={onClosed}
+                footer={
+                    <>
+                        <IconButton
+                            icon={faTimes}
+                            color="success"
+                            text="Close"
+                            onClick={() => setBrowseOpen(false)}
+                        />
+                    </>
+                }
+            >
+                {fullFs ? <LostFileBrowser fs={fullFs} mode="lsTest" /> : ''}
+            </BaseModal>
             {isDsEditOpenView && (
                 <EditDSModal
                     isNewDs={isNewDS}
@@ -180,6 +223,25 @@ export const DSTable = ({ visLevel }) => {
                         },
                     },
                     {
+                        Header: 'Delete',
+                        id: 'delete',
+                        accessor: (row) => {
+                            return (
+                                <IconButton
+                                    icon={faTrash}
+                                    color="danger"
+                                    onClick={() => onDeleteDs(row)}
+                                    disabled={
+                                        row.groupId === null
+                                            ? visLevel !== 'global'
+                                            : false
+                                    }
+                                    text="Delete"
+                                />
+                            )
+                        },
+                    },
+                    {
                         Header: 'Edit',
                         id: 'edit',
                         accessor: (row) => {
@@ -200,20 +262,21 @@ export const DSTable = ({ visLevel }) => {
                         },
                     },
                     {
-                        Header: 'Delete',
-                        id: 'delete',
+                        Header: 'Browse',
+                        id: 'browse',
                         accessor: (row) => {
                             return (
                                 <IconButton
-                                    icon={faTrash}
-                                    color="danger"
-                                    onClick={() => onDeleteDs(row)}
+                                    icon={faFolderOpen}
+                                    color="primary"
+                                    onClick={() => onOpenFileBrowser(row)}
                                     disabled={
                                         row.groupId === null
                                             ? visLevel !== 'global'
                                             : false
                                     }
-                                    text="Delete"
+                                    text="Browse"
+                                    // isOutline={false}
                                 />
                             )
                         },
