@@ -38,7 +38,7 @@ app.config['MAIL_USE_TLS'] = settings.MAIL_USE_TLS
 app.config['MAIL_USERNAME'] = settings.MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = settings.MAIL_PASSWORD
 app.config['MAIL_DEFAULT_SENDER'] = settings.MAIL_DEFAULT_SENDER
-app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024    # 100 Mb limit
+app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024    # 1024 Mb limit
 mail = None
 if settings.LOST_CONFIG.send_mail:
     try:
