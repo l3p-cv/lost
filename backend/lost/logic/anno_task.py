@@ -94,8 +94,8 @@ def set_finished(dbm, anno_task_id):
             return "not finished, remaining: " + str(progress['remainingAnnos'])
 
 def get_current_annotask(dbm, user):
-        if user.choosen_anno_task:
-            anno_task = user.choosen_anno_task
+        if len(user.choosen_anno_tasks) > 0:
+            anno_task = user.choosen_anno_tasks[0].anno_task
             return __get_at_info(dbm, anno_task, user.idx, True)
         return None
 

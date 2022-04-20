@@ -1039,7 +1039,6 @@ class DBMan(object):
                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
                 WHERE pipe.manager_id = {} {}".format(user_id, between_str)
-        print(sql)
         return self.session.execute(sql)
     
     def get_processed_anno_tasks_in_time_by_designer(self, user_id, start, end, group_by='day'):

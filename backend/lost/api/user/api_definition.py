@@ -17,16 +17,25 @@ class Groups(fields.Raw):
         for v in value:
             groups.append({
                 'idx': v.group.idx,
-                'name': v.group.name
+                'name': v.group.name,
+                'isUserDefault': v.group.is_user_default
             })
         return groups
 
+class DefaultGroupId(fields.Raw):
+    def format(self, value):
+        for v in value:
+            if v.group.is_user_default:
+                return v.group.idx
+        return None
+    
 user_role = api.model('User Role', {
     'idx': fields.Integer(readOnly=True, description='The identifier of the Role'),
     'name': fields.String(description='Name of the Role')
 })
 user = api.model('User', {
     'idx': fields.Integer(readOnly=True, description='The identifier of the user'),
+    'default_group_id': DefaultGroupId(attribute='groups'),
     'is_active': fields.Boolean(description="Online Status of the user"),
     'user_name': fields.String(required=True, description='User name'),
     'email': fields.String(required=True, description='User email'),

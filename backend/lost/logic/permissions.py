@@ -26,9 +26,9 @@ class UserPermissions(object):
         if self.user.has_role(roles.ADMINISTRATOR): 
             return True
         else:
-            anno_task = self.user.choosen_anno_task
+            anno_task = self.user.choosen_anno_tasks[0].anno_task
             for rll in anno_task.req_label_leaves:
                 if self.is_users_default_group(rll.label_leaf.group_id):
                     return True
             return False
-    
+     

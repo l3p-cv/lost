@@ -109,7 +109,23 @@ class UserList(Resource):
                 'message': 'success'
             }, 200
          
-
+@namespace.route('/anno_task_user')
+@api.doc(description='User Api get method for anno task users.')
+class UserListAnnoTask(Resource):
+    @api.marshal_with(user_list)
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            users = dbm.get_users()
+            dbm.close_session()
+            ulist = {'users':users}
+            return ulist 
 
 @namespace.route('/<int:id>')
 @namespace.param('id', 'The user identifier')
@@ -219,7 +235,7 @@ class User(Resource):
             return "User with ID '{}' not found.".format(id), 400
 
     
-
+ 
 @namespace.route('/self')
 class UserSelf(Resource):
     @api.marshal_with(user)
