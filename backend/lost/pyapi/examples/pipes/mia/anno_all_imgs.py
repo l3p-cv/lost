@@ -2,20 +2,39 @@ from lost.pyapi import script
 import os
 
 ENVS = ['lost']
-
+ARGUMENTS = {'recursive' : { 'value': 'true',
+                            'help': 'Walk recursive through folder structure'},
+            'valid_imgtypes' : { 'value': "['.jpg', '.jpeg', '.png', '.bmp']",
+                            'help': 'Img types where annotations will be requested for!'}
+            }
 class LostScript(script.Script):
-    '''This Script requests image annotations for each image of an imageset.
+    '''Request annotations for each image of an imageset.
 
     An imageset is basicly a folder with images.
     '''
+
+    def check_and_request(self, fm, path):
+        if fm.fs.isfile(path):
+            if os.path.splitext(path)[1].lower() in self.get_arg('valid_imgtypes'):
+                self.outp.request_annos(img_path=path, fm=fm)
+                self.logger.info('Requested annos for: {}'.format(path))
+            else:
+                self.logger.warning(f'{path} no valid img file!')
+        else:
+            self.logger.warning(f'{path} is no valid file!')
+        
     def main(self):
-        self.logger.info("Request image annotations for:")
         for ds in self.inp.datasources:
             media_path = ds.path
             fm = ds.get_fm()
-            for img_path in fm.fs.ls(media_path):
-                self.outp.request_image_anno(img_path=img_path, fm=fm)
-                self.logger.debug(img_path)
+            if self.get_arg('recursive'):
+                for root, dirs, files in fm.fs.walk(media_path):
+                    for f in files:
+                        path = os.path.join(root, f)
+                        self.check_and_request(fm, path)
+            else:
+                for img_path in fm.fs.ls(media_path):
+                    self.check_and_request(fm, img_path)
 
 if __name__ == "__main__":
-    my_script = LostScript()
+    my_script = LostScript() 

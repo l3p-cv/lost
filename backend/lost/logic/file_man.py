@@ -266,8 +266,50 @@ class FileMan(object):
         #     return path
 
     def ls(self, path, detail=False):
+        '''Perform ls command for current filesystem
+        
+        Args:
+            path (str): Filesystem path
+            detail (bool): Return details for each entry in list
+        
+        Returns:
+            List of strings if detail is False, or list of dicts with detailed 
+            information
+
+        Note:
+            See fsspec docs for further information.
+        '''
         abs_path = self.get_abs_path(path)
         return self.fs.ls(abs_path, detail=detail)
+
+    def rm(self, path, recursive=False):
+        '''Delete files
+        
+        Args:
+            path (str): The path to delete
+            recursive (bool): If file(s) are directories, recursively delete 
+                contents and then also remove the directory
+        Note:
+            See fsspec docs for further information.
+        '''
+        abs_path = self.get_abs_path(path)
+        return self.fs.rm(abs_path, recursive=recursive)
+
+    def mkdirs(self, path, exist_ok=False):
+        '''Recursively make directories
+
+        Creates directory at path and any intervening required directories. 
+        Raises exception if, for instance, the path already exists but is a file.
+
+        Args:
+            path (str): Dir to create
+            exist_ok (bool): If False, an exception will be thrown if dir already
+                exists.
+        Note:
+            See fsspec docs for further information.
+        '''
+        abs_path = self.get_abs_path(path)
+        return self.fs.mkdirs(abs_path, exist_ok=exist_ok)
 
     def make_path_relative(self, in_path):
         '''Make a path relative to project root path.
