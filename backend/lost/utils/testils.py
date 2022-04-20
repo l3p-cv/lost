@@ -22,10 +22,11 @@ def get_user(dbm):
                 first_name= 'Test',
                 last_name='User'
             )
-        user.groups.append(model.Group(name=user.user_name, 
-                            is_user_default=True))
-        dbm.add(user)
-        dbm.commit()
+        dbm.save_obj(user)
+        g = model.Group(name=user.user_name, is_user_default=True)
+        dbm.save_obj(g)
+        ug = model.UserGroups(group_id=g.idx,user_id=user.idx)
+        dbm.save_obj(ug)
     return user
 
 def delete_user(dbm, user):
