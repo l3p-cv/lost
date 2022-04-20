@@ -25,7 +25,7 @@ class Available(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            group_ids = [g.idx for g in user.groups]
+            group_ids = [g.group.idx for g in user.groups]
             annotask_list = annotask_service.get_available_annotasks(dbm, group_ids, identity)
             dbm.close_session()
             import json
