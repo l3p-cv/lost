@@ -29,6 +29,12 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         error: deleteFilesErrorData,
     } = fb_api.useDeleteFiles()
 
+    const {
+        mutate: mkDir,
+        status: mkDirStatus,
+        error: mkDirErrorData,
+    } = fb_api.useMkDir()
+
     useEffect(() => {
         setChonkyDefaults({ iconComponent: ChonkyIconFA })
     }, [])
@@ -70,6 +76,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         if (uploadFilesData.isSuccess) {
             setCopiedAcceptedFiles([])
             Notification.showSuccess('Upload succeeded.')
+            ls(fs, selectedDir)
         }
         if (uploadFilesData.isSuccess === false) {
             Notification.showError('Upload failed.')
@@ -81,6 +88,12 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
             ls(fs, selectedDir)
         }
     }, [deleteFilesStatus])
+
+    useEffect(() => {
+        if (mkDirStatus === 'success') {
+            ls(fs, selectedDir)
+        }
+    }, [mkDirStatus])
 
     const handleFileAction = (data) => {
         switch (data.id) {
@@ -106,11 +119,11 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
             case ChonkyActions.CreateFolder.id:
                 const folderName = prompt('Provide the name for your new folder:')
                 console.log('CREATE FOLDER:', folderName)
+                mkDir({ fs, path: selectedDir, name: folderName })
                 break
             case ChonkyActions.DeleteFiles.id:
                 // const folderName = prompt('Provide the name for your new folder:')
                 deleteFiles({ fs, files: data.state.selectedFiles })
-                console.log('Delete files:', data.state.selectedFiles)
                 break
 
             default:

@@ -287,6 +287,10 @@ class MkDirs(Resource):
             fs_db = dbm.get_fs(fs_id=fs_id)
             fm = FileMan(fs_db=fs_db)
             path = data['path']
-            res = fm.mkdirs(path, exist_ok=False)
+            commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
+            if commonprefix != fs_db.root_path:
+                path = fs_db.root_path
+            name = data['name']
+            res = fm.mkdirs(os.path.join(path, name), exist_ok=False)
             dbm.close_session()
             return 'success', 200 

@@ -94,3 +94,11 @@ export const useDeleteFiles = () => {
         axios.post(API_URL + '/fb/rm', { fsId: fs.id, files }).then((res) => res.data),
     )
 }
+
+export const useMkDir = () => {
+    return useMutation(({ fs, path, name }) =>
+        axios
+            .post(API_URL + '/fb/mkdirs', { fsId: fs.id, path, name })
+            .then((res) => res.data),
+    )
+}
