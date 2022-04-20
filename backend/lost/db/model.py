@@ -804,7 +804,7 @@ class ImageAnno(Base):
             'img_frame_n': self.frame_n,
             # 'img_video_path': self.video_path,
             'img_path': self.img_path,
-            'abs_path': os.path.join(self.fs.root_path, self.img_path),
+            'abs_path': self.abs_path,
             # 'img_result_id': self.result_id,
             'img_iteration': self.iteration,
             'img_user_id': self.user_id,
