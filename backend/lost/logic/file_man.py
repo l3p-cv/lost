@@ -226,6 +226,10 @@ class FileMan(object):
             arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
             img = cv2.imdecode(arr, color)
         return img
+
+    def write_file_stream(self, stream, path, option='wb'):
+        with open(path, option) as f:
+            f.write(stream.read())
         
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.root_path, PIPE_LOG_PATH)

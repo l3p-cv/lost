@@ -258,20 +258,16 @@ class Upload(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            # try:
-                # check if user is permitted to upload files to that datasource !
-                # fm = AppFileMan(LOST_CONFIG)
+            # TODO: Check if user is permitted to upload files to that datasource !
             data = request.form
-            uploaded_files = request.files.getlist("file[]")
-            for file in uploaded_files:
-                pass
             fsId = data['fsId'] 
             path = data['path']
-
- 
+            fs_db = dbm.get_fs(fs_id=fsId)
+            fm = FileMan(fs_db=fs_db)
+            uploaded_files = request.files.getlist("file[]")
+            for file in uploaded_files:
+                dst_path = os.path.join(path, file.filename)
+                # fm.fs.touch(dst_path)
+                fm.write_file_stream(file.stream, dst_path, 'wb')
             dbm.close_session() 
             return "success", 200 
-            # except:
-                # dbm.close_session()
-                # return "error", 200
-            
