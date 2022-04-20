@@ -41,8 +41,12 @@ class User(Base, UserMixin):
     first_name = Column(String(100), server_default='')
     last_name = Column(String(100),  server_default='')
 
-    roles = relationship('Role', secondary='user_roles', lazy='joined')
-    groups = relationship('Group', secondary='user_groups', lazy='joined')
+    # roles = relationship('Role', secondary='user_roles', lazy='joined')
+    # groups = relationship('Group', secondary='user_groups', lazy='joined')
+
+    roles = relationship('UserRoles', back_populates='user', lazy='joined')
+    groups = relationship('UserGroups', back_populates='user', lazy='joined')
+
     choosen_anno_task = relationship(
         'AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
 
@@ -71,11 +75,13 @@ class User(Base, UserMixin):
     def has_role(self, role):
         role_names = []
         for r in self.roles:
-            role_names.append(r.name)
+            role_names.append(r.role.name)
         if role in role_names:
             return True
         else:
             return False
+
+
 
 
 # Define the Role data-model
@@ -83,17 +89,17 @@ class Role(Base):
     __tablename__ = 'role'
     idx = Column(Integer(), primary_key=True)
     name = Column(String(50), unique=True)
+    users = relationship("UserRoles", back_populates="role", lazy='joined')
 
 # Define the UserRoles association table
-
 
 class UserRoles(Base):
     __tablename__ = 'user_roles'
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     role_id = Column(Integer(), ForeignKey('role.idx', ondelete='CASCADE'))
-    role = relationship('Role', uselist=False)
-
+    role = relationship("Role", back_populates="users", lazy='joined')
+    user = relationship("User", back_populates="roles", lazy='joined')
 
 class Group(Base):
     __tablename__ = 'group'
@@ -101,7 +107,7 @@ class Group(Base):
     name = Column(String(50), unique=True)
     manager_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     is_user_default = Column(Boolean(), nullable=False, server_default='0')
-    users = relationship("User", secondary="user_groups")
+    users = relationship("UserGroups", back_populates="group", lazy='joined')
 
 
 class UserGroups(Base):
@@ -109,7 +115,9 @@ class UserGroups(Base):
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     group_id = Column(Integer(), ForeignKey('group.idx', ondelete='CASCADE'))
-    group = relationship('Group', uselist=False)
+    group = relationship("Group", back_populates="users", lazy='joined')
+    user = relationship("User", back_populates="groups", lazy='joined')
+
 
 
 class TwoDAnno(Base):

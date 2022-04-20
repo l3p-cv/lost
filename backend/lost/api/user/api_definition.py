@@ -1,7 +1,25 @@
 from flask_restx import fields
 
 from lost.api.api import api
-from lost.api.group.api_definition import group
+
+class Roles(fields.Raw):
+    def format(self, value):
+        roles = []
+        for v in value:
+            roles.append({
+                'idx': v.role.idx,
+                'name': v.role.name
+            })
+        return roles
+class Groups(fields.Raw):
+    def format(self, value):
+        groups = []
+        for v in value:
+            groups.append({
+                'idx': v.group.idx,
+                'name': v.group.name
+            })
+        return groups
 
 user_role = api.model('User Role', {
     'idx': fields.Integer(readOnly=True, description='The identifier of the Role'),
@@ -17,9 +35,10 @@ user = api.model('User', {
     'last_name': fields.String(required=True, description='User last name'),
     'confidence_level': fields.Integer(description='Confidence level of user'),
     'photo_path': fields.String(description='Path to user avatar'),
+    'apiToken': fields.String(description='API Token for permanent access', attribute='api_token'),
     'new_password': fields.String(required=True, description='User password'),
-    'groups': fields.List(fields.Nested(group)), 
-    'roles': fields.List(fields.Nested(user_role)),
+    'groups': Groups(), 
+    'roles': Roles(),
     'is_external': fields.Boolean(description="User inherited from external user managament"), 
     # 'choosen_anno_task': fields.Raw()
 })
