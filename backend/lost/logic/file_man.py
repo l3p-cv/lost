@@ -44,7 +44,6 @@ def chonkyfy(fs_list, root, fs):
                 'name': head 
             })
     for el in fs_list:
-        print(el) 
         res = {
             'id':el['name'],
             'name':os.path.basename(el['name'])

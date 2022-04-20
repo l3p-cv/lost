@@ -1,10 +1,11 @@
 import os
 from os.path import join
+from unicodedata import name
 from lost.db import access
 import lostconfig as config
 from lost.logic import file_man
 from lost.db import roles
-from lost.db.model import User, Role, Group
+from lost.db.model import User, Role, Group, UserGroups, UserRoles
 from lost.db import model
 import json
 from datetime import datetime
@@ -20,10 +21,22 @@ def main():
     # Create Tables
     dbm = access.DBMan(lostconfig)
     dbm.create_database()
+    create_roles(dbm)
     create_first_user(dbm)
     create_lost_filesystem_entry(dbm, lostconfig)
     create_project_config(dbm)
     dbm.close_session()
+
+def create_roles(dbm):
+    if not dbm.get_role_by_name(roles.ADMINISTRATOR):
+        role = Role(name=roles.ADMINISTRATOR)
+        dbm.save_obj(role)
+    if not dbm.get_role_by_name(roles.DESIGNER):
+        role = Role(name=roles.DESIGNER)
+        dbm.save_obj(role)
+    if not dbm.get_role_by_name(roles.ANNOTATOR):
+        role = Role(name=roles.ANNOTATOR)
+        dbm.save_obj(role)
 
 def create_first_user(dbm): 
     if not dbm.find_user_by_user_name('admin'):
@@ -35,11 +48,23 @@ def create_first_user(dbm):
             first_name= 'LOST',
             last_name='Admin'
         )
-        user.roles.append(Role(name=roles.ADMINISTRATOR))
-        user.roles.append(Role(name=roles.DESIGNER))
-        user.roles.append(Role(name=roles.ANNOTATOR))
-        user.groups.append(Group(name=user.user_name, is_user_default=True))
         dbm.save_obj(user)
+        # create user's default group
+        g = Group(name=user.user_name, is_user_default=True)
+        dbm.save_obj(g)
+        ug = UserGroups(group_id=g.idx,user_id=user.idx)
+        dbm.save_obj(ug)
+
+        # add all roles to admin
+        role = dbm.get_role_by_name(roles.ADMINISTRATOR)
+        ur = UserRoles(user_id=user.idx, role_id=role.idx)
+        dbm.save_obj(ur)
+        role = dbm.get_role_by_name(roles.DESIGNER)
+        ur = UserRoles(user_id=user.idx, role_id=role.idx)
+        dbm.save_obj(ur)
+        role = dbm.get_role_by_name(roles.ANNOTATOR)
+        ur = UserRoles(user_id=user.idx, role_id=role.idx)
+        dbm.save_obj(ur)
 
 def create_lost_filesystem_entry(dbm, lostconfig):
     lost_fs = dbm.get_fs('lost_data')
