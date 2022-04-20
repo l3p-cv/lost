@@ -20,6 +20,7 @@ import { saveAs } from 'file-saver'
 import { useHistory } from 'react-router-dom'
 import actions from '../../../../../../actions'
 import IconButton from '../../../../../../components/IconButton'
+import * as userApi from '../../../../../../actions/user/user_api'
 
 // function download(filename, text) {
 //     var element = document.createElement('a');
@@ -77,17 +78,17 @@ function handleChangeUser(props, groupId) {
 
 const AnnoTaskModal = (props) => {
     const dispatch = useDispatch()
-    const users = useSelector((state) => state.user.users)
+    const { data: users } = userApi.useAnnotaskUser()
+    // const users = useSelector((state) => state.user.users)
     const groups = useSelector((state) => state.group.groups)
     const hist = useHistory()
     useEffect(() => {
-        dispatch(actions.getUsers())
+        // dispatch(actions.getUsers())
         dispatch(actions.getGroups())
     }, [])
-
     const dataTableData = [
         ...users.map((user) => ({
-            idx: user.idx,
+            idx: user.default_group_id,
             rawName: user.user_name,
             name: `${user.user_name} (user)`,
         })),
@@ -140,10 +141,10 @@ const AnnoTaskModal = (props) => {
                         <Datatable
                             data={dataTableData}
                             columns={[
-                                {
-                                    Header: 'ID',
-                                    accessor: 'idx',
-                                },
+                                // {
+                                //     Header: 'ID',
+                                //     accessor: 'idx',
+                                // },
                                 {
                                     Header: 'Name',
                                     accessor: 'name',

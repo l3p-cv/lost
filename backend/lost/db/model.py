@@ -41,10 +41,13 @@ class User(Base, UserMixin):
     first_name = Column(String(100), server_default='')
     last_name = Column(String(100),  server_default='')
 
-    roles = relationship('Role', secondary='user_roles', lazy='joined')
-    groups = relationship('Group', secondary='user_groups', lazy='joined')
-    choosen_anno_task = relationship(
-        'AnnoTask', secondary='choosen_anno_task', lazy='joined', uselist=False)
+    # roles = relationship('Role', secondary='user_roles', lazy='joined')
+    # groups = relationship('Group', secondary='user_groups', lazy='joined')
+
+    roles = relationship('UserRoles', back_populates='user', lazy='joined')
+    groups = relationship('UserGroups', back_populates='user', lazy='joined')
+
+    choosen_anno_tasks = relationship('ChoosenAnnoTask', back_populates='user', lazy='joined')
 
     api_token = Column(String(4096))
     is_external = Column(Boolean)
@@ -71,11 +74,13 @@ class User(Base, UserMixin):
     def has_role(self, role):
         role_names = []
         for r in self.roles:
-            role_names.append(r.name)
+            role_names.append(r.role.name)
         if role in role_names:
             return True
         else:
             return False
+
+
 
 
 # Define the Role data-model
@@ -83,17 +88,17 @@ class Role(Base):
     __tablename__ = 'role'
     idx = Column(Integer(), primary_key=True)
     name = Column(String(50), unique=True)
+    users = relationship("UserRoles", back_populates="role", lazy='joined')
 
 # Define the UserRoles association table
-
 
 class UserRoles(Base):
     __tablename__ = 'user_roles'
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     role_id = Column(Integer(), ForeignKey('role.idx', ondelete='CASCADE'))
-    role = relationship('Role', uselist=False)
-
+    role = relationship("Role", back_populates="users", lazy='joined')
+    user = relationship("User", back_populates="roles", lazy='joined')
 
 class Group(Base):
     __tablename__ = 'group'
@@ -101,7 +106,7 @@ class Group(Base):
     name = Column(String(50), unique=True)
     manager_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     is_user_default = Column(Boolean(), nullable=False, server_default='0')
-    users = relationship("User", secondary="user_groups")
+    users = relationship("UserGroups", back_populates="group", lazy='joined')
 
 
 class UserGroups(Base):
@@ -109,7 +114,9 @@ class UserGroups(Base):
     idx = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('user.idx', ondelete='CASCADE'))
     group_id = Column(Integer(), ForeignKey('group.idx', ondelete='CASCADE'))
-    group = relationship('Group', uselist=False)
+    group = relationship("Group", back_populates="users", lazy='joined')
+    user = relationship("User", back_populates="groups", lazy='joined')
+
 
 
 class TwoDAnno(Base):
@@ -1013,6 +1020,7 @@ class AnnoTask(Base):
     configuration = Column(Text)
     last_activity = Column(DateTime())
     last_annotator_id = Column(Integer, ForeignKey('user.idx'))
+    users = relationship("ChoosenAnnoTask", back_populates="anno_task", lazy='joined')
     last_annotator = relationship(
         "User", foreign_keys='AnnoTask.last_annotator_id', uselist=False)
     req_label_leaves = relationship('RequiredLabelLeaf')
@@ -1179,7 +1187,8 @@ class ChoosenAnnoTask(Base):
     idx = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.idx'), unique=True)
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
-    anno_task = relationship("AnnoTask")
+    anno_task = relationship("AnnoTask", back_populates="users", lazy='joined')
+    user = relationship("User", back_populates="choosen_anno_tasks", lazy='joined')
 
     def __init__(self, idx=None, user_id=None, anno_task_id=None):
         self.idx = idx
@@ -1240,11 +1249,13 @@ class PipeElement(Base):
                            secondaryjoin="PipeElement.idx==result_link.c.pe_out")
     result_in = relationship("Result", secondary="result_link",
                              primaryjoin="PipeElement.idx==result_link.c.pe_out",
-                             secondaryjoin="Result.idx==result_link.c.result_id")
+                             secondaryjoin="Result.idx==result_link.c.result_id",
+                             overlaps="pe_outs")
     result_out = relationship("Result", secondary="result_link",
                               primaryjoin="PipeElement.idx==result_link.c.pe_n",
-                              secondaryjoin="Result.idx==result_link.c.result_id")
-    anno_task = relationship("AnnoTask", uselist=False)
+                              secondaryjoin="Result.idx==result_link.c.result_id",
+                              overlaps="pe_outs,result_in")
+    anno_task = relationship("AnnoTask", uselist=False, overlaps="pipe_element")
     script = relationship("Script", uselist=False)
     iteration = Column(Integer)
     pipe_context = Column(String(4096))
@@ -1252,7 +1263,7 @@ class PipeElement(Base):
     arguments = Column(Text)
     loop = relationship(
         "Loop", foreign_keys='Loop.pipe_element_id', uselist=False)
-    pipe = relationship("Pipe", uselist=False)
+    pipe = relationship("Pipe", uselist=False, overlaps="pe_list")
     datasource = relationship('Datasource', uselist=False)
 
     def __init__(self, idx=None, state=None, dtype=None,
@@ -1291,13 +1302,13 @@ class Result(Base):
     timestamp = Column(DateTime())
     img_annos = relationship("ImageAnno")
     visual_outputs = relationship("VisualOutput")
-    data_exports = relationship("VisualOutput")
+    data_exports = relationship("VisualOutput", overlaps="visual_outputs")
 
     def __init__(self, timestamp=None, media_id=None):
         self.timestamp = timestamp
         self.media_id = media_id
 
-    def add_img_anno(self, img_anno):
+    def add_img_anno(self, img_anno): 
         '''Add a :class:`ImageAnno` to this result.
         '''
         self.img_annos.append(img_anno)
@@ -1398,7 +1409,7 @@ class ResultLink(Base):
     result_id = Column(Integer, ForeignKey('result.idx'))
     pe_n = Column(Integer, ForeignKey('pipe_element.idx'))
     pe_out = Column(Integer, ForeignKey('pipe_element.idx'))
-    result = relationship("Result", uselist=False)
+    result = relationship("Result", uselist=False, overlaps="result_in,result_out")
 
     def __init__(self, pe_n=None, pe_out=None, result_id=None):
         self.pe_n = pe_n
