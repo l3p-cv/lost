@@ -13,12 +13,11 @@ import * as fbaccess from '../../access/fb'
 import * as fb_api from '../../actions/fb/fb_api'
 
 const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
-    // Declare a new state variable, which we'll call "count"
-    const [count, setCount] = useState(0)
     const [files, setFiles] = useState([])
     const [folderChain, setFolderChain] = useState([])
     const [size, setSize] = useState(0)
     const [selectedPath, setSelectedPath] = useState('/')
+    const [copiedAccecptedFiles, setCopiedAcceptedFiles] = useState([])
     const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
         useDropzone({})
     const [uploadFilesData, uploadFiles, breakUpload] = fb_api.useUploadFiles()
@@ -37,6 +36,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         acceptedFiles.map((a) => {
             newSize += a.size
         })
+        setCopiedAcceptedFiles(acceptedFiles)
         setSize(newSize)
     }, [acceptedFiles])
 
@@ -57,9 +57,8 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
     }
 
     useEffect(() => {
-        console.log(uploadFilesData)
-
         if (uploadFilesData.isSuccess) {
+            setCopiedAcceptedFiles([])
             Notification.showSuccess('Upload succeeded.')
         }
         if (uploadFilesData.isSuccess === false) {
@@ -114,8 +113,6 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
             <CRow
                 style={{
                     marginTop: 10,
-                    // marginLeft: 1,
-                    // marginRight: 1,
                 }}
             >
                 <CCol sm="10">
@@ -148,10 +145,10 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
                             <b style={{ color: '#898989' }}>
                                 <ul>
                                     {' '}
-                                    {acceptedFiles.length > 0 ? (
-                                        <li key={acceptedFiles[0].path}>
-                                            {acceptedFiles.length} File
-                                            {acceptedFiles.length > 1 ? 's' : ''}
+                                    {copiedAccecptedFiles.length > 0 ? (
+                                        <li key={copiedAccecptedFiles[0].path}>
+                                            {copiedAccecptedFiles.length} File
+                                            {copiedAccecptedFiles.length > 1 ? 's' : ''}
                                             {' - '}
                                             {Number((size / 1024 / 1024).toFixed(2))}{' '}
                                             MBytes
@@ -170,18 +167,25 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
                         icon={faUpload}
                         color={'primary'}
                         text={'Upload'}
-                        disabled={acceptedFiles.length === 0 || fs === undefined}
+                        disabled={copiedAccecptedFiles.length === 0 || fs === undefined}
                         onClick={
                             fs
                                 ? () =>
                                       uploadFiles({
-                                          files: acceptedFiles,
+                                          files: copiedAccecptedFiles,
                                           fsId: fs.id,
                                           path: selectedPath,
                                       })
                                 : ''
                         }
                     />
+                    <div style={{ marginTop: 10 }}>
+                        {uploadFilesData.progress
+                            ? `Progress: ${Number(uploadFilesData.progress * 100).toFixed(
+                                  2,
+                              )}%`
+                            : ''}
+                    </div>
                 </CCol>
             </CRow>
         </>
