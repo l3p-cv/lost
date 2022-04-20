@@ -271,31 +271,6 @@ class Upload(Resource):
                     fs_stream.write(file.read())
             dbm.close_session() 
             return "success", 200 
-
-@namespace.route('/rm')
-class RM(Resource):
-    @jwt_required 
-    def post(self):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        else:
-            # TODO: Permitted to rm?
-            data = json.loads(request.data)
-            fs_db = dbm.get_fs(fs_id=data['fs']['id'])
-            fm = FileMan(fs_db=fs_db)
-            recursive = False
-            if 'recursive' in data:
-                if data['recursive']:
-                    recursive = True
-            path = data['path']
-            res = fm.rm(path, recursive)
-            dbm.close_session()
-            return 'success', 200 
-
 @namespace.route('/mkdirs')
 class MkDirs(Resource):
     @jwt_required 
