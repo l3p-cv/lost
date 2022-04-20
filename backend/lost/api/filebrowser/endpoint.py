@@ -267,7 +267,7 @@ class Upload(Resource):
             uploaded_files = request.files.getlist("file[]")
             for file in uploaded_files:
                 dst_path = os.path.join(path, file.filename)
-                # fm.fs.touch(dst_path)
-                fm.write_file_stream(file.stream, dst_path, 'wb')
+                with fm.fs.open(dst_path, 'wb') as fs_stream:
+                    fs_stream.write(file.read())
             dbm.close_session() 
             return "success", 200 
