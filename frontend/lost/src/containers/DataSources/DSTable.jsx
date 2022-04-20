@@ -170,7 +170,7 @@ export const DSTable = ({ visLevel }) => {
                     </>
                 }
             >
-                {fullFs ? <LostFileBrowser fs={fullFs} mode="lsTest" /> : ''}
+                {fullFs ? <LostFileBrowser fs={fullFs} /> : ''}
             </BaseModal>
             {isDsEditOpenView && (
                 <EditDSModal
