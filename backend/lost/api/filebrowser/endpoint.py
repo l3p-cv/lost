@@ -257,20 +257,36 @@ class Upload(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            # try:
-                # check if user is permitted to upload files to that datasource !
-                # fm = AppFileMan(LOST_CONFIG)
+            # TODO: Check if user is permitted to upload files to that datasource !
             data = request.form
-            uploaded_files = request.files.getlist("file[]")
-            for file in uploaded_files:
-                pass
             fsId = data['fsId'] 
             path = data['path']
-
- 
+            fs_db = dbm.get_fs(fs_id=fsId)
+            fm = FileMan(fs_db=fs_db)
+            uploaded_files = request.files.getlist("file[]")
+            for file in uploaded_files:
+                dst_path = os.path.join(path, file.filename)
+                with fm.fs.open(dst_path, 'wb') as fs_stream:
+                    fs_stream.write(file.read())
             dbm.close_session() 
             return "success", 200 
-            # except:
-                # dbm.close_session()
-                # return "error", 200
-            
+@namespace.route('/mkdirs')
+class MkDirs(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            # TODO: Permitted to mkdirs?
+            data = json.loads(request.data)
+            fs_id = data['fsId']
+            fs_db = dbm.get_fs(fs_id=fs_id)
+            fm = FileMan(fs_db=fs_db)
+            path = data['path']
+            res = fm.mkdirs(path, exist_ok=False)
+            dbm.close_session()
+            return 'success', 200 

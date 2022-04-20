@@ -226,7 +226,7 @@ class FileMan(object):
             arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
             img = cv2.imdecode(arr, color)
         return img
-        
+
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.root_path, PIPE_LOG_PATH)
         if not self.fs.exists(base_path):
