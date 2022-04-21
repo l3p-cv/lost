@@ -288,11 +288,11 @@ class ScriptOutput(Output):
             raise Exception('One of the arguments need to be not None!')
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.VISUALIZATION:
-                if img_path is not None:
-                    rel_path = self._script.file_man.make_path_relative(img_path)
-                else:
-                    rel_path = None
-                vis_out = model.VisualOutput(img_path=rel_path,
+                # if img_path is not None:
+                #     rel_path = self._script.file_man.make_path_relative(img_path)
+                # else:
+                #     rel_path = None
+                vis_out = model.VisualOutput(img_path=img_path,
                                           html_string=html,
                                           result_id=self._result_map[pe.idx],
                                           iteration=self._script._pipe_element.iteration)
@@ -536,11 +536,10 @@ class ScriptOutput(Output):
                     img_sim_class = 1
             else:
                 img_sim_class = 1
-            rel_img_path = fm.make_path_relative(img_path)
+            # rel_img_path = fm.make_path_relative(img_path)
             anno_task_id = pe.anno_task.idx
             img_anno = model.ImageAnno(anno_task_id=anno_task_id,
-                                    img_path=rel_img_path,
-                                    abs_path=os.path.join(fm.root_path, rel_img_path),
+                                    img_path=img_path,
                                     state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
                                     iteration=self._script._pipe_element.iteration,
@@ -640,12 +639,9 @@ class ScriptOutput(Output):
             fs_db = self._script._dbm.get_fs(name='default')
             fs = DummyFileMan(fs_db)
             fm = file_man.FileMan(fs_db=fs.lost_fs)
-        rel_img_path = fm.make_path_relative(img_path)
-        abs_path = fm.get_abs_path(img_path)
-        if fm.fs.isfile(abs_path):
+        if fm.fs.isfile(img_path):
             img_anno = model.ImageAnno(anno_task_id=anno_task_id,
-                                    img_path=rel_img_path,
-                                    abs_path=abs_path,
+                                    img_path=img_path,
                                     state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
                                     iteration=self._script._pipe_element.iteration,
@@ -689,7 +685,7 @@ class ScriptOutput(Output):
                     anno.sim_class = 1
                 img_anno.twod_annos.append(anno)
         else:
-            self._script.logger.warning(f'Will ignore {abs_path} since it is not a file!')
+            self._script.logger.warning(f'Will ignore {img_path} since it is not a file!')
     
     def _lbl_name_to_id(self, lbl, lbl_map=None):
         if isinstance(lbl, str):

@@ -41,7 +41,7 @@ class Datasource(Element):
     @property
     def path(self):
         '''str: Relative path to file or folder'''
-        return self.file_man.get_abs_path(self.pe.datasource.selected_path)
+        return self.pe.datasource.selected_path
 
     def get_fs(self):
         '''Get filesystem for this datasource'''
@@ -204,7 +204,7 @@ class DataExport(Element):
         '''list of str: A list of absolute path to exported files'''
         path_list = []
         for export in self.data_exports:
-            path_list.append(self._fm.get_abs_path(export.file_path))
+            path_list.append(export.file_path)
         return path_list
 
     def to_dict(self):
@@ -218,7 +218,7 @@ class DataExport(Element):
             d_list.append(
                 {
                     'iteration': export.iteration,
-                    'file_path': self._fm.get_abs_path(export.file_path)
+                    'file_path': export.file_path
                 }
             )
         return d_list
@@ -247,7 +247,7 @@ class VisualOutput(Element):
         '''list of str: List of absolute paths to images.'''
         path_list = []
         for v_out in self.v_outs:
-            path_list.append(self._fm.get_abs_path(v_out.file_path))
+            path_list.append(v_out.file_path)
         return path_list
 
     @property
@@ -255,7 +255,7 @@ class VisualOutput(Element):
         '''list of str: list of html strings.'''
         path_list = []
         for v_out in self.v_outs:
-            path_list.append(self._fm.get_abs_path(v_out.file_path))
+            path_list.append(v_out.file_path)
         return path_list
 
     def to_dict(self):
@@ -270,7 +270,7 @@ class VisualOutput(Element):
             d_list.append(
                 {
                     'iteration': v_out.iteration,
-                    'img_path': self._fm.get_abs_path(v_out.img_path),
+                    'img_path': v_out.img_path,
                     'html_string': v_out.html_string
                 }
             )

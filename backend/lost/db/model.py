@@ -651,8 +651,7 @@ class ImageAnno(Base):
     Attributes:
         labels (list): The related :class:`Label` object.
         twod_annos (list): A list of :class:`TwoDAnno` objects.
-        img_path (str): Relative path (to fs.root_path) to image in related filesystem
-        abs_path (str): Absolute path to image in related filesystem
+        img_path (str): Abs path to image in file system
         frame_n (int): If this image is part of an video,
             frame_n indicates the frame number.
         video_path (str): If this image is part of an video,
@@ -685,7 +684,6 @@ class ImageAnno(Base):
     frame_n = Column(Integer)
     video_path = Column(String(4096))
     img_path = Column(String(4096))
-    abs_path = Column(String(4096))
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.idx'))
@@ -701,7 +699,7 @@ class ImageAnno(Base):
 
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
-                 sim_class=None, result_id=None, img_path=None, abs_path=None,
+                 sim_class=None, result_id=None, img_path=None,
                  frame_n=None,
                  video_path=None,
                  iteration=0, anno_time=None, is_junk=None,
@@ -713,7 +711,6 @@ class ImageAnno(Base):
         self.sim_class = sim_class
         self.result_id = result_id
         self.img_path = img_path
-        self.abs_path = abs_path
         self.video_path = video_path
         self.frame_n = frame_n
         self.iteration = iteration
@@ -811,7 +808,6 @@ class ImageAnno(Base):
             'img_frame_n': self.frame_n,
             # 'img_video_path': self.video_path,
             'img_path': self.img_path,
-            'abs_path': self.abs_path,
             # 'img_result_id': self.result_id,
             'img_iteration': self.iteration,
             'img_user_id': self.user_id,

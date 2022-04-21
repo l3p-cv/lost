@@ -190,7 +190,8 @@ class FileMan(object):
             color = cv2.IMREAD_COLOR
         else:
             color = cv2.IMREAD_GRAYSCALE
-        img_path = self.get_abs_path(path)
+        # img_path = self.get_abs_path(path)
+        img_path = path
         with self.fs.open(img_path, 'rb') as f:
             arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
             img = cv2.imdecode(arr, color)
@@ -202,33 +203,33 @@ class FileMan(object):
             self.fs.mkdirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
 
-    def get_rel_path(self, path):
-        '''Get relativ path for current project
+    # def get_rel_path(self, path):
+    #     '''Get relativ path for current project
 
-        Args:
-            path (str): A absolute path
+    #     Args:
+    #         path (str): A absolute path
 
-        Returns:
-            str : Relative path
-        '''
-        if os.path.isabs(path):
-            return self.make_path_relative(path)
-        else:
-            return path
+    #     Returns:
+    #         str : Relative path
+    #     '''
+    #     if os.path.isabs(path):
+    #         return self.make_path_relative(path)
+    #     else:
+    #         return path
 
-    def get_abs_path(self, path):
-        '''Get absolute path in current file system.
+    # def get_abs_path(self, path):
+    #     '''Get absolute path in current file system.
 
-        Args:
-            path (str): A relative path.
+    #     Args:
+    #         path (str): A relative path.
 
-        Returns:
-            str: Absolute path
-        '''
-        if path.startswith(self.root_path):
-            return path
-        else:
-            return os.path.join(self.root_path, path)
+    #     Returns:
+    #         str: Absolute path
+    #     '''
+    #     if path.startswith(self.root_path):
+    #         return path
+    #     else:
+    #         return os.path.join(self.root_path, path)
 
     def ls(self, path, detail=False):
         '''Perform ls command for current filesystem
@@ -244,8 +245,7 @@ class FileMan(object):
         Note:
             See fsspec docs for further information.
         '''
-        abs_path = self.get_abs_path(path)
-        return self.fs.ls(abs_path, detail=detail)
+        return self.fs.ls(path, detail=detail)
 
     def rm(self, path, recursive=False):
         '''Delete files
@@ -257,8 +257,7 @@ class FileMan(object):
         Note:
             See fsspec docs for further information.
         '''
-        abs_path = self.get_abs_path(path)
-        return self.fs.rm(abs_path, recursive=recursive)
+        return self.fs.rm(path, recursive=recursive)
 
     def mkdirs(self, path, exist_ok=False):
         '''Recursively make directories
@@ -273,8 +272,7 @@ class FileMan(object):
         Note:
             See fsspec docs for further information.
         '''
-        abs_path = self.get_abs_path(path)
-        return self.fs.mkdirs(abs_path, exist_ok=exist_ok)
+        return self.fs.mkdirs(path, exist_ok=exist_ok)
 
     def make_path_relative(self, in_path):
         '''Make a path relative to project root path.

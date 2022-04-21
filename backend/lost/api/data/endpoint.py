@@ -144,7 +144,10 @@ class Logs(Resource):
 def load_img(db_img, fm, user):
     if LOST_CONFIG.worker_management != 'dynamic':
         # need to execute ls for s3fs (don't know why)
-        fm.fs.ls(db_img.img_path)
+        try:
+            fm.fs.ls(db_img.img_path)
+        except:
+            pass
         img = fm.load_img(db_img.img_path)
     else:
         img = dask_session.ds_man.read_fs_img(user, db_img.fs, db_img.img_path)

@@ -30,7 +30,7 @@ class LostScript(script.Script):
         # p_path = os.path.join(os.path.join(root_path, 'ds.parquet'))
         # csv_path = os.path.join(os.path.join(root_path, 'ds.csv'))
 
-        ds.df['img_path'] = ds.df['abs_path']
+        # ds.df['img_path'] = ds.df['abs_path']
 
         # with fs.open(root_path, 'wb') as f:
         #     zip_fs = ZipFileSystem(f, )

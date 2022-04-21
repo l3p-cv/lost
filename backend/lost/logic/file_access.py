@@ -32,7 +32,28 @@ class UserFileAccess(object):
         self.uid = user_id 
         if not isinstance(fs_db, model.FileSystem):
             raise Exception('fm needs to be a FileMan object!')
+        self.fs_db = fs_db
         self.fm = FileMan(fs_db=fs_db)
+        self.fs = self.fm.fs
 
     def get_media_path(self):
         return self.fm.get_media_path()
+
+    def get_pipe_log_path(self, pipe_id):
+        if self.uid != self.fs_db.user_default_id:
+            raise Exception('Can only be performed for user default file systems')
+        return self.fm.get_pipe_log_path(pipe_id)
+
+    def get_fs(self, name):
+        '''Get a filesystem by name
+        
+        Args:
+            name (str): Name of the filesystem
+
+        Returns:
+            Fsspec Filesystem
+        '''
+        #TODO: Check if user is permitted to access filesystem
+        fs_db = self.dbm.get_fs(name=name)
+        fm = FileMan(fs_db=fs_db)
+        return fm.fs
