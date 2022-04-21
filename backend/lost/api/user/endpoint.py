@@ -224,7 +224,6 @@ class User(Resource):
                         ug = UserGroups(user_id=requesteduser.idx, group_id=group.idx)
                         dbm.save_obj(ug)
             if args.get('password') and not requesteduser.is_external:
-                print(args.get('password')) 
                 requesteduser.set_password(args.get('password'))
 
             dbm.save_obj(requesteduser)
@@ -291,7 +290,6 @@ class UserLogoutRefresh(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         blacklist.add(jti)
-        print(blacklist)
         return {"msg": "Successfully logged out"}, 200
 
 @namespace.route('/refresh')

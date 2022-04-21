@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Personal statistics for annotator and designer roles
 - Statistics:
   - Designer statistics for designers - includes all annotation activities of the users of the designer's pipelines
+- Datasources:
+  - Allow to connect to external filesystems (azure blob storage, s3 bucket, ssh / sftp)
+  - Allow to upload and delete files via GUI
+  - Allow to create directories via GUI
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

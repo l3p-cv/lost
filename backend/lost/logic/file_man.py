@@ -42,6 +42,10 @@ def chonkyfy(fs_list, root, fs):
             'id':el['name'],
             'name':os.path.basename(el['name'])
         }
+        try:
+            res['modDate'] = el['LastModified'].strftime("%Y-%m-%d %H:%M:%S")
+        except:
+            pass
         if el['type'] == 'file':
             res['size'] = el['size']
         elif el['type'] == 'directory':
