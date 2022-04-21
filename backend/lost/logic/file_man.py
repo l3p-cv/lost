@@ -12,8 +12,6 @@ import numpy as np
 import cv2
 import ast
 from lost.logic.crypt import decrypt_fs_connection
-#import ptvsd
-
 
 DATA_ROOT_PATH = ""
 MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
@@ -50,9 +48,7 @@ def chonkyfy(fs_list, root, fs):
             res['size'] = el['size']
         elif el['type'] == 'directory':
             res['isDir'] = True
-            # raise Exception(el['name'])
             res['childrenCount'] = len(fs.ls(el['name']))
-            # res['childrenCount'] = 0
         else:
             raise Exception('Unknown file type')
         files.append(res)
@@ -75,8 +71,6 @@ class AppFileMan(object):
         user_upload_path = os.path.join(u_path,str(user_id))
         if not self.fs.exists(user_upload_path):
             self.fs.mkdirs(user_upload_path)
-        # if not self.fs.exists(u_path):
-        #     self.fs.mkdirs(u_path)
         return os.path.join(user_upload_path, file_name)
 
     def get_app_log_path(self, log_file_name):
@@ -137,28 +131,11 @@ class AppFileMan(object):
         i_path = join(root_path, DEBUG_ROOT_PATH)
         if not self.fs.exists(i_path):
             self.fs.mkdirs(i_path)
-        # task_path = join(i_path, str(pipe_element.task_id))
-        # if not self.fs.exists(task_path):
-        #     self.fs.mkdirs(task_path)
         pe_i_path = join(i_path, 'i-{}'.format(str(pipe_element.idx)))
         if not self.fs.exists(pe_i_path):
             self.fs.mkdirs(pe_i_path)
         return pe_i_path
 
-
-    # def create_debug_path(self, pipe_element):
-    #     root_path = self.lostconfig.app_path
-    #     debug_path = join(root_path, DEBUG_ROOT_PATH)
-    #     if not self.fs.exists(debug_path):
-    #         self.fs.mkdirs(debug_path)
-    #     task_path = join(debug_path, str(pipe_element.pipe_id))
-    #     if not self.fs.exists(task_path):
-    #         self.fs.mkdirs(task_path)
-    #     pe_i_path = join(task_path, str(pipe_element.idx))
-    #     if not self.fs.exists(pe_i_path):
-    #         self.fs.mkdirs(pe_i_path)
-    #     return pe_i_path
-    
     @property
     def pipe_path(self):
         '''Get path to store pipeline directories.
@@ -208,17 +185,6 @@ class FileMan(object):
             color = cv2.IMREAD_COLOR
         else:
             color = cv2.IMREAD_GRAYSCALE
-        # if not os.path.isabs(path):
-        #     img_path = self.get_abs_path(path)
-        #     with self.fs.open(img_path, 'rb') as f:
-        #         arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
-        #         img = cv2.imdecode(arr, color)
-        #     return img
-        # else:
-        #     with fsspec.open(path) as f:
-        #         arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
-        #         img = cv2.imdecode(arr, color)
-        #     return img
         img_path = self.get_abs_path(path)
         with self.fs.open(img_path, 'rb') as f:
             arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
@@ -258,10 +224,6 @@ class FileMan(object):
             return path
         else:
             return os.path.join(self.root_path, path)
-        # if not os.path.isabs(path):
-        #     return os.path.join(self.root_path, path)
-        # else:
-        #     return path
 
     def ls(self, path, detail=False):
         '''Perform ls command for current filesystem
@@ -379,8 +341,6 @@ class FileMan(object):
             return pipe_context
         else:
             raise Exception("No valid argument for pipe context path.")
-
-
         
     def create_instance_path(self, pipe_element):
         '''Create the instance path for a :class:`lost.db.models.PipeElement`
@@ -395,20 +355,10 @@ class FileMan(object):
         i_path = join(root_path, INSTANCE_ROOT_PATH)
         if not self.fs.exists(i_path):
             self.fs.mkdirs(i_path)
-        # task_path = join(i_path, str(pipe_element.task_id))
-        # if not self.fs.exists(task_path):
-        #     self.fs.mkdirs(task_path)
         pe_i_path = join(i_path, 'i-{}'.format(str(pipe_element.idx)))
         if not self.fs.exists(pe_i_path):
             self.fs.mkdirs(pe_i_path)
         return pe_i_path
-
-
-
-    # def get_debug_path(self, pipe_e):
-    #     return self.create_instance_path(pipe_e, debug=True)
-
-    
 
     def create_project_folders(self):
         '''Create folder structure for a project in lost webportal.
@@ -452,13 +402,10 @@ class FileMan(object):
             d = {'name': 'root'}
         else:
             d = {'name': os.path.basename(path)}
-        # if os.path.isdir(path):
         d['type'] = "directory"
         d['children'] = [
             {'name':os.path.basename(p), 'type':'directory'} for p in self.fs.ls(path)
-            ]#[path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
-        # else:
-        #     d['type'] = "file"
+            ]
         return d
     
     def get_sia_history_path(self, annotask):
