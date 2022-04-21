@@ -1718,9 +1718,14 @@ class FileSystem(Base):
         name (str): Name of the filesystem
         deleted (bool): Indicates wether this datasource was deleted by a user, 
             but needs to be keept for data consistency.
+        editable (bool): Indicates wether this datasource is editable by the user.
+        user_default_id (int): Id of the user who owns this filesystem as default 
+            filesystem
+        
     
     Note:
         group_id is None if this filesystem is available for all users!
+        user_default_id is None if this is not a default filesystem for any user!
 
     '''
     __tablename__ = "filesystem"
@@ -1732,9 +1737,13 @@ class FileSystem(Base):
     timestamp = Column(DateTime())
     name = Column(String(200))
     deleted = Column(Boolean())
+    editable = Column(Boolean())
+    user_default_id = Column(Integer)
 
     def __init__(self, group_id=None, connection=None,
-                 root_path=None, fs_type=None, name=None, timestamp=None, deleted=False):
+                 root_path=None, fs_type=None, name=None, 
+                 timestamp=None, deleted=False, editable=True, 
+                 user_default_id=None):
         self.group_id = group_id
         self.fs_type = fs_type
         self.connection = connection
@@ -1742,6 +1751,8 @@ class FileSystem(Base):
         self.name = name
         self.timestamp = timestamp
         self.deleted = deleted
+        self.editable = editable
+        self.user_default_id = user_default_id
 
 
 class Config(Base):

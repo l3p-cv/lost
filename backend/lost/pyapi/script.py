@@ -59,7 +59,7 @@ class Script(pe_base.Element):
             args = parser.parse_args()
         lostconfig = LOSTConfig()
         dbm = access.DBMan(lostconfig)
-        db_fs = dbm.get_fs(name='lost_data')
+        db_fs = dbm.get_fs(name='default')
         self.file_man = FileMan(fs_db=db_fs)
         self._dbm = dbm #type: lost.db.access.DBMan
         if pe_id is None:

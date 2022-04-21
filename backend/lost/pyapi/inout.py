@@ -463,11 +463,11 @@ class ScriptOutput(Output):
             if not fs_name:
                 if fm is not None:
                     return fm
-                fs_name = 'lost_data'
+                fs_name = 'default'
         else:
             if fm is not None:
                 return fm
-            fs_name = 'lost_data'
+            fs_name = 'default'
         if fs_name in fm_cache:
             return fm_cache[fs_name]
         else:
@@ -637,7 +637,7 @@ class ScriptOutput(Output):
         if video_path is not None:
             video_path = self._script.get_rel_path(video_path)
         if fm is None:
-            fs_db = self._script._dbm.get_fs(name='lost_data')
+            fs_db = self._script._dbm.get_fs(name='default')
             fs = DummyFileMan(fs_db)
             fm = file_man.FileMan(fs_db=fs.lost_fs)
         rel_img_path = fm.make_path_relative(img_path)

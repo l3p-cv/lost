@@ -10,6 +10,7 @@ from lost.db import model
 import json
 from datetime import datetime
 from lost.logic.project_config import ProjectConfigMan
+from lost.logic.file_access import create_user_default_fs
 
 def main():
     lostconfig = config.LOSTConfig()
@@ -22,8 +23,9 @@ def main():
     dbm = access.DBMan(lostconfig)
     dbm.create_database()
     create_roles(dbm)
-    create_first_user(dbm)
-    create_lost_filesystem_entry(dbm, lostconfig)
+    user, group = create_first_user(dbm)
+    create_lost_filesystem_entry(dbm, lostconfig, group.idx)
+    create_user_default_fs(dbm, user, group.idx)
     create_project_config(dbm)
     dbm.close_session()
 
@@ -65,20 +67,22 @@ def create_first_user(dbm):
         role = dbm.get_role_by_name(roles.ANNOTATOR)
         ur = UserRoles(user_id=user.idx, role_id=role.idx)
         dbm.save_obj(ur)
+        return user, g
 
-def create_lost_filesystem_entry(dbm, lostconfig):
-    lost_fs = dbm.get_fs('lost_data')
+def create_lost_filesystem_entry(dbm, lostconfig, admin_default_group):
+    lost_fs = dbm.get_fs('default')
     if lost_fs is None:
-        print('Create first FileSystem entry for lost_data in database')
+        print('Create first FileSystem entry for default in database')
         lost_fs = model.FileSystem(
             connection=json.dumps(lostconfig.data_fs_args),
-            name='lost_data',
+            name='default',
             root_path=lostconfig.data_path,
             timestamp=datetime.utcnow(),
-            fs_type=lostconfig.data_fs_type
+            fs_type=lostconfig.data_fs_type,
+            group_id=admin_default_group
         )
     else:
-        print('Update FileSystem entry for lost_data in database')
+        print('Update FileSystem entry for default fs in database')
         lost_fs.connection = json.dumps(lostconfig.data_fs_args)
         lost_fs.root_path = lostconfig.data_path
         lost_fs.fs_type = lostconfig.data_fs_type 

@@ -13,17 +13,16 @@ import cv2
 import ast
 from lost.logic.crypt import decrypt_fs_connection
 
-DATA_ROOT_PATH = ""
-MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
-PIPE_ROOT_PATH = DATA_ROOT_PATH + "pipes/"
-INSTANCE_ROOT_PATH = DATA_ROOT_PATH + "instance/"
-DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
-PACKED_PIPE_ROOT_PATH = DATA_ROOT_PATH + "packed_pipes/"
-SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
-SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
-PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
-APP_LOG_PATH = DATA_ROOT_PATH + "logs/"
-UPLOAD_PATH = DATA_ROOT_PATH + "uploads"
+MEDIA_ROOT_PATH = "media/"
+PIPE_ROOT_PATH = "pipes/"
+INSTANCE_ROOT_PATH = "instance/"
+DEBUG_ROOT_PATH = "debug/"
+PACKED_PIPE_ROOT_PATH = "packed_pipes/"
+SIA_HISTORY_PATH = "sia_history/"
+SIA_HISTORY_BACKUP_PATH = "sia_history/backup/"
+PIPE_LOG_PATH = "logs/pipes/"
+APP_LOG_PATH = "logs/"
+UPLOAD_PATH = "uploads"
 
 def chonkyfy(fs_list, root, fs):
     files, folder_chain = [], []
@@ -169,6 +168,12 @@ class FileMan(object):
             self.root_path = lostconfig.data_path
         else:
             raise Exception('Need either lostconifg or fs_db as argument!')
+
+    def get_media_path(self):
+        m_path = os.path.join(self.root_path, MEDIA_ROOT_PATH)
+        if not self.fs.exists(m_path):
+            self.fs.mkdirs(m_path)
+        return m_path
 
     def load_img(self, path, color_type='color'):
         '''Load image from filesystem
@@ -359,6 +364,17 @@ class FileMan(object):
         if not self.fs.exists(pe_i_path):
             self.fs.mkdirs(pe_i_path)
         return pe_i_path
+    
+    def create_root_path(self):
+        '''Create the root path of this file man
+
+        Returns:
+            str: The absolute created path
+        '''
+        root_path = self.root_path
+        if not self.fs.exists(root_path):
+            self.fs.mkdirs(root_path)
+        return root_path
 
     def create_project_folders(self):
         '''Create folder structure for a project in lost webportal.

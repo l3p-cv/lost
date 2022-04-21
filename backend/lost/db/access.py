@@ -769,6 +769,18 @@ class DBMan(object):
             return self.session.query(model.Worker)\
                 .filter(model.Worker.worker_name==worker_name).first()
 
+    def get_user_default_fs(self, user_idx):
+        '''Get user default filesystem 
+
+        Args:
+            user_idx (int): Id of the user who own this default filesystem
+        
+        Retruns:
+            `model.FileSystem` object: If one arg was given.
+        '''
+        return self.session.query(model.FileSystem)\
+            .filter(model.FileSystem.user_default_id==user_idx).first()
+                
     def get_fs(self, name=None, group_id=None, fs_id=None):
         '''Get filesystem entries from database
 
