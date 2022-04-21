@@ -17,9 +17,6 @@ from lost.logic.crypt import decrypt_fs_connection
 
 DATA_ROOT_PATH = ""
 MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
-# MEDIA_UPLOAD_PATH = MEDIA_ROOT_PATH + "uploads/"
-# MEDIA_CHUNK_PATH = MEDIA_ROOT_PATH + ".chunks/"
-# SCRIPT_ROOT_PATH = DATA_ROOT_PATH + "script/"
 PIPE_ROOT_PATH = DATA_ROOT_PATH + "pipes/"
 INSTANCE_ROOT_PATH = DATA_ROOT_PATH + "instance/"
 DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
@@ -29,9 +26,6 @@ SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
 PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
 APP_LOG_PATH = DATA_ROOT_PATH + "logs/"
 UPLOAD_PATH = DATA_ROOT_PATH + "uploads"
-# MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
-# JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
-# MY_DATA_PATH = "my_data/"
 
 def chonkyfy(fs_list, root, fs):
     files, folder_chain = [], []
