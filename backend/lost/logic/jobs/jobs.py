@@ -39,17 +39,6 @@ def get_args():
 
     return config.LOSTConfig()
 
-def exec_pipe():
-    lostconfig = get_args()
-    dbm = DBMan(lostconfig)
-    pipe_list = dbm.get_pipes_to_process()
-    # For each task in this project
-    for p in pipe_list:
-       pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig)
-       pipe_man.process_pipeline()
-    dbm.close_session()
-
-
 def force_anno_release(dbm, anno_task_id):
     '''Force a release of all annotations that are currently locked by a user for annotation
 
