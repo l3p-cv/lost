@@ -161,10 +161,10 @@ class PipeEngine(pipe_model.PipeEngine):
         if pipe_e.script.envs is not None:
             script_envs = json.loads(pipe_e.script.envs)
             if len(script_envs) == 0:
-                return 'celery'
+                return 'lost'
         else:
             script_envs = list()
-            return 'celery' # Return default queue
+            return 'lost' # Return default queue
         worker_envs = w_man.get_worker_envs()        
         for script_env in script_envs:
             if script_env in worker_envs:
