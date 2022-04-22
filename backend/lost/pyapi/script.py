@@ -14,10 +14,10 @@ import traceback
 import os
 from lostconfig import LOSTConfig
 import json
-import pickle
 from lost.pyapi import pe_base
 from lost.logic.label import LabelTree
 from lost.pyapi import pipe_elements
+from lost.logic.db_access import UserDbAccess
 import ast 
 
 def report_script_err(pipe_element, task, dbm, msg):
@@ -67,8 +67,10 @@ class Script(pe_base.Element):
         super().__init__(pe, dbm)
 
         user_id = self.pipe_info.user.idx
+        self.user_id = user_id
         db_fs = dbm.get_user_default_fs(user_id)
         self.ufa = UserFileAccess(dbm, user_id, db_fs)
+        self.dba = UserDbAccess(dbm, user_id)
 
         logfile_path = self.ufa.get_pipe_log_path(self._pipe.idx)
         self._log_stream = self.ufa.fs.open(logfile_path, 'a')
@@ -128,17 +130,6 @@ class Script(pe_base.Element):
         '''
         return self._outp #type: inout.ScriptOutput
 
-    # def get_rel_path(self, path):
-    #     '''Get relativ path for current project
-
-    #     Args:
-    #         path (str): A absolute path
-
-    #     Returns:
-    #         str : Relative path
-    #     '''
-    #     return self.ufa.fm.get_rel_path(path)
-
     def get_label_tree(self, name):
         '''Get a LabelTree by name.
         
@@ -172,17 +163,6 @@ class Script(pe_base.Element):
         tree = LabelTree(self._dbm)
         tree.create_root(name, external_id=external_id)
         return tree
-
-    # def get_abs_path(self, path):
-    #     '''Get absolute path in current file system.
-
-    #     Args:
-    #         path (str): A relative path.
-
-    #     Returns:
-    #         str: Absolute path
-    #     '''
-    #     return self.ufa.fm.get_abs_path(path)
 
     def break_loop(self):
         '''Break next loop in pipeline.
@@ -228,7 +208,7 @@ class Script(pe_base.Element):
         else:
             return None
 
-    def get_filesystem(self, name=None):
+    def get_fs(self, name=None):
         '''Get default lost filesystem or a specific filesystem by name.
 
         Returns:
@@ -238,32 +218,23 @@ class Script(pe_base.Element):
             return self.ufa.fs
         return self.ufa.get_fs(name)
 
-    def get_path(self, file_name, context='instance', ptype='abs'):
+    def get_path(self, file_name, context='instance'):
         '''Get path for the filename in a specific context in filesystem.
 
         Args:
             file_name (str): Name or relative path for a file.
-            context (str): Options: *instance*, *pipe*, *static*
-            ptype (str): Type of this path. Can be relative or absolute
-                Options: *abs*, *rel*
+            context (str): Options: *instance*, *pipe*
 
         Returns:
-            str: Path to the file in the specified context.
+            str: Absolute path to the file in the specified context.
         '''
         if context == 'instance':
-            path = os.path.join(self.instance_context, file_name)
+            path = os.path.join(self.ufa.get_instance_path(self._pe), file_name)
         elif context == 'pipe':
-            path = os.path.join(self.pipe_context, file_name)
-        elif context == 'static':
-            path = os.path.join(self.static_context, file_name)
+            path = os.path.join(self.ufa.get_pipe_context_path(self._pe), file_name)
         else:
-            raise Exception('Unknown context: {}'.format(context))
-        if ptype == 'abs':
-            return path
-        elif ptype == 'rel':
-            return self.get_rel_path(path)
-        else:
-            raise Exception('Unknown argument ptype: {}'.format(ptype))
+            raise Exception('Unknown context: {}. Should be *instance* or *pipe*!'.format(context))
+        return path
 
     @property
     def iteration(self):
@@ -272,34 +243,6 @@ class Script(pe_base.Element):
         Number of times this script has been executed.
         '''
         return self._pipe_element.iteration
-
-    # @property
-    # def instance_context(self):
-    #     '''str: Get the path to store files that are only valid for this instance.
-    #     '''
-    #     abs_path = self.file_man.create_instance_path(self._pipe_element)
-    #     rel_path = self.file_man.make_path_relative(abs_path)
-    #     self._pipe_element.instance_context = rel_path
-    #     self._dbm.add(self._pipe_element)
-    #     return abs_path
-
-    # @property
-    # def pipe_context(self):
-    #     '''str: Root path to store files that should be visible for all elements
-    #     in the pipeline.
-    #     '''
-    #     return self.file_man.get_pipe_context_path(self._pipe_element)
-
-    # @property
-    # def static_context(self):
-    #     '''str: Get the static path.
-
-    #     Files that are stored at this path can be accessed by all instances of a
-    #     script.
-    #     '''
-    #     #TODO: Check how to handle different filesystem!
-    #     return os.path.join(self._lostconfig.app_path,
-    #                         os.path.split(self._pipe_element.script.path)[0])
 
     @property
     def progress(self):
@@ -317,7 +260,6 @@ class Script(pe_base.Element):
         '''
         self._pipe_element.progress = value
         self._dbm.commit()
-
 
     def reject_execution(self):
         '''Reject execution of this script and set it to PENDING again.
@@ -347,7 +289,7 @@ class Script(pe_base.Element):
             * :class:`lost.pyapi.pipe_elements.Loop`
 
         '''
-        pe = self._dbm.get_pipe_element(pe_id)
+        pe = self.dba.get_alien(pe_id)
 
         if pe.dtype == dtype.PipeElement.SCRIPT:
             return Script(pe_id=pe_id)

@@ -17,8 +17,8 @@ def main():
     # project_root = join(lostconfig.project_path, "data")
     # if not os.path.exists(project_root):
     #     os.makedirs(project_root)
-    fman = file_man.FileMan(lostconfig)
-    fman.create_project_folders()
+    # fman = file_man.FileMan(lostconfig)
+    # fman.create_project_folders()
     # Create Tables
     dbm = access.DBMan(lostconfig)
     dbm.create_database()

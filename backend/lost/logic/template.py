@@ -90,7 +90,7 @@ def get_template(db_man, template_id ,user):
         finally:
             return error_msg
     file_man = FileMan(db_man.lostconfig)
-    available_raw_files = file_man.get_media_rel_path_tree()
+    available_raw_files =dict() #file_man.get_media_rel_path_tree()
     available_groups = db_man.get_groups()
     default_group = db_man.get_group_by_name(user.user_name)
     available_label_trees = db_man.get_all_label_trees(group_id=default_group.idx, add_global=True)

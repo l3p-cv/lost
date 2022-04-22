@@ -374,22 +374,22 @@ class FileMan(object):
             self.fs.mkdirs(root_path)
         return root_path
 
-    def create_project_folders(self):
-        '''Create folder structure for a project in lost webportal.
+    # def create_project_folders(self):
+    #     '''Create folder structure for a project in lost webportal.
 
-        Args:
-            root: Root path of the project.
-        '''
-        root = self.root_path
-        if not self.fs.exists(root):
-            self.fs.mkdirs(root)
-            print("\t Created: %s"%(root,))
-        if not self.fs.exists(join(root,INSTANCE_ROOT_PATH)):
-            self.fs.mkdirs(join(root,INSTANCE_ROOT_PATH))
-            print("\t Created: %s"%(join(root,INSTANCE_ROOT_PATH),))
-        if not self.fs.exists(join(root,MEDIA_ROOT_PATH)):
-            self.fs.mkdirs(join(root,MEDIA_ROOT_PATH))
-            print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
+    #     Args:
+    #         root: Root path of the project.
+    #     '''
+    #     root = self.root_path
+    #     if not self.fs.exists(root):
+    #         self.fs.mkdirs(root)
+    #         print("\t Created: %s"%(root,))
+    #     if not self.fs.exists(join(root,INSTANCE_ROOT_PATH)):
+    #         self.fs.mkdirs(join(root,INSTANCE_ROOT_PATH))
+    #         print("\t Created: %s"%(join(root,INSTANCE_ROOT_PATH),))
+    #     if not self.fs.exists(join(root,MEDIA_ROOT_PATH)):
+    #         self.fs.mkdirs(join(root,MEDIA_ROOT_PATH))
+    #         print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
 
     @property
     def media_root_path(self):

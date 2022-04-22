@@ -45,16 +45,7 @@ class Datasource(Element):
 
     def get_fs(self):
         '''Get filesystem for this datasource'''
-        # ds = self.pe.datasource
-        # fs_args = ast.literal_eval(ds.fs.connection)
-        # fs = fsspec.filesystem(ds.fs.fs_type, **fs_args)
-        # fs.lost_fs = ds.fs
         return self.file_man.fs
-
-    def get_fm(self):
-        '''Get FileMan object'''
-        return self.file_man
-
 
 class AnnoTask(Element):
 

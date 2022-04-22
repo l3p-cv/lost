@@ -13,10 +13,10 @@ class LostScript(script.Script):
     An imageset is basicly a folder with images.
     '''
 
-    def check_and_request(self, fm, path):
-        if fm.fs.isfile(path):
+    def check_and_request(self, fs, path):
+        if fs.isfile(path):
             if os.path.splitext(path)[1].lower() in self.get_arg('valid_imgtypes'):
-                self.outp.request_annos(img_path=path, fm=fm)
+                self.outp.request_annos(img_path=path, fs=fs)
                 self.logger.info('Requested annos for: {}'.format(path))
             else:
                 self.logger.warning(f'{path} no valid img file!')
@@ -26,15 +26,15 @@ class LostScript(script.Script):
     def main(self):
         for ds in self.inp.datasources:
             media_path = ds.path
-            fm = ds.get_fm()
+            fs = ds.get_fs()
             if self.get_arg('recursive'):
-                for root, dirs, files in fm.fs.walk(media_path):
+                for root, dirs, files in fs.walk(media_path):
                     for f in files:
                         path = os.path.join(root, f)
-                        self.check_and_request(fm, path)
+                        self.check_and_request(fs, path)
             else:
-                for img_path in fm.fs.ls(media_path):
-                    self.check_and_request(fm, img_path)
+                for img_path in fs.ls(media_path):
+                    self.check_and_request(fs, img_path)
 
 if __name__ == "__main__":
     my_script = LostScript() 
