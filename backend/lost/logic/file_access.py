@@ -7,7 +7,7 @@ import os
 
 def create_user_default_fs(dbm, user, group_id):
     default = dbm.get_fs(name='default')
-    user_root_path = os.path.join(default.root_path, 'user', str(user.idx))
+    user_root_path = os.path.join(default.root_path, str(user.idx))
     fs_db = dbm.get_fs(name=user.user_name)
     if fs_db is None:
         fs_db = model.FileSystem(name=user.user_name, group_id=group_id,
