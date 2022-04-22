@@ -93,29 +93,38 @@ class UserFileAccess(object):
         self._user_default_required()
         return self.fm.get_pipe_context_path(pe)
         
-    def get_fs(self, name):
-        '''Get a filesystem by name
+    def get_fs_db(self, name=None, fs_id=None):
+        if name is not None:
+            fs_db = self.dbm.get_fs(name=name)
+        elif fs_id is not None:
+            fs_db = self.dbm.get_fs(fs_id=fs_id)
+        else:
+            raise ValueError('Either name or fs_id need to be provided')
+        user = self.dbm.get_user(self.uid)
+        if user.has_role(roles.ADMINISTRATOR):
+            return fs_db
+        elif self.uid == fs_db.user_default_id:
+            return fs_db
+        elif fs_db.group_id is None:
+            return fs_db
+        elif fs_db.group_id in [g.group_id for g in user.groups]:
+            return fs_db
+        else:
+            raise FsAccessNotPermitted()
+        
+    def get_fs(self, name=None, fs_id=None):
+        '''Get a filesystem by name or fs_id
         
         Args:
             name (str): Name of the filesystem
+            fs_id (int): Id of the lost filesystem
 
         Returns:
             Fsspec Filesystem
         '''
-        fs_db = self.dbm.get_fs(name=name)
+        fs_db = self.get_fs_db(name, fs_id)
         fm = FileMan(fs_db=fs_db)
-        fs = fm.fs
-        user = self.dbm.get_user(self.uid)
-        if user.has_role(roles.ADMINISTRATOR):
-            return fs
-        elif self.uid == fs_db.user_default_id:
-            return fs
-        elif fs_db.group_id is None:
-            return fs
-        elif fs_db.group_id in [g.group_id for g in user.groups]:
-            return fs
-        else:
-            raise FsAccessNotPermitted()
+        return fm.fs
 
     def get_user_default_fs(self):
         '''Get users default filesystem'''
