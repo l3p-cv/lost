@@ -33,7 +33,7 @@ class UserFileAccess(object):
         self.dbm = dbm
         self.uid = user_id 
         if not isinstance(fs_db, model.FileSystem):
-            raise Exception('fm needs to be a FileMan object!')
+            raise Exception('fs_db needs to be a lost FileSystem object!')
         self.fs_db = fs_db
         self.fm = FileMan(fs_db=fs_db)
         self.fs = self.fm.fs

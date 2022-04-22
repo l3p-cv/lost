@@ -8,6 +8,7 @@ from lost.utils import testils
 from lost.pyapi.script import Script
 import shutil
 import os
+from os.path import join
 # import pudb
 
 REF_BBOXES = [
@@ -17,16 +18,16 @@ REF_BBOXES = [
 ]
 
 EXAMPLE_IMG_DIR = '/code/src/backend/lost/pyapi/examples/images/10_voc2012'
-LOST_EXAMPLE_IMG_DIR = 'test'
+LOST_EXAMPLE_IMG_DIR = '/home/lost/data/test'
 
 IMG_NAME1 = '2007_008547.jpg'
 IMG_NAME2 = '2008_002123.jpg'
 
 IMG_PATH1 = f'{LOST_EXAMPLE_IMG_DIR}/{IMG_NAME1}'
 IMG_PATH2 = f'{LOST_EXAMPLE_IMG_DIR}/{IMG_NAME2}'
-os.makedirs(f'/home/lost/data/{LOST_EXAMPLE_IMG_DIR}')
-shutil.copyfile(os.path.join(EXAMPLE_IMG_DIR, IMG_NAME1), os.path.join('/home/lost/data', LOST_EXAMPLE_IMG_DIR, IMG_NAME1))
-shutil.copyfile(os.path.join(EXAMPLE_IMG_DIR, IMG_NAME2), os.path.join('/home/lost/data', LOST_EXAMPLE_IMG_DIR, IMG_NAME2))
+os.makedirs(LOST_EXAMPLE_IMG_DIR, exist_ok=True)
+shutil.copyfile(join(EXAMPLE_IMG_DIR, IMG_NAME1), join(LOST_EXAMPLE_IMG_DIR, IMG_NAME1))
+shutil.copyfile(join(EXAMPLE_IMG_DIR, IMG_NAME2), join(LOST_EXAMPLE_IMG_DIR, IMG_NAME2))
 
 def check_bbox(ref, to_check):
     '''Check if two boxes are equal'''
@@ -65,6 +66,7 @@ class TempFSDummy(object):
 class TestScriptApi(object):
 
     def test_request_annos(self, script_element, tree, local_fs):
+        # print('script_element.manager_id', script_element.manager_id)
         s = Script(pe_id=script_element.idx)
         fs = TempFSDummy(local_fs)
         # pudb.set_trace()
