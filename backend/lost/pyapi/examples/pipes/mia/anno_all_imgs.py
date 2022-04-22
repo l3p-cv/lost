@@ -16,7 +16,7 @@ class LostScript(script.Script):
     def check_and_request(self, fs, path):
         if fs.isfile(path):
             if os.path.splitext(path)[1].lower() in self.get_arg('valid_imgtypes'):
-                self.outp.request_annos(img_path=path, fs=fs)
+                self.outp.request_annos(path, fs=fs)
                 self.logger.info('Requested annos for: {}'.format(path))
             else:
                 self.logger.warning(f'{path} no valid img file!')
