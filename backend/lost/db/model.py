@@ -278,8 +278,9 @@ class TwoDAnno(Base):
             # 'anno.img_anno_id': self.img_anno_id,
             'anno_user': None,
             'anno_confidence': self.confidence,
-            'anno_anno_time': self.anno_time,
+            'anno_time': self.anno_time,
             'anno_lbl': None,
+            'anno_lbl_id': None,
             'anno_style': self.get_anno_style(),
             'anno_format': 'rel',
             'anno_comment': self.description
@@ -297,6 +298,9 @@ class TwoDAnno(Base):
         try:
             anno_dict['anno_lbl'] = [
                 lbl.label_leaf.name for lbl in self.labels
+            ]
+            anno_dict['anno_lbl_id'] = [
+                lbl.label_leaf.idx for lbl in self.labels
             ]
         except:
             pass
@@ -813,6 +817,7 @@ class ImageAnno(Base):
             'img_user_id': self.user_id,
             'img_anno_time': self.anno_time,
             'img_lbl': None,
+            'img_lbl_id': None,
             'img_user': None,
             'img_is_junk': self.is_junk,
             'img_fs_name': self.fs.name
@@ -826,6 +831,8 @@ class ImageAnno(Base):
         try:
             img_dict['img_lbl'] = [
                 lbl.label_leaf.name for lbl in self.labels]
+            img_dict['img_lbl_id'] = [
+                lbl.label_leaf.idx for lbl in self.labels]
         except:
             pass
         try:
