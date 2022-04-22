@@ -3,6 +3,7 @@ from lost.logic import file_man
 from lost.logic.user import get_user_default_group
 from lost.pyapi import pipe_elements
 from lost.logic.file_man import DummyFileMan
+from lost.logic.file_access import UserFileAccess
 from lost.db import access, dtype
 from lost.db import model
 from lost.db import state
@@ -263,18 +264,7 @@ class ScriptOutput(Output):
     def __init__(self, script):
         super().__init__(script)
         self._script = script
-
-    # def add_img_anno(self, anno):
-    #     '''Add an ImageAnnotation to output.
-
-    #     Args:
-    #         anno (ImageAnnotation): An image annotation object.
-    #     '''
-    #     for pe in self._connected_pes:
-    #         anno.img_path = self._script.file_man.make_path_relative(anno.img_path)
-    #         anno.result_id = self._result_map[pe.idx]
-    #         anno.iteration = self._script._pipe_element.iteration
-    #         self._script._dbm.add(anno)
+        self.ufa = script.ufa
 
     def add_visual_output(self, img_path=None, html=None):
         '''Display an image and html in the web gui via a VisualOutput element.
@@ -288,10 +278,6 @@ class ScriptOutput(Output):
             raise Exception('One of the arguments need to be not None!')
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.VISUALIZATION:
-                # if img_path is not None:
-                #     rel_path = self._script.file_man.make_path_relative(img_path)
-                # else:
-                #     rel_path = None
                 vis_out = model.VisualOutput(img_path=img_path,
                                           html_string=html,
                                           result_id=self._result_map[pe.idx],
@@ -472,10 +458,7 @@ class ScriptOutput(Output):
             return fs_cache[fs_name]
         else:
             dbm = self._script._dbm
-            # TODO: use UserFileAccess to get fs
-            group_id = get_user_default_group(dbm, self._script.pipe_info.user.idx)
-            fs_db_list = dbm.get_fs(group_id=group_id)
-            fs_db_list += dbm.get_public_fs()
+            fs_db_list = self.ufa.get_user_fs_list()
             res = list(filter(lambda x: x.name == fs_name, fs_db_list))
             if len(res) > 0:
                 fs_db = res[0]
@@ -642,8 +625,7 @@ class ScriptOutput(Output):
         if img_sim_class is None:
             img_sim_class = 1
         if fs is None:
-            # TODO: User UserFileAccess to get fs
-            fs_db = self._script._dbm.get_fs(name='default')
+            fs_db = self.ufa.get_user_default_fs()
             fm = file_man.FileMan(fs_db=fs_db)
             fs = fm.fs
         if fs.isfile(img_path):

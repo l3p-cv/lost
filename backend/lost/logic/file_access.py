@@ -1,6 +1,8 @@
 from datetime import datetime
 from lost.logic.file_man import FileMan
 from lost.db import model
+from lost.logic.user import get_user_default_group
+from lost.db import roles
 import os
 
 def create_user_default_fs(dbm, user, group_id):
@@ -90,10 +92,42 @@ class UserFileAccess(object):
         Returns:
             Fsspec Filesystem
         '''
-        #TODO: Check if user is permitted to access filesystem
         fs_db = self.dbm.get_fs(name=name)
         fm = FileMan(fs_db=fs_db)
-        return fm.fs
+        fs = fm.fs
+        user = self.dbm.get_user(self.uid)
+        if user.has_role(roles.ADMINISTRATOR):
+            return fs
+        elif self.uid == fs_db.user_default_id:
+            return fs
+        elif fs_db.group_id is None:
+            return fs
+        elif fs_db.group_id in [g.idx for g in user.groups]:
+            return fs
+        else:
+            raise FsAccessNotPermitted()
+
+    def get_user_default_fs(self):
+        '''Get users default filesystem'''
+        return self.dbm.get_user_default_fs(self.uid)
+
+    def get_user_fs_list(self):
+        '''Get a list of all filesystem that the current user may access
+        
+        Retruns:
+            list of FileSystem: List of FileSystem objects
+        '''
+        dbm = self.dbm
+        group_id = get_user_default_group(dbm, self.uid)
+        fs_db_list = dbm.get_fs(group_id=group_id)
+        fs_db_list += dbm.get_public_fs()
+        return list(fs_db_list)
+
+class FsAccessNotPermitted(Exception):
+    '''Raise if a user is not permitted to access filesystem'''
+
+    def __str__(self):
+        return 'User is not permitted to access requested filesystem!'
 
 class UserDefaultFsRequired(Exception):
     '''A User Default Filesystem is required to perform a specific action'''
