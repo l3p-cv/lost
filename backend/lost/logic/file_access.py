@@ -40,6 +40,16 @@ class UserFileAccess(object):
         self.fm = FileMan(fs_db=fs_db)
         self.fs = self.fm.fs
 
+    def load_anno_img(self,db_img):
+        anno_task = self.dbm.get_anno_task(db_img.anno_task_id)
+        user = self.dbm.get_user(self.uid)
+        if anno_task.manager_id == self.uid:
+            return self.fm.load_img(db_img.img_path)
+        elif anno_task.group_id in [g.group_id for g in user.groups]:
+            return self.fm.load_img(db_img.img_path)
+        else:
+            raise FsAccessNotPermitted()
+
     def get_media_path(self):
         return self.fm.get_media_path()
 
@@ -102,7 +112,7 @@ class UserFileAccess(object):
             return fs
         elif fs_db.group_id is None:
             return fs
-        elif fs_db.group_id in [g.idx for g in user.groups]:
+        elif fs_db.group_id in [g.group_id for g in user.groups]:
             return fs
         else:
             raise FsAccessNotPermitted()
