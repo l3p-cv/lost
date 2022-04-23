@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Datatable from '../../components/Datatable'
 import IconButton from '../../components/IconButton'
 import BaseModal from '../../components/BaseModal'
+import { useSelector } from 'react-redux'
 import {
     faUserPlus,
     faEdit,
@@ -21,6 +22,8 @@ export const DSTable = ({ visLevel }) => {
     const [isNewDS, setIsNewDS] = useState(false)
     // const [fsList, setFSList] = useState([])
     // const [possibleFsTypes, setPossibleFsTypes] = useState([])
+    const userName = useSelector((state) => state.user.ownUser.user_name)
+    const defaultDsName = 'default'
     const [browseOpen, setBrowseOpen] = useState(false)
     const [fs, setFs] = useState()
     const { mutate: getFSListNew, data: fsList } = fbAPI.useGetFSList()
@@ -45,6 +48,7 @@ export const DSTable = ({ visLevel }) => {
     }
 
     useEffect(() => {
+        console.log(userName)
         fetchData()
         // const interval = setInterval(fetchData, 1000)
         // return () => clearInterval(interval)
@@ -152,6 +156,21 @@ export const DSTable = ({ visLevel }) => {
         getFullFs(fs)
         setBrowseOpen(true)
     }
+    const checkEditable = (row) => {
+        if (row.name === userName) {
+            return true
+        }
+        if (row.name === defaultDsName) {
+            return true
+        }
+        if (row.groupId === null) {
+            if (visLevel !== 'global') {
+                return true
+            }
+        }
+        return false
+    }
+
     return (
         <div>
             <BaseModal
@@ -204,10 +223,10 @@ export const DSTable = ({ visLevel }) => {
                         Header: 'Type',
                         accessor: 'fsType',
                     },
-                    {
-                        Header: 'Root Path',
-                        accessor: 'rootPath',
-                    },
+                    // {
+                    //     Header: 'Root Path',
+                    //     accessor: 'rootPath',
+                    // },
                     // {
                     //     Header: 'Connection',
                     //     accessor: 'connection',
@@ -231,11 +250,7 @@ export const DSTable = ({ visLevel }) => {
                                     icon={faTrash}
                                     color="danger"
                                     onClick={() => onDeleteDs(row)}
-                                    disabled={
-                                        row.groupId === null
-                                            ? visLevel !== 'global'
-                                            : false
-                                    }
+                                    disabled={checkEditable(row)}
                                     text="Delete"
                                 />
                             )
@@ -250,11 +265,7 @@ export const DSTable = ({ visLevel }) => {
                                     icon={faEdit}
                                     color="primary"
                                     onClick={() => onEditDs(row)}
-                                    disabled={
-                                        row.groupId === null
-                                            ? visLevel !== 'global'
-                                            : false
-                                    }
+                                    disabled={checkEditable(row)}
                                     text="Edit"
                                     // isOutline={false}
                                 />
