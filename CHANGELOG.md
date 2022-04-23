@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow to request annotations via LOSTDataframes (see #144)
   - Allow to request annotation labels via label_name (see #144) 
   - Allow to add meta information to annotations via pyAPI
+  - request_annos: Added ability to deal with ImageAnno objects from database in order to request annos for a copy of the ImageAnno object.
 - Configurations for LOST via database
 - pyAPI: Allow to add a image comment via api. This comment will be shown in ImgBar in SIA
 - SIA: 
@@ -56,6 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PipeStart: Empty labels in annotask not possible anymore
 ## Removed
 - removed lost-cv images. This is now integrated into the lost image 
+- pyAPI: 
+  - request_bbox_annos since it is a special case of request_annos
+  - request_image_anno since it is a special case of request_annos
+  - add_anno since it has not been used until now
 
 ## [1.5.0] - unreleased
 ### Added

@@ -14,6 +14,7 @@ from lost.logic.user import release_user_annos
 from flaskapp import blacklist
 from lost.logic import dask_session
 from lost.api.user.login_manager import LoginManager
+from lost.logic.file_access import create_user_default_fs
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
@@ -99,7 +100,7 @@ class UserList(Resource):
                 api_token = create_access_token(identity=user.idx, expires_delta=expires)
                 user.api_token = api_token
                 dbm.save_obj(user)
-
+                create_user_default_fs(dbm, user, g.idx)
             try:
                 email.send_new_user(user,data['password'])
             except:

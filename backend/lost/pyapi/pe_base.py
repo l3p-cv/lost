@@ -9,6 +9,7 @@ class Element(object):
         self._dbm = dbm #type: lost.db.access.DBMan
         self._lostconfig = dbm.lostconfig
         self._pipe_element = pe
+        self._pe = pe
         self._pipe = self._dbm.get_pipe(pipe_id=self._pipe_element.pipe_id)
         self._pipe_man = pipe_model.PipeEngine(self._dbm, self._pipe)
         self._inp = inout.Input(self)

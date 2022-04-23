@@ -278,8 +278,9 @@ class TwoDAnno(Base):
             # 'anno.img_anno_id': self.img_anno_id,
             'anno_user': None,
             'anno_confidence': self.confidence,
-            'anno_anno_time': self.anno_time,
+            'anno_time': self.anno_time,
             'anno_lbl': None,
+            'anno_lbl_id': None,
             'anno_style': self.get_anno_style(),
             'anno_format': 'rel',
             'anno_comment': self.description
@@ -297,6 +298,9 @@ class TwoDAnno(Base):
         try:
             anno_dict['anno_lbl'] = [
                 lbl.label_leaf.name for lbl in self.labels
+            ]
+            anno_dict['anno_lbl_id'] = [
+                lbl.label_leaf.idx for lbl in self.labels
             ]
         except:
             pass
@@ -651,8 +655,7 @@ class ImageAnno(Base):
     Attributes:
         labels (list): The related :class:`Label` object.
         twod_annos (list): A list of :class:`TwoDAnno` objects.
-        img_path (str): Relative path (to fs.root_path) to image in related filesystem
-        abs_path (str): Absolute path to image in related filesystem
+        img_path (str): Abs path to image in file system
         frame_n (int): If this image is part of an video,
             frame_n indicates the frame number.
         video_path (str): If this image is part of an video,
@@ -685,7 +688,6 @@ class ImageAnno(Base):
     frame_n = Column(Integer)
     video_path = Column(String(4096))
     img_path = Column(String(4096))
-    abs_path = Column(String(4096))
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
     user_id = Column(Integer, ForeignKey('user.idx'))
@@ -701,7 +703,7 @@ class ImageAnno(Base):
 
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
-                 sim_class=None, result_id=None, img_path=None, abs_path=None,
+                 sim_class=None, result_id=None, img_path=None,
                  frame_n=None,
                  video_path=None,
                  iteration=0, anno_time=None, is_junk=None,
@@ -713,7 +715,6 @@ class ImageAnno(Base):
         self.sim_class = sim_class
         self.result_id = result_id
         self.img_path = img_path
-        self.abs_path = abs_path
         self.video_path = video_path
         self.frame_n = frame_n
         self.iteration = iteration
@@ -811,12 +812,12 @@ class ImageAnno(Base):
             'img_frame_n': self.frame_n,
             # 'img_video_path': self.video_path,
             'img_path': self.img_path,
-            'abs_path': self.abs_path,
             # 'img_result_id': self.result_id,
             'img_iteration': self.iteration,
             'img_user_id': self.user_id,
             'img_anno_time': self.anno_time,
             'img_lbl': None,
+            'img_lbl_id': None,
             'img_user': None,
             'img_is_junk': self.is_junk,
             'img_fs_name': self.fs.name
@@ -830,6 +831,8 @@ class ImageAnno(Base):
         try:
             img_dict['img_lbl'] = [
                 lbl.label_leaf.name for lbl in self.labels]
+            img_dict['img_lbl_id'] = [
+                lbl.label_leaf.idx for lbl in self.labels]
         except:
             pass
         try:
@@ -1718,9 +1721,14 @@ class FileSystem(Base):
         name (str): Name of the filesystem
         deleted (bool): Indicates wether this datasource was deleted by a user, 
             but needs to be keept for data consistency.
+        editable (bool): Indicates wether this datasource is editable by the user.
+        user_default_id (int): Id of the user who owns this filesystem as default 
+            filesystem
+        
     
     Note:
         group_id is None if this filesystem is available for all users!
+        user_default_id is None if this is not a default filesystem for any user!
 
     '''
     __tablename__ = "filesystem"
@@ -1732,9 +1740,13 @@ class FileSystem(Base):
     timestamp = Column(DateTime())
     name = Column(String(200))
     deleted = Column(Boolean())
+    editable = Column(Boolean())
+    user_default_id = Column(Integer)
 
     def __init__(self, group_id=None, connection=None,
-                 root_path=None, fs_type=None, name=None, timestamp=None, deleted=False):
+                 root_path=None, fs_type=None, name=None, 
+                 timestamp=None, deleted=False, editable=True, 
+                 user_default_id=None):
         self.group_id = group_id
         self.fs_type = fs_type
         self.connection = connection
@@ -1742,6 +1754,8 @@ class FileSystem(Base):
         self.name = name
         self.timestamp = timestamp
         self.deleted = deleted
+        self.editable = editable
+        self.user_default_id = user_default_id
 
 
 class Config(Base):

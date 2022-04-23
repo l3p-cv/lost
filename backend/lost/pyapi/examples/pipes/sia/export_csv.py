@@ -14,7 +14,7 @@ class LostScript(script.Script):
     '''
     def main(self):
         df = self.inp.to_df()
-        fs = self.get_filesystem()
+        fs = self.get_fs()
         
         file_path_parquet = self.get_path(self.get_arg('file_name_parquet'), context='instance')
         file_path_csv = self.get_path(self.get_arg('file_name_csv'), context='instance')

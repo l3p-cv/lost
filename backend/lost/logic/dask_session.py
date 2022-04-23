@@ -11,7 +11,10 @@ config = lostconfig.LOSTConfig()
 
 def _read_fs_img(fs, img_path):
     fm = FileMan(fs_db=fs)
-    fm.fs.ls(img_path)
+    try:
+        fm.fs.ls(img_path)
+    except:
+        pass
     img = fm.load_img(img_path)
     return img
 

@@ -3,6 +3,7 @@ from lost.logic import file_man
 from lost.logic.user import get_user_default_group
 from lost.pyapi import pipe_elements
 from lost.logic.file_man import DummyFileMan
+from lost.logic.file_access import UserFileAccess
 from lost.db import access, dtype
 from lost.db import model
 from lost.db import state
@@ -263,18 +264,7 @@ class ScriptOutput(Output):
     def __init__(self, script):
         super().__init__(script)
         self._script = script
-
-    # def add_img_anno(self, anno):
-    #     '''Add an ImageAnnotation to output.
-
-    #     Args:
-    #         anno (ImageAnnotation): An image annotation object.
-    #     '''
-    #     for pe in self._connected_pes:
-    #         anno.img_path = self._script.file_man.make_path_relative(anno.img_path)
-    #         anno.result_id = self._result_map[pe.idx]
-    #         anno.iteration = self._script._pipe_element.iteration
-    #         self._script._dbm.add(anno)
+        self.ufa = script.ufa
 
     def add_visual_output(self, img_path=None, html=None):
         '''Display an image and html in the web gui via a VisualOutput element.
@@ -288,11 +278,7 @@ class ScriptOutput(Output):
             raise Exception('One of the arguments need to be not None!')
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.VISUALIZATION:
-                if img_path is not None:
-                    rel_path = self._script.file_man.make_path_relative(img_path)
-                else:
-                    rel_path = None
-                vis_out = model.VisualOutput(img_path=rel_path,
+                vis_out = model.VisualOutput(img_path=img_path,
                                           html_string=html,
                                           result_id=self._result_map[pe.idx],
                                           iteration=self._script._pipe_element.iteration)
@@ -321,75 +307,13 @@ class ScriptOutput(Output):
         if video_path is None and frame_n is not None:
             raise Exception('If video_path is provided a frame_n is also required!')
 
-    def request_bbox_annos(self, img_path, boxes=[], labels=[],
-                    frame_n=None, video_path=None, sim_classes=[], fm=None, 
-                    img_comment=None):
-        '''Request BBox annotations for a subsequent annotaiton task.
-
-        Args:
-            img_path (str): Path of the image.
-            boxes (list) : A list of boxes [[x,y,w,h],..].
-            labels (list) : A list of labels for each box. 
-            frame_n (int): If *img_path* belongs to a video *frame_n* indicates
-                the framenumber.
-            video_path (str): If *img_path* belongs to a video this is the path to
-                this video.
-            sim_classes (list): [sim_class1, sim_class2,...] 
-                A list of similarity classes that is used to 
-                cluster BBoxes when using MIA for annotation.
-            fm (obj): The FileSystemManager for the filesystem where image is located. 
-                Use lost standard filesystem if no filesystem was given.
-                You can get this Filesystem object from a DataSource-Element by calling
-                get_fm method.
-            img_comment (str): A comment that will be added to this image.
-
-        Note:
-            There are three cases when you request a bbox annotation.
-
-            Case1: Annotate empty image
-                You just want to get bounding boxes drawn by a human annotator
-                for an image.
-                -> Only set the img_path argument.
-            Case2: Annotate image with a preset of boxes
-                You want to get verified predicted bounding boxes by a human
-                annotator and you have not predicted a label for the boxes.
-                -> Set the img_path argument and boxes.
-            Case3: Annotate image with a preset of boxes and labels
-                You want to get predicted bounding boxes and the related predicted
-                labels to be verified by a human annotator.
-                -> Set the img_path and the boxes argument. For boxes you
-                need to assign a list of box and a list of label_ids for labels.
-                An annotation may have multiple labels.
-                E.g. boxes =[[0.1,0.1,0.2,0.3],...], labels =[[1,5],[5],...]
-        
-        Example:
-            How to use this method in a Script::
-
-                >>> self.request_bbox_annos('path/to/img.png', 
-                ...     boxes=[[0.1,0.1,0.2,0.3],[0.2,0.2,0.4,0.4]], 
-                ...     labels=[[0],[1]]
-                ... )
-        '''
-        for pe in self._connected_pes:
-            if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                self._add_annos(pe, img_path,
-                    annos=boxes,
-                    anno_types=['bbox']*len(boxes),
-                    anno_labels=labels,
-                    anno_sim_classes=sim_classes,
-                    frame_n=frame_n,
-                    video_path=video_path,
-                    anno_task_id=pe.anno_task.idx,
-                    fm=fm, img_comment=img_comment)
-                
-
-    def request_annos(self, img_path, img_labels=None, img_sim_class=None, 
+    def request_annos(self, img, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fm=None, img_meta=None, anno_meta=None, img_comment=None):
+        video_path=None, fs=None, img_meta=None, anno_meta=None, img_comment=None):
         '''Request annotations for a subsequent annotaiton task.
 
         Args:
-            img_path (str): Path to the image where annotations are added for.
+            img (str or ImageAnno): Path to the image or database image where annotations will be requested for
             img_label (list of int): Labels that will be assigned to the image. The labels should be
                 represented by a label_leaf_id. An image may have multiple labels.
             img_sim_class (int): A culster id that will be used to cluster this image
@@ -408,7 +332,7 @@ class ScriptOutput(Output):
                 the framenumber.
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
-            fm (obj): The FileSystemManager for the filesystem where image is located. 
+            fs (fsspec.spec.AbstractFileSystem): The filesystem where image is located. 
                 Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fm method.
@@ -444,7 +368,7 @@ class ScriptOutput(Output):
         '''
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                self._add_annos(pe, img_path,
+                self._add_annos(pe, img,
                     img_labels=img_labels,
                     img_sim_class=img_sim_class,
                     annos=annos,
@@ -454,51 +378,53 @@ class ScriptOutput(Output):
                     frame_n=frame_n,
                     video_path=video_path,
                     anno_task_id=pe.anno_task.idx,
-                    fm=fm, img_meta=img_meta, anno_meta=anno_meta,
+                    fs=fs, img_meta=img_meta, anno_meta=anno_meta,
                     img_comment=img_comment)
 
-    def _get_lds_fm(self, df, fm_cache=dict(), fm=None):
+    def _get_lds_fm(self, df, fs_cache=dict(), fs=None):
         if 'img_fs_name' in df:
             fs_name = df['img_fs_name'].values[0]
             if not fs_name:
-                if fm is not None:
-                    return fm
-                fs_name = 'lost_data'
+                if fs is not None:
+                    return fs
+                fs_name = 'default'
         else:
-            if fm is not None:
-                return fm
-            fs_name = 'lost_data'
-        if fs_name in fm_cache:
-            return fm_cache[fs_name]
+            if fs is not None:
+                return fs
+            fs_name = 'default'
+        if fs_name in fs_cache:
+            return fs_cache[fs_name]
         else:
             dbm = self._script._dbm
-            group_id = get_user_default_group(dbm, self._script.pipe_info.user.idx)
-            fs_db_list = dbm.get_fs(group_id=group_id)
-            fs_db_list += dbm.get_public_fs()
+            fs_db_list = self.ufa.get_user_fs_list()
             res = list(filter(lambda x: x.name == fs_name, fs_db_list))
             if len(res) > 0:
                 fs_db = res[0]
                 fm = file_man.FileMan(fs_db=fs_db)
-                fm_cache[fs_name] = fm
-                return fm
+                fs_cache[fs_name] = fm.fs
+                return fm.fs
             else:
                 raise Exception('No possible filesystem found')
 
-    def request_lds_annos(self, lds, fm=None, anno_meta_keys=[], img_meta_keys=[], img_path_key=None):
+    def request_lds_annos(self, lds, fs=None, anno_meta_keys=[], img_meta_keys=[], img_path_key=None):
         '''Request annos from LOSTDataset.
         
         Args:
             lds (LOSTDataset): A lost dataset object. Request all annotation in this 
                 dataset again.
+            fs (fsspec.spec.AbstractFileSystem): The filesystem where image is located. 
+                Use lost standard filesystem if no filesystem was given.
+                You can get this Filesystem object from a DataSource-Element by calling
+                get_fm method.
             img_meta_keys (list): Keys that should be used for img_anno meta information
             anno_meta_keys (list): Keys that should be used for two_d_anno meta information
         '''
         for pe in self._connected_pes:
             if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                self._request_lds(pe, lds, fm, anno_meta_keys, img_meta_keys, img_path_key)
+                self._request_lds(pe, lds, fs, anno_meta_keys, img_meta_keys, img_path_key)
 
 
-    def _request_lds(self, pe, lds, fm=None, anno_meta_keys=[], img_meta_keys=[], img_path_key='img_path'):
+    def _request_lds(self, pe, lds, fs=None, anno_meta_keys=[], img_meta_keys=[], img_path_key='img_path'):
         '''Request annos from LOSTDataset.
         
         Args:
@@ -506,7 +432,10 @@ class ScriptOutput(Output):
                 dataset again.
             pe (PipelineElement): PipelineElement of the annotations task where 
                 annotations should be requested for.
-            fm (FileMan): A file_man object.
+            fs (fsspec.spec.AbstractFileSystem): The filesystem where image is located. 
+                Use lost standard filesystem if no filesystem was given.
+                You can get this Filesystem object from a DataSource-Element by calling
+                get_fm method.
             img_meta_keys (list): Keys that should be used for img_anno meta information
             anno_meta_keys (list or *all*): Keys that should be used for two_d_anno meta information.
                 If all, all keys of lds will be added as meta information.
@@ -523,12 +452,12 @@ class ScriptOutput(Output):
                 raise Exception('All anno in bboxes need to be in xcycwh anno_style!')
         else:
             self._script.logger.warning('anno_style column is missing in lds')
-        fm_cache = dict()
+        fs_cache = dict()
         # db_anno_task = self._script._dbm.get_anno_task(anno_task_id=anno_task_id)
         anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
         lbl_map = anno_task.lbl_map
         for img_path, df in lds.df.groupby(img_path_key):
-            fm = self._get_lds_fm(df, fm_cache, fm)
+            fs = self._get_lds_fm(df, fs_cache, fs)
             if 'img_sim_class' in df:
                 if df['img_sim_class'].values[0]:
                     img_sim_class = df['img_sim_class'].values[0]
@@ -536,17 +465,16 @@ class ScriptOutput(Output):
                     img_sim_class = 1
             else:
                 img_sim_class = 1
-            rel_img_path = fm.make_path_relative(img_path)
+            # rel_img_path = fm.make_path_relative(img_path)
             anno_task_id = pe.anno_task.idx
             img_anno = model.ImageAnno(anno_task_id=anno_task_id,
-                                    img_path=rel_img_path,
-                                    abs_path=os.path.join(fm.root_path, rel_img_path),
+                                    img_path=img_path,
                                     state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
                                     iteration=self._script._pipe_element.iteration,
                                     # frame_n=df['img_frame_n'].values[0],
                                     sim_class=img_sim_class,
-                                    fs_id=fm.fs.lost_fs.idx)
+                                    fs_id=fs.lost_fs.idx)
             if len(img_meta_keys) > 0:
                 # anno.meta = json.dumps(row[img_meta_keys].to_dict())
                 img_anno.meta = json.dumps(df.iloc[0][img_meta_keys].to_dict(), default=_json_default)
@@ -592,15 +520,15 @@ class ScriptOutput(Output):
                             anno.sim_class = 1
                         img_anno.twod_annos.append(anno)
 
-    def _add_annos(self, pe, img_path, img_labels=None, img_sim_class=None, 
+    def _add_annos(self, pe, img, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, anno_task_id=None, fm=None, img_meta=None, anno_meta=None, 
+        video_path=None, anno_task_id=None, fs=None, img_meta=None, anno_meta=None, 
         img_comment=None):
         '''Add annos in list style to an image.
         
         Args:
             pe (PipeElement): The connected PipeElement where annotation should be provided for.
-            img_path (str): Path to the image where annotations are added for.
+            img (str or ImageAnno): Path to the image or database image where annotations will be requested for
             img_labels (list of int or str): Labels that will be assigned to the image. The label should
                 represented by a label_leaf_id or label_name.
             img_sim_class (int): A culster id that will be used to cluster this image
@@ -620,7 +548,7 @@ class ScriptOutput(Output):
             video_path (str): If *img_path* belongs to a video this is the path to
                 this video.
             anno_task_id (int): Id of the assigned annotation task.
-            fm (obj): The FileSystemManager for the filesystem where image is located. 
+            fs (fsspec.spec.AbstractFileSystem): The filesystem where image is located. 
                 Use lost standard filesystem if no filesystem was given.
                 You can get this Filesystem object from a DataSource-Element by calling
                 get_fm method.
@@ -632,27 +560,38 @@ class ScriptOutput(Output):
                 added as column during annotation export. The dict-value will be row content.
             img_comment (str): A comment that will be added to this image.
         '''
+        if isinstance(img, model.ImageAnno):
+            img_path = img.img_path
+            if frame_n is None:
+                frame_n = img.frame_n
+            if video_path is None:
+                video_path = img.video_path
+            if img_sim_class is None:
+                img_sim_class = img.sim_class
+            if img_comment is None:
+                img_comment = img.description
+            if fs is None:
+                # fs_db = self.ufa.get_fs_db(fs_id=img.fs_id)
+                fs = self.ufa.get_fs(fs_id=img.fs_id)
+                # fs = file_man.FileMan(fs_db=fs_db).fs
+        else:
+            img_path = img
         if img_sim_class is None:
             img_sim_class = 1
-        if video_path is not None:
-            video_path = self._script.get_rel_path(video_path)
-        if fm is None:
-            fs_db = self._script._dbm.get_fs(name='lost_data')
-            fs = DummyFileMan(fs_db)
-            fm = file_man.FileMan(fs_db=fs.lost_fs)
-        rel_img_path = fm.make_path_relative(img_path)
-        abs_path = fm.get_abs_path(img_path)
-        if fm.fs.isfile(abs_path):
+        if fs is None:
+            fs_db = self.ufa.get_user_default_fs()
+            fm = file_man.FileMan(fs_db=fs_db)
+            fs = fm.fs
+        if fs.isfile(img_path):
             img_anno = model.ImageAnno(anno_task_id=anno_task_id,
-                                    img_path=rel_img_path,
-                                    abs_path=abs_path,
+                                    img_path=img_path,
                                     state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
                                     iteration=self._script._pipe_element.iteration,
                                     frame_n=frame_n,
                                     video_path=video_path,
                                     sim_class=img_sim_class,
-                                    fs_id=fm.fs.lost_fs.idx,
+                                    fs_id=fs.lost_fs.idx,
                                     description=img_comment)
             if img_meta is not None:
                 img_anno.meta = json.dumps(img_meta, default=_json_default)
@@ -689,7 +628,7 @@ class ScriptOutput(Output):
                     anno.sim_class = 1
                 img_anno.twod_annos.append(anno)
         else:
-            self._script.logger.warning(f'Will ignore {abs_path} since it is not a file!')
+            self._script.logger.warning(f'Will ignore {img_path} since it is not a file!')
     
     def _lbl_name_to_id(self, lbl, lbl_map=None):
         if isinstance(lbl, str):
@@ -717,109 +656,3 @@ class ScriptOutput(Output):
                 ll_ids = self._lbl_name_to_id(ll_ids, lbl_map)
                 if ll_ids is not None:
                     anno.labels.append(model.Label(label_leaf_id=ll_ids))
-
-    def add_annos(self, img_path, img_labels=None, img_sim_class=None, 
-        annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
-        video_path=None, fm=None, img_comment=None):
-        '''Add annos in list style to an image.
-        
-        Args:
-            img_path (str): Path to the image where annotations are added for.
-            img_labels (list of int): Labels that will be assigned to the image. Each label in the list is
-                represented by a label_leaf_id.
-            img_sim_class (int): A culster id that will be used to cluster this image
-                in the MIA annotation tool.
-            annos (list of list): A list of
-                POINTs: [x,y]
-                BBOXes: [x,y,w,h]
-                LINEs or POLYGONs: [[x,y], [x,y], ...]
-            anno_types (list of str): Can be 'point', 'bbox', 'line', 'polygon'
-            anno_labels (list of list of int): Labels for the twod annos. 
-                Each label in the list is represented by a label_leaf_id.
-                (see also :class:`LabelLeaf`).
-            anno_sim_classes (list of ints): List of arbitrary cluster ids 
-                that are used to cluster annotations in the MIA annotation tool.
-            frame_n (int): If *img_path* belongs to a video *frame_n* indicates
-                the framenumber.
-            video_path (str): If *img_path* belongs to a video this is the path to
-                this video.
-            fm (obj): The FileSystemManager for the filesystem where image is located. 
-                Use lost standard filesystem if no filesystem was given.
-                You can get this Filesystem object from a DataSource-Element by calling
-                get_fm method.
-            img_comment (str): A comment that will be added to this image.
-
-
-        Example:
-            Add annotations to an::
-
-                >>> self.outp.add_annos('path/to/img.jpg',
-                ...     annos = [
-                ...         [0.1, 0.1, 0.2, 0.2], 
-                ...         [0.1, 0.2], 
-                ...         [[0.1, 0.3], [0.2, 0.3], [0.15, 0.1]]
-                ...     ],
-                ...     anno_types=['bbox', 'point', 'polygon'],
-                ...     anno_labels=[
-                ...         [1], 
-                ...         [1], 
-                ...         [4]
-                ...     ],
-                ...     anno_sim_classes=[10, 10, 15]
-                ... )
-
-        Note:
-            In contrast to *request_annos* this method
-            will broadcast the added annotations to all connected
-            pipeline elements.
-        '''
-        self.__check_for_video(frame_n, video_path)
-        if video_path is not None:
-            video_path = self._script.get_rel_path(video_path)
-        for pe in self._connected_pes:
-            self._add_annos(pe, img_path,
-                img_labels=img_labels,
-                img_sim_class=img_sim_class,
-                annos=annos,
-                anno_types=anno_types,
-                anno_labels=anno_labels,
-                anno_sim_classes=anno_sim_classes,
-                frame_n=frame_n,
-                video_path=video_path,
-                anno_task_id=pe.anno_task.idx,
-                fm=fm, img_comment=img_comment)
-
-    def request_image_anno(self, img_path, sim_class=None, labels=None, 
-        frame_n=None, video_path=None, fm=None, comment=None):
-        '''Request a class label annotation for an image.
-
-        Args:
-            img_path (str): Path to the image that should be annotated.
-            sim_class (int): A similarity class for this image. This similarity measure
-                will be used to cluster images for MultiObjectAnnoation ->
-                Images with the same sim_class will be presented to the
-                annotator in one step.
-            labels (list of int): Labels that will be assigned to the image.
-                Each label should represent a label_leaf_id.
-            frame_n (int): If *img_path* belongs to a video *frame_n* indicates
-                the framenumber.
-            video_path (str): If *img_path* belongs to a video this is the path to
-                this video. 
-            fm (obj): The FileSystemManager for the filesystem where image is located. 
-                Use lost standard filesystem if no filesystem was given.
-                You can get this Filesystem object from a DataSource-Element by calling
-                get_fm method.
-            comment (str): A comment that will be added to this image.
-        Example:
-            Request image annotation::
-                >>> self.request_image_anno('path/to/image', sim_class=2)
-        '''
-        for pe in self._connected_pes:
-            if pe.dtype == dtype.PipeElement.ANNO_TASK:
-                self._add_annos(pe, img_path,
-                    img_sim_class=sim_class,
-                    img_labels=labels,
-                    frame_n=frame_n,
-                    video_path=video_path,
-                    anno_task_id=pe.anno_task.idx,
-                    fm=fm, img_comment=comment)
