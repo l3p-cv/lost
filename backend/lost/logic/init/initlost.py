@@ -24,9 +24,10 @@ def main():
     dbm.create_database()
     create_roles(dbm)
     user, group = create_first_user(dbm)
-    create_lost_filesystem_entry(dbm, lostconfig, group.idx)
-    create_user_default_fs(dbm, user, group.idx)
-    create_project_config(dbm)
+    if user and group:
+        create_lost_filesystem_entry(dbm, lostconfig, group.idx)
+        create_user_default_fs(dbm, user, group.idx)
+        create_project_config(dbm)
     dbm.close_session()
 
 def create_roles(dbm):
@@ -68,6 +69,7 @@ def create_first_user(dbm):
         ur = UserRoles(user_id=user.idx, role_id=role.idx)
         dbm.save_obj(ur)
         return user, g
+    return None, None
 
 def create_lost_filesystem_entry(dbm, lostconfig, admin_default_group):
     lost_fs = dbm.get_fs('default')
