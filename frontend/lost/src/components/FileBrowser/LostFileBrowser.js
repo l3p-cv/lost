@@ -86,11 +86,13 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
     useEffect(() => {
         if (deleteFilesStatus === 'success') {
             ls(fs, selectedDir)
+            Notification.showSuccess('Deletion succeeded.')
         }
     }, [deleteFilesStatus])
 
     useEffect(() => {
         if (mkDirStatus === 'success') {
+            Notification.showSuccess('Create directory succeeded.')
             ls(fs, selectedDir)
         }
     }, [mkDirStatus])

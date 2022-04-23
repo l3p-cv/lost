@@ -94,7 +94,7 @@ class RM(Resource):
                 if 'isDir' in file:
                     res = fm.rm(file['id'] , True)
                 else:
-                    res = fm.rm(file['id'] , False)
+                    res = fm.rm(file['id'] , False) 
             dbm.close_session()
             return 'success', 200 
 
@@ -271,7 +271,7 @@ class Upload(Resource):
             dbm.close_session() 
             return "success", 200 
 @namespace.route('/mkdirs')
-class MkDirs(Resource):
+class MkDirs(Resource): 
     @jwt_required 
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
