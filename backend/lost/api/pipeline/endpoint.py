@@ -92,7 +92,7 @@ class PipelineList(Resource):
             # for group in user.groups:
             #     print("--- printing group of user.groups ---")
             #     print(group) 
-            group_ids = [g.idx for g in user.groups]
+            group_ids = [g.group_id for g in user.groups]
             re = pipeline_service.get_pipelines(dbm, group_ids)
             dbm.close_session()
             # print("--- PipelineList result ---")

@@ -170,6 +170,9 @@ class User(Resource):
                         dbm.commit()
                         dbm.delete(g)
                         dbm.commit()
+            for r in requesteduser.roles:
+                    dbm.delete(r)
+                    dbm.commit()
             dbm.delete(requesteduser) 
             dbm.commit()
             dbm.close_session()
