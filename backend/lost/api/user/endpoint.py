@@ -78,13 +78,16 @@ class UserList(Resource):
             dbm.save_obj(ur)
             
             if data['roles']:
+                role_ids = [db_role.role_id for db_role in dbm.get_user_roles(user.idx)]
                 for role_name in data['roles']:
                     for item in [item for item in dir(roles) if not item.startswith("__")]:
                         name = getattr(roles, item)
                         if role_name == name:
                             role = dbm.get_role_by_name(name)
-                            ur = UserRoles(user_id=user.idx, role_id=role.idx)
-                            dbm.save_obj(ur)
+                            if not role.idx in role_ids:
+                                ur = dbm.get_
+                                ur = UserRoles(user_id=user.idx, role_id=role.idx)
+                                dbm.save_obj(ur)
             
             if data['groups']:
                 for group_name in data['groups']:
