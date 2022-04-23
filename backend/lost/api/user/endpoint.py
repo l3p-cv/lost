@@ -85,7 +85,6 @@ class UserList(Resource):
                         if role_name == name:
                             role = dbm.get_role_by_name(name)
                             if not role.idx in role_ids:
-                                ur = dbm.get_
                                 ur = UserRoles(user_id=user.idx, role_id=role.idx)
                                 dbm.save_obj(ur)
             
