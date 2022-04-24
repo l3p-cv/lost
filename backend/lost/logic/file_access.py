@@ -6,18 +6,24 @@ from lost.db import roles
 import os
 
 def create_user_default_fs(dbm, user, group_id):
-    default = dbm.get_fs(name='default')
-    user_root_path = os.path.join(default.root_path, str(user.idx))
-    fs_db = dbm.get_fs(name=user.user_name)
-    if fs_db is None:
-        fs_db = model.FileSystem(name=user.user_name, group_id=group_id,
-                                connection=default.connection,
-                                root_path=user_root_path,
-                                fs_type=default.fs_type, timestamp=datetime.now(), 
-                                editable=False, user_default_id=user.idx)
-        dbm.save_obj(fs_db)
-        fm = FileMan(fs_db=fs_db)
-        fm.create_root_path()
+    if user.has_role(roles.ADMINISTRATOR) or user.has_role(roles.DESIGNER):
+        default = dbm.get_fs(name='default')
+        user_root_path = os.path.join(default.root_path, str(user.idx))
+        fs_db = dbm.get_fs_deleted_also(name=user.user_name)
+        if fs_db is None:
+            fs_db = model.FileSystem(name=user.user_name, group_id=group_id,
+                                    connection=default.connection,
+                                    root_path=user_root_path,
+                                    fs_type=default.fs_type, timestamp=datetime.now(), 
+                                    editable=False, user_default_id=user.idx)
+            dbm.save_obj(fs_db)
+            fm = FileMan(fs_db=fs_db)
+            fm.create_root_path()
+        elif fs_db.deleted == True:
+            # Reactivate old user specific default filesystem
+            fs_db.deleted = False
+            dbm.save_obj(fs_db)
+        return fs_db
     
 class UserFileAccess(object):
     
@@ -134,7 +140,7 @@ class UserFileAccess(object):
         '''
         return self.dbm.get_user_default_fs(self.user.idx)
 
-    def delete_user_default_fs_db(self):
+    def delete_user_default_fs(self):
         '''Delete user default fs
         
         Returns:
