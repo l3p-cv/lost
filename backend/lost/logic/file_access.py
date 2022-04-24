@@ -141,6 +141,34 @@ class UserFileAccess(object):
         fs_db_list = dbm.get_fs(group_id=group_id)
         fs_db_list += dbm.get_public_fs()
         return list(fs_db_list)
+    
+    def get_permission(self):
+        # fs types: global, own_user_specific, other_user_specific
+        # operations: read (r), read-write(rw), none 
+        # admin user, user
+        user = self.dbm.get_user(self.uid)
+        group_id = get_user_default_group(self.dbm, self.uid)
+        if user.has_role(roles.ADMINISTRATOR):
+            # global fs
+            if not self.fs_db.group_id:
+                return 'rw'
+            # user's own fs
+            if self.fs_db.group_id == group_id:
+                return 'rw'
+            # other user's fs
+            else:
+                return None
+        if user.has_role(roles.DESIGNER):
+            # global fs
+            if not self.fs_db.group_id:
+                return 'r'
+            # user's own fs
+            if self.fs_db.group_id == group_id:
+                return 'rw'
+            # other user's fs
+            else:
+                return None
+        return None
 
 class FsAccessNotPermitted(Exception):
     '''Raise if a user is not permitted to access filesystem'''

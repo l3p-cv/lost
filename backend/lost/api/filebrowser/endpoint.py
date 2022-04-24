@@ -1,5 +1,6 @@
 from datetime import time, datetime
 import json
+from lost.logic.file_access import UserFileAccess
 from flask import request
 from flask_restx import Resource
 from lost.api.api import api
@@ -149,6 +150,7 @@ class FsList(Resource):
                 fs_list += list(dbm.get_fs(group_id=group_id))
             ret = []
             for fs in fs_list:
+                ufa = UserFileAccess(dbm, user.idx, fs)
                 ret.append({
                     'id': fs.idx,
                     'groupId': fs.group_id,
@@ -156,6 +158,7 @@ class FsList(Resource):
                     'rootPath': fs.root_path,
                     'fsType': fs.fs_type,
                     'name' : fs.name,
+                    'permission': ufa.get_permission(),
                     'timestamp': fs.timestamp.isoformat()
                 })
             dbm.close_session()
