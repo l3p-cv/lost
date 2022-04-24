@@ -149,7 +149,6 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
     }
 
     const renderFileUpload = () => {
-        console.log(fs)
         if (fs) {
             if (fs.permission === 'rw') {
                 return (

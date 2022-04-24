@@ -56,7 +56,6 @@ const EditDSModal = ({
     }, [fullFs])
 
     useEffect(() => {
-        console.log('saveFsStatus', saveFsStatus)
         if (saveFsStatus === 'success') {
             closeModal()
             Notification.showSuccess('Saved datasource')
@@ -70,14 +69,11 @@ const EditDSModal = ({
             const sel = fsList.find((el) => {
                 return el.id == selectedId
             })
-            console.log('selectedFS: ', sel)
-            // callGetFullFs(sel)
             getFullFs(sel)
         }
     }, [fsList, selectedId])
 
     useEffect(() => {
-        console.log('fs changed', fs)
         setBrowsePath(fs.rootPath)
     }, [fs])
 
@@ -94,7 +90,6 @@ const EditDSModal = ({
             ...fs,
             rootPath: browsePath,
         })
-        console.log('Saved Root Path', browsePath)
         setBrowseOpen(false)
     }
 
@@ -229,7 +224,6 @@ const EditDSModal = ({
     }
 
     return (
-        // console.log()
         <div>
             <BaseModal
                 isOpen={modalOpen ? true : false}
@@ -289,7 +283,6 @@ const EditDSModal = ({
                                 color="primary"
                                 onClick={() => {
                                     setBrowseOpen(true)
-                                    console.log('fs', fs)
                                 }}
                             >
                                 Test
