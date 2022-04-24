@@ -142,14 +142,14 @@ class WorkersTable extends Component {
                             <td className="text-center">
                                 <div>{worker.in_progress}</div>
                             </td>
-                            <td className="text-center">
+                            {/* <td className="text-center">
                                 <Button
                                     onClick={() => this.handleLogfileButtonClick(worker)}
                                 >
                                     Logs
                                 </Button>
                                 {this.renderLogFileModal(worker)}
-                            </td>
+                            </td> */}
                         </tr>
                     )
                 })}
@@ -167,7 +167,7 @@ class WorkersTable extends Component {
                             <th className="text-center">Status</th>
                             <th className="text-center">Resources</th>
                             <th className="text-center">Jobs</th>
-                            <th className="text-center">Logs</th>
+                            {/* <th className="text-center">Logs</th> */}
                         </tr>
                     </thead>
                     {this.renderTableBody()}
