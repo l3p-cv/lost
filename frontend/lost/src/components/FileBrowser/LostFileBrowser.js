@@ -41,6 +41,8 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
     useEffect(() => {
         if (fs) {
             ls(fs, fs.rootPath)
+            setSelectedDir(fs.rootPath)
+            setSelectedPath(fs.rootPath)
         }
     }, [fs])
 
