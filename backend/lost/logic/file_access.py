@@ -167,9 +167,8 @@ class UserFileAccess(object):
         # fs types: global, own_user_specific, other_user_specific
         # operations: read (r), read-write(rw), none 
         # admin user, user
-        user = self.dbm.get_user(self.uid)
-        group_id = get_user_default_group(self.dbm, self.uid)
-        if user.has_role(roles.ADMINISTRATOR):
+        group_id = get_user_default_group(self.dbm, self.user.idx)
+        if self.user.has_role(roles.ADMINISTRATOR):
             # global fs
             if not self.fs_db.group_id:
                 return 'rw'
@@ -179,7 +178,7 @@ class UserFileAccess(object):
             # other user's fs
             else:
                 return None
-        if user.has_role(roles.DESIGNER):
+        if self.user.has_role(roles.DESIGNER):
             # global fs
             if not self.fs_db.group_id:
                 return 'r'

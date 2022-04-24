@@ -1,5 +1,6 @@
 from datetime import time, datetime
 import json
+from math import perm
 from lost.logic.file_access import UserFileAccess
 from flask import request
 from flask_restx import Resource
@@ -150,7 +151,7 @@ class FsList(Resource):
                 fs_list += list(dbm.get_fs(group_id=group_id))
             ret = []
             for fs in fs_list:
-                ufa = UserFileAccess(dbm, user.idx, fs)
+                ufa = UserFileAccess(dbm, user, fs)
                 ret.append({
                     'id': fs.idx,
                     'groupId': fs.group_id,
@@ -199,6 +200,10 @@ class SaveFs(Resource):
                 if data['visLevel'] == VisLevel().GLOBAL:
                     group_id = None
                 # raise Exception(f'data connection:\n{data["connection"]}')
+                if data['fsType'] == 'file':
+                    if not user.has_role(roles.ADMINISTRATOR):
+                        dbm.close_session()
+                        return "Access to the local file system can only be performed by administrators.", 401
                 new_fs_db = model.FileSystem(
                     group_id=group_id,
                     connection=encrypt_fs_connection(data['connection']) if data['fsType'] != 'file' else data['connection'],
@@ -235,20 +240,23 @@ class FullFs(Resource):
                 if user_group.group.is_user_default:
                     group_id = user_group.group.idx
             fs = dbm.get_fs(fs_id=data['id'])
+            ufa = UserFileAccess(dbm, user, fs)
+            permission = ufa.get_permission()
+            connection = None
+            if permission == 'rw':
+                if user.idx != fs.user_default_id:
+                    connection = decrypt_fs_connection(fs)
             dbm.close_session()
-            if fs.group_id == group_id or (user.has_role(roles.ADMINISTRATOR) and fs.group_id is None):
-                # connection = Crypt().decrypt(fs.connection) if fs.fs_type != 'file' else fs.connection
-                return {
-                        'id': fs.idx,
-                        'groupId': fs.group_id,
-                        'connection': decrypt_fs_connection(fs),
-                        'rootPath': fs.root_path,
-                        'fsType': fs.fs_type,
-                        'name' : fs.name,
-                        'timestamp': fs.timestamp.isoformat()
-                    }
-            else:
-                return "You need to be the owner of this datasource in order to decrypt the connection string", 401
+            return {
+                    'id': fs.idx,
+                    'groupId': fs.group_id,
+                    'connection': connection,
+                    'rootPath': fs.root_path,
+                    'permission': permission,
+                    'fsType': fs.fs_type,
+                    'name' : fs.name,
+                    'timestamp': fs.timestamp.isoformat()
+                }
 @namespace.route('/upload')
 class Upload(Resource):
     @jwt_required
