@@ -169,10 +169,15 @@ class FsList(Resource):
 class FsTypes(Resource):
     @jwt_required 
     def get(self):
-        # dbm = access.DBMan(LOST_CONFIG)
-        # identity = get_jwt_identity()
-        # user = dbm.get_user_by_id(identity)
-        return list(known_implementations.keys())
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        possible_fs_types = ['ssh', 'ftp', 'sftp', 's3', 's3a', 'adl', 'abfs', 'abfss']
+        if user.has_role(roles.ADMINISTRATOR):
+            possible_fs_types.append('file')
+
+        return possible_fs_types
+        #return list(known_implementations.keys())
 
 @namespace.route('/savefs')
 class SaveFs(Resource):
