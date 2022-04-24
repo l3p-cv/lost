@@ -10,7 +10,7 @@ from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
 from lost.db.model import User as DBUser, Group, UserRoles, UserGroups
 from lost.logic import email 
-from lost.logic.user import release_user_annos
+from lost.logic.user import get_user_default_group, release_user_annos
 from flaskapp import blacklist
 from lost.logic import dask_session
 from lost.api.user.login_manager import LoginManager
@@ -210,6 +210,8 @@ class User(Resource):
                     dbm.delete(user_role) 
                     dbm.commit()
             
+            user_default_group_id = get_user_default_group(dbm, requesteduser.idx)
+            user_role_list = []
             if requesteduser.user_name != 'admin': 
                 if args.get('roles'):
                     for role_name in args.get('roles'):
@@ -217,9 +219,20 @@ class User(Resource):
                             name = getattr(roles, item)
                             if role_name == name:
                                 role = dbm.get_role_by_name(name) 
+                                user_role_list.append(role)
                                 ur = UserRoles(user_id=requesteduser.idx, role_id=role.idx)
                                 dbm.save_obj(ur)
-            
+
+            if len(user_role_list) == 1:
+                if requesteduser.has_role(roles.ANNOTATOR):
+                    # raise Exception(user_role_list)
+                    fs_db = dbm.get_user_default_fs(requesteduser.idx)
+                    ufa = UserFileAccess(dbm, requesteduser, fs_db)
+                    ufa.delete_user_default_fs()
+                else:
+                    create_user_default_fs(dbm, requesteduser, user_default_group_id)
+            else:
+                create_user_default_fs(dbm, requesteduser, user_default_group_id)
 
             for user_group in dbm.get_user_groups_by_user_id(id):
                 if user_group.group.is_user_default:

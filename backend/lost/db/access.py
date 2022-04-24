@@ -781,6 +781,29 @@ class DBMan(object):
         return self.session.query(model.FileSystem)\
             .filter(model.FileSystem.user_default_id==user_idx).first()
                 
+    def get_fs_deleted_also(self, name=None, group_id=None, fs_id=None):
+        '''Get all filesystem entries from database including deleted fs
+
+        Args:
+            name (str): Get filesystem by name.
+            group_id (int): GroupID for Group or User
+        
+        Retruns:
+            list of `model.FileSystem`: If no arg or group_id was given.
+            `model.FileSystem` object: If one arg was given.
+        '''
+        if name is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.name==name).first()
+        elif group_id is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.group_id==group_id).all()
+        elif fs_id is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.idx==fs_id).first()
+        else:
+            return self.session.query(model.FileSystem).all()
+
     def get_fs(self, name=None, group_id=None, fs_id=None):
         '''Get filesystem entries from database
 

@@ -168,11 +168,10 @@ class GetImage(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
-            #TODO: Check if user is permitted to load this image
-            data = json.loads(request.data)
             #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
+            data = json.loads(request.data)
+            # TODO: get db_img via db access
             if data['type'] == 'imageBased':
-                # TODO: get image via db access
                 db_img = dbm.get_image_anno(data['id'])
                 ufa = UserFileAccess(dbm, user, db_img.fs)
                 img = load_img(db_img, ufa, user)
