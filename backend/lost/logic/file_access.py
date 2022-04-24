@@ -21,7 +21,7 @@ def create_user_default_fs(dbm, user, group_id):
     
 class UserFileAccess(object):
     
-    def __init__(self, dbm, user_id, fs_db):
+    def __init__(self, dbm, user, fs_db):
         '''User based file system access layer.
         
         This class will manage all file access of a lost user. It will also check
@@ -29,11 +29,11 @@ class UserFileAccess(object):
         
         Args:
             dbm (DBMan): Lost DatabaseManager
-            user_id (int): Id of the user who needs filesystem access
+            user (model.User): User database object of the user who needs filesystem access
             fs_db (model.FileSystem): A lost FileSystem
         '''
         self.dbm = dbm
-        self.uid = user_id 
+        self.user = user
         if not isinstance(fs_db, model.FileSystem):
             raise Exception('fs_db needs to be a lost FileSystem object!')
         self.fs_db = fs_db
@@ -42,8 +42,8 @@ class UserFileAccess(object):
 
     def load_anno_img(self,db_img):
         anno_task = self.dbm.get_anno_task(db_img.anno_task_id)
-        user = self.dbm.get_user(self.uid)
-        if anno_task.manager_id == self.uid:
+        user = self.user
+        if anno_task.manager_id == user.idx:
             return self.fm.load_img(db_img.img_path)
         elif anno_task.group_id in [g.group_id for g in user.groups]:
             return self.fm.load_img(db_img.img_path)
@@ -62,7 +62,7 @@ class UserFileAccess(object):
                 action in any other fs than his default fs
 
         '''
-        if self.uid != self.fs_db.user_default_id:
+        if self.user.idx != self.fs_db.user_default_id:
             raise UserDefaultFsRequired()
 
     def get_pipe_log_path(self, pipe_id):
@@ -100,10 +100,10 @@ class UserFileAccess(object):
             fs_db = self.dbm.get_fs(fs_id=fs_id)
         else:
             raise ValueError('Either name or fs_id need to be provided')
-        user = self.dbm.get_user(self.uid)
+        user = self.user
         if user.has_role(roles.ADMINISTRATOR):
             return fs_db
-        elif self.uid == fs_db.user_default_id:
+        elif user.idx == fs_db.user_default_id:
             return fs_db
         elif fs_db.group_id is None:
             return fs_db
@@ -126,9 +126,30 @@ class UserFileAccess(object):
         fm = FileMan(fs_db=fs_db)
         return fm.fs
 
-    def get_user_default_fs(self):
-        '''Get users default filesystem'''
-        return self.dbm.get_user_default_fs(self.uid)
+    def get_user_default_fs_db(self):
+        '''Get users default filesystem
+        
+        Returns:
+            model.FileSystem: lost filesystem entry from database
+        '''
+        return self.dbm.get_user_default_fs(self.user.idx)
+
+    def delete_user_default_fs_db(self):
+        '''Delete user default fs
+        
+        Returns:
+            model.FileSystem: The deleted filesystem
+            
+        Note:
+            When deleting a user default filesystem a deleted flag will be set 
+            in oder to maintain data consitency.
+        '''
+        self._user_default_required()
+        fs_db = self.fs_db
+        if fs_db is not None:
+            fs_db.deleted = True
+            self.dbm.save_obj(fs_db)
+        return fs_db
 
     def get_user_fs_list(self):
         '''Get a list of all filesystem that the current user may access
@@ -137,7 +158,7 @@ class UserFileAccess(object):
             list of FileSystem: List of FileSystem objects
         '''
         dbm = self.dbm
-        group_id = get_user_default_group(dbm, self.uid)
+        group_id = get_user_default_group(dbm, self.user.idx)
         fs_db_list = dbm.get_fs(group_id=group_id)
         fs_db_list += dbm.get_public_fs()
         return list(fs_db_list)

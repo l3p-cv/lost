@@ -174,12 +174,12 @@ class GetImage(Resource):
             if data['type'] == 'imageBased':
                 # TODO: get image via db access
                 db_img = dbm.get_image_anno(data['id'])
-                ufa = UserFileAccess(dbm, user.idx, db_img.fs)
+                ufa = UserFileAccess(dbm, user, db_img.fs)
                 img = load_img(db_img, ufa, user)
             elif data['type'] == 'annoBased':
                 db_anno = dbm.get_two_d_anno(two_d_anno_id=data['id'])
                 db_img = dbm.get_image_anno(db_anno.img_anno_id)
-                ufa = UserFileAccess(dbm, user.idx, db_img.fs)
+                ufa = UserFileAccess(dbm, user, db_img.fs)
                 # image = fm.load_img(db_img.img_path)
                 image = load_img(db_img, ufa, user)
                 

@@ -579,7 +579,7 @@ class ScriptOutput(Output):
         if img_sim_class is None:
             img_sim_class = 1
         if fs is None:
-            fs_db = self.ufa.get_user_default_fs()
+            fs_db = self.ufa.get_user_default_fs_db()
             fm = file_man.FileMan(fs_db=fs_db)
             fs = fm.fs
         if fs.isfile(img_path):
