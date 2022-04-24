@@ -44,7 +44,7 @@ const EditDSModal = ({
     const [browsePath, setBrowsePath] = useState(fs.rootPath)
     const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
     const { mutate: saveFs, status: saveFsStatus, error: saveFsError } = fbAPI.useSaveFs()
-    const userName = useSelector((state) => state.user.ownUser.user_name)
+    const roles = useSelector((state) => state.user.ownUser.roles)
 
     // async function callGetFullFs(fs) {
     //     const fullFs = await getFullFs(fs)
@@ -151,7 +151,7 @@ const EditDSModal = ({
                     <b>Load Preset</b>
                 </CRow>
                 <CRow alignHorizontal="center" style={{ marginTop: 8, marginBottom: 20 }}>
-                    {userName === 'admin' ? (
+                    {roles.find((el) => el.name === 'Administrator') ? (
                         <IconButton
                             text="File"
                             isOutline={false}
