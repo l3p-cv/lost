@@ -140,6 +140,21 @@ class UserFileAccess(object):
         '''
         return self.dbm.get_user_default_fs(self.user.idx)
 
+    def write_file(self, bytes_obj, path):
+        '''Write bytes object to selected filesystem 
+        
+        Args:
+            bytes_obj(bytes): Object to write
+            path (str): Destination path where object will be saved
+        '''
+        if self.fs_db.root_path not in path:
+            raise WriteAccessNotPermitted()
+        if 'w' in self.get_permission():
+            with self.fs.open(path, 'wb') as fs_stream:
+                fs_stream.write(bytes_obj)
+        else:
+            raise WriteAccessNotPermitted()
+
     def delete_user_default_fs(self):
         '''Delete user default fs
         
@@ -201,6 +216,11 @@ class UserFileAccess(object):
         log_path = self.get_pipe_log_path(pipe_id)
         return self.fm.get_file_stream(log_path)
 
+class WriteAccessNotPermitted(Exception):
+    '''Raise if a user is not permitted to write into filesystem'''
+
+    def __str__(self):
+        return 'User is not permitted to write to current filesystem!'
 class FsAccessNotPermitted(Exception):
     '''Raise if a user is not permitted to access filesystem'''
 

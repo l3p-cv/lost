@@ -1,10 +1,12 @@
 from datetime import time, datetime
 import json
 from math import perm
+from lost.logic import file_access
 from lost.logic.file_access import UserFileAccess
 from flask import request
 from flask_restx import Resource
 from lost.api.api import api
+from lost.logic.file_access import UserFileAccess
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.db.vis_level import VisLevel
 from lost.logic.user import get_user_default_group
@@ -278,14 +280,20 @@ class Upload(Resource):
             fsId = data['fsId'] 
             path = data['path']
             fs_db = dbm.get_fs(fs_id=fsId)
-            fm = FileMan(fs_db=fs_db)
-            uploaded_files = request.files.getlist("file[]")
-            for file in uploaded_files:
-                dst_path = os.path.join(path, file.filename)
-                with fm.fs.open(dst_path, 'wb') as fs_stream:
-                    fs_stream.write(file.read())
-            dbm.close_session() 
-            return "success", 200 
+            ufa = UserFileAccess(dbm, user, fs_db)
+            try:
+                # fm = FileMan(fs_db=fs_db)
+                uploaded_files = request.files.getlist("file[]")
+                for file in uploaded_files:
+                    dst_path = os.path.join(path, file.filename)
+                    # with ufa.fs.open(dst_path, 'wb') as fs_stream:
+                    #     fs_stream.write(file.read())
+                    ufa.write_file(file.read(), dst_path)
+                dbm.close_session() 
+                return "success", 200 
+            except file_access.WriteAccessNotPermitted:
+                return 'Not allowed to upload to this filesystem', 403
+
 @namespace.route('/mkdirs')
 class MkDirs(Resource): 
     @jwt_required 
