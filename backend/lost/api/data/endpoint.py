@@ -60,11 +60,11 @@ class Data(Resource):
 
 #             # return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data/logs'), path)
 
-@namespace.route('/logs/<path:path>')
+@namespace.route('/logs/<int:pe_id>')
 #@namespace.param('path', 'Path to logfile')
 class Logs(Resource):
     @jwt_required 
-    def get(self, path):
+    def get(self, pe_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -74,10 +74,11 @@ class Logs(Resource):
         else:
             # raise Exception('data/logs/ -> Not Implemented!')
             fm = FileMan(LOST_CONFIG)
-            with fm.fs.open(fm.get_abs_path(path), 'rb') as f:
-                resp = make_response(f.read())
-                resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
-                resp.headers["Content-Type"] = "text/csv"
+            user_fs = dbm.get_user_default_fs(user.idx)
+            ufa = UserFileAccess(dbm, user, user_fs)           
+            resp = make_response(ufa.get_pipe_log_file(pe_id))
+            resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
+            resp.headers["Content-Type"] = "text/csv"
             return resp
 
 @namespace.route('/dataexport/<deid>')

@@ -374,6 +374,9 @@ class FileMan(object):
             self.fs.mkdirs(root_path)
         return root_path
 
+    def get_file_stream(self, path, option='rb'):
+        with self.fs.open(path, option) as f:
+            return f.read()
     # def create_project_folders(self):
     #     '''Create folder structure for a project in lost webportal.
 

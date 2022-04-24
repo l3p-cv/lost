@@ -35,16 +35,16 @@ const LogModal = (props) => {
     const getLog = async () => {
         let logResponse
         setIsRedBorder(true)
-        if (props.logPath || props.message) {
+        if (props.pipeId || props.wId) {
             switch (props.actionType) {
                 case LogModal.TYPES.PIPELINE:
-                    logResponse = await actions.getLog(props.logPath)
+                    logResponse = await actions.getLog(props.pipeId)
                     break
                 case LogModal.TYPES.WORKERS:
                     if (firstRequest) {
                         Notification.showLoading()
                     }
-                    logResponse = await actions.getWorkerLogFile(props.logPath)
+                    logResponse = await actions.getWorkerLogFile(props.wId)
                     break
                 default:
                     throw new Error('Unknown type')
@@ -69,10 +69,10 @@ const LogModal = (props) => {
         }, 100)
     }
     useEffect(() => {
-        if ((props.logPath || props.message) && props.isOpen) {
+        if ((props.pipeId || props.wId) && props.isOpen) {
             getLog()
         }
-    }, [props.logPath])
+    }, [props.pipeId, props.wId])
 
     useInterval(() => {
         if (props.isOpen) {
@@ -83,10 +83,10 @@ const LogModal = (props) => {
     const downloadLogfile = () => {
         switch (props.actionType) {
             case LogModal.TYPES.PIPELINE:
-                dispatch(actions.downloadLogfile(props.logPath, props.wiLogId))
+                dispatch(actions.downloadLogfile(props.pipeId))
                 break
             case LogModal.TYPES.WORKERS:
-                dispatch(actions.downloadWorkerLogfile(props.logPath, props.wiLogId))
+                dispatch(actions.downloadWorkerLogfile(props.wId))
                 break
             default:
                 throw new Error('Unknown type')

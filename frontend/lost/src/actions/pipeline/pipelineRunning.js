@@ -82,9 +82,9 @@ const playPipeline = (id) => async (dispatch) => {
 
 const regeneratePipeline = (id) => async (dispatch) => {}
 
-const getLog = async (path) => {
+const getLog = async (id) => {
     // const token = localStorage.getItem('token')
-    // const response = await fetch(`${API_URL}/${path}?nocache=${Math.random()}`,
+    // const response = await fetch(`${API_URL}/${id}?nocache=${Math.random()}`,
     //     {
     //         headers: {
     //             Authorization: 'Bearer ' + token
@@ -93,7 +93,7 @@ const getLog = async (path) => {
     // )
     let response = {}
     try {
-        response = await axios.get(`${API_URL}/data/logs/${path}`)
+        response = await axios.get(`${API_URL}/data/logs/${id}`)
         // console.log('pipelineRunning getLog', response)
     } catch (err) {
         console.warn(err)
@@ -127,10 +127,10 @@ const updateArguments = (elementId, updatedArguments) => async (dispatch) => {
     // const response = await axios.post(`${API_URL}/updateArguments/6`)
 }
 
-const downloadLogfile = (path, id) => async (dispatch) => {
+const downloadLogfile = (id) => async (dispatch) => {
     const token = localStorage.getItem('token')
     const response = await http.get({
-        url: `${API_URL}/data/logs/${path}?nocache=${Math.random()}`,
+        url: `${API_URL}/data/logs/${id}?nocache=${Math.random()}`,
         token,
         type: 'image',
     })

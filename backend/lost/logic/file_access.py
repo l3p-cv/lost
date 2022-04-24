@@ -195,6 +195,11 @@ class UserFileAccess(object):
             else:
                 return None
         return None
+    
+    def get_pipe_log_file(self, pipe_id):
+        self._user_default_required()
+        log_path = self.get_pipe_log_path(pipe_id)
+        return self.fm.get_file_stream(log_path)
 
 class FsAccessNotPermitted(Exception):
     '''Raise if a user is not permitted to access filesystem'''
