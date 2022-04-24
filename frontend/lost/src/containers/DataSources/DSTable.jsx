@@ -48,14 +48,12 @@ export const DSTable = ({ visLevel }) => {
     }
 
     useEffect(() => {
-        console.log(userName)
         fetchData()
         // const interval = setInterval(fetchData, 1000)
         // return () => clearInterval(interval)
     }, [])
 
     useEffect(() => {
-        console.log('deleteStatus', deleteStatus)
         if (deleteStatus === 'success') {
             fetchData()
             Notification.showSuccess('Deletion successfull!')
@@ -64,9 +62,7 @@ export const DSTable = ({ visLevel }) => {
         }
     }, [deleteStatus])
 
-    useEffect(() => {
-        console.log('possibleFsTypes: ', possibleFsTypes)
-    }, [possibleFsTypes])
+    useEffect(() => {}, [possibleFsTypes])
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
     const [selectedDs, setSelectedDs] = useState()
@@ -80,8 +76,6 @@ export const DSTable = ({ visLevel }) => {
     }
 
     const handleEditDs = (row) => {
-        console.log('handleEditDs', row)
-        console.log('row.value', row.id)
         setSelectedDs(row.id)
         openEditDSModal()
     }
@@ -121,7 +115,6 @@ export const DSTable = ({ visLevel }) => {
             option1: {
                 text: 'YES',
                 callback: () => {
-                    console.log('Delete', row)
                     deleteSelectedFs(row)
                 },
             },
@@ -149,7 +142,6 @@ export const DSTable = ({ visLevel }) => {
     }
 
     const onOpenFileBrowser = (row) => {
-        console.log(row.id)
         const fs = {
             id: row.id,
         }
@@ -281,11 +273,6 @@ export const DSTable = ({ visLevel }) => {
                                     icon={faFolderOpen}
                                     color="primary"
                                     onClick={() => onOpenFileBrowser(row)}
-                                    disabled={
-                                        row.groupId === null
-                                            ? visLevel !== 'global'
-                                            : false
-                                    }
                                     text="Browse"
                                     // isOutline={false}
                                 />

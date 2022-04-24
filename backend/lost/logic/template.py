@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from lost.logic.file_access import UserFileAccess
 from lost.db import model, access, dtype
 from lost.logic.file_man import FileMan
 from lost.logic.label import LabelTree
@@ -107,7 +108,7 @@ def get_template(db_man, template_id ,user):
                                             available_label_trees, 
                                             available_groups,
                                             available_scripts,
-                                            available_fs)
+                                            available_fs, user)
     except TypeError:
             return "No JSON found in PipeTemplate."
     template_serialize.add_available_info()
@@ -125,7 +126,8 @@ class TemplateSerialize(object):
                  available_label_trees=None,
                  available_groups=None,
                  available_scripts=None,
-                 available_fs=None):
+                 available_fs=None,
+                 user=None):
         self.dbm = dbm
         self.template = template
         self.template_json = json.loads(template.json_template)
@@ -134,6 +136,7 @@ class TemplateSerialize(object):
         self.available_groups = available_groups
         self.available_scripts = available_scripts
         self.available_fs = available_fs
+        self.user = user
 
     def add_available_info(self):
         self.template_json['id'] = self.template.idx
@@ -154,10 +157,12 @@ class TemplateSerialize(object):
     def __get_filesystem_infos(self):
         res = []
         for fs in self.available_fs:
+            ufa = UserFileAccess(self.dbm, self.user, fs)
             res.append({
                 'name': fs.name,
                 'id': fs.idx,
                 'rootPath': fs.root_path,
+                'permission': ufa.get_permission(),
                 'fsType': fs.fs_type
             })
         return res

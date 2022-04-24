@@ -52,15 +52,21 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         setCopiedAcceptedFiles(acceptedFiles)
         setSize(newSize)
     }, [acceptedFiles])
-    const fileActions = useMemo(
-        () => [ChonkyActions.CreateFolder, ChonkyActions.DeleteFiles],
-        [],
-    )
+
+    const getAllowedFileActions = () => {
+        if (fs) {
+            if (fs.permission === 'rw') {
+                return [ChonkyActions.CreateFolder, ChonkyActions.DeleteFiles]
+            }
+        }
+        return []
+    }
+    const fileActions = useMemo(() => getAllowedFileActions(), [fs])
+
     const ls = async (fs, path) => {
         let res_data
         if (mode) {
             if (mode === 'lsTest') {
-                console.log('LostFileBrowser -> fs, path', fs, path)
                 res_data = await fbaccess.lsTest(fs, path)
             } else {
                 res_data = await fbaccess.ls(fs, path)
@@ -111,7 +117,6 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
                 break
             case ChonkyActions.MouseClickFile.id:
                 if (data) {
-                    console.log('MouseClickFile: ', data.payload.file.id)
                     if (onPathSelected) {
                         onPathSelected(data.payload.file.id)
                     }
@@ -119,7 +124,6 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
                 break
             case ChonkyActions.CreateFolder.id:
                 const folderName = prompt('Provide the name for your new folder:')
-                console.log('CREATE FOLDER:', folderName)
                 mkDir({ fs, path: selectedDir, name: folderName })
                 break
             case ChonkyActions.DeleteFiles.id:
@@ -144,6 +148,111 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
         }
     }
 
+    const renderFileUpload = () => {
+        if (fs) {
+            if (fs.permission === 'rw') {
+                return (
+                    <CRow
+                        style={{
+                            marginTop: 10,
+                        }}
+                    >
+                        <CCol sm="10">
+                            <section
+                                style={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    padding: '30px',
+                                    // marginTop: '10px',
+                                    borderWidth: '2px',
+                                    borderRadius: '2px',
+                                    borderColor: '#cccccc',
+                                    borderStyle: 'dashed',
+                                    backgroundColor: '#fafafa',
+                                    color: '#bdbdbd',
+                                    outline: 'none',
+                                    transition: 'border 0.24s ease-in-out',
+                                    height: '100px',
+                                }}
+                            >
+                                <div {...getRootProps({ className: 'dropzone' })}>
+                                    <input {...getInputProps()} />
+                                    <p>
+                                        Upload files to this folder by drag 'n' drop or
+                                        clicking.
+                                    </p>
+                                </div>
+                                <aside>
+                                    <b style={{ color: '#898989' }}>
+                                        <ul>
+                                            {' '}
+                                            {copiedAccecptedFiles.length > 0 ? (
+                                                <li key={copiedAccecptedFiles[0].path}>
+                                                    {copiedAccecptedFiles.length} File
+                                                    {copiedAccecptedFiles.length > 1
+                                                        ? 's'
+                                                        : ''}
+                                                    {' - '}
+                                                    {Number(
+                                                        (size / 1024 / 1024).toFixed(2),
+                                                    )}{' '}
+                                                    MBytes
+                                                </li>
+                                            ) : (
+                                                ''
+                                            )}
+                                        </ul>
+                                    </b>
+                                </aside>
+                            </section>
+                        </CCol>
+                        <CCol sm="2">
+                            {' '}
+                            <IconButton
+                                icon={faUpload}
+                                color={'primary'}
+                                text={'Upload'}
+                                disabled={
+                                    copiedAccecptedFiles.length === 0 || fs === undefined
+                                }
+                                onClick={
+                                    fs
+                                        ? () =>
+                                              uploadFiles({
+                                                  files: copiedAccecptedFiles,
+                                                  fsId: fs.id,
+                                                  path: selectedPath,
+                                              })
+                                        : ''
+                                }
+                            />
+                            <div style={{ marginTop: 10 }}>
+                                {uploadFilesData.progress
+                                    ? `Progress: ${Number(
+                                          uploadFilesData.progress * 100,
+                                      ).toFixed(2)}%`
+                                    : ''}
+                            </div>
+                        </CCol>
+                    </CRow>
+                )
+            }
+        }
+        return (
+            <CRow
+                style={{
+                    marginTop: 10,
+                }}
+            >
+                <CCol>
+                    <b>Read-only datasource.</b>
+                </CCol>
+            </CRow>
+        )
+    }
+
     return (
         <>
             <div style={{ height: 400 }}>
@@ -162,84 +271,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
                     <FileContextMenu />
                 </FileBrowser>
             </div>
-            <CRow
-                style={{
-                    marginTop: 10,
-                }}
-            >
-                <CCol sm="10">
-                    <section
-                        style={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            padding: '30px',
-                            // marginTop: '10px',
-                            borderWidth: '2px',
-                            borderRadius: '2px',
-                            borderColor: '#cccccc',
-                            borderStyle: 'dashed',
-                            backgroundColor: '#fafafa',
-                            color: '#bdbdbd',
-                            outline: 'none',
-                            transition: 'border 0.24s ease-in-out',
-                            height: '100px',
-                        }}
-                    >
-                        <div {...getRootProps({ className: 'dropzone' })}>
-                            <input {...getInputProps()} />
-                            <p>
-                                Upload files to this folder by drag 'n' drop or clicking.
-                            </p>
-                        </div>
-                        <aside>
-                            <b style={{ color: '#898989' }}>
-                                <ul>
-                                    {' '}
-                                    {copiedAccecptedFiles.length > 0 ? (
-                                        <li key={copiedAccecptedFiles[0].path}>
-                                            {copiedAccecptedFiles.length} File
-                                            {copiedAccecptedFiles.length > 1 ? 's' : ''}
-                                            {' - '}
-                                            {Number((size / 1024 / 1024).toFixed(2))}{' '}
-                                            MBytes
-                                        </li>
-                                    ) : (
-                                        ''
-                                    )}
-                                </ul>
-                            </b>
-                        </aside>
-                    </section>
-                </CCol>
-                <CCol sm="2">
-                    {' '}
-                    <IconButton
-                        icon={faUpload}
-                        color={'primary'}
-                        text={'Upload'}
-                        disabled={copiedAccecptedFiles.length === 0 || fs === undefined}
-                        onClick={
-                            fs
-                                ? () =>
-                                      uploadFiles({
-                                          files: copiedAccecptedFiles,
-                                          fsId: fs.id,
-                                          path: selectedPath,
-                                      })
-                                : ''
-                        }
-                    />
-                    <div style={{ marginTop: 10 }}>
-                        {uploadFilesData.progress
-                            ? `Progress: ${Number(uploadFilesData.progress * 100).toFixed(
-                                  2,
-                              )}%`
-                            : ''}
-                    </div>
-                </CCol>
-            </CRow>
+            {renderFileUpload()}
         </>
     )
 }

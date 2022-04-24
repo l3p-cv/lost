@@ -16,7 +16,7 @@ import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import * as Notification from '../../components/Notification'
 import { CRow } from '@coreui/react'
-// import { saveFs } from '../../access/fb'
+import { useSelector } from 'react-redux'
 import * as fbAPI from '../../actions/fb/fb_api'
 
 const EditDSModal = ({
@@ -44,6 +44,7 @@ const EditDSModal = ({
     const [browsePath, setBrowsePath] = useState(fs.rootPath)
     const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
     const { mutate: saveFs, status: saveFsStatus, error: saveFsError } = fbAPI.useSaveFs()
+    const roles = useSelector((state) => state.user.ownUser.roles)
 
     // async function callGetFullFs(fs) {
     //     const fullFs = await getFullFs(fs)
@@ -55,7 +56,6 @@ const EditDSModal = ({
     }, [fullFs])
 
     useEffect(() => {
-        console.log('saveFsStatus', saveFsStatus)
         if (saveFsStatus === 'success') {
             closeModal()
             Notification.showSuccess('Saved datasource')
@@ -69,14 +69,11 @@ const EditDSModal = ({
             const sel = fsList.find((el) => {
                 return el.id == selectedId
             })
-            console.log('selectedFS: ', sel)
-            // callGetFullFs(sel)
             getFullFs(sel)
         }
     }, [fsList, selectedId])
 
     useEffect(() => {
-        console.log('fs changed', fs)
         setBrowsePath(fs.rootPath)
     }, [fs])
 
@@ -93,7 +90,6 @@ const EditDSModal = ({
             ...fs,
             rootPath: browsePath,
         })
-        console.log('Saved Root Path', browsePath)
         setBrowseOpen(false)
     }
 
@@ -155,13 +151,17 @@ const EditDSModal = ({
                     <b>Load Preset</b>
                 </CRow>
                 <CRow alignHorizontal="center" style={{ marginTop: 8, marginBottom: 20 }}>
-                    <IconButton
-                        text="File"
-                        isOutline={false}
-                        icon={faFile}
-                        style={{ marginRight: 8 }}
-                        onClick={() => loadPreset('file')}
-                    />
+                    {roles.find((el) => el.name === 'Administrator') ? (
+                        <IconButton
+                            text="File"
+                            isOutline={false}
+                            icon={faFile}
+                            style={{ marginRight: 8 }}
+                            onClick={() => loadPreset('file')}
+                        />
+                    ) : (
+                        ''
+                    )}
                     <IconButton
                         text="S3 Bucket"
                         isOutline={false}
@@ -224,7 +224,6 @@ const EditDSModal = ({
     }
 
     return (
-        // console.log()
         <div>
             <BaseModal
                 isOpen={modalOpen ? true : false}
@@ -284,7 +283,6 @@ const EditDSModal = ({
                                 color="primary"
                                 onClick={() => {
                                     setBrowseOpen(true)
-                                    console.log('fs', fs)
                                 }}
                             >
                                 Test
