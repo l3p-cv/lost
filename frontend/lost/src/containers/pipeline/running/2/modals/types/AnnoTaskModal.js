@@ -46,15 +46,15 @@ function handleSiaRewiewClick(props, callback) {
     // history.push('/sia-review')
 }
 
-function handleInstantAnnoDownload(pe_id) {
-    fetch(`${API_URL}/data/annoexport/${pe_id}`, {
+function handleInstantAnnoDownload(pe_id, type = 'csv') {
+    fetch(`${API_URL}/data/annoexport_${type}/${pe_id}`, {
         method: 'get',
         headers: new Headers({
             Authorization: `Bearer ${localStorage.getItem('token')}`,
         }),
     })
         .then((res) => res.blob())
-        .then((blob) => saveAs(blob, `annos_pe_${pe_id}.parquet`))
+        .then((blob) => saveAs(blob, `annos_pe_${pe_id}.${type}`))
 }
 
 function annotationReleaseSuccessful() {
@@ -198,8 +198,16 @@ const AnnoTaskModal = (props) => {
                     color="primary"
                     isOutline={false}
                     style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-                    onClick={(e) => handleInstantAnnoDownload(props.id)}
-                    text="Download Annotations"
+                    onClick={(e) => handleInstantAnnoDownload(props.id, 'csv')}
+                    text="CSV - Download"
+                />
+                <IconButton
+                    icon={faDownload}
+                    color="primary"
+                    isOutline={false}
+                    style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
+                    onClick={(e) => handleInstantAnnoDownload(props.id, 'parquet')}
+                    text="Parquet - Download"
                 />
                 <IconButton
                     icon={faEye}
