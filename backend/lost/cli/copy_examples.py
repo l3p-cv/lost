@@ -18,6 +18,7 @@ if __name__ == "__main__":
     lostconfig = config.LOSTConfig()
     dbm = DBMan(lostconfig)
     admin_fs = dbm.get_user_default_fs(1)
-    ufa = UserFileAccess(dbm, 1, admin_fs)
+    admin = dbm.get_user_by_id(1)
+    ufa = UserFileAccess(dbm, admin, admin_fs)
     ufa.fm.fs.put(args.src, ufa.get_media_path(), recursive=True)
     logging.info('Copyed images from {} to {}'.format(args.src, ufa.get_media_path()))

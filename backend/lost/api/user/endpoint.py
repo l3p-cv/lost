@@ -14,7 +14,7 @@ from lost.logic.user import release_user_annos
 from flaskapp import blacklist
 from lost.logic import dask_session
 from lost.api.user.login_manager import LoginManager
-from lost.logic.file_access import create_user_default_fs
+from lost.logic.file_access import UserFileAccess, create_user_default_fs
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
@@ -177,6 +177,9 @@ class User(Resource):
                     dbm.commit()
             dbm.delete(requesteduser) 
             dbm.commit()
+            fs_db = dbm.get_user_default_fs(requesteduser.idx)
+            ufa = UserFileAccess(dbm, requesteduser, fs_db)
+            ufa.delete_user_default_fs()
             dbm.close_session()
             return 'success', 200 
         else:

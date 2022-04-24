@@ -69,7 +69,7 @@ class Script(pe_base.Element):
         user_id = self.pipe_info.user.idx
         self.user_id = user_id
         db_fs = dbm.get_user_default_fs(user_id)
-        self.ufa = UserFileAccess(dbm, user_id, db_fs)
+        self.ufa = UserFileAccess(dbm, self.pipe_info.user, db_fs)
         self.dba = UserDbAccess(dbm, user_id)
 
         logfile_path = self.ufa.get_pipe_log_path(self._pipe.idx)
