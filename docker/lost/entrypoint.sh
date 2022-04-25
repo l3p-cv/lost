@@ -13,10 +13,6 @@ if [ -z "${LOST_DB_PORT}" ]; then
   export LOST_DB_PORT=3306
 fi
 
-if [ -z "${RABBITMQ_PORT}" ]; then
-  export RABBITMQ_PORT=5672
-fi
-
 # Wait for database to get available
 nc -z $LOST_DB_IP $LOST_DB_PORT
 n=$?
@@ -26,8 +22,6 @@ while [ $n -ne 0 ]; do
     n=$?
     echo "$(date): Waiting for MySQL@$LOST_DB_IP:$LOST_DB_PORT"
 done
-
-mkdir -p ${LOST_HOME}/logs
 
 python3 /code/src/backend/lost/logic/init/initlost.py
 cd /code/src/backend/lost/cli && bash import_examples.sh && cd -
@@ -48,17 +42,17 @@ cron_jobs="python3 /code/src/backend/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &
 
 # start jupyter-lab instance if configured
-if [ ${JUPYTER_LAB_ACTIVE} = "True" ]; then
-  if [ -z "${JUPYTER_LAB_ROOT_PATH}" ]; then
-    export JUPYTER_LAB_ROOT_PATH='/code/src'
+if [ ${LOST_JUPYTER_LAB_ACTIVE} = "True" ]; then
+  if [ -z "${LOST_JUPYTER_LAB_ROOT_PATH}" ]; then
+    export LOST_JUPYTER_LAB_ROOT_PATH='/code/src'
   fi
-  if [ -z "${JUPYTER_LAB_TOKEN}" ]; then
-    export JUPYTER_LAB_TOKEN='lostdevelopment'
+  if [ -z "${LOST_JUPYTER_LAB_TOKEN}" ]; then
+    export LOST_JUPYTER_LAB_TOKEN='lostdevelopment'
   fi
-  if [ -z "${JUPYTER_LAB_PORT}" ]; then
-    export JUPYTER_LAB_PORT=8888
+  if [ -z "${LOST_JUPYTER_LAB_PORT}" ]; then
+    export LOST_JUPYTER_LAB_PORT=8888
   fi
-  jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=$JUPYTER_LAB_TOKEN --ServerApp.notebook_dir=$JUPYTER_LAB_ROOT_PATH"
+  jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=$LOST_JUPYTER_LAB_TOKEN --ServerApp.notebook_dir=$LOST_JUPYTER_LAB_ROOT_PATH"
   eval $jupyter &
 fi
 
@@ -85,8 +79,8 @@ else
   # start nginx web server
   nginx="service nginx start"
   eval $nginx &
+
   # start uswgi server
-  #endpoint="cd /code/src/backend/lost/ && uwsgi --ini wsgi.ini --logto ${LOST_HOME}/logs/uswgi.log"
-  endpoint="cd /code/ && bash start.sh"
-  eval $endpoint 
+  cd /code/src/backend/lost
+  uwsgi --ini wsgi.ini
 fi
