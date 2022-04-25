@@ -35,7 +35,7 @@ daskscheduler="dask-scheduler"
 eval $daskscheduler &
 
 #start a worker.
-worker="dask-worker localhost:8786 --name $ENV_NAME"
+worker="dask-worker localhost:8786 --name $LOST_WORKER_NAME"
 eval $worker &
 
 cron_jobs="python3 /code/src/backend/lost/logic/jobs/cron_jobs.py"
