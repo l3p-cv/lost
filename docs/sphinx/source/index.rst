@@ -38,7 +38,10 @@ proposals that are presented to an annotator inside the annotation tool.
    :caption: Contents:
 
         Getting Started <getting_started.rst>
-        Quick Setup <quick_setup.rst>
+        Setup <setup.rst>
+        LabelTrees <label_trees.rst>
+        Datasources <datasources.rst>
+        Admin Area <admin_area.rst>
         For Annotators <annotators.rst>
         Annotation Review <annotation_review.rst>
         The LOST Ecosystem <lost_ecosystem.rst>
@@ -46,10 +49,9 @@ proposals that are presented to an annotator inside the annotation tool.
         ALL About Pipelines <all_about_pipelines.rst>
         All About Scripts <all_about_scripts.rst>
         Command Line Interface <lost_cli.rst>
-        Advanced Setup <advanced_setup.rst>
         Contribution Guide <contribution_guide.rst>
-        Users and Groups <users_groups.rst>
         Conventions <conventions.rst>
+        Archive <archive.rst>
         PyAPI <pyapi.rst>
 
 Indices and tables
