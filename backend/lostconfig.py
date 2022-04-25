@@ -53,7 +53,7 @@ class LOSTConfig(object):
 
     def __init__(self):
 
-        self.secret_key = env['SECRET_KEY']
+        self.secret_key = env['LOST_SECRET_KEY']
         self.use_docker = ge('LOST_USE_DOCKER', True)
         self.debug = ge('LOST_DEBUG_MODE', True)
 
@@ -121,6 +121,10 @@ class LOSTConfig(object):
         # Timout in minutes when a user get automatically logged out
         self.session_timeout = ge('LOST_SESSION_TIMEOUT',30)
 
+        # Max file upload size
+        self.max_file_upload_size = ge('LOST_MAX_FILE_UPLOAD_SIZE', 1024 * 1024 * 1024) # = 1GB 
+        # max file upload size has to be adapted in nginx proxy configuration as well !
+
         # LDAP Configuation
         self.ldap_config = dict()
         self.ldap_config['LDAP_ACTIVE'] = ge('LOST_LDAP_ACTIVE', False)
@@ -146,7 +150,7 @@ class LOSTConfig(object):
         self.mail_lost_url = ge('LOST_MAIL_LOST_URL', "")
 
         # JupyterLab configuration
-        self.jupyter_lab_active = ge('JUPYTER_LAB_ACTIVE', False)
-        self.jupyter_lab_root_path = ge('JUPYTER_LAB_ROOT_PATH', '/code/src')
-        self.jupyter_lab_token = ge('JUPYTER_LAB_TOKEN', "")
-        self.jupyter_lab_port = ge('JUPYTER_LAB_PORT', "")
+        self.jupyter_lab_active = ge('LOST_JUPYTER_LAB_ACTIVE', False)
+        self.jupyter_lab_root_path = ge('LOST_JUPYTER_LAB_ROOT_PATH', '/code/src')
+        self.jupyter_lab_token = ge('LOST_JUPYTER_LAB_TOKEN', "")
+        self.jupyter_lab_port = ge('LOST_JUPYTER_LAB_PORT', "")

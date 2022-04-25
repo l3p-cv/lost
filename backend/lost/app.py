@@ -22,7 +22,7 @@ from lost.api.anno_example.endpoint import namespace as anno_example_namespace
 from lost.logic import dask_session
 from lost.db import access
 
-from flaskapp import app
+from flaskapp import app, blacklist
 
 app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTPLUS_SWAGGER_EXPANSIONS
 app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VAL

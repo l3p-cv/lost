@@ -32,16 +32,16 @@ class DockerComposeBuilder(object):
             '      env_file:\n'
             '        - .env\n'
             '      volumes:\n'
-            '        - ${LOST_DATA}:/home/lost\n'
+            '        - ${LOST_DATA}:/home/lost/data\n'
+            '        - ${LOST_APP}:/home/lost/app\n'
             '      restart: always\n'
             '      ports:\n'
             '        - "${LOST_FRONTEND_PORT}:8080"\n'
-            '        #- "${JUPYTER_LAB_PORT:-8888}:8888"\n'
+            '        #- "${LOST_JUPYTER_LAB_PORT:-8888}:8888"\n'
             '      environment:\n'
             '        PYTHONPATH: "/code/src/backend"\n'
-            '        ENV_NAME: "lost"\n'
-            '        WORKER_NAME: "lost-0"\n'
-            '        PY3_INIT: "source /opt/conda/bin/activate lost"\n'
+            '        LOST_WORKER_NAME: "lost"\n'
+            '        LOST_PY3_INIT: "source /opt/conda/bin/activate lost"\n'
             '      links:\n'
             '        - db-lost\n'
         )
@@ -52,7 +52,7 @@ class DockerComposeBuilder(object):
             '      image: mysql:5.7\n'
             '      container_name: db-lost\n'
             '      volumes:\n'
-            '          - ${LOST_DATA}/mysql:/var/lib/mysql\n'
+            '          - ${LOST_APP}/mysql:/var/lib/mysql\n'
             '      restart: always\n'
             '      environment:\n'
             '          MYSQL_DATABASE: ${LOST_DB_NAME}\n'
@@ -75,7 +75,7 @@ class DockerComposeBuilder(object):
             '      links:\n'
             '          - "db-lost:db"\n'
             '      ports:\n'
-            '          - "${PHP_MYADMIN_PORT}:80"\n'
+            '          - "${LOST_PHP_MYADMIN_PORT}:80"\n'
         )
 
     def _write_file(self, sotre_path, content):
@@ -129,7 +129,7 @@ class QuickSetup(object):
             ['#======================','#'],
             ['#=   LOST Basic config  ','#'],
             ['#======================','#'],
-            ['DEBUG','False'],
+            ['LOST_DEBUG_MODE','False'],
             ['# Add example pipelines and example images ','#'],
             ['LOST_ADD_EXAMPLES','True'],
             # ['#= Add also ai pipelines if true. You will need the lost-cv worker to execute these pipelines.',' #'],
@@ -137,7 +137,7 @@ class QuickSetup(object):
             ['LOST_VERSION', self.release],
             ['#= LOST port binding to host machine',' #'],
             ['LOST_FRONTEND_PORT', 80],
-            ['SECRET_KEY', self.secret_key],
+            ['LOST_SECRET_KEY', self.secret_key],
             ['#= Path to LOST data in host filesystem',' #'],
             ['LOST_DATA', self.dst_project_data_dir],
             ['LOST_APP', self.dst_app_data_dir],
@@ -150,39 +150,39 @@ class QuickSetup(object):
             ['LOST_DB_USER', 'lost'],
             ['LOST_DB_PASSWORD', 'LostDbLost'],
             ['LOST_DB_ROOT_PASSWORD', 'LostRootLost'],
-            ['PHP_MYADMIN_PORT', 8081], 
+            ['LOST_PHP_MYADMIN_PORT', 8081], 
             ['#======================','#'],
             ['#=   PipeEngine config  ','#'],
             ['#======================','#'],
             ['# Interval in seconds for the cronjob to update the pipeline',' #'],
-            ['PIPE_SCHEDULE', '5'],
+            ['LOST_PIPE_SCHEDULE', 5],
             ['# Intervall in seconds in which a worker should give a lifesign',' #'],
-            ['WORKER_BEAT', 10],
+            ['LOST_WORKER_BEAT', 10],
             ['# Timeout in seconds when a worker is considered to be dead',' #'],
-            ['WORKER_TIMEOUT',30],
+            ['LOST_WORKER_TIMEOUT',30],
             ['# Session timout in minutes - timespan when an inactive user is logged out',' #'],
             ['# Also used to schedule a background job that releases locked annotations ',' #'],
-            ['SESSION_TIMEOUT',30],
+            ['LOST_SESSION_TIMEOUT',30],
             ['#========================','#'],
             ['#= Your Mail config here ','#'],
             ['#========================','#'],
-            ['#MAIL_SERVER','mailserver.com'],
-            ['#MAIL_PORT','465'],
-            ['#MAIL_USE_SSL','True'],
-            ['#MAIL_USE_TLS','True'],
-            ['#MAIL_USERNAME','email@email.com'],
-            ['#MAIL_PASSWORD','password'],
-            ['#MAIL_DEFAULT_SENDER','LOST Notification System <email@email.com>'],
-            ['#MAIL_LOST_URL','http://mylostinstance.url/'],
+            ['#LOST_MAIL_SERVER','mailserver.com'],
+            ['#LOST_MAIL_PORT','465'],
+            ['#LOST_MAIL_USE_SSL','True'],
+            ['#LOST_MAIL_USE_TLS','True'],
+            ['#LOST_MAIL_USERNAME','email@email.com'],
+            ['#LOST_MAIL_PASSWORD','password'],
+            ['#LOST_MAIL_DEFAULT_SENDER','LOST Notification System <email@email.com>'],
+            ['#LOST_MAIL_LOST_URL','http://mylostinstance.url/'],
             ['#========================','#'],
             ['#= Jupyter Lab Config    ','#'],
             ['#========================','#'],
             ['# In order to enable Jupyter-Lab integration you have to uncomment the following lines','#'],
             ['# Please watch out: You have to uncomment the port export of JUPYTER_LAB_PORT in your .docker-compose.yml as well','#'],
-            ['#JUPYTER_LAB_ACTIVE','True'],
-            ['#JUPYTER_LAB_ROOT_PATH','/code/src'],
-            ['#JUPYTER_LAB_TOKEN','mysecrettoken'],
-            ['#JUPYTER_LAB_PORT','8888']
+            ['#LOST_JUPYTER_LAB_ACTIVE','True'],
+            ['#LOST_JUPYTER_LAB_ROOT_PATH','/code/src'],
+            ['#LOST_JUPYTER_LAB_TOKEN','mysecrettoken'],
+            ['#LOST_JUPYTER_LAB_PORT','8888']
         ]
         with open(env_path, 'w') as f:
             for key, val in config:
