@@ -13,11 +13,11 @@ def send_email(subject, recipients, html_body):
 
 def send_script_error(pipe, pipe_element):
     with app.app_context():
-        for user in pipe.group.users:
+        for ug in pipe.group.users:
             send_email("LOST: Script Error in Pipeline '{}'".format(pipe.name),
-                    [user.email],
+                    [ug.user.email],
                     render_template("email/script_error.html", 
-                                    user = user, pipe=pipe, pipe_element=pipe_element, lost_url=LOST_CONFIG.mail_lost_url))
+                                    user = ug.user, pipe=pipe, pipe_element=pipe_element, lost_url=LOST_CONFIG.mail_lost_url))
 
 def send_annotask_available(dbm, annotask):
     size = 'unknown'
@@ -29,11 +29,11 @@ def send_annotask_available(dbm, annotask):
     elif annotask.dtype == dtype.AnnoTask.SIA:
         annotype = 'SIA'
     with app.app_context():
-        for user in annotask.group.users:
+        for ug in annotask.group.users:
             send_email("LOST: New AnnotationTask available !",
-                [user.email],
+                [ug.user.email],
                 render_template("email/new_annotask.html", 
-                                user = user, 
+                                user = ug.user, 
                                 annotask=annotask, 
                                 type=annotype, 
                                 size=size, 
@@ -42,11 +42,11 @@ def send_annotask_available(dbm, annotask):
 
 def send_pipeline_finished(pipe):
     with app.app_context():
-        for user in pipe.group.users:
+        for ug in pipe.group.users:
             send_email("LOST: Pipeline '{}' has been finished.".format(pipe.name),
-                        [user.email],
+                        [ug.user.email],
                         render_template("email/pipeline_finished.html", 
-                                        user = user, pipe=pipe, lost_url=LOST_CONFIG.mail_lost_url))
+                                        user = ug.user, pipe=pipe, lost_url=LOST_CONFIG.mail_lost_url))
 
 def send_annotask_finished(dbm, annotask):
         size = 'unknown'
@@ -58,11 +58,11 @@ def send_annotask_finished(dbm, annotask):
         elif annotask.dtype == dtype.AnnoTask.SIA:
             annotype = 'SIA'
         with app.app_context():
-            for user in annotask.pipe_element.pipe.group.users:
+            for ug in annotask.pipe_element.pipe.group.users:
                 send_email("LOST: AnnotationTask '{}' has been finished.".format(annotask.name),
-                    [user.email],
+                    [ug.user.email],
                     render_template("email/annotask_finished.html", 
-                                    user = user, 
+                                    user = ug.user, 
                                     annotask=annotask, 
                                     type=annotype, 
                                     size=size, 
