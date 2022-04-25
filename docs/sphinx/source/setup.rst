@@ -1,56 +1,18 @@
-.. _quick-setup:
+.. _setup:
 
-LOST Quick Setup
-****************
-#TODO: Review
-LOST provides a `quick_setup <https://github.com/l3p-cv/lost/tree/master/docker/quick_setup>`_
-script, 
-that will configure LOST and instruct you how to start LOST. 
-We designed this script for Linux environments,
-but it will also work on Windows host machines.
-
-The quick_setup will import some out-of-the-box annotation pipelines and
-example label trees.
-When you start LOST,
-all required docker containers will be downloaded from DockerHub and
-started on your machine.
-The following containers are used in different combinations by the LOST
-quick_setup:
-
-* **mysql** ~124 MB download (extracted 372 MB)
-* **rabbitmq** ~90 MB download (extracted 149 MB)
-* **lost** ~1 GB download (extracted 2.95 GB)
-* **lost-cv** ~3 GB download (extracted 6.94 GB)
-* **lost-cv-gpu** ~4 GB download (extracted 8.33 GB), an **nvidia docker** container
-
-There are three configurations that can be created with the
-**quick_setup** script:
-
-1. A :ref:`standard config <quick-setup-standard>`
-   that starts the following containers: **mysql**,
-   **rabbitmq**, **lost**, **lost-cv**.
-   In this config you are able to run all annotation pipelines that are
-   available.
-   Semi-automatic pipelines that make use of AI will be executed on your CPU.
-
-2. A :ref:`minimum configuration <quick-setup-standard>` that starts the 
-   **mysql**, **rabbitmq** and **lost** container.
-   This conifg may only run simple annotation pipelines that have no AI
-   included,
-   since there is no container that has an :ref:`environment <lost-ecosystem-pipe-engine>`
-   installed to perform deep learning algorithms.
-   This setup will required the smallest amount of disc space on your machine.
-
-3. A :ref:`gpu config <quick-setup-gpu>` that will allow you to execute
-   our semi-automatic AI annotation piplines on your nvidia gpu.
-   The following containers will be downloaded:
-   **mysql**, **rabbitmq**, **lost** and **lost-cv-gpu**.
+LOST Setup & Configuration
+**************************
 
 .. _quick-setup-standard:
 
-Standard Setup with Docker
-==============
-#TODO: GR Review
+Default Setup with Docker
+==========================
+LOST provides a `quick_setup <https://github.com/l3p-cv/lost/tree/master/docker/quick_setup>`_
+script, that will configure LOST and instruct you how to start LOST. 
+We designed this script for Linux environments,
+but it will also work on Windows host machines.
+
+LOST releases are hosted on DockerHub and shipped in Containers. For a quick setup perform the following steps (these steps have been tested for Ubuntu):
 
 1. Install docker on your machine or server:
     https://docs.docker.com/install/
@@ -59,40 +21,127 @@ Standard Setup with Docker
 3. Clone LOST:
     .. code-block:: bash
 
-        git clone -b 1.x https://github.com/l3p-cv/lost.git
-4. Run quick_setup script:
+        git clone https://github.com/l3p-cv/lost.git
+4. Install the *cryptography* package in your python environment:
+    .. code-block:: bash
+
+        pip install cryptography
+    
+5. Run quick_setup script:
     .. code-block:: bash
 
         cd lost/docker/quick_setup/
-        # python3 quick_setup.py path/to/install/lost
-        # If you want to install a specific release,
-        # you can use the --release argument to do so.
-        python3 quick_setup.py ~/lost
-5. Run LOST:
+        python3 quick_setup.py /path/to/install/lost --release 2.0.0
+    
+    If you want to use phpmyadmin, you can set it via argument
+    
+    .. code-block:: bash
+        
+        python3 quick_setup.py /path/to/install/lost --release 2.0.0 --phpmyadmin
+
+6. Run LOST:
+
     Follow instructions of the quick_setup script, 
     printed in the command line.
 
-Use PhpMyAdmin
-------------------------
-#TODO: GR
+.. note::
+    
+    The quick setup script has now created the docker configuration files 
+    ``docker-compose.yml`` and ``.env`` . In the following sections, 
+    additional desired configurations usually refer to these two files.
+    
+
+Activate E-Mail Notifications
+-----------------------------
+In order to activate E-Mail Notifications you have to provide an outgoing E-Mail Account.
+In your ``.env`` file you have to add the following environment variables.
+If you have set up lost with the quick setup script, these variables only need to be commented out and adjusted:
+
+    .. code-block:: bash
+
+        LOST_MAIL_SERVER=mailserver.com
+        LOST_MAIL_PORT=465
+        LOST_MAIL_USE_SSL=True
+        LOST_MAIL_USE_TLS=True
+        LOST_MAIL_USERNAME=email@email.com
+        LOST_MAIL_PASSWORD=password
+        LOST_MAIL_DEFAULT_SENDER=LOST Notification System <email@email.com>
+        LOST_MAIL_LOST_URL=http://mylostinstance.url/
+
+
+Configure LDAP
+------------------
+LDAP can be configured using the following environment variables in your ``.env`` file:
+
+    .. code-block:: bash
+
+        LDAP_ACTIVE=True
+        LDAP_HOST=192.168.0.100
+        LDAP_PORT=389
+        LDAP_BASE_DN=dc=example,dc=com
+        LDAP_USER_DN=ou=Entwickler
+        LDAP_BIND_USER_DN=cn=binduser,dc=example,dc=com
+        LDAP_BIND_USER_PASSWORD=ldap_bind_password
+
+.. note::
+    
+    Users logging into LOST for the first time using LDAP are automatically assigned the **Annotator** role.
+    If you want to assign another role to the user, you have to do so in the user management in the Admin Area.
+
+.. note::
+
+    The resolution of groups via LDAP is not yet supported. If a LOST group should be assigned to an LDAP user, 
+    this must be done via the user management in the Admin Area.
+
 
 Activate JupyterLab
 ------------------------
-#TODO: GR
+The JupyterLab integration is primarily intended for pipeline developers and quick experiments in LOST.
+Through this integration it is very easy to access all pipelines and their elements at any time and manipulate them through a web interface.
+By accessing the LOST pyAPI, various operations can be investigated, as they are also executed in the scripts of the annotation pipelines.
+
+In order to activate the JupyterLab Integration you have to add the following 
+environment variables in your ``.env`` file:
+
+    .. code-block:: bash
+
+        LOST_JUPYTER_LAB_ACTIVE=True
+        LOST_JUPYTER_LAB_ROOT_PATH=/code/src
+        LOST_JUPYTER_LAB_TOKEN=mysecrettoken
+        LOST_JUPYTER_LAB_PORT=8888
+
+
+In addition, the port for the JupyterLab must be enabled in the **lost** service of your ``docker-compose.yml`` file:
+
+    .. code-block:: bash
+
+        ports:
+            - "${LOST_FRONTEND_PORT}:8080"
+            - "${LOST_JUPYTER_LAB_PORT:-8888}:8888"
+
+
+Once the JupyterLab integration has been activated, the started JupyterLab can be accessed via the GUI in the Admin Area. 
+Within the Admin Area, a tab (far right) now appears that contains the link to the JupyterLab.
+
+    .. warning::
+
+        The environment variable ``LOST_JUPYTER_ROOT_PATH`` defines from which path the Jupyter Lab is started in the docker container. 
+        If this path is not in a location mounted in the docker container, 
+        notebooks and other data will not be persistently stored.
+
+    .. danger::
+
+        Using JupyterLab gives **full access** to the database and connected file systems.
+        The JupyterLab integration should therefore only be used in development environments and in no case in production systems. 
+
+
 
 Nginx Configuration
-------------------------
-#TODO: GR
-
-LOST is shipped in docker containers. 
-The base image inherits from an official nginx container. 
-LOST is installed in this container. 
-The communication to the host system is done via the nginx webserver, which can be configured via a configuration file. 
-A differentiation is made between the debug mode and a productive environment.
+---------------------
 
 Configuration File
 ^^^^^^^^^^^^^^^^^^^^^^
-When starting the lost container the corresponding configuration file (depending on debug mode) for nginx is 
+When starting the lost container the corresponding nginx configuration file (depending on debug mode) for nginx is 
 copied from the repository into the folder 
 
     .. code-block:: bash
@@ -101,7 +150,7 @@ copied from the repository into the folder
 
 by the **entrypoint.sh** script.
 
-Both nginx configuration files can be found at:
+Both nginx configuration files (debug mode and production) can be found at:
 `lost/docker/lost/nginx <https://github.com/l3p-cv/lost/blob/master/docker/lost/nginx>`_
 in our GitHub repository.
 
@@ -116,49 +165,11 @@ host machine into the lost container.
         volumes:
             - /host/path/to/nginx/conf:/etc/nginx/conf.d/default.conf
 
-Standard Setup Linux (without docker)
-==============
+.. note::
+  By default, files with a **maximum size of 1GB** can be uploaded in LOST. 
+  To change the maximum size you have to change the value ``client_max_body_size 1024M;`` inside the nginx configuration file. 
+  In addition, the environment variable ``LOST_MAX_FILE_UPLOAD_SIZE`` must also be adjusted in the LOST configuration.
+
+Setup On Linux (without docker)
+=====================================
 #TODO: JG
-
-Activate E-Mail Notifications
-========================
-#TODO: GR 
-
-Activate LDAP
-========================
-#TODO: GR 
-
-Install LOST from backup
-========================
-#TODO: GR  Review !
-
-0. Perform full backup with sudo
-   .. code-block:: bash
-
-        sudo zip -r backup.zip ~/lost
-1. Install docker on your machine or server:
-    https://docs.docker.com/install/
-2. Install docker-compose:
-    https://docs.docker.com/compose/install/
-3. Clone LOST:
-    .. code-block:: bash
-
-        git clone https://github.com/l3p-cv/lost.git
-4. Run quick_setup script:
-    .. code-block:: bash
-
-        cd lost/docker/quick_setup/
-        # python3 quick_setup.py path/to/install/lost
-        # If you want to install a specific release,
-        # you can use the --release argument to do so.
-        python3 quick_setup.py ~/lost
-        sudo rm -rf ~/lost
-        unzip backup.zip ~/lost
-        
-5. Make sure that ~/lost/docker/.env file contains proper absolute path to ~/lost in LOST_DATA
-and proper LOST_DB_PASSWORD
-
-6. Run LOST:
-    Follow instructions of the quick_setup script, 
-    printed in the command line.
- 
