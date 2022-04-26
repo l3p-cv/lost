@@ -1,13 +1,20 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 
-import ToolBar from './src/ToolBar'
-import Canvas from './src/Canvas'
+import ToolBar from './ToolBar'
+import Canvas from './Canvas'
 
 const Sia = (props) => {
 
+    const [fullscreenCSS, setFullscreenCSS] = useState('')
     const toolbarRef = useRef()
     const containerRef = useRef()
     const canvasRef = useRef()
+
+    useEffect(() => {
+        if (props.onGetRefs){
+            props.onGetRefs(containerRef, canvasRef, toolbarRef)
+        }
+    }, [])
 
     const handleAnnoEvent = (anno, annos, action) => {
         if (props.onAnnoEvent){
@@ -43,7 +50,7 @@ const Sia = (props) => {
     }
 
     return (
-        <div className={this.state.fullscreenCSS} ref={containerRef}>
+        <div className={fullscreenCSS} ref={containerRef}>
             <Canvas
                 ref={canvasRef} 
                 container={containerRef}
