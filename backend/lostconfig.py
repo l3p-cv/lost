@@ -145,7 +145,7 @@ class LOSTConfig(object):
 
         # Mail configuration
         self.send_mail = ge('LOST_MAIL_ACTIVE', False)
-        self.mail_server = ge('LOST_MAIL_SEVER', "")
+        self.mail_server = ge('LOST_MAIL_SERVER', "")
         self.mail_port = ge('LOST_MAIL_PORT', "")
         self.mail_use_ssl = ge('LOST_MAIL_USE_SSL', False)
         self.mail_use_tls = ge('LOST_MAIL_USE_TLS', False)
