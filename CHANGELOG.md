@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow to request annotations via LOSTDataframes (see #144)
   - Allow to request annotation labels via label_name (see #144) 
   - Allow to add meta information to annotations via pyAPI
+  - request_annos: Added ability to deal with ImageAnno objects from database in order to request annos for a copy of the ImageAnno object.
 - Configurations for LOST via database
 - pyAPI: Allow to add a image comment via api. This comment will be shown in ImgBar in SIA
 - SIA: 
@@ -24,7 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added sia auto save feature
 - Cronjob that removes annotations that are not assigned to any image
 - ExamplePipes:
-  - pack_dataset -> Will gather all images and a dataset file in csv and parquet format and provide it by via download 
+  - pack_dataset -> Will gather all images and a dataset file in csv and parquet format and provide it by via download
+- Dashboard:
+  - Personal statistics for annotator and designer roles
+- Statistics:
+  - Designer statistics for designers - includes all annotation activities of the users of the designer's pipelines
+- Datasources:
+  - Allow to connect to external filesystems (azure blob storage, s3 bucket, ssh / sftp)
+  - Allow to upload and delete files via GUI
+  - Allow to create directories via GUI
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
@@ -48,6 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PipeStart: Empty labels in annotask not possible anymore
 ## Removed
 - removed lost-cv images. This is now integrated into the lost image 
+- pyAPI: 
+  - request_bbox_annos since it is a special case of request_annos
+  - request_image_anno since it is a special case of request_annos
+  - add_anno since it has not been used until now
 
 ## [1.5.0] - unreleased
 ### Added

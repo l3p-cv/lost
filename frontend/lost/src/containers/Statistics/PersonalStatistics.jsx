@@ -7,10 +7,9 @@ import { CWidgetDropdown, CRow, CCol, CWidgetBrand } from '@coreui/react'
 
 import { CChart } from '@coreui/react-chartjs'
 import ChartLineSimple from './ChartLineSimple'
-import BaseContainer from '../../components/BaseContainer'
 import Loading from '../../components/Loading'
 
-const DesignerDashboard = () => {
+const PersonalStatistics = () => {
     const dispatch = useDispatch()
     const { mutate: getPersonalStatistics, data: personalStatistics } =
         statistics_api.usePersonalStatistics()
@@ -57,7 +56,28 @@ const DesignerDashboard = () => {
     }, [personalStatistics])
 
     /// do not render component if required data is not available
-    if (personalStatistics === undefined) return <Loading size="l" />
+    if (personalStatistics === undefined)
+        return (
+            <>
+                <CRow style={{ display: 'flex', justifyContent: 'center', fontSize: 20 }}>
+                    <b>Statistics not yet available.</b>
+                </CRow>
+                <CRow
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        fontSize: 20,
+                        marginTop: 5,
+                    }}
+                >
+                    Perform your first annotation right now to get your personal
+                    statistics !
+                </CRow>
+                <CRow style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Loading size="xl" />
+                </CRow>
+            </>
+        )
 
     const chartColors = {
         background: 'rgb(16, 81, 95,0.8)',
@@ -102,7 +122,16 @@ const DesignerDashboard = () => {
     }
 
     return (
-        <BaseContainer>
+        <>
+            <CRow style={{ marginBottom: 10 }}>
+                <CCol sm="5">
+                    <h3 id="traffic" className="card-title mb-0">
+                        Personal statistics
+                    </h3>
+                    {/* <div className="small text-muted">last seven days</div> */}
+                </CCol>
+                <CCol sm="7" className="d-none d-md-block"></CCol>
+            </CRow>
             <CRow>
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
@@ -152,13 +181,21 @@ const DesignerDashboard = () => {
                     </CWidgetBrand>
                 </CCol>
             </CRow>
-
+            <CRow style={{ marginBottom: 5 }}>
+                <CCol sm="5">
+                    <h4 id="traffic" className="card-title mb-0">
+                        Averages
+                    </h4>
+                    <div className="small text-muted">Last 7 days</div>
+                </CCol>
+                <CCol sm="7" className="d-none d-md-block"></CCol>
+            </CRow>
             <CRow>
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
                         header={'Ø ' + personalStatistics.annos.avg}
-                        text="Annos / Day"
+                        text="Annotations / Day"
                         footerSlot={
                             <ChartLineSimple
                                 className="mt-3"
@@ -173,7 +210,6 @@ const DesignerDashboard = () => {
                         }
                     ></CWidgetDropdown>
                 </CCol>
-
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
@@ -193,7 +229,6 @@ const DesignerDashboard = () => {
                         }
                     ></CWidgetDropdown>
                 </CCol>
-
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
@@ -212,7 +247,6 @@ const DesignerDashboard = () => {
                         }
                     ></CWidgetDropdown>
                 </CCol>
-
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetDropdown
                         color="primary"
@@ -236,6 +270,15 @@ const DesignerDashboard = () => {
             </CRow>
 
             <CRow>
+                <CCol sm="5">
+                    <h4 id="traffic" className="card-title mb-0">
+                        Annotations / Label and Type
+                    </h4>
+                    <div className="small text-muted">Total time period</div>
+                </CCol>
+                <CCol sm="7" className="d-none d-md-block"></CCol>
+            </CRow>
+            <CRow>
                 <CCol sm="12" lg="6">
                     <CChart
                         type="bar"
@@ -254,7 +297,7 @@ const DesignerDashboard = () => {
                     />
                 </CCol>
             </CRow>
-        </BaseContainer>
+        </>
     )
 }
-export default DesignerDashboard
+export default PersonalStatistics

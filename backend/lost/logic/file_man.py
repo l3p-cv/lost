@@ -12,26 +12,17 @@ import numpy as np
 import cv2
 import ast
 from lost.logic.crypt import decrypt_fs_connection
-#import ptvsd
 
-
-DATA_ROOT_PATH = ""
-MEDIA_ROOT_PATH = DATA_ROOT_PATH + "media/"
-# MEDIA_UPLOAD_PATH = MEDIA_ROOT_PATH + "uploads/"
-# MEDIA_CHUNK_PATH = MEDIA_ROOT_PATH + ".chunks/"
-# SCRIPT_ROOT_PATH = DATA_ROOT_PATH + "script/"
-PIPE_ROOT_PATH = DATA_ROOT_PATH + "pipes/"
-INSTANCE_ROOT_PATH = DATA_ROOT_PATH + "instance/"
-DEBUG_ROOT_PATH = DATA_ROOT_PATH + "debug/"
-PACKED_PIPE_ROOT_PATH = DATA_ROOT_PATH + "packed_pipes/"
-SIA_HISTORY_PATH = DATA_ROOT_PATH + "sia_history/"
-SIA_HISTORY_BACKUP_PATH = DATA_ROOT_PATH + "sia_history/backup/"
-PIPE_LOG_PATH = DATA_ROOT_PATH + "logs/pipes/"
-APP_LOG_PATH = DATA_ROOT_PATH + "logs/"
-UPLOAD_PATH = DATA_ROOT_PATH + "uploads"
-# MIA_CROP_PATH = DATA_ROOT_PATH + "mia_crops/"
-# JUPYTER_NOTEBOOK_OUTPUT_PATH = DATA_ROOT_PATH + "notebooks/jupyter_output.txt"
-# MY_DATA_PATH = "my_data/"
+MEDIA_ROOT_PATH = "media/"
+PIPE_ROOT_PATH = "pipes/"
+INSTANCE_ROOT_PATH = "instance/"
+DEBUG_ROOT_PATH = "debug/"
+PACKED_PIPE_ROOT_PATH = "packed_pipes/"
+SIA_HISTORY_PATH = "sia_history/"
+SIA_HISTORY_BACKUP_PATH = "sia_history/backup/"
+PIPE_LOG_PATH = "logs/pipes/"
+APP_LOG_PATH = "logs/"
+UPLOAD_PATH = "uploads"
 
 def chonkyfy(fs_list, root, fs):
     files, folder_chain = [], []
@@ -48,13 +39,15 @@ def chonkyfy(fs_list, root, fs):
             'id':el['name'],
             'name':os.path.basename(el['name'])
         }
+        try:
+            res['modDate'] = el['LastModified'].strftime("%Y-%m-%d %H:%M:%S")
+        except:
+            pass
         if el['type'] == 'file':
             res['size'] = el['size']
         elif el['type'] == 'directory':
             res['isDir'] = True
-            # raise Exception(el['name'])
             res['childrenCount'] = len(fs.ls(el['name']))
-            # res['childrenCount'] = 0
         else:
             raise Exception('Unknown file type')
         files.append(res)
@@ -77,8 +70,6 @@ class AppFileMan(object):
         user_upload_path = os.path.join(u_path,str(user_id))
         if not self.fs.exists(user_upload_path):
             self.fs.mkdirs(user_upload_path)
-        # if not self.fs.exists(u_path):
-        #     self.fs.mkdirs(u_path)
         return os.path.join(user_upload_path, file_name)
 
     def get_app_log_path(self, log_file_name):
@@ -139,28 +130,11 @@ class AppFileMan(object):
         i_path = join(root_path, DEBUG_ROOT_PATH)
         if not self.fs.exists(i_path):
             self.fs.mkdirs(i_path)
-        # task_path = join(i_path, str(pipe_element.task_id))
-        # if not self.fs.exists(task_path):
-        #     self.fs.mkdirs(task_path)
         pe_i_path = join(i_path, 'i-{}'.format(str(pipe_element.idx)))
         if not self.fs.exists(pe_i_path):
             self.fs.mkdirs(pe_i_path)
         return pe_i_path
 
-
-    # def create_debug_path(self, pipe_element):
-    #     root_path = self.lostconfig.app_path
-    #     debug_path = join(root_path, DEBUG_ROOT_PATH)
-    #     if not self.fs.exists(debug_path):
-    #         self.fs.mkdirs(debug_path)
-    #     task_path = join(debug_path, str(pipe_element.pipe_id))
-    #     if not self.fs.exists(task_path):
-    #         self.fs.mkdirs(task_path)
-    #     pe_i_path = join(task_path, str(pipe_element.idx))
-    #     if not self.fs.exists(pe_i_path):
-    #         self.fs.mkdirs(pe_i_path)
-    #     return pe_i_path
-    
     @property
     def pipe_path(self):
         '''Get path to store pipeline directories.
@@ -178,7 +152,10 @@ class FileMan(object):
                 fs_connection = decrypt_fs_connection(fs_db)
             else:
                 fs_connection = fs_db.connection
-            fs_args = ast.literal_eval(fs_connection)
+            if type(fs_connection) != dict:
+                fs_args = ast.literal_eval(fs_connection)
+            else:
+                fs_args = fs_connection
             fs = fsspec.filesystem(fs_db.fs_type, **fs_args)
             fs.lost_fs = fs_db
             self.fs = fs
@@ -191,6 +168,12 @@ class FileMan(object):
             self.root_path = lostconfig.data_path
         else:
             raise Exception('Need either lostconifg or fs_db as argument!')
+
+    def get_media_path(self):
+        m_path = os.path.join(self.root_path, MEDIA_ROOT_PATH)
+        if not self.fs.exists(m_path):
+            self.fs.mkdirs(m_path)
+        return m_path
 
     def load_img(self, path, color_type='color'):
         '''Load image from filesystem
@@ -207,64 +190,89 @@ class FileMan(object):
             color = cv2.IMREAD_COLOR
         else:
             color = cv2.IMREAD_GRAYSCALE
-        # if not os.path.isabs(path):
-        #     img_path = self.get_abs_path(path)
-        #     with self.fs.open(img_path, 'rb') as f:
-        #         arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
-        #         img = cv2.imdecode(arr, color)
-        #     return img
-        # else:
-        #     with fsspec.open(path) as f:
-        #         arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
-        #         img = cv2.imdecode(arr, color)
-        #     return img
-        img_path = self.get_abs_path(path)
+        # img_path = self.get_abs_path(path)
+        img_path = path
         with self.fs.open(img_path, 'rb') as f:
             arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
             img = cv2.imdecode(arr, color)
         return img
-        
+
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.root_path, PIPE_LOG_PATH)
         if not self.fs.exists(base_path):
             self.fs.mkdirs(base_path)
         return os.path.join(base_path, 'p-{}.log'.format(pipe_id))
 
-    def get_rel_path(self, path):
-        '''Get relativ path for current project
+    # def get_rel_path(self, path):
+    #     '''Get relativ path for current project
 
-        Args:
-            path (str): A absolute path
+    #     Args:
+    #         path (str): A absolute path
 
-        Returns:
-            str : Relative path
-        '''
-        if os.path.isabs(path):
-            return self.make_path_relative(path)
-        else:
-            return path
+    #     Returns:
+    #         str : Relative path
+    #     '''
+    #     if os.path.isabs(path):
+    #         return self.make_path_relative(path)
+    #     else:
+    #         return path
 
-    def get_abs_path(self, path):
-        '''Get absolute path in current file system.
+    # def get_abs_path(self, path):
+    #     '''Get absolute path in current file system.
 
-        Args:
-            path (str): A relative path.
+    #     Args:
+    #         path (str): A relative path.
 
-        Returns:
-            str: Absolute path
-        '''
-        if path.startswith(self.root_path):
-            return path
-        else:
-            return os.path.join(self.root_path, path)
-        # if not os.path.isabs(path):
-        #     return os.path.join(self.root_path, path)
-        # else:
-        #     return path
+    #     Returns:
+    #         str: Absolute path
+    #     '''
+    #     if path.startswith(self.root_path):
+    #         return path
+    #     else:
+    #         return os.path.join(self.root_path, path)
 
     def ls(self, path, detail=False):
-        abs_path = self.get_abs_path(path)
-        return self.fs.ls(abs_path, detail=detail)
+        '''Perform ls command for current filesystem
+        
+        Args:
+            path (str): Filesystem path
+            detail (bool): Return details for each entry in list
+        
+        Returns:
+            List of strings if detail is False, or list of dicts with detailed 
+            information
+
+        Note:
+            See fsspec docs for further information.
+        '''
+        return self.fs.ls(path, detail=detail)
+
+    def rm(self, path, recursive=False):
+        '''Delete files
+        
+        Args:
+            path (str): The path to delete
+            recursive (bool): If file(s) are directories, recursively delete 
+                contents and then also remove the directory
+        Note:
+            See fsspec docs for further information.
+        '''
+        return self.fs.rm(path, recursive=recursive)
+
+    def mkdirs(self, path, exist_ok=False):
+        '''Recursively make directories
+
+        Creates directory at path and any intervening required directories. 
+        Raises exception if, for instance, the path already exists but is a file.
+
+        Args:
+            path (str): Dir to create
+            exist_ok (bool): If False, an exception will be thrown if dir already
+                exists.
+        Note:
+            See fsspec docs for further information.
+        '''
+        return self.fs.mkdirs(path, exist_ok=exist_ok)
 
     def make_path_relative(self, in_path):
         '''Make a path relative to project root path.
@@ -336,8 +344,6 @@ class FileMan(object):
             return pipe_context
         else:
             raise Exception("No valid argument for pipe context path.")
-
-
         
     def create_instance_path(self, pipe_element):
         '''Create the instance path for a :class:`lost.db.models.PipeElement`
@@ -352,37 +358,38 @@ class FileMan(object):
         i_path = join(root_path, INSTANCE_ROOT_PATH)
         if not self.fs.exists(i_path):
             self.fs.mkdirs(i_path)
-        # task_path = join(i_path, str(pipe_element.task_id))
-        # if not self.fs.exists(task_path):
-        #     self.fs.mkdirs(task_path)
         pe_i_path = join(i_path, 'i-{}'.format(str(pipe_element.idx)))
         if not self.fs.exists(pe_i_path):
             self.fs.mkdirs(pe_i_path)
         return pe_i_path
-
-
-
-    # def get_debug_path(self, pipe_e):
-    #     return self.create_instance_path(pipe_e, debug=True)
-
     
+    def create_root_path(self):
+        '''Create the root path of this file man
 
-    def create_project_folders(self):
-        '''Create folder structure for a project in lost webportal.
-
-        Args:
-            root: Root path of the project.
+        Returns:
+            str: The absolute created path
         '''
-        root = self.root_path
-        if not self.fs.exists(root):
-            self.fs.mkdirs(root)
-            print("\t Created: %s"%(root,))
-        if not self.fs.exists(join(root,INSTANCE_ROOT_PATH)):
-            self.fs.mkdirs(join(root,INSTANCE_ROOT_PATH))
-            print("\t Created: %s"%(join(root,INSTANCE_ROOT_PATH),))
-        if not self.fs.exists(join(root,MEDIA_ROOT_PATH)):
-            self.fs.mkdirs(join(root,MEDIA_ROOT_PATH))
-            print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
+        root_path = self.root_path
+        if not self.fs.exists(root_path):
+            self.fs.mkdirs(root_path)
+        return root_path
+
+    # def create_project_folders(self):
+    #     '''Create folder structure for a project in lost webportal.
+
+    #     Args:
+    #         root: Root path of the project.
+    #     '''
+    #     root = self.root_path
+    #     if not self.fs.exists(root):
+    #         self.fs.mkdirs(root)
+    #         print("\t Created: %s"%(root,))
+    #     if not self.fs.exists(join(root,INSTANCE_ROOT_PATH)):
+    #         self.fs.mkdirs(join(root,INSTANCE_ROOT_PATH))
+    #         print("\t Created: %s"%(join(root,INSTANCE_ROOT_PATH),))
+    #     if not self.fs.exists(join(root,MEDIA_ROOT_PATH)):
+    #         self.fs.mkdirs(join(root,MEDIA_ROOT_PATH))
+    #         print("\t Created: %s"%(join(root,MEDIA_ROOT_PATH),))
 
     @property
     def media_root_path(self):
@@ -409,13 +416,10 @@ class FileMan(object):
             d = {'name': 'root'}
         else:
             d = {'name': os.path.basename(path)}
-        # if os.path.isdir(path):
         d['type'] = "directory"
         d['children'] = [
             {'name':os.path.basename(p), 'type':'directory'} for p in self.fs.ls(path)
-            ]#[path_to_dict(os.path.join(path,x)) for x in os.listdir(path)]
-        # else:
-        #     d['type'] = "file"
+            ]
         return d
     
     def get_sia_history_path(self, annotask):

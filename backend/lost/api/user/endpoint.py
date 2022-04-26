@@ -8,12 +8,13 @@ from lost.api.user.api_definition import user, user_list, user_login
 from lost.api.user.parsers import login_parser, create_user_parser, update_user_parser
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
-from lost.db.model import User as DBUser, Role, Group
+from lost.db.model import User as DBUser, Group, UserRoles, UserGroups
 from lost.logic import email 
-from lost.logic.user import release_user_annos
+from lost.logic.user import get_user_default_group, release_user_annos
 from flaskapp import blacklist
 from lost.logic import dask_session
 from lost.api.user.login_manager import LoginManager
+from lost.logic.file_access import UserFileAccess, create_user_default_fs
 namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
@@ -32,7 +33,7 @@ class UserList(Resource):
             users = dbm.get_users()
             for us in users:
                 for g in us.groups:
-                    if g.is_user_default:
+                    if g.group.is_user_default:
                         us.groups.remove(g)
             dbm.close_session()
             ulist = {'users':users}
@@ -65,26 +66,43 @@ class UserList(Resource):
             email_confirmed_at=datetime.datetime.utcnow(),
             password= data['password'],
             )
+            dbm.save_obj(user)
+            # create user's default group
+            g = Group(name=user.user_name, is_user_default=True)
+            dbm.save_obj(g)
+            ug = UserGroups(group_id=g.idx,user_id=user.idx)
+            dbm.save_obj(ug)
+            # create user's default role
             anno_role = dbm.get_role_by_name(roles.ANNOTATOR)
-            user.roles.append(anno_role)
-            user.groups.append(Group(name=user.user_name, is_user_default=True))
-            
+            ur = UserRoles(user_id=user.idx, role_id=anno_role.idx)
+            dbm.save_obj(ur)
             
             if data['roles']:
+                role_ids = [db_role.role_id for db_role in dbm.get_user_roles(user.idx)]
                 for role_name in data['roles']:
-                    if role_name == 'Administrator':
-                        designer_role = dbm.get_role_by_name(roles.ADMINISTRATOR)
-                        user.roles.append(designer_role)        
-                    if role_name == 'Designer':
-                        designer_role = dbm.get_role_by_name(roles.DESIGNER)
-                        user.roles.append(designer_role)        
+                    for item in [item for item in dir(roles) if not item.startswith("__")]:
+                        name = getattr(roles, item)
+                        if role_name == name:
+                            role = dbm.get_role_by_name(name)
+                            if not role.idx in role_ids:
+                                ur = UserRoles(user_id=user.idx, role_id=role.idx)
+                                dbm.save_obj(ur)
             
             if data['groups']:
                 for group_name in data['groups']:
                     group = dbm.get_group_by_name(group_name)
                     if group:
-                        user.groups.append(group)
+                        ug = UserGroups(group_id=group.idx, user_id=user.idx)
+                        dbm.save_obj(ug)
             dbm.save_obj(user)
+
+
+            if user.has_role(roles.DESIGNER) or user.has_role(roles.ADMINISTRATOR):
+                expires = datetime.timedelta(days=365000)
+                api_token = create_access_token(identity=user.idx, expires_delta=expires)
+                user.api_token = api_token
+                dbm.save_obj(user)
+                create_user_default_fs(dbm, user, g.idx)
             try:
                 email.send_new_user(user,data['password'])
             except:
@@ -94,7 +112,23 @@ class UserList(Resource):
                 'message': 'success'
             }, 200
          
-
+@namespace.route('/anno_task_user')
+@api.doc(description='User Api get method for anno task users.')
+class UserListAnnoTask(Resource):
+    @api.marshal_with(user_list)
+    @jwt_required 
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            users = dbm.get_users()
+            dbm.close_session()
+            ulist = {'users':users}
+            return ulist 
 
 @namespace.route('/<int:id>')
 @namespace.param('id', 'The user identifier')
@@ -133,11 +167,19 @@ class User(Resource):
 
         if requesteduser:
             for g in requesteduser.groups:
-                    if g.is_user_default:
+                    if g.group.is_user_default:
+                        dbm.delete(g.group)
+                        dbm.commit()
                         dbm.delete(g)
                         dbm.commit()
+            for r in requesteduser.roles:
+                    dbm.delete(r)
+                    dbm.commit()
             dbm.delete(requesteduser) 
             dbm.commit()
+            fs_db = dbm.get_user_default_fs(requesteduser.idx)
+            ufa = UserFileAccess(dbm, requesteduser, fs_db)
+            ufa.delete_user_default_fs()
             dbm.close_session()
             return 'success', 200 
         else:
@@ -163,23 +205,35 @@ class User(Resource):
                 requesteduser.first_name = args.get('first_name')
                 requesteduser.last_name = args.get('last_name')
 
-    
-
-            if roles.ADMINISTRATOR not in args.get('roles'):
-                for user_role in dbm.get_user_roles_by_user_id(id):
-                    if user_role.role.name == roles.ADMINISTRATOR and requesteduser.user_name != 'admin': 
-                        dbm.delete(user_role) 
-                        dbm.commit()   
-
-            if args.get('roles'):
-                for role_name in args.get('roles'):
-                    if role_name == 'Designer':
-                        designer_role = dbm.get_role_by_name(roles.DESIGNER)
-                        requesteduser.roles.append(designer_role)
-                    if role_name == 'Administrator':
-                        admin_role = dbm.get_role_by_name(roles.ADMINISTRATOR)
-                        requesteduser.roles.append(admin_role)   
+            for user_role in dbm.get_user_roles_by_user_id(id):
+                if requesteduser.user_name != 'admin': 
+                    dbm.delete(user_role) 
+                    dbm.commit()
             
+            user_default_group_id = get_user_default_group(dbm, requesteduser.idx)
+            user_role_list = []
+            if requesteduser.user_name != 'admin': 
+                if args.get('roles'):
+                    for role_name in args.get('roles'):
+                        for item in [item for item in dir(roles) if not item.startswith("__")]:
+                            name = getattr(roles, item)
+                            if role_name == name:
+                                role = dbm.get_role_by_name(name) 
+                                user_role_list.append(role)
+                                ur = UserRoles(user_id=requesteduser.idx, role_id=role.idx)
+                                dbm.save_obj(ur)
+
+            if len(user_role_list) == 1:
+                if requesteduser.has_role(roles.ANNOTATOR):
+                    # raise Exception(user_role_list)
+                    fs_db = dbm.get_user_default_fs(requesteduser.idx)
+                    ufa = UserFileAccess(dbm, requesteduser, fs_db)
+                    ufa.delete_user_default_fs()
+                else:
+                    create_user_default_fs(dbm, requesteduser, user_default_group_id)
+            else:
+                create_user_default_fs(dbm, requesteduser, user_default_group_id)
+
             for user_group in dbm.get_user_groups_by_user_id(id):
                 if user_group.group.is_user_default:
                     continue
@@ -189,9 +243,9 @@ class User(Resource):
                 for group_name in args.get('groups'):
                     group = dbm.get_group_by_name(group_name)
                     if group:
-                        requesteduser.groups.append(group)
+                        ug = UserGroups(user_id=requesteduser.idx, group_id=group.idx)
+                        dbm.save_obj(ug)
             if args.get('password') and not requesteduser.is_external:
-                print(args.get('password')) 
                 requesteduser.set_password(args.get('password'))
 
             dbm.save_obj(requesteduser)
@@ -202,7 +256,7 @@ class User(Resource):
             return "User with ID '{}' not found.".format(id), 400
 
     
-
+ 
 @namespace.route('/self')
 class UserSelf(Resource):
     @api.marshal_with(user)
@@ -258,7 +312,6 @@ class UserLogoutRefresh(Resource):
     def post(self):
         jti = get_raw_jwt()['jti']
         blacklist.add(jti)
-        print(blacklist)
         return {"msg": "Successfully logged out"}, 200
 
 @namespace.route('/refresh')

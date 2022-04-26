@@ -92,13 +92,13 @@ class PipelineList(Resource):
             # for group in user.groups:
             #     print("--- printing group of user.groups ---")
             #     print(group) 
-            group_ids = [g.idx for g in user.groups]
+            group_ids = [g.group_id for g in user.groups]
             re = pipeline_service.get_pipelines(dbm, group_ids)
             dbm.close_session()
             # print("--- PipelineList result ---")
             # print(re) 
             return re
-
+ 
 
 @namespace.route('/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
@@ -125,7 +125,7 @@ class Pipeline(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            tasks.delete_pipe.delay(pipeline_id)
+            tasks.delete_pipe(pipeline_id)
             dbm.close_session()
             return 'success'
 

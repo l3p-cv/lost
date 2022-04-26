@@ -137,6 +137,7 @@ class SelectLabel extends Component {
                 id: el.idx,
                 label: String(el.name),
                 color: el.color ? el.color : '#10515F',
+                font: {color: '#FFFFFF'}
             }
             if (el.children.length) {
                 this.mapTreeToGraph(el, el.idx)
@@ -161,6 +162,7 @@ class SelectLabel extends Component {
             label: this.tree.name,
             chosen: true,
             color: this.tree.color ? this.tree.color : '#10515F',
+            font: {color: '#FFFFFF'}
         })
 
         this.mapTreeToGraph(this.tree, this.tree.idx)

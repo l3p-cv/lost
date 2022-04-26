@@ -18,14 +18,19 @@ class LostScript(script.Script):
                 for bbox in img.iter_annos('bbox'):
                     # Use yolo sim_class predictions from first
                     # annotation stage for clustring in MIA
-                    sim_class_list.append(bbox.sim_class)
+                    try:
+                        sim_class_list.append(bbox.to_df()['anno_lbl_id'].values[0])
+                    except:
+                        sim_class_list.append(None)
                     boxes.append(bbox.bbox)
                 if len(boxes)>0:
-                    self.outp.request_bbox_annos(img.img_path, 
-                        boxes=boxes, 
-                        sim_classes=sim_class_list, fs=img.fs) 
-        self.logger.info("Requested the following annos: \n{}".format(
-            self.outp.to_vec(['anno.data', 'anno.sim_class', 'img.img_path'])))
+                    self.outp.request_annos(img, 
+                        annos=boxes, 
+                        anno_types=['bbox']*len(boxes),
+                        anno_sim_classes=sim_class_list) 
+        self.logger.info(f"""Requested the following annos: \n{
+            self.outp.to_vec(['anno_data', 'anno_sim_class', 'img_path'])
+            }""")
 
 if __name__ == "__main__":
     my_script = LostScript()

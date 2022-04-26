@@ -9,7 +9,9 @@ import * as styles from '../components/styles'
 const TheFooter = () => {
     const history = useHistory()
     const version = useSelector((state) => state.lost.version)
-    const autoLogoutWarnTime = useSelector((state) => state.lost.settings.autoLogoutWarnTime)
+    const autoLogoutWarnTime = useSelector(
+        (state) => state.lost.settings.autoLogoutWarnTime,
+    )
     const autoLogoutTime = useSelector((state) => state.lost.settings.autoLogoutTime)
     const isDevMode = useSelector((state) => state.lost.settings.isDevMode)
     const timer = useInactive(autoLogoutTime, true)
@@ -20,7 +22,7 @@ const TheFooter = () => {
         if (isDevMode) {
             return (
                 <div className="ml-auto">
-                    <p style={{ margin: 0 }}>
+                    {/* <p style={{ margin: 0 }}>
                         {' '}
                         Auto logout in{' '}
                         <span>
@@ -32,7 +34,7 @@ const TheFooter = () => {
                         {autoLogoutWarnTime % 60 < 10
                             ? `0${autoLogoutWarnTime % 60}`
                             : autoLogoutWarnTime % 60}
-                    </p>
+                    </p> */}
                 </div>
             )
         }
@@ -62,7 +64,10 @@ const TheFooter = () => {
         <CFooter fixed={false}>
             <div>
                 <span className="ml-1">
-                    Powered by <a href="https://github.com/l3p-cv/lost" target="_blank">LOST Community</a>
+                    Powered by{' '}
+                    <a href="https://github.com/l3p-cv/lost" target="_blank">
+                        LOST Community
+                    </a>
                 </span>
             </div>
             {renderAutologoutTimerFooter()}
@@ -70,7 +75,7 @@ const TheFooter = () => {
             <div className="mfs-auto">
                 <span className="ml-auto">
                     <span style={{ marginRight: 20 }}>
-                        {isDevMode ? 'React Development Mode' : ''}
+                        {/* {isDevMode ? 'React Development Mode' : ''} */}
                     </span>
                     <b>Version </b>
                     <small>{version}</small>

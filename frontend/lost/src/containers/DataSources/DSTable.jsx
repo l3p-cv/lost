@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import Datatable from '../../components/Datatable'
 import IconButton from '../../components/IconButton'
-import { faUserPlus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import BaseModal from '../../components/BaseModal'
+import { useSelector } from 'react-redux'
+import {
+    faUserPlus,
+    faEdit,
+    faTrash,
+    faFolderOpen,
+    faTimes,
+    faSave,
+} from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
 import * as Notification from '../../components/Notification'
+import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 // import { deleteFs } from '../../access/fb'
 import * as fbAPI from '../../actions/fb/fb_api'
 import { CBadge } from '@coreui/react'
@@ -12,9 +22,19 @@ export const DSTable = ({ visLevel }) => {
     const [isNewDS, setIsNewDS] = useState(false)
     // const [fsList, setFSList] = useState([])
     // const [possibleFsTypes, setPossibleFsTypes] = useState([])
+    const userName = useSelector((state) => state.user.ownUser.user_name)
+    const defaultDsName = 'default'
+    const [browseOpen, setBrowseOpen] = useState(false)
+    const [fs, setFs] = useState()
     const { mutate: getFSListNew, data: fsList } = fbAPI.useGetFSList()
-    const { mutate: getPossibleFsTypes, data: possibleFsTypes } = fbAPI.useGetPossibleFsTypes()
-    const { mutate: deleteFs, status: deleteStatus, error: deleteErrorData} = fbAPI.useDeleteFs()
+    const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
+    const { mutate: getPossibleFsTypes, data: possibleFsTypes } =
+        fbAPI.useGetPossibleFsTypes()
+    const {
+        mutate: deleteFs,
+        status: deleteStatus,
+        error: deleteErrorData,
+    } = fbAPI.useDeleteFs()
 
     function fetchData() {
         // setFSList(await getFSList(visLevel))
@@ -34,18 +54,15 @@ export const DSTable = ({ visLevel }) => {
     }, [])
 
     useEffect(() => {
-        console.log('deleteStatus', deleteStatus)
-        if (deleteStatus === 'success'){
+        if (deleteStatus === 'success') {
             fetchData()
             Notification.showSuccess('Deletion successfull!')
-        } else if (deleteStatus === 'error'){
+        } else if (deleteStatus === 'error') {
             Notification.showError(`Error while deleting Datasource!\n${deleteErrorData}`)
         }
     }, [deleteStatus])
 
-    useEffect(() => {
-        console.log('possibleFsTypes: ', possibleFsTypes)
-    }, [possibleFsTypes])
+    useEffect(() => {}, [possibleFsTypes])
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
     const [selectedDs, setSelectedDs] = useState()
@@ -59,8 +76,6 @@ export const DSTable = ({ visLevel }) => {
     }
 
     const handleEditDs = (row) => {
-        console.log('handleEditDs', row)
-        console.log('row.value', row.id)
         setSelectedDs(row.id)
         openEditDSModal()
     }
@@ -100,7 +115,6 @@ export const DSTable = ({ visLevel }) => {
             option1: {
                 text: 'YES',
                 callback: () => {
-                    console.log('Delete', row)
                     deleteSelectedFs(row)
                 },
             },
@@ -127,8 +141,48 @@ export const DSTable = ({ visLevel }) => {
         })
     }
 
+    const onOpenFileBrowser = (row) => {
+        const fs = {
+            id: row.id,
+        }
+        getFullFs(fs)
+        setBrowseOpen(true)
+    }
+    const checkEditable = (row) => {
+        if (row.name === userName) {
+            return true
+        }
+        if (row.name === defaultDsName) {
+            return true
+        }
+        if (row.groupId === null) {
+            if (visLevel !== 'global') {
+                return true
+            }
+        }
+        return false
+    }
+
     return (
         <div>
+            <BaseModal
+                isOpen={browseOpen}
+                title="Browse Files"
+                toggle={() => setBrowseOpen(!browseOpen)}
+                // onClosed={onClosed}
+                footer={
+                    <>
+                        <IconButton
+                            icon={faTimes}
+                            color="success"
+                            text="Close"
+                            onClick={() => setBrowseOpen(false)}
+                        />
+                    </>
+                }
+            >
+                {fullFs ? <LostFileBrowser fs={fullFs} /> : ''}
+            </BaseModal>
             {isDsEditOpenView && (
                 <EditDSModal
                     isNewDs={isNewDS}
@@ -161,10 +215,10 @@ export const DSTable = ({ visLevel }) => {
                         Header: 'Type',
                         accessor: 'fsType',
                     },
-                    {
-                        Header: 'Root Path',
-                        accessor: 'rootPath',
-                    },
+                    // {
+                    //     Header: 'Root Path',
+                    //     accessor: 'rootPath',
+                    // },
                     // {
                     //     Header: 'Connection',
                     //     accessor: 'connection',
@@ -180,26 +234,6 @@ export const DSTable = ({ visLevel }) => {
                         },
                     },
                     {
-                        Header: 'Edit',
-                        id: 'edit',
-                        accessor: (row) => {
-                            return (
-                                <IconButton
-                                    icon={faEdit}
-                                    color="primary"
-                                    onClick={() => onEditDs(row)}
-                                    disabled={
-                                        row.groupId === null
-                                            ? visLevel !== 'global'
-                                            : false
-                                    }
-                                    text="Edit"
-                                    // isOutline={false}
-                                />
-                            )
-                        },
-                    },
-                    {
                         Header: 'Delete',
                         id: 'delete',
                         accessor: (row) => {
@@ -208,12 +242,39 @@ export const DSTable = ({ visLevel }) => {
                                     icon={faTrash}
                                     color="danger"
                                     onClick={() => onDeleteDs(row)}
-                                    disabled={
-                                        row.groupId === null
-                                            ? visLevel !== 'global'
-                                            : false
-                                    }
+                                    disabled={checkEditable(row)}
                                     text="Delete"
+                                />
+                            )
+                        },
+                    },
+                    {
+                        Header: 'Edit',
+                        id: 'edit',
+                        accessor: (row) => {
+                            return (
+                                <IconButton
+                                    icon={faEdit}
+                                    color="primary"
+                                    onClick={() => onEditDs(row)}
+                                    disabled={checkEditable(row)}
+                                    text="Edit"
+                                    // isOutline={false}
+                                />
+                            )
+                        },
+                    },
+                    {
+                        Header: 'Browse',
+                        id: 'browse',
+                        accessor: (row) => {
+                            return (
+                                <IconButton
+                                    icon={faFolderOpen}
+                                    color="primary"
+                                    onClick={() => onOpenFileBrowser(row)}
+                                    text="Browse"
+                                    // isOutline={false}
                                 />
                             )
                         },

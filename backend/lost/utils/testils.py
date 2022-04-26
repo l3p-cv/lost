@@ -4,6 +4,7 @@ from lost.db import model, dtype
 from lost.logic.label import LabelTree
 import datetime
 import pandas as pd
+import json
 from lost.logic.pipeline.instance import PipeInstance
 
 def get_user(dbm):
@@ -22,9 +23,18 @@ def get_user(dbm):
                 first_name= 'Test',
                 last_name='User'
             )
-        user.groups.append(model.Group(name=user.user_name, 
-                            is_user_default=True))
-        dbm.add(user)
+        dbm.save_obj(user)
+        g = model.Group(name=user.user_name, is_user_default=True)
+        dbm.save_obj(g)
+        ug = model.UserGroups(group_id=g.idx,user_id=user.idx)
+        dbm.save_obj(ug)
+
+        fs = model.FileSystem(group_id=g.idx, connection=json.dumps(dict()), 
+                                user_default_id=user.idx,
+                                root_path='/home/lost/data/test',
+                                fs_type='file', timestamp=datetime.datetime.now(), 
+                                name=user.user_name)
+        dbm.add(fs)
         dbm.commit()
     return user
 
@@ -54,7 +64,8 @@ def get_script_pipeline_fragment(dbm):
         :class:`lost.db.model.PipeElement`, :class:`lost.db.model.PipeElement`, :class:`lost.db.model.Pipe`: 
             (script_element, annotation_task_element, pipeline)
     '''
-    pipe = model.Pipe(name='TestPipe')
+    test_user = get_user(dbm)
+    pipe = model.Pipe(name='TestPipe', manager_id=test_user.idx)
     dbm.add(pipe)
     dbm.commit()
 

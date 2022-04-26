@@ -39,8 +39,8 @@ const Profile = () => {
         dispatch(
             actions.updateOwnUser({
                 email,
-                first_name:firstName,
-                last_name:lastName,
+                first_name: firstName,
+                last_name: lastName,
                 password,
             }),
         )

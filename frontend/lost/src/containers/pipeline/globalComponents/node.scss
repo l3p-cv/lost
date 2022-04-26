@@ -1,20 +1,20 @@
 // @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
 
 
-$borderWidth: 2px;
-$borderRadius: 15px;
+$borderWidth: 1px;
+$borderRadius: 8px;
 
 
 
 .graph-node{
-    border: $borderWidth solid gray;
+    border: $borderWidth solid #092f3873;
     border-radius: $borderRadius ;
     cursor: pointer;
     .graph-node-title{
         color: white;
         font-size: large;
         text-align: center;
-        background-color: #147289;
+        background-color: #10515f; 
         border-top-left-radius: $borderRadius - $borderWidth;
         border-top-right-radius: $borderRadius - $borderWidth;
         padding: 5px;
@@ -24,6 +24,7 @@ $borderRadius: 15px;
         }
         .graph-node-title-text{
             padding-right: 10px;
+            font-family: 'Lato';
         }
     }
     
@@ -64,19 +65,19 @@ $borderRadius: 15px;
 }
 
 .bg-blue{
-    background-color: #0073FF !important
+    background-color: #092F38 !important
 }
 .bg-green{
-    background-color: green !important
+    background-color: #2EB85C !important
 }
 .bg-orange{
-    background-color: orange !important
+    background-color: #F9B115 !important
 }
 
 .bg-red{
-    background-color: red !important
+    background-color: #E55353 !important
 }
 
 .arguments-lable{
-    color: red 
+    color: #E55353 
 }

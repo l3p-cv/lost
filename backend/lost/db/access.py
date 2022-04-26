@@ -769,6 +769,41 @@ class DBMan(object):
             return self.session.query(model.Worker)\
                 .filter(model.Worker.worker_name==worker_name).first()
 
+    def get_user_default_fs(self, user_idx):
+        '''Get user default filesystem 
+
+        Args:
+            user_idx (int): Id of the user who own this default filesystem
+        
+        Retruns:
+            `model.FileSystem` object: If one arg was given.
+        '''
+        return self.session.query(model.FileSystem)\
+            .filter(model.FileSystem.user_default_id==user_idx).first()
+                
+    def get_fs_deleted_also(self, name=None, group_id=None, fs_id=None):
+        '''Get all filesystem entries from database including deleted fs
+
+        Args:
+            name (str): Get filesystem by name.
+            group_id (int): GroupID for Group or User
+        
+        Retruns:
+            list of `model.FileSystem`: If no arg or group_id was given.
+            `model.FileSystem` object: If one arg was given.
+        '''
+        if name is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.name==name).first()
+        elif group_id is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.group_id==group_id).all()
+        elif fs_id is not None:
+            return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.idx==fs_id).first()
+        else:
+            return self.session.query(model.FileSystem).all()
+
     def get_fs(self, name=None, group_id=None, fs_id=None):
         '''Get filesystem entries from database
 
@@ -969,11 +1004,194 @@ class DBMan(object):
         sql = "SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
                 FROM two_d_anno WHERE two_d_anno.user_id = {} {} GROUP BY two_d_anno.dtype".format(user_id, between_str)
         return self.session.execute(sql)
-    
-    def mean_anno_time_by_user(self, user_id, anno_type='twodBased'):
+     
+    def mean_anno_time_by_user(self, user_id, anno_type='twodBased', start=None, end=None):
+        between_str = ''
         if anno_type == 'imageBased':
-            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            if start and end:
+                between_str ='AND timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
             return self.session.execute(sql).first()
         else:
-            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL".format(user_id)
+            if start and end:
+                between_str ='AND timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
             return self.session.execute(sql).first()
+    
+    def get_number_image_annos_in_time(self, user_id, start=None, end=None):
+        if start and end:
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+            .filter(model.ImageAnno.user_id == user_id, \
+                model.ImageAnno.state == state.Anno.LABELED, 
+                model.ImageAnno.timestamp >= start, 
+                model.ImageAnno.timestamp <= end)
+        else:
+            return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
+            .filter(model.ImageAnno.user_id == user_id, \
+                model.ImageAnno.state == state.Anno.LABELED)
+    
+
+    def mean_anno_time_by_user_grouped_by(self, user_id, start, end, group_by='day', anno_type='twodBased'):
+        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
+        if anno_type == 'imageBased':
+            sql = "SELECT AVG(anno_time) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+            return self.session.execute(sql)
+        else:
+            sql = "SELECT AVG(anno_time) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL  {}".format(user_id, between_str)
+            return self.session.execute(sql)
+    
+
+    def get_number_twod_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
+        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(idx) FROM two_d_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql)
+
+    def get_number_image_annos_in_time_group_by(self, user_id, start, end, group_by='day'):
+        between_str ='AND timestamp BETWEEN "{}" AND "{}" GROUP BY {}(timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(idx) FROM image_anno WHERE user_id={} AND anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql)
+    
+    def get_processed_anno_tasks_in_time(self, user_id, start, end, group_by='day'):
+        between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
+             image_anno.user_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql) 
+
+    def count_all_anno_tasks_by_user(self, user_id):
+        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id WHERE \
+             image_anno.user_id={} AND image_anno.anno_time IS NOT NULL".format(user_id)
+        return self.session.execute(sql) 
+    
+    def count_two_d_annos_by_designer_and_group_by_hour(self, user_id, start, end):
+        between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}" \
+                     GROUP BY YEAR(two_d_anno.timestamp), \
+                     MONTH(two_d_anno.timestamp), DAY(two_d_anno.timestamp), \
+                     HOUR(two_d_anno.timestamp)'.format(start, end)
+        sql = "SELECT DAY(two_d_anno.timestamp), MONTH(two_d_anno.timestamp), \
+                YEAR(two_d_anno.timestamp), HOUR(two_d_anno.timestamp), \
+                COUNT(two_d_anno.idx), AVG(two_d_anno.anno_time) \
+                FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id\
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id = {} {}".format(user_id, between_str)
+        return self.session.execute(sql)
+    
+    def get_processed_anno_tasks_in_time_by_designer(self, user_id, start, end, group_by='day'):
+        between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno \
+             INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+             INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+             INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+             WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql)
+
+    def mean_anno_time_by_designer(self, user_id, anno_type='twodBased', start=None, end=None):
+        between_str = ''
+        if anno_type == 'imageBased':
+            if start and end:
+                between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+            sql = "SELECT AVG(image_anno.anno_time) FROM image_anno \
+                INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id={} AND image_ano.anno_time IS NOT NULL {}".format(user_id, between_str)
+            return self.session.execute(sql).first()
+        else:
+            if start and end:
+                between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+            sql = "SELECT AVG(two_d_anno.anno_time) FROM two_d_anno \
+                 INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                 WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL  {}".format(user_id, between_str)
+            return self.session.execute(sql).first()
+    
+    def mean_anno_time_by_designer_group_by(self, user_id, start, end, group_by='day', anno_type='twodBased'):
+        if anno_type == 'imageBased':
+            between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
+            sql = "SELECT AVG(image_anno.anno_time) FROM image_anno \
+                INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id={} AND image_ano.anno_time IS NOT NULL {}".format(user_id, between_str)
+            return self.session.execute(sql)
+        else:
+            between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(two_d_anno.timestamp)'.format(start, end, group_by)
+            sql = "SELECT AVG(two_d_anno.anno_time) FROM two_d_anno \
+                 INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+                 INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                 WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL  {}".format(user_id, between_str)
+            return self.session.execute(sql)
+    
+    def count_all_anno_tasks_by_designer(self, user_id):
+        sql = "SELECT COUNT(DISTINCT(anno_task.idx)) FROM image_anno \
+            INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+            INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+            INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+            WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL".format(user_id)
+        return self.session.execute(sql) 
+    
+    def count_two_d_annos_per_label_by_designer(self, user_id, start=None, end=None):
+        between_str = ""
+        if start and end:
+            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+
+        sql = "SELECT label.label_leaf_id, label_leaf.name, label_leaf.color, COUNT(label.idx) AS num_items \
+                FROM label INNER JOIN two_d_anno ON two_d_anno.idx = label.two_d_anno_id \
+                INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                INNER JOIN label_leaf ON label_leaf.idx = label.label_leaf_id \
+                WHERE pipe.manager_id = {} \
+                {} GROUP BY label.label_leaf_id".format(user_id, between_str)
+        return self.session.execute(sql)
+
+    def count_two_d_annos_per_type_by_designer(self, user_id, start=None, end=None):
+        between_str = ""
+        if start and end:
+            between_str ='AND two_d_anno.timestamp BETWEEN STR_TO_DATE("{}","%Y-%m-%d") AND STR_TO_DATE("{}","%Y-%m-%d")'.format(start, end)
+
+        sql = "SELECT two_d_anno.dtype, COUNT(two_d_anno.idx) AS num_items \
+                FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id = {} {} GROUP BY two_d_anno.dtype".format(user_id, between_str)
+        return self.session.execute(sql)
+
+    def get_number_image_annos_in_time_by_designer_group_by(self, user_id, start, end, group_by='day'):
+        between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(image_anno.timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(image_anno.idx) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql)
+    
+        
+    def get_number_image_annos_in_time_by_designer(self, user_id, start=None, end=None):
+        between_str = ''
+        if start and end:
+            between_str ='AND image_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+        sql = "SELECT COUNT(image_anno.idx) FROM image_anno INNER JOIN anno_task ON anno_task.idx = image_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id={} AND image_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql)
+
+    def get_number_twod_annos_in_time_by_designer_group_by(self, user_id, start, end, group_by='day'):
+        between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}" GROUP BY {}(two_d_anno.timestamp)'.format(start, end, group_by)
+        sql = "SELECT COUNT(two_d_anno.idx) FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql)
+    
+    def get_number_twod_annos_in_time_by_designer(self, user_id, start=None, end=None):
+        between_str = ''
+        if start and end:
+            between_str ='AND two_d_anno.timestamp BETWEEN "{}" AND "{}"'.format(start, end)
+        sql = "SELECT COUNT(two_d_anno.idx) FROM two_d_anno INNER JOIN anno_task ON anno_task.idx = two_d_anno.anno_task_id \
+                INNER JOIN pipe_element ON pipe_element.idx = anno_task.pipe_element_id \
+                INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
+                WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
+        return self.session.execute(sql)

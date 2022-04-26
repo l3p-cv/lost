@@ -12,6 +12,7 @@ from lost.logic import anno_task as annotask_service
 from lost.logic.file_man import FileMan
 from lost.logic import dask_session
 from lost.pyapi.utils import anno_helper
+from lost.logic.file_access import UserFileAccess
 import json
 import os
 from lost.pyapi import pe_base
@@ -27,7 +28,6 @@ namespace = api.namespace('data', description='Data API.')
 class Data(Resource): 
     @jwt_required 
     def get(self, path):
-        print(path)
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -65,7 +65,6 @@ class Data(Resource):
 class Logs(Resource):
     @jwt_required 
     def get(self, path):
-        print(path)
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -143,10 +142,16 @@ class Logs(Resource):
             # return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'logs'), path)
 
 
-def load_img(db_img, fm, user):
+def load_img(db_img, ufa, user):
     if LOST_CONFIG.worker_management != 'dynamic':
-        img = fm.load_img(db_img.img_path)
+        # need to execute ls for s3fs (don't know why)
+        try:
+            ufa.fs.ls(db_img.img_path)
+        except:
+            pass
+        img = ufa.load_anno_img(db_img)
     else:
+        # TODO: Use UserFileAccess to load image
         img = dask_session.ds_man.read_fs_img(user, db_img.fs, db_img.img_path)
     return img
 
@@ -163,19 +168,19 @@ class GetImage(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
-            #TODO: Check if user is permitted to load this image
-            data = json.loads(request.data)
             #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
+            data = json.loads(request.data)
+            # TODO: get db_img via db access
             if data['type'] == 'imageBased':
                 db_img = dbm.get_image_anno(data['id'])
-                fm = FileMan(fs_db=db_img.fs)
-                img = load_img(db_img, fm, user)
+                ufa = UserFileAccess(dbm, user, db_img.fs)
+                img = load_img(db_img, ufa, user)
             elif data['type'] == 'annoBased':
                 db_anno = dbm.get_two_d_anno(two_d_anno_id=data['id'])
                 db_img = dbm.get_image_anno(db_anno.img_anno_id)
-                fm = FileMan(fs_db=db_img.fs)
+                ufa = UserFileAccess(dbm, user, db_img.fs)
                 # image = fm.load_img(db_img.img_path)
-                image = load_img(db_img, fm, user)
+                image = load_img(db_img, ufa, user)
                 
                 # get annotation_task config
                 draw_anno = False
