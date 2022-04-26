@@ -64,7 +64,7 @@ const INITITAL_STATE = {
     },
 }
 
-const INITITAL_STATE_ANNO_TASK_MODAL = {
+const INITITAL_STATE_SIA_ANNO_TASK_MODAL = {
     style: {
         container: {
             paddingTop: 24, //pixel
@@ -129,6 +129,69 @@ const INITITAL_STATE_ANNO_TASK_MODAL = {
     currentStep: 0,
 }
 
+const INITITAL_STATE_MIA_ANNO_TASK_MODAL = {
+    style: {
+        container: {
+            paddingTop: 24, //pixel
+            paddingBottom: 24, //pixel
+        },
+        shape: {
+            size: 60,
+            borderWidth: 4,
+            borderRadius: '50%',
+        },
+        line: {
+            borderWidth: 3,
+            borderColor: 'gray',
+            padding: 0,
+        },
+    },
+    steps: [
+        {
+            text: '1',
+            icon: 'fa-info',
+            shapeBorderColor: '#147289',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#147289',
+            verified: true,
+        },
+        {
+            text: '2',
+            icon: 'fa-user',
+            shapeBorderColor: '#147289',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#147289',
+            verified: false,
+            svgStyle: {
+                width: '800px',
+            },
+        },
+        {
+            text: '3',
+            icon: 'fa-database',
+            shapeBorderColor: '#147289',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#147289',
+            verified: false,
+        },
+        {
+            text: '4',
+            icon: 'fa-tag',
+            shapeBorderColor: '#147289',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#147289',
+            verified: false,
+        },
+    ],
+    currentStep: 0,
+}
+
+const getInitialAnnotaskStepperData = (type) => {
+    if (type === 'sia') {
+        return INITITAL_STATE_SIA_ANNO_TASK_MODAL
+    }
+    return INITITAL_STATE_MIA_ANNO_TASK_MODAL
+}
 export default (state = INITITAL_STATE, action) => {
     switch (action.type) {
         case 'PIPELINE_START_SELECT_TAB':
@@ -432,6 +495,28 @@ export default (state = INITITAL_STATE, action) => {
                     }),
                 },
             }
+        case 'PIPELINE_START_ANNO_TASK_ADD_CONFIGURATION_TAB':
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        configuration: action.payload.configuration,
+                                    },
+                                },
+                            }
+                        }
+                        return el
+                    }),
+                },
+            }
         // ANNO TASK END
 
         case 'PIPELINE_START_VERIFY_NODE':
@@ -517,7 +602,7 @@ export default (state = INITITAL_STATE, action) => {
                             return {
                                 ...el,
                                 id: el.peN,
-                                stepper: INITITAL_STATE_ANNO_TASK_MODAL,
+                                stepper: getInitialAnnotaskStepperData(el.annoTask.type),
                                 verified: false,
                                 type: 'annoTask',
                                 title: 'Annotation Task',
