@@ -4,6 +4,8 @@ from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from flask_jwt_extended import create_access_token, create_refresh_token
 from lost.db.model import User as DBUser, Group, UserRoles, UserGroups
 from lost.db import roles
+import flask
+import traceback
 class LoginManager():
     def __init__(self, dbm, user_name, password):
         self.dbm = dbm
@@ -12,7 +14,12 @@ class LoginManager():
     
     def login(self):
         if LOST_CONFIG.ldap_config['LDAP_ACTIVE']:
-            access_token, refresh_token = self.__authenticate_ldap()
+            try:
+                access_token, refresh_token = self.__authenticate_ldap()
+            except Exception:
+                flask.current_app.logger.error('LDAP Authentication failed.')
+                flask.current_app.logger.error(traceback.print_exc())
+                access_token, refresh_token = self.__authenticate_flask() 
         else:
             access_token, refresh_token = self.__authenticate_flask()
 
