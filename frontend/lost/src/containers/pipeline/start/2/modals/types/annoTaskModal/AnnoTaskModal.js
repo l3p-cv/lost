@@ -6,33 +6,41 @@ import UserInfo from './1/UserInfo'
 import SelectUser from './2/SelectUser'
 import SelectTree from './3/SelectTree'
 import SelectLabel from './4/SelectLabel'
+import SelectConfiguration from './5/SelectConfiguration'
 // import GrayLine from '../../..&globalComponents/GrayLine'
 
- const { selectTab, verifyTab } = actions
+const { selectTab, verifyTab } = actions
 
 class AnnoTaskModal extends Component {
-    constructor(){
+    constructor() {
         super()
         this.changeCurrentStep = this.changeCurrentStep.bind(this)
     }
     changeCurrentStep(newStep) {
         this.props.selectTab(this.props.peN, newStep)
+        console.log(this.props)
     }
 
     renderContent() {
         switch (this.props.stepper.currentStep) {
-            case 0: return (<UserInfo {...this.props}/>)
-            case 1: return (<SelectUser {...this.props} />)
-            case 2: return (<SelectTree {...this.props} />)
-            case 3: return (<SelectLabel {...this.props} />)
+            case 0:
+                return <UserInfo {...this.props} />
+            case 1:
+                return <SelectUser {...this.props} />
+            case 2:
+                return <SelectTree {...this.props} />
+            case 3:
+                return <SelectLabel {...this.props} />
+            case 4:
+                return <SelectConfiguration {...this.props} />
             default:
                 break
         }
     }
 
-    renderStepper(){
-        if(this.props.stepper.steps){
-            return(
+    renderStepper() {
+        if (this.props.stepper.steps) {
+            return (
                 <Stepper
                     stepperData={this.props.stepper}
                     changeCurrentStep={this.changeCurrentStep}
@@ -51,7 +59,4 @@ class AnnoTaskModal extends Component {
     }
 }
 
-export default connect(
-    null,
-    { selectTab, verifyTab }
-)(AnnoTaskModal)
+export default connect(null, { selectTab, verifyTab })(AnnoTaskModal)

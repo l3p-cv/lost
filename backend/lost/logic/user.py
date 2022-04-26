@@ -54,10 +54,9 @@ def release_user_annos(dbm, user_id):
     '''
     for anno_task in dbm.get_anno_task(state=state.AnnoTask.IN_PROGRESS):
         locked_annos = dbm.get_locked_img_annos(anno_task.idx)
-        for anno in locked_annos:
-            print('UserID: {}, AnnoID: {}'.format(anno.user_id, anno.idx))
+        # for anno in locked_annos:
+        #     print('UserID: {}, AnnoID: {}'.format(anno.user_id, anno.idx))
         locked_user_annos = [anno for anno in locked_annos if anno.user_id == user_id]
-        print(locked_user_annos)
         for anno in locked_user_annos:
             anno.state = state.Anno.UNLOCKED
             anno.timestamp_lock = None
@@ -65,12 +64,9 @@ def release_user_annos(dbm, user_id):
             dbm.add(anno)
                 
         locked_annos = dbm.get_locked_two_d_annos(anno_task.idx)
-        print('locked 2d annos')
-        print(locked_annos)
-        for anno in locked_annos:
-            print('UserID: {} AnnoID: {}'.format(anno.user_id, anno.idx))
+        # for anno in locked_annos:
+        #     print('UserID: {} AnnoID: {}'.format(anno.user_id, anno.idx))
         locked_user_annos = [anno for anno in locked_annos if anno.user_id == user_id]
-        print(locked_user_annos)
         for anno in locked_user_annos:
             anno.state = state.Anno.UNLOCKED
             anno.timestamp_lock = None

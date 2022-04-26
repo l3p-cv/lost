@@ -2,8 +2,10 @@ import datetime
 from flask_ldap3_login import LDAP3LoginManager, AuthenticationResponseStatus
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from flask_jwt_extended import create_access_token, create_refresh_token
-from lost.db.model import User as DBUser, Group
+from lost.db.model import User as DBUser, Group, UserRoles, UserGroups
 from lost.db import roles
+import flask
+import traceback
 class LoginManager():
     def __init__(self, dbm, user_name, password):
         self.dbm = dbm
@@ -12,7 +14,12 @@ class LoginManager():
     
     def login(self):
         if LOST_CONFIG.ldap_config['LDAP_ACTIVE']:
-            access_token, refresh_token = self.__authenticate_ldap()
+            try:
+                access_token, refresh_token = self.__authenticate_ldap()
+            except Exception:
+                flask.current_app.logger.error('LDAP Authentication failed.')
+                flask.current_app.logger.error(traceback.print_exc())
+                access_token, refresh_token = self.__authenticate_flask() 
         else:
             access_token, refresh_token = self.__authenticate_flask()
 
@@ -26,9 +33,6 @@ class LoginManager():
     def __get_token(self, user_id): 
         expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
         expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
-        if FLASK_DEBUG:
-            expires = datetime.timedelta(days=365)
-            expires_refresh = datetime.timedelta(days=366)
         access_token = create_access_token(identity=user_id, fresh=True, expires_delta=expires)
         refresh_token = create_refresh_token(user_id, expires_delta=expires_refresh)
         return access_token, refresh_token
@@ -64,10 +68,14 @@ class LoginManager():
         user = DBUser(user_name=user_info['uid'], email=user_info['mail'],
                     email_confirmed_at=datetime.datetime.now(), first_name=user_info['givenName'],
                     last_name=user_info['sn'], is_external=True)
-        anno_role = self.dbm.get_role_by_name(roles.ANNOTATOR)
-        user.roles.append(anno_role)
-        user.groups.append(Group(name=user.user_name, is_user_default=True))
         self.dbm.save_obj(user)
+        anno_role = self.dbm.get_role_by_name(roles.ANNOTATOR)
+        ur = UserRoles(user_id=user.idx, role_id=anno_role.idx)
+        self.dbm.save_obj(ur)
+        g = Group(name=user.user_name, is_user_default=True)
+        self.dbm.save_obj(g)
+        ug = UserGroups(group_id=g.idx,user_id=user.idx)
+        self.dbm.save_obj(ug)
         return user
 
     def __update_db_user(self, user_info, user):

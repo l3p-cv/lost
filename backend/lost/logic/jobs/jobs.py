@@ -93,26 +93,26 @@ def release_user_annos(dbm, user_id):
         dbm (object): DBMan object.
         user_id (int): ID of the user to release locked annos.
     '''
-    print('Was Here! User id is: {}'.format(user_id))
+    # print('Was Here! User id is: {}'.format(user_id))
     for anno_task in dbm.get_anno_task(state=state.AnnoTask.IN_PROGRESS):
         locked_annos = dbm.get_locked_img_annos(anno_task.idx)
-        print('locked annos')
-        print(locked_annos)
-        for anno in locked_annos:
-            print('UserID: {}'.format(anno.user_id))
+        # print('locked annos')
+        # print(locked_annos)
+        # for anno in locked_annos:
+        #     print('UserID: {}'.format(anno.user_id))
         locked_user_annos = [anno for anno in locked_annos if anno.user_id == user_id]
-        print(locked_user_annos)
+        # print(locked_user_annos)
         for anno in locked_user_annos:
             anno.state = state.Anno.UNLOCKED
             dbm.add(anno)
                 
         locked_annos = dbm.get_locked_two_d_annos(anno_task.idx)
-        print('locked 2d annos')
-        print(locked_annos)
-        for anno in locked_annos:
-            print('UserID: {}'.format(anno.user_id))
+        # print('locked 2d annos')
+        # print(locked_annos)
+        # for anno in locked_annos:
+        #     print('UserID: {}'.format(anno.user_id))
         locked_user_annos = [anno for anno in locked_annos if anno.user_id == user_id]
-        print(locked_user_annos)
+        # print(locked_user_annos)
         for anno in locked_user_annos:
             anno.state = state.Anno.UNLOCKED
             dbm.add(anno)

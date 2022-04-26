@@ -191,7 +191,7 @@ class PipeStarter(object):
             anno_task.dtype = dtype.AnnoTask.MIA
         elif template_element['annoTask']['type'].lower() == "sia":
             anno_task.dtype = dtype.AnnoTask.SIA
-        anno_task.configuration = json.dumps(template_element['annoTask']['configuration'])
+        anno_task.configuration = json.dumps(data_element['annoTask']['configuration'])
         anno_task.name = data_element['annoTask']['name']
         anno_task.instructions = data_element['annoTask']['instructions']
         anno_task.group_id = data_element['annoTask']['workerId']

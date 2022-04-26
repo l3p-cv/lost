@@ -9,8 +9,8 @@ class UserPermissions(object):
 
     def is_users_default_group(self, group_id):
         for user_group in self.user.groups:
-            if user_group.is_user_default:
-                if group_id == user_group.idx:
+            if user_group.group.is_user_default:
+                if group_id == user_group.group.idx:
                     return True
         return False
 

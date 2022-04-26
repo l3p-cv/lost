@@ -59,6 +59,7 @@ If you have set up lost with the quick setup script, these variables only need t
 
     .. code-block:: bash
 
+        LOST_MAIL_ACTIVE=True
         LOST_MAIL_SERVER=mailserver.com
         LOST_MAIL_PORT=465
         LOST_MAIL_USE_SSL=True
@@ -75,13 +76,27 @@ LDAP can be configured using the following environment variables in your ``.env`
 
     .. code-block:: bash
 
-        LDAP_ACTIVE=True
-        LDAP_HOST=192.168.0.100
-        LDAP_PORT=389
-        LDAP_BASE_DN=dc=example,dc=com
-        LDAP_USER_DN=ou=Entwickler
-        LDAP_BIND_USER_DN=cn=binduser,dc=example,dc=com
-        LDAP_BIND_USER_PASSWORD=ldap_bind_password
+        LOST_LDAP_ACTIVE=True
+        LOST_LDAP_HOST=192.168.0.100
+        LOST_LDAP_PORT=389
+        LOST_LDAP_BASE_DN=dc=example,dc=com
+        LOST_LDAP_USER_DN=ou=myOrganizationUnit
+        LOST_LDAP_BIND_USER_DN=cn=binduser,dc=example,dc=com
+        LOST_LDAP_BIND_USER_PASSWORD=ldap_bind_password
+
+For more LDAP configurations just check the Flask LDAP documentation:
+`Flask LDAP Documentation
+<https://flask-ldap3-login.readthedocs.io/en/latest/quick_start.html>`_.
+
+It is important that all LDAP environment variables are prefixed with LOST so that the settings are applied:
+    .. code-block:: bash
+
+        LOST_LDAP_GROUP_OBJECT_FILTER=(objectclass=posixGroup)
+        LOST_LDAP_GROUP_DN=
+        LOST_LDAP_USER_RDN_ATTR=cn
+        LOST_LDAP_USER_LOGIN_ATTR=uid
+        LOST_LDAP_USE_SSL=False
+        LOST_LDAP_ADD_SERVER= True
 
 .. note::
     
@@ -93,6 +108,10 @@ LDAP can be configured using the following environment variables in your ``.env`
     The resolution of groups via LDAP is not yet supported. If a LOST group should be assigned to an LDAP user, 
     this must be done via the user management in the Admin Area.
 
+.. warning::
+
+    If a local user with the same user name of a new LDAP user already exists, 
+    the local user settings will be overwritten by those of the LDAP user.
 
 Activate JupyterLab
 ------------------------

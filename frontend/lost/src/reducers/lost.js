@@ -4,12 +4,12 @@ const initIsNavBarVisible = localStorage.getItem('isNavBarVisible') === 'true'
 console.log('initIsNavBarVisible')
 console.log(initIsNavBarVisible)
 const INITIAL_STATE = {
-    isNavBarVisible: initIsNavBarVisible === undefined? true: initIsNavBarVisible,
+    isNavBarVisible: initIsNavBarVisible === undefined ? true : initIsNavBarVisible,
     version: '',
     settings: {
         autoLogoutWarnTime: 300,
         autoLogoutTime: 3600,
-        isDevMode: true
+        isDevMode: true,
     },
     jupyterLabUrl: '',
 }
@@ -30,17 +30,17 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.SET_ROLES:
             return {
                 ...state,
-                roles: action.payload
+                roles: action.payload,
             }
         case TYPES.SET_VERSION:
             return {
                 ...state,
-                version: action.payload
+                version: action.payload,
             }
         case TYPES.SET_JUPYTER_LAB_URL:
             return {
                 ...state,
-                jupyterLabUrl: action.payload
+                jupyterLabUrl: action.payload,
             }
         default:
             return state

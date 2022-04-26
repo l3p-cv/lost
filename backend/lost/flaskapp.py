@@ -33,6 +33,7 @@ app.config['MAIL_USERNAME'] = settings.MAIL_USERNAME
 app.config['MAIL_PASSWORD'] = settings.MAIL_PASSWORD
 app.config['MAIL_DEFAULT_SENDER'] = settings.MAIL_DEFAULT_SENDER
 app.config['MAX_CONTENT_LENGTH'] = settings.MAX_FILE_UPLOAD_SIZE 
+
 mail = None
 if settings.LOST_CONFIG.send_mail:
     try:

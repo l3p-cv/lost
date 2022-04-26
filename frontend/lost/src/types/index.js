@@ -10,4 +10,16 @@ import * as pipeline from './pipeline'
 import * as siaReview from './siaReview'
 import * as lost from './lost'
 
-export default { ...auth, ...label, ...group, ...user, ...annoTask, ...mia, ...sia, ...worker, ...pipeline, ...siaReview, ...lost}
+export default {
+    ...auth,
+    ...label,
+    ...group,
+    ...user,
+    ...annoTask,
+    ...mia,
+    ...sia,
+    ...worker,
+    ...pipeline,
+    ...siaReview,
+    ...lost,
+}

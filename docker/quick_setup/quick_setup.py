@@ -166,6 +166,7 @@ class QuickSetup(object):
             ['#========================','#'],
             ['#= Your Mail config here ','#'],
             ['#========================','#'],
+            ['#LOST_MAIL_ACTIVE','True'],
             ['#LOST_MAIL_SERVER','mailserver.com'],
             ['#LOST_MAIL_PORT','465'],
             ['#LOST_MAIL_USE_SSL','True'],

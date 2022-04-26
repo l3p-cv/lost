@@ -80,7 +80,6 @@ class Control extends Component {
             this.props.getWorkingOnAnnoTask,
             this.props.maxAmount,
         )
-        this.props.refreshToken()
         this.props.setMiaSelectedLabel(undefined)
         this.setState({ value: '' })
     }

@@ -128,7 +128,12 @@ class LOSTConfig(object):
         # LDAP Configuation
         self.ldap_config = dict()
         self.ldap_config['LDAP_ACTIVE'] = ge('LOST_LDAP_ACTIVE', False)
+        self.ldap_config['LDAP_HOST'] = ge('LOST_LDAP_HOST', '0.0.0.0')
         self.ldap_config['LDAP_PORT'] = ge('LOST_LDAP_PROT', 389)
+        self.ldap_config['LDAP_BASE_DN'] = ge('LOST_LDAP_BASE_DN', '')
+        self.ldap_config['LDAP_USER_DN'] = ge('LOST_LDAP_USER_DN', '')
+        self.ldap_config['LDAP_BIND_USER_DN'] = ge('LOST_LDAP_BIND_USER_DN', '')
+        self.ldap_config['LDAP_BIND_USER_PASSWORD'] = ge('LOST_LDAP_BIND_USER_PASSWORD', '')
         self.ldap_config['LDAP_GROUP_OBJECT_FILTER'] = ge(
             'LOST_LDAP_GROUP_OBJECT_FILTER', '(objectclass=posixGroup)'
         )
@@ -139,8 +144,8 @@ class LOSTConfig(object):
         self.ldap_config['LDAP_ADD_SERVER'] = ge('LOST_LDAP_ADD_SERVER', True)
 
         # Mail configuration
-        self.send_mail = ge('LOST_SEND_MAIL', False)
-        self.mail_server = ge('LOST_MAIL_SEVER', "")
+        self.send_mail = ge('LOST_MAIL_ACTIVE', False)
+        self.mail_server = ge('LOST_MAIL_SERVER', "")
         self.mail_port = ge('LOST_MAIL_PORT', "")
         self.mail_use_ssl = ge('LOST_MAIL_USE_SSL', False)
         self.mail_use_tls = ge('LOST_MAIL_USE_TLS', False)

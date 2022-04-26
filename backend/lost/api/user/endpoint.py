@@ -227,8 +227,9 @@ class User(Resource):
                 if requesteduser.has_role(roles.ANNOTATOR):
                     # raise Exception(user_role_list)
                     fs_db = dbm.get_user_default_fs(requesteduser.idx)
-                    ufa = UserFileAccess(dbm, requesteduser, fs_db)
-                    ufa.delete_user_default_fs()
+                    if fs_db:
+                        ufa = UserFileAccess(dbm, requesteduser, fs_db)
+                        ufa.delete_user_default_fs()
                 else:
                     create_user_default_fs(dbm, requesteduser, user_default_group_id)
             else:
@@ -325,9 +326,6 @@ class UserTokenRefresh(Resource):
             dask_session.ds_man.refresh_user_session(user)
         expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
         expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
-        if FLASK_DEBUG:
-            expires = datetime.timedelta(days=365)
-            expires_refresh = datetime.timedelta(days=366)
         if user:
             access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
             refresh_token = create_refresh_token(user.idx, expires_delta=expires_refresh)
@@ -347,8 +345,8 @@ class UserLogin(Resource):
         # get data from parser
         data = login_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
-        user = dbm.find_user_by_user_name(data['user_name'])
-        lm = LoginManager(dbm, data['user_name'], data['password'])
+        user = dbm.find_user_by_user_name(data['userName'])
+        lm = LoginManager(dbm, data['userName'], data['password'])
         response = lm.login()
         if LOST_CONFIG.worker_management == 'dynamic':
             if response[1] == 200:

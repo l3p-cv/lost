@@ -8,6 +8,7 @@ def send_email(subject, recipients, html_body):
     if LOST_CONFIG.send_mail:
         msg = Message(subject, sender=LOST_CONFIG.mail_default_sender, recipients=recipients)
         msg.html = html_body
+        mail.connect()
         mail.send(msg)
 
 

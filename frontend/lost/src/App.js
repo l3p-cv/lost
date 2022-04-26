@@ -44,30 +44,32 @@ const loading = () => {
     return <div>Loading</div>
 }
 
-const App = () => (
-    <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
-            <Suspense fallback={loading}>
-                <BrowserRouter>
-                    <Switch>
-                        <Route
-                            exact
-                            path="/login"
-                            name="Login Page"
-                            render={(props) => <Login {...props} />}
-                        />
-                        <Route
-                            exact
-                            path="/logout"
-                            name="Logout Page"
-                            component={Logout}
-                        />
-                        <Route path="/" name="Home" render={() => <TheLayout />} />
-                    </Switch>
-                </BrowserRouter>
-            </Suspense>
-        </QueryClientProvider>
-    </Provider>
-)
+function App() {
+    return (
+        <Provider store={store}>
+            <QueryClientProvider client={queryClient}>
+                <Suspense fallback={loading}>
+                    <BrowserRouter>
+                        <Switch>
+                            <Route
+                                exact
+                                path="/login"
+                                name="Login Page"
+                                render={(props) => <Login {...props} />}
+                            />
+                            <Route
+                                exact
+                                path="/logout"
+                                name="Logout Page"
+                                component={Logout}
+                            />
+                            <Route path="/" name="Home" render={() => <TheLayout />} />
+                        </Switch>
+                    </BrowserRouter>
+                </Suspense>
+            </QueryClientProvider>
+        </Provider>
+    )
+}
 
 export default App
