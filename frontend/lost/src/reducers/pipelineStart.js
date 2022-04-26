@@ -117,6 +117,14 @@ const INITITAL_STATE_ANNO_TASK_MODAL = {
             shapeContentColor: '#147289',
             verified: false,
         },
+        {
+            text: '5',
+            icon: 'fa-gears',
+            shapeBorderColor: '#147289',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#147289',
+            verified: false,
+        },
     ],
     currentStep: 0,
 }
@@ -402,7 +410,28 @@ export default (state = INITITAL_STATE, action) => {
                     }),
                 },
             }
-
+        case 'PIPELINE_START_ANNO_TASK_UPDATE_CONFIGURATION':
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        configuration: action.payload.configuration,
+                                    },
+                                },
+                            }
+                        }
+                        return el
+                    }),
+                },
+            }
         // ANNO TASK END
 
         case 'PIPELINE_START_VERIFY_NODE':
