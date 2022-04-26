@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow to connect to external filesystems (azure blob storage, s3 bucket, ssh / sftp)
   - Allow to upload and delete files via GUI
   - Allow to create directories via GUI
+- PipelineStart:
+  - Allow to specify annotation options for SIA Annotation Tasks
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
