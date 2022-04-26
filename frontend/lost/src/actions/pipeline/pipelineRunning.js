@@ -83,18 +83,9 @@ const playPipeline = (id) => async (dispatch) => {
 const regeneratePipeline = (id) => async (dispatch) => {}
 
 const getLog = async (id) => {
-    // const token = localStorage.getItem('token')
-    // const response = await fetch(`${API_URL}/${id}?nocache=${Math.random()}`,
-    //     {
-    //         headers: {
-    //             Authorization: 'Bearer ' + token
-    //         }
-    //     }
-    // )
     let response = {}
     try {
         response = await axios.get(`${API_URL}/data/logs/${id}`)
-        // console.log('pipelineRunning getLog', response)
     } catch (err) {
         console.warn(err)
         response.data = 'ERROR'
