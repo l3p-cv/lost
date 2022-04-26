@@ -18,6 +18,15 @@ class Version(Resource):
             return lost.__version__
         except:
             return 'development'
+
+@namespace.route('/settings')
+class Version(Resource):
+    def get(self):
+        return {
+            'autoLogoutTime': LOST_CONFIG.session_timeout*60,
+            'autoLogoutWarnTime': 1*60,
+            'isDevMode': LOST_CONFIG.debug
+        }
 @namespace.route('/jupyter')
 class JupyterLabUrl(Resource):
     @jwt_required 

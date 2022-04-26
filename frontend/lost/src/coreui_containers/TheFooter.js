@@ -1,12 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { CFooter } from '@coreui/react'
-import { useSelector } from 'react-redux'
+import { useInterval } from 'react-use'
+import { useSelector, useDispatch } from 'react-redux'
 import SweetAlert from 'react-bootstrap-sweetalert'
 import { useHistory } from 'react-router-dom'
 import useInactive from '../hooks/useInactive'
 import * as styles from '../components/styles'
+import actions from '../actions'
 
 const TheFooter = () => {
+    const dispatch = useDispatch()
+    useEffect(() => {
+        dispatch(actions.loadSettings())
+    }, [])
+
     const history = useHistory()
     const version = useSelector((state) => state.lost.version)
     const autoLogoutWarnTime = useSelector(
@@ -18,11 +25,16 @@ const TheFooter = () => {
     let seconds = timer % 60
     seconds = seconds > 9 ? seconds : `0${seconds}`
     const minutes = parseInt(timer / 60)
+
+    useInterval(() => {
+        dispatch(actions.checkExpireDate(new Date(Date.now() - seconds * 1000).getTime()))
+    }, 2000)
+
     const renderAutologoutTimerFooter = () => {
         if (isDevMode) {
             return (
                 <div className="ml-auto">
-                    {/* <p style={{ margin: 0 }}>
+                    <p style={{ margin: 0 }}>
                         {' '}
                         Auto logout in{' '}
                         <span>
@@ -34,7 +46,7 @@ const TheFooter = () => {
                         {autoLogoutWarnTime % 60 < 10
                             ? `0${autoLogoutWarnTime % 60}`
                             : autoLogoutWarnTime % 60}
-                    </p> */}
+                    </p>
                 </div>
             )
         }
@@ -70,7 +82,7 @@ const TheFooter = () => {
                     </a>
                 </span>
             </div>
-            {renderAutologoutTimerFooter()}
+            {/* {renderAutologoutTimerFooter()} */}
             {renderAutologoutModal()}
             <div className="mfs-auto">
                 <span className="ml-auto">
