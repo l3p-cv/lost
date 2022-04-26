@@ -227,8 +227,9 @@ class User(Resource):
                 if requesteduser.has_role(roles.ANNOTATOR):
                     # raise Exception(user_role_list)
                     fs_db = dbm.get_user_default_fs(requesteduser.idx)
-                    ufa = UserFileAccess(dbm, requesteduser, fs_db)
-                    ufa.delete_user_default_fs()
+                    if fs_db:
+                        ufa = UserFileAccess(dbm, requesteduser, fs_db)
+                        ufa.delete_user_default_fs()
                 else:
                     create_user_default_fs(dbm, requesteduser, user_default_group_id)
             else:
