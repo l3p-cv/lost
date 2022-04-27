@@ -142,3 +142,26 @@ class ChangeUser(Resource):
     
             dbm.close_session()
             return "You are not authorized.", 401
+@namespace.route('/update_config/<int:annotask_id>')
+@namespace.param('annotask_id', 'The id of the annotation task.')
+class UpdateAnnoTaskConfig(Resource):
+    @jwt_required 
+    def post(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity() 
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            anno_task = dbm.get_anno_task(annotask_id)
+            pipe_manager_id = anno_task.pipe_element.pipe.manager_id
+            if pipe_manager_id == user.idx:
+                data = json.loads(request.data)
+                anno_task.configuration = json.dumps(data['configuration'])
+                dbm.save_obj(anno_task)
+                dbm.close_session()
+                return "Success", 200
+    
+            dbm.close_session()
+            return "You are not authorized.", 401

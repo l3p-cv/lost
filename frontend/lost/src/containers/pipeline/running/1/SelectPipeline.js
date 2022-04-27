@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import actions from '../../../../actions/pipeline/pipelineRunning'
 
 import { connect } from 'react-redux'
-import Datatable from '../../../../components/Datatable'
+import ReactTable from 'react-table'
+import 'react-table/react-table.css'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../../../components/IconButton'
 import HelpButton from '../../../../components/HelpButton'
@@ -58,7 +59,7 @@ class SelectPipeline extends Component {
                 date: new Date(`${el.date} GMT -0000`),
             }))
             return (
-                <Datatable
+                <ReactTable
                     columns={[
                         {
                             Header: 'Name',

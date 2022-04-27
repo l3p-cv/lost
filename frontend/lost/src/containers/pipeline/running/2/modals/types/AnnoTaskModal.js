@@ -12,15 +12,18 @@ import {
     faEye,
     faCircle,
     faTag,
+    faGears,
 } from '@fortawesome/free-solid-svg-icons'
 // import axios from 'axios'
 import { API_URL } from '../../../../../../lost_settings'
 import { saveAs } from 'file-saver'
 // import { createHashHistory } from 'history'
 import { useHistory } from 'react-router-dom'
+import SelectConfiguration from '../../../../start/2/modals/types/annoTaskModal/5/SelectConfiguration'
 import actions from '../../../../../../actions'
 import IconButton from '../../../../../../components/IconButton'
 import * as userApi from '../../../../../../actions/user/user_api'
+import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 
 // function download(filename, text) {
 //     var element = document.createElement('a');
@@ -80,11 +83,14 @@ const AnnoTaskModal = (props) => {
     const dispatch = useDispatch()
     const { data: users } = userApi.useAnnotaskUser()
     // const users = useSelector((state) => state.user.users)
+    const { data: annoTaskConfigUpdateDate, mutate: updateAnnoTaskConfig } =
+        annoTaskApi.useUpdateConfig()
     const groups = useSelector((state) => state.group.groups)
     const hist = useHistory()
     useEffect(() => {
         // dispatch(actions.getUsers())
         dispatch(actions.getGroups())
+        console.log(props)
     }, [])
     const dataTableData = [
         ...users.map((user) => ({
@@ -98,6 +104,10 @@ const AnnoTaskModal = (props) => {
             name: `${group.name} (group)`,
         })),
     ]
+    const onAnnoTaskConfigUpdate = (config) => {
+        console.log(config)
+        updateAnnoTaskConfig({ annotaskId: props.annoTask.id, configuration: config })
+    }
     return (
         <>
             <ModalHeader>Annotation Task</ModalHeader>
@@ -193,6 +203,19 @@ const AnnoTaskModal = (props) => {
                         </Badge>
                     </h5>
                 </CollapseCard>
+
+                {props.annoTask.type === 'sia' ? (
+                    <CollapseCard icon={faGears} buttonText="Adapt Configuration">
+                        <SelectConfiguration
+                            peN={undefined}
+                            configuration={props.annoTask.configuration}
+                            onUpdate={(config) => onAnnoTaskConfigUpdate(config)}
+                        ></SelectConfiguration>
+                    </CollapseCard>
+                ) : (
+                    ''
+                )}
+
                 <IconButton
                     icon={faDownload}
                     color="primary"
