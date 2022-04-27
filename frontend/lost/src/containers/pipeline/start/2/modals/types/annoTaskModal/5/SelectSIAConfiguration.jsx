@@ -13,7 +13,7 @@ const loadElements = (state) => {
     return undefined
 }
 
-export const SelectConfiguration = ({ ...props }) => {
+export const SelectSIAConfiguration = ({ ...props }) => {
     const dispatch = useDispatch()
     const [configuration, setConfiguration] = useState(undefined)
     const elements = useSelector((state) => loadElements(state))
@@ -428,4 +428,4 @@ export const SelectConfiguration = ({ ...props }) => {
     )
 }
 
-export default SelectConfiguration
+export default SelectSIAConfiguration

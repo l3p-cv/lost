@@ -19,7 +19,8 @@ import { API_URL } from '../../../../../../lost_settings'
 import { saveAs } from 'file-saver'
 // import { createHashHistory } from 'history'
 import { useHistory } from 'react-router-dom'
-import SelectConfiguration from '../../../../start/2/modals/types/annoTaskModal/5/SelectConfiguration'
+import SelectSIAConfiguration from '../../../../start/2/modals/types/annoTaskModal/5/SelectSIAConfiguration'
+import SelectMIAConfiguration from '../../../../start/2/modals/types/annoTaskModal/5/SelectMIAConfiguration'
 import actions from '../../../../../../actions'
 import IconButton from '../../../../../../components/IconButton'
 import * as userApi from '../../../../../../actions/user/user_api'
@@ -206,14 +207,20 @@ const AnnoTaskModal = (props) => {
 
                 {props.annoTask.type === 'sia' ? (
                     <CollapseCard icon={faGears} buttonText="Adapt Configuration">
-                        <SelectConfiguration
+                        <SelectSIAConfiguration
                             peN={undefined}
                             configuration={props.annoTask.configuration}
                             onUpdate={(config) => onAnnoTaskConfigUpdate(config)}
-                        ></SelectConfiguration>
+                        ></SelectSIAConfiguration>
                     </CollapseCard>
                 ) : (
-                    ''
+                    <CollapseCard icon={faGears} buttonText="Adapt Configuration">
+                        <SelectMIAConfiguration
+                            peN={undefined}
+                            configuration={props.annoTask.configuration}
+                            onUpdate={(config) => onAnnoTaskConfigUpdate(config)}
+                        ></SelectMIAConfiguration>
+                    </CollapseCard>
                 )}
 
                 <IconButton

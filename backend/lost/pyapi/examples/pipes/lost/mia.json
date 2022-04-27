@@ -26,7 +26,8 @@
         "type" : "mia",
         "instructions" : "Please assign a class label to all presented images.",
         "configuration": {
-          "type": "imageBased"
+          "type": "imageBased",
+          "showProposedLabel": true
         }
       }
     },

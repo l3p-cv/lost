@@ -27,7 +27,8 @@
         "configuration":{
           "type": "annoBased",
           "drawAnno": false,
-          "addContext": 0.0
+          "addContext": 0.0,
+          "showProposedLabel": true
         }
       }
     }
