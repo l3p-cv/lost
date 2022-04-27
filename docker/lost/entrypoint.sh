@@ -24,7 +24,6 @@ while [ $n -ne 0 ]; do
 done
 
 python3 /code/src/backend/lost/logic/init/initlost.py
-cd /code/src/backend/lost/cli && bash import_examples.sh && cd -
 # cd /code/docs/sphinx &&  make html && cd -
 python3 /code/src/backend/lost/logic/init/initworker.py
 python3 /code/src/backend/lost/logic/init/init_patchsystem.py

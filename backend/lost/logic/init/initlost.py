@@ -1,14 +1,18 @@
 import os
-from os.path import join
-from unicodedata import name
-from lost.db import access
-import lostconfig as config
-from lost.logic import file_man
-from lost.db import roles
-from lost.db.model import User, Role, Group, UserGroups, UserRoles
-from lost.db import model
+import pandas as pd
 import json
 from datetime import datetime
+from lost.settings import LOST_CONFIG
+import lostconfig as config
+import shutil
+from lost.db import access
+from lost.logic.pipeline import template_import
+from lost.logic.file_man import AppFileMan
+from lost.db import roles
+from lost.db.model import User, Role, Group, UserGroups, UserRoles
+from lost.logic.file_access import UserFileAccess
+from lost.db import model
+from lost.logic.label import LabelTree
 from lost.logic.project_config import ProjectConfigMan
 from lost.logic.file_access import create_user_default_fs
 
@@ -27,7 +31,10 @@ def main():
     if user and group:
         create_lost_filesystem_entry(dbm, lostconfig, group.idx)
         create_user_default_fs(dbm, user, group.idx)
-        create_project_config(dbm)
+        import_ootb_pipelines(dbm, lostconfig)
+        copy_example_images(dbm, lostconfig, user)
+        import_example_label_trees(dbm, lostconfig)
+        # create_project_config(dbm)
     dbm.close_session()
 
 def create_roles(dbm):
@@ -90,13 +97,42 @@ def create_lost_filesystem_entry(dbm, lostconfig, admin_default_group):
         lost_fs.fs_type = lostconfig.data_fs_type 
     dbm.save_obj(lost_fs)
 
-def create_project_config(dbm):
-    pc = ProjectConfigMan(dbm)
-    print ('Try to create default project config!')
-    try:
-        pc.create_entry('default_language', 'en', description='Default selected language.')
-    except:
-        print('Project config already exists!')
+# def create_project_config(dbm):
+#     pc = ProjectConfigMan(dbm)
+#     print ('Try to create default project config!')
+#     try:
+#         pc.create_entry('default_language', 'en', description='Default selected language.')
+#     except:
+#         print('Project config already exists!')
+
+def import_ootb_pipelines(dbm, lostconfig):
+    fm = AppFileMan(lostconfig)
+    src_path = '/code/src/backend/lost/pyapi/examples/pipes/lost'
+    pp_path = fm.get_pipe_project_path()
+    dst_path = os.path.join(pp_path, os.path.basename(src_path))
+    #try:
+    shutil.copytree(src_path, dst_path, dirs_exist_ok=False)
+    importer = template_import.PipeImporter(dst_path, dbm)
+    importer.start_import()
+
+
+def copy_example_images(dbm, lostconfig, user):
+    if lostconfig.add_examples:
+        src_path = '/code/src/backend/lost/pyapi/examples/images'
+        admin_fs = dbm.get_user_default_fs(user.idx)
+        ufa = UserFileAccess(dbm, user, admin_fs)
+        ufa.fm.fs.put(src_path, ufa.get_media_path(), recursive=True)
+
+
+def import_example_label_trees(dbm, lostconfig):
+    if lostconfig.add_examples:
+        tree = LabelTree(dbm)
+        src_pathes = ['/code/src/backend/lost/pyapi/examples/label_trees/pascal_voc2012.csv',
+                    '/code/src/backend/lost/pyapi/examples/label_trees/dummy_label_tree.csv']
+        
+        for src_path in src_pathes:
+            df = pd.read_csv(src_path)
+            tree.import_df(df)
 
 
 if __name__ == '__main__':
