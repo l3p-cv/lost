@@ -2,10 +2,37 @@ import React, { useRef, useEffect, useState } from 'react'
 
 import ToolBar from './ToolBar'
 import Canvas from './Canvas'
+import * as tbe from './types/toolbarEvents'
 
 const Sia = (props) => {
 
     const [fullscreenCSS, setFullscreenCSS] = useState('')
+    const [layoutUpdate, setLayoutUpdate] = useState(0)
+    const [uiConfig, setUiConfig] = useState(
+        {
+            "nodeRadius": 4,
+            "strokeWidth": 4,
+            "annoDetails": {
+                "visible": false
+            },
+            "labelInfo": {
+                "visible": false
+            },
+            "annoStats": {
+                "visible": false
+            },
+            "layoutOffset": {
+                "left": 20,
+                "top": 0,
+                "bottom": 5,
+                "right": 5
+            },
+            "imgBarVisible": true,
+            "imgLabelInputVisible": false,
+            "centerCanvasInContainer": true,
+            "maxCanvas": true
+        }
+    )
     const toolbarRef = useRef()
     const containerRef = useRef()
     const canvasRef = useRef()
@@ -15,6 +42,18 @@ const Sia = (props) => {
             props.onGetRefs(containerRef, canvasRef, toolbarRef)
         }
     }, [])
+
+    useEffect(() => {
+        doLayoutUpdate()
+    }, [props.layoutUpdate])
+
+    useEffect(() => {
+        setUiConfig({...uiConfig, ...props.uiConfig})
+    }, [props.uiConfig])
+
+    const doLayoutUpdate = () => {
+        setLayoutUpdate(layoutUpdate + 1)
+    }
 
     const handleAnnoEvent = (anno, annos, action) => {
         if (props.onAnnoEvent){
@@ -44,6 +83,35 @@ const Sia = (props) => {
     }
 
     const handleToolBarEvent = (e, data) => {
+        console.log('Sia handleToolBarEvent', e)
+        switch(e){
+            case tbe.SET_FULLSCREEN:
+                // this.props.siaSetFullscreen(!this.props.fullscreenMode)
+                if (fullscreenCSS === ''){
+                    setFullscreenCSS('sia-fullscreen')
+                    setUiConfig({...uiConfig,
+                        layoutOffset: {
+                            ...uiConfig.layoutOffset,
+                            left: 50,
+                            top: 5,
+                        } 
+                    })
+                    doLayoutUpdate()
+                } else {
+                    setFullscreenCSS('')
+                    setUiConfig({...uiConfig,
+                        layoutOffset: {
+                            ...uiConfig.layoutOffset,
+                            left: 20,
+                            top: 0,
+                        } 
+                    })
+                    doLayoutUpdate()
+                }
+                break
+            default:
+                break
+        }
         if (props.onToolBarEvent){
             props.onToolBarEvent(e, data)
         }
@@ -72,7 +140,7 @@ const Sia = (props) => {
                 }
 
                 canvasConfig={props.canvasConfig}
-                uiConfig={props.uiConfig}
+                uiConfig={uiConfig}
 
                 nextAnnoId={props.nextAnnoId}
                 annos={props.annos}
@@ -81,7 +149,7 @@ const Sia = (props) => {
                 possibleLabels={props.possibleLabels}
                 exampleImg={props.exampleImg}
 
-                layoutUpdate={props.layoutUpdate}
+                layoutUpdate={layoutUpdate}
                 selectedTool={props.selectedTool}
                 isJunk={props.isJunk}
                 blocked={props.blockCanvas}
@@ -93,7 +161,7 @@ const Sia = (props) => {
                     (e, data) => handleToolBarEvent(e, data)
                 }
                 imageMeta={props.imageMeta}
-                layoutUpdate={props.layoutUpdate}
+                layoutUpdate={layoutUpdate}
 
                 svg={props.svg}
                 active={{
@@ -102,7 +170,7 @@ const Sia = (props) => {
                     fullscreen: props.fullscreenMode
                 }}
                 canvasConfig={props.canvasConfig}
-                uiConfig={props.uiConfig}
+                uiConfig={uiConfig}
                 filter={props.filter}
             />
         </div>

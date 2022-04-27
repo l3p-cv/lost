@@ -37,7 +37,7 @@ class SiaWrapper extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            fullscreenCSS: '',
+            // fullscreenCSS: '',
             didMount: false,
             image: {
                 id: undefined,
@@ -47,12 +47,12 @@ class SiaWrapper extends Component {
                 image: undefined,
                 annotations: undefined
             },
-            layoutOffset: {
-                left: 20,
-                top: 0,
-                bottom: 5,
-                right: 5
-            },
+            // layoutOffset: {
+            //     left: 20,
+            //     top: 0,
+            //     bottom: 5,
+            //     right: 5
+            // },
             notification: undefined,
             filteredData: undefined,
             currentRotation: 0,
@@ -81,10 +81,10 @@ class SiaWrapper extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        this.setFullscreen(this.props.fullscreenMode)
-        if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
-            this.props.siaLayoutUpdate()
-        }
+        // this.setFullscreen(this.props.fullscreenMode)
+        // if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
+        //     this.props.siaLayoutUpdate()
+        // }
         if (prevState.notification !== this.state.notification){
             const notifyTimeOut = 5000
             if (this.state.notification){
@@ -232,9 +232,9 @@ class SiaWrapper extends Component {
             case tbe.IMG_IS_JUNK:
                 this.props.siaImgIsJunk(!this.props.isJunk)
                 break
-            case tbe.SET_FULLSCREEN:
-                this.props.siaSetFullscreen(!this.props.fullscreenMode)
-                break
+            // case tbe.SET_FULLSCREEN:
+            //     this.props.siaSetFullscreen(!this.props.fullscreenMode)
+            //     break
             case tbe.APPLY_FILTER:
                 this.props.siaApplyFilter(data)
                 break
@@ -488,31 +488,6 @@ class SiaWrapper extends Component {
         return undefined
     }
 
-    setFullscreen(fullscreen = true) {
-        if (fullscreen) {
-            if (this.state.fullscreenCSS !== 'sia-fullscreen') {
-                this.setState({ 
-                    fullscreenCSS: 'sia-fullscreen',
-                    layoutOffset: {
-                        ...this.state.layoutOffset,
-                        left: 50,
-                        top: 5,
-                    } 
-                })
-            }
-        } else {
-            if (this.state.fullscreenCSS !== '') {
-                this.setState({
-                    fullscreenCSS: '',
-                    layoutOffset: {
-                        ...this.state.layoutOffset,
-                        left: 20,
-                        top: 0,
-                    } 
-                })
-            }
-        }
-    }
 
     handleGetRefs(containerRef, canvasRef, toolbarRef){
         this.canvas = canvasRef
@@ -527,7 +502,7 @@ class SiaWrapper extends Component {
                     onGetRefs={(containerRef, canvasRef, toolbarRef) => this.handleGetRefs(containerRef, canvasRef, toolbarRef) }
                     onAnnoEvent={(anno, annos, action) => this.handleAnnoPerformedAction(anno, annos, action)}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
-                    onKeyDown={ e => this.handleCanvasKeyDown(e)}
+                    onCanvasKeyDown={ e => this.handleCanvasKeyDown(e)}
                     onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
                     onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
 
@@ -539,7 +514,7 @@ class SiaWrapper extends Component {
                     }}
 
                     uiConfig={{...this.props.uiConfig,
-                        layoutOffset:this.state.layoutOffset,
+                        // layoutOffset:this.state.layoutOffset,
                         imgBarVisible: true,
                         imgLabelInputVisible: this.props.imgLabelInput.show,
                         centerCanvasInContainer: true,
