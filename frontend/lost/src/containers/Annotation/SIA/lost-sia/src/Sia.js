@@ -39,7 +39,7 @@ const Sia = (props) => {
 
     useEffect(() => {
         if (props.onGetRefs){
-            props.onGetRefs(containerRef, canvasRef, toolbarRef)
+            props.onGetRefs(canvasRef, toolbarRef)
         }
     }, [])
 

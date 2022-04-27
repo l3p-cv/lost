@@ -4,21 +4,14 @@ import actions from '../../../actions'
 import 'semantic-ui-css/semantic.min.css'
 import * as tbe from './lost-sia/src/types/toolbarEvents'
 
-import Canvas from './lost-sia/src/Canvas'
-
-import './sia-container.scss';
-
-import ToolBar from './lost-sia/src/ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import { withRouter } from 'react-router-dom';
-import InfoBoxArea from './lost-sia/src/InfoBoxes/InfoBoxArea'
 import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
 import * as transform from './lost-sia/src/utils/transform'
 import * as filterTools from './filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
-import AnnoDetails from './lost-sia/src/InfoBoxes/AnnoDetails'
 import * as annoActions from './lost-sia/src/types/canvasActions'
 import Sia from './lost-sia/src/Sia'
 
@@ -60,8 +53,6 @@ class SiaWrapper extends Component {
             nextAnnoId: undefined,
             allowedToMark: false
         }
-        
-        this.container = React.createRef()
         this.canvas = React.createRef()
     }
 
@@ -489,9 +480,8 @@ class SiaWrapper extends Component {
     }
 
 
-    handleGetRefs(containerRef, canvasRef, toolbarRef){
+    handleGetRefs(canvasRef, toolbarRef){
         this.canvas = canvasRef
-        this.container = containerRef
         this.toolbar = toolbarRef
     }
 
@@ -514,7 +504,6 @@ class SiaWrapper extends Component {
                     }}
 
                     uiConfig={{...this.props.uiConfig,
-                        // layoutOffset:this.state.layoutOffset,
                         imgBarVisible: true,
                         imgLabelInputVisible: this.props.imgLabelInput.show,
                         centerCanvasInContainer: true,
@@ -538,76 +527,11 @@ class SiaWrapper extends Component {
                     }
                     svg={this.props.svg}
                     filter={this.props.filter}
-                
                 />
                 <NotificationContainer/>
             </div>
         )
     }
-
-//     render() {
-//         return (
-//             <div className={this.state.fullscreenCSS} ref={this.container}>
-//                 <Canvas
-//                     ref={this.canvas} 
-//                     container={this.container}
-
-//                     onAnnoEvent={(anno, annos, action) => this.handleAnnoPerformedAction(anno, annos, action)}
-//                     onNotification={(messageObj) => this.handleNotification(messageObj)}
-//                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
-//                     onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
-//                     onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
-
-//                     canvasConfig={{
-//                         ...this.props.canvasConfig,
-//                         annos: {...this.props.canvasConfig.annos, maxAnnos:null},
-//                         autoSaveInterval:60,
-//                         allowedToMarkExample:this.state.allowedToMark
-//                     }}
-
-//                     uiConfig={{...this.props.uiConfig,
-//                         layoutOffset:this.state.layoutOffset,
-//                         imgBarVisible: true,
-//                         imgLabelInputVisible: this.props.imgLabelInput.show,
-//                         centerCanvasInContainer: true,
-//                         maxCanvas: true
-//                     }}
-
-//                     nextAnnoId={this.state.nextAnnoId}
-//                     annos={this.state.annos.annotations}
-//                     imageMeta={this.state.annos.image}
-//                     imageBlob={this.state.image.data}
-//                     possibleLabels={this.props.possibleLabels}
-//                     exampleImg={this.props.exampleImg}
-
-//                     layoutUpdate={this.props.layoutUpdate}
-//                     selectedTool={this.props.selectedTool}
-//                     isJunk={this.props.isJunk}
-//                     blocked={this.state.blockCanvas}
-//                     // defaultLabel='no label'
-//                 />
-//                 <ToolBar 
-//                     ref={this.toolbar} 
-//                     onToolBarEvent={
-//                         (e, data) => this.handleToolBarEvent(e, data)
-//                     }
-//                     imageMeta={this.state.annos.image}
-//                     layoutUpdate={this.props.layoutUpdate}
-
-//                     svg={this.props.svg}
-//                     active={{
-//                         isJunk: this.props.isJunk,
-//                         selectedTool: this.props.selectedTool,
-//                         fullscreen: this.props.fullscreenMode
-//                     }}
-//                     canvasConfig={this.props.canvasConfig}
-//                     uiConfig={this.props.uiConfig}
-//                     filter={this.props.filter}
-//                     />
-//                 <NotificationContainer/>
-//              </div>
-//         )
-//     }
 }
 
 function mapStateToProps(state) {
