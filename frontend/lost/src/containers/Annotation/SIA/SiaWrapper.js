@@ -135,13 +135,17 @@ class SiaWrapper extends Component {
                 })
             })
         }
-        if(this.props.annos.image){
-            if (prevProps.annos.image){
-                if(this.props.annos.image.id !== prevProps.annos.image.id){
-                    this.requestImageFromBackend()
+        if (this.props.annos){
+            if(prevProps.annos){
+                if (this.props.annos !== prevProps.annos){
+                    if (this.props.annos.image.id){
+                        this.requestImageFromBackend()
+                    }
                 }
             } else {
-                this.requestImageFromBackend()
+                if (this.props.annos.image.id){
+                    this.requestImageFromBackend()
+                }
             }
         }
         if(prevState.filteredData != this.state.filteredData){
@@ -200,7 +204,6 @@ class SiaWrapper extends Component {
     }
 
     handleToolBarEvent(e, data){
-        // console.log('handleToolBarEvent: ', e, data)
         switch(e){
             case tbe.DELETE_ALL_ANNOS:
                 this.canvas.current.deleteAllAnnos()
@@ -223,9 +226,6 @@ class SiaWrapper extends Component {
             case tbe.IMG_IS_JUNK:
                 this.props.siaImgIsJunk(!this.props.isJunk)
                 break
-            // case tbe.SET_FULLSCREEN:
-            //     this.props.siaSetFullscreen(!this.props.fullscreenMode)
-            //     break
             case tbe.APPLY_FILTER:
                 this.props.siaApplyFilter(data)
                 break
