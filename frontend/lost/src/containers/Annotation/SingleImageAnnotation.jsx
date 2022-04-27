@@ -6,7 +6,7 @@ import {
 } from 'reactstrap'
 
 import WorkingOnSIA from './AnnoTask/WorkingOnSIA'
-import SIA from './SIA/SIA'
+import SiaWrapper from './SIA/SiaWrapper'
 
 import actions from '../../actions'
 import * as exampleApi from '../../actions/annoExample/annoExample_api'
@@ -57,7 +57,7 @@ const SingleImageAnnotation = (props) => {
 						<Col xs='12'>
 							<WorkingOnSIA annoTask={props.workingOnAnnoTask}
 							/>
-							<SIA
+							<SiaWrapper
 								exampleImg={exampleImg}
 								onGetAnnoExample={(exampleArgs) => handleGetAnnoExample(exampleArgs)}
 							/>

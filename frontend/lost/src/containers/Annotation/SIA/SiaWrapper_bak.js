@@ -2,17 +2,13 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
 import 'semantic-ui-css/semantic.min.css'
+import * as tbe from './lost-sia/src/types/toolbarEvents'
 
-// import from npm package
-//import Canvas from 'lost-sia'
-//import 'lost-sia/dist/index.css'
-
-// import from source code
 import Canvas from './lost-sia/src/Canvas'
 
 import './sia-container.scss';
 
-import ToolBar from './ToolBar'
+import ToolBar from './lost-sia/src/ToolBar'
 import {NotificationManager, NotificationContainer } from 'react-notifications'
 import { withRouter } from 'react-router-dom';
 import InfoBoxArea from './lost-sia/src/InfoBoxes/InfoBoxArea'
@@ -27,15 +23,15 @@ import * as annoActions from './lost-sia/src/types/canvasActions'
 
 
 const { 
-    siaLayoutUpdate, getSiaAnnos,
+    siaLayoutUpdate, getSiaAnnos, siaSelectTool, siaSetTaskFinished,
     getSiaLabels, getSiaConfig, siaSetSVG, getSiaImage, 
-    siaUpdateAnnos, siaSendFinishToBackend,
+    siaUpdateAnnos, siaSendFinishToBackend, siaSetFullscreen,
     siaSetUIConfig, siaGetNextAnnoId, siaAllowedToMarkExample,
     selectAnnotation, siaShowImgLabelInput, siaImgIsJunk, getWorkingOnAnnoTask,
     siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
 } = actions
 
-class SIA extends Component {
+class SiaWrapper extends Component {
 
     constructor(props) {
         super(props)
@@ -77,7 +73,6 @@ class SIA extends Component {
         this.props.getSiaConfig()
         this.getNextAnnoId()
         this.allowedToMarkExample()
-        // console.warn('We are not using real SIA config')
     }
     componentWillUnmount() {
         document.body.style.overflow = ""
@@ -87,7 +82,6 @@ class SIA extends Component {
     componentDidUpdate(prevProps, prevState) {
         this.setFullscreen(this.props.fullscreenMode)
         if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
-            // this.props.siaAppliedFullscreen(this.props.fullscreenMode)
             this.props.siaLayoutUpdate()
         }
         if (prevState.notification !== this.state.notification){
@@ -202,9 +196,6 @@ class SIA extends Component {
             this.props.getSiaAnnos(imageId, direction)
         })
     }
-    // handleImgBarClose(){
-    //     this.props.siaShowImgBar(false)
-    // }
 
     handleImgLabelInputClose(){
         this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
@@ -214,6 +205,83 @@ class SIA extends Component {
         this.setState({
             notification: messageObj
         })
+    }
+
+    handleToolBarEvent(e, data){
+        // console.log('handleToolBarEvent: ', e, data)
+        switch(e){
+            case tbe.DELETE_ALL_ANNOS:
+                this.canvas.current.deleteAllAnnos()
+                break
+            case tbe.TOOL_SELECTED:
+                this.props.siaSelectTool(data)
+                break
+            case tbe.GET_NEXT_IMAGE:
+                this.props.siaGetNextImage(this.props.currentImage.id)
+                break
+            case tbe.GET_PREV_IMAGE:
+                this.props.siaGetPrevImage(this.props.currentImage.id)
+                break
+            case tbe.TASK_FINISHED:
+                this.props.siaSetTaskFinished()
+                break
+            case tbe.SHOW_IMAGE_LABEL_INPUT:
+                this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
+                break
+            case tbe.IMG_IS_JUNK:
+                this.props.siaImgIsJunk(!this.props.isJunk)
+                break
+            case tbe.SET_FULLSCREEN:
+                this.props.siaSetFullscreen(!this.props.fullscreenMode)
+                break
+            case tbe.APPLY_FILTER:
+                this.props.siaApplyFilter(data)
+                break
+            case tbe.SHOW_ANNO_DETAILS:
+                this.props.siaSetUIConfig(
+                    {...this.props.uiConfig,
+                        annoDetails: {
+                            ...this.props.uiConfig.annoDetails,
+                            visible: !this.props.uiConfig.annoDetails.visible
+                        }
+                    }
+                )
+                break
+            case tbe.SHOW_LABEL_INFO:
+                this.props.siaSetUIConfig(
+                    {...this.props.uiConfig,
+                        labelInfo: {
+                            ...this.props.uiConfig.labelInfo,
+                            visible: !this.props.uiConfig.labelInfo.visible
+                        }
+                    }
+                )
+                break
+            case tbe.SHOW_ANNO_STATS:
+                this.props.siaSetUIConfig(
+                    {...this.props.uiConfig,
+                        annoStats: {
+                            ...this.props.uiConfig.annoStats,
+                            visible: !this.props.uiConfig.annoStats.visible
+                        }
+                    }
+                )
+                break
+            case tbe.EDIT_STROKE_WIDTH:
+                this.props.siaSetUIConfig({
+                    ...this.props.uiConfig,
+                    strokeWidth: data
+                })
+                break
+            case tbe.EDIT_NODE_RADIUS:
+                this.props.siaSetUIConfig({
+                    ...this.props.uiConfig,
+                    nodeRadius: data
+                })
+                break
+            default:
+                break
+        }
     }
 
     handleCanvasKeyDown(e){
@@ -265,32 +333,47 @@ class SIA extends Component {
         }
     }
 
-    handleAnnoPerformedAction(annoId, annos, action){
-        console.log('annoPerformedAction', annoId, annos, action)
+    handleAnnoPerformedAction(anno, annos, action){
+        // console.log('annoPerformedAction', anno, annos, action)
         switch(action){
             case annoActions.ANNO_CREATED:
             case annoActions.ANNO_CREATED_FINAL_NODE:
-                // console.log('ANNO CREATED!')
                 this.getNextAnnoId()
+                break
+            case annoActions.ANNO_SELECTED:
+                console.log('anno selected')
+                this.props.selectAnnotation(anno)
                 break
             default:
                 break
         }
     }
 
+    handleCanvasEvent(action, data){
+        // console.log('Handle canvas event', action, data)
+        switch(action){
+            case annoActions.CANVAS_AUTO_SAVE:
+                this.handleAutoSave()
+                break
+            case annoActions.CANVAS_SVG_UPDATE:
+                this.props.siaSetSVG(data)
+                break
+            case annoActions.CANVAS_UI_CONFIG_UPDATE:
+                this.props.siaSetUIConfig(data)
+                break
+            case annoActions.CANVAS_LABEL_INPUT_CLOSE:
+                this.handleImgLabelInputClose()
+                break
+            default:
+                break
+        }
+
+    }
+
     undoAnnoRotationForUpdate(saveState=true){
         if (this.state.currentRotation!== 0){
-            // const currentRotation = this.state.currentRotation
-            // this.setState({currentRotation:0})
             return this.rotateAnnos(0, true, saveState)
         }
-        // if (currentFilter){
-        //     if (currentFilter.rotate){
-        //         if (currentFilter.rotate.angle !== 0){
-        //             return this.rotateAnnos(-currentFilter.rotate.angle, true)
-        //         }
-        //     } 
-        // }
         return this.canvas.current.getAnnos(undefined, true)
     }
 
@@ -298,7 +381,7 @@ class SIA extends Component {
         const angle = absAngle - this.state.currentRotation
         const bAnnos = this.canvas.current.getAnnos(undefined, removeFrontendIds)
         const svg = this.canvas.current.state.image
-        let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg)
+        let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg, {x:0, y:0})
         let pivotPoint = {x:svg.width/2.0, y:svg.height/2.0}
         sAnnos = sAnnos.map(el => {
             return {
@@ -306,11 +389,9 @@ class SIA extends Component {
                 data: transform.rotateAnnotation(
                     el.data, 
                     pivotPoint, 
-                    // {x:0.0,y:0.0},
                     angle)
             }
         })
-        // translate annotations into origin of new coordinate system
         let imageCorners = [
             {x:0, y:0},{x:0, y:svg.height}, 
             {x:svg.width,y:0}, {x:svg.width,y:svg.height}
@@ -321,12 +402,6 @@ class SIA extends Component {
             angle)
     
         let transPoint = transform.getMostLeftPoint(transform.getTopPoint(imageCorners))[0]
-        // let transPoint = transform.getTopPoint(transform.getMostLeftPoint(imageCorners))[0]
-        // if (angle==180 || angle===-180){
-        //     transPoint={x:0.0,y:0.0}
-        // }
-
-        // transPoint = transform.rotateAnnotation([transPoint], pivotPoint, angle)[0]
         sAnnos = sAnnos.map(el => {
             return {
                 ...el,
@@ -334,19 +409,12 @@ class SIA extends Component {
             }
         })
 
-        // sAnnos = transform.rotateAnnotation(sAnnos, {x:svg.width/2, y:svg.height/2}, angle)
         let newSize, minCorner, maxCorner
         [minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
         newSize = {
             width: maxCorner.x - minCorner.x, 
             height: maxCorner.y - minCorner.y
         }
-        // newSize
-        // if (angle==90 || angle==-90){
-        //     newSize = {width:svg.height, height:svg.width}
-        // } else {
-        //     newSize = svg
-        // }
         let bAnnosNew = {
             ...bAnnos,
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize)
@@ -354,19 +422,8 @@ class SIA extends Component {
         if (saveState){
             this.setState({currentRotation:absAngle})
         }
-        // this.setState({
-        //     annos: {
-        //         image: {...this.state.image},
-        //         annotations: bAnnosNew.annotations
-        //     }
-        // })
         return bAnnosNew
     }
-
-    // {
-    //     'clahe' : {'clipLimit':2.0},
-    //     'rotate':{'angle':angle}
-    // }
 
     /**
      * Filter image via backend service
@@ -377,22 +434,12 @@ class SIA extends Component {
      * }
      */
     filterImage(filter){
-        // if (filterTools.active(filter)){
         const data = {
             ...filter,
             'imageId': this.props.annos.image.id
         }
         this.canvas.current.unloadImage()
         this.props.siaFilterImage(data).then(response => {
-            // var blob = new Blob([response.request.response], { type: response.headers['content-type'] });
-            // var url = URL.createObjectURL(blob);
-
-            // var blob = Buffer.from(response.data, 'binary').toString('base64')
-            // var url = blob
-
-            // var b64Response = btoa(response.data);
-            // var url = 'data:image/png;base64,'+b64Response;
-            
             let bAnnosNew
             if (filter.rotate !== undefined){
                 bAnnosNew = this.rotateAnnos(filter.rotate.angle, false)
@@ -407,12 +454,8 @@ class SIA extends Component {
                     annotations: bAnnosNew.annotations
                 }
         })
-        //     var img = new Image();
-        //     img.src = url;
-        //     document.body.appendChild(img);
         })
         this.canvas.current.resetZoom()
-        // }
     }
 
     requestImageFromBackend(){
@@ -420,10 +463,8 @@ class SIA extends Component {
             {
                 this.setState({
                     image: {
-                        // ...this.state.image, 
                         id: this.props.annos.image.id, 
-                        data:response.data,
-                        // data:window.URL.createObjectURL(response),
+                        data:response ? response.data : this.failedToLoadImage(),
                     },
                     blockCanvas: filterTools.active(this.props.filter)
                 })
@@ -433,6 +474,17 @@ class SIA extends Component {
         if (filterTools.active(this.props.filter)){
             this.filterImage(this.props.filter)
         }       
+    }
+
+    failedToLoadImage(){
+        const message = 
+                        {
+                            title: "Load image error",
+                            message: 'Failed to load image',
+                            type: notificationType.ERROR
+                        }
+        this.handleNotification(message)
+        return undefined
     }
 
     setFullscreen(fullscreen = true) {
@@ -466,44 +518,60 @@ class SIA extends Component {
             <div className={this.state.fullscreenCSS} ref={this.container}>
                 <Canvas
                     ref={this.canvas} 
-                    imgBarVisible={true}
-                    imgLabelInputVisible={this.props.imgLabelInput.show}
                     container={this.container}
-                    annos={this.state.annos}
-                    image={this.state.image}
-                    uiConfig={this.props.uiConfig}
-                    layoutUpdate={this.props.layoutUpdate}
-                    selectedTool={this.props.selectedTool}
-                    canvasConfig={{
-                        ...this.props.canvasConfig,
-                        annos: {...this.props.canvasConfig.annos, maxAnnos:null}
-                    }}
-                    possibleLabels={this.props.possibleLabels}
-                    onSVGUpdate={svg => this.props.siaSetSVG(svg)}
-                    onAnnoSelect={anno => this.props.selectAnnotation(anno)}
-                    layoutOffset={this.state.layoutOffset}
-                    isJunk={this.props.isJunk}
-                    onImgLabelInputClose={() => this.handleImgLabelInputClose()}
-                    centerCanvasInContainer={false}
-                    maxCanvas={true}
+
+                    onAnnoEvent={(anno, annos, action) => this.handleAnnoPerformedAction(anno, annos, action)}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onKeyDown={ e => this.handleCanvasKeyDown(e)}
-                    blocked={this.state.blockCanvas}
-                    onUiConfigUpdate={e => this.props.siaSetUIConfig(e)}
-                    onAutoSave={() => this.handleAutoSave()}
-                    autoSaveInterval={60}
-                    nextAnnoId={this.state.nextAnnoId}
-                    onAnnoPerformedAction={(annoId, annos, action) => this.handleAnnoPerformedAction(annoId, annos, action)}
-                    allowedToMarkExample={this.state.allowedToMark}
+                    onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
                     onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
+
+                    canvasConfig={{
+                        ...this.props.canvasConfig,
+                        annos: {...this.props.canvasConfig.annos, maxAnnos:null},
+                        autoSaveInterval:60,
+                        allowedToMarkExample:this.state.allowedToMark
+                    }}
+
+                    uiConfig={{...this.props.uiConfig,
+                        layoutOffset:this.state.layoutOffset,
+                        imgBarVisible: true,
+                        imgLabelInputVisible: this.props.imgLabelInput.show,
+                        centerCanvasInContainer: true,
+                        maxCanvas: true
+                    }}
+
+                    nextAnnoId={this.state.nextAnnoId}
+                    annos={this.state.annos.annotations}
+                    imageMeta={this.state.annos.image}
+                    imageBlob={this.state.image.data}
+                    possibleLabels={this.props.possibleLabels}
                     exampleImg={this.props.exampleImg}
+
+                    layoutUpdate={this.props.layoutUpdate}
+                    selectedTool={this.props.selectedTool}
+                    isJunk={this.props.isJunk}
+                    blocked={this.state.blockCanvas}
                     // defaultLabel='no label'
-                    />
+                />
                 <ToolBar 
                     ref={this.toolbar} 
-                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
+                    onToolBarEvent={
+                        (e, data) => this.handleToolBarEvent(e, data)
+                    }
+                    imageMeta={this.state.annos.image}
+                    layoutUpdate={this.props.layoutUpdate}
+
+                    svg={this.props.svg}
+                    active={{
+                        isJunk: this.props.isJunk,
+                        selectedTool: this.props.selectedTool,
+                        fullscreen: this.props.fullscreenMode
+                    }}
+                    canvasConfig={this.props.canvasConfig}
+                    uiConfig={this.props.uiConfig}
+                    filter={this.props.filter}
                     />
-                <InfoBoxArea container={this.container}></InfoBoxArea>
                 <NotificationContainer/>
              </div>
         )
@@ -540,11 +608,11 @@ export default connect(
         siaLayoutUpdate, getSiaAnnos,
         getSiaConfig, getSiaLabels, siaSetSVG, getSiaImage,
         siaUpdateAnnos, siaSendFinishToBackend,
-        selectAnnotation,
-        siaShowImgLabelInput,
+        selectAnnotation, siaSetTaskFinished,
+        siaShowImgLabelInput, siaSetFullscreen,
         siaImgIsJunk, siaSetUIConfig, siaAllowedToMarkExample,
-        getWorkingOnAnnoTask, siaGetNextAnnoId,
+        getWorkingOnAnnoTask, siaGetNextAnnoId, siaSelectTool,
         siaGetNextImage, siaGetPrevImage, siaFilterImage, siaApplyFilter
     }
     , null,
-    {})(withRouter((SIA)))
+    {})(withRouter((SiaWrapper)))

@@ -1,11 +1,7 @@
 import React, {Component} from 'react'
-
-import {connect} from 'react-redux'
 import { Popup, Icon, Menu, Divider, Checkbox } from 'semantic-ui-react'
-import actions from '../../../actions'
 import * as filterTools from './filterTools'
-const { siaApplyFilter } = actions
-
+import * as tbe from './types/toolbarEvents'
 class SIAFilterButton extends Component{
 
     constructor(props) {
@@ -18,15 +14,21 @@ class SIAFilterButton extends Component{
     }
 
     componentDidUpdate(prevProps){
-        if (prevProps.filter.clahe.clipLimit != this.props.filter.clahe.clipLimit){
+        if (prevProps.filter.clahe.clipLimit !== this.props.filter.clahe.clipLimit){
             this.setState({clipLimit:this.props.filter.clahe.clipLimit})
         }
-        if (this.props.filter != prevProps.filter){
+        if (this.props.filter !== prevProps.filter){
             if (filterTools.active(this.props.filter)){
                 this.setState({color:'red', active:true})
             } else {
                 this.setState({color:'white', active:false})
             }
+        }
+    }
+
+    triggerEvent(e, data){
+        if (this.props.onFilterEvent){
+            this.props.onFilterEvent(e, data)
         }
     }
 
@@ -39,10 +41,16 @@ class SIAFilterButton extends Component{
     rotateImg(angle){
         const active = !(this.props.filter.rotate.active && this.props.filter.rotate.angle === angle)
         const myAngle = active ? angle : 0
-        this.props.siaApplyFilter({
+        this.triggerEvent( tbe.APPLY_FILTER,
+        {
             ...this.props.filter,
             rotate: {angle:myAngle, active:active}
         })
+
+        // this.props.siaApplyFilter({
+        //     ...this.props.filter,
+        //     rotate: {angle:myAngle, active:active}
+        // })
     }
 
     claheFilter(clipLimit){
@@ -52,10 +60,15 @@ class SIAFilterButton extends Component{
                 active:!this.props.filter.clahe.active
             }
         }
-        this.props.siaApplyFilter({
+        this.triggerEvent(tbe.APPLY_FILTER,
+        {
             ...this.props.filter,
             clahe: filter.clahe
         })
+        // this.props.siaApplyFilter({
+        //     ...this.props.filter,
+        //     clahe: filter.clahe
+        // })
     }
 
     releaseCLAHESlider(e){
@@ -65,15 +78,20 @@ class SIAFilterButton extends Component{
                 active:true
             }
         }
-        this.props.siaApplyFilter({
+        this.triggerEvent(tbe.APPLY_FILTER,
+        {
             ...this.props.filter,
             clahe: filter.clahe
         })
+        // this.props.siaApplyFilter({
+        //     ...this.props.filter,
+        //     clahe: filter.clahe
+        // })
     }
 
     render(){
         const filter = this.props.filter
-        if (!this.props.annos.image) return null
+        if (!this.props.imageMeta) return null
         const popupContent = <div >
             <Divider horizontal>Rotate</Divider>
             <Checkbox 
@@ -117,18 +135,10 @@ class SIAFilterButton extends Component{
                 position={"right center"}
                 pinned
                 on="click"
+                style={{zIndex:7000}}
             />
         )
     }
 }
 
-function mapStateToProps(state) {
-    return ({
-        // uiConfig: state.sia.uiConfig,
-        annos: state.sia.annos,
-        filter: state.sia.filter
-    })
-}
-export default connect(mapStateToProps, 
-    {siaApplyFilter}
-)(SIAFilterButton)
+export default SIAFilterButton

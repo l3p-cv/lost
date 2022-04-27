@@ -71,6 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed raw sql in access to be compatible with postgresql
 - Fixed copy bug in import script -> Copied to wrong location, when path had tailing '/'
 - PipeStart: Empty labels in annotask not possible anymore
+- SIA: Endless image loading bug
+
 ## Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 

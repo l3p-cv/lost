@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import { Icon, Menu, Button, Card } from 'semantic-ui-react'
 import {connect} from 'react-redux'
-import SIASettingButton from '../SIA/SIASettingButton'
+import SIASettingButton from '../SIA/lost-sia/src/SIASettingButton'
 import Prompt from '../SIA/lost-sia/src/Prompt'
 
 // import actions from '../../actions'

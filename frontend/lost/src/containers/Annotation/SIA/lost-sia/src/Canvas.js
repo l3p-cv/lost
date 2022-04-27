@@ -62,10 +62,16 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *          label: str, (name of the label) 
  *          color: str (color is optional)
  *      }
- * @param {object} image - The actual image blob that will be displayed
- *      {id: int, data: blob}
+ * @param {blob} imageBlob - The actual image blob that will be displayed
  * @param {object} uiConfig - User interface configs 
- *      {nodesRadius: int, strokeWidth: int}
+ *      {
+ *          nodesRadius: int, strokeWidth: int,
+ *          layoutOffset: {left:int, top:int, right:int, bottom:int}, -> Offset of the canvas inside the container
+ *          imgBarVisible: bool,
+ *          imgLabelInputVisible: bool,
+ *          centerCanvasInContainer: bool, -> Center the canvas in the middle of the container.
+ *          maxCanvas: bool -> Maximize Canvas Size. Do not fit canvas to image size.
+ *      }
  * @param {int} layoutUpdate - A counter that triggers a layout update
  *      everytime it is incremented.
  * @param {string} selectedTool - The tool that is selected to draw an 
@@ -93,42 +99,34 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *          actions: {
  *              label: bool,
  *          }
- *      }
+ *      },
+ *      allowedToMarkExample: bool, -> Indicates wether the current user is allowed to mark an annotation as example.
+ *      autoSaveInterval: int -> Interval in seconds when an autosave will be requested by canvas
  *   }
- * @param {bool} imgBarVisible - Controls visibility of the ImgBar
- * @param {bool} imgLabelInputVisible - Controls visibility of the ImgLabelInputPrompt
- * @param {object} layoutOffset - Offset of the canvas inside the container:
- *      {left:int, top:int, right:int, bottom:int} values in pixels.
- * @param {bool} centerCanvasInContainer - Center the canvas in the 
- *      middle of the container.
- * @param {bool} maxCanvas - Maximize Canvas Size. Do not fit canvas to image size
  * @param {str or int} defaultLabel (optional) - Name or ID of the default label that is used
  *      when no label was selected by the annotator. If not set "no label" will be used.
  *      If ID is used, it needs to be one of the possible label ids.
  * @param {bool} blocked Block canvas view with loading dimmer.
- * @param {bool} allowedToMarkExample Indicates wether the current user is allowed
- *       to mark an annotation as example
- * @param {int} autoSaveInterval Interval in seconds when an autosave will be requested by canvas
  * @param {int} nextAnnoId Id that will be used for the next annotation that 
  *        will be created. If undefined, the canvas will create its own ids.
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
- * @event onSVGUpdate - Fires when the svg in canvas changed.
- *      args: {width: int, height: int, scale: float, translateX: float,
- *      translateY:float}
- * @event onImageLoaded - Fires when an image was loaded into the canvas
- * @event onAnnoSelect - Fires when an annotation was selected or if the
- *      selected annotation was updated.
- * @event onImgBarClose - Fires when close button on ImgBar was hit.
- * @event onImgLabelInputClose - ImgLabelInput requests to be closed.
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
  * @event onKeyDown - Fires for keyDown on canvas 
  * @event onKeyUp - Fires for keyUp on canvas 
- * @event onUiConfigUpdate - Fires when ui config should be updated
- * @event onAutoSave - Fires when SIA request an auto save based on autoSaveInterval
- * @event onAnnoPerformedAction - Fires when an anno performed an action
- *      args: {annoId: int, newAnnos: list of annoObjects, pAction: str}
+ * @event onAnnoEvent - Fires when an anno performed an action
+ *      args: {anno: annoObject, newAnnos: list of annoObjects, pAction: str}
+ * @event onCanvasEvent - Fires on canvas event
+ *      args: {action: action, data: dataObject}
+ *      action -> CANVAS_SVG_UPDATE 
+ *          data: {width: int, height: int, scale: float, translateX: float,
+ *          translateY:float}
+ *      action -> CANVAS_UI_CONFIG_UPDATE
+ *      action -> CANVAS_LABEL_INPUT_CLOSE 
+ *      action -> CANVAS_IMG_LOADED
+ *      action -> CANVAS_IMGBAR_CLOSE
+ * @event onImgBarClose - Fires when close button on ImgBar was hit.
  */
 class Canvas extends Component{
 
@@ -165,7 +163,7 @@ class Canvas extends Component{
             imgLoadTimestamp: 0,
             performedImageInit: false,
             prevLabel: [],
-            imageData: undefined,
+            imageBlob: undefined,
             isJunk: false,
             imgBarVisible:false,
             annoToolBarVisible: false,
@@ -189,11 +187,23 @@ class Canvas extends Component{
 
             this.setState({prevLabel:[this.props.defaultLabel]})
         }
-        if (this.props.autoSaveInterval){
+        if (this.props.canvasConfig.autoSaveInterval){
             this.autoSaveI = setInterval(() => {
-                console.log('AutoSave')
-                this.props.onAutoSave()
-            }, this.props.autoSaveInterval*1000)
+                // console.log('AutoSave')
+                // this.props.onAutoSave()
+                this.triggerCanvasEvent(canvasActions.CANVAS_AUTO_SAVE)
+            }, this.props.canvasConfig.autoSaveInterval*1000)
+        }
+        if (this.props.onGetFunction){
+            this.props.onGetFunction({
+                'deleteAllAnnos':() => this.deleteAllAnnos(),
+                'unloadImage': () => this.unloadImage(),
+                'resetZoom': () => this.resetZoom(),
+                'getAnnos': (annos,removeFrontendIds) => this.getAnnos(annos, removeFrontendIds)
+            })
+            // this.props.onGetFunction(
+            //     () => this.deleteAllAnnos()
+            // )
         }
     }
 
@@ -206,21 +216,23 @@ class Canvas extends Component{
         // if (this.props.image.id !== prevProps.image.id){
             
         // }
-        if (prevProps.annos !== this.props.annos){
+        if (prevProps.imageMeta !== this.props.imageMeta){
             this.setState({
-                imgLabelIds: this.props.annos.image.labelIds,
-                imgAnnoTime: this.props.annos.image.annoTime,
+                imgLabelIds: this.props.imageMeta.labelIds,
+                imgAnnoTime: this.props.imageMeta.annoTime,
                 imgLoadTimestamp: performance.now()
                 // isJunk: this.props.annos.image.isJunk
             })
-            if (this.state.imageData) { 
+        }
+        if (prevProps.annos !== this.props.annos){
+            if (this.state.imageBlob) { 
                 this.updateCanvasView(
-                    annoConversion.fixBackendAnnos(this.props.annos.annotations) 
+                    annoConversion.fixBackendAnnos(this.props.annos) 
                 ) 
             }
             // this.setState({
             //     imageLoaded: false,
-            //     // imageData: undefined
+            //     // imageBlob: undefined
             // })
         }
         if (prevProps.isJunk !== this.props.isJunk){
@@ -230,8 +242,8 @@ class Canvas extends Component{
                 })
             }
         }
-        if (this.state.imageData !== this.props.image.data){
-            this.setState({imageData: this.props.image.data})
+        if (this.state.imageBlob !== this.props.imageBlob){
+            this.setState({imageBlob: this.props.imageBlob})
         }
         // if (!this.state.imageLoaded){
         //     if(this.props.annos.image.id === this.props.image.id){
@@ -252,7 +264,7 @@ class Canvas extends Component{
                 performedImageInit:false,
                 annoToolBarVisible:false
             })
-            if (this.props.imgBarVisible){
+            if (this.props.uiConfig.imgBarVisible){
                 this.setState({imgBarVisible:true})
             }
             this.hist.clearHist()
@@ -266,12 +278,14 @@ class Canvas extends Component{
             this.putSelectedOnTop(prevState)
             if (prevState.imgLoadCount !== this.state.imgLoadCount){
                 this.updateCanvasView(
-                    annoConversion.fixBackendAnnos(this.props.annos.annotations)
+                    annoConversion.fixBackendAnnos(this.props.annos)
                 )
-                this.setImageLabels(this.props.annos.image.labelIds)
-                this.setState({
-                    performedImageInit:true
-                })
+                if (this.props.imageMeta){
+                    this.setImageLabels(this.props.imageMeta.labelIds)
+                    this.setState({
+                        performedImageInit:true
+                    })
+                }
             } 
             if(prevProps.layoutUpdate !== this.props.layoutUpdate){
                 this.selectAnnotation(undefined)
@@ -293,9 +307,10 @@ class Canvas extends Component{
             showSingleAnno: undefined,
             selectedAnnoId: undefined
         })
-        if (this.props.onImageLoaded){
-            this.props.onImageLoaded()
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_IMG_LOADED)
+        // if (this.props.onImageLoaded){
+        //     this.props.onImageLoaded()
+        // }
     }
 
     onMouseOver(){
@@ -395,7 +410,7 @@ class Canvas extends Component{
     updateAnnoComment(comment){
         const anno = this.findAnno(this.state.selectedAnnoId)
         anno.comment = comment
-        this.onAnnoPerformedAction(anno, canvasActions.ANNO_COMMENT_UPDATE)
+        this.handleAnnoEvent(anno, canvasActions.ANNO_COMMENT_UPDATE)
         // this.stopAnnotimeMeasure(anno)
         // console.log('updateAnnoComment', comment)
     }
@@ -515,13 +530,23 @@ class Canvas extends Component{
     }
     
     
+    /**
+     * Trigger canvas event
+     * @param {String} action Action that was performed
+     * @param {Object} data Data object of the action
+     */
+    triggerCanvasEvent(action, data){
+        if (this.props.onCanvasEvent){
+            this.props.onCanvasEvent(action, data)
+        }
+    }
 
     /**
      * Handle actions that have been performed by an annotation 
      * @param {Number} anno Id of the annotation
      * @param {String} pAction Action that was performed
      */
-    onAnnoPerformedAction(anno, pAction){
+    handleAnnoEvent(anno, pAction){
         let newAnnos = undefined
         switch(pAction){
             case canvasActions.ANNO_MARK_EXAMPLE:
@@ -664,8 +689,8 @@ class Canvas extends Component{
                 console.warn('Action not handeled', pAction)
                 break
         }
-        if (this.props.onAnnoPerformedAction){
-            this.props.onAnnoPerformedAction(anno.id, newAnnos, pAction)
+        if (this.props.onAnnoEvent){
+            this.props.onAnnoEvent(anno, newAnnos, pAction)
         }
     }
 
@@ -678,13 +703,14 @@ class Canvas extends Component{
         this.showLabelInput(false)
         this.showSingleAnno(undefined)
         const anno = this.findAnno(this.state.selectedAnnoId)
-        this.onAnnoPerformedAction(anno, canvasActions.ANNO_LABEL_UPDATE)
+        this.handleAnnoEvent(anno, canvasActions.ANNO_LABEL_UPDATE)
     }
 
     handleImgBarClose(){
-        if (this.props.onImgBarClose){
-            this.props.onImgBarClose()
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_IMGBAR_CLOSE)
+        // if (this.props.onImgBarClose){
+        //     this.props.onImgBarClose()
+        // }
     }
 
     handleImgLabelUpdate(label){
@@ -701,7 +727,7 @@ class Canvas extends Component{
     }
 
     handleCanvasClick(e){
-        if (this.props.imgBarVisible){
+        if (this.props.uiConfig.imgBarVisible){
             this.setState({imgBarVisible:true})
         }
     }
@@ -711,9 +737,10 @@ class Canvas extends Component{
     }
 
     handleImgLabelInputClose(){
-        if (this.props.onImgLabelInputClose){
-            this.props.onImgLabelInputClose()
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_LABEL_INPUT_CLOSE)
+        // if (this.props.onImgLabelInputClose){
+        //     this.props.onImgLabelInputClose()
+        // }
     }
 
     // handleAnnoCommentInputClose(e){
@@ -763,7 +790,7 @@ class Canvas extends Component{
         } else {
             newAnno.isExample = true
         }
-        this.onAnnoPerformedAction(newAnno, canvasActions.ANNO_MARK_EXAMPLE)
+        this.handleAnnoEvent(newAnno, canvasActions.ANNO_MARK_EXAMPLE)
 
     }
 
@@ -934,7 +961,7 @@ class Canvas extends Component{
                 if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
     
             } else {
-                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+                this.handleAnnoEvent(anno, canvasActions.ANNO_DELETED)
             }
         }
     }
@@ -944,7 +971,7 @@ class Canvas extends Component{
             if (anno.mode === modes.CREATE){
                 // const ar = this.findAnnoRef(this.state.selectedAnnoId)
                 // if (ar !== undefined) ar.current.myAnno.current.removeLastNode()
-                this.onAnnoPerformedAction(anno, canvasActions.ANNO_DELETED)
+                this.handleAnnoEvent(anno, canvasActions.ANNO_DELETED)
     
             } else {
             }
@@ -1021,10 +1048,10 @@ class Canvas extends Component{
                 this.onAnnoLabelInputClose()
             }
         }
-        if(this.props.onAnnoSelect){
-            const anno = this.findAnno(annoId)
-            this.props.onAnnoSelect(anno)
-        }
+        // if(this.props.onAnnoSelect){
+        //     const anno = this.findAnno(annoId)
+        //     this.props.onAnnoSelect(anno)
+        // }
     }
 
     /**
@@ -1058,12 +1085,12 @@ class Canvas extends Component{
         const backendFormat = annoConversion.canvasToBackendAnnos(myAnnos, 
             this.state.svg, removeFrontedIds, this.state.imageOffset)
         const finalData = {
-            imgId: this.props.annos.image.id,
+            imgId: this.props.imageMeta.id,
             imgLabelIds: this.state.imgLabelIds,
             imgLabelChanged: this.state.imgLabelChanged,
             annotations: backendFormat,
             isJunk: this.state.isJunk,
-            annoTime: this.props.annos.image.annoTime + (performance.now() - this.state.imgLoadTimestamp)/1000
+            annoTime: this.props.imageMeta.annoTime + (performance.now() - this.state.imgLoadTimestamp)/1000
         }
         return finalData
     }
@@ -1303,11 +1330,11 @@ class Canvas extends Component{
             selectedAnnoId: anno.id,
             prevLabel: anno.labelIds, 
         })
-        if(this.props.onAnnoSelect){
-            if (newAnno !== null){
-                this.props.onAnnoSelect(newAnno)
-            }
-        }
+        // if(this.props.onAnnoSelect){
+        //     if (newAnno !== null){
+        //         this.props.onAnnoSelect(newAnno)
+        //     }
+        // }
         return newAnnos
     }
 
@@ -1364,11 +1391,12 @@ class Canvas extends Component{
         var canvasLeft
         var maxImgHeight
         var maxImgWidth 
-        if(this.props.layoutOffset){
-            canvasTop = container.top + this.props.layoutOffset.top
-            canvasLeft = container.left + this.props.layoutOffset.left
-            maxImgHeight = clientHeight - container.top - this.props.layoutOffset.bottom - this.props.layoutOffset.top
-            maxImgWidth = container.right -canvasLeft - this.props.layoutOffset.right
+        const layoutOffset = this.props.uiConfig.layoutOffset
+        if(layoutOffset){
+            canvasTop = container.top + layoutOffset.top
+            canvasLeft = container.left + layoutOffset.left
+            maxImgHeight = clientHeight - container.top - layoutOffset.bottom - layoutOffset.top
+            maxImgWidth = container.right -canvasLeft - layoutOffset.right
         } else {
             canvasTop = container.top
             canvasLeft = container.left
@@ -1388,7 +1416,7 @@ class Canvas extends Component{
         }
         var svg 
         const imgOffset = {x: 0, y:0}
-        if (this.props.maxCanvas){
+        if (this.props.uiConfig.maxCanvas){
             imgOffset.x = (maxImgWidth - imgWidth)/2
             imgOffset.y = (maxImgHeight - imgHeight)/2
             console.log(`imgOffset: `, imgOffset)
@@ -1397,7 +1425,7 @@ class Canvas extends Component{
                 left: canvasLeft, top: canvasTop
             }
         } else {
-            if (this.props.centerCanvasInContainer){
+            if (this.props.uiConfig.centerCanvasInContainer){
                 const resSpaceX = maxImgWidth - imgWidth
                 if (resSpaceX > 2){
                     canvasLeft = canvasLeft + resSpaceX / 2
@@ -1425,9 +1453,10 @@ class Canvas extends Component{
     }
 
     svgUpdate(svg){
-        if(this.props.onSVGUpdate){
-            this.props.onSVGUpdate(svg)
-        }
+        this.triggerCanvasEvent(canvasActions.CANVAS_SVG_UPDATE, svg)
+        // if(this.props.onSVGUpdate){
+        //     this.props.onSVGUpdate(svg)
+        // }
     }
 
     setImageLabels(labelIds){
@@ -1461,7 +1490,7 @@ class Canvas extends Component{
                         imageOffset={this.state.imageOffset}
                         ref={this.annoRefs[this.annoRefs.length - 1]}
                         onMouseDown={e => this.onAnnoMouseDown(e)}
-                        onAction={(anno, pAction) => this.onAnnoPerformedAction(anno, pAction)}
+                        onAction={(anno, pAction) => this.handleAnnoEvent(anno, pAction)}
                         selectedAnno={this.state.selectedAnnoId}
                         // onModeChange={(anno) => this.onAnnoModeChange(anno)}
                         showSingleAnno={this.state.showSingleAnno}
@@ -1482,10 +1511,10 @@ class Canvas extends Component{
     }
 
     renderImgLabelInput(){
-        if (!this.props.annos.image) return null
+        if (!this.props.imageMeta) return null
         return <Prompt 
             onClick={() => this.handleImgLabelInputClose()}
-            active={this.props.imgLabelInputVisible}
+            active={this.props.uiConfig.imgLabelInputVisible}
             header={<div>
                 Add label for the whole image
             </div>}
@@ -1498,7 +1527,7 @@ class Canvas extends Component{
                     onLabelUpdate={label => this.handleImgLabelUpdate(label)}
                     possibleLabels={this.state.possibleLabels}
                     initLabelIds={this.state.imgLabelIds}
-                    relatedId={this.props.annos.image.id}
+                    relatedId={this.props.imageMeta.id}
                     defaultLabel={this.props.defaultLabel}
                     // disabled={!this.props.allowedActions.label}
                     // renderPopup
@@ -1565,6 +1594,7 @@ class Canvas extends Component{
                 possibleLabels={this.state.possibleLabels}
                 annos={this.props.annos}
                 svg={this.state.svg}
+                imageMeta={this.props.imageMeta}
                 onClose={() => this.handleImgBarClose()}
                 imgLabelIds={this.state.imgLabelIds}
                 // onLabelUpdate={label => this.handleImgLabelUpdate(label)}
@@ -1588,11 +1618,11 @@ class Canvas extends Component{
                     annos={this.state.annos}
                     selectedAnno={selectedAnno}
                     possibleLabels={this.state.possibleLabels}
-                    allowedToMarkExample={this.props.allowedToMarkExample}
+                    allowedToMarkExample={this.props.canvasConfig.allowedToMarkExample}
                     uiConfig={this.props.uiConfig}
                     imgLoadCount={this.state.imgLoadCount}
                     onCommentUpdate={comment => this.updateAnnoComment(comment)}
-                    onUiConfigUpdate={e => this.props.onUiConfigUpdate(e)}
+                    onUiConfigUpdate={e => this.triggerCanvasEvent(canvasActions.CANVAS_UI_CONFIG_UPDATE, e)}
                     onHideLbl={(lbl, hide) => this.handleHideLbl(lbl, hide)}
                     onMarkExample={anno => this.handleMarkExample(anno)}
                     commentInputTrigger={this.state.annoCommentInputTrigger}
@@ -1618,7 +1648,7 @@ class Canvas extends Component{
                         <image
                             onContextMenu={(e) => this.onRightClick(e)}
                             onMouseDown={(e) => this.onMouseDown(e)}
-                            href={this.props.image.data} 
+                            href={this.props.imageBlob} 
                             width={this.state.svg.width} 
                             height={this.state.svg.height}
                         />
@@ -1627,7 +1657,7 @@ class Canvas extends Component{
                 </svg>
                 <img 
                     alt='sia' style={{display:'none'}} ref={this.img} 
-                    onLoad={() => {this.onImageLoad()}} src={this.state.imageData}
+                    onLoad={() => {this.onImageLoad()}} src={this.state.imageBlob}
                     width="100%" height="100%"
                 />
                 {/* </div> */}

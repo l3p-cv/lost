@@ -1,10 +1,7 @@
 import React, {Component} from 'react'
 
-import {connect} from 'react-redux'
 import { Popup, Icon, Menu, Divider, Checkbox } from 'semantic-ui-react'
-import actions from '../../../actions'
-const { siaSetUIConfig } = actions
-
+import * as tbe from './types/toolbarEvents'
 class SIASettingButton extends Component{
 
     constructor(props) {
@@ -14,55 +11,34 @@ class SIASettingButton extends Component{
         }
     }
 
+    triggerEvent(e, data){
+        if (this.props.onSettingEvent){
+            this.props.onSettingEvent(e, data)
+        }
+    }
     toggleAnnoDetails(){
-        this.props.siaSetUIConfig(
-            {...this.props.uiConfig,
-                annoDetails: {
-                    ...this.props.uiConfig.annoDetails,
-                    visible: !this.props.uiConfig.annoDetails.visible
-                }
-            }
-        )
+        this.triggerEvent(tbe.SHOW_ANNO_DETAILS)
     }
 
     toggleLabelInfo(){
-        this.props.siaSetUIConfig(
-            {...this.props.uiConfig,
-                labelInfo: {
-                    ...this.props.uiConfig.labelInfo,
-                    visible: !this.props.uiConfig.labelInfo.visible
-                }
-            }
-        )
+        this.triggerEvent(tbe.SHOW_LABEL_INFO)
     }
 
     toggleAnnoStats(){
-        this.props.siaSetUIConfig(
-            {...this.props.uiConfig,
-                annoStats: {
-                    ...this.props.uiConfig.annoStats,
-                    visible: !this.props.uiConfig.annoStats.visible
-                }
-            }
-        )
+        this.triggerEvent(tbe.SHOW_ANNO_STATS)
     }
 
     handleStrokeWidthChange(e){
-        this.props.siaSetUIConfig({
-            ...this.props.uiConfig,
-            strokeWidth: parseInt(e.target.value)
-        })
+        this.triggerEvent(tbe.EDIT_STROKE_WIDTH, parseInt(e.target.value))
     }
 
     handleNodeRadiusChange(e){
-        this.props.siaSetUIConfig({
-            ...this.props.uiConfig,
-            nodeRadius: parseInt(e.target.value)
-        })
+        this.triggerEvent(tbe.EDIT_NODE_RADIUS, parseInt(e.target.value))
     }
 
     render(){
-        if (!this.props.annos.image) return null
+
+        if (!this.props.uiConfig) return null
         const popupContent = <div >
             <Divider horizontal>Info Boxes</Divider>
             <Checkbox 
@@ -108,17 +84,10 @@ class SIASettingButton extends Component{
                 position={"right center"}
                 pinned
                 on="click"
+                style={{zIndex:7000}}
             />
         )
     }
 }
 
-function mapStateToProps(state) {
-    return ({
-        uiConfig: state.sia.uiConfig,
-        annos: state.sia.annos
-    })
-}
-export default connect(mapStateToProps, 
-    {siaSetUIConfig}
-)(SIASettingButton)
+export default SIASettingButton
