@@ -122,15 +122,15 @@ const AnnoTaskModal = (props) => {
                             key: 'Instructions',
                             value: props.annoTask.instructions,
                         },
+                        {
+                            key: 'Pipe Element ID',
+                            value: props.id,
+                        },
                     ]}
                 />
                 <CollapseCard icon={faInfo}>
                     <Table
                         data={[
-                            {
-                                key: 'Element ID',
-                                value: props.id,
-                            },
                             {
                                 key: 'Annotation Task ID',
                                 value: props.annoTask.id,
