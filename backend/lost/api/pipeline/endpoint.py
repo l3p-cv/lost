@@ -1,3 +1,5 @@
+from distutils.command.upload import upload
+import shutil
 from tkinter.tix import Tree
 from flask import request, make_response
 from flask_restx import Resource, Mask
@@ -231,10 +233,11 @@ class TemplateImport(Resource):
                 pp_path = fm.get_pipe_project_path()
                 dst_dir = os.path.basename(upload_path)
                 dst_dir = os.path.splitext(dst_dir)[0]
+                e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
+                extract_path = os.path.join(e_path, dst_dir)
                 dst_path = os.path.join(pp_path, dst_dir)
-                    
-
-                template_import.unpack_pipe_project(upload_path, dst_path)
+                extracted_path = template_import.unpack_pipe_project(upload_path, extract_path)
+                shutil.copytree(extracted_path, dst_path)
                 dbm = access.DBMan(LOST_CONFIG)
                 if not USER_NAMESPACE:
                     importer = template_import.PipeImporter(dst_path, dbm)
@@ -242,6 +245,7 @@ class TemplateImport(Resource):
                     importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
                 importer.start_import()
                 fm.fs.rm(upload_path, recursive=True)
+                fm.fs.rm(e_path, recursive=True)
                 dbm.close_session()
                 return "success", 200
             except:

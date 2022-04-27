@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 import argparse
-from lost.db import model, access
-import lostconfig as config
 from lost.logic.pipeline import template_import
 import logging
-from lost.logic.file_man import AppFileMan
 import os
-import shutil
-
 logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
 
 if __name__ == "__main__":
