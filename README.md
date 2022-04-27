@@ -60,10 +60,12 @@ tested for Ubuntu):
     Follow instructions of the quick_setup script, 
     printed in the command line.
 
-## !!! Experimental !!! LOST 2.x QuickSetup - use it wisely !
-Lost 2.x is still in development. 
-In the backend most of the work packages are finished, currently we are finalizing the version and expect a first official release soon. 
-You are welcome to test the current version anyway:
+## !!! Alpha Release !!! LOST 2.x QuickSetup - use it wisely !
+Most of the implementation work on version 2.0 has been completed. LOST 2 is currently in a test stage.
+In addition, we are working on preparing the documentation for the first official release.
+What's new compared to version 1, you can read in the [Changelog](./CHANGELOG.md).
+
+You are welcome to test the current version:
 
 1. Install docker on your machine or server:
     https://docs.docker.com/install/
@@ -73,7 +75,11 @@ You are welcome to test the current version anyway:
     ```
     git clone https://github.com/l3p-cv/lost.git
     ```
-4. Run quick_setup script:
+4. Install **cryptography** python package:
+    ```
+    pip install cryptography
+    ```
+5. Run quick_setup script:
     ```
     cd lost/docker/quick_setup/
     python3 quick_setup.py /path/to/install/lost --release 2.0.0-alpha.11
@@ -83,7 +89,7 @@ You are welcome to test the current version anyway:
     python3 quick_setup.py /path/to/install/lost --release 2.0.0-alpha.11 --phpmyadmin
     ```
 
-5. Run LOST:
+6. Run LOST:
 
     Follow instructions of the quick_setup script, 
     printed in the command line.
