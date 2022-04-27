@@ -196,7 +196,10 @@ class Canvas extends Component{
         }
         if (this.props.onGetFunction){
             this.props.onGetFunction({
-                'deleteAllAnnos':() => this.deleteAllAnnos()
+                'deleteAllAnnos':() => this.deleteAllAnnos(),
+                'unloadImage': () => this.unloadImage(),
+                'resetZoom': () => this.resetZoom(),
+                'getAnnos': (annos,removeFrontendIds) => this.getAnnos(annos, removeFrontendIds)
             })
             // this.props.onGetFunction(
             //     () => this.deleteAllAnnos()

@@ -53,7 +53,7 @@ class SiaWrapper extends Component {
             nextAnnoId: undefined,
             allowedToMark: false
         }
-        this.canvas = React.createRef()
+        this.canvas = undefined
     }
 
     componentDidMount() {
@@ -180,9 +180,11 @@ class SiaWrapper extends Component {
         })
     }
     getNewImage(imageId, direction){
-        this.canvas.current.resetZoom()
+        // this.canvas.current.resetZoom()
+        this.canvas.resetZoom()
         const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
-        this.canvas.current.unloadImage()
+        // this.canvas.current.unloadImage()
+        this.canvas.unloadImage()
         this.setState({image: {
             id: undefined, 
             data:undefined
@@ -207,7 +209,8 @@ class SiaWrapper extends Component {
         switch(e){
             case tbe.DELETE_ALL_ANNOS:
                 // this.canvas.current.deleteAllAnnos()
-                this.deleteAll()
+                // this.deleteAll()
+                this.canvas.deleteAllAnnos()
                 break
             case tbe.TOOL_SELECTED:
                 this.props.siaSelectTool(data)
@@ -315,7 +318,7 @@ class SiaWrapper extends Component {
     }
     
     handleAutoSave(){
-        if (this.canvas.current){
+        if (this.canvas){
             const newAnnos = this.undoAnnoRotationForUpdate(false)
             this.props.siaUpdateAnnos(newAnnos, true)
             this.handleNotification({
@@ -367,12 +370,12 @@ class SiaWrapper extends Component {
         if (this.state.currentRotation!== 0){
             return this.rotateAnnos(0, true, saveState)
         }
-        return this.canvas.current.getAnnos(undefined, true)
+        return this.canvas.getAnnos(undefined, true)
     }
 
     rotateAnnos(absAngle, removeFrontendIds=false, saveState=true){
         const angle = absAngle - this.state.currentRotation
-        const bAnnos = this.canvas.current.getAnnos(undefined, removeFrontendIds)
+        const bAnnos = this.canvas.getAnnos(undefined, removeFrontendIds)
         const svg = this.canvas.current.state.image
         let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg, {x:0, y:0})
         let pivotPoint = {x:svg.width/2.0, y:svg.height/2.0}
@@ -437,7 +440,7 @@ class SiaWrapper extends Component {
             if (filter.rotate !== undefined){
                 bAnnosNew = this.rotateAnnos(filter.rotate.angle, false)
             } else {
-                bAnnosNew = this.canvas.current.getAnnos(undefined, false)
+                bAnnosNew = this.canvas.getAnnos(undefined, false)
             }
             this.setState({
                 filteredData: response.data,
@@ -480,31 +483,26 @@ class SiaWrapper extends Component {
         return undefined
     }
 
-
-    handleGetRefs(canvasRef, toolbarRef){
-        this.canvas = canvasRef
-        this.toolbar = toolbarRef
-    }
-
-    handleGetFunction(deleteAll){
-        console.log(deleteAll.deleteAllAnnos)
+    handleGetFunction(canvas){
+        console.log('canvas', canvas)
+        this.canvas = canvas
+        // console.log(canvas.deleteAllAnnos)
         
         // this.deleteAll = deleteAll['deleteAllAnnos']
-        this.deleteAll = deleteAll.deleteAllAnnos
+        // this.deleteAll = deleteAll.deleteAllAnnos
     }
 
     render(){
         return (
             <div>
                 <Sia
-                    onGetRefs={(containerRef, canvasRef, toolbarRef) => this.handleGetRefs(containerRef, canvasRef, toolbarRef) }
                     onAnnoEvent={(anno, annos, action) => this.handleAnnoPerformedAction(anno, annos, action)}
                     onNotification={(messageObj) => this.handleNotification(messageObj)}
                     onCanvasKeyDown={ e => this.handleCanvasKeyDown(e)}
                     onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
                     onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
 
-                    onGetFunction={(da) => this.handleGetFunction(da)}
+                    onGetFunction={(canvasFunc) => this.handleGetFunction(canvasFunc)}
 
                     canvasConfig={{
                         ...this.props.canvasConfig,

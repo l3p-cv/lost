@@ -33,15 +33,10 @@ const Sia = (props) => {
             "maxCanvas": true
         }
     )
-    const toolbarRef = useRef()
     const containerRef = useRef()
-    const canvasRef = useRef()
 
-    useEffect(() => {
-        if (props.onGetRefs){
-            props.onGetRefs(canvasRef, toolbarRef)
-        }
-    }, [])
+    // useEffect(() => {
+    // }, [])
 
     useEffect(() => {
         doLayoutUpdate()
@@ -126,7 +121,6 @@ const Sia = (props) => {
     return (
         <div className={fullscreenCSS} ref={containerRef}>
             <Canvas
-                ref={canvasRef} 
                 container={containerRef}
 
                 onAnnoEvent={
@@ -144,7 +138,7 @@ const Sia = (props) => {
                 onGetAnnoExample={
                     (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs):{} 
                 }
-                onGetFunction={(deleteAll) => handleGetFunction(deleteAll)}
+                onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
 
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
@@ -163,7 +157,6 @@ const Sia = (props) => {
                 defaultLabel={props.defaultLabel}
             />
             <ToolBar 
-                ref={toolbarRef} 
                 onToolBarEvent={
                     (e, data) => handleToolBarEvent(e, data)
                 }
