@@ -1,5 +1,5 @@
 {
-  "description" : "This pipeline selects all images of an rawFile for an annotation task",
+  "description" : "Request multi image annotations for all images of a specified data source.",
   "author" : "Jonas Jaeger",
   "pipe-schema-version" : 1.0,
   "elements" : [
@@ -14,8 +14,8 @@
       "peN" : 1,
       "peOut" : [2],
       "script" : {
-        "path": "anno_all_imgs.py",
-        "description" : "Request ImageAnnotations for all images in an rawFile"
+        "path": "request_annos.py",
+        "description": "Request annotations for all images in a folder."
       }
     },
     {
@@ -24,7 +24,7 @@
       "annoTask" : {
         "name" : "MultiImageAnnoation",
         "type" : "mia",
-        "instructions" : "Please assign a class labels to all presented images.",
+        "instructions" : "Please assign a class label to all presented images.",
         "configuration": {
           "type": "imageBased"
         }
@@ -34,8 +34,8 @@
       "peN" : 3,
       "peOut" : [4],
       "script" : {
-        "path": "export_csv.py",
-        "description" : "Export all annotations to csv file"
+        "path": "export.py",
+        "description" : "Export all annotations to csv and parquet file."
       }
     },
     {

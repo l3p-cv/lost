@@ -1,5 +1,5 @@
 {
-  "description": "This pipeline selects all images of a datasource and requests annotations.",
+  "description": "Request all annotations from a dataset file (csv or parquet) in lost_dataset format again.",
   "author": "Jonas Jaeger",
   "pipe-schema-version" : 1.0,
   "elements": [{
@@ -13,13 +13,13 @@
       "peN": 1,
       "peOut": [2],
       "script": {
-        "path": "request_annos.py",
-        "description": "Request annotations for all images in a folder"
+        "path": "request_annos_again.py",
+        "description": "Request all annotations from an anno file again."
       }
     },
     {
       "peN": 2,
-      "peOut": [3],
+      "peOut": null,
       "annoTask": {
         "name": "Single Image Annotation Task",
         "type": "sia",
@@ -49,19 +49,6 @@
           }
         }
       }
-    },
-    {
-      "peN": 3,
-      "peOut": [4],
-      "script": {
-        "path": "export_csv.py",
-        "description": "Export all annotations to a csv file."
-      }
-    },
-    {
-      "peN": 4,
-      "peOut": null,
-      "dataExport": {}
     }
   ]
 }
