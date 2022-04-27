@@ -82,5 +82,6 @@ class LoginManager():
         user.email = user_info['mail']
         user.first_name = user_info['givenName']
         user.last_name = user_info['sn']
+        user.is_external=True
         self.dbm.save_obj(user)
         return user
