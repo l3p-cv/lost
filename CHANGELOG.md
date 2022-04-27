@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - unreleased
 ## Added
-- Install script
-- JupyterLab for Admins
+- Install script for installations without docker
+- JupyterLab Integration for Administrators
 - pyAPI:
   - Allow to request annotations via LOSTDataframes (see #144)
   - Allow to request annotation labels via label_name (see #144) 
@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cronjob that removes annotations that are not assigned to any image
 - ExamplePipes:
   - pack_dataset -> Will gather all images and a dataset file in csv and parquet format and provide it by via download
+  - restructured whole lost out of the box pipeline project
 - Dashboard:
   - Personal statistics for annotator and designer roles
 - Statistics:
@@ -35,7 +36,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow to upload and delete files via GUI
   - Allow to create directories via GUI
 - PipelineStart:
-  - Allow to specify annotation options for SIA Annotation Tasks
+  - Allow to specify annotation options for SIA and MIA Annotation Tasks
+- PipelineRunning:
+  - Allow to adapt annotation options for SIA and MIA Annotation Tasks
+- PipeProject:
+  - Allow to import, update and export pipe projects via UI
+- LabelTrees:
+  - Allow to import and export label trees via UI
+- VisibilityLevels and Roles:
+  - Added Admin role + Admin Area 
+  - Added global and user specific visibility levels
+    - Global datasources and label trees
+    - User (Designer) - specific datasources and label trees
+- LDAP 
+  - Allow to connect to external ldap servers in order to authenticate with external users
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
