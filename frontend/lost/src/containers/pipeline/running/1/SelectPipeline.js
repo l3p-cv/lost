@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import actions from '../../../../actions/pipeline/pipelineRunning'
 
 import { connect } from 'react-redux'
-import ReactTable from 'react-table'
-import 'react-table/react-table.css'
+import Datatable from '../../../../components/Datatable'
+import { faEye } from '@fortawesome/free-solid-svg-icons'
+import IconButton from '../../../../components/IconButton'
+import HelpButton from '../../../../components/HelpButton'
 import { Progress } from 'reactstrap'
 import { getColor } from '../../../../containers/Annotation/AnnoTask/utils'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
@@ -56,24 +58,38 @@ class SelectPipeline extends Component {
                 date: new Date(`${el.date} GMT -0000`),
             }))
             return (
-                <ReactTable
+                <Datatable
                     columns={[
                         {
                             Header: 'Name',
                             accessor: 'name',
+                            Cell: (row) => {
+                                return <b>{row.original.name}</b>
+                            },
                         },
                         {
                             Header: 'Description',
                             accessor: 'description',
+                            Cell: (row) => {
+                                return (
+                                    <HelpButton
+                                        id={row.original.id}
+                                        text={row.original.description}
+                                    />
+                                )
+                            },
                         },
                         {
                             Header: 'Template Name',
                             accessor: 'templateName',
+                            Cell: (row) => {
+                                return <b>{row.original.templateName}</b>
+                            },
                         },
-                        {
-                            Header: 'Author',
-                            accessor: 'creatorName',
-                        },
+                        // {
+                        //     Header: 'Author',
+                        //     accessor: 'creatorName',
+                        // },
                         {
                             Header: 'Progress',
                             accessor: 'progress',
@@ -108,7 +124,7 @@ class SelectPipeline extends Component {
                             },
                         },
                         {
-                            Header: 'Date',
+                            Header: 'Started on',
                             accessor: 'date',
                             Cell: (row) => {
                                 return new Date(row.value).toLocaleString('de')
@@ -120,10 +136,26 @@ class SelectPipeline extends Component {
                                 return 1
                             },
                         },
+                        {
+                            Header: 'Start',
+                            Cell: (row) => {
+                                return (
+                                    <IconButton
+                                        color="primary"
+                                        size="m"
+                                        isOutline={false}
+                                        onClick={() => this.selectRow(row.original.id)}
+                                        icon={faEye}
+                                        text="Open"
+                                    />
+                                )
+                            },
+                            accessor: 'id',
+                        },
                     ]}
-                    getTrProps={(state, rowInfo) => ({
-                        onClick: () => this.selectRow(rowInfo.original.id),
-                    })}
+                    // getTrProps={(state, rowInfo) => ({
+                    //     onClick: () => this.selectRow(rowInfo.original.id),
+                    // })}
                     defaultSorted={[
                         {
                             id: 'date',
