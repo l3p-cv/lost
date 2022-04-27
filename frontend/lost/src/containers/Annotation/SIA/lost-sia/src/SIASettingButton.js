@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 
 import { Popup, Icon, Menu, Divider, Checkbox } from 'semantic-ui-react'
-import * as tbe from './lost-sia/src/types/toolbarEvents'
+import * as tbe from './types/toolbarEvents'
 class SIASettingButton extends Component{
 
     constructor(props) {
@@ -84,6 +84,7 @@ class SIASettingButton extends Component{
                 position={"right center"}
                 pinned
                 on="click"
+                style={{zIndex:7000}}
             />
         )
     }

@@ -82,6 +82,12 @@ const Sia = (props) => {
         }
     }
 
+    const handleGetFunction = (deleteAll) =>  {
+        if (props.onGetFunction){
+            props.onGetFunction(deleteAll)
+        }
+    }
+
     const handleToolBarEvent = (e, data) => {
         console.log('Sia handleToolBarEvent', e)
         switch(e){
@@ -138,6 +144,7 @@ const Sia = (props) => {
                 onGetAnnoExample={
                     (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs):{} 
                 }
+                onGetFunction={(deleteAll) => handleGetFunction(deleteAll)}
 
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}

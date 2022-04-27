@@ -10,7 +10,7 @@ import 'react-notifications/lib/notifications.css';
 
 import * as notificationType from './lost-sia/src/types/notificationType'
 import * as transform from './lost-sia/src/utils/transform'
-import * as filterTools from './filterTools'
+import * as filterTools from './lost-sia/src/filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
 import * as annoActions from './lost-sia/src/types/canvasActions'
 import Sia from './lost-sia/src/Sia'
@@ -206,7 +206,8 @@ class SiaWrapper extends Component {
     handleToolBarEvent(e, data){
         switch(e){
             case tbe.DELETE_ALL_ANNOS:
-                this.canvas.current.deleteAllAnnos()
+                // this.canvas.current.deleteAllAnnos()
+                this.deleteAll()
                 break
             case tbe.TOOL_SELECTED:
                 this.props.siaSelectTool(data)
@@ -485,6 +486,13 @@ class SiaWrapper extends Component {
         this.toolbar = toolbarRef
     }
 
+    handleGetFunction(deleteAll){
+        console.log(deleteAll.deleteAllAnnos)
+        
+        // this.deleteAll = deleteAll['deleteAllAnnos']
+        this.deleteAll = deleteAll.deleteAllAnnos
+    }
+
     render(){
         return (
             <div>
@@ -495,6 +503,8 @@ class SiaWrapper extends Component {
                     onCanvasKeyDown={ e => this.handleCanvasKeyDown(e)}
                     onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
                     onGetAnnoExample={(exampleArgs) => this.props.onGetAnnoExample ? this.props.onGetAnnoExample(exampleArgs):{} }
+
+                    onGetFunction={(da) => this.handleGetFunction(da)}
 
                     canvasConfig={{
                         ...this.props.canvasConfig,

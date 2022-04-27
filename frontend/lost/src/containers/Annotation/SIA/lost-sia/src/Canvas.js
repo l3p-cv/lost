@@ -194,6 +194,14 @@ class Canvas extends Component{
                 this.triggerCanvasEvent(canvasActions.CANVAS_AUTO_SAVE)
             }, this.props.canvasConfig.autoSaveInterval*1000)
         }
+        if (this.props.onGetFunction){
+            this.props.onGetFunction({
+                'deleteAllAnnos':() => this.deleteAllAnnos()
+            })
+            // this.props.onGetFunction(
+            //     () => this.deleteAllAnnos()
+            // )
+        }
     }
 
     componentWillUnmount(){

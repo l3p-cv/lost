@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import { Icon, Menu, Button, Card } from 'semantic-ui-react'
-import SIASettingButton from '../../SIASettingButton'
-import SIAFilterButton from '../../SIAFilterButton'
+import SIASettingButton from './SIASettingButton'
+import SIAFilterButton from './SIAFilterButton'
 import Prompt from './Prompt'
 
 import * as TOOLS from './types/tools'
