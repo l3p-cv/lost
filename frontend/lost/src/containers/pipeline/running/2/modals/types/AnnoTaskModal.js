@@ -148,7 +148,7 @@ const AnnoTaskModal = (props) => {
                     />
                 </CollapseCard>
                 <CollapseCard icon={faUsers} buttonText="Adapt Users/Groups">
-                    {dataTableData.length > 1 ? (
+                    {dataTableData.length > 0 ? (
                         <Datatable
                             data={dataTableData}
                             columns={[

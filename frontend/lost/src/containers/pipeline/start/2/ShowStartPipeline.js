@@ -20,6 +20,7 @@ class ShowStartPipeline extends Component {
     }
     renderNodes() {
         return this.props.data.elements.map((el) => {
+            console.log(el)
             switch (el.type) {
                 case 'datasource':
                     return <DatasourceNode key={el.id} {...el} />
