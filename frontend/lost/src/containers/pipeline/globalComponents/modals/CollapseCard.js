@@ -16,7 +16,9 @@ class CollapseCustom extends Component {
             <>
                 <Button
                     block
-                    className="text-left m-1 p-1"
+                    outline={this.props.btnOutline ? this.props.btnOutline : false}
+                    className="text-left m-1 p-2"
+                    color={this.props.btnColor ? this.props.btnColor : 'secondary'}
                     onClick={this.toggle}
                     style={{ marginTop: 20, marginRight: 10, marginBottom: '1rem' }}
                 >
@@ -24,7 +26,9 @@ class CollapseCustom extends Component {
                         {' '}
                         <FontAwesomeIcon
                             icon={this.props.icon ? this.props.icon : faInfo}
-                            color="#00294B"
+                            color={
+                                this.props.iconColor ? this.props.iconColor : '#00294B'
+                            }
                             size="1x"
                         />
                         &nbsp;&nbsp;&nbsp;
@@ -33,10 +37,8 @@ class CollapseCustom extends Component {
                             : 'More Information'}{' '}
                     </h5>
                 </Button>
-                <Collapse isOpen={this.state.collapse}>
-                    <Card>
-                        <CardBody>{this.props.children}</CardBody>
-                    </Card>
+                <Collapse style={{ margin: '5px' }} isOpen={this.state.collapse}>
+                    {this.props.children}
                 </Collapse>
             </>
         )

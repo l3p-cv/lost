@@ -1195,3 +1195,9 @@ class DBMan(object):
                 INNER JOIN pipe ON pipe.idx = pipe_element.pipe_id \
                 WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
         return self.session.execute(sql)
+    
+    def get_data_exports_by_anno_task_id(self, anno_task_id):
+        ''' Get data_export by anno_task_id
+        '''
+        return self.session.query(model.DataExport)\
+        .filter(model.DataExport.anno_task_id==anno_task_id).all()

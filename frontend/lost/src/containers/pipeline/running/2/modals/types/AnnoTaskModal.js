@@ -13,6 +13,7 @@ import {
     faCircle,
     faTag,
     faGears,
+    faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons'
 // import axios from 'axios'
 import { API_URL } from '../../../../../../lost_settings'
@@ -25,7 +26,7 @@ import actions from '../../../../../../actions'
 import IconButton from '../../../../../../components/IconButton'
 import * as userApi from '../../../../../../actions/user/user_api'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
-
+import InstantAnnoExport from './InstantAnnoExport'
 // function download(filename, text) {
 //     var element = document.createElement('a');
 //     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
@@ -129,7 +130,7 @@ const AnnoTaskModal = (props) => {
                         },
                     ]}
                 />
-                <CollapseCard icon={faInfo}>
+                <CollapseCard icon={faInfoCircle}>
                     <Table
                         data={[
                             {
@@ -222,8 +223,10 @@ const AnnoTaskModal = (props) => {
                         ></SelectMIAConfiguration>
                     </CollapseCard>
                 )}
-
-                <IconButton
+                <CollapseCard icon={faDownload} buttonText="Instant Annotation Export">
+                    <InstantAnnoExport annotaskId={props.annoTask.id}></InstantAnnoExport>
+                </CollapseCard>
+                {/* <IconButton
                     icon={faDownload}
                     color="primary"
                     isOutline={false}
@@ -238,7 +241,7 @@ const AnnoTaskModal = (props) => {
                     style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
                     onClick={(e) => handleInstantAnnoDownload(props.id, 'parquet')}
                     text="Parquet - Download"
-                />
+                /> */}
                 <IconButton
                     icon={faEye}
                     color="warning"

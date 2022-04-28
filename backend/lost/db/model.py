@@ -1439,8 +1439,10 @@ class DataExport(Base):
     timestamp = Column(DateTime())
     name = Column(String(4096))
     anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
+    progress = Column(Integer)
 
-    def __init__(self, file_path=None, result_id=None, iteration=0, fs_id=None, timestamp=None, name=None, anno_task_id=None):
+    def __init__(self, file_path=None, result_id=None, iteration=0, fs_id=None, timestamp=None, name=None,
+                 anno_task_id=None, progress=None):
         self.fs_id = fs_id
         self.file_path = file_path
         self.result_id = result_id
@@ -1448,6 +1450,7 @@ class DataExport(Base):
         self.timestamp = timestamp
         self.name = name
         self.anno_task_id = anno_task_id
+        self.progress = progress
 
 
 class Loop(Base):
