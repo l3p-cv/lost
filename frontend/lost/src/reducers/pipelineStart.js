@@ -103,7 +103,7 @@ const INITITAL_STATE_SIA_ANNO_TASK_MODAL = {
         },
         {
             text: '3',
-            icon: 'fa-database',
+            icon: 'fa-table',
             shapeBorderColor: '#092F38',
             shapeBackgroundColor: 'white',
             shapeContentColor: '#092F38',
@@ -168,7 +168,7 @@ const INITITAL_STATE_MIA_ANNO_TASK_MODAL = {
         },
         {
             text: '3',
-            icon: 'fa-database',
+            icon: 'fa-table',
             shapeBorderColor: '#092F38',
             shapeBackgroundColor: 'white',
             shapeContentColor: '#092F38',

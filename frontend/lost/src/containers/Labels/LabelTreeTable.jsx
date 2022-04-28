@@ -4,6 +4,7 @@ import { faEdit, faFileExport, faEye } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
 import Datatable from '../../components/Datatable'
 import BaseModal from '../../components/BaseModal'
+import HelpButton from '../../components/HelpButton'
 import LabelTree from './LabelTree'
 import { API_URL } from '../../lost_settings'
 import { saveAs } from 'file-saver'
@@ -67,6 +68,14 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                     {
                         Header: 'Description',
                         accessor: 'description',
+                        Cell: (row) => {
+                            return (
+                                <HelpButton
+                                    id={row.original.idx}
+                                    text={row.original.description}
+                                />
+                            )
+                        },
                     },
                     {
                         Header: 'Amount of Labels',

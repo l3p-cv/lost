@@ -158,21 +158,19 @@ class WorkersTable extends Component {
     }
     render() {
         return (
-            <BaseContainer>
-                <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
-                    <thead className="thead-light">
-                        <tr>
-                            <th className="text-center">Name</th>
-                            <th className="text-center">Environment</th>
-                            <th className="text-center">Status</th>
-                            <th className="text-center">Resources</th>
-                            <th className="text-center">Jobs</th>
-                            {/* <th className="text-center">Logs</th> */}
-                        </tr>
-                    </thead>
-                    {this.renderTableBody()}
-                </Table>
-            </BaseContainer>
+            <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
+                <thead className="thead-light">
+                    <tr>
+                        <th className="text-center">Name</th>
+                        <th className="text-center">Environment</th>
+                        <th className="text-center">Status</th>
+                        <th className="text-center">Resources</th>
+                        <th className="text-center">Jobs</th>
+                        {/* <th className="text-center">Logs</th> */}
+                    </tr>
+                </thead>
+                {this.renderTableBody()}
+            </Table>
         )
     }
 }
