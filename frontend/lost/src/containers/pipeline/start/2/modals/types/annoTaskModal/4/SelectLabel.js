@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import Graph from 'react-graph-vis'
 import { connect } from 'react-redux'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
-
-import { Card, CardBody } from 'reactstrap'
+import HelpButton from '../../../../../../../../components/HelpButton'
+import { CRow } from '@coreui/react'
 import _ from 'lodash'
 
 const { updateLabels } = actions
@@ -168,17 +168,26 @@ class SelectLabel extends Component {
         this.mapTreeToGraph(this.tree, this.tree.idx)
 
         return (
-            <Card className="annotask-modal-card">
-                <CardBody>
-                    <p style={{ textAlign: 'center' }}>Click on label</p>
-                    <Graph
-                        ref={this.graph}
-                        graph={this.graphData}
-                        options={options}
-                        events={this.events}
+            // <Card className="annotask-modal-card">
+            //     <CardBody>
+            <>
+                <CRow className="justify-content-center">
+                    <HelpButton
+                        id={'choose-label'}
+                        text={`Click on the parent label to make all child labels available in the AnnotationTask. 
+                        Multiple parent labels can also be selected. 
+                        Labels that are active for the AnnotationTask are visualized with a strong border in this view.`}
                     />
-                </CardBody>
-            </Card>
+                </CRow>
+                <Graph
+                    ref={this.graph}
+                    graph={this.graphData}
+                    options={options}
+                    events={this.events}
+                />
+            </>
+            //     </CardBody>
+            // </Card>
         )
     }
 }

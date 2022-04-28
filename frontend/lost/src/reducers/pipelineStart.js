@@ -41,7 +41,7 @@ const INITITAL_STATE = {
             },
             {
                 text: '3',
-                icon: 'fa-list-alt',
+                icon: 'fa-info',
                 shapeBorderColor: '#092F38',
                 shapeBackgroundColor: 'white',
                 shapeContentColor: '#092F38',

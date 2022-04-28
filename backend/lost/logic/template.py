@@ -184,6 +184,7 @@ class TemplateSerialize(object):
                 group_name += " (user)"
             else:
                 group_name += " (group)"
+            group_json['name'] = group.name
             group_json['groupName'] = group_name
             group_json['isUserDefault'] = group.is_user_default
             groups_json.append(group_json)
