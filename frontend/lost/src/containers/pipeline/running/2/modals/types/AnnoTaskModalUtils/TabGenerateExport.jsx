@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useInterval } from 'react-use'
-import HelpButton from '../../../../../../components/HelpButton'
-import IconButton from '../../../../../../components/IconButton'
+
 import {
     CDropdown,
     CDropdownItem,
@@ -12,26 +10,19 @@ import {
     CSwitch,
     CInput,
 } from '@coreui/react'
-import { Progress } from 'reactstrap'
-import { API_URL } from '../../../../../../lost_settings'
-import { faPlay, faDownload, faCheck } from '@fortawesome/free-solid-svg-icons'
-import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
-import ReactTable from 'react-table'
-import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
-import { getColor } from '../../../../../../containers/Annotation/AnnoTask/utils'
-import { saveAs } from 'file-saver'
-import * as Notification from '../../../../../../components/Notification'
+import { faPlay } from '@fortawesome/free-solid-svg-icons'
+import HelpButton from '../../../../../../../components/HelpButton'
+import IconButton from '../../../../../../../components/IconButton'
+import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
+import * as Notification from '../../../../../../../components/Notification'
 
-const InstantAnnoExport = (props) => {
+const TabGenerateExport = (props) => {
     const {
         data: annoTaskExportData,
         mutate: generateExport,
         status: generateExportStatus,
     } = annoTaskApi.useGenerateExport()
-    const { data: dataExportData, refetch } = annoTaskApi.useGetDataexports(
-        props.annotaskId,
-    )
-    const [dataExports, setDataExports] = useState([])
+
     const [newExport, setNewExport] = useState({
         exportName: 'Annotation',
         exportType: 'LOST_Dataset',
@@ -43,9 +34,6 @@ const InstantAnnoExport = (props) => {
             val: 0.1,
         },
     })
-    useInterval(() => {
-        refetch()
-    }, 1000)
 
     useEffect(() => {
         if (generateExportStatus === 'success') {
@@ -55,11 +43,7 @@ const InstantAnnoExport = (props) => {
             Notification.showError('Error while creating your export.')
         }
     }, [generateExportStatus])
-    useEffect(() => {
-        if (dataExportData) {
-            setDataExports(dataExportData)
-        }
-    }, [dataExportData])
+
     const onGenerateExport = () => {
         console.log('Generate Export')
         const data = { annotaskId: props.annotaskId, exportConfig: newExport }
@@ -82,27 +66,12 @@ const InstantAnnoExport = (props) => {
             setNewExport({ ...newExport, randomSplits: splits })
         }
     }
-    const handleAnnotaskDataExport = (dataExportId, dataExportType, dataExportName) => {
-        fetch(`${API_URL}/anno_task/data_export/download/${dataExportId}`, {
-            method: 'get',
-            headers: new Headers({
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            }),
-        })
-            .then((res) => res.blob())
-            .then((blob) => saveAs(blob, `${dataExportName}.${dataExportType}`))
-    }
+
     return (
         <>
-            <CollapseCard
-                btnOutline={true}
-                btnColor="primary"
-                // iconColor="#CED2D8"
-                icon={faPlay}
-                buttonText="Generate new Export"
-            >
+            <CRow style={{ marginLeft: '5px' }}>
                 <CCol sm="6">
-                    <CRow style={{ marginTop: '20px', marginBottom: '20px' }}>
+                    <CRow style={{ marginTop: '10px', marginBottom: '20px' }}>
                         <CCol sm="12">
                             <h4>
                                 Export Name
@@ -393,123 +362,20 @@ const InstantAnnoExport = (props) => {
                             )}
                         </CCol>
                     </CRow>
-                    <CRow
-                        className="justify-content-center"
-                        style={{ marginBottom: '20px' }}
-                    >
-                        <IconButton
-                            isOutline={false}
-                            color="primary"
-                            onClick={() => onGenerateExport()}
-                            icon={faPlay}
-                            text="Generate export"
-                            style={{ marginRight: '20px' }}
-                        ></IconButton>
-                    </CRow>
                 </CCol>
-            </CollapseCard>
-            <CollapseCard
-                btnOutline={true}
-                btnColor="primary"
-                // iconColor="#CED2D8"
-                icon={faCheck}
-                buttonText="Available Exports"
-            >
-                <ReactTable
-                    columns={[
-                        {
-                            Header: 'Name',
-                            accessor: 'name',
-                            Cell: (row) => {
-                                return <b>{row.original.name}</b>
-                            },
-                        },
-                        {
-                            Header: 'Exported on',
-                            accessor: 'timestamp',
-                            Cell: (row) => {
-                                return new Date(row.original.timestamp).toLocaleString(
-                                    'de',
-                                )
-                            },
-                            sortMethod: (date1, date2) => {
-                                if (new Date(date1) > new Date(date2)) {
-                                    return -1
-                                }
-                                return 1
-                            },
-                        },
-                        {
-                            Header: 'File size',
-                            accessor: 'fileSize',
-                            Cell: (row) => {
-                                return (
-                                    <>
-                                        {Number(
-                                            (row.original.fileSize / 1024 / 1024).toFixed(
-                                                2,
-                                            ),
-                                        )}{' '}
-                                        MBytes
-                                    </>
-                                )
-                            },
-                        },
-                        {
-                            Header: 'Export progress',
-                            accessor: 'progress',
-                            Cell: (row) => {
-                                const progress = parseInt(row.original.progress)
-                                return (
-                                    <Progress
-                                        className="progress-xs rt-progress"
-                                        color={getColor(progress)}
-                                        value={progress}
-                                    />
-                                    // <Progress
-                                    //     className="progress-xs rt-progress"
-                                    //     color="warning"
-                                    //     value={progress}
-                                    // />
-                                )
-                            },
-                        },
-                        {
-                            Header: 'Download',
-                            accessor: 'name',
-                            Cell: (row) => {
-                                return (
-                                    <IconButton
-                                        color="primary"
-                                        isOutline={false}
-                                        disabled={row.original.progress < 100}
-                                        icon={faDownload}
-                                        onClick={() =>
-                                            handleAnnotaskDataExport(
-                                                row.original.id,
-                                                row.original.fileType,
-                                                row.original.name,
-                                            )
-                                        }
-                                        text={'Download'}
-                                    ></IconButton>
-                                )
-                            },
-                        },
-                    ]}
-                    defaultSorted={[
-                        {
-                            id: 'timestamp',
-                            desc: true,
-                        },
-                    ]}
-                    data={dataExports}
-                    defaultPageSize={10}
-                    className="-striped -highlight"
-                />
-            </CollapseCard>
+            </CRow>
+            <CRow className="justify-content-center" style={{ marginBottom: '20px' }}>
+                <IconButton
+                    isOutline={false}
+                    color="primary"
+                    onClick={() => onGenerateExport()}
+                    icon={faPlay}
+                    text="Generate export"
+                    style={{ marginRight: '20px' }}
+                ></IconButton>
+            </CRow>
         </>
     )
 }
 
-export default InstantAnnoExport
+export default TabGenerateExport

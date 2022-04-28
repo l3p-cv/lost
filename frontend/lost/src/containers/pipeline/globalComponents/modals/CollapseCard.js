@@ -1,7 +1,13 @@
 import React, { Component } from 'react'
 import { Collapse, Button, Card, CardBody } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faInfo } from '@fortawesome/free-solid-svg-icons'
+import {
+    faAngleUp,
+    faArrowDown,
+    faAngleDown,
+    faInfo,
+} from '@fortawesome/free-solid-svg-icons'
+import { CRow } from '@coreui/react'
 class CollapseCustom extends Component {
     constructor(props) {
         super(props)
@@ -35,6 +41,17 @@ class CollapseCustom extends Component {
                         {this.props.buttonText
                             ? this.props.buttonText
                             : 'More Information'}{' '}
+                        <div style={{ display: 'inline', float: 'right' }}>
+                            <FontAwesomeIcon
+                                icon={this.state.collapse ? faAngleUp : faAngleDown}
+                                color={
+                                    this.props.iconColor
+                                        ? this.props.iconColor
+                                        : '#00294B'
+                                }
+                                size="1x"
+                            />
+                        </div>
                     </h5>
                 </Button>
                 <Collapse style={{ margin: '5px' }} isOpen={this.state.collapse}>
