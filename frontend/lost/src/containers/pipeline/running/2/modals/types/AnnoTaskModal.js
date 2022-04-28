@@ -34,12 +34,10 @@ function handleSiaRewiewClick(props, callback) {
 }
 
 function annotationReleaseSuccessful() {
-    // console.log('Annotation release successful')
     alertSuccess('Annotation release successful')
 }
 
 function handleForceAnnotationRelease(props) {
-    // console.log('Start annotation release')
     props.forceAnnotationRelease(props.annoTask.id, annotationReleaseSuccessful)
 }
 
