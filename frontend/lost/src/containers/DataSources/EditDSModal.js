@@ -11,7 +11,12 @@ import {
 } from 'reactstrap'
 import BaseModal from '../../components/BaseModal'
 import IconButton from '../../components/IconButton'
-import { faSave, faBan, faFile, faNetworkWired } from '@fortawesome/free-solid-svg-icons'
+import {
+    faSave,
+    faTimes,
+    faFile,
+    faNetworkWired,
+} from '@fortawesome/free-solid-svg-icons'
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import * as Notification from '../../components/Notification'
@@ -200,17 +205,19 @@ const EditDSModal = ({
                 footer={
                     <>
                         <IconButton
-                            icon={faBan}
-                            color="warning"
-                            text="Cancel"
-                            onClick={cancelBrowse}
-                        />
-                        <IconButton
+                            isOutline={false}
                             icon={faSave}
-                            color="success"
+                            color="primary"
                             text="Save Root Path"
                             onClick={saveBrowse}
                         />
+                        <IconButton
+                            isOutline={false}
+                            color="secondary"
+                            icon={faTimes}
+                            text="Close"
+                            onClick={cancelBrowse}
+                        ></IconButton>
                     </>
                 }
             >
@@ -233,17 +240,20 @@ const EditDSModal = ({
                 footer={
                     <>
                         <IconButton
-                            icon={faBan}
-                            color="warning"
-                            text="Cancel"
-                            onClick={cancel}
-                        />
-                        <IconButton
+                            isOutline={false}
+                            disabled={fs.name === '' || fs.rootPath === ''}
                             icon={faSave}
-                            color="success"
+                            color="primary"
                             text="Save"
                             onClick={save}
                         />
+                        <IconButton
+                            isOutline={false}
+                            color="secondary"
+                            icon={faTimes}
+                            text="Close"
+                            onClick={cancel}
+                        ></IconButton>
                     </>
                 }
             >

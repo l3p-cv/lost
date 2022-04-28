@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Button, Progress, Table, Card, CardHeader, CardBody, Row, Col } from 'reactstrap'
+import { Progress, Table, Card, CardHeader, CardBody, Row, Col } from 'reactstrap'
+import { CRow, CCol } from '@coreui/react'
 import { getColor } from './utils'
 import AmountPerLabel from './AmountPerLabel'
 import IconButton from '../../../components/IconButton'
 import Modal from 'react-modal'
 
 import actions from '../../../actions'
-import { faChartBar } from '@fortawesome/free-solid-svg-icons'
+import { faChartBar, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -81,10 +82,16 @@ class MyAnnoTasks extends Component {
                     <CardBody style={{ height: '100%' }}>
                         {this.renderStatistic()}
                     </CardBody>
-                    <Button color="success" onClick={this.closeModal}>
-                        <i className="fa fa-times"></i> Close
-                    </Button>
                 </Card>
+                <CRow className="justify-content-end" style={{ marginRight: '5px' }}>
+                    <IconButton
+                        isOutline={false}
+                        color="secondary"
+                        icon={faTimes}
+                        text="Close"
+                        onClick={this.closeModal}
+                    ></IconButton>
+                </CRow>
             </Modal>
         )
     }

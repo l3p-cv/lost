@@ -3,7 +3,7 @@ import BaseModal from '../../components/BaseModal'
 import Datatable from '../../components/Datatable'
 import { Input } from 'reactstrap'
 import IconButton from '../../components/IconButton'
-import { faSave, faBan } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import actions from '../../actions'
 import validator from 'validator'
 import { useDispatch, useSelector } from 'react-redux'
@@ -241,17 +241,19 @@ const EditUserModal = (props) => {
             footer={
                 <>
                     <IconButton
-                        icon={faBan}
-                        color="warning"
-                        text="Cancel"
-                        onClick={cancel}
-                    />
-                    <IconButton
+                        isOutline={false}
                         icon={faSave}
                         color="success"
                         text="Save"
                         onClick={save}
                     />
+                    <IconButton
+                        isOutline={false}
+                        color="secondary"
+                        icon={faTimes}
+                        text="Close"
+                        onClick={cancel}
+                    ></IconButton>
                 </>
             }
         >

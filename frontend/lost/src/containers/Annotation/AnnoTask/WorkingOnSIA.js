@@ -2,9 +2,12 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Progress } from 'reactstrap'
 import { getColor } from './utils'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { Alert, Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 import Modal from 'react-modal'
 import actions from '../../../actions'
+import IconButton from '../../../components/IconButton'
+import { CCardFooter } from '@coreui/react'
 
 const { refreshToken, siaLayoutUpdate } = actions
 const customStyles = {
@@ -145,9 +148,13 @@ class WorkingOnSIA extends Component {
                                         }}
                                     />
                                 </Alert>
-                                <Button color="success" onClick={this.closeModal}>
-                                    <i className="fa fa-times"></i> Close
-                                </Button>
+                                <IconButton
+                                    isOutline={false}
+                                    color="secondary"
+                                    icon={faTimes}
+                                    text="Close"
+                                    onClick={this.closeModal}
+                                ></IconButton>
                             </CardBody>
                         </Card>
                     </Modal>

@@ -13,11 +13,11 @@ import {
     Input,
 } from 'reactstrap'
 import GrayLine from '../../globalComponents/GrayLine'
-
+import IconButton from '../../../../components/IconButton'
 import actions from '../../../../actions/pipeline/pipelineRunning'
 
 import startActions from '../../../../actions/pipeline/pipelineStart'
-
+import HelpButton from '../../../../components/HelpButton'
 import { connect } from 'react-redux'
 import {
     alertLoading,
@@ -32,6 +32,7 @@ import {
     faPause,
     faPlay,
     faRedo,
+    faTimes,
 } from '@fortawesome/free-solid-svg-icons'
 import ToolbarTooltip from './ToolbarTooltip'
 import LogModal from '../../../../components/LogModal'
@@ -194,38 +195,58 @@ class Toolbar extends Component {
                                 Regenerate Pipeline
                             </ModalHeader>
                             <ModalBody>
-                                <Card>
-                                    <CardBody>
-                                        <Form>
-                                            <FormGroup>
-                                                <Label for="name">Name</Label>
-                                                <Input
-                                                    defaultValue={this.state.name}
-                                                    onChange={this.nameOnInput}
-                                                    type="text"
-                                                />
-                                            </FormGroup>
-                                            <FormGroup>
-                                                <Label for="instruction">
-                                                    Description
-                                                </Label>
-                                                <Input
-                                                    defaultValue={this.state.description}
-                                                    onChange={this.descriptionOnInput}
-                                                    type="text"
-                                                />
-                                            </FormGroup>
-                                        </Form>
-                                    </CardBody>
-                                </Card>
+                                <Form>
+                                    <FormGroup>
+                                        <Label for="name">Pipeline Name</Label>
+                                        <HelpButton
+                                            id={'pipeline-start-name'}
+                                            text={
+                                                'Give your pipeline a name so that you can identify it later.'
+                                            }
+                                        />
+                                        <Input
+                                            defaultValue={this.state.name}
+                                            onChange={this.nameOnInput}
+                                            type="text"
+                                        />
+                                    </FormGroup>
+                                    <FormGroup>
+                                        <Label for="instruction">
+                                            Pipeline Description
+                                        </Label>
+                                        <HelpButton
+                                            id={'pipeline-start-desc'}
+                                            text={
+                                                'Give your pipeline a description so that you still know later what you started it for.'
+                                            }
+                                        />
+                                        <Input
+                                            defaultValue={this.state.description}
+                                            onChange={this.descriptionOnInput}
+                                            type="text"
+                                        />
+                                    </FormGroup>
+                                </Form>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" onClick={this.regenerate}>
-                                    Regenerate
-                                </Button>{' '}
-                                <Button color="secondary" onClick={this.toggle}>
-                                    Cancel
-                                </Button>
+                                <IconButton
+                                    isOutline={false}
+                                    color="primary"
+                                    disabled={
+                                        this.state.description === undefined ||
+                                        this.state.name === undefined
+                                    }
+                                    icon={faRedo}
+                                    text="Regenerate"
+                                    onClick={this.regenerate}
+                                ></IconButton>
+                                <IconButton
+                                    isOutline={false}
+                                    color="secondary"
+                                    icon={faTimes}
+                                    text="Close"
+                                    onClick={this.toggle}
+                                ></IconButton>
                             </ModalFooter>
                         </Modal>
                     </>

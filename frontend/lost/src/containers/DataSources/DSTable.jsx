@@ -173,8 +173,9 @@ export const DSTable = ({ visLevel }) => {
                 footer={
                     <>
                         <IconButton
+                            isOutline={false}
                             icon={faTimes}
-                            color="success"
+                            color="secondary"
                             text="Close"
                             onClick={() => setBrowseOpen(false)}
                         />

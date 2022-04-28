@@ -89,7 +89,8 @@ export default (props) => {
                         onInput={argumentsOnInput}
                     />
                     <IconButton
-                        color="success"
+                        color="primary"
+                        isOutline={false}
                         icon={faCloudUploadAlt}
                         text="Update Arguments"
                         onClick={updateArguments}
