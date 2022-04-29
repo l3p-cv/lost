@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import IconButton from '../../components/IconButton'
-import { faPlus, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
+import {
+    faPlus,
+    faCheck,
+    faTimes,
+    faUpload,
+    faEarth,
+    faFileZipper,
+} from '@fortawesome/free-solid-svg-icons'
 import BaseModal from '../../components/BaseModal'
 import { useDropzone } from 'react-dropzone'
+import { CRow, CCol, CInput } from '@coreui/react'
 import * as pipelinedProjectsApi from '../../actions/pipeline/pipeline_projects_api'
 import * as Notification from '../../components/Notification'
+import HelpButton from '../../components/HelpButton'
+import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
 
 const AddPipelineProject = ({ visLevel }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -14,18 +24,22 @@ const AddPipelineProject = ({ visLevel }) => {
             accept: '.zip',
             maxFiles: 1,
         })
-
+    const [uploadZipfile, setUploadZipfile] = useState()
+    const [gitUrl, setGitUrl] = useState()
+    //'https://github.com/l3p-cv/lost-pipeline-zoo.git'
+    const [gitBranch, setGitBranch] = useState('main')
     const [submitNewPipelineProjectData, submitNewPipelineProject, breakUpload] =
         pipelinedProjectsApi.useSubmitNewPipelineProject()
 
-    useEffect(() => {
-        if (acceptedFiles.length === 1) {
-            console.log('Data recieved')
-        }
-    }, [acceptedFiles])
+    const { mutate: importPipelineGit, status: pipelineImportGitStatus } =
+        pipelinedProjectsApi.useImportPipelineProjectGit()
+    // useEffect(() => {
+    //     if (acceptedFiles.length === 1) {
+    //     }
+    // }, [acceptedFiles])
 
     const getColor = () => {
-        if (acceptedFiles[0]) {
+        if (uploadZipfile) {
             return '#2EB85C'
         }
         if (isDragReject) {
@@ -38,40 +52,69 @@ const AddPipelineProject = ({ visLevel }) => {
     }
     useEffect(() => {
         if (acceptedFiles[0]) {
-            console.log(acceptedFiles)
+            setUploadZipfile(acceptedFiles[0])
+        }
+    }, [acceptedFiles])
+    useEffect(() => {
+        if (submitNewPipelineProjectData.isSuccess) {
+            Notification.showSuccess('Import succeeded.')
+            setUploadZipfile(undefined)
+            setIsModalOpen(false)
+        }
+        if (submitNewPipelineProjectData.isSuccess === false) {
+            setUploadZipfile(undefined)
+            Notification.showError('Import failed.')
+        }
+    }, [submitNewPipelineProjectData])
+
+    useEffect(() => {
+        if (pipelineImportGitStatus === 'success') {
+            setGitUrl('')
+            setGitBranch('main')
+            setIsModalOpen(false)
+            Notification.showSuccess('Import succeeded.')
+        }
+        if (pipelineImportGitStatus === 'error') {
+            setGitUrl('')
+            setGitBranch('main')
+            Notification.showError('Import failed.')
+        }
+    }, [pipelineImportGitStatus])
+    const onImportZipFile = () => {
+        if (acceptedFiles[0]) {
             submitNewPipelineProject({
                 zip_file: acceptedFiles[0],
                 vis_level: visLevel,
             })
         }
-    }, [acceptedFiles])
-
-    useEffect(() => {
-        console.log(submitNewPipelineProjectData)
-
-        if (submitNewPipelineProjectData.isSuccess) {
-            Notification.showSuccess('Import succeeded.')
-            setIsModalOpen(false)
+    }
+    const onImportGit = () => {
+        if (gitUrl) {
+            const data = {
+                gitUrl,
+                gitBranch,
+            }
+            importPipelineGit(data)
         }
-        if (submitNewPipelineProjectData.isSuccess === false) {
-            Notification.showError('Import failed.')
-        }
-    }, [submitNewPipelineProjectData])
-
+    }
     const renderModalFooter = () => {
         return (
             <IconButton
-                icon={
-                    submitNewPipelineProjectData.isSuccess === false ? faTimes : faCheck
-                }
-                color={
-                    submitNewPipelineProjectData.isSuccess === false
-                        ? 'danger'
-                        : 'success'
-                }
-                text={
-                    submitNewPipelineProjectData.isSuccess === false ? 'Cancel' : 'Close'
-                }
+                icon={faTimes}
+                isOutline={false}
+                color="secondary"
+                text="Close"
+                // icon={
+                //     submitNewPipelineProjectData.isSuccess === false ? faTimes : faCheck
+                // }
+                // color={
+                //     submitNewPipelineProjectData.isSuccess === false
+                //         ? 'danger'
+                //         : 'success'
+                // }
+                // text={
+                //     submitNewPipelineProjectData.isSuccess === false ? 'Cancel' : 'Close'
+                // }
                 onClick={() => setIsModalOpen(false)}
             />
         )
@@ -79,52 +122,167 @@ const AddPipelineProject = ({ visLevel }) => {
     return (
         <>
             <BaseModal
-                title="Import pipe project"
+                title="Import or Update pipe project"
                 isOpen={isModalOpen}
                 toggle={() => setIsModalOpen(false)}
                 footer={renderModalFooter()}
             >
-                <section
-                    style={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        padding: '20px',
-                        borderWidth: '2px',
-                        borderRadius: '2px',
-                        borderColor: getColor(),
-                        borderStyle: 'dashed',
-                        backgroundColor: '#fafafa',
-                        color: '#bdbdbd',
-                        outline: 'none',
-                        transition: 'border 0.24s ease-in-out',
-                        height: '250px',
-                    }}
-                >
-                    <div {...getRootProps({ className: 'dropzone' })}>
-                        <input {...getInputProps()} />
-                        <p>Upload zip-file by drag 'n' drop or clicking.</p>
-                    </div>
-                    <aside>
-                        <b style={{ color: '#898989' }}>
-                            <ul>
-                                {' '}
-                                {acceptedFiles[0] ? (
-                                    <li key={acceptedFiles[0].path}>
-                                        {acceptedFiles[0].path} -{' '}
-                                        {Number(
-                                            (acceptedFiles[0].size / 1024).toFixed(2),
-                                        )}{' '}
-                                        KBytes
-                                    </li>
-                                ) : (
-                                    ''
-                                )}
-                            </ul>
-                        </b>
-                    </aside>
-                </section>
+                <CRow>
+                    <CCol sm="12">
+                        <CollapseCard
+                            initOpen
+                            icon={faFileZipper}
+                            buttonText={
+                                ' Import / Update pipeline project from .zip File'
+                            }
+                        >
+                            <CRow>
+                                <CCol sm="12">
+                                    <section
+                                        style={{
+                                            flex: 1,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            padding: '20px',
+                                            borderWidth: '2px',
+                                            borderRadius: '2px',
+                                            borderColor: getColor(),
+                                            borderStyle: 'dashed',
+                                            backgroundColor: '#fafafa',
+                                            color: '#bdbdbd',
+                                            outline: 'none',
+                                            transition: 'border 0.24s ease-in-out',
+                                            height: '250px',
+                                        }}
+                                    >
+                                        <div {...getRootProps({ className: 'dropzone' })}>
+                                            <input {...getInputProps()} />
+                                            <p>
+                                                Upload zip-file by drag 'n' drop or
+                                                clicking.
+                                            </p>
+                                        </div>
+                                        <aside>
+                                            <b style={{ color: '#898989' }}>
+                                                <ul>
+                                                    {' '}
+                                                    {uploadZipfile ? (
+                                                        <li key={uploadZipfile.path}>
+                                                            {uploadZipfile.path} -{' '}
+                                                            {Number(
+                                                                (
+                                                                    uploadZipfile.size /
+                                                                    1024
+                                                                ).toFixed(2),
+                                                            )}{' '}
+                                                            KBytes
+                                                        </li>
+                                                    ) : (
+                                                        ''
+                                                    )}
+                                                </ul>
+                                            </b>
+                                        </aside>
+                                    </section>
+                                    <IconButton
+                                        style={{
+                                            marginLeft: '5px',
+                                            marginTop: '10px',
+                                            marginBottom: '20px',
+                                        }}
+                                        color="primary"
+                                        isOutline={false}
+                                        disabled={uploadZipfile === undefined}
+                                        onClick={() => onImportZipFile()}
+                                        icon={faUpload}
+                                        text="Import / Update"
+                                    />
+                                </CCol>
+                            </CRow>
+                        </CollapseCard>
+                        <CollapseCard
+                            icon={faEarth}
+                            buttonText={
+                                'Import / Update pipeline project from a public git repository'
+                            }
+                        >
+                            <CRow>
+                                <CCol sm="12">
+                                    <CRow
+                                        style={{
+                                            marginLeft: '5px',
+                                            marginTop: '10px',
+                                        }}
+                                    >
+                                        <CInput
+                                            type="text"
+                                            style={{ maxWidth: '40%' }}
+                                            value={gitUrl}
+                                            onChange={(e) =>
+                                                setGitUrl(e.currentTarget.value)
+                                            }
+                                        />
+                                        <b
+                                            style={{
+                                                marginLeft: '20px',
+                                                display: 'inline',
+                                            }}
+                                        >
+                                            Git Url
+                                            <HelpButton
+                                                id="url"
+                                                text={`Enter a git url to a public git repository that 
+                                                contains the LOST pipeline project. `}
+                                            />
+                                        </b>
+                                    </CRow>
+                                    <CRow
+                                        style={{
+                                            marginLeft: '5px',
+                                            marginTop: '10px',
+                                        }}
+                                    >
+                                        <CInput
+                                            type="text"
+                                            style={{ maxWidth: '40%' }}
+                                            value={gitBranch}
+                                            onChange={(e) =>
+                                                setGitBranch(e.currentTarget.value)
+                                            }
+                                        />
+                                        <b
+                                            style={{
+                                                marginLeft: '20px',
+                                                display: 'inline',
+                                            }}
+                                        >
+                                            Git Branch
+                                            <HelpButton
+                                                id="branch"
+                                                text={`Specify a branch or tag name of the Git repository to checkout on import to this branch or tag. 
+                                            If no branch is specified, "main" is used by default. `}
+                                            />
+                                        </b>
+                                    </CRow>
+                                    <IconButton
+                                        style={{
+                                            marginLeft: '5px',
+                                            marginTop: '10px',
+                                            marginBottom: '20px',
+                                        }}
+                                        color="primary"
+                                        isOutline={false}
+                                        disabled={gitUrl === undefined}
+                                        onClick={() => onImportGit()}
+                                        icon={faUpload}
+                                        text="Import / Update"
+                                    />
+                                </CCol>
+                            </CRow>
+                        </CollapseCard>
+                    </CCol>
+                </CRow>
             </BaseModal>
             <IconButton
                 icon={faPlus}

@@ -209,8 +209,8 @@ class PipelinePlay(Resource):
             dbm.close_session()
             return "success"
 
-@namespace.route('/project/import')
-class TemplateImport(Resource):
+@namespace.route('/project/import_zip')
+class TemplateImportZip(Resource):
     @jwt_required
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -246,6 +246,51 @@ class TemplateImport(Resource):
                 importer.start_import()
                 fm.fs.rm(upload_path, recursive=True)
                 fm.fs.rm(e_path, recursive=True)
+                dbm.close_session()
+                return "success", 200
+            except:
+                dbm.close_session()
+                return "error", 200
+
+@namespace.route('/project/import_git')
+class TemplateImportGit(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+        else:
+            try:
+                fm = AppFileMan(LOST_CONFIG)
+                data = json.loads(request.data)
+                git_url = data['gitUrl']
+                git_branch = data['gitBranch']
+                # upload_path = fm.get_upload_path(identity, uploaded_file.filename)
+                # USER_NAMESPACE = False
+                # if USER_NAMESPACE:
+                #     head, tail = os.path.split(upload_path)
+                #     upload_path = os.path.join(head, f'{identity}_{tail}')
+                # uploaded_file.save(upload_path)
+
+                # pp_path = fm.get_pipe_project_path()
+                # dst_dir = os.path.basename(upload_path)
+                # dst_dir = os.path.splitext(dst_dir)[0]
+                # e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
+                # extract_path = os.path.join(e_path, dst_dir)
+                # dst_path = os.path.join(pp_path, dst_dir)
+                # extracted_path = template_import.unpack_pipe_project(upload_path, extract_path)
+                # shutil.copytree(extracted_path, dst_path)
+                # dbm = access.DBMan(LOST_CONFIG)
+                # if not USER_NAMESPACE:
+                #     importer = template_import.PipeImporter(dst_path, dbm)
+                # else:
+                #     importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
+                # importer.start_import()
+                # fm.fs.rm(upload_path, recursive=True)
+                # fm.fs.rm(e_path, recursive=True)
                 dbm.close_session()
                 return "success", 200
             except:

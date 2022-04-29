@@ -13,6 +13,9 @@ class CollapseCustom extends Component {
         super(props)
         this.toggle = this.toggle.bind(this)
         this.state = { collapse: false }
+        if (props.initOpen) {
+            this.state = { collapse: true }
+        }
     }
     toggle() {
         this.setState({ collapse: !this.state.collapse })
@@ -26,7 +29,7 @@ class CollapseCustom extends Component {
                     className="text-left m-1 p-2"
                     color={this.props.btnColor ? this.props.btnColor : 'secondary'}
                     onClick={this.toggle}
-                    style={{ marginTop: 20, marginRight: 10, marginBottom: '1rem' }}
+                    style={{ marginTop: 30, marginRight: 10, marginBottom: '1rem' }}
                 >
                     <h5 className="m-0 p-0">
                         {' '}
@@ -54,7 +57,15 @@ class CollapseCustom extends Component {
                         </div>
                     </h5>
                 </Button>
-                <Collapse style={{ margin: '5px' }} isOpen={this.state.collapse}>
+                <Collapse
+                    style={{
+                        marginTop: '15px',
+                        marginBottom: '5px',
+                        marginLeft: '5px',
+                        marginRight: '5px',
+                    }}
+                    isOpen={this.state.collapse}
+                >
                     {this.props.children}
                 </Collapse>
             </>
