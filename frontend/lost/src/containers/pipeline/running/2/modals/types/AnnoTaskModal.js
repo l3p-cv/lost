@@ -105,9 +105,11 @@ const AnnoTaskModal = (props) => {
                     onClick={(e) => handleInstantAnnoDownload(props.id, 'parquet')}
                     text="Parquet - Download"
                 /> */}
+                <hr></hr>
                 <IconButton
                     icon={faEye}
-                    color="warning"
+                    color="primary"
+                    // isOutline={false}
                     style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
                     onClick={(e) =>
                         handleSiaRewiewClick(props, () => {
