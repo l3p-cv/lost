@@ -355,10 +355,20 @@ class ProjectList(Resource):
         def filter_by_pipe_project(re):
             pipeProjects = list()
             unique = list()
+            pipeProjectCounter = dict()
             for x in re['templates']:
+                if x['pipeProject'] in pipeProjectCounter:
+                    pipeProjectCounter[x['pipeProject']] += x['pipelineCount']
+                else:
+                    pipeProjectCounter[x['pipeProject']] = x['pipelineCount']
                 if x['pipeProject'] not in pipeProjects:
                     unique.append(x)
                     pipeProjects.append(x['pipeProject'])
+            
+            for projectName in pipeProjects:
+                for un in unique:
+                    if un['pipeProject'] == projectName:
+                        un['pipelineCount'] = pipeProjectCounter[projectName]
             return {"templates": unique}
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -370,24 +380,19 @@ class ProjectList(Resource):
                 return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx)
-                re = filter_by_pipe_project(re)
-                dbm.close_session()
-                return re
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
                 return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
             else:
                 re = template_service.get_templates(dbm)
-                re = filter_by_pipe_project(re)
-                dbm.close_session()
-                return re
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
                 return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
-                re = filter_by_pipe_project(re)
-                dbm.close_session()
-                return re
+    
+        re = filter_by_pipe_project(re)
+        dbm.close_session()
+        return re

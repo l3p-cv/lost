@@ -16,7 +16,7 @@ import * as Notification from '../../components/Notification'
 import HelpButton from '../../components/HelpButton'
 import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
 
-const AddPipelineProject = ({ visLevel }) => {
+const AddPipelineProject = ({ visLevel, projectNames = [] }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
@@ -81,20 +81,62 @@ const AddPipelineProject = ({ visLevel }) => {
         }
     }, [pipelineImportGitStatus])
     const onImportZipFile = () => {
-        if (acceptedFiles[0]) {
-            submitNewPipelineProject({
-                zip_file: acceptedFiles[0],
-                vis_level: visLevel,
-            })
+        if (uploadZipfile) {
+            if (projectNames.includes(uploadZipfile.name.split('.')[0])) {
+                Notification.showDecision({
+                    title: 'The uploaded pipe project already exists, do you want to update it ?',
+                    option1: {
+                        text: 'Yes',
+                        callback: () => {
+                            submitNewPipelineProject({
+                                zip_file: uploadZipfile,
+                                vis_level: visLevel,
+                            })
+                        },
+                    },
+                    option2: {
+                        text: 'No',
+                        callback: () => {},
+                    },
+                })
+            } else {
+                submitNewPipelineProject({
+                    zip_file: uploadZipfile,
+                    vis_level: visLevel,
+                })
+            }
         }
     }
     const onImportGit = () => {
+        //'https://github.com/l3p-cv/lost-pipeline-zoo.git'
         if (gitUrl) {
             const data = {
                 gitUrl,
                 gitBranch,
             }
-            importPipelineGit(data)
+            const splittedUrl = gitUrl.split('/')
+            if (
+                projectNames.includes(splittedUrl[splittedUrl.length - 1]) ||
+                projectNames.includes(
+                    splittedUrl[splittedUrl.length - 1].split('.git')[0],
+                )
+            ) {
+                Notification.showDecision({
+                    title: 'The uploaded pipe project already exists, do you want to update it ?',
+                    option1: {
+                        text: 'Yes',
+                        callback: () => {
+                            importPipelineGit(data)
+                        },
+                    },
+                    option2: {
+                        text: 'No',
+                        callback: () => {},
+                    },
+                })
+            } else {
+                importPipelineGit(data)
+            }
         }
     }
     const renderModalFooter = () => {
@@ -104,17 +146,6 @@ const AddPipelineProject = ({ visLevel }) => {
                 isOutline={false}
                 color="secondary"
                 text="Close"
-                // icon={
-                //     submitNewPipelineProjectData.isSuccess === false ? faTimes : faCheck
-                // }
-                // color={
-                //     submitNewPipelineProjectData.isSuccess === false
-                //         ? 'danger'
-                //         : 'success'
-                // }
-                // text={
-                //     submitNewPipelineProjectData.isSuccess === false ? 'Cancel' : 'Close'
-                // }
                 onClick={() => setIsModalOpen(false)}
             />
         )

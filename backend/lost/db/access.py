@@ -1205,3 +1205,10 @@ class DBMan(object):
         if anno_task_id:
             return self.session.query(model.AnnoTaskExport)\
             .filter(model.AnnoTaskExport.anno_task_id==anno_task_id).order_by(model.AnnoTaskExport.idx.desc()).all()
+
+
+    def count_pipelines_by_template_id(self, pipe_template_id):
+        ''' Count all pipelines belonging to a template_id
+        '''
+        return self.session.query(sqlalchemy.func.count(model.Pipe.idx))\
+        .filter(model.Pipe.pipe_template_id == pipe_template_id)

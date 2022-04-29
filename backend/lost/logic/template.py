@@ -36,11 +36,14 @@ def get_templates(db_man, group_id=None, add_global=False, debug_mode=False):
         if not debug_mode:
             if temp.is_debug_mode:
                 continue
+        for r in db_man.count_pipelines_by_template_id(temp.idx)[0]:
+            pipelineCount = r
         pipe_template_json['isDebug'] = temp.is_debug_mode
         pipe_template_json['id'] = temp.idx
         pipe_template_json['date'] = temp.timestamp
         pipe_template_json['group_id'] = temp.group_id
         pipe_template_json['pipeProject'] = temp.pipe_project
+        pipe_template_json['pipelineCount'] = pipelineCount
         content = json.loads(temp.json_template)
         # --------------- name  ------------------------------
         try:

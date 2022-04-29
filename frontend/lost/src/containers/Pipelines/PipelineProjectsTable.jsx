@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faEarListen, faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useInterval } from 'react-use'
 import IconButton from '../../components/IconButton'
 import Datatable from '../../components/Datatable'
 import { API_URL } from '../../lost_settings'
 import { saveAs } from 'file-saver'
-import { CBadge } from '@coreui/react'
+import { CRow, CBadge } from '@coreui/react'
 import * as Notification from '../../components/Notification'
 
 import * as pipelineProjectsApi from '../../actions/pipeline/pipeline_projects_api'
+import AddPipelineProject from './AddPipelineProject'
 
 const PTTable = ({ visLevel }) => {
     const [tableData, setTableData] = useState([])
@@ -17,6 +18,8 @@ const PTTable = ({ visLevel }) => {
 
     const { mutate: deletePipelineProject, status: deletePipelineProjectStatus } =
         pipelineProjectsApi.useDeletePipelineProject()
+
+    const [projectNames, setProjectNames] = useState([])
 
     function handlePipelineProjectExport(pipeProject) {
         fetch(`${API_URL}/pipeline/project/export/${pipeProject}`, {
@@ -37,6 +40,10 @@ const PTTable = ({ visLevel }) => {
         if (pipelineProjects) {
             if (pipelineProjects.templates) {
                 setTableData(pipelineProjects.templates)
+                const pNames = pipelineProjects.templates.map((el) => {
+                    return el.pipeProject
+                })
+                setProjectNames(pNames)
             }
         }
     }, [pipelineProjects])
@@ -54,13 +61,28 @@ const PTTable = ({ visLevel }) => {
 
     return (
         <>
+            <CRow style={{ marginBottom: 10, marginLeft: 3 }}>
+                <AddPipelineProject visLevel={visLevel} projectNames={projectNames} />
+            </CRow>
             {tableData.length > 0 ? (
                 <Datatable
                     data={tableData}
                     columns={[
                         {
-                            Header: 'Project',
+                            Header: 'Project / Imported on',
                             accessor: 'pipeProject',
+                            Cell: (row) => {
+                                return (
+                                    <>
+                                        <b>{row.original.pipeProject}</b>
+                                        <div className="small text-muted">
+                                            {new Date(row.original.date).toLocaleString(
+                                                'us',
+                                            )}
+                                        </div>
+                                    </>
+                                )
+                            },
                         },
                         {
                             Header: 'Global',
@@ -73,17 +95,15 @@ const PTTable = ({ visLevel }) => {
                             },
                         },
                         {
-                            Header: 'Date',
+                            Header: 'Pipelines started',
                             Cell: (row) => {
-                                return new Date(row.value).toLocaleString('de')
+                                return (
+                                    <CBadge shape="pill" color="primary">
+                                        {row.value}
+                                    </CBadge>
+                                )
                             },
-                            accessor: 'date',
-                            sortMethod: (date1, date2) => {
-                                if (new Date(date1) > new Date(date2)) {
-                                    return -1
-                                }
-                                return 1
-                            },
+                            accessor: 'pipelineCount',
                         },
                         {
                             Header: 'Delete',
@@ -94,6 +114,7 @@ const PTTable = ({ visLevel }) => {
                                         icon={faTrash}
                                         text="Delete"
                                         color="danger"
+                                        disabled={d.pipelineCount > 0}
                                         onClick={() =>
                                             handlePipelineProjectDelete(d.pipeProject)
                                         }
