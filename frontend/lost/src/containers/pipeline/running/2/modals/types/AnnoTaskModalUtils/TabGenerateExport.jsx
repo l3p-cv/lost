@@ -49,6 +49,7 @@ const TabGenerateExport = (props) => {
         console.log('Generate Export')
         const data = { annotaskId: props.annotask.id, exportConfig: newExport }
         generateExport(data)
+        props.setActive(0)
     }
     const validateSplit = (splitType, value) => {
         console.log(splitType, value)

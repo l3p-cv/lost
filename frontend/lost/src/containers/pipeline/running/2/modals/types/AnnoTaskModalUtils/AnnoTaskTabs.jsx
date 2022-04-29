@@ -91,7 +91,10 @@ const AnnoTaskTabs = (props) => {
                         />
                     </CTabPane>
                     <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
-                        <TabGenerateExport annotask={props.annotask} />
+                        <TabGenerateExport
+                            annotask={props.annotask}
+                            setActive={setActive}
+                        />
                     </CTabPane>
                 </>
             )
@@ -99,7 +102,7 @@ const AnnoTaskTabs = (props) => {
         return (
             <>
                 <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabGenerateExport annotask={props.annotask} />
+                    <TabGenerateExport annotask={props.annotask} setActive={setActive} />
                 </CTabPane>
                 <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabAvailableExports
