@@ -197,16 +197,17 @@ class GenerateExport(Resource):
                     split_train = export_config['randomSplits']['train']
                     split_test = export_config['randomSplits']['test']
                     split_val = export_config['randomSplits']['val']
-                #TODO Export here
                 for r in dbm.count_all_image_annos(anno_task_id=anno_task.idx)[0]:
                     img_count = r
                 for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
                     annotated_img_count = img_count - r
-                dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, name=export_name, 
-                                                progress=10, 
-                                                anno_task_progress=anno_task.progress,
-                                                img_count=annotated_img_count)
-                dbm.save_obj(dExport)
+                if annotated_img_count < LOST_CONFIG.img_export_limit:
+                    #TODO Export here
+                    dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, name=export_name, 
+                                                    progress=10, 
+                                                    anno_task_progress=anno_task.progress,
+                                                    img_count=annotated_img_count)
+                    dbm.save_obj(dExport)
 
                 dbm.close_session()
                 return "Success", 200
