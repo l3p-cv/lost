@@ -166,6 +166,14 @@ def remove_empty_annos():
     dbm.close_session()
     return c_2dannos
 
+def get_file_ext_from_export_type(export_type):
+    if export_type == 'LOST_Dataset':
+        return '.parquet'
+    elif export_type == 'CSV':
+        return '.csv'
+    else:
+        raise NotImplementedError(f'Unsupported export type: {export_type}')
+    
 def write_df (base_path, df, export_type, zip_file=None, fs_stream=None):
     def write_stream(zip_dir, bytestream):
         if zip_file is not None:
@@ -226,37 +234,37 @@ def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, inclu
         ate.progress=pg
         dbm.save_obj(ate)
 
-    # if not include_imgs:
-    #     df = ds.df
-    #     df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
-    #     ds = lds.LOSTDataset(df, filesystem=dst_fs)
-    #     with dst_fs.open(root_path, 'wb') as f:
-    #         write_df(root_path, ds.df, export_type, fs_stream=dst_fs)
-    #     return 
-        
-
-    root_path = f'{root_path}.zip'
-        
-    with dst_fs.open(root_path, 'wb') as f:
-        with ZipFile(f, 'w') as zip_file:
-            df = lds.pack_ds(ds.df, root_path, filesystem=src_fs, 
-                             zip_file=zip_file, progress_callback=progress_callback)
-            df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
-            out_base = os.path.basename(root_path)
-            out_base = os.path.splitext(out_base)[0]
-            if splits is not None:
-                ds = lds.LOSTDataset(df)
-                df_splits = ds.split_by_img_path(test_size=float(splits['test']),
-                                     val_size=float(splits['val']))
-                df_names = ['train', 'test', 'val']
-                for s in df_splits:
-                    df_name = df_names.pop()
-                    df_path = os.path.join(out_base, df_name)
-                    write_df(df_path, s, export_type, zip_file)
-            else:
-                df_path = os.path.join(out_base, 'ds')
-                write_df(df_path, df, export_type, zip_file)
-            # Write parquet file
+    if not include_imgs and splits is None:
+        df = ds.df
+        # df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
+        root_path = f'{root_path}{get_file_ext_from_export_type(export_type)}'
+        with dst_fs.open(root_path, 'wb') as f:
+            write_df(root_path, df, export_type, fs_stream=f)
+    else:
+        root_path = f'{root_path}.zip'
+        with dst_fs.open(root_path, 'wb') as f:
+            with ZipFile(f, 'w') as zip_file:
+                if include_imgs:
+                    df = lds.pack_ds(ds.df, root_path, filesystem=src_fs, 
+                                    zip_file=zip_file, progress_callback=progress_callback)
+                    df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
+                else:
+                    df = ds.df
+                out_base = os.path.basename(root_path)
+                out_base = os.path.splitext(out_base)[0]
+                if splits is not None:
+                    ds = lds.LOSTDataset(df)
+                    df_splits = ds.split_by_img_path(test_size=float(splits['test']),
+                                        val_size=float(splits['val']))
+                    df_names = ['train', 'test', 'val']
+                    for s in df_splits:
+                        df_name = df_names.pop()
+                        df_path = os.path.join(out_base, df_name)
+                        write_df(df_path, s, export_type, zip_file)
+                else:
+                    df_path = os.path.join(out_base, 'ds')
+                    write_df(df_path, df, export_type, zip_file)
+                # Write parquet file
     my_info = dst_fs.info(root_path)
 
     ate.file_size = str(my_info['size'])
