@@ -247,12 +247,18 @@ class DataExports(Resource):
                     export_json['id'] = export.idx
                     export_json['name'] = export.name
                     export_json['timestamp'] = export.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-                    export_json['fileSize'] = int(export.file_size)
+                    file_size = 0
+                    file_type = None
+                    if export.file_size:
+                        file_size = int(export.file_size)
+                    if export.file_path:
+                        file_type = export.file_path.split('.')[-1] 
+                    export_json['fileSize'] = file_size
                     export_json['progress'] = export.progress
                     export_json['annotaskProgress'] = export.anno_task_progress
                     export_json['imgCount'] = export.img_count
                     export_json['filePath'] = export.file_path
-                    export_json['fileType'] = export.file_path.split('.')[-1] 
+                    export_json['fileType'] = file_type
                     ret_json.append(export_json)
             dbm.close_session()
             return ret_json, 200
