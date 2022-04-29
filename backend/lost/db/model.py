@@ -1436,21 +1436,42 @@ class DataExport(Base):
     fs = relationship('FileSystem', uselist=False)
     result_id = Column(Integer, ForeignKey('result.idx'))
     iteration = Column(Integer)
-    timestamp = Column(DateTime())
-    name = Column(String(4096))
-    anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
-    progress = Column(Integer)
 
-    def __init__(self, file_path=None, result_id=None, iteration=0, fs_id=None, timestamp=None, name=None,
-                 anno_task_id=None, progress=None):
+    def __init__(self, file_path=None, result_id=None, iteration=0, fs_id=None):
         self.fs_id = fs_id
         self.file_path = file_path
         self.result_id = result_id
         self.iteration = iteration
+
+class AnnoTaskExport(Base):
+    '''An AnnoTaskExport represents an arbitrary file that is the export of an AnnotationTask.
+
+    Attributes:
+        idx (str): ID in database.
+        file_path (str): Path to the result file.
+    '''
+    __tablename__ = "anno_task_export"
+    idx = Column(Integer, primary_key=True)
+    file_path = Column(String(4096))
+    fs_id = Column(Integer, ForeignKey('filesystem.idx'))
+    fs = relationship('FileSystem', uselist=False)
+    timestamp = Column(DateTime())
+    name = Column(String(4096))
+    anno_task_id = Column(Integer, ForeignKey('anno_task.idx'))
+    progress = Column(Integer)
+    anno_task_progress = Column(Integer)
+    img_count = Column(Integer)
+
+    def __init__(self, file_path=None, fs_id=None, timestamp=None, name=None,
+                 anno_task_id=None, progress=None, anno_task_progress=None, img_count=None):
+        self.fs_id = fs_id
+        self.file_path = file_path
         self.timestamp = timestamp
         self.name = name
         self.anno_task_id = anno_task_id
+        self.anno_task_progress = anno_task_progress
         self.progress = progress
+        self.img_count = img_count
 
 
 class Loop(Base):

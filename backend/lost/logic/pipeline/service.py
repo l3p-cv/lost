@@ -362,11 +362,15 @@ def serialize_elements(db_man, pipe_serialize, pipe_id):
         elif pe.dtype == dtype.PipeElement.ANNO_TASK:
             anno_task = db_man.get_anno_task(pipe_element_id=pe.idx)
             # TODO: if all_users - will throw an error at this time
+            for r in db_man.count_all_image_annos(anno_task_id=anno_task.idx)[0]:
+                img_count = r
+            for r in db_man.count_image_remaining_annos(anno_task_id=anno_task.idx):
+                annotated_img_count = img_count - r
             anno_task_user_name = "All Users"
             if anno_task.group_id:
                 anno_task_user_name = anno_task.group.name
             leaves = db_man.get_all_required_label_leaves(anno_task.idx)
-            pipe_serialize.add_anno_task(pe, anno_task, anno_task_user_name, leaves)
+            pipe_serialize.add_anno_task(pe, anno_task, anno_task_user_name, leaves, img_count, annotated_img_count)
         
         ########## DATA EXPORT #############
         elif pe.dtype == dtype.PipeElement.DATA_EXPORT:
@@ -511,7 +515,7 @@ class PipeSerialize(object):
         pe_json['script'] = script_json
         self.append_pe_json(pe_json)
 
-    def add_anno_task(self, pe, anno_task, anno_task_user_name, req_leaves):
+    def add_anno_task(self, pe, anno_task, anno_task_user_name, req_leaves, img_count, annotated_img_count):
 
         # create pipe element json
         pe_json = dict()
@@ -527,6 +531,8 @@ class PipeSerialize(object):
             anno_task_json['type'] = "sia"
         anno_task_json['userName'] = anno_task_user_name
         anno_task_json['progress'] = anno_task.progress
+        anno_task_json['imgCount'] = img_count
+        anno_task_json['annotatedImgCount'] = annotated_img_count
         anno_task_json['instructions'] = anno_task.instructions
         if anno_task.configuration:
             anno_task_json['configuration'] = json.loads(anno_task.configuration)

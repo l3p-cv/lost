@@ -27,10 +27,18 @@ export const useGetDataexports = (annoTaskId) => {
         ['annoDataExports'],
         () =>
             axios
-                .get(`${API_URL}/annotask/data_exports/${annoTaskId}`)
+                .get(`${API_URL}/annotask/anno_task_exports/${annoTaskId}`)
                 .then((res) => res.data),
         {
             initialData: null,
         },
+    )
+}
+
+export const useDeleteExport = () => {
+    return useMutation((annoTaskExportId) =>
+        axios
+            .post(`${API_URL}/annotask/delete_export/${annoTaskExportId}`, {})
+            .then((res) => res.data),
     )
 }

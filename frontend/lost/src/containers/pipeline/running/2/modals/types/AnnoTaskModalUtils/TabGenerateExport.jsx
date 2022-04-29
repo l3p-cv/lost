@@ -9,6 +9,7 @@ import {
     CCol,
     CSwitch,
     CInput,
+    CBadge,
 } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import HelpButton from '../../../../../../../components/HelpButton'
@@ -24,7 +25,7 @@ const TabGenerateExport = (props) => {
     } = annoTaskApi.useGenerateExport()
 
     const [newExport, setNewExport] = useState({
-        exportName: 'Annotation',
+        exportName: 'AnnotationExport',
         exportType: 'LOST_Dataset',
         includeImages: false,
         randomSplits: {
@@ -46,7 +47,7 @@ const TabGenerateExport = (props) => {
 
     const onGenerateExport = () => {
         console.log('Generate Export')
-        const data = { annotaskId: props.annotaskId, exportConfig: newExport }
+        const data = { annotaskId: props.annotask.id, exportConfig: newExport }
         generateExport(data)
     }
     const validateSplit = (splitType, value) => {
@@ -103,7 +104,7 @@ const TabGenerateExport = (props) => {
                     <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>
                         <CCol sm="12">
                             <h4>
-                                Include Images
+                                {`Include Images`}
                                 <HelpButton
                                     id="include-images"
                                     text={
@@ -125,6 +126,17 @@ const TabGenerateExport = (props) => {
                                             })
                                         }
                                     />
+                                    {newExport.includeImages ? (
+                                        <CBadge
+                                            color="primary"
+                                            shape="pill"
+                                            style={{ marginLeft: '20px' }}
+                                        >
+                                            {`${props.annotask.annotatedImgCount}`}
+                                        </CBadge>
+                                    ) : (
+                                        ''
+                                    )}
                                 </CCol>
                             </CRow>
                         </CCol>

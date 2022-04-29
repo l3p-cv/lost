@@ -433,7 +433,7 @@ class DBMan(object):
          %(anno_task_id, state.Anno.LABELED, state.Anno.LABELED_LOCKED)
         return self.session.execute(sql).first()
 
-    def count_all_image_annos(self, anno_task_id, iteration):
+    def count_all_image_annos(self, anno_task_id, iteration=0):
         ''' Count the all image annotation of an annotation task
         '''
         return self.session.query(sqlalchemy.func.count(model.ImageAnno.idx))\
@@ -1196,8 +1196,12 @@ class DBMan(object):
                 WHERE pipe.manager_id={} AND two_d_anno.anno_time IS NOT NULL {}".format(user_id, between_str)
         return self.session.execute(sql)
     
-    def get_data_exports_by_anno_task_id(self, anno_task_id):
-        ''' Get data_export by anno_task_id
+    def get_anno_task_export(self, anno_task_export_id=None, anno_task_id=None):
+        ''' Get anno_task_export by anno_task_export_id or anno_task_id
         '''
-        return self.session.query(model.DataExport)\
-        .filter(model.DataExport.anno_task_id==anno_task_id).all()
+        if anno_task_export_id:
+            return self.session.query(model.AnnoTaskExport)\
+            .filter(model.AnnoTaskExport.idx==anno_task_export_id).first()
+        if anno_task_id:
+            return self.session.query(model.AnnoTaskExport)\
+            .filter(model.AnnoTaskExport.anno_task_id==anno_task_id).order_by(model.AnnoTaskExport.idx.desc()).all()

@@ -198,7 +198,14 @@ class GenerateExport(Resource):
                     split_test = export_config['randomSplits']['test']
                     split_val = export_config['randomSplits']['val']
                 #TODO Export here
-                dExport = model.DataExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, name=export_name, progress=0)
+                for r in dbm.count_all_image_annos(anno_task_id=anno_task.idx)[0]:
+                    img_count = r
+                for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
+                    annotated_img_count = img_count - r
+                dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, name=export_name, 
+                                                progress=10, 
+                                                anno_task_progress=anno_task.progress,
+                                                img_count=annotated_img_count)
                 dbm.save_obj(dExport)
 
                 dbm.close_session()
@@ -207,7 +214,7 @@ class GenerateExport(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
 
-@namespace.route('/data_exports/<int:annotask_id>')
+@namespace.route('/anno_task_exports/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
 class DataExports(Resource):
     @jwt_required 
@@ -222,7 +229,7 @@ class DataExports(Resource):
             anno_task = dbm.get_anno_task(annotask_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
             if pipe_manager_id == user.idx:
-                d_exports = dbm.get_data_exports_by_anno_task_id(anno_task.idx)
+                d_exports = dbm.get_anno_task_export(anno_task_id=anno_task.idx)
                 ret_json = []
                 for export in d_exports:
                     export_json = dict()
@@ -231,16 +238,18 @@ class DataExports(Resource):
                     export_json['timestamp'] = export.timestamp.strftime("%Y-%m-%d %H:%M:%S")
                     export_json['fileSize'] = 164000 # TODO get filesize
                     export_json['progress'] = export.progress
+                    export_json['annotaskProgress'] = export.anno_task_progress
+                    export_json['imgCount'] = export.img_count
                     export_json['filePath'] = export.file_path
                     export_json['fileType'] = 'zip' #TODO get filetype
                     ret_json.append(export_json)
             dbm.close_session()
             return ret_json, 200
-@namespace.route('/data_export/download/<int:data_export_id>')
-@namespace.param('data_export_id', 'The id of the data_export to download.')
+@namespace.route('/download_export/<int:anno_task_export_id>')
+@namespace.param('anno_task_export_id', 'The id of the anno_task_export to download.')
 class DataExportDownload(Resource):
     @jwt_required 
-    def get(self, data_export_id):
+    def get(self, anno_task_export_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -250,8 +259,8 @@ class DataExportDownload(Resource):
         else:
             # TODO Export here !
             fm = AppFileMan(LOST_CONFIG)
-            data_export = dbm.get_data_export(data_export_id)
-            anno_task = dbm.get_anno_task(data_export.anno_task_id)
+            anno_task_export = dbm.get_anno_task_export(anno_task_export_id=anno_task_export_id)
+            anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
             if pipe_manager_id == user.idx:
             # src = fm.get_pipe_project_path(content['namespace'])
@@ -265,3 +274,28 @@ class DataExportDownload(Resource):
                 dbm.close_session()
                 return resp
             return 500
+
+@namespace.route('/delete_export/<int:anno_task_export_id>')
+@namespace.param('anno_task_export_id', 'The id of the annotation task.')
+class DeleteExport(Resource):
+    @jwt_required 
+    def post(self, anno_task_export_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity() 
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            anno_task_data_export = dbm.get_anno_task_export(anno_task_export_id)
+            anno_task = dbm.get_anno_task(anno_task_data_export.anno_task_id)
+            pipe_manager_id = anno_task.pipe_element.pipe.manager_id
+            if pipe_manager_id == user.idx:
+                #TODO Delete FIles here !
+                dbm.delete(anno_task_data_export)
+                dbm.commit()
+                dbm.close_session()
+                return "Success", 200
+    
+            dbm.close_session()
+            return "You are not authorized.", 401
