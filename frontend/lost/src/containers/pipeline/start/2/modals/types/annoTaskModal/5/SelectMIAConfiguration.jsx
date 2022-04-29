@@ -79,10 +79,10 @@ export const SelectMIAConfiguration = ({ ...props }) => {
         }
     }
     return (
-        <CCard className="annotask-modal-card">
+        <>
             {configuration ? (
-                <CCardBody>
-                    <CRow>
+                <>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="12">
                             <h4>MIA Configuration</h4>
                             <CRow>
@@ -237,11 +237,11 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                             </CRow>
                         </CCol>
                     </CRow>
-                </CCardBody>
+                </>
             ) : (
                 ''
             )}
-        </CCard>
+        </>
     )
 }
 

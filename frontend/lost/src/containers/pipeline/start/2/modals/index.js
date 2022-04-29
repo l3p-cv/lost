@@ -5,7 +5,7 @@ import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
 import LoopModal from './types/LoopModal'
 import actions from '../../../../../actions/pipeline/pipelineStart'
 import IconButton from '../../../../../components/IconButton'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import { connect } from 'react-redux'
@@ -121,8 +121,8 @@ class BaseModal extends Component {
                     <IconButton
                         color="secondary"
                         isOutline={false}
-                        icon={faTimes}
-                        text="Close"
+                        icon={faCheck}
+                        text="Okay"
                         onClick={this.toggleModal}
                     />
                 </ModalFooter>
