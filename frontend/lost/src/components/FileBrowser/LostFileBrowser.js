@@ -12,7 +12,7 @@ import * as Notification from '../../components/Notification'
 import * as fbaccess from '../../access/fb'
 import * as fb_api from '../../actions/fb/fb_api'
 
-const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
+const LostFileBrowser = ({ fs, onPathSelected, mode, initPath = undefined }) => {
     const [files, setFiles] = useState([])
     const [folderChain, setFolderChain] = useState([])
     const [size, setSize] = useState(0)
@@ -40,6 +40,12 @@ const LostFileBrowser = ({ fs, onPathSelected, mode }) => {
     }, [])
     useEffect(() => {
         if (fs) {
+            if (initPath !== undefined) {
+                ls(fs, initPath)
+                setSelectedDir(initPath)
+                setSelectedPath(initPath)
+                return
+            }
             ls(fs, fs.rootPath)
             setSelectedDir(fs.rootPath)
             setSelectedPath(fs.rootPath)

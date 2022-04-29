@@ -16,13 +16,32 @@ class DatasourceModal extends Component {
 
         this.toggle = this.toggle.bind(this)
         this.selectItem = this.selectItem.bind(this)
+        let selectedFs = undefined
+        let selectedPath = DEFAULT_TEXT_PATH
+        let selectedPathColor = 'red'
+        let initPath = undefined
+        if (props.exportData.datasource.fs_id) {
+            selectedFs = props.datasource.filesystems.find((el) => {
+                if (el.id === props.exportData.datasource.fs_id) {
+                    return el
+                }
+                return undefined
+            })
+            selectedPath = props.exportData.datasource.selectedPath
+            if (selectedPath !== DEFAULT_TEXT_PATH) {
+                initPath = selectedPath
+                selectedPathColor = 'green'
+            }
+        }
         this.state = {
             dropdownOpen: false,
             dsDropdownOpen: false,
-            selectedFs: undefined,
-            selectedPath: DEFAULT_TEXT_PATH,
-            selectedPathColor: 'red',
+            selectedFs: selectedFs,
+            selectedPath: selectedPath,
+            selectedPathColor: selectedPathColor,
+            initPath: initPath,
         }
+        console.log(props)
     }
 
     toggle() {
@@ -125,6 +144,7 @@ class DatasourceModal extends Component {
                     <LostFileBrowser
                         fs={this.state.selectedFs}
                         onPathSelected={(path) => this.selectItem(path)}
+                        initPath={this.state.initPath}
                     />
                 </div>
                 <Divider horizontal>Selected Datasource</Divider>
