@@ -29,7 +29,7 @@ const TabGenerateExport = (props) => {
         exportType: 'LOST_Dataset',
         includeImages: false,
         randomSplits: {
-            active: true,
+            active: false,
             train: 0.7,
             test: 0.2,
             val: 0.1,
@@ -170,7 +170,7 @@ const TabGenerateExport = (props) => {
                                                 >
                                                     LOST_Dataset
                                                 </CDropdownItem>
-                                                <CDropdownItem
+                                                {/* <CDropdownItem
                                                     href="#"
                                                     onClick={(e) =>
                                                         setNewExport({
@@ -202,22 +202,19 @@ const TabGenerateExport = (props) => {
                                                     }
                                                 >
                                                     YOLO
+                                                </CDropdownItem> */}
+
+                                                <CDropdownItem
+                                                    href="#"
+                                                    onClick={(e) =>
+                                                        setNewExport({
+                                                            ...newExport,
+                                                            exportType: 'CSV',
+                                                        })
+                                                    }
+                                                >
+                                                    CSV
                                                 </CDropdownItem>
-                                                {newExport.includeImages ? (
-                                                    ''
-                                                ) : (
-                                                    <CDropdownItem
-                                                        href="#"
-                                                        onClick={(e) =>
-                                                            setNewExport({
-                                                                ...newExport,
-                                                                exportType: 'CSV',
-                                                            })
-                                                        }
-                                                    >
-                                                        CSV
-                                                    </CDropdownItem>
-                                                )}
                                             </CDropdownMenu>
                                         </CDropdown>
                                     </CRow>
@@ -380,6 +377,7 @@ const TabGenerateExport = (props) => {
             <CRow className="justify-content-center" style={{ marginBottom: '20px' }}>
                 <IconButton
                     isOutline={false}
+                    disabled={newExport.exportName === ''}
                     color="primary"
                     onClick={() => onGenerateExport()}
                     icon={faPlay}
