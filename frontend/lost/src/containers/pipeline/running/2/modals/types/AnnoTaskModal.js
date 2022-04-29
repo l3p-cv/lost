@@ -49,6 +49,7 @@ const AnnoTaskModal = (props) => {
             <ModalHeader>Annotation Task</ModalHeader>
             <ModalBody>
                 <Table
+                    style={{ marginBottom: '20px' }}
                     data={[
                         {
                             key: 'Annotation Task Name',

@@ -60,7 +60,9 @@ export default (props) => {
                         },
                     ]}
                 />
-                <Progress value={progress}>{progress}%</Progress>
+                <Progress style={{ marginBottom: '20px' }} value={progress}>
+                    {progress}%
+                </Progress>
                 <CollapseCard>
                     <Table
                         data={[
