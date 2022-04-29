@@ -222,6 +222,7 @@ class SiaWrapper extends Component {
     }
 
     handleToolBarEvent(e, data) {
+        console.log('action, data', e, data)
         switch (e) {
             case tbe.DELETE_ALL_ANNOS:
                 // this.canvas.deleteAllAnnos()
@@ -364,9 +365,9 @@ class SiaWrapper extends Component {
             case annoActions.CANVAS_AUTO_SAVE:
                 this.handleAutoSave()
                 break
-            // case annoActions.CANVAS_SVG_UPDATE:
-            //     this.props.siaSetSVG(data)
-            //     break
+            case annoActions.CANVAS_SVG_UPDATE:
+                this.props.siaSetSVG(data)
+                break
             case annoActions.CANVAS_UI_CONFIG_UPDATE:
                 this.props.siaSetUIConfig(data)
                 break
@@ -542,7 +543,7 @@ class SiaWrapper extends Component {
                     isJunk={this.props.isJunk}
                     blocked={this.state.blockCanvas}
                     onToolBarEvent={(e, data) => this.handleToolBarEvent(e, data)}
-                    svg={this.props.svg}
+                    // svg={this.props.svg}
                     filter={this.props.filter}
                     toolbarEnabled={{
                         imgLabel: true,
