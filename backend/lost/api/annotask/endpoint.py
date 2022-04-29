@@ -1,15 +1,16 @@
 from datetime import datetime
-from random import triangular
+from random import random, triangular
 from flask_restx import Resource
 from flask import request, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.logic.file_man import AppFileMan
+from lost.logic.file_access import UserFileAccess
 from lost.db import access, roles, model
 from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
-from lost.logic.jobs.jobs import force_anno_release
+from lost.logic.jobs.jobs import force_anno_release, export_ds
 from lost.logic.report import Report
 import json
 import os
@@ -193,7 +194,9 @@ class GenerateExport(Resource):
                 export_type = export_config['exportType'] # LOST_Dataset, PascalVOC, YOLO, MS_Coco, CSV
                 include_images = export_config['includeImages']
                 random_splits_active = export_config['randomSplits']['active']
+                splits=None
                 if random_splits_active:
+                    splits = export_config['randomSplits']
                     split_train = export_config['randomSplits']['train']
                     split_test = export_config['randomSplits']['test']
                     split_val = export_config['randomSplits']['val']
@@ -203,10 +206,17 @@ class GenerateExport(Resource):
                     annotated_img_count = img_count - r
                 if annotated_img_count < LOST_CONFIG.img_export_limit:
                     #TODO Export here
-                    dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, name=export_name, 
+                    dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
+                                                    name=export_name, 
                                                     progress=10, 
                                                     anno_task_progress=anno_task.progress,
-                                                    img_count=annotated_img_count)
+                                                    img_count=annotated_img_count,
+                                                    )
+                    dbm.save_obj(dExport)
+                    e_path = export_ds(anno_task.pipe_element_id, identity, 
+                                       dExport.idx, dExport.name, splits, 
+                                       export_type, include_imgs=include_images)
+                    dExport.file_path = e_path
                     dbm.save_obj(dExport)
 
                 dbm.close_session()
@@ -259,18 +269,22 @@ class DataExportDownload(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
             # TODO Export here !
-            fm = AppFileMan(LOST_CONFIG)
+            fs_db = dbm.get_user_default_fs(user.idx)
+            ufa = UserFileAccess(dbm, user, fs_db)
             anno_task_export = dbm.get_anno_task_export(anno_task_export_id=anno_task_export_id)
             anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
             if pipe_manager_id == user.idx:
+                export_name = os.path.basename(anno_task_export.file_path)
             # src = fm.get_pipe_project_path(content['namespace'])
-                f = BytesIO()
-                # f = open('/home/lost/app/test.zip', 'wb')
+                my_file = ufa.load_file(anno_task_export.file_path)
+                # f = BytesIO()
+                # # f = open('/home/lost/app/test.zip', 'wb')
                 
-                f.seek(0)
-                resp = make_response(f.read())
-                resp.headers["Content-Disposition"] = f"attachment; filename={pipe_project}.zip"
+                # f.seek(0)
+                # resp = make_response(f.read())
+                resp = make_response(my_file)
+                resp.headers["Content-Disposition"] = f"attachment; filename={export_name}"
                 resp.headers["Content-Type"] = "blob"
                 dbm.close_session()
                 return resp
