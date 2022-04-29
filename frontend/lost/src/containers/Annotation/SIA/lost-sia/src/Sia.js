@@ -3,11 +3,13 @@ import React, { useRef, useEffect, useState } from 'react'
 import ToolBar from './ToolBar'
 import Canvas from './Canvas'
 import * as tbe from './types/toolbarEvents'
+import * as annoActions from './types/canvasActions'
 
 const Sia = (props) => {
 
     const [fullscreenCSS, setFullscreenCSS] = useState('')
     const [layoutUpdate, setLayoutUpdate] = useState(0)
+    const [svg, setSvg] = useState()
     const [uiConfig, setUiConfig] = useState(
         {
             "nodeRadius": 4,
@@ -72,6 +74,14 @@ const Sia = (props) => {
     }
 
     const handleCanvasEvent = (e, data) => {
+        switch(e){
+            case annoActions.CANVAS_SVG_UPDATE:
+                // this.props.siaSetSVG(data)
+                setSvg(data)
+                break
+            default:
+                break
+        }
         if (props.onCanvasEvent){
             props.onCanvasEvent(e, data)
         }
@@ -162,13 +172,13 @@ const Sia = (props) => {
                 }
                 imageMeta={props.imageMeta}
                 layoutUpdate={layoutUpdate}
-
-                svg={props.svg}
+                svg={svg}
                 active={{
                     isJunk: props.isJunk,
                     selectedTool: props.selectedTool,
                     fullscreen: props.fullscreenMode
                 }}
+                enabled={props.toolbarEnabled}
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
                 filter={props.filter}
