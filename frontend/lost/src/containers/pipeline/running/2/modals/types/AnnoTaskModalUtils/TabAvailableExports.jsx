@@ -53,6 +53,18 @@ const TabAvailableExports = (props) => {
         }
     }, [deleteExportStatus])
     //
+    const getFileSize = (fileSize) => {
+        if (fileSize < 1024) {
+            return <>{Number(fileSize.toFixed(2))} Bytes</>
+        }
+        if (fileSize < 1048576) {
+            return <>{Number((fileSize / 1024).toFixed(2))} kBytes</>
+        }
+        if (fileSize < 1073741824) {
+            return <>{Number((fileSize / 1024 / 1024).toFixed(2))} MBytes</>
+        }
+        return <>{Number((fileSize / 1024 / 1024 / 1024).toFixed(2))} GBytes</>
+    }
     return (
         <>
             <ReactTable
@@ -104,14 +116,7 @@ const TabAvailableExports = (props) => {
                                             value={progress}
                                         />
                                         <div className="small text-muted">
-                                            {Number(
-                                                (
-                                                    row.original.fileSize /
-                                                    1024 /
-                                                    1024
-                                                ).toFixed(2),
-                                            )}{' '}
-                                            MB
+                                            {getFileSize(row.original.fileSize)}
                                         </div>
                                     </div>
                                 </>

@@ -237,7 +237,7 @@ class DataExports(Resource):
                     export_json['id'] = export.idx
                     export_json['name'] = export.name
                     export_json['timestamp'] = export.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-                    export_json['fileSize'] = 164000 # TODO get filesize
+                    export_json['fileSize'] = 16400000 # TODO get filesize
                     export_json['progress'] = export.progress
                     export_json['annotaskProgress'] = export.anno_task_progress
                     export_json['imgCount'] = export.img_count
