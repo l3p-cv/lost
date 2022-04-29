@@ -128,7 +128,7 @@ class SelectPipeline extends Component {
                             Header: 'Started on',
                             accessor: 'date',
                             Cell: (row) => {
-                                return new Date(row.value).toLocaleString('de')
+                                return new Date(row.value).toLocaleString('us')
                             },
                             sortMethod: (date1, date2) => {
                                 if (new Date(date1) > new Date(date2)) {

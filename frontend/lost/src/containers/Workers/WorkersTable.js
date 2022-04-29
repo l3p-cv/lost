@@ -133,7 +133,9 @@ class WorkersTable extends Component {
                                 </div>
                                 <div className="small text-muted">
                                     Last life sign:{' '}
-                                    {new Date(`${worker.timestamp}Z`).toLocaleString()}
+                                    {new Date(`${worker.timestamp}Z`).toLocaleString(
+                                        'us',
+                                    )}
                                 </div>
                             </td>
                             <td className="text-center">

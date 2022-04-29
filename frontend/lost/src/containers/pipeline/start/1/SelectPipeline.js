@@ -55,19 +55,19 @@ class SelectPipeline extends Component {
                                 )
                             },
                         },
-                        {
-                            Header: 'Imported on',
-                            Cell: (row) => {
-                                return new Date(row.value).toLocaleString('de')
-                            },
-                            accessor: 'date',
-                            sortMethod: (date1, date2) => {
-                                if (new Date(date1) > new Date(date2)) {
-                                    return -1
-                                }
-                                return 1
-                            },
-                        },
+                        // {
+                        //     Header: 'Imported on',
+                        //     Cell: (row) => {
+                        //         return new Date(row.value).toLocaleString('us')
+                        //     },
+                        //     accessor: 'date',
+                        //     sortMethod: (date1, date2) => {
+                        //         if (new Date(date1) > new Date(date2)) {
+                        //             return -1
+                        //         }
+                        //         return 1
+                        //     },
+                        // },
                         {
                             Header: 'Start',
                             Cell: (row) => {

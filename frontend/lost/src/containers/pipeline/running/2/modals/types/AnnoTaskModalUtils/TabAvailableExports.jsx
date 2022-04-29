@@ -66,7 +66,7 @@ const TabAvailableExports = (props) => {
                                     <b>{row.original.name}</b>
                                     <div className="small text-muted">
                                         {new Date(row.original.timestamp).toLocaleString(
-                                            'de',
+                                            'us',
                                         )}
                                     </div>
                                 </>
