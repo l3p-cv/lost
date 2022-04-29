@@ -20,7 +20,7 @@
     },
     {
       "peN" : 2,
-      "peOut" : [3],
+      "peOut" : null,
       "annoTask" : {
         "name" : "MultiImageAnnoation",
         "type" : "mia",
@@ -30,19 +30,6 @@
           "showProposedLabel": true
         }
       }
-    },
-    {
-      "peN" : 3,
-      "peOut" : [4],
-      "script" : {
-        "path": "export.py",
-        "description" : "Export all annotations to csv and parquet file."
-      }
-    },
-    {
-      "peN" : 4,
-      "peOut" : null,
-      "dataExport" : {}
     }
   ]
 }
