@@ -55,10 +55,18 @@ class UserFileAccess(object):
             return self.fm.load_img(db_img.img_path)
         else:
             raise FsAccessNotPermitted()
+    
+    def load_file(self, path, option='rb'):
+        if 'r' in self.get_permission():
+            return self.fm.load_file(path, option)
+        else:
+            raise FsAccessNotPermitted()
 
     def get_media_path(self):
         return self.fm.get_media_path()
 
+    def get_export_ds_path(self, export_id):
+        return self.fm.get_export_ds_path(export_id)
 
     def _user_default_required(self):
         '''Check if an action will be performed on users default fs
@@ -129,6 +137,11 @@ class UserFileAccess(object):
             Fsspec Filesystem
         '''
         fs_db = self.get_fs_db(name, fs_id)
+        fm = FileMan(fs_db=fs_db)
+        return fm.fs
+
+    def get_user_default_fs(self):
+        fs_db = self.get_user_default_fs_db()
         fm = FileMan(fs_db=fs_db)
         return fm.fs
 

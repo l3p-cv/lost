@@ -1449,10 +1449,12 @@ class AnnoTaskExport(Base):
     Attributes:
         idx (str): ID in database.
         file_path (str): Path to the result file.
+        file_size (str): FileSize in byte
     '''
     __tablename__ = "anno_task_export"
     idx = Column(Integer, primary_key=True)
     file_path = Column(String(4096))
+    file_size = Column(String(4096))
     fs_id = Column(Integer, ForeignKey('filesystem.idx'))
     fs = relationship('FileSystem', uselist=False)
     timestamp = Column(DateTime())

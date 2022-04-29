@@ -14,6 +14,7 @@ import ast
 from lost.logic.crypt import decrypt_fs_connection
 
 MEDIA_ROOT_PATH = "media/"
+EXPORT_ROOT_PATH = "ds_export/"
 PIPE_ROOT_PATH = "pipes/"
 INSTANCE_ROOT_PATH = "instance/"
 DEBUG_ROOT_PATH = "debug/"
@@ -174,6 +175,12 @@ class FileMan(object):
         if not self.fs.exists(m_path):
             self.fs.mkdirs(m_path)
         return m_path
+    
+    def get_export_ds_path(self, export_id):
+        my_path = os.path.join(self.root_path, EXPORT_ROOT_PATH, str(export_id))
+        if not self.fs.exists(my_path):
+            self.fs.mkdirs(my_path)
+        return my_path
 
     def load_img(self, path, color_type='color'):
         '''Load image from filesystem
@@ -196,6 +203,18 @@ class FileMan(object):
             arr = np.asarray((bytearray(f.read())), dtype=np.uint8)
             img = cv2.imdecode(arr, color)
         return img
+
+    def load_file(self, path, option='rb'):
+        '''Load file from filesystem
+        
+        Args:
+            path (str): Absolute path to file that should be loaded
+        
+        Returns:
+            bytes
+        '''
+        with self.fs.open(path, option) as f:
+            return f.read()
 
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.root_path, PIPE_LOG_PATH)
