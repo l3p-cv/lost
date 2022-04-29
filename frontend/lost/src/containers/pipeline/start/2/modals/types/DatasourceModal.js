@@ -94,14 +94,20 @@ class DatasourceModal extends Component {
                         {this.props.datasource.filesystems.map((el) => {
                             return (
                                 // <DropdownItem onClick={e => {this.props.pipeStartUpdateDS(this.props.peN, e.target.innerText); console.log('fs_update',e.target)}} key={el.name}>{el.name}</DropdownItem>
-                                <DropdownItem
-                                    onClick={(e) => {
-                                        this.selectDS(el)
-                                    }}
-                                    key={el.name}
-                                >
-                                    {el.name}
-                                </DropdownItem>
+                                <>
+                                    {el.name !== 'default' ? (
+                                        <DropdownItem
+                                            onClick={(e) => {
+                                                this.selectDS(el)
+                                            }}
+                                            key={el.name}
+                                        >
+                                            {el.name}
+                                        </DropdownItem>
+                                    ) : (
+                                        ''
+                                    )}
+                                </>
                             )
                         })}
                     </DropdownMenu>
