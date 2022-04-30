@@ -209,7 +209,7 @@ class GenerateExport(Resource):
                 if annotated_img_count < LOST_CONFIG.img_export_limit:
                     dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
                                                     name=export_name, 
-                                                    progress=10, 
+                                                    progress=1, 
                                                     anno_task_progress=anno_task.progress,
                                                     img_count=annotated_img_count,
                                                     )

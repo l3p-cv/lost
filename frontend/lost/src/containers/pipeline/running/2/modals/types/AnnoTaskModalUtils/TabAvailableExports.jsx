@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-
+import { createWriteStream } from 'streamsaver'
 import { Progress } from 'reactstrap'
 import ReactTable from 'react-table'
 import { saveAs } from 'file-saver'
@@ -17,17 +17,31 @@ const TabAvailableExports = (props) => {
         status: deleteExportStatus,
     } = annoTaskApi.useDeleteExport()
 
-    const handleAnnotaskDataExport = (dataExportId, dataExportType, dataExportName) => {
-        fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
-            method: 'get',
+    const downloadFile = (dataExportId, dataExportType, dataExportName) => {
+        return fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
             headers: new Headers({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             }),
-        })
-            .then((res) => res.blob())
-            .then((blob) => saveAs(blob, `${dataExportName}.${dataExportType}`))
-    }
+        }).then((res) => {
+            console.log('DOWNLOAD')
+            const fileStream = createWriteStream(`${dataExportName}.${dataExportType}`)
+            const writer = fileStream.getWriter()
+            if (res.body.pipeTo) {
+                writer.releaseLock()
+                return res.body.pipeTo(fileStream)
+            }
 
+            const reader = res.body.getReader()
+            const pump = () =>
+                reader
+                    .read()
+                    .then(({ value, done }) =>
+                        done ? writer.close() : writer.write(value).then(pump),
+                    )
+
+            return pump()
+        })
+    }
     const handleAnnotaskExportDelete = (annoTaskExportId) => {
         Notification.showDecision({
             title: 'Do you really want to delete your annotation export ?',
@@ -115,9 +129,13 @@ const TabAvailableExports = (props) => {
                                             color={getColor(progress)}
                                             value={progress}
                                         />
-                                        <div className="small text-muted">
-                                            {getFileSize(row.original.fileSize)}
-                                        </div>
+                                        {progress < 100 ? (
+                                            ''
+                                        ) : (
+                                            <div className="small text-muted">
+                                                {getFileSize(row.original.fileSize)}
+                                            </div>
+                                        )}
                                     </div>
                                 </>
                             )
@@ -150,7 +168,7 @@ const TabAvailableExports = (props) => {
                                     disabled={row.original.progress < 100}
                                     icon={faDownload}
                                     onClick={() =>
-                                        handleAnnotaskDataExport(
+                                        downloadFile(
                                             row.original.id,
                                             row.original.fileType,
                                             row.original.name,
