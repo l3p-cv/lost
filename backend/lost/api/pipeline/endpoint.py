@@ -249,6 +249,7 @@ class TemplateImportZip(Resource):
                 dbm.close_session()
                 return "success", 200
             except:
+                # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
                 dbm.close_session()
                 return "error", 200
 
@@ -294,6 +295,7 @@ class TemplateImportGit(Resource):
                 dbm.close_session()
                 return "success", 200
             except:
+                # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
                 dbm.close_session()
                 return "error", 200
 

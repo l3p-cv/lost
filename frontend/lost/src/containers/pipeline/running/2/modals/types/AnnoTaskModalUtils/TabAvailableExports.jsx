@@ -21,25 +21,32 @@ const TabAvailableExports = (props) => {
             headers: new Headers({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             }),
-        }).then((res) => {
-            const fileStream = createWriteStream(`${dataExportName}.${dataExportType}`)
-            const writer = fileStream.getWriter()
-            if (res.body.pipeTo) {
-                writer.releaseLock()
-                return res.body.pipeTo(fileStream)
-            }
-
-            const reader = res.body.getReader()
-            const pump = () =>
-                reader
-                    .read()
-                    .then(({ value, done }) =>
-                        done ? writer.close() : writer.write(value).then(pump),
-                    )
-
-            return pump()
         })
+            .then((res) => {
+                const fileStream = createWriteStream(
+                    `${dataExportName}.${dataExportType}`,
+                )
+                const writer = fileStream.getWriter()
+                if (res.body.pipeTo) {
+                    writer.releaseLock()
+                    return res.body.pipeTo(fileStream)
+                }
+
+                const reader = res.body.getReader()
+                const pump = () =>
+                    reader
+                        .read()
+                        .then(({ value, done }) =>
+                            done ? writer.close() : writer.write(value).then(pump),
+                        )
+
+                return pump()
+            })
+            .catch((e) => {
+                Notification.showError('Failed to download annotation export.')
+            })
     }
+
     const handleAnnotaskExportDelete = (annoTaskExportId) => {
         Notification.showDecision({
             title: 'Do you really want to delete your annotation export ?',

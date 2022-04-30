@@ -39,6 +39,7 @@ export const useSubmitNewPipelineProject = () => {
             })
             setState({
                 isSuccess: response.data === 'success',
+                errorMessage: response.data,
             })
         } catch (error) {
             setState({ error })

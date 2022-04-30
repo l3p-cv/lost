@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import IconButton from '../../components/IconButton'
 import {
     faPlus,
-    faCheck,
     faTimes,
     faUpload,
     faEarth,
@@ -15,7 +14,6 @@ import * as pipelinedProjectsApi from '../../actions/pipeline/pipeline_projects_
 import * as Notification from '../../components/Notification'
 import HelpButton from '../../components/HelpButton'
 import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
-
 const AddPipelineProject = ({ visLevel, projectNames = [] }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -31,8 +29,11 @@ const AddPipelineProject = ({ visLevel, projectNames = [] }) => {
     const [submitNewPipelineProjectData, submitNewPipelineProject, breakUpload] =
         pipelinedProjectsApi.useSubmitNewPipelineProject()
 
-    const { mutate: importPipelineGit, status: pipelineImportGitStatus } =
-        pipelinedProjectsApi.useImportPipelineProjectGit()
+    const {
+        data: importPipelineProjectGitData,
+        mutate: importPipelineGit,
+        status: pipelineImportGitStatus,
+    } = pipelinedProjectsApi.useImportPipelineProjectGit()
     // useEffect(() => {
     //     if (acceptedFiles.length === 1) {
     //     }
@@ -63,16 +64,32 @@ const AddPipelineProject = ({ visLevel, projectNames = [] }) => {
         }
         if (submitNewPipelineProjectData.isSuccess === false) {
             setUploadZipfile(undefined)
-            Notification.showError('Import failed.')
+            if (submitNewPipelineProjectData.errorMessage) {
+                Notification.showError(
+                    `Import failed: ${submitNewPipelineProjectData.errorMessage}`,
+                    7500,
+                )
+            } else {
+                Notification.showError('Import failed.')
+            }
         }
     }, [submitNewPipelineProjectData])
 
     useEffect(() => {
         if (pipelineImportGitStatus === 'success') {
-            setGitUrl('')
-            setGitBranch('main')
-            setIsModalOpen(false)
-            Notification.showSuccess('Import succeeded.')
+            if (importPipelineProjectGitData !== 'success') {
+                setGitUrl('')
+                setGitBranch('main')
+                Notification.showError(
+                    `Import failed: ${importPipelineProjectGitData}`,
+                    7500,
+                )
+            } else {
+                setGitUrl('')
+                setGitBranch('main')
+                setIsModalOpen(false)
+                Notification.showSuccess('Import succeeded.')
+            }
         }
         if (pipelineImportGitStatus === 'error') {
             setGitUrl('')
@@ -80,6 +97,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [] }) => {
             Notification.showError('Import failed.')
         }
     }, [pipelineImportGitStatus])
+
     const onImportZipFile = () => {
         if (uploadZipfile) {
             if (projectNames.includes(uploadZipfile.name.split('.')[0])) {
