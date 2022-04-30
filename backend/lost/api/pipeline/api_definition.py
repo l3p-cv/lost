@@ -19,7 +19,7 @@ template  = api.model('Template', {
     'author': fields.String(readOnly=True, description="The author of the pipeline template."),
     'namespace': fields.String(readOnly=True, description="The namespace of the pipeline template."),
     'name': fields.String(readOnly=True, description="The name of the pipeline template."),
-    'date': fields.DateTime(readOnly=True, description="Timestamp when template was imported.",  dt_format='rfc822'),
+    'date': fields.DateTime(readOnly=True, description="Timestamp when template was imported."),
     'availableLabelTrees': fields.Raw(readOnly=True, description="All available label trees in system."),
     'availableGroups': fields.Raw(readOnly=True, description="All available groups for the user."),
     'pipelineCount': fields.Raw(readOnly=True, description="Number of pipelines started with this template."),

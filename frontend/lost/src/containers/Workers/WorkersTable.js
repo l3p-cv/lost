@@ -106,7 +106,7 @@ class WorkersTable extends Component {
 
                     if (worker.timestamp) {
                         const someSecondsAgo = new Date(Date.now() - 15000) // fix this to correct timestamp
-                        const lastActivityDate = new Date(`${worker.timestamp}Z`)
+                        const lastActivityDate = new Date(worker.timestamp)
                         if (lastActivityDate < someSecondsAgo) {
                             statusColor = 'danger'
                             statusText = 'Offline'
