@@ -42,7 +42,6 @@ const Login = () => {
         })
     }
     useEffect(() => {
-        console.log(loginStatus)
         if (loginStatus === 'success') {
             localStorage.setItem('token', loginData.token)
             localStorage.setItem('refreshToken', loginData.refresh_token)

@@ -1,8 +1,6 @@
 import TYPES from '../types/index'
 
 const initIsNavBarVisible = localStorage.getItem('isNavBarVisible') === 'true'
-console.log('initIsNavBarVisible')
-console.log(initIsNavBarVisible)
 const INITIAL_STATE = {
     isNavBarVisible: initIsNavBarVisible === undefined ? true : initIsNavBarVisible,
     version: '',

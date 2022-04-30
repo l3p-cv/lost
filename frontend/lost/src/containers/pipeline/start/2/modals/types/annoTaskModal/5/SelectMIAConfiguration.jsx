@@ -50,7 +50,6 @@ export const SelectMIAConfiguration = ({ ...props }) => {
     }, [props])
 
     const changeValue = (key, value) => {
-        console.log(key, value)
         let newConfiguration = { ...configuration }
         switch (key) {
             case 'show-proposed-label':

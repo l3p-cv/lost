@@ -186,7 +186,6 @@ class Control extends Component {
                             onChange={(e) => this.setState({ value: e.target.value })}
                             onSelect={(value, label) => {
                                 this.setState({ value: value })
-                                console.log(label)
                                 this.handleAddLabel(label)
                             }}
                         />

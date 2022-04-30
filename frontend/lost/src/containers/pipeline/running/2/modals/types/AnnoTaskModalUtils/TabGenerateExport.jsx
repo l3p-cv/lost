@@ -46,13 +46,11 @@ const TabGenerateExport = (props) => {
     }, [generateExportStatus])
 
     const onGenerateExport = () => {
-        console.log('Generate Export')
         const data = { annotaskId: props.annotask.id, exportConfig: newExport }
         generateExport(data)
         props.setActive(0)
     }
     const validateSplit = (splitType, value) => {
-        console.log(splitType, value)
         let splits = {}
         if (splitType === 'train') {
             splits = { ...newExport.randomSplits, train: parseFloat(value) }
@@ -63,7 +61,6 @@ const TabGenerateExport = (props) => {
         if (splitType === 'val') {
             splits = { ...newExport.randomSplits, val: parseFloat(value) }
         }
-        console.log(splits)
         if (splits.train + splits.test + splits.val <= 1.0) {
             setNewExport({ ...newExport, randomSplits: splits })
         }

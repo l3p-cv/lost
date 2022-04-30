@@ -41,7 +41,6 @@ class DatasourceModal extends Component {
             selectedPathColor: selectedPathColor,
             initPath: initPath,
         }
-        console.log(props)
     }
 
     toggle() {
@@ -112,7 +111,6 @@ class DatasourceModal extends Component {
                     <DropdownMenu>
                         {this.props.datasource.filesystems.map((el) => {
                             return (
-                                // <DropdownItem onClick={e => {this.props.pipeStartUpdateDS(this.props.peN, e.target.innerText); console.log('fs_update',e.target)}} key={el.name}>{el.name}</DropdownItem>
                                 <>
                                     {el.name !== 'default' ? (
                                         <DropdownItem

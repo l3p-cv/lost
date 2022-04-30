@@ -152,7 +152,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode, initPath = undefined }) => 
                 break
 
             default:
-                console.log('Unknown action', data.id)
+                break
         }
     }
 

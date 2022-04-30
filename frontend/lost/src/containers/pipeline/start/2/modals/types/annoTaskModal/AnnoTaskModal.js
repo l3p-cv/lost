@@ -19,7 +19,6 @@ class AnnoTaskModal extends Component {
     }
     changeCurrentStep(newStep) {
         this.props.selectTab(this.props.peN, newStep)
-        console.log(this.props)
     }
 
     renderContent() {

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import { createWriteStream } from 'streamsaver'
 import { Progress } from 'reactstrap'
 import ReactTable from 'react-table'
-import { saveAs } from 'file-saver'
 import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { API_URL } from '../../../../../../../lost_settings'
 import IconButton from '../../../../../../../components/IconButton'
@@ -23,7 +22,6 @@ const TabAvailableExports = (props) => {
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
             }),
         }).then((res) => {
-            console.log('DOWNLOAD')
             const fileStream = createWriteStream(`${dataExportName}.${dataExportType}`)
             const writer = fileStream.getWriter()
             if (res.body.pipeTo) {

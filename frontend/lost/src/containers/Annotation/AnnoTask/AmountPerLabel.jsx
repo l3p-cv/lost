@@ -20,7 +20,6 @@ const AmountPerLabel = ({ stats }) => {
             return d.amount
         })
         const colors = stats.map((d) => {
-            console.log(d.color)
             if (d.color !== '') {
                 return d.color
             }

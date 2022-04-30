@@ -15,11 +15,9 @@ const TabUser = (props) => {
     useEffect(() => {
         // dispatch(actions.getUsers())
         dispatch(actions.getGroups())
-        console.log(props)
     }, [])
 
     function changeUserSuccessful() {
-        // console.log('Annotation release successful')
         alertSuccess('Change user successful')
     }
 

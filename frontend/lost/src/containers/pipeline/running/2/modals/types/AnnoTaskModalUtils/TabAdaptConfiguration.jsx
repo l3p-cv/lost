@@ -8,7 +8,6 @@ const TabAdaptConfiguration = (props) => {
         annoTaskApi.useUpdateConfig()
 
     const onAnnoTaskConfigUpdate = (config) => {
-        console.log(config)
         updateAnnoTaskConfig({ annotaskId: props.annoTask.id, configuration: config })
     }
     return (

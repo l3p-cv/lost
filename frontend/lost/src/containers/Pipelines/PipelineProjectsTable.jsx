@@ -33,7 +33,6 @@ const PTTable = ({ visLevel }) => {
     }
 
     function handlePipelineProjectDelete(pipeProject) {
-        console.log('Delete', pipeProject)
         deletePipelineProject({ pipeProject })
     }
     useEffect(() => {
