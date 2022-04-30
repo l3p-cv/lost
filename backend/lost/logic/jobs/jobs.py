@@ -238,10 +238,14 @@ def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, inclu
         df = ds.df
         # df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
         root_path = f'{root_path}{get_file_ext_from_export_type(export_type)}'
+        ate.file_path = root_path
+        dbm.save_obj(ate)
         with dst_fs.open(root_path, 'wb') as f:
             write_df(root_path, df, export_type, fs_stream=f)
     else:
         root_path = f'{root_path}.zip'
+        ate.file_path = root_path
+        dbm.save_obj(ate)
         with dst_fs.open(root_path, 'wb') as f:
             with ZipFile(f, 'w') as zip_file:
                 if include_imgs:

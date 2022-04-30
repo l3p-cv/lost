@@ -12,6 +12,7 @@ from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
 from lost.logic.jobs.jobs import force_anno_release, export_ds
 from lost.logic.report import Report
+from lost.logic import dask_session
 import json
 import os
 from io import BytesIO
@@ -205,7 +206,6 @@ class GenerateExport(Resource):
                 for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
                     annotated_img_count = img_count - r
                 if annotated_img_count < LOST_CONFIG.img_export_limit:
-                    #TODO Export here
                     dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
                                                     name=export_name, 
                                                     progress=10, 
@@ -213,12 +213,10 @@ class GenerateExport(Resource):
                                                     img_count=annotated_img_count,
                                                     )
                     dbm.save_obj(dExport)
-                    e_path = export_ds(anno_task.pipe_element_id, identity, 
+                    client = dask_session.get_client(user)
+                    client.submit(export_ds, anno_task.pipe_element_id, identity, 
                                        dExport.idx, dExport.name, splits, 
                                        export_type, include_imgs=include_images)
-                    dExport.file_path = e_path
-                    dbm.save_obj(dExport)
-
                 dbm.close_session()
                 return "Success", 200
     
