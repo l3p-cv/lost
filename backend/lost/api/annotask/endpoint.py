@@ -11,7 +11,7 @@ from lost.logic.file_access import UserFileAccess
 from lost.db import access, roles, model
 from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
-from lost.logic.jobs.jobs import force_anno_release, export_ds
+from lost.logic.jobs.jobs import force_anno_release, export_ds, delete_ds_export
 from lost.logic.report import Report
 from lost.logic import dask_session
 import json
@@ -273,7 +273,6 @@ class DataExportDownload(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            # TODO Export here !
             fs_db = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, fs_db)
             anno_task_export = dbm.get_anno_task_export(anno_task_export_id=anno_task_export_id)
@@ -311,7 +310,9 @@ class DeleteExport(Resource):
             anno_task = dbm.get_anno_task(anno_task_data_export.anno_task_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
             if pipe_manager_id == user.idx:
-                #TODO Delete FIles here !
+                # client =dask_session.get_client(user)
+                # client.submit(delete_ds_export, anno_task_data_export.idx, user.idx)
+                delete_ds_export( anno_task_data_export.idx, user.idx)
                 dbm.delete(anno_task_data_export)
                 dbm.commit()
                 dbm.close_session()

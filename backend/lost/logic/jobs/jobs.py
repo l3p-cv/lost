@@ -276,3 +276,12 @@ def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, inclu
     dbm.save_obj(ate)
     dbm.close_session()
     return root_path
+
+def delete_ds_export(export_id, user_id):
+    dbm = access.DBMan(config.LOSTConfig())
+    user = dbm.get_user(user_id)
+    fs_db = dbm.get_user_default_fs(user_id)
+    ufa = UserFileAccess(dbm, user, fs_db)
+    export_path = ufa.get_export_ds_path(export_id)
+    ufa.rm(export_path, True)
+    dbm.close_session()

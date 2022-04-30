@@ -62,6 +62,12 @@ class UserFileAccess(object):
         else:
             raise FsAccessNotPermitted()
 
+    def rm(self, path, recursive=False):
+        if 'w' in self.get_permission():
+            return self.fm.rm(path, recursive=recursive)
+        else:
+            raise FsAccessNotPermitted()
+
     def get_media_path(self):
         return self.fm.get_media_path()
 
