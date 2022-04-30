@@ -59,7 +59,9 @@ const WorkingOn = ({ annoTask }) => {
                     <strong>{progress}%</strong>
                 </div>
                 <div className="float-right">
-                    <small className="text-muted">Started at: {annoTask.createdAt}</small>
+                    <small className="text-muted">
+                        Started at: {new Date(annoTask.createdAt).toLocaleString()}
+                    </small>
                 </div>
             </div>
             <Progress

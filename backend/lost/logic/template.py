@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from lost import settings
 from lost.logic.file_access import UserFileAccess
 from lost.db import model, access, dtype
 from lost.logic.file_man import FileMan
@@ -40,7 +41,7 @@ def get_templates(db_man, group_id=None, add_global=False, debug_mode=False):
             pipelineCount = r
         pipe_template_json['isDebug'] = temp.is_debug_mode
         pipe_template_json['id'] = temp.idx
-        pipe_template_json['date'] = temp.timestamp
+        pipe_template_json['date'] = temp.timestamp.strftime(settings.STRF_TIME)
         pipe_template_json['group_id'] = temp.group_id
         pipe_template_json['pipeProject'] = temp.pipe_project
         pipe_template_json['pipelineCount'] = pipelineCount
@@ -143,7 +144,7 @@ class TemplateSerialize(object):
 
     def add_available_info(self):
         self.template_json['id'] = self.template.idx
-        self.template_json['timestamp'] = self.template.timestamp
+        self.template_json['timestamp'] = self.template.timestamp.strftime(settings.STRF_TIME)
         self.template_json['availableGroups'] = self.__groups()
         self.template_json['availableLabelTrees'] = self.__label_trees()
 

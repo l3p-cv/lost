@@ -77,9 +77,9 @@ const TabAvailableExports = (props) => {
                                 <>
                                     <b>{row.original.name}</b>
                                     <div className="small text-muted">
-                                        {new Date(row.original.timestamp).toLocaleString(
-                                            'us',
-                                        )}
+                                        {new Date(
+                                            row.original.timestamp,
+                                        ).toLocaleString()}
                                     </div>
                                 </>
                             )
@@ -163,7 +163,7 @@ const TabAvailableExports = (props) => {
                     },
                 ]}
                 data={props.dataExports}
-                defaultPageSize={10}
+                defaultPageSize={5}
                 className="-striped -highlight"
             />
         </>

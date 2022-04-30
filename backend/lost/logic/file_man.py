@@ -11,6 +11,7 @@ import fsspec
 import numpy as np
 import cv2
 import ast
+from lost import settings
 from lost.logic.crypt import decrypt_fs_connection
 
 MEDIA_ROOT_PATH = "media/"
@@ -41,7 +42,7 @@ def chonkyfy(fs_list, root, fs):
             'name':os.path.basename(el['name'])
         }
         try:
-            res['modDate'] = el['LastModified'].strftime("%Y-%m-%d %H:%M:%S")
+            res['modDate'] = el['LastModified'].strftime(settings.STRF_TIME)
         except:
             pass
         if el['type'] == 'file':

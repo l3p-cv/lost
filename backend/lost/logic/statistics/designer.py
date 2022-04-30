@@ -1,7 +1,7 @@
 from datetime import date, datetime, timedelta
 import flask
 from lost.db.dtype import TwoDAnno
-
+from lost import settings
 class DesignerStats():
     def __init__(self, dbm, user_id):
         self.dbm = dbm
@@ -124,10 +124,42 @@ class DesignerStats():
         stats['avgPerHour'] = []
         stats['totalTimePerHour'] = []
         stats['labels'] = []
+        base = self.today
+        date_list = [base - timedelta(hours=x) for x in range(168)] # 7 * 24 hours for last 7 das = 168 hours
+        hour_dict = dict()
+        for date in date_list:
+            date_label = date.strftime(settings.STRF_TIME)
+            date_label = f'{date_label.split("T")[0]}T{date_label.split("T")[1].split(":")[0]}:00:00.000Z'
+            hour_dict[date_label] = {
+                'amountPerHour':0,
+                'avgPerHour':0,
+                'totalTimePerHour':0,
+                'label': date_label
+            }
         for row in self.dbm.count_two_d_annos_by_designer_and_group_by_hour(self.user_id, start=self.last_week, end=self.today):
-            stats['amountPerHour'].append(row[4])
-            stats['avgPerHour'].append('{:.2f}'.format(row[5]))
-            stats['totalTimePerHour'].append('{:.2f}'.format(row[4]*row[5]))
-            stats['labels'].append(f'{row[2]}-{row[1]}-{row[0]} {row[3]}:00')
+            
+            year = row[2]
+            month = row[1]
+            day = row[0]
+            hour = row[3]
+            if month < 10:
+                month = f'0{month}'
+            if hour < 10: 
+                hour = f'0{hour}'
+            date_label = f'{year}-{month}-{day}T{hour}:00:00.000Z'
+            hour_dict[date_label] = {
+                'amountPerHour':row[4],
+                'avgPerHour': '{:.2f}'.format(row[5]),
+                'totalTimePerHour': '{:.2f}'.format(row[4]*row[5]),
+                'label': date_label
+            }
+        
+        for key in hour_dict:
+            stats['amountPerHour'].append(hour_dict[key]['amountPerHour'])
+            stats['avgPerHour'].append(hour_dict[key]['avgPerHour'])
+            stats['totalTimePerHour'].append(hour_dict[key]['totalTimePerHour'])
+            stats['labels'].append(key)
+        
+
         return stats
 

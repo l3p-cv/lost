@@ -6,6 +6,7 @@ from lost.logic.template import combine_arguments
 from lost.logic import file_man
 from lost.utils.dump import dump
 import flask
+from lost import settings
 
 __author__ = "Gereon Reus"
 
@@ -298,7 +299,7 @@ def __serialize_pipes(db_man, debug_mode, pipes):
         pipe_json = {'id': pipe.idx,
                      'name': pipe.name,
                      'description': pipe.description,
-                     'date': pipe.timestamp.strftime("%b %d %Y %H:%M:%S"),
+                     'date': pipe.timestamp.strftime(settings.STRF_TIME),
                      'progress': progress,
                      'creatorName': creator_name,
                      'isDebug': pipe.is_debug_mode,
@@ -405,7 +406,7 @@ class PipeSerialize(object):
         self.pipe_json['description'] = pipe.description
         self.pipe_json['managerName'] = manager_name
         self.pipe_json['templateId'] = pipe.pipe_template_id
-        self.pipe_json['timestamp'] = pipe.timestamp.strftime("%b %d %Y %H:%M:%S")
+        self.pipe_json['timestamp'] = pipe.timestamp.strftime(settings.STRF_TIME)
         self.pipe_json['isDebug'] = pipe.is_debug_mode
         self.pipe_json['logfilePath'] = pipe.logfile_path
         self.pipe_json['progress'] = progress

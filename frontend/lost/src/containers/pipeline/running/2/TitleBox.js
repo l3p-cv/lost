@@ -4,7 +4,7 @@ const TitleBox = (props) => {
     return (
         <div>
             <div>Name: {props.name}</div>
-            <div>timestamp: {props.timestamp}</div>
+            <div>timestamp: {new Date(props.timestamp).toLocaleString()}</div>
         </div>
         //     <CCard style={{ width: '200px' }}>
         //     <CCardHeader style={{ backgroundColor: '#092F38', color: 'white' }}>

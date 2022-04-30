@@ -56,7 +56,6 @@ class SelectPipeline extends Component {
             }
             const data = this.props.data.response.pipes.map((el) => ({
                 ...el,
-                date: new Date(`${el.date} GMT -0000`),
             }))
             return (
                 <ReactTable
@@ -84,7 +83,17 @@ class SelectPipeline extends Component {
                             Header: 'Template Name',
                             accessor: 'templateName',
                             Cell: (row) => {
-                                return <b>{row.original.templateName}</b>
+                                return (
+                                    <>
+                                        {' '}
+                                        <b>
+                                            {row.original.templateName.split('.')[1]}
+                                        </b>{' '}
+                                        <div className="small text-muted">
+                                            {`${row.original.templateName.split('.')[0]}`}
+                                        </div>
+                                    </>
+                                )
                             },
                         },
                         // {
@@ -128,7 +137,7 @@ class SelectPipeline extends Component {
                             Header: 'Started on',
                             accessor: 'date',
                             Cell: (row) => {
-                                return new Date(row.value).toLocaleString('us')
+                                return new Date(row.original.date).toLocaleString()
                             },
                             sortMethod: (date1, date2) => {
                                 if (new Date(date1) > new Date(date2)) {

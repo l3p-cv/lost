@@ -76,9 +76,7 @@ const PTTable = ({ visLevel }) => {
                                     <>
                                         <b>{row.original.pipeProject}</b>
                                         <div className="small text-muted">
-                                            {new Date(row.original.date).toLocaleString(
-                                                'us',
-                                            )}
+                                            {new Date(row.original.date).toLocaleString()}
                                         </div>
                                     </>
                                 )
