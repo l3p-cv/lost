@@ -212,7 +212,10 @@ class MyAnnoTasks extends Component {
                                     </div>
                                     <div className="float-right">
                                         <small className="text-muted">
-                                            Started at: {annoTask.createdAt}
+                                            Started at:{' '}
+                                            {new Date(
+                                                annoTask.createdAt,
+                                            ).toLocaleString()}
                                         </small>
                                     </div>
                                 </div>
@@ -236,7 +239,9 @@ class MyAnnoTasks extends Component {
                                 onClick={() => this.handleRowClick(annoTask)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <strong>{annoTask.lastActivity}</strong>
+                                <strong>
+                                    {new Date(annoTask.lastActivity).toLocaleString()}
+                                </strong>
                                 <div className="small text-muted">
                                     by {annoTask.lastAnnotator}
                                 </div>

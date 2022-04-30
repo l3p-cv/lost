@@ -122,9 +122,7 @@ class WorkersTable extends Component {
                                 <div>{worker.env_name}</div>
                                 <div className="small text-muted">
                                     Registered at:{' '}
-                                    {new Date(
-                                        `${worker.register_timestamp}Z`,
-                                    ).toLocaleString()}
+                                    {new Date(worker.register_timestamp).toLocaleString()}
                                 </div>
                             </td>
                             <td className="text-center">
@@ -133,9 +131,7 @@ class WorkersTable extends Component {
                                 </div>
                                 <div className="small text-muted">
                                     Last life sign:{' '}
-                                    {new Date(`${worker.timestamp}Z`).toLocaleString(
-                                        'us',
-                                    )}
+                                    {new Date(worker.timestamp).toLocaleString()}
                                 </div>
                             </td>
                             <td className="text-center">

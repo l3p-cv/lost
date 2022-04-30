@@ -1,6 +1,6 @@
 
 {
-  "description": "This pipe represents a two stage annotation process. In a first stage bbox annotations are collected and in the second stage this bboxes will be labeled by MIA.",
+  "description": "This pipeline represents a two stage annotation process. In a first stage bbox annotations are collected and in the second stage this bboxes will be labeled by MIA.",
   "author": "Jonas Jaeger",
   "pipe-schema-version" : 1.0,
   "elements": [{

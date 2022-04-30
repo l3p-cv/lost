@@ -25,7 +25,7 @@ const TabGenerateExport = (props) => {
     } = annoTaskApi.useGenerateExport()
 
     const [newExport, setNewExport] = useState({
-        exportName: 'AnnotationExport',
+        exportName: 'LOST_Annotation',
         exportType: 'LOST_Dataset',
         includeImages: false,
         randomSplits: {

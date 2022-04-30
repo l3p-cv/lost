@@ -3,6 +3,7 @@ from random import random, triangular
 from flask_restx import Resource
 from flask import request, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from lost import settings
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.logic.file_man import AppFileMan
@@ -246,7 +247,7 @@ class DataExports(Resource):
                     export_json = dict()
                     export_json['id'] = export.idx
                     export_json['name'] = export.name
-                    export_json['timestamp'] = export.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                    export_json['timestamp'] = export.timestamp.strftime(settings.STRF_TIME)
                     file_size = 0
                     file_type = None
                     if export.file_size:

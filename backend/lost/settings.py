@@ -33,4 +33,6 @@ CORS_HEADERS = 'Content-Type'
 
 DATA_URL = 'data/'
 
+STRF_TIME = "%Y-%m-%dT%H:%M:%S.000Z"
+
 MAX_FILE_UPLOAD_SIZE = LOST_CONFIG.max_file_upload_size

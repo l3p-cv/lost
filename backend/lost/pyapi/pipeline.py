@@ -1,5 +1,5 @@
 import lost
-from lost.logic import file_man
+from lost import settings
 
 class PipeInfo(object):
 
@@ -23,13 +23,13 @@ class PipeInfo(object):
     def timestamp(self):
         '''str: Timestamp when pipeline was started.
         '''
-        return self._pipe.timestamp.strftime('%Y%m%d%H%M%S')
+        return self._pipe.timestamp.strftime(settings.STRF_TIME)
 
     @property
     def timestamp_finished(self):
         '''str: Timestamp when pipeline was finished.
         '''
-        return self._pipe.timestamp_finished.strftime('%Y%m%d%H%M%S')
+        return self._pipe.timestamp_finished.strftime(settings.STRF_TIME)
 
     @property
     def description(self):
