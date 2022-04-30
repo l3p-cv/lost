@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 import {
     Button,
     Card,
@@ -14,12 +13,14 @@ import {
     Row,
     Input,
 } from 'reactstrap'
+import { CRow } from '@coreui/react'
 import { useHistory } from 'react-router-dom'
 import { FaUser, FaLock } from 'react-icons/fa'
 import actions from '../../actions'
 import lostLogoColor from '../../assets/img/brand/lost_logo.png'
 import backgroundImage from '../../assets/img/background.svg'
 import errorResolver from '../../utils/errorResolver'
+import Loading from '../../components/Loading'
 
 const Login = () => {
     const {
@@ -41,6 +42,7 @@ const Login = () => {
         })
     }
     useEffect(() => {
+        console.log(loginStatus)
         if (loginStatus === 'success') {
             localStorage.setItem('token', loginData.token)
             localStorage.setItem('refreshToken', loginData.refresh_token)
@@ -107,6 +109,13 @@ const Login = () => {
                                         <div className="text-red-600 text-center mb-4">
                                             {errorText}
                                         </div>
+                                        {loginStatus === 'loading' ? (
+                                            <CRow className="justify-content-center">
+                                                <Loading></Loading>
+                                            </CRow>
+                                        ) : (
+                                            ''
+                                        )}
                                         <Row>
                                             <Col xs="6">
                                                 <Button color="primary" className="px-4">
