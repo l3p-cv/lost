@@ -208,18 +208,26 @@ class GenerateExport(Resource):
                     img_count = r
                 for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
                     annotated_img_count = img_count - r
-                if annotated_img_count < LOST_CONFIG.img_export_limit:
-                    dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
-                                                    name=export_name, 
-                                                    progress=1, 
-                                                    anno_task_progress=anno_task.progress,
-                                                    img_count=annotated_img_count,
-                                                    )
-                    dbm.save_obj(dExport)
-                    client = dask_session.get_client(user)
-                    client.submit(export_ds, anno_task.pipe_element_id, identity, 
-                                       dExport.idx, dExport.name, splits, 
-                                       export_type, include_imgs=include_images)
+                
+                # check if amount of images to export is bigger than given limit in config
+                if include_images:
+                    if annotated_images_only:
+                        if annotated_img_count > LOST_CONFIG.img_export_limit:
+                            include_images = False
+                    if img_count > LOST_CONFIG.img_export_limit:
+                        include_images = False
+
+                dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
+                                                name=export_name, 
+                                                progress=1, 
+                                                anno_task_progress=anno_task.progress,
+                                                img_count=annotated_img_count,
+                                                )
+                dbm.save_obj(dExport)
+                client = dask_session.get_client(user)
+                client.submit(export_ds, anno_task.pipe_element_id, identity, 
+                                    dExport.idx, dExport.name, splits, 
+                                    export_type, include_imgs=include_images)
                 dbm.close_session()
                 return "Success", 200
     

@@ -53,7 +53,6 @@ const TabGenerateExport = (props) => {
         props.setActive(0)
     }
     const validateSplit = (splitType, value) => {
-        console.log(props.annotask)
         let splits = {}
         if (splitType === 'train') {
             splits = { ...newExport.randomSplits, train: parseFloat(value) }
