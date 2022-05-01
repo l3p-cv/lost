@@ -10,6 +10,7 @@ import {
     CSwitch,
     CInput,
     CBadge,
+    CInputCheckbox,
 } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import HelpButton from '../../../../../../../components/HelpButton'
@@ -28,6 +29,7 @@ const TabGenerateExport = (props) => {
         exportName: 'LOST_Annotation',
         exportType: 'LOST_Dataset',
         includeImages: false,
+        annotatedOnly: true,
         randomSplits: {
             active: false,
             train: 0.7,
@@ -51,6 +53,7 @@ const TabGenerateExport = (props) => {
         props.setActive(0)
     }
     const validateSplit = (splitType, value) => {
+        console.log(props.annotask)
         let splits = {}
         if (splitType === 'train') {
             splits = { ...newExport.randomSplits, train: parseFloat(value) }
@@ -130,13 +133,49 @@ const TabGenerateExport = (props) => {
                                             shape="pill"
                                             style={{ marginLeft: '20px' }}
                                         >
-                                            {`${props.annotask.annotatedImgCount}`}
+                                            {newExport.annotatedOnly
+                                                ? `${props.annotask.annotatedImgCount} images`
+                                                : `${props.annotask.imgCount} images`}
                                         </CBadge>
                                     ) : (
                                         ''
                                     )}
                                 </CCol>
                             </CRow>
+                            {newExport.includeImages ? (
+                                <CRow style={{ marginTop: '10px' }}>
+                                    <CCol>
+                                        <CSwitch
+                                            className={'mx-1'}
+                                            variant={'3d'}
+                                            color={'primary'}
+                                            checked={newExport.annotatedOnly}
+                                            onChange={(e) =>
+                                                setNewExport({
+                                                    ...newExport,
+                                                    annotatedOnly:
+                                                        !newExport.annotatedOnly,
+                                                })
+                                            }
+                                        />
+                                        <b
+                                            style={{
+                                                marginLeft: '20px',
+                                            }}
+                                        >
+                                            Annotated images only
+                                            <HelpButton
+                                                id="anno-only"
+                                                text={
+                                                    'Only add already annotated images to the export.'
+                                                }
+                                            />
+                                        </b>
+                                    </CCol>
+                                </CRow>
+                            ) : (
+                                ''
+                            )}
                         </CCol>
                     </CRow>
                     <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>

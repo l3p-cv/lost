@@ -195,6 +195,8 @@ class GenerateExport(Resource):
                 export_name = export_config['exportName']
                 export_type = export_config['exportType'] # LOST_Dataset, PascalVOC, YOLO, MS_Coco, CSV
                 include_images = export_config['includeImages']
+                if include_images:
+                    annotated_images_only = export_config['annotatedOnly'] #TODO export annotated images only if this variable and include_images are set to true
                 random_splits_active = export_config['randomSplits']['active']
                 splits=None
                 if random_splits_active:
