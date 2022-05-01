@@ -1,6 +1,5 @@
-from distutils.command.upload import upload
+import subprocess
 import shutil
-from tkinter.tix import Tree
 from flask import request, make_response
 from flask_restx import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -257,6 +256,9 @@ class TemplateImportZip(Resource):
 class TemplateImportGit(Resource):
     @jwt_required
     def post(self):
+
+        def git(*args):
+            return subprocess.check_call(['git'] + list(args))
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -269,7 +271,15 @@ class TemplateImportGit(Resource):
                 data = json.loads(request.data)
                 git_url = data['gitUrl']
                 git_branch = data['gitBranch']
-                # upload_path = fm.get_upload_path(identity, uploaded_file.filename)
+                git_project = os.path.splitext(os.path.basename(git_url))[0]
+                # raise Exception(git_project)
+
+                upload_path = fm.get_upload_path(identity, git_project)
+                if git_branch == 'main':
+                    git('clone', git_url, upload_path)
+                else:
+                    git('clone', git_url, upload_path, '-b', git_branch)
+                
                 # USER_NAMESPACE = False
                 # if USER_NAMESPACE:
                 #     head, tail = os.path.split(upload_path)
@@ -297,6 +307,7 @@ class TemplateImportGit(Resource):
             except:
                 # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
                 dbm.close_session()
+                raise
                 return "error", 200
 
 @namespace.route('/project/export/<string:pipe_project>')
