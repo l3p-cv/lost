@@ -195,15 +195,13 @@ class GenerateExport(Resource):
                 export_name = export_config['exportName']
                 export_type = export_config['exportType'] # LOST_Dataset, PascalVOC, YOLO, MS_Coco, CSV
                 include_images = export_config['includeImages']
+                annotated_images_only = False
                 if include_images:
                     annotated_images_only = export_config['annotatedOnly'] #TODO export annotated images only if this variable and include_images are set to true
                 random_splits_active = export_config['randomSplits']['active']
                 splits=None
                 if random_splits_active:
                     splits = export_config['randomSplits']
-                    split_train = export_config['randomSplits']['train']
-                    split_test = export_config['randomSplits']['test']
-                    split_val = export_config['randomSplits']['val']
                 for r in dbm.count_all_image_annos(anno_task_id=anno_task.idx)[0]:
                     img_count = r
                 for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
@@ -227,7 +225,8 @@ class GenerateExport(Resource):
                 client = dask_session.get_client(user)
                 client.submit(export_ds, anno_task.pipe_element_id, identity, 
                                     dExport.idx, dExport.name, splits, 
-                                    export_type, include_imgs=include_images)
+                                    export_type, include_imgs=include_images, 
+                                    annotated_images_only=annotated_images_only)
                 dbm.close_session()
                 return "Success", 200
     

@@ -208,7 +208,8 @@ def write_df (base_path, df, export_type, zip_file=None, fs_stream=None):
     else:
         raise NotImplementedError(f'Unsupported export type: {export_type}')
     
-def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, include_imgs):
+def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, 
+              include_imgs, annotated_images_only):
     dbm = access.DBMan(config.LOSTConfig())
     ate = dbm.get_anno_task_export(anno_task_export_id=export_id)
     user = dbm.get_user(user_id)
@@ -220,6 +221,8 @@ def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, inclu
     alien = pipe_elements.AnnoTask(pe, dbm)
 
     df = alien.inp.to_df()
+    if annotated_images_only:
+        df = df[df['img_state'] == 4]
     fs_name = df.img_fs_name.unique()[0]
     # src_fs = self.get_fs(name=fs_name)
     src_fs = ufa.get_fs(name=fs_name)
