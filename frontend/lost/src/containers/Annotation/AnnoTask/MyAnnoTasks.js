@@ -245,14 +245,20 @@ class MyAnnoTasks extends Component {
                             Cell: (row) => {
                                 return (
                                     <>
-                                        <strong>
-                                            {new Date(
-                                                row.original.lastActivity,
-                                            ).toLocaleString()}
-                                        </strong>
-                                        <div className="small text-muted">
-                                            by {row.original.lastAnnotator}
-                                        </div>
+                                        {row.original.lastActivity ? (
+                                            <>
+                                                <strong>
+                                                    {new Date(
+                                                        row.original.lastActivity,
+                                                    ).toLocaleString()}
+                                                </strong>
+                                                <div className="small text-muted">
+                                                    by {row.original.lastAnnotator}
+                                                </div>{' '}
+                                            </>
+                                        ) : (
+                                            ''
+                                        )}
                                     </>
                                 )
                             },
