@@ -154,6 +154,20 @@ Within the Admin Area, a tab (far right) now appears that contains the link to t
         The JupyterLab integration should therefore only be used in development environments and in no case in production systems. 
 
 
+Git Configuration
+---------------------
+With the help of the Git configuration, you can have your Git access data (Personal Access Token) stored in the container.
+This means that, for example, private Git repositories can be used within the JupyterLab environment without having to enter a password. 
+Furthermore, the configuration of the Git settings is necessary so that private Git repositories can be imported via the GUI.
+
+In order to configure your Git authentication you have to add the following 
+environment variables in your ``.env`` file:
+
+    .. code-block:: bash
+
+        LOST_GIT_USER=Git User                                                                            │
+        LOST_GIT_EMAIL=myemail                                                                      │
+        LOST_GIT_ACCES_TOKEN=https://mygitusername:mygitaccesstoken@github.com
 
 Nginx Configuration
 ---------------------
