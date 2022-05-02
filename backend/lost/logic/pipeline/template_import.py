@@ -98,6 +98,7 @@ class PipeImporter(object):
             self.import_pipe(pipe)
 
     def import_pipe(self, pipe):
+        error_message = ''
         try:
             logging.info('\n---\n')
             # Do everything relative from pipeline definition file path.
@@ -127,11 +128,15 @@ class PipeImporter(object):
                     if 'arguments' in element_j:
                         for arg in element_j['arguments']:
                             if arg not in script_arguments:
-                                logging.error("Invalid argument >> {} << in pipeline definition json".format(arg))
+                                message = "Invalid argument >> {} << in pipeline definition json".format(arg)
+                                logging.error(message)
                                 valid_args = ""
+                                error_message += message + "\n"
                                 for v_arg in script_arguments:
                                     valid_args += ">> {} <<\n".format(v_arg)
-                                logging.error("Valid arguments are: \n{}".format(valid_args[:-1]))
+                                message = "Valid arguments are: \n{}".format(valid_args[:-1])
+                                logging.error(message)
+                                error_message += message + "\n"
                                 raise Exception('Invalid arguments. Start Cleanup')
                     if db_script is None:
                         self.dbm.add(script)
@@ -177,6 +182,7 @@ class PipeImporter(object):
             if not self.forTest:
                 self.remove_pipe_project()
             logging.error('Cleanup successful. Removed buggy pipeline.')
+            return error_message
 
     def remove_pipe_project(self):
         '''Remove an imported pipeline project from lost system.

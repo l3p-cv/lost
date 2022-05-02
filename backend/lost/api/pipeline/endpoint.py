@@ -1,3 +1,4 @@
+from ast import Str
 import subprocess
 import shutil
 from flask import request, make_response
@@ -235,22 +236,30 @@ class TemplateImportZip(Resource):
                 e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
                 extract_path = os.path.join(e_path, dst_dir)
                 dst_path = os.path.join(pp_path, dst_dir)
-                extracted_path = template_import.unpack_pipe_project(upload_path, extract_path)
+                #TODO Will be part of pipe importer !
+                try:
+                    extracted_path = template_import.unpack_pipe_project(upload_path, extract_path)
+                except:
+                    dbm.close_session()
+                    return 'No valid pipeline found.', 200
                 shutil.copytree(extracted_path, dst_path)
                 dbm = access.DBMan(LOST_CONFIG)
                 if not USER_NAMESPACE:
                     importer = template_import.PipeImporter(dst_path, dbm)
                 else:
                     importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
-                importer.start_import()
+                res = importer.start_import()
                 fm.fs.rm(upload_path, recursive=True)
                 fm.fs.rm(e_path, recursive=True)
                 dbm.close_session()
+                if isinstance(res, str):
+                    if res != '':
+                        return res, 200
                 return "success", 200
             except:
                 # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
                 dbm.close_session()
-                return "error", 200
+                return 'error', 200
 
 @namespace.route('/project/import_git')
 class TemplateImportGit(Resource):
