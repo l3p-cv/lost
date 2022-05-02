@@ -56,6 +56,7 @@ class LOSTConfig(object):
         self.secret_key = env['LOST_SECRET_KEY']
         self.use_docker = ge('LOST_USE_DOCKER', True)
         self.debug = ge('LOST_DEBUG_MODE', True)
+        self.add_examples = ge('LOST_ADD_EXAMPLES', True)
 
         # Storage for application related data
         self.app_path = '/home/lost/app'
@@ -124,6 +125,9 @@ class LOSTConfig(object):
         # Max file upload size
         self.max_file_upload_size = ge('LOST_MAX_FILE_UPLOAD_SIZE', 1024 * 1024 * 1024) # = 1GB 
         # max file upload size has to be adapted in nginx proxy configuration as well !
+
+        # Max img export limit
+        self.img_export_limit = ge('LOST_MAX_IMG_EXPORT', 2500)
 
         # LDAP Configuation
         self.ldap_config = dict()

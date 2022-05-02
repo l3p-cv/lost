@@ -103,7 +103,6 @@ if [ -z ${IS_USING_DOCKER+x} ] || [ "$IS_USING_DOCKER" != "true" ]; then
     echo 🛠️  initializing application
     # finally initialize python environment (install database tables etc..)
     python3 $LOST_BASE_DIR/src/backend/lost/logic/init/initlost.py
-    cd $LOST_BASE_DIR/src/backend/lost/cli && bash import_examples.sh
     cd $LOST_REPO_LOCATION_DIR
 else
     mkdir -p $LOST_BASE_DIR/src/backend/lost/media

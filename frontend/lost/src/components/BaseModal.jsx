@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import PropTypes from 'prop-types'
-import { faBan } from '@fortawesome/free-solid-svg-icons'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import IconButton from './IconButton'
 
 const BaseModal = ({
@@ -38,11 +38,12 @@ const BaseModal = ({
                     footer || null,
                     isShowCancelButton ? (
                         <IconButton
-                            icon={faBan}
-                            color="warning"
-                            text="Cancel"
+                            isOutline={false}
+                            color="secondary"
+                            icon={faTimes}
+                            text="Close"
                             onClick={toggle}
-                        />
+                        ></IconButton>
                     ) : null,
                 ]}
             </ModalFooter>

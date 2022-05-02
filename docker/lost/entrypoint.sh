@@ -24,7 +24,6 @@ while [ $n -ne 0 ]; do
 done
 
 python3 /code/src/backend/lost/logic/init/initlost.py
-cd /code/src/backend/lost/cli && bash import_examples.sh && cd -
 # cd /code/docs/sphinx &&  make html && cd -
 python3 /code/src/backend/lost/logic/init/initworker.py
 python3 /code/src/backend/lost/logic/init/init_patchsystem.py
@@ -54,6 +53,16 @@ if [ ${LOST_JUPYTER_LAB_ACTIVE} = "True" ]; then
   fi
   jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=$LOST_JUPYTER_LAB_TOKEN --ServerApp.notebook_dir=$LOST_JUPYTER_LAB_ROOT_PATH"
   eval $jupyter &
+fi
+
+if [[ -z "${LOST_GITLAB_USER}" ]]; then
+  echo ""
+else
+  git config --global user.name "$LOST_GITLAB_USER"
+  git config --global user.email "$LOST_GITLAB_EMAIL"
+  git config --global credential.helper store
+  printf $LOST_GITLAB_ACCES_TOKEN >> /root/.git-credentials
+  chmod 600 /root/.git-credentials
 fi
 
 

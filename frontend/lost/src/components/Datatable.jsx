@@ -121,7 +121,7 @@ const RenderStatus = ({ lastActive }) => {
     return (
         <div>
             <Badge color={status === 'Online' ? 'success' : 'danger'}>{status}</Badge>
-            {smallText(`Last Active: ${lastActive.toLocaleString('de-DE')}`)}
+            {smallText(`Last Active: ${lastActive.toLocaleString()}`)}
         </div>
     )
 }

@@ -6,7 +6,8 @@ import UserInfo from './1/UserInfo'
 import SelectUser from './2/SelectUser'
 import SelectTree from './3/SelectTree'
 import SelectLabel from './4/SelectLabel'
-import SelectConfiguration from './5/SelectConfiguration'
+import SelectSIAConfiguration from './5/SelectSIAConfiguration'
+import SelectMIAConfiguration from './5/SelectMIAConfiguration'
 // import GrayLine from '../../..&globalComponents/GrayLine'
 
 const { selectTab, verifyTab } = actions
@@ -18,7 +19,6 @@ class AnnoTaskModal extends Component {
     }
     changeCurrentStep(newStep) {
         this.props.selectTab(this.props.peN, newStep)
-        console.log(this.props)
     }
 
     renderContent() {
@@ -32,7 +32,11 @@ class AnnoTaskModal extends Component {
             case 3:
                 return <SelectLabel {...this.props} />
             case 4:
-                return <SelectConfiguration {...this.props} />
+                if (this.props.annoTask.type === 'sia') {
+                    return <SelectSIAConfiguration {...this.props} />
+                } else if (this.props.annoTask.type === 'mia') {
+                    return <SelectMIAConfiguration {...this.props} />
+                }
             default:
                 break
         }

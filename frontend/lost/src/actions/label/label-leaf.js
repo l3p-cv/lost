@@ -11,8 +11,6 @@ export const updateLabel = (data, visLevel) => async (dispatch) => {
         const newLabelTrees = await axios.get(API_URL + `/label/tree/${visLevel}`)
         dispatch({ type: TYPES.GET_LABEL_TREES, payload: newLabelTrees.data })
     } catch (e) {
-        console.log(data)
-        console.log(e)
         dispatch({ type: TYPES.UPDATE_LABEL_FAILED, payload: e.response.data.message })
     }
 }

@@ -5,15 +5,11 @@ import logging
 import os
 import shutil
 from lost.logic.file_man import AppFileMan
-from lost.logic import file_man as fm
-from distutils import dir_util
 from lost.db import model
 from lost.logic.script import get_default_script_arguments
 from lost.logic.script import get_default_script_envs
 from lost.logic.script import get_default_script_resources
 from lost.logic.script import get_script_args
-from distutils import dir_util
-from os.path import join
 from glob import glob
 from lost.logic import script as script_man
 import copy
@@ -508,3 +504,17 @@ def unpack_pipe_project(zip_project, dst_path):
     # res_dir = os.path.splitext(res_dir)[0]
     # dst = os.path.join(dst_path, res_dir)
     shutil.unpack_archive(zip_project, dst_path)
+    # dirs = os.listdir(dst_path)
+    j_list = glob(os.path.join(dst_path, '*.json'))
+    if len(j_list) > 0:
+        return dst_path
+    for root, dirs, files in os.walk(dst_path):
+        for f in files:
+            if os.path.splitext(f)[1].lower() == '.json':
+                old_root = root 
+                new_root = os.path.join(os.path.split(old_root)[0], os.path.basename(dst_path))
+                os.rename(old_root, new_root)
+                return new_root
+    raise Exception("No valid pipeline file found!")
+
+    

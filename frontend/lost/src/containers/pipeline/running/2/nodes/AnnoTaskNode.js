@@ -15,7 +15,11 @@ const AnnoTaskNode = (props) => {
             </div>
             <div className="graph-node-body">
                 <div className="graph-node-body-row">
-                    <span className="graph-node-body-left-text">Name: </span>
+                    <b>
+                        <span className="graph-node-body-left-text">
+                            <b>Name: </b>
+                        </span>
+                    </b>
                     <span>{props.annoTask.name}</span>
                 </div>
                 <Progress value={props.annoTask.progress}>

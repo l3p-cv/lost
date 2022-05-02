@@ -1,6 +1,7 @@
 import os
 from datetime import date, datetime, timedelta
 from lost.logic.pipeline import exec_utils
+from dask.distributed import Client
 import logging
 from time import sleep
 # from lost.lost_session import lost_session
@@ -9,6 +10,15 @@ import lostconfig
 
 config = lostconfig.LOSTConfig()
 
+def get_client(user):
+    if config.worker_management == 'dynamic':
+        client = ds_man.get_dask_client(user)
+    else:
+        client = Client('{}:{}'.format(
+            config.scheduler_ip, config.scheduler_port)
+        )
+    return client
+    
 def _read_fs_img(fs, img_path):
     fm = FileMan(fs_db=fs)
     try:

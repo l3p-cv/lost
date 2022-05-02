@@ -106,7 +106,7 @@ class WorkersTable extends Component {
 
                     if (worker.timestamp) {
                         const someSecondsAgo = new Date(Date.now() - 15000) // fix this to correct timestamp
-                        const lastActivityDate = new Date(`${worker.timestamp}Z`)
+                        const lastActivityDate = new Date(worker.timestamp)
                         if (lastActivityDate < someSecondsAgo) {
                             statusColor = 'danger'
                             statusText = 'Offline'
@@ -122,9 +122,7 @@ class WorkersTable extends Component {
                                 <div>{worker.env_name}</div>
                                 <div className="small text-muted">
                                     Registered at:{' '}
-                                    {new Date(
-                                        `${worker.register_timestamp}Z`,
-                                    ).toLocaleString()}
+                                    {new Date(worker.register_timestamp).toLocaleString()}
                                 </div>
                             </td>
                             <td className="text-center">
@@ -133,7 +131,7 @@ class WorkersTable extends Component {
                                 </div>
                                 <div className="small text-muted">
                                     Last life sign:{' '}
-                                    {new Date(`${worker.timestamp}Z`).toLocaleString()}
+                                    {new Date(worker.timestamp).toLocaleString()}
                                 </div>
                             </td>
                             <td className="text-center">
@@ -158,21 +156,19 @@ class WorkersTable extends Component {
     }
     render() {
         return (
-            <BaseContainer>
-                <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
-                    <thead className="thead-light">
-                        <tr>
-                            <th className="text-center">Name</th>
-                            <th className="text-center">Environment</th>
-                            <th className="text-center">Status</th>
-                            <th className="text-center">Resources</th>
-                            <th className="text-center">Jobs</th>
-                            {/* <th className="text-center">Logs</th> */}
-                        </tr>
-                    </thead>
-                    {this.renderTableBody()}
-                </Table>
-            </BaseContainer>
+            <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
+                <thead className="thead-light">
+                    <tr>
+                        <th className="text-center">Name</th>
+                        <th className="text-center">Environment</th>
+                        <th className="text-center">Status</th>
+                        <th className="text-center">Resources</th>
+                        <th className="text-center">Jobs</th>
+                        {/* <th className="text-center">Logs</th> */}
+                    </tr>
+                </thead>
+                {this.renderTableBody()}
+            </Table>
         )
     }
 }

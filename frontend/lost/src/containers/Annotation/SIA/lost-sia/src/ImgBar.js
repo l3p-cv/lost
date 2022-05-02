@@ -89,9 +89,9 @@ class ImgBar extends Component{
     }
 
     renderImgDescription(){
-        if(this.props.annos.image.description){
+        if(this.props.imageMeta.description){
            return <Menu.Item>
-               {this.props.annos.image.description}
+               {this.props.imageMeta.description}
             </Menu.Item>
         } else {
             return null
@@ -99,7 +99,7 @@ class ImgBar extends Component{
     }
     render(){
         if (!this.props.visible) return null
-        if (!this.props.annos.image) return null
+        if (!this.props.imageMeta) return null
         // if (!this.props.annos.image.url) return null
         return(
         <div style={{
@@ -114,14 +114,13 @@ class ImgBar extends Component{
             <Menu inverted style={{opacity:0.9, justifyContent:'center', alignItems:'center'}}>
                     {/* {this.renderImgLabelInput()} */}
                     {this.renderImgDescription()}
-                    <Menu.Item
-                    >
+                    <Menu.Item>
                     {/* {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"} */}
-                    {"ID: "+this.props.annos.image.id}
+                    {"ID: "+this.props.imageMeta.id}
                     </Menu.Item>
                     <Menu.Item  
                     >
-                    {this.props.annos.image.number +" / "+ this.props.annos.image.amount}
+                    {this.props.imageMeta.number +" / "+ this.props.imageMeta.amount}
                     </Menu.Item>
                     {this.renderImgLabels()}
             </Menu>

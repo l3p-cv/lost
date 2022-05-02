@@ -4,6 +4,7 @@ from datetime import datetime
 from lost.pyapi import pipe_elements
 import pandas as pd
 from lost.logic import email
+from lost import settings
 
 def update_anno_task(dbm, anno_task_id, user_id=None):
     remaining = None
@@ -132,10 +133,10 @@ def __get_at_info(dbm, annotask, user_id, amount_per_label=False):
     at['instructions'] = annotask.instructions
     at['createdAt'] = None
     if annotask.timestamp:
-        at['createdAt'] = annotask.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        at['createdAt'] = annotask.timestamp.strftime(settings.STRF_TIME)
     at['lastActivity'] = None
     if annotask.last_activity:
-        at['lastActivity'] = annotask.last_activity.strftime("%Y-%m-%d %H:%M:%S")
+        at['lastActivity'] = annotask.last_activity.strftime(settings.STRF_TIME)
     at['lastAnnotator'] = "N/A"
     if annotask.last_annotator:
         at['lastAnnotator'] = annotask.last_annotator.user_name

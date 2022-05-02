@@ -4,6 +4,9 @@ import actions from '../../../../actions/pipeline/pipelineRunning'
 import { connect } from 'react-redux'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
+import { faEye } from '@fortawesome/free-solid-svg-icons'
+import IconButton from '../../../../components/IconButton'
+import HelpButton from '../../../../components/HelpButton'
 import { Progress } from 'reactstrap'
 import { getColor } from '../../../../containers/Annotation/AnnoTask/utils'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
@@ -53,7 +56,6 @@ class SelectPipeline extends Component {
             }
             const data = this.props.data.response.pipes.map((el) => ({
                 ...el,
-                date: new Date(`${el.date} GMT -0000`),
             }))
             return (
                 <ReactTable
@@ -61,19 +63,43 @@ class SelectPipeline extends Component {
                         {
                             Header: 'Name',
                             accessor: 'name',
+                            Cell: (row) => {
+                                return <b>{row.original.name}</b>
+                            },
                         },
                         {
                             Header: 'Description',
                             accessor: 'description',
+                            Cell: (row) => {
+                                return (
+                                    <HelpButton
+                                        id={row.original.id}
+                                        text={row.original.description}
+                                    />
+                                )
+                            },
                         },
                         {
                             Header: 'Template Name',
                             accessor: 'templateName',
+                            Cell: (row) => {
+                                return (
+                                    <>
+                                        {' '}
+                                        <b>
+                                            {row.original.templateName.split('.')[1]}
+                                        </b>{' '}
+                                        <div className="small text-muted">
+                                            {`${row.original.templateName.split('.')[0]}`}
+                                        </div>
+                                    </>
+                                )
+                            },
                         },
-                        {
-                            Header: 'Author',
-                            accessor: 'creatorName',
-                        },
+                        // {
+                        //     Header: 'Author',
+                        //     accessor: 'creatorName',
+                        // },
                         {
                             Header: 'Progress',
                             accessor: 'progress',
@@ -108,10 +134,10 @@ class SelectPipeline extends Component {
                             },
                         },
                         {
-                            Header: 'Date',
+                            Header: 'Started on',
                             accessor: 'date',
                             Cell: (row) => {
-                                return new Date(row.value).toLocaleString('de')
+                                return new Date(row.original.date).toLocaleString()
                             },
                             sortMethod: (date1, date2) => {
                                 if (new Date(date1) > new Date(date2)) {
@@ -120,10 +146,26 @@ class SelectPipeline extends Component {
                                 return 1
                             },
                         },
+                        {
+                            Header: 'Start',
+                            Cell: (row) => {
+                                return (
+                                    <IconButton
+                                        color="primary"
+                                        size="m"
+                                        isOutline={false}
+                                        onClick={() => this.selectRow(row.original.id)}
+                                        icon={faEye}
+                                        text="Open"
+                                    />
+                                )
+                            },
+                            accessor: 'id',
+                        },
                     ]}
-                    getTrProps={(state, rowInfo) => ({
-                        onClick: () => this.selectRow(rowInfo.original.id),
-                    })}
+                    // getTrProps={(state, rowInfo) => ({
+                    //     onClick: () => this.selectRow(rowInfo.original.id),
+                    // })}
                     defaultSorted={[
                         {
                             id: 'date',

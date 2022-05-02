@@ -4,20 +4,39 @@ import { CCard, CCardBody, CRow, CCol, CSwitch, CInput } from '@coreui/react'
 
 import { useSelector, useDispatch } from 'react-redux'
 
-export const SelectConfiguration = ({ ...props }) => {
+const loadElements = (state) => {
+    if (state.pipelineStart) {
+        if (state.pipelineStart.step1Data) {
+            return state.pipelineStart.step1Data.elements
+        }
+    }
+    return undefined
+}
+
+export const SelectSIAConfiguration = ({ ...props }) => {
     const dispatch = useDispatch()
-    const [configuration, setConfiguration] = useState()
-    const elements = useSelector((state) => state.pipelineStart.step1Data.elements)
+    const [configuration, setConfiguration] = useState(undefined)
+    const elements = useSelector((state) => loadElements(state))
 
     useEffect(() => {
-        elements.find((el) => {
-            if (el.peN === props.peN) {
-                setConfiguration(el.exportData.annoTask.configuration)
-                return true
-            }
-            return false
-        })
+        if (elements) {
+            elements.find((el) => {
+                if (el.peN === props.peN) {
+                    setConfiguration(el.exportData.annoTask.configuration)
+                    return true
+                }
+                return false
+            })
+        }
     }, [elements])
+
+    useEffect(() => {
+        if (configuration === undefined) {
+            if (props.peN === undefined) {
+                setConfiguration(props.configuration)
+            }
+        }
+    }, [props])
 
     const changeValue = (key, value) => {
         let newConfiguration = { ...configuration }
@@ -61,16 +80,21 @@ export const SelectConfiguration = ({ ...props }) => {
             default:
                 break
         }
-        dispatch({
-            type: 'PIPELINE_START_ANNO_TASK_UPDATE_CONFIGURATION',
-            payload: { elementId: props.peN, configuration: newConfiguration },
-        })
+        if (props.peN) {
+            dispatch({
+                type: 'PIPELINE_START_ANNO_TASK_UPDATE_CONFIGURATION',
+                payload: { elementId: props.peN, configuration: newConfiguration },
+            })
+        } else {
+            setConfiguration(newConfiguration)
+            props.onUpdate(newConfiguration)
+        }
     }
     return (
-        <CCard className="annotask-modal-card">
+        <>
             {configuration ? (
-                <CCardBody>
-                    <CRow>
+                <>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="6">
                             <h4>Annotation Types</h4>
                             <CRow>
@@ -291,7 +315,7 @@ export const SelectConfiguration = ({ ...props }) => {
                         </CCol>
                     </CRow>
                     <hr></hr>
-                    <CRow>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="12">
                             <h4>
                                 Minimum Annotation Size{' '}
@@ -314,7 +338,7 @@ export const SelectConfiguration = ({ ...props }) => {
                         </CCol>
                     </CRow>
                     <hr></hr>
-                    <CRow>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="12">
                             <h4>Image</h4>
                             <CCol sm="12">
@@ -396,12 +420,12 @@ export const SelectConfiguration = ({ ...props }) => {
                             </CCol>
                         </CCol>
                     </CRow>
-                </CCardBody>
+                </>
             ) : (
                 ''
             )}
-        </CCard>
+        </>
     )
 }
 
-export default SelectConfiguration
+export default SelectSIAConfiguration

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
-
+import HelpButton from '../../../../../../../../components/HelpButton'
+import IconButton from '../../../../../../../../components/IconButton'
+import { faTags } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
 import { Card, CardBody } from 'reactstrap'
 import ReactTable from 'react-table'
@@ -26,10 +28,10 @@ class SelectTree extends Component {
         return (
             <ReactTable
                 columns={[
-                    {
-                        Header: 'ID',
-                        accessor: 'idx',
-                    },
+                    // {
+                    //     Header: 'ID',
+                    //     accessor: 'idx',
+                    // },
                     {
                         Header: 'Name',
                         accessor: 'name',
@@ -37,11 +39,34 @@ class SelectTree extends Component {
                     {
                         Header: 'Description',
                         accessor: 'description',
+                        Cell: (row) => {
+                            return (
+                                <HelpButton
+                                    id={row.original.idx}
+                                    text={row.original.description}
+                                />
+                            )
+                        },
+                    },
+                    {
+                        Header: 'Choose',
+                        accessor: 'name',
+                        Cell: (row) => {
+                            return (
+                                <IconButton
+                                    isOutline={false}
+                                    color="primary"
+                                    icon={faTags}
+                                    text="Choose"
+                                    onClick={() => this.selectRow(row.original)}
+                                />
+                            )
+                        },
                     },
                 ]}
-                getTrProps={(state, rowInfo) => ({
-                    onClick: () => this.selectRow(rowInfo.original),
-                })}
+                // getTrProps={(state, rowInfo) => ({
+                //     onClick: () => this.selectRow(rowInfo.original),
+                // })}
                 defaultSorted={[
                     {
                         id: 'name',

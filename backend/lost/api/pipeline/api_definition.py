@@ -22,6 +22,7 @@ template  = api.model('Template', {
     'date': fields.DateTime(readOnly=True, description="Timestamp when template was imported."),
     'availableLabelTrees': fields.Raw(readOnly=True, description="All available label trees in system."),
     'availableGroups': fields.Raw(readOnly=True, description="All available groups for the user."),
+    'pipelineCount': fields.Raw(readOnly=True, description="Number of pipelines started with this template."),
     'elements': fields.Raw()
     #'elements': fields.List(fields.Nested(template_element))
 })

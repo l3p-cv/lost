@@ -1,0 +1,35 @@
+{
+  "description" : "Request multi image annotations for all images of a specified data source.",
+  "author" : "Jonas Jaeger",
+  "pipe-schema-version" : 1.0,
+  "elements" : [
+    {
+      "peN" : 0,
+      "peOut" : [1],
+      "datasource" : {
+        "type" : "rawFile"
+      }
+    },
+    {
+      "peN" : 1,
+      "peOut" : [2],
+      "script" : {
+        "path": "request_annos.py",
+        "description": "Request annotations for all images in a folder."
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : null,
+      "annoTask" : {
+        "name" : "MultiImageAnnoation",
+        "type" : "mia",
+        "instructions" : "Please assign a class label to all presented images.",
+        "configuration": {
+          "type": "imageBased",
+          "showProposedLabel": true
+        }
+      }
+    }
+  ]
+}

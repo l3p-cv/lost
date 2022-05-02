@@ -5,7 +5,9 @@ import AnnoTaskModal from './types/AnnoTaskModal'
 import LoopModal from './types/LoopModal'
 import VisualOutputModal from './types/VisualOutputModal'
 import DataExportModal from './types/DataExportModal'
-import { Button, Modal, ModalFooter } from 'reactstrap'
+import { Modal, ModalFooter } from 'reactstrap'
+import IconButton from '../../../../../components/IconButton'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
 import actions from '../../../../../actions/pipeline/pipelineRunning'
 import actionsAll from '../../../../../actions'
@@ -57,9 +59,13 @@ class BaseModal extends Component {
             >
                 {this.selectModal()}
                 <ModalFooter>
-                    <Button color="secondary" onClick={this.toggleModal}>
-                        Okay
-                    </Button>
+                    <IconButton
+                        color="secondary"
+                        isOutline={false}
+                        icon={faTimes}
+                        text="Close"
+                        onClick={this.toggleModal}
+                    />
                 </ModalFooter>
             </Modal>
         )

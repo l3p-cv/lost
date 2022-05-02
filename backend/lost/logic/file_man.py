@@ -11,9 +11,11 @@ import fsspec
 import numpy as np
 import cv2
 import ast
+from lost import settings
 from lost.logic.crypt import decrypt_fs_connection
 
 MEDIA_ROOT_PATH = "media/"
+EXPORT_ROOT_PATH = "ds_export/"
 PIPE_ROOT_PATH = "pipes/"
 INSTANCE_ROOT_PATH = "instance/"
 DEBUG_ROOT_PATH = "debug/"
@@ -40,7 +42,7 @@ def chonkyfy(fs_list, root, fs):
             'name':os.path.basename(el['name'])
         }
         try:
-            res['modDate'] = el['LastModified'].strftime("%Y-%m-%d %H:%M:%S")
+            res['modDate'] = el['LastModified'].strftime(settings.STRF_TIME)
         except:
             pass
         if el['type'] == 'file':
@@ -174,6 +176,12 @@ class FileMan(object):
         if not self.fs.exists(m_path):
             self.fs.mkdirs(m_path)
         return m_path
+    
+    def get_export_ds_path(self, export_id):
+        my_path = os.path.join(self.root_path, EXPORT_ROOT_PATH, str(export_id))
+        if not self.fs.exists(my_path):
+            self.fs.mkdirs(my_path)
+        return my_path
 
     def load_img(self, path, color_type='color'):
         '''Load image from filesystem
@@ -197,6 +205,18 @@ class FileMan(object):
             img = cv2.imdecode(arr, color)
         return img
 
+    def load_file(self, path, option='rb'):
+        '''Load file from filesystem
+        
+        Args:
+            path (str): Absolute path to file that should be loaded
+        
+        Returns:
+            bytes
+        '''
+        with self.fs.open(path, option) as f:
+            return f.read()
+    
     def get_pipe_log_path(self, pipe_id):
         base_path = os.path.join(self.root_path, PIPE_LOG_PATH)
         if not self.fs.exists(base_path):

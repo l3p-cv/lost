@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import actions from '../../../../actions/pipeline/pipelineStart'
 import { connect } from 'react-redux'
-import ReactTable from 'react-table'
-import 'react-table/react-table.css'
+import { faPlay } from '@fortawesome/free-solid-svg-icons'
+import IconButton from '../../../../components/IconButton'
+import Datatable from '../../../../components/Datatable'
+import HelpButton from '../../../../components/HelpButton'
 const { getTemplates, selectTab, verifyTab, getTemplate } = actions
 
 class SelectPipeline extends Component {
@@ -29,36 +31,70 @@ class SelectPipeline extends Component {
             }
             const data = this.props.data.response.templates.map((el) => ({
                 ...el,
-                date: new Date(el.date),
             }))
             return (
-                <ReactTable
+                <Datatable
                     columns={[
                         {
-                            Header: 'Name',
+                            Header: 'Name / Project',
                             accessor: 'name',
+                            Cell: (row) => {
+                                return (
+                                    <>
+                                        {' '}
+                                        <b>{row.original.name.split('.')[1]}</b>{' '}
+                                        <div className="small text-muted">
+                                            {`${row.original.name.split('.')[0]}`}
+                                        </div>
+                                    </>
+                                )
+                            },
                         },
                         {
                             Header: 'Description',
                             accessor: 'description',
-                        },
-                        {
-                            Header: 'Date',
                             Cell: (row) => {
-                                return new Date(row.value).toLocaleString('de')
+                                return (
+                                    <HelpButton
+                                        id={row.original.id}
+                                        text={row.original.description}
+                                    />
+                                )
                             },
-                            accessor: 'date',
-                            sortMethod: (date1, date2) => {
-                                if (new Date(date1) > new Date(date2)) {
-                                    return -1
-                                }
-                                return 1
+                        },
+                        // {
+                        //     Header: 'Imported on',
+                        //     Cell: (row) => {
+                        //         return new Date(row.original.date).toLocaleString()
+                        //     },
+                        //     accessor: 'date',
+                        //     sortMethod: (date1, date2) => {
+                        //         if (new Date(date1) > new Date(date2)) {
+                        //             return -1
+                        //         }
+                        //         return 1
+                        //     },
+                        // },
+                        {
+                            Header: 'Start',
+                            Cell: (row) => {
+                                return (
+                                    <IconButton
+                                        color="primary"
+                                        size="m"
+                                        isOutline={false}
+                                        onClick={() => this.selectRow(row.original.id)}
+                                        icon={faPlay}
+                                        text="Start"
+                                    />
+                                )
                             },
+                            accessor: 'id',
                         },
                     ]}
-                    getTrProps={(state, rowInfo) => ({
-                        onClick: () => this.selectRow(rowInfo.original.id),
-                    })}
+                    // getTrProps={(state, rowInfo) => ({
+                    //     onClick: () => this.selectRow(rowInfo.original.id),
+                    // })}
                     defaultSorted={[
                         {
                             id: 'date',

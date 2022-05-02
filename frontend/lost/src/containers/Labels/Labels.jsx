@@ -12,10 +12,10 @@ const Labels = ({ visLevel }) => {
         dispatch(actions.getLabelTrees(visLevel))
     }, [])
     return (
-        <BaseContainer>
+        <>
             <CreateLabelTree visLevel={visLevel} />
             <LabelTreeTable labelTrees={labelTrees} visLevel={visLevel}></LabelTreeTable>
-        </BaseContainer>
+        </>
     )
 }
 

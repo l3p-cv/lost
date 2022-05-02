@@ -3,7 +3,7 @@ import * as REQUEST_STATUS from '../types/requestStatus'
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
-    showConfirmButton: false
+    showConfirmButton: false,
 })
 
 const TimerToast = Swal.mixin({
@@ -11,26 +11,27 @@ const TimerToast = Swal.mixin({
     timer: 3000,
     timerProgressBar: true,
     position: 'top-end',
-    showConfirmButton: false
+    showConfirmButton: false,
 })
 
 export const showLoading = () => {
     Toast.fire({
-        title: 'Loading...'
+        title: 'Loading...',
     })
 }
 
 export const showSuccess = (text) => {
     TimerToast.fire({
         icon: 'success',
-        title: text
+        title: text,
     })
 }
 
-export const showError = (text) => {
+export const showError = (text, timer = 3000) => {
     TimerToast.fire({
         icon: 'error',
-        title: text
+        timer: timer,
+        title: text,
     })
 }
 
@@ -47,7 +48,7 @@ export const handling = (status, successText) => {
 }
 
 export const networkRequest = (requestStatus) => {
-    if(requestStatus.status) {
+    if (requestStatus.status) {
         if (REQUEST_STATUS.LOADING === requestStatus.status) {
             showLoading()
         } else if (REQUEST_STATUS.SUCCESS === requestStatus.status) {

@@ -1,0 +1,36 @@
+{
+  "description": "Request all annotations from a dataset file (csv or parquet) in lost_dataset format again.",
+  "author": "Jonas Jaeger",
+  "pipe-schema-version" : 1.0,
+  "elements": [{
+      "peN": 0,
+      "peOut": [1],
+      "datasource": {
+        "type": "rawFile"
+      }
+    },
+    {
+      "peN": 1,
+      "peOut": [2],
+      "script": {
+        "path": "request_annos_again.py",
+        "description": "Request all annotations from an anno file again."
+      }
+    },
+    {
+      "peN" : 2,
+      "peOut" : null,
+      "annoTask" : {
+        "name" : "MultiImageAnnotation",
+        "type" : "mia",
+        "instructions" : "Please assign a class label to all presented images.",
+        "configuration":{
+          "type": "annoBased",
+          "drawAnno": false,
+          "addContext": 0.0,
+          "showProposedLabel": true
+        }
+      }
+    }
+  ]
+}

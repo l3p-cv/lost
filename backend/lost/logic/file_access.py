@@ -49,16 +49,30 @@ class UserFileAccess(object):
     def load_anno_img(self,db_img):
         anno_task = self.dbm.get_anno_task(db_img.anno_task_id)
         user = self.user
-        if anno_task.manager_id == user.idx:
+        if anno_task.pipe_element.pipe.manager_id == user.idx:
             return self.fm.load_img(db_img.img_path)
         elif anno_task.group_id in [g.group_id for g in user.groups]:
             return self.fm.load_img(db_img.img_path)
+        else:
+            raise FsAccessNotPermitted()
+    
+    def load_file(self, path, option='rb'):
+        if 'r' in self.get_permission():
+            return self.fm.load_file(path, option)
+        else:
+            raise FsAccessNotPermitted()
+
+    def rm(self, path, recursive=False):
+        if 'w' in self.get_permission():
+            return self.fm.rm(path, recursive=recursive)
         else:
             raise FsAccessNotPermitted()
 
     def get_media_path(self):
         return self.fm.get_media_path()
 
+    def get_export_ds_path(self, export_id):
+        return self.fm.get_export_ds_path(export_id)
 
     def _user_default_required(self):
         '''Check if an action will be performed on users default fs
@@ -129,6 +143,11 @@ class UserFileAccess(object):
             Fsspec Filesystem
         '''
         fs_db = self.get_fs_db(name, fs_id)
+        fm = FileMan(fs_db=fs_db)
+        return fm.fs
+
+    def get_user_default_fs(self):
+        fs_db = self.get_user_default_fs_db()
         fm = FileMan(fs_db=fs_db)
         return fm.fs
 

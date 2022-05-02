@@ -1,6 +1,6 @@
 
 {
-  "description": "This pipe represents a two stage annotation process. In a first stage bbox annotations are created and in the second stage this bboxes will be labeled by MIA. Semi Automatic support is achieved using yolo box proposals in first stage and class label for clustering in second stage.",
+  "description": "This pipeline represents a two stage annotation process. In a first stage bbox annotations are collected and in the second stage this bboxes will be labeled by MIA.",
   "author": "Jonas Jaeger",
   "pipe-schema-version" : 1.0,
   "elements": [{
@@ -15,7 +15,7 @@
       "peOut": [2],
       "script": {
         "path": "request_annos.py",
-        "description": "Request BBoxAnnotations for all images in an rawFile."
+        "description": "Request annotations for all images in a folder."
       }
     },
     {
@@ -56,35 +56,22 @@
       "peOut": [4],
       "script": {
         "path": "cluster_using_prev_stage.py",
-        "description": "Cluster bboxes by class labels from previous stage"
+        "description": "Cluster bboxes by class labels from previous stage."
       }
     },
     {
       "peN" : 4,
-      "peOut" : [5],
+      "peOut" : null,
       "annoTask" : {
         "name" : "MultiImageAnnotation",
         "type" : "mia",
-        "instructions" : "Please assign a class labels to all presented images.",
+        "instructions" : "Please assign a class label to all presented images.",
         "configuration":{
           "type": "annoBased",
           "drawAnno": false,
           "addContext": 0.0
         }
       }
-    },
-    {
-      "peN": 5,
-      "peOut": [6],
-      "script": {
-        "path": "export_csv.py",
-        "description": "Export all annotations to a csv file."
-      }
-    },
-    {
-      "peN": 6,
-      "peOut": null,
-      "dataExport": {}
     }
   ]
 }
