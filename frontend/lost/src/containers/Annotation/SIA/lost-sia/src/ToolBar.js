@@ -47,6 +47,7 @@ class ToolBar extends Component{
     }
 
     calcPosition(){
+        if (!this.props.enabled) return
         const tb = this.toolBarGroup.current.getBoundingClientRect()
         if (tb){
             if (this.props.svg){
@@ -116,6 +117,7 @@ class ToolBar extends Component{
 
     renderToolButtons(){
         if (!this.props.canvasConfig) return null
+        if (!this.props.enabled.toolSelection) return null
         if (!this.props.canvasConfig.annos.actions.draw) return null
         let btns = []
         if (this.props.canvasConfig.tools.point){
@@ -190,6 +192,7 @@ class ToolBar extends Component{
      */
     renderNavigation(){
         let btns = []
+        if (!this.props.enabled.nextPrev) return null
         if (this.props.imageMeta){
             if (this.props.imageMeta.isLast){
                 btns.push(
@@ -225,6 +228,7 @@ class ToolBar extends Component{
     }
 
     renderJunkButton(){
+        if (!this.props.enabled.junk) return null
         return <Menu.Item name='ban' key='junk'
             active={this.props.active.isJunk} 
             onClick={() => this.toggleJunk()}
@@ -234,6 +238,7 @@ class ToolBar extends Component{
     }
 
     renderDeleteAllAnnosButton(){
+        if (!this.props.enabled.deleteAll) return null
         return <Menu.Item name='trash alternate outline' key='deleteAllAnnos'
             onClick={() => this.handleOnDeleteAllAnnos()}
         >
@@ -242,6 +247,7 @@ class ToolBar extends Component{
     }
 
     renderHelpButton(){
+        if (!this.props.enabled.help) return null
         return <Menu.Item name='help' key='help'
             active={false} 
             onClick={() => this.toggleHelp()}
@@ -314,6 +320,7 @@ class ToolBar extends Component{
 
     
     renderImgLabelInput(){
+        if (!this.props.enabled.imgLabel) return null
         if (this.props.canvasConfig.img.actions.label){
             return <Menu.Item name='img label input' 
                 // active={this.props.imgLabelInput.show} 
@@ -326,7 +333,34 @@ class ToolBar extends Component{
         }
     }
 
+    renderFullscreenBtn(){
+        if (!this.props.enabled.fullscreen) return null
+        return <Menu.Item name='expand arrows alternate' 
+                    active={this.props.active.fullscreen} 
+                    onClick={() => this.toggleFullscreen()}
+                >
+                    <Icon name='expand arrows alternate' />
+                </Menu.Item>
+    }
+
+    renderSettingBtn(){
+        if (!this.props.enabled.settings) return null
+        return <SIASettingButton 
+                    uiConfig={this.props.uiConfig}
+                    onSettingEvent={(e,data) => this.triggerToolBarEvent(e, data)}/>
+    }
+
+    renderFilterBtn(){
+        if (!this.props.enabled.filter) return null
+        return <SIAFilterButton 
+                    onFilterEvent={(e, data) => this.triggerToolBarEvent(e, data)}
+                    filter={this.props.filter}
+                    imageMeta={this.props.imageMeta}
+                />
+    }
+
     render(){
+        if (!this.props.enabled) return null
         return(
         <div
             ref={this.toolBarGroup}
@@ -335,23 +369,12 @@ class ToolBar extends Component{
                 {this.renderImgLabelInput()}
                 {this.renderNavigation()}
                 {this.renderToolButtons()}
-                <Menu.Item name='expand arrows alternate' 
-                    active={this.props.active.fullscreen} 
-                    onClick={() => this.toggleFullscreen()}
-                >
-                    <Icon name='expand arrows alternate' />
-                </Menu.Item>
+                {this.renderFullscreenBtn()}
                 {this.renderJunkButton()}
                 {this.renderDeleteAllAnnosButton()}
-                <SIASettingButton 
-                    uiConfig={this.props.uiConfig}
-                    onSettingEvent={(e,data) => this.triggerToolBarEvent(e, data)}/>
-                <SIAFilterButton 
-                    onFilterEvent={(e, data) => this.triggerToolBarEvent(e, data)}
-                    filter={this.props.filter}
-                    imageMeta={this.props.imageMeta}
-                />
                 {this.renderHelpButton()}
+                {this.renderSettingBtn()}
+                {this.renderFilterBtn()}
             </Menu>
         </div>
         )

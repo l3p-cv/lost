@@ -222,6 +222,7 @@ class SiaWrapper extends Component {
     }
 
     handleToolBarEvent(e, data) {
+        console.log('action, data', e, data)
         switch (e) {
             case tbe.DELETE_ALL_ANNOS:
                 // this.canvas.deleteAllAnnos()
@@ -542,8 +543,19 @@ class SiaWrapper extends Component {
                     isJunk={this.props.isJunk}
                     blocked={this.state.blockCanvas}
                     onToolBarEvent={(e, data) => this.handleToolBarEvent(e, data)}
-                    svg={this.props.svg}
+                    // svg={this.props.svg}
                     filter={this.props.filter}
+                    toolbarEnabled={{
+                        imgLabel: true,
+                        nextPrev: true,
+                        toolSelection: true,
+                        fullscreen: true,
+                        junk: true,
+                        deleteAll: true,
+                        settings: true,
+                        filter: true,
+                        help: true
+                    }}
                 />
                 <NotificationContainer />
             </div>
