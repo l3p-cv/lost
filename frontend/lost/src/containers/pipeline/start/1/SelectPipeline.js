@@ -31,16 +31,23 @@ class SelectPipeline extends Component {
             }
             const data = this.props.data.response.templates.map((el) => ({
                 ...el,
-                date: new Date(el.date),
             }))
             return (
                 <Datatable
                     columns={[
                         {
-                            Header: 'Name',
+                            Header: 'Name / Project',
                             accessor: 'name',
                             Cell: (row) => {
-                                return <b>{row.original.name}</b>
+                                return (
+                                    <>
+                                        {' '}
+                                        <b>{row.original.name.split('.')[1]}</b>{' '}
+                                        <div className="small text-muted">
+                                            {`${row.original.name.split('.')[0]}`}
+                                        </div>
+                                    </>
+                                )
                             },
                         },
                         {
@@ -55,19 +62,19 @@ class SelectPipeline extends Component {
                                 )
                             },
                         },
-                        {
-                            Header: 'Imported on',
-                            Cell: (row) => {
-                                return new Date(row.value).toLocaleString('de')
-                            },
-                            accessor: 'date',
-                            sortMethod: (date1, date2) => {
-                                if (new Date(date1) > new Date(date2)) {
-                                    return -1
-                                }
-                                return 1
-                            },
-                        },
+                        // {
+                        //     Header: 'Imported on',
+                        //     Cell: (row) => {
+                        //         return new Date(row.original.date).toLocaleString()
+                        //     },
+                        //     accessor: 'date',
+                        //     sortMethod: (date1, date2) => {
+                        //         if (new Date(date1) > new Date(date2)) {
+                        //             return -1
+                        //         }
+                        //         return 1
+                        //     },
+                        // },
                         {
                             Header: 'Start',
                             Cell: (row) => {

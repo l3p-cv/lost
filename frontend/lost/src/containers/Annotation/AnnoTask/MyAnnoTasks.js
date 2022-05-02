@@ -1,14 +1,16 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Progress, Table, Card, CardHeader, CardBody, Row, Col } from 'reactstrap'
-import { CRow, CCol } from '@coreui/react'
+import { Progress, Card, CardHeader, CardBody, Row, Col } from 'reactstrap'
+import { CRow } from '@coreui/react'
 import { getColor } from './utils'
 import AmountPerLabel from './AmountPerLabel'
 import IconButton from '../../../components/IconButton'
 import Modal from 'react-modal'
+import ReactTable from 'react-table'
+import 'react-table/react-table.css'
 
 import actions from '../../../actions'
-import { faChartBar, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faChartBar, faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -153,128 +155,176 @@ class MyAnnoTasks extends Component {
         } else return <div>No Data available.</div>
     }
 
-    renderTableBody() {
-        return (
-            <tbody>
-                {this.props.annoTasks.map((annoTask) => {
-                    let progress = Math.floor((annoTask.finished / annoTask.size) * 100)
-                    if (annoTask.lastActivity) {
-                        const twoWeeksAgo = new Date()
-                        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
-                        const lastActivityDate = new Date(annoTask.lastActivity)
-                        if (
-                            annoTask.status === 'finished' &&
-                            lastActivityDate < twoWeeksAgo
-                        ) {
-                            return undefined
-                        }
-                    }
-                    return (
-                        <tr
-                            key={annoTask.id}
-                            style={
-                                annoTask.status === 'inProgress'
-                                    ? { cursor: 'pointer' }
-                                    : { backgroundColor: '#CCCCCC' }
-                            }
-                        >
-                            <td
-                                className="text-center"
-                                onClick={() => this.handleRowClick(annoTask)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <div>{annoTask.name}</div>
-                                <div className="small text-muted">ID: {annoTask.id}</div>
-                            </td>
-                            <td
-                                onClick={() => this.handleRowClick(annoTask)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <div>{annoTask.pipelineName}</div>
-                                <div className="small text-muted">
-                                    Created by: {annoTask.pipelineCreator}
-                                </div>
-                            </td>
-                            <td
-                                className="text-center"
-                                onClick={() => this.handleRowClick(annoTask)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <div>{annoTask.group}</div>
-                            </td>
-                            <td
-                                onClick={() => this.handleRowClick(annoTask)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <div className="clearfix">
-                                    <div className="float-left">
-                                        <strong>{progress}%</strong>
-                                    </div>
-                                    <div className="float-right">
-                                        <small className="text-muted">
-                                            Started at: {annoTask.createdAt}
-                                        </small>
-                                    </div>
-                                </div>
-                                <Progress
-                                    className="progress-xs"
-                                    color={getColor(progress)}
-                                    value={progress}
-                                />
-                                <div className="small text-muted">
-                                    {annoTask.finished}/{annoTask.size}
-                                </div>
-                            </td>
-                            <td
-                                className="text-center"
-                                onClick={() => this.handleRowClick(annoTask)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <strong>{annoTask.type}</strong>
-                            </td>
-                            <td
-                                onClick={() => this.handleRowClick(annoTask)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <strong>{annoTask.lastActivity}</strong>
-                                <div className="small text-muted">
-                                    by {annoTask.lastAnnotator}
-                                </div>
-                            </td>
-                            <td>
-                                <IconButton
-                                    onClick={() => this.handleStatisticsClick(annoTask)}
-                                    color="primary"
-                                    isOutline={false}
-                                    disabled={progress > 0 ? false : true}
-                                    text="Statistic"
-                                    icon={faChartBar}
-                                />
-                            </td>
-                        </tr>
-                    )
-                })}
-            </tbody>
-        )
-    }
     render() {
         return (
             <React.Fragment>
                 {this.renderStatisticModal()}
-                <Table hover responsive className="table-outline mb-0 d-none d-sm-table">
-                    <thead className="thead-light">
-                        <tr>
-                            <th className="text-center">Name</th>
-                            <th className="text-center">Pipeline</th>
-                            <th className="text-center">Group/User</th>
-                            <th>Progress</th>
-                            <th className="text-center">Annotation Type</th>
-                            <th className="text-center">Activity</th>
-                            <th className="text-center">Statistics</th>
-                        </tr>
-                    </thead>
-                    {this.renderTableBody()}
-                </Table>
+                <ReactTable
+                    columns={[
+                        {
+                            Header: 'Name',
+                            accessor: 'name',
+                            width: 250,
+                            Cell: (row) => {
+                                return (
+                                    <>
+                                        <div>{row.original.name}</div>
+                                        <div className="small text-muted">
+                                            ID: {row.original.id}
+                                        </div>
+                                    </>
+                                )
+                            },
+                        },
+                        {
+                            Header: 'Pipeline',
+                            accessor: 'name',
+                            Cell: (row) => {
+                                return (
+                                    <>
+                                        <div>{row.original.pipelineName}</div>
+                                        <div className="small text-muted">
+                                            Created by: {row.original.pipelineCreator}
+                                        </div>
+                                    </>
+                                )
+                            },
+                        },
+                        {
+                            Header: 'Group / User',
+                            accessor: 'name',
+                            Cell: (row) => {
+                                return <div>{row.original.group}</div>
+                            },
+                        },
+                        {
+                            Header: 'Progress',
+                            accessor: 'name',
+                            width: 300,
+                            Cell: (row) => {
+                                const progress = Math.floor(
+                                    (row.original.finished / row.original.size) * 100,
+                                )
+                                return (
+                                    <>
+                                        <div className="clearfix">
+                                            <div className="float-left">
+                                                <strong>{progress}%</strong>
+                                            </div>
+                                            <div className="float-right">
+                                                <small className="text-muted">
+                                                    Started at:{' '}
+                                                    {new Date(
+                                                        row.original.createdAt,
+                                                    ).toLocaleString()}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <Progress
+                                            className="progress-xs"
+                                            color={getColor(progress)}
+                                            value={progress}
+                                        />
+                                        <div className="small text-muted">
+                                            {row.original.finished}/{row.original.size}
+                                        </div>
+                                    </>
+                                )
+                            },
+                        },
+                        {
+                            Header: 'Annotation Type',
+                            accessor: 'name',
+                            Cell: (row) => {
+                                return <strong>{row.original.type}</strong>
+                            },
+                        },
+                        {
+                            Header: 'Activity',
+                            accessor: 'name',
+                            Cell: (row) => {
+                                return (
+                                    <>
+                                        <strong>
+                                            {new Date(
+                                                row.original.lastActivity,
+                                            ).toLocaleString()}
+                                        </strong>
+                                        <div className="small text-muted">
+                                            by {row.original.lastAnnotator}
+                                        </div>
+                                    </>
+                                )
+                            },
+                        },
+                        {
+                            Header: 'Statistic',
+                            accessor: 'name',
+                            Cell: (row) => {
+                                const progress = Math.floor(
+                                    (row.original.finished / row.original.size) * 100,
+                                )
+                                return (
+                                    <>
+                                        <IconButton
+                                            onClick={() =>
+                                                this.handleStatisticsClick(row.original)
+                                            }
+                                            color="primary"
+                                            disabled={progress > 0 ? false : true}
+                                            text="Statistic"
+                                            icon={faChartBar}
+                                        />
+                                    </>
+                                )
+                            },
+                        },
+                        {
+                            Header: 'Annotate',
+                            accessor: 'name',
+                            Cell: (row) => {
+                                const progress = Math.floor(
+                                    (row.original.finished / row.original.size) * 100,
+                                )
+                                return (
+                                    <>
+                                        {progress < 100 ? (
+                                            <IconButton
+                                                onClick={() =>
+                                                    this.handleRowClick(row.original)
+                                                }
+                                                color="primary"
+                                                isOutline={false}
+                                                text="Annotate"
+                                                icon={faPencil}
+                                            />
+                                        ) : (
+                                            <IconButton
+                                                onClick={() =>
+                                                    this.handleRowClick(row.original)
+                                                }
+                                                color="primary"
+                                                isOutline={false}
+                                                disabled
+                                                text="Finished"
+                                                icon={faCheck}
+                                            />
+                                        )}
+                                    </>
+                                )
+                            },
+                        },
+                    ]}
+                    defaultSorted={[
+                        {
+                            id: 'lastActivity',
+                            desc: false,
+                        },
+                    ]}
+                    data={this.props.annoTasks}
+                    defaultPageSize={10}
+                    className="-striped -highlight"
+                />
             </React.Fragment>
         )
     }

@@ -118,7 +118,8 @@ class WorkingOnSIA extends Component {
                         </div>
                         <div className="float-right">
                             <small className="text-muted">
-                                Started at: {this.props.annoTask.createdAt}
+                                Started at:{' '}
+                                {new Date(this.props.annoTask.createdAt).toLocaleString()}
                             </small>
                         </div>
                     </div>

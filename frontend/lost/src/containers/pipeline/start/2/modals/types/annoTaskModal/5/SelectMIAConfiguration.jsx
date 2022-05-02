@@ -50,7 +50,6 @@ export const SelectMIAConfiguration = ({ ...props }) => {
     }, [props])
 
     const changeValue = (key, value) => {
-        console.log(key, value)
         let newConfiguration = { ...configuration }
         switch (key) {
             case 'show-proposed-label':
@@ -79,10 +78,10 @@ export const SelectMIAConfiguration = ({ ...props }) => {
         }
     }
     return (
-        <CCard className="annotask-modal-card">
+        <>
             {configuration ? (
-                <CCardBody>
-                    <CRow>
+                <>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="12">
                             <h4>MIA Configuration</h4>
                             <CRow>
@@ -237,11 +236,11 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                             </CRow>
                         </CCol>
                     </CRow>
-                </CCardBody>
+                </>
             ) : (
                 ''
             )}
-        </CCard>
+        </>
     )
 }
 

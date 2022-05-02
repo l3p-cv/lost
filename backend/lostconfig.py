@@ -126,6 +126,9 @@ class LOSTConfig(object):
         self.max_file_upload_size = ge('LOST_MAX_FILE_UPLOAD_SIZE', 1024 * 1024 * 1024) # = 1GB 
         # max file upload size has to be adapted in nginx proxy configuration as well !
 
+        # Max img export limit
+        self.img_export_limit = ge('LOST_MAX_IMG_EXPORT', 2500)
+
         # LDAP Configuation
         self.ldap_config = dict()
         self.ldap_config['LDAP_ACTIVE'] = ge('LOST_LDAP_ACTIVE', False)

@@ -18,6 +18,7 @@ RUN wget --quiet https://github.com/conda-forge/miniforge/releases/latest/downlo
     echo "conda activate lost" >> ~/.bashrc
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 # ADD /docker/lost-base/environment.yml .
 ADD /docker/lost-base/mamba_env.sh .
 # ADD mamba_env.sh .

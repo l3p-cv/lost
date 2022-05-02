@@ -45,6 +45,11 @@ const AnnosPerHour = ({ data }) => {
                             drawOnChartArea: false,
                         },
                         time: {
+                            // parser: 'YYYY-MM-DD HH:mm',
+                            parser: function (date) {
+                                return date.toLocaleString()
+                            },
+                            tooltipFormat: 'll HH:mm',
                             unit: 'day',
                             unitStepSize: 1,
                             displayFormats: {

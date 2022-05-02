@@ -106,7 +106,7 @@ class WorkersTable extends Component {
 
                     if (worker.timestamp) {
                         const someSecondsAgo = new Date(Date.now() - 15000) // fix this to correct timestamp
-                        const lastActivityDate = new Date(`${worker.timestamp}Z`)
+                        const lastActivityDate = new Date(worker.timestamp)
                         if (lastActivityDate < someSecondsAgo) {
                             statusColor = 'danger'
                             statusText = 'Offline'
@@ -122,9 +122,7 @@ class WorkersTable extends Component {
                                 <div>{worker.env_name}</div>
                                 <div className="small text-muted">
                                     Registered at:{' '}
-                                    {new Date(
-                                        `${worker.register_timestamp}Z`,
-                                    ).toLocaleString()}
+                                    {new Date(worker.register_timestamp).toLocaleString()}
                                 </div>
                             </td>
                             <td className="text-center">
@@ -133,7 +131,7 @@ class WorkersTable extends Component {
                                 </div>
                                 <div className="small text-muted">
                                     Last life sign:{' '}
-                                    {new Date(`${worker.timestamp}Z`).toLocaleString()}
+                                    {new Date(worker.timestamp).toLocaleString()}
                                 </div>
                             </td>
                             <td className="text-center">

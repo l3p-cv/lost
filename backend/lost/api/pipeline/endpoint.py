@@ -1,6 +1,5 @@
-from distutils.command.upload import upload
+import subprocess
 import shutil
-from tkinter.tix import Tree
 from flask import request, make_response
 from flask_restx import Resource, Mask
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -209,8 +208,8 @@ class PipelinePlay(Resource):
             dbm.close_session()
             return "success"
 
-@namespace.route('/project/import')
-class TemplateImport(Resource):
+@namespace.route('/project/import_zip')
+class TemplateImportZip(Resource):
     @jwt_required
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -249,7 +248,66 @@ class TemplateImport(Resource):
                 dbm.close_session()
                 return "success", 200
             except:
+                # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
                 dbm.close_session()
+                return "error", 200
+
+@namespace.route('/project/import_git')
+class TemplateImportGit(Resource):
+    @jwt_required
+    def post(self):
+
+        def git(*args):
+            return subprocess.check_call(['git'] + list(args))
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ADMINISTRATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+        else:
+            try:
+                fm = AppFileMan(LOST_CONFIG)
+                data = json.loads(request.data)
+                git_url = data['gitUrl']
+                git_branch = data['gitBranch']
+                git_project = os.path.splitext(os.path.basename(git_url))[0]
+                # raise Exception(git_project)
+
+                upload_path = fm.get_upload_path(identity, git_project)
+                if git_branch == 'main':
+                    git('clone', git_url, upload_path)
+                else:
+                    git('clone', git_url, upload_path, '-b', git_branch)
+                
+                # USER_NAMESPACE = False
+                # if USER_NAMESPACE:
+                #     head, tail = os.path.split(upload_path)
+                #     upload_path = os.path.join(head, f'{identity}_{tail}')
+                # uploaded_file.save(upload_path)
+
+                # pp_path = fm.get_pipe_project_path()
+                # dst_dir = os.path.basename(upload_path)
+                # dst_dir = os.path.splitext(dst_dir)[0]
+                # e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
+                # extract_path = os.path.join(e_path, dst_dir)
+                # dst_path = os.path.join(pp_path, dst_dir)
+                # extracted_path = template_import.unpack_pipe_project(upload_path, extract_path)
+                # shutil.copytree(extracted_path, dst_path)
+                # dbm = access.DBMan(LOST_CONFIG)
+                # if not USER_NAMESPACE:
+                #     importer = template_import.PipeImporter(dst_path, dbm)
+                # else:
+                #     importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
+                # importer.start_import()
+                # fm.fs.rm(upload_path, recursive=True)
+                # fm.fs.rm(e_path, recursive=True)
+                dbm.close_session()
+                return "success", 200
+            except:
+                # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
+                dbm.close_session()
+                raise
                 return "error", 200
 
 @namespace.route('/project/export/<string:pipe_project>')
@@ -310,10 +368,20 @@ class ProjectList(Resource):
         def filter_by_pipe_project(re):
             pipeProjects = list()
             unique = list()
+            pipeProjectCounter = dict()
             for x in re['templates']:
+                if x['pipeProject'] in pipeProjectCounter:
+                    pipeProjectCounter[x['pipeProject']] += x['pipelineCount']
+                else:
+                    pipeProjectCounter[x['pipeProject']] = x['pipelineCount']
                 if x['pipeProject'] not in pipeProjects:
                     unique.append(x)
                     pipeProjects.append(x['pipeProject'])
+            
+            for projectName in pipeProjects:
+                for un in unique:
+                    if un['pipeProject'] == projectName:
+                        un['pipelineCount'] = pipeProjectCounter[projectName]
             return {"templates": unique}
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -325,24 +393,19 @@ class ProjectList(Resource):
                 return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx)
-                re = filter_by_pipe_project(re)
-                dbm.close_session()
-                return re
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
                 return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
             else:
                 re = template_service.get_templates(dbm)
-                re = filter_by_pipe_project(re)
-                dbm.close_session()
-                return re
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
                 return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
-                re = filter_by_pipe_project(re)
-                dbm.close_session()
-                return re
+    
+        re = filter_by_pipe_project(re)
+        dbm.close_session()
+        return re

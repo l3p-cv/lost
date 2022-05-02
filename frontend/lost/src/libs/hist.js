@@ -1,50 +1,48 @@
-class UndoRedo{
-    constructor(maxElements=100){
+class UndoRedo {
+    constructor(maxElements = 100) {
         this.hist = []
         this.pointer = 0
         this.maxElements = maxElements
     }
 
-    push(entry, description='No description'){
-        console.log(this.pointer)
+    push(entry, description = 'No description') {
         const histEl = {
             entry,
-            description
+            description,
         }
-        if (this.pointer !== 0){
-            while (this.pointer !== 0){
+        if (this.pointer !== 0) {
+            while (this.pointer !== 0) {
                 this.pointer--
                 this.hist.shift()
             }
         }
         this.hist.unshift(histEl)
-        if (this.hist.length > this.maxElements){
+        if (this.hist.length > this.maxElements) {
             this.hist.pop()
         }
     }
 
-    undo(){
-        if (this.pointer+1 < this.hist.length){
-            // const element = 
+    undo() {
+        if (this.pointer + 1 < this.hist.length) {
+            // const element =
             this.pointer++
-            console.log(this.pointer)
             return this.hist[this.pointer]
         } else {
-            return this.hist[this.hist.length-1]
+            return this.hist[this.hist.length - 1]
         }
     }
 
-    undoMia(){
-        if (this.pointer+1 < this.hist.length){
+    undoMia() {
+        if (this.pointer + 1 < this.hist.length) {
             this.pointer++
-            return this.hist[this.pointer-1] 
+            return this.hist[this.pointer - 1]
         } else {
-                return this.hist[this.hist.length-1]
-            }
+            return this.hist[this.hist.length - 1]
+        }
     }
 
-    redo(){
-        if (this.pointer-1 >= 0){
+    redo() {
+        if (this.pointer - 1 >= 0) {
             this.pointer--
             return this.hist[this.pointer]
         } else {
@@ -52,18 +50,17 @@ class UndoRedo{
         }
     }
 
-    getHist(){
+    getHist() {
         return this.hist
     }
 
-    clearHist(){
+    clearHist() {
         this.hist = []
     }
 
-    isEmpty(){
+    isEmpty() {
         return this.hist.length === 0
     }
-
 }
 
 export default UndoRedo

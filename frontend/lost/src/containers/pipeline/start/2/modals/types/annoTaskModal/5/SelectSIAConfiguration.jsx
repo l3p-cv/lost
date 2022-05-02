@@ -91,10 +91,10 @@ export const SelectSIAConfiguration = ({ ...props }) => {
         }
     }
     return (
-        <CCard className="annotask-modal-card">
+        <>
             {configuration ? (
-                <CCardBody>
-                    <CRow>
+                <>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="6">
                             <h4>Annotation Types</h4>
                             <CRow>
@@ -315,7 +315,7 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                         </CCol>
                     </CRow>
                     <hr></hr>
-                    <CRow>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="12">
                             <h4>
                                 Minimum Annotation Size{' '}
@@ -338,7 +338,7 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                         </CCol>
                     </CRow>
                     <hr></hr>
-                    <CRow>
+                    <CRow style={{ margin: '5px' }}>
                         <CCol sm="12">
                             <h4>Image</h4>
                             <CCol sm="12">
@@ -420,11 +420,11 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                             </CCol>
                         </CCol>
                     </CRow>
-                </CCardBody>
+                </>
             ) : (
                 ''
             )}
-        </CCard>
+        </>
     )
 }
 

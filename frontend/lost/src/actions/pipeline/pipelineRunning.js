@@ -3,10 +3,6 @@ import axios from 'axios'
 import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
 import {
-    alertLoading,
-    alertClose,
-} from '../../containers/pipeline//globalComponents/Sweetalert'
-import {
     dispatchRequestLoading,
     dispatchRequestReset,
     dispatchRequestError,

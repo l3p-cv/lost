@@ -16,12 +16,30 @@ class DatasourceModal extends Component {
 
         this.toggle = this.toggle.bind(this)
         this.selectItem = this.selectItem.bind(this)
+        let selectedFs = undefined
+        let selectedPath = DEFAULT_TEXT_PATH
+        let selectedPathColor = 'red'
+        let initPath = undefined
+        if (props.exportData.datasource.fs_id) {
+            selectedFs = props.datasource.filesystems.find((el) => {
+                if (el.id === props.exportData.datasource.fs_id) {
+                    return el
+                }
+                return undefined
+            })
+            selectedPath = props.exportData.datasource.selectedPath
+            if (selectedPath !== DEFAULT_TEXT_PATH) {
+                initPath = selectedPath
+                selectedPathColor = 'green'
+            }
+        }
         this.state = {
             dropdownOpen: false,
             dsDropdownOpen: false,
-            selectedFs: undefined,
-            selectedPath: DEFAULT_TEXT_PATH,
-            selectedPathColor: 'red',
+            selectedFs: selectedFs,
+            selectedPath: selectedPath,
+            selectedPathColor: selectedPathColor,
+            initPath: initPath,
         }
     }
 
@@ -93,15 +111,20 @@ class DatasourceModal extends Component {
                     <DropdownMenu>
                         {this.props.datasource.filesystems.map((el) => {
                             return (
-                                // <DropdownItem onClick={e => {this.props.pipeStartUpdateDS(this.props.peN, e.target.innerText); console.log('fs_update',e.target)}} key={el.name}>{el.name}</DropdownItem>
-                                <DropdownItem
-                                    onClick={(e) => {
-                                        this.selectDS(el)
-                                    }}
-                                    key={el.name}
-                                >
-                                    {el.name}
-                                </DropdownItem>
+                                <>
+                                    {el.name !== 'default' ? (
+                                        <DropdownItem
+                                            onClick={(e) => {
+                                                this.selectDS(el)
+                                            }}
+                                            key={el.name}
+                                        >
+                                            {el.name}
+                                        </DropdownItem>
+                                    ) : (
+                                        ''
+                                    )}
+                                </>
                             )
                         })}
                     </DropdownMenu>
@@ -119,6 +142,7 @@ class DatasourceModal extends Component {
                     <LostFileBrowser
                         fs={this.state.selectedFs}
                         onPathSelected={(path) => this.selectItem(path)}
+                        initPath={this.state.initPath}
                     />
                 </div>
                 <Divider horizontal>Selected Datasource</Divider>

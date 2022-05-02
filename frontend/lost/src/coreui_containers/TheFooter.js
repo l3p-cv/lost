@@ -27,7 +27,11 @@ const TheFooter = () => {
     const minutes = parseInt(timer / 60)
 
     useInterval(() => {
-        dispatch(actions.checkExpireDate(new Date(Date.now() - seconds * 1000).getTime()))
+        dispatch(
+            actions.checkExpireDate(
+                new Date(Date.now() - (autoLogoutTime - timer) * 1000).getTime(),
+            ),
+        )
     }, 2000)
 
     const renderAutologoutTimerFooter = () => {

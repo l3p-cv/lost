@@ -45,7 +45,11 @@ const IconButton = ({
                 </div>
             )
         }
-        const ic = <FontAwesomeIcon key="icon" icon={iconButtonIcon} />
+        const ic = iconButtonIcon ? (
+            <FontAwesomeIcon key="icon" icon={iconButtonIcon} />
+        ) : (
+            ''
+        )
         const iconButtonText = text ? (
             <span key="text" style={{ marginLeft: margin, marginRight: margin }}>
                 {text}
