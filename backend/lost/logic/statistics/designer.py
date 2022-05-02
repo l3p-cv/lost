@@ -142,6 +142,8 @@ class DesignerStats():
             month = row[1]
             day = row[0]
             hour = row[3]
+            if day < 10:
+                day = f'0{day}'
             if month < 10:
                 month = f'0{month}'
             if hour < 10: 
