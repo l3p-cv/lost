@@ -43,12 +43,13 @@ class PipeImporter(object):
         self.dbm = dbm
         self.user_id = user_id
         self.file_man = AppFileMan(self.dbm.lostconfig)
-        if pipe_template_dir.endswith('/'):
-            pipe_template_dir = pipe_template_dir[:-1]
-        self.src_pipe_template_path = pipe_template_dir
+        pt_dir = find_pipe_root_path(pipe_template_dir)
+        if pt_dir.endswith('/'):
+            pt_dir = pt_dir[:-1]
+        self.src_pipe_template_path = pt_dir
         self.dst_pipe_template_path = os.path.join(self.file_man.pipe_path,
             os.path.basename(self.src_pipe_template_path))
-        self.json_files = glob(os.path.join(pipe_template_dir,'*.json'))
+        self.json_files = glob(os.path.join(pt_dir,'*.json'))
         self.pipes = []
         self.namespace = self._get_namespace()
         for json_path in self.json_files:
@@ -505,22 +506,26 @@ def pack_pipe_project_to_stream(f, project_path):
                 print(rel)
                 zip_file.writestr(rel, read_stream(os.path.join(root, my_file)))
 
+def find_pipe_root_path(pp_path):
+    j_list = glob(os.path.join(pp_path, '*.json'))
+    if len(j_list) > 0:
+        return pp_path
+    for root, dirs, files in os.walk(pp_path):
+        for f in files:
+            if os.path.splitext(f)[1].lower() == '.json':
+                # old_root = root 
+                # new_root = os.path.join(os.path.split(old_root)[0], os.path.basename(pp_path))
+                # os.rename(old_root, new_root)
+                # return new_root
+                return root
+    raise Exception("No valid pipeline file found!")
+    
 def unpack_pipe_project(zip_project, dst_path):
     # res_dir = os.path.basename(dst_path)
     # res_dir = os.path.splitext(res_dir)[0]
     # dst = os.path.join(dst_path, res_dir)
     shutil.unpack_archive(zip_project, dst_path)
     # dirs = os.listdir(dst_path)
-    j_list = glob(os.path.join(dst_path, '*.json'))
-    if len(j_list) > 0:
-        return dst_path
-    for root, dirs, files in os.walk(dst_path):
-        for f in files:
-            if os.path.splitext(f)[1].lower() == '.json':
-                old_root = root 
-                new_root = os.path.join(os.path.split(old_root)[0], os.path.basename(dst_path))
-                os.rename(old_root, new_root)
-                return new_root
-    raise Exception("No valid pipeline file found!")
+    # return find_pipe_root_path(dst_path)
 
     
