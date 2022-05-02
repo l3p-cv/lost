@@ -55,6 +55,16 @@ if [ ${LOST_JUPYTER_LAB_ACTIVE} = "True" ]; then
   eval $jupyter &
 fi
 
+if [[ -z "${LOST_GITLAB_USER}" ]]; then
+  echo ""
+else
+  git config --global user.name "$LOST_GITLAB_USER"
+  git config --global user.email "$LOST_GITLAB_EMAIL"
+  git config --global credential.helper store
+  printf $LOST_GITLAB_ACCES_TOKEN >> /root/.git-credentials
+  chmod 600 /root/.git-credentials
+fi
+
 
 # remove config in case debug mode changed
 if [ -f "/etc/nginx/conf.d/lost.conf" ]; then
