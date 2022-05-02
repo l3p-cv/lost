@@ -167,7 +167,7 @@ environment variables in your ``.env`` file:
 
         LOST_GIT_USER=Git User                                                                            │
         LOST_GIT_EMAIL=myemail                                                                      │
-        LOST_GIT_ACCES_TOKEN=https://mygitusername:mygitaccesstoken@github.com
+        LOST_GIT_ACCESS_TOKEN=https://mygitusername:mygitaccesstoken@github.com
 
 Nginx Configuration
 ---------------------
