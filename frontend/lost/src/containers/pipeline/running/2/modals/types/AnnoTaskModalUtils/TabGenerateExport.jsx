@@ -10,7 +10,6 @@ import {
     CSwitch,
     CInput,
     CBadge,
-    CInputCheckbox,
 } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import HelpButton from '../../../../../../../components/HelpButton'
@@ -28,8 +27,8 @@ const TabGenerateExport = (props) => {
     const [newExport, setNewExport] = useState({
         exportName: 'LOST_Annotation',
         exportType: 'LOST_Dataset',
-        includeImages: false,
         annotatedOnly: true,
+        includeImages: false,
         randomSplits: {
             active: false,
             train: 0.7,
@@ -104,6 +103,35 @@ const TabGenerateExport = (props) => {
                     <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>
                         <CCol sm="12">
                             <h4>
+                                {`Annotated only`}
+                                <HelpButton
+                                    id="anno-only"
+                                    text={
+                                        'Only add annotations from already annotated images to the export.'
+                                    }
+                                />
+                            </h4>
+                            <CRow>
+                                <CCol>
+                                    <CSwitch
+                                        className={'mx-1'}
+                                        variant={'3d'}
+                                        color={'primary'}
+                                        checked={newExport.annotatedOnly}
+                                        onChange={(e) =>
+                                            setNewExport({
+                                                ...newExport,
+                                                annotatedOnly: !newExport.annotatedOnly,
+                                            })
+                                        }
+                                    />
+                                </CCol>
+                            </CRow>
+                        </CCol>
+                    </CRow>
+                    <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>
+                        <CCol sm="12">
+                            <h4>
                                 {`Include Images`}
                                 <HelpButton
                                     id="include-images"
@@ -141,40 +169,6 @@ const TabGenerateExport = (props) => {
                                     )}
                                 </CCol>
                             </CRow>
-                            {newExport.includeImages ? (
-                                <CRow style={{ marginTop: '10px' }}>
-                                    <CCol>
-                                        <CSwitch
-                                            className={'mx-1'}
-                                            variant={'3d'}
-                                            color={'primary'}
-                                            checked={newExport.annotatedOnly}
-                                            onChange={(e) =>
-                                                setNewExport({
-                                                    ...newExport,
-                                                    annotatedOnly:
-                                                        !newExport.annotatedOnly,
-                                                })
-                                            }
-                                        />
-                                        <b
-                                            style={{
-                                                marginLeft: '20px',
-                                            }}
-                                        >
-                                            Annotated images only
-                                            <HelpButton
-                                                id="anno-only"
-                                                text={
-                                                    'Only add already annotated images to the export.'
-                                                }
-                                            />
-                                        </b>
-                                    </CCol>
-                                </CRow>
-                            ) : (
-                                ''
-                            )}
                         </CCol>
                     </CRow>
                     <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>
