@@ -32,13 +32,14 @@ class LS(Resource):
         else:
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fs']['id'])
+            ufa = UserFileAccess(dbm, user, fs_db)
             fm = FileMan(fs_db=fs_db)
             commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
             if commonprefix != fs_db.root_path:
                 path = fs_db.root_path
             else:
                 path = data['path']
-            res = fm.ls(path, detail=True)
+            res = ufa.ls(path, detail=True)
             # raise Exception(res)
             dbm.close_session()
             return chonkyfy(res, path, fm)
@@ -65,7 +66,7 @@ class LS(Resource):
                 fs_type=data['fs']['fsType']
             )
             fm = FileMan(fs_db=db_fs, decrypt=False)
-
+            ufa = UserFileAccess(dbm, user, db_fs)
             # fs_db = dbm.get_fs(name=data['fs']['name'])
             # fm = FileMan(fs_db=fs_db)
             # commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
@@ -74,7 +75,7 @@ class LS(Resource):
             # else:
             #     path = data['path']
             path = data['path']
-            res = fm.ls(path, detail=True)
+            res = ufa.ls(path, detail=True)
             # raise Exception(res)
             dbm.close_session()
             return chonkyfy(res, path, fm)
@@ -90,15 +91,14 @@ class RM(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            # TODO: Permitted to rm?
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fsId'])
-            fm = FileMan(fs_db=fs_db)
+            ufa = UserFileAccess(dbm, user, fs_db)
             for file in data['files']:
                 if 'isDir' in file:
-                    res = fm.rm(file['id'] , True)
+                    res = ufa.rm(file['id'] , True)
                 else:
-                    res = fm.rm(file['id'] , False) 
+                    res = ufa.rm(file['id'] , False) 
             dbm.close_session()
             return 'success', 200 
 
@@ -275,7 +275,6 @@ class Upload(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            # TODO: Check if user is permitted to upload files to that datasource !
             data = request.form
             fsId = data['fsId'] 
             path = data['path']
@@ -300,16 +299,16 @@ class MkDirs(Resource):
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
+        user = dbm.get_user_by_id(identity) 
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else:
-            # TODO: Permitted to mkdirs?
-            data = json.loads(request.data)
+            data = json.loads(request.data) 
             fs_id = data['fsId']
             fs_db = dbm.get_fs(fs_id=fs_id)
             fm = FileMan(fs_db=fs_db)
+            ufa = UserFileAccess(dbm, user, fs_db)
             path = data['path']
             commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
             if commonprefix != fs_db.root_path:
@@ -321,8 +320,8 @@ class MkDirs(Resource):
                 # we need to create an empty file to create a  "folder".
                 # See also https://github.com/fsspec/s3fs/issues/245
                 temp_file = os.path.join(path, 'empty.txt')
-                fm.fs.touch(temp_file)
+                ufa.touch(temp_file)
             except:
-                res = fm.mkdirs(path, exist_ok=False)
+                res = ufa.mkdirs(path, exist_ok=False)
             dbm.close_session()
             return 'success', 200 
