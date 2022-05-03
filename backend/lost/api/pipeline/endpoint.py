@@ -235,7 +235,6 @@ class TemplateImportZip(Resource):
                 e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
                 extract_path = os.path.join(e_path, dst_dir)
                 dst_path = os.path.join(pp_path, dst_dir)
-                #TODO Will be part of pipe importer !
                 try:
                     template_import.unpack_pipe_project(upload_path, extract_path)
                 except:
@@ -288,7 +287,17 @@ class TemplateImportGit(Resource):
                     git('clone', git_url, upload_path)
                 else:
                     git('clone', git_url, upload_path, '-b', git_branch)
-                
+                pp_path = fm.get_pipe_project_path()
+                dst_dir = os.path.basename(upload_path)
+                dst_path = os.path.join(pp_path, dst_dir)
+                shutil.copytree(upload_path, dst_path,dirs_exist_ok=True)
+                USER_NAMESPACE = False
+                if not USER_NAMESPACE:
+                    importer = template_import.PipeImporter(dst_path, dbm)
+                else:
+                    importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
+                importer.start_import()
+                shutil.rmtree(upload_path)
                 # USER_NAMESPACE = False
                 # if USER_NAMESPACE:
                 #     head, tail = os.path.split(upload_path)
@@ -362,11 +371,9 @@ class TemplateDelete(Resource):
             data = json.loads(request.data)
             fm = AppFileMan(LOST_CONFIG)
             pipe_project = data['pipeProject']
-            importer = template_import.PipeImporter(fm.get_pipe_project_path(pp_name=pipe_project), dbm)
+            pipe_template = dbm.get_pipe_template_by_pipe_project(pipe_project)[0]
+            importer = template_import.PipeImporter(pipe_template.install_path, dbm)
             importer.remove_pipe_project()
-
-            #TODO Delete here
-           
             dbm.close_session()
             return "success", 200
 @namespace.route('/project/<string:visibility>')

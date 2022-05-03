@@ -51,6 +51,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow to connect to external ldap servers in order to authenticate with external users
 - AnnotationTask
   - Allow to generate multiple exports with given presets at any time
+- Pipeline import:
+  - Import pipelines via git/github or zipfile
+- Pipeline export:
+  - Export lost pipelines to zip file
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

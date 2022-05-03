@@ -200,6 +200,15 @@ class DBMan(object):
         return self.session.query(model.PipeTemplate)\
             .filter(model.PipeTemplate.idx==pipe_template_id).first()
 
+    def get_pipe_template_by_pipe_project(self, pipe_project_name):
+        '''Get PipeTemplates by pipe_project name
+
+        Returns:
+            list: List of PipeTemplates
+        '''
+        return self.session.query(model.PipeTemplate)\
+            .filter(model.PipeTemplate.pipe_project==pipe_project_name).all()
+
     def get_script(self, script_id=None, name=None, file_name=None):
         '''Get a script object from database.
 

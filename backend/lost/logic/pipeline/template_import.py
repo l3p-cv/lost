@@ -44,6 +44,7 @@ class PipeImporter(object):
         self.user_id = user_id
         self.file_man = AppFileMan(self.dbm.lostconfig)
         pt_dir = find_pipe_root_path(pipe_template_dir)
+        self.install_path = pipe_template_dir
         if pt_dir.endswith('/'):
             pt_dir = pt_dir[:-1]
         self.src_pipe_template_path = pt_dir
@@ -174,7 +175,8 @@ class PipeImporter(object):
                 pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
                                                 timestamp=datetime.now(),
                                                 group_id=self.user_id,
-                                                pipe_project=self.namespace)
+                                                pipe_project=self.namespace,
+                                                install_path=self.install_path)
                 self.dbm.save_obj(pipe_temp)
                 logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
                 return pipe_temp.idx
@@ -204,6 +206,8 @@ class PipeImporter(object):
                 not_deleted_pipes.append(pipe)
                 logging.info('''Pipeline project {} was not completely removed 
                     since some pipes are still in use'''.format(self.namespace))
+        if len(not_deleted_pipes) == 0:
+            shutil.rmtree(self.install_path)
         return not_deleted_pipes
 
     def remove_pipeline(self, pipe):
