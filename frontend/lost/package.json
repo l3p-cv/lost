@@ -59,7 +59,7 @@
     "semantic-ui-react": "^0.87.3",
     "streamsaver": "^2.0.6",
     "sweetalert2": "^10.14.0",
-    "validator": "^13.5.2",
+    "validator": "^13.7.0",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
