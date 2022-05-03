@@ -129,6 +129,10 @@ class LOSTConfig(object):
         # Max img export limit
         self.img_export_limit = ge('LOST_MAX_IMG_EXPORT', 2500)
 
+        # Initial Pipeline Import 
+        self.initial_pipeline_import_url = ge('LOST_INITIAL_PIPELINE_IMPORT_URL', 'https://github.com/l3p-cv/lost-pipeline-zoo.git')
+        self.initial_pipeline_import_branch = ge('LOST_INITIAL_PIPELINE_IMPORT_URL', 'main')
+
         # LDAP Configuation
         self.ldap_config = dict()
         self.ldap_config['LDAP_ACTIVE'] = ge('LOST_LDAP_ACTIVE', False)
