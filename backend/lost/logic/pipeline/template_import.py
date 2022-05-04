@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from zipfile import ZipFile
 import json
 import logging
@@ -55,7 +55,10 @@ class PipeImporter(object):
         self.namespace = self._get_namespace()
         for json_path in self.json_files:
             with open(json_path) as jfile:
-                pipe = json.load(jfile)
+                try:
+                    pipe = json.load(jfile)
+                except:
+                    raise JSONDecodeError()
             pipe['namespace'] = self.namespace
             pipe['name'] = self._namespaced_name(
                 os.path.splitext(os.path.basename(json_path))[0]
@@ -83,10 +86,13 @@ class PipeImporter(object):
     def start_import(self):
         logging.info('\n\n++++++++++++++++++++++ \n\n')
         logging.info('Start pipe project import for: {}'.format(self.src_pipe_template_path))
+        error_message = ''
         for pipe in self.pipes:
             if not self.checker.check(pipe):
-                logging.error('Wrong pipeline definition! Did not import pipe project!')
-                return False
+                message = 'Wrong pipeline definition! Did not import pipe project!'
+                logging.error(message)
+                error_message += message + "\n"
+                return error_message
         # if os.path.exists(self.dst_pipe_template_path):
         #     logging.warning('Cannot import pipeline!')
         #     logging.warning('Pipe Template Dir already exist: {}'.format(
@@ -97,7 +103,11 @@ class PipeImporter(object):
         # logging.info("Copyed pipeline template dir from %s to %s"%(self.src_pipe_template_path,
         #                                             self.dst_pipe_template_path))
         for pipe in self.pipes:
-            self.import_pipe(pipe)
+            message = self.import_pipe(pipe)
+            if message != '':
+                error_message += message + "\n"
+
+        return error_message
 
     def import_pipe(self, pipe):
         error_message = ''
@@ -170,16 +180,20 @@ class PipeImporter(object):
                 if db_json['name'].lower() == pipe['name'].lower():
                     pipe_in_db = True
                     logging.warning(f"PipeTemplate already in database: {db_json['name'].lower()}")
-                    return db_pipe.idx
+                    db_pipe.json_template = json.dumps(pipe)
+                    db_pipe.timestamp = datetime.now()
+                    self.dbm.save_obj(db_pipe)
+                    return error_message
             if not pipe_in_db:
                 pipe_temp = model.PipeTemplate(json_template=json.dumps(pipe),
                                                 timestamp=datetime.now(),
                                                 group_id=self.user_id,
                                                 pipe_project=self.namespace,
                                                 install_path=self.install_path)
+                
                 self.dbm.save_obj(pipe_temp)
                 logging.info("Added Pipeline: *** %s ***"%(pipe['name'],))
-                return pipe_temp.idx
+                return error_message
         except Exception as e:
             logging.error(e, exc_info=True)
             if not self.forTest:
@@ -533,3 +547,7 @@ def unpack_pipe_project(zip_project, dst_path):
     # return find_pipe_root_path(dst_path)
 
     
+class JSONDecodeError(Exception):
+
+    def __str__(self):
+        return 'JSON could not be decoded: Check your pipeline definition file(s) (.json).'
