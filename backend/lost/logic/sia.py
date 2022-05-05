@@ -337,11 +337,14 @@ class SiaUpdate(object):
             elif annotation['status'] == "deleted":
                 try:
                     two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
-                    two_d_json = self.__serialize_two_d_json(two_d)
-                    annotation_json['deleted'].append(two_d_json)
-                    for label in self.db_man.get_all_two_d_label(two_d.idx):
-                        self.db_man.delete(label)
-                    self.db_man.delete(two_d)
+                    # Do not try to delete an annotation if it has already been 
+                    # deleted in database <- This could be the case for auto save commands
+                    if two_d is not None: 
+                        two_d_json = self.__serialize_two_d_json(two_d)
+                        annotation_json['deleted'].append(two_d_json)
+                        for label in self.db_man.get_all_two_d_label(two_d.idx):
+                            self.db_man.delete(label)
+                        self.db_man.delete(two_d)
                 except KeyError:
                     print('SIA bug backend fix! Do not try to delete annotations that are not in db!')
             elif annotation['status'] == "new":
