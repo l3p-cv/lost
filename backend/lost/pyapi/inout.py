@@ -283,6 +283,7 @@ class ScriptOutput(Output):
                                           result_id=self._result_map[pe.idx],
                                           iteration=self._script._pipe_element.iteration)
                 self._script._dbm.add(vis_out)
+                self._script._dbm.commit()
 
     def add_data_export(self, file_path, fs):
         '''Serve a file for download inside the web gui via a DataExport element.
@@ -300,6 +301,7 @@ class ScriptOutput(Output):
                                        fs_id = fs.lost_fs.idx,
                                        iteration=self._script._pipe_element.iteration)
                 self._script._dbm.add(export)
+                self._script._dbm.commit()
 
     def __check_for_video(self, frame_n, video_path):
         if frame_n is None and video_path is not None:
@@ -519,6 +521,7 @@ class ScriptOutput(Output):
                         else:
                             anno.sim_class = 1
                         img_anno.twod_annos.append(anno)
+            self._script._dbm.commit()
 
     def _add_annos(self, pe, img, img_labels=None, img_sim_class=None, 
         annos=[], anno_types=[], anno_labels=[], anno_sim_classes=[], frame_n=None, 
@@ -627,6 +630,7 @@ class ScriptOutput(Output):
                 else:
                     anno.sim_class = 1
                 img_anno.twod_annos.append(anno)
+            self._script._dbm.commit()
         else:
             self._script.logger.warning(f'Will ignore {img_path} since it is not a file!')
     

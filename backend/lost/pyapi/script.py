@@ -171,6 +171,7 @@ class Script(pe_base.Element):
         if loop_e is not None:
             loop_e.loop.break_loop = True
         self._dbm.add(loop_e)
+        self._dbm.commit()
 
     def loop_is_broken(self):
         '''Check if the current loop is broken'''
