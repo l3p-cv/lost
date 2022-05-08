@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { API_URL } from '../../../../src/lost_settings'
+// import { useHistory } from 'react-router-dom'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../../src/actions'
@@ -68,7 +69,7 @@ class SIAReview extends Component {
             iteration: null,
         }
         this.container = React.createRef()
-        this.canvas = React.createRef()
+        // this.canvas = React.createRef()
     }
 
     resetCanvas() {
@@ -158,7 +159,8 @@ class SIAReview extends Component {
 
     async handleSaveAnnos() {
         try {
-            const newAnnos = this.canvas.current.getAnnos()
+            const newAnnos = this.canvas.getAnnos()
+            // const camName = history.location.pathname.split('/').slice(-1)[0]
             const response = await axios.post(
                 API_URL + '/sia/reviewupdate/' + this.props.pipeElementId,
                 newAnnos,
@@ -300,13 +302,22 @@ class SIAReview extends Component {
         )
     }
 
+    handleGetFunction(canvas) {
+        this.canvas = canvas
+    }
+
     handleToolBarEvent(e, data) {
         console.log('action, data', e, data)
         switch (e) {
-            case tbe.DELETE_ALL_ANNOS:
+            case tbe.SAVE:
+                this.handleSaveAnnos()
                 // this.canvas.deleteAllAnnos()
                 break
+            case tbe.DELETE_ALL_ANNOS:
+                this.canvas.deleteAllAnnos()
+                break
             case tbe.TOOL_SELECTED:
+                this.handleToolSelected(data)
                 // this.props.siaSelectTool(data)
                 break
             case tbe.GET_NEXT_IMAGE:
@@ -458,7 +469,7 @@ class SIAReview extends Component {
                     //         ? this.props.onGetAnnoExample(exampleArgs)
                     //         : {}
                     // }
-                    // onGetFunction={(canvasFunc) => this.handleGetFunction(canvasFunc)}
+                    onGetFunction={(canvasFunc) => this.handleGetFunction(canvasFunc)}
                     canvasConfig={
                         CANVAS_CONFIG
                         // {
@@ -489,6 +500,7 @@ class SIAReview extends Component {
                     // svg={this.props.svg}
                     // filter={this.props.filter}
                     toolbarEnabled={{
+                        save:true,
                         imgLabel: true,
                         nextPrev: true,
                         toolSelection: true,
