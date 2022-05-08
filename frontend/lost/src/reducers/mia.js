@@ -2,8 +2,10 @@ import TYPES from '../types/index'
 const INITIAL_STATE = {
     images: [],
     proposedLabel: undefined,
-    maxAmount: 10,
-    zoom: 100,
+    maxAmount: localStorage.getItem('mia-max-amount')
+        ? localStorage.getItem('mia-max-amount')
+        : 10,
+    zoom: localStorage.getItem('mia-zoom') ? localStorage.getItem('mia-zoom') : 100,
     labels: [],
     selectedLabel: undefined,
 }
