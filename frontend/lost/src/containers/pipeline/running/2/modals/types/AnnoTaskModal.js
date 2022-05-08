@@ -106,18 +106,22 @@ const AnnoTaskModal = (props) => {
                     text="Parquet - Download"
                 /> */}
                 <hr></hr>
-                <IconButton
-                    icon={faEye}
-                    color="primary"
-                    // isOutline={false}
-                    style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-                    onClick={(e) =>
-                        handleSiaRewiewClick(props, () => {
-                            hist.push('/sia-review')
-                        })
-                    }
-                    text="Review Annotations"
-                />
+                {props.annoTask.type === 'sia' ? (
+                    <IconButton
+                        icon={faEye}
+                        color="primary"
+                        // isOutline={false}
+                        style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
+                        onClick={(e) =>
+                            handleSiaRewiewClick(props, () => {
+                                hist.push('/sia-review')
+                            })
+                        }
+                        text="Review Annotations"
+                    />
+                ) : (
+                    ''
+                )}
                 <IconButton
                     icon={faCircle}
                     color="danger"
