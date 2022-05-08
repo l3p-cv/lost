@@ -53,6 +53,7 @@ class TwoDSerialize(object):
         self.anno_task_id = anno_task_id
         self.file_man = FileMan(self.db_man.lostconfig)
         self.proposedLabel = proposedLabel
+        self.config = json.loads(db_man.get_anno_task(anno_task_id=anno_task_id).configuration)
     def serialize(self):
         # directory = self.file_man.get_mia_crop_path(self.anno_task_id)
         self.mia_json['images'] = list()
@@ -63,6 +64,11 @@ class TwoDSerialize(object):
             image_json = dict()
             image_json['id'] = anno.idx
             image_json['type'] = 'annoBased'
+            try:
+                image_json['drawAnno'] = self.config['drawAnno']
+                image_json['addContext'] = self.config['addContext']
+            except:
+                pass
             # get image_anno of two_d anno
             image_anno = self.db_man.get_image_annotation(img_anno_id=anno.img_anno_id)
             self.mia_json['images'].append(image_json) 
