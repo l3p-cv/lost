@@ -5,6 +5,8 @@ import actions from '../../../actions'
 import BaseModal from '../../../components/BaseModal'
 import ImageLoading from './ImageLoading'
 import { CSwitch } from '@coreui/react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 const MIAImage = (props) => {
     const [image, setImage] = useState({ id: props.image.id, data: '' })
@@ -86,7 +88,19 @@ const MIAImage = (props) => {
                     }
                 />
                 <div style={{ marginRight: '50px' }}>
-                    {props.image.is_active ? <b>Included</b> : <b>Excluded</b>}
+                    {props.image.is_active ? (
+                        <b>Included</b>
+                    ) : (
+                        <>
+                            <FontAwesomeIcon
+                                className="mr-3"
+                                size={'1x'}
+                                color={'red'}
+                                icon={faTimes}
+                            />
+                            <b>Excluded</b>
+                        </>
+                    )}
                 </div>
             </>
         )
@@ -106,7 +120,6 @@ const MIAImage = (props) => {
                             <TransformComponent>
                                 <img
                                     style={{ maxWidth: '100%' }}
-                                    className={`${classes}`}
                                     src={image.data}
                                     alt=""
                                 />
@@ -116,14 +129,30 @@ const MIAImage = (props) => {
                 </div>
             </BaseModal>
             {image.data ? (
-                <img
-                    alt={props.miaKey}
-                    id={props.miaKey}
-                    onClick={() => imageClick()}
-                    src={image.data}
-                    className={`mia-image ${classes}`}
-                    height={props.height}
-                />
+                <>
+                    <div style={{ display: 'inline', position: 'relative' }}>
+                        <img
+                            alt={props.miaKey}
+                            id={props.miaKey}
+                            onClick={() => imageClick()}
+                            src={image.data}
+                            className={`mia-image ${classes}`}
+                            height={props.height}
+                            style={{ display: 'inline' }}
+                        />
+                        {props.image.is_active ? (
+                            ''
+                        ) : (
+                            <FontAwesomeIcon
+                                style={{ position: 'absolute', bottom: 0, left: '45%' }}
+                                className="mr-3"
+                                size={'2x'}
+                                color={'red'}
+                                icon={faTimes}
+                            />
+                        )}
+                    </div>
+                </>
             ) : (
                 <ImageLoading />
             )}
