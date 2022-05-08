@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import actions from '../../../actions'
 import BaseModal from '../../../components/BaseModal'
 import ImageLoading from './ImageLoading'
-import { CSwitch } from '@coreui/react'
+import { CRow, CSwitch } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
@@ -115,7 +115,7 @@ const MIAImage = (props) => {
                 footer={modalFooter()}
             >
                 <div key={props.miaKey}>
-                    <div className="flex justify-center my-1">
+                    <CRow className="justify-content-center">
                         <TransformWrapper>
                             <TransformComponent>
                                 <img
@@ -125,7 +125,7 @@ const MIAImage = (props) => {
                                 />
                             </TransformComponent>
                         </TransformWrapper>
-                    </div>
+                    </CRow>
                 </div>
             </BaseModal>
             {image.data ? (
