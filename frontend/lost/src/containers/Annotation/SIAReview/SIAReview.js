@@ -6,8 +6,8 @@ import { connect } from 'react-redux'
 import actions from '../../../../src/actions'
 import 'semantic-ui-css/semantic.min.css'
 import '../SIA/lost-sia/src/SIA.scss'
-import FilterInfoBox from './FilterInfoBox'
 import * as tbe from '../SIA/lost-sia/src/types/toolbarEvents'
+import * as canvasActions from '../SIA/lost-sia/src/types/canvasActions'
 
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
@@ -54,52 +54,15 @@ const SIAReview = (props) => {
     const [imageMeta, setImageMeta] = useState()
     const [imgBlob, setImgBlob] = useState()
     const [canvas, setCanvas] = useState()
+    const [isJunk, setIsJunk] = useState(false)
     const [selectedTool, setSelectedTool] = useState()
     const history = useHistory()
-    // constructor(props) {
-    //     super(props)
-    //     state = {
-    //         fullscreenCSS: '',
-    //         layoutOffset: {
-    //             left: 20,
-    //             top: 0,
-    //             bottom: 5,
-    //             right: 5,
-    //         },
-    //         svg: undefined,
-    //         tool: 'bBox',
-    //         imgLabelInputVisible: false,
-    //         isJunk: false,
-    //         image: { id: null, data: null },
-    //         iteration: null,
-    //     }
-    //     container = React.createRef()
-    //     // canvas = React.createRef()
-    // }
-
-    // const resetCanvas = () => {
-    //     setState({
-    //         imgLabelInputVisible: false,
-    //     })
-    // }
-
-    // const handleSetSVG = (svg) => {
-    //     setState({ svg: { ...svg } })
-    // }
 
     const handleToolSelected = (tool) =>  {
         setSelectedTool(tool)
         // setState({ tool: tool })
     }
-
-    const handleToggleImgLabelInput = () =>  {
-        setImgLabelInputVisible(!imgLabelInputVisible)
-        // setState({ imgLabelInputVisible: !state.imgLabelInputVisible })
-    }
-    const handleToggleJunk = () => {
-        props.siaImgIsJunk(!props.isJunk)
-    }
-
+    
     useEffect(() => {
         window.addEventListener('resize', props.siaLayoutUpdate)
         // document.body.style.overflow = "hidden"
@@ -123,40 +86,10 @@ const SIAReview = (props) => {
     useEffect(() => {
         if (props.annos) {
             requestImageFromBackend()
-            // if (props.annos.image){
-            //     if (prevProps.annos) {
-            //         if (props.annos.image.id !== prevProps.annos.image.id) {
-            //             requestImageFromBackend()
-            //         }
-            //     } else {
-            //         requestImageFromBackend()
-            //     }
-            // } 
             props.siaImgIsJunk(props.annos.image.isJunk)
         }
 
     }, [props.annos])
-
-    // componentDidUpdate(prevProps, prevState) {
-    //     if (props.annos) {
-    //         if (!props.annos.image) return
-    //         if (prevProps.annos) {
-    //             if (props.annos.image.id !== prevProps.annos.image.id) {
-    //                 requestImageFromBackend()
-    //             }
-    //         } else {
-    //             requestImageFromBackend()
-    //         }
-    //     }
-    //     // if (state.fullscreenCSS !== prevState.fullscreenCSS) {
-    //     //     props.siaLayoutUpdate()
-    //     // }
-    //     if (prevProps.annos !== props.annos) {
-    //         if (props.annos) {
-    //             props.siaImgIsJunk(props.annos.image.isJunk)
-    //         }
-    //     }
-    // }
 
     const requestImageFromBackend = () => {
         if (canvas){
@@ -165,22 +98,6 @@ const SIAReview = (props) => {
         }
         props.getSiaImage(props.annos.image.id).then((response) => {
             setImgBlob(response.data)
-            // setImageMeta(                
-            //     {
-            //         // ...state.image,
-            //         id: props.annos.image.id,
-            //         data: response.data,
-            //     })
-            // setState({
-            //     image: {
-            //         // ...state.image,
-            //         id: props.annos.image.id,
-            //         data: response.data,
-            //     },
-            // })
-            // if (canvas.current) {
-            //     canvas.current.resetZoom()
-            // }
         })
     }
 
@@ -199,10 +116,11 @@ const SIAReview = (props) => {
 
     const handleSaveAnnos = async () => {
         try {
+            const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
             const newAnnos = canvas.getAnnos()
             // const camName = history.location.pathname.split('/').slice(-1)[0]
             const response = await axios.post(
-                API_URL + '/sia/reviewupdate/' + props.pipeElementId,
+                API_URL + '/sia/reviewupdate/' + pipeElementId,
                 newAnnos,
             )
             console.log('REQUEST: siaReviewUpdate ', response)
@@ -322,39 +240,31 @@ const SIAReview = (props) => {
     }
 
     const handleToolBarEvent = (e, data) => {
-        console.log('action, data', e, data)
         switch (e) {
             case tbe.SAVE:
                 handleSaveAnnos()
-                // canvas.deleteAllAnnos()
                 break
             case tbe.DELETE_ALL_ANNOS:
                 canvas.deleteAllAnnos()
                 break
             case tbe.TOOL_SELECTED:
                 handleToolSelected(data)
-                // props.siaSelectTool(data)
                 break
             case tbe.GET_NEXT_IMAGE:
                 handleNextPrevImage(props.annos.image.id, 'next')
-                // onPrevImage={(imgId) => handleNextPrevImage(imgId, 'previous')}
-                // props.siaGetNextImage(props.currentImage.id)
                 break
             case tbe.GET_PREV_IMAGE:
                 handleNextPrevImage(props.annos.image.id, 'previous')
-                // props.siaGetPrevImage(props.currentImage.id)
                 break
             case tbe.TASK_FINISHED:
-                // props.siaSetTaskFinished()
                 break
             case tbe.SHOW_IMAGE_LABEL_INPUT:
-                // props.siaShowImgLabelInput(!props.imgLabelInput.show)
+                setImgLabelInputVisible(true)
                 break
             case tbe.IMG_IS_JUNK:
-                // props.siaImgIsJunk(!props.isJunk)
+                setIsJunk(!isJunk)
                 break
             case tbe.APPLY_FILTER:
-                // props.siaApplyFilter(data)
                 break
             case tbe.SHOW_ANNO_DETAILS:
                 // props.siaSetUIConfig({
@@ -366,40 +276,38 @@ const SIAReview = (props) => {
                 // })
                 break
             case tbe.SHOW_LABEL_INFO:
-                // props.siaSetUIConfig({
-                //     ...props.uiConfig,
-                //     labelInfo: {
-                //         ...props.uiConfig.labelInfo,
-                //         visible: !props.uiConfig.labelInfo.visible,
-                //     },
-                // })
                 break
             case tbe.SHOW_ANNO_STATS:
-                // props.siaSetUIConfig({
-                //     ...props.uiConfig,
-                //     annoStats: {
-                //         ...props.uiConfig.annoStats,
-                //         visible: !props.uiConfig.annoStats.visible,
-                //     },
-                // })
                 break
             case tbe.EDIT_STROKE_WIDTH:
-                // props.siaSetUIConfig({
-                //     ...props.uiConfig,
-                //     strokeWidth: data,
-                // })
                 break
             case tbe.EDIT_NODE_RADIUS:
-                // props.siaSetUIConfig({
-                //     ...props.uiConfig,
-                //     nodeRadius: data,
-                // })
                 break
             default:
                 break
         }
     }
     
+    const handleCanvasEvent = (action, data) => {
+        // console.log('Handle canvas event', action, data)
+        switch (action) {
+            case canvasActions.CANVAS_AUTO_SAVE:
+                // this.handleAutoSave()
+                break
+            case canvasActions.CANVAS_SVG_UPDATE:
+                // this.props.siaSetSVG(data)
+                break
+            case canvasActions.CANVAS_UI_CONFIG_UPDATE:
+                // this.props.siaSetUIConfig(data)
+                break
+            case canvasActions.CANVAS_LABEL_INPUT_CLOSE:
+                setImgLabelInputVisible(false)
+                break
+            default:
+                break
+        }
+    }
+
     const renderSia = () => {
         if (!props.annos) return 'No Review Data!'
         if (!props.filterOptions) return 'No Review Data!'
@@ -410,7 +318,7 @@ const SIAReview = (props) => {
                     // }
                     onNotification={(messageObj) => handleNotification(messageObj)}
                     onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
-                    // onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                    onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
                     // onGetAnnoExample={(exampleArgs) =>
                     //     props.onGetAnnoExample
                     //         ? props.onGetAnnoExample(exampleArgs)
@@ -429,7 +337,7 @@ const SIAReview = (props) => {
                     uiConfig={{
                         ...props.uiConfig,
                         imgBarVisible: true,
-                        imgLabelInputVisible: false,
+                        imgLabelInputVisible: imgLabelInputVisible,
                         centerCanvasInContainer: true,
                         maxCanvas: true,
                     }}
@@ -441,7 +349,7 @@ const SIAReview = (props) => {
                     // exampleImg={props.exampleImg}
                     layoutUpdate={props.layoutUpdate}
                     selectedTool={selectedTool}
-                    // isJunk={props.isJunk}
+                    isJunk={isJunk}
                     // blocked={state.blockCanvas}
                     onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
                     // svg={props.svg}
@@ -475,8 +383,7 @@ function mapStateToProps(state) {
     return {
         uiConfig: state.sia.uiConfig,
         layoutUpdate: state.sia.layoutUpdate,
-        isJunk: state.sia.isJunk,
-        pipeElementId: state.siaReview.elementId,
+        // isJunk: state.sia.isJunk,
         annos: state.siaReview.annos,
         filterOptions: state.siaReview.options,
     }
