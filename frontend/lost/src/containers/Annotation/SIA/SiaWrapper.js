@@ -225,8 +225,6 @@ class SiaWrapper extends Component {
         console.log('action, data', e, data)
         switch (e) {
             case tbe.DELETE_ALL_ANNOS:
-                // this.canvas.deleteAllAnnos()
-                // this.deleteAll()
                 this.canvas.deleteAllAnnos()
                 break
             case tbe.TOOL_SELECTED:
@@ -344,7 +342,6 @@ class SiaWrapper extends Component {
     }
 
     handleAnnoPerformedAction(anno, annos, action) {
-        // console.log('annoPerformedAction', anno, annos, action)
         switch (action) {
             case annoActions.ANNO_CREATED:
             case annoActions.ANNO_CREATED_FINAL_NODE:
@@ -360,7 +357,6 @@ class SiaWrapper extends Component {
     }
 
     handleCanvasEvent(action, data) {
-        // console.log('Handle canvas event', action, data)
         switch (action) {
             case annoActions.CANVAS_AUTO_SAVE:
                 this.handleAutoSave()

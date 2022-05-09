@@ -127,6 +127,11 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *      action -> CANVAS_IMG_LOADED
  *      action -> CANVAS_IMGBAR_CLOSE
  * @event onImgBarClose - Fires when close button on ImgBar was hit.
+ * @event onGetFunction - Get special canvas functions for manipulation from outside canvas
+ *              deleteAllAnnos()
+ *              unloadImage()
+ *              resetZoom()
+ *              getAnnos(annos,removeFrontendIds)
  */
 class Canvas extends Component{
 

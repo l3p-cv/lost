@@ -266,6 +266,7 @@ const SIAReview = (props) => {
                 break
             case tbe.APPLY_FILTER:
                 break
+
             case tbe.SHOW_ANNO_DETAILS:
                 // props.siaSetUIConfig({
                 //     ...props.uiConfig,
