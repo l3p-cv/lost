@@ -8,7 +8,7 @@ For Annotators
 
 Your Dashboard
 ==============
-.. figure:: images/annotator-dashboard.*
+.. figure:: ../images/annotator-dashboard.*
 
     |fig-dashboard|: The annotator dashboard.
 
@@ -42,17 +42,17 @@ SIA consists of three main components.
 These components are the canvas, 
 the image bar and the tool bar  
 
-.. figure:: images/sia-example.*
+.. figure:: ../images/sia-example.*
 
     |fig-sia|: An example of SIA.
 
-.. figure:: images/sia-canvas.*
+.. figure:: ../images/sia-canvas.*
 
     |fig-sia-canvas|: An example of the SIA canvas component.
     It presents the image to the annotator. By right click, 
     you can draw annotations on the image.
 
-.. figure:: images/sia-image-bar.*
+.. figure:: ../images/sia-image-bar.*
 
     |fig-sia-image-bar|: The image bar component provides information 
     about the image. Beginning with the filename of the image and the
@@ -61,7 +61,7 @@ the image bar and the tool bar
     images to annotate. The last information is the label that was given
     to the whole image, if provided.
 
-.. figure:: images/sia-toolbar.*
+.. figure:: ../images/sia-toolbar.*
 
     |fig-sia-tool-bar|: The toolbar provides a control to assign a label
     to the whole image. The navigation between images. Buttons to select
@@ -105,7 +105,7 @@ Now the annotator moved on to the label input field and selected
 Now the annotator needs to click on the **Submit** button to complete 
 this annotation step.
 
-.. figure:: images/mia-example.*
+.. figure:: ../images/mia-example.*
 
     |fig-mia|: An example of MIA.
 
@@ -113,7 +113,7 @@ this annotation step.
 You can see the **label input field** and the current **selected label**
 in a red box.
 
-.. figure:: images/mia-controls1.*
+.. figure:: ../images/mia-controls1.*
 
     |fig-mia-controls1|: Left part of the MIA control panel.
 
@@ -132,7 +132,7 @@ Next to the **zoom buttons** there is a dropdown with name **amount**
 here the annotator can select the maximum number of images that are 
 presented at the same time within the cluster view.
 
-.. figure:: images/mia-controls2.*
+.. figure:: ../images/mia-controls2.*
 
     |fig-mia-controls2|: Right part of the MIA control panel.
 
@@ -143,7 +143,7 @@ In order to **zoom a single image** perform a **double click** on it.
 To scale the image back to original size, 
 **double click** again.
 
-.. figure:: images/mia-example-zoom.*
+.. figure:: ../images/mia-example-zoom.*
 
     |fig-mia-zoom|: Zoomed view of a specific image of the cluster.
 

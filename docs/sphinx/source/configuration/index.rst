@@ -1,58 +1,8 @@
-.. _setup:
+Configuration
+*************
 
-LOST Setup & Configuration
-**************************
-
-.. _quick-setup-standard:
-
-Default Setup with Docker
-==========================
-LOST provides a `quick_setup <https://github.com/l3p-cv/lost/tree/master/docker/quick_setup>`_
-script, that will configure LOST and instruct you how to start LOST. 
-We designed this script for Linux environments,
-but it will also work on Windows host machines.
-
-LOST releases are hosted on DockerHub and shipped in Containers. For a quick setup perform the following steps (these steps have been tested for Ubuntu):
-
-1. Install docker on your machine or server:
-    https://docs.docker.com/install/
-2. Install docker-compose:
-    https://docs.docker.com/compose/install/
-3. Clone LOST:
-    .. code-block:: bash
-
-        git clone https://github.com/l3p-cv/lost.git
-4. Install the *cryptography* package in your python environment:
-    .. code-block:: bash
-
-        pip install cryptography
-    
-5. Run quick_setup script:
-    .. code-block:: bash
-
-        cd lost/docker/quick_setup/
-        python3 quick_setup.py /path/to/install/lost --release 2.0.0
-    
-    If you want to use phpmyadmin, you can set it via argument
-    
-    .. code-block:: bash
-        
-        python3 quick_setup.py /path/to/install/lost --release 2.0.0 --phpmyadmin
-
-6. Run LOST:
-
-    Follow instructions of the quick_setup script, 
-    printed in the command line.
-
-.. note::
-    
-    The quick setup script has now created the docker configuration files 
-    ``docker-compose.yml`` and ``.env`` . In the following sections, 
-    additional desired configurations usually refer to these two files.
-    
-
-Activate E-Mail Notifications
------------------------------
+E-Mail Notifications
+=============================
 In order to activate E-Mail Notifications you have to provide an outgoing E-Mail Account.
 In your ``.env`` file you have to add the following environment variables.
 If you have set up lost with the quick setup script, these variables only need to be commented out and adjusted:
@@ -70,8 +20,8 @@ If you have set up lost with the quick setup script, these variables only need t
         LOST_MAIL_LOST_URL=http://mylostinstance.url/
 
 
-Configure LDAP
-------------------
+LDAP
+====
 LDAP can be configured using the following environment variables in your ``.env`` file:
 
     .. code-block:: bash
@@ -113,8 +63,8 @@ It is important that all LDAP environment variables are prefixed with LOST so th
     If a local user with the same user name of a new LDAP user already exists, 
     the local user settings will be overwritten by those of the LDAP user.
 
-Activate JupyterLab
-------------------------
+JupyterLab
+==========
 The JupyterLab integration is primarily intended for pipeline developers and quick experiments in LOST.
 Through this integration it is very easy to access all pipelines and their elements at any time and manipulate them through a web interface.
 By accessing the LOST pyAPI, various operations can be investigated, as they are also executed in the scripts of the annotation pipelines.
@@ -154,8 +104,8 @@ Within the Admin Area, a tab (far right) now appears that contains the link to t
         The JupyterLab integration should therefore only be used in development environments and in no case in production systems. 
 
 
-Git Configuration
----------------------
+Git Access Token
+================
 With the help of the Git configuration, you can have your Git access data (Personal Access Token) stored in the container.
 This means that, for example, private Git repositories can be used within the JupyterLab environment without having to enter a password. 
 Furthermore, the configuration of the Git settings is necessary so that private Git repositories can be imported via the GUI.
@@ -170,10 +120,10 @@ environment variables in your ``.env`` file:
         LOST_GIT_ACCESS_TOKEN=https://mygitusername:mygitaccesstoken@github.com
 
 Nginx Configuration
----------------------
+===================
 
 Configuration File
-^^^^^^^^^^^^^^^^^^^^^^
+------------------
 When starting the lost container the corresponding nginx configuration file (depending on debug mode) for nginx is 
 copied from the repository into the folder 
 
@@ -189,7 +139,7 @@ in our GitHub repository.
 
 
 Custom Configuration File
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 If a custom configuration file is desired, this file must be mounted from the 
 host machine into the lost container.
 
@@ -202,7 +152,3 @@ host machine into the lost container.
   By default, files with a **maximum size of 1GB** can be uploaded in LOST. 
   To change the maximum size you have to change the value ``client_max_body_size 1024M;`` inside the nginx configuration file. 
   In addition, the environment variable ``LOST_MAX_FILE_UPLOAD_SIZE`` must also be adjusted in the LOST configuration.
-
-Setup On Linux (without docker)
-=====================================
-#TODO: JG
