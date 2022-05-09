@@ -190,12 +190,18 @@ import * as annoActions from './types/canvasActions'
  *          data: int // -> Stroke width
  *      e -> EDIT_NODE_RADIUS
  *          data: int // -> Radius
+ * @event onGetFunction - Get special canvas functions for manipulation from outside canvas
+ *              deleteAllAnnos()
+ *              unloadImage()
+ *              resetZoom()
+ *              getAnnos(annos,removeFrontendIds)
  */
 const Sia = (props) => {
 
     const [fullscreenCSS, setFullscreenCSS] = useState('')
     const [layoutUpdate, setLayoutUpdate] = useState(0)
     const [svg, setSvg] = useState()
+    const [externalConfigUpdate, setExternalConfigUpdate] = useState(false)
     const [uiConfig, setUiConfig] = useState(
         {
             "nodeRadius": 4,
@@ -223,16 +229,24 @@ const Sia = (props) => {
     )
     const containerRef = useRef()
 
-    // useEffect(() => {
-    // }, [])
-
     useEffect(() => {
         doLayoutUpdate()
     }, [props.layoutUpdate])
 
     useEffect(() => {
+        setExternalConfigUpdate(true)
         setUiConfig({...uiConfig, ...props.uiConfig})
     }, [props.uiConfig])
+
+    useEffect(() => {
+        if (externalConfigUpdate){
+            setExternalConfigUpdate(false)
+        }else{
+            if (props.onCanvasEvent){
+                props.onCanvasEvent(annoActions.CANVAS_UI_CONFIG_UPDATE, uiConfig)
+            }
+        }
+    }, [uiConfig])
 
     const doLayoutUpdate = () => {
         setLayoutUpdate(layoutUpdate + 1)
@@ -262,8 +276,10 @@ const Sia = (props) => {
     const handleCanvasEvent = (e, data) => {
         switch(e){
             case annoActions.CANVAS_SVG_UPDATE:
-                // this.props.siaSetSVG(data)
                 setSvg(data)
+                break
+            case annoActions.CANVAS_UI_CONFIG_UPDATE:
+                setUiConfig({...uiConfig, ...data})
                 break
             default:
                 break
@@ -280,10 +296,8 @@ const Sia = (props) => {
     }
 
     const handleToolBarEvent = (e, data) => {
-        console.log('Sia handleToolBarEvent', e)
         switch(e){
             case tbe.SET_FULLSCREEN:
-                // this.props.siaSetFullscreen(!this.props.fullscreenMode)
                 if (fullscreenCSS === ''){
                     setFullscreenCSS('sia-fullscreen')
                     setUiConfig({...uiConfig,
@@ -305,6 +319,39 @@ const Sia = (props) => {
                     })
                     doLayoutUpdate()
                 }
+                break
+            case tbe.SHOW_ANNO_DETAILS:
+                setUiConfig({
+                    ...uiConfig,
+                    annoDetails: {
+                        ...uiConfig.annoDetails,
+                        visible: !uiConfig.annoDetails.visible,
+                    },
+                })
+                break
+            case tbe.SHOW_LABEL_INFO:
+                setUiConfig({
+                    ...uiConfig,
+                    labelInfo: {
+                        ...uiConfig.labelInfo,
+                        visible: !uiConfig.labelInfo.visible,
+                    },
+                })
+                break
+            case tbe.SHOW_ANNO_STATS:
+                setUiConfig({
+                    ...uiConfig,
+                    annoStats: {
+                        ...uiConfig.annoStats,
+                        visible: !uiConfig.annoStats.visible,
+                    },
+                })
+                break
+            case tbe.EDIT_STROKE_WIDTH:
+                setUiConfig({...uiConfig, strokeWidth: data})
+                break
+            case tbe.EDIT_NODE_RADIUS:
+                setUiConfig({...uiConfig, nodeRadius: data})
                 break
             default:
                 break

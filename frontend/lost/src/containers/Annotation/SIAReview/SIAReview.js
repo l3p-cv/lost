@@ -1,18 +1,18 @@
 import axios from 'axios'
 import { API_URL } from '../../../../src/lost_settings'
-import React, { Component } from 'react'
+import { useHistory } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../../src/actions'
 import 'semantic-ui-css/semantic.min.css'
-import Canvas from '../SIA/lost-sia/src/Canvas'
 import '../SIA/lost-sia/src/SIA.scss'
-import FilterInfoBox from './FilterInfoBox'
+import * as tbe from '../SIA/lost-sia/src/types/toolbarEvents'
+import * as canvasActions from '../SIA/lost-sia/src/types/canvasActions'
 
-// import {dummyAnnos, uiConfig, possibleLabels, imageBlob, canvasConfig} from './dummyData'
-import ToolBar from './ToolBar'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
 import * as notificationType from '../SIA/lost-sia/src/types/notificationType'
+import Sia from '../SIA/lost-sia/src/Sia'
 
 const {
     siaLayoutUpdate,
@@ -23,123 +23,109 @@ const {
     siaReviewResetAnnos,
 } = actions
 
-class SIAReview extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            fullscreenCSS: '',
-            layoutOffset: {
-                left: 20,
-                top: 0,
-                bottom: 5,
-                right: 5,
-            },
-            svg: undefined,
-            tool: 'bBox',
-            imgLabelInputVisible: false,
-            isJunk: false,
-            image: { id: null, data: null },
-            iteration: null,
-        }
-        this.container = React.createRef()
-        this.canvas = React.createRef()
-    }
+const CANVAS_CONFIG = {
+                        tools: {
+                            point: true,
+                            line: true,
+                            polygon: true,
+                            bbox: true,
+                            junk: true,
+                        },
+                        annos: {
+                            minArea: 20,
+                            multilabels: true,
+                            actions: {
+                                draw: true,
+                                label: true,
+                                edit: true,
+                            },
+                        },
+                        img: {
+                            multilabels: true,
+                            actions: {
+                                label: true,
+                            },
+                        },
+                    }
 
-    resetCanvas() {
-        this.setState({
-            imgLabelInputVisible: false,
-        })
-    }
-    handleSetSVG(svg) {
-        this.setState({ svg: { ...svg } })
-    }
-    handleToolSelected(tool) {
-        this.setState({ tool: tool })
-    }
-    handleToggleImgLabelInput() {
-        this.setState({ imgLabelInputVisible: !this.state.imgLabelInputVisible })
-    }
-    handleToggleJunk() {
-        this.props.siaImgIsJunk(!this.props.isJunk)
-    }
+const SIAReview = (props) => {
+    const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
+    const [annos, setAnnos] = useState()
+    const [imageMeta, setImageMeta] = useState()
+    const [imgBlob, setImgBlob] = useState()
+    const [canvas, setCanvas] = useState()
+    const [isJunk, setIsJunk] = useState(false)
+    const [selectedTool, setSelectedTool] = useState()
+    const history = useHistory()
 
-    componentDidMount() {
-        window.addEventListener('resize', this.props.siaLayoutUpdate)
+    const handleToolSelected = (tool) =>  {
+        setSelectedTool(tool)
+        // setState({ tool: tool })
+    }
+    
+    useEffect(() => {
+        window.addEventListener('resize', props.siaLayoutUpdate)
         // document.body.style.overflow = "hidden"
 
+        const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
         //direction: 'next', 'previous', 'first'
         const data = {
             direction: 'first',
             image_anno_id: null,
             iteration: null,
-            pe_id: this.props.pipeElementId,
+            pe_id: pipeElementId,
         }
-        this.props.getSiaReviewOptions(this.props.pipeElementId)
-        this.props.getSiaReviewAnnos(data)
-        // this.props.getSiaConfig()
-    }
+        props.getSiaReviewOptions(pipeElementId)
+        props.getSiaReviewAnnos(data)
+        // props.getSiaConfig()
+        return () => {
+            window.removeEventListener('resize', props.siaLayoutUpdate)
+        }
+    }, [])
 
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.props.siaLayoutUpdate)
-    }
+    useEffect(() => {
+        if (props.annos) {
+            requestImageFromBackend()
+            props.siaImgIsJunk(props.annos.image.isJunk)
+        }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.props.annos) {
-            if (!this.props.annos.image) return
-            if (prevProps.annos) {
-                if (this.props.annos.image.id !== prevProps.annos.image.id) {
-                    this.requestImageFromBackend()
-                }
-            } else {
-                this.requestImageFromBackend()
-            }
-        }
-        if (this.state.fullscreenCSS !== prevState.fullscreenCSS) {
-            this.props.siaLayoutUpdate()
-        }
-        if (prevProps.annos !== this.props.annos) {
-            if (this.props.annos) {
-                this.props.siaImgIsJunk(this.props.annos.image.isJunk)
-            }
-        }
-    }
+    }, [props.annos])
 
-    requestImageFromBackend() {
-        this.props.getSiaImage(this.props.annos.image.id).then((response) => {
-            this.setState({
-                image: {
-                    // ...this.state.image,
-                    id: this.props.annos.image.id,
-                    data: response.data,
-                },
-            })
-            if (this.canvas.current) {
-                this.canvas.current.resetZoom()
-            }
+    const requestImageFromBackend = () => {
+        if (canvas){
+            canvas.resetZoom()
+            canvas.unloadImage()
+        }
+        props.getSiaImage(props.annos.image.id).then((response) => {
+            setImgBlob(response.data)
         })
     }
 
-    handleNextPrevImage(imgId, direction) {
+    const handleNextPrevImage = (imgId, direction) => {
+        const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
         const data = {
             direction: direction,
             image_anno_id: imgId,
-            iteration: this.state.iteration,
-            pe_id: this.props.pipeElementId,
+            iteration: null,
+            pe_id: pipeElementId,
         }
-        this.props.getSiaReviewOptions(this.props.pipeElementId)
-        this.props.getSiaReviewAnnos(data)
+        // props.getSiaReviewOptions(props.pipeElementId)
+        props.getSiaReviewOptions(pipeElementId)
+        props.getSiaReviewAnnos(data)
     }
 
-    async handleSaveAnnos() {
+    const handleSaveAnnos = async () => {
         try {
-            const newAnnos = this.canvas.current.getAnnos()
+            const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
+            const newAnnos = canvas.getAnnos()
+            // const camName = history.location.pathname.split('/').slice(-1)[0]
             const response = await axios.post(
-                API_URL + '/sia/reviewupdate/' + this.props.pipeElementId,
+                API_URL + '/sia/reviewupdate/' + pipeElementId,
                 newAnnos,
             )
             console.log('REQUEST: siaReviewUpdate ', response)
-            // this.props.siaUpdateAnnos(newAnnos).then(
-            this.handleNotification({
+            // props.siaUpdateAnnos(newAnnos).then(
+            handleNotification({
                 title: 'Saved',
                 message: 'Annotations have been saved!',
                 type: notificationType.INFO,
@@ -147,7 +133,7 @@ class SIAReview extends Component {
             // )
         } catch (e) {
             console.error(e)
-            this.handleNotification({
+            handleNotification({
                 title: 'Could not save!!!',
                 message: 'Server Error',
                 type: notificationType.ERROR,
@@ -155,7 +141,7 @@ class SIAReview extends Component {
         }
     }
 
-    handleNotification(notification) {
+    const handleNotification = (notification) => {
         const notifyTimeOut = 5000
         if (notification) {
             switch (notification.type) {
@@ -193,41 +179,16 @@ class SIAReview extends Component {
         }
     }
 
-    toggleFullscreen() {
-        console.log('Toggle Fullscreen')
-        if (this.state.fullscreenCSS !== 'sia-fullscreen') {
-            this.setState({
-                fullscreenCSS: 'sia-fullscreen',
-                layoutOffset: {
-                    ...this.state.layoutOffset,
-                    left: 50,
-                    top: 5,
-                },
-            })
-        } else {
-            if (this.state.fullscreenCSS !== '') {
-                this.setState({
-                    fullscreenCSS: '',
-                    layoutOffset: {
-                        ...this.state.layoutOffset,
-                        left: 20,
-                        top: 0,
-                    },
-                })
-            }
-        }
-    }
-
-    handleCanvasKeyDown(e) {
+    const handleCanvasKeyDown = (e) => {
         console.log('Canvas keyDown: ', e.key)
-        if (!this.props.annos) return
-        if (!this.props.annos.image) return
+        if (!props.annos) return
+        if (!props.annos.image) return
         switch (e.key) {
             case 'ArrowLeft':
-                if (!this.props.annos.image.isFirst) {
-                    this.handleNextPrevImage(this.props.annos.image.id, 'previous')
+                if (!props.annos.image.isFirst) {
+                    handleNextPrevImage(props.annos.image.id, 'previous')
                 } else {
-                    this.handleNotification({
+                    handleNotification({
                         title: 'No previous image',
                         message: 'This is the first image!',
                         type: notificationType.WARNING,
@@ -235,10 +196,10 @@ class SIAReview extends Component {
                 }
                 break
             case 'ArrowRight':
-                if (!this.props.annos.image.isLast) {
-                    this.handleNextPrevImage(this.props.annos.image.id, 'next')
+                if (!props.annos.image.isLast) {
+                    handleNextPrevImage(props.annos.image.id, 'next')
                 } else {
-                    this.handleNotification({
+                    handleNotification({
                         title: 'No next image',
                         message: 'This is the last image!',
                         type: notificationType.WARNING,
@@ -250,112 +211,180 @@ class SIAReview extends Component {
         }
     }
 
-    handleIterationChange(iteration) {
-        this.setState({ iteration: iteration })
-        console.log('iteration', iteration)
-        const data = {
-            direction: 'first',
-            image_anno_id: null,
-            iteration: iteration,
-            pe_id: this.props.pipeElementId,
+    // const handleIterationChange = (iteration) => {
+    //     setState({ iteration: iteration })
+    //     console.log('iteration', iteration)
+    //     const data = {
+    //         direction: 'first',
+    //         image_anno_id: null,
+    //         iteration: iteration,
+    //         pe_id: props.pipeElementId,
+    //     }
+    //     props.siaReviewResetAnnos()
+    //     props.getSiaReviewAnnos(data)
+    // }
+
+    // const renderFilter = () => {
+    //     if (!props.filterOptions) return null
+    //     return (
+    //         <FilterInfoBox
+    //             visible={true}
+    //             options={props.filterOptions}
+    //             onIterationChange={(iter) => handleIterationChange(iter)}
+    //         />
+    //     )
+    // }
+
+    const handleGetFunction = (canvas) => {
+        setCanvas(canvas)
+    }
+
+    const handleToolBarEvent = (e, data) => {
+        switch (e) {
+            case tbe.SAVE:
+                handleSaveAnnos()
+                break
+            case tbe.DELETE_ALL_ANNOS:
+                canvas.deleteAllAnnos()
+                break
+            case tbe.TOOL_SELECTED:
+                handleToolSelected(data)
+                break
+            case tbe.GET_NEXT_IMAGE:
+                handleNextPrevImage(props.annos.image.id, 'next')
+                break
+            case tbe.GET_PREV_IMAGE:
+                handleNextPrevImage(props.annos.image.id, 'previous')
+                break
+            case tbe.TASK_FINISHED:
+                break
+            case tbe.SHOW_IMAGE_LABEL_INPUT:
+                setImgLabelInputVisible(true)
+                break
+            case tbe.IMG_IS_JUNK:
+                setIsJunk(!isJunk)
+                break
+            case tbe.APPLY_FILTER:
+                break
+
+            case tbe.SHOW_ANNO_DETAILS:
+                // props.siaSetUIConfig({
+                //     ...props.uiConfig,
+                //     annoDetails: {
+                //         ...props.uiConfig.annoDetails,
+                //         visible: !props.uiConfig.annoDetails.visible,
+                //     },
+                // })
+                break
+            case tbe.SHOW_LABEL_INFO:
+                break
+            case tbe.SHOW_ANNO_STATS:
+                break
+            case tbe.EDIT_STROKE_WIDTH:
+                break
+            case tbe.EDIT_NODE_RADIUS:
+                break
+            default:
+                break
         }
-        this.props.siaReviewResetAnnos()
-        this.props.getSiaReviewAnnos(data)
+    }
+    
+    const handleCanvasEvent = (action, data) => {
+        // console.log('Handle canvas event', action, data)
+        switch (action) {
+            case canvasActions.CANVAS_AUTO_SAVE:
+                // this.handleAutoSave()
+                break
+            case canvasActions.CANVAS_SVG_UPDATE:
+                // this.props.siaSetSVG(data)
+                break
+            case canvasActions.CANVAS_UI_CONFIG_UPDATE:
+                // this.props.siaSetUIConfig(data)
+                break
+            case canvasActions.CANVAS_LABEL_INPUT_CLOSE:
+                setImgLabelInputVisible(false)
+                break
+            default:
+                break
+        }
     }
 
-    renderFilter() {
-        if (!this.props.filterOptions) return null
-        return (
-            <FilterInfoBox
-                visible={true}
-                options={this.props.filterOptions}
-                onIterationChange={(iter) => this.handleIterationChange(iter)}
-            />
-        )
-    }
-    renderCanvas() {
-        if (!this.props.annos) return 'No Review Data!'
-        if (!this.props.filterOptions) return 'No Review Data!'
-        return (
-            <div>
-                <ToolBar
-                    svg={this.state.svg}
-                    currentImage={this.props.annos.image}
-                    onToolSelected={(tool) => this.handleToolSelected(tool)}
-                    onToggleImgLabelInput={() => this.handleToggleImgLabelInput()}
-                    onToggleJunk={() => this.handleToggleJunk()}
-                    onNextImage={(imgId) => this.handleNextPrevImage(imgId, 'next')}
-                    onPrevImage={(imgId) => this.handleNextPrevImage(imgId, 'previous')}
-                    onToggleFullscreen={() => this.toggleFullscreen()}
-                    onDeleteAllAnnos={() => this.canvas.current.deleteAllAnnos()}
-                    onSaveAnnos={() => this.handleSaveAnnos()}
-                />
-                <Canvas
-                    ref={this.canvas}
-                    imgBarVisible={true}
-                    imgLabelInputVisible={this.state.imgLabelInputVisible}
-                    container={this.container}
-                    annos={this.props.annos}
-                    image={this.state.image}
-                    uiConfig={this.props.uiConfig}
-                    layoutUpdate={this.props.layoutUpdate}
-                    selectedTool={this.state.tool}
-                    canvasConfig={{
-                        tools: {
-                            point: true,
-                            line: true,
-                            polygon: true,
-                            bbox: true,
-                            junk: true,
-                        },
-                        annos: {
-                            minArea: 20,
-                            multilabels: true,
-                            actions: {
-                                draw: true,
-                                label: true,
-                                edit: true,
-                            },
-                        },
-                        img: {
-                            multilabels: true,
-                            actions: {
-                                label: true,
-                            },
-                        },
+    const renderSia = () => {
+        if (!props.annos) return 'No Review Data!'
+        if (!props.filterOptions) return 'No Review Data!'
+        return <div>
+                <Sia
+                    // onAnnoEvent={(anno, annos, action) =>
+                    //     handleAnnoPerformedAction(anno, annos, action)
+                    // }
+                    onNotification={(messageObj) => handleNotification(messageObj)}
+                    onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
+                    onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                    // onGetAnnoExample={(exampleArgs) =>
+                    //     props.onGetAnnoExample
+                    //         ? props.onGetAnnoExample(exampleArgs)
+                    //         : {}
+                    // }
+                    onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                    canvasConfig={
+                        CANVAS_CONFIG
+                        // {
+                        // ...props.canvasConfig,
+                        // annos: { ...props.canvasConfig.annos, maxAnnos: null },
+                        // autoSaveInterval: 60,
+                        // allowedToMarkExample: state.allowedToMark,
+                        // }
+                    }
+                    uiConfig={{
+                        ...props.uiConfig,
+                        imgBarVisible: true,
+                        imgLabelInputVisible: imgLabelInputVisible,
+                        centerCanvasInContainer: true,
+                        maxCanvas: true,
                     }}
-                    possibleLabels={this.props.filterOptions.possible_labels}
-                    onSVGUpdate={(svg) => this.handleSetSVG(svg)}
-                    // onAnnoSelect={anno => this.props.selectAnnotation(anno)}
-                    layoutOffset={this.state.layoutOffset}
-                    isJunk={this.props.isJunk}
-                    onImgLabelInputClose={() => this.handleToggleImgLabelInput()}
-                    centerCanvasInContainer={true}
-                    onNotification={(messageObj) => this.handleNotification(messageObj)}
-                    onKeyDown={(e) => this.handleCanvasKeyDown(e)}
-                    // defaultLabel='no label'
+                    // nextAnnoId={state.nextAnnoId}
+                    annos={props.annos.annotations}
+                    imageMeta={props.annos.image}
+                    imageBlob={imgBlob}
+                    possibleLabels={props.filterOptions.possible_labels}
+                    // exampleImg={props.exampleImg}
+                    layoutUpdate={props.layoutUpdate}
+                    selectedTool={selectedTool}
+                    isJunk={isJunk}
+                    // blocked={state.blockCanvas}
+                    onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
+                    // svg={props.svg}
+                    // filter={props.filter}
+                    toolbarEnabled={{
+                        save:true,
+                        imgLabel: true,
+                        nextPrev: true,
+                        toolSelection: true,
+                        fullscreen: true,
+                        junk: true,
+                        deleteAll: true,
+                        settings: true,
+                        filter: false,
+                        help: true
+                    }}
                 />
             </div>
-        )
     }
 
-    render() {
-        return (
-            <div className={this.state.fullscreenCSS} ref={this.container}>
-                {this.renderCanvas()}
-                {this.renderFilter()}
-                <NotificationContainer />
-            </div>
-        )
-    }
+    return (
+        <div>
+            {renderSia()}
+            <NotificationContainer />
+        </div>
+    )
+    
 }
 
 function mapStateToProps(state) {
     return {
         uiConfig: state.sia.uiConfig,
         layoutUpdate: state.sia.layoutUpdate,
-        isJunk: state.sia.isJunk,
-        pipeElementId: state.siaReview.elementId,
+        // isJunk: state.sia.isJunk,
         annos: state.siaReview.annos,
         filterOptions: state.siaReview.options,
     }
