@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { API_URL } from '../../../../src/lost_settings'
-// import { useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../../src/actions'
@@ -55,6 +55,7 @@ const SIAReview = (props) => {
     const [imgBlob, setImgBlob] = useState()
     const [canvas, setCanvas] = useState()
     const [selectedTool, setSelectedTool] = useState()
+    const history = useHistory()
     // constructor(props) {
     //     super(props)
     //     state = {
@@ -103,14 +104,15 @@ const SIAReview = (props) => {
         window.addEventListener('resize', props.siaLayoutUpdate)
         // document.body.style.overflow = "hidden"
 
+        const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
         //direction: 'next', 'previous', 'first'
         const data = {
             direction: 'first',
             image_anno_id: null,
             iteration: null,
-            pe_id: props.pipeElementId,
+            pe_id: pipeElementId,
         }
-        props.getSiaReviewOptions(props.pipeElementId)
+        props.getSiaReviewOptions(pipeElementId)
         props.getSiaReviewAnnos(data)
         // props.getSiaConfig()
         return () => {
@@ -157,7 +159,10 @@ const SIAReview = (props) => {
     // }
 
     const requestImageFromBackend = () => {
-        canvas.unloadImage()
+        if (canvas){
+            canvas.resetZoom()
+            canvas.unloadImage()
+        }
         props.getSiaImage(props.annos.image.id).then((response) => {
             setImgBlob(response.data)
             // setImageMeta(                
@@ -173,9 +178,6 @@ const SIAReview = (props) => {
             //         data: response.data,
             //     },
             // })
-            if (canvas){
-                canvas.resetZoom()
-            }
             // if (canvas.current) {
             //     canvas.current.resetZoom()
             // }
@@ -183,13 +185,15 @@ const SIAReview = (props) => {
     }
 
     const handleNextPrevImage = (imgId, direction) => {
+        const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
         const data = {
             direction: direction,
             image_anno_id: imgId,
             iteration: null,
-            pe_id: props.pipeElementId,
+            pe_id: pipeElementId,
         }
-        props.getSiaReviewOptions(props.pipeElementId)
+        // props.getSiaReviewOptions(props.pipeElementId)
+        props.getSiaReviewOptions(pipeElementId)
         props.getSiaReviewAnnos(data)
     }
 

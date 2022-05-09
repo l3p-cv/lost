@@ -113,7 +113,7 @@ const AnnoTaskModal = (props) => {
                     style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
                     onClick={(e) =>
                         handleSiaRewiewClick(props, () => {
-                            hist.push('/sia-review')
+                            hist.push(`/sia-review/${props.id}`)
                         })
                     }
                     text="Review Annotations"
