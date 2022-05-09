@@ -1,3 +1,5 @@
+import subprocess
+import shutil
 import os
 import pandas as pd
 import json
@@ -31,7 +33,7 @@ def main():
     if user and group:
         create_lost_filesystem_entry(dbm, lostconfig, group.idx)
         create_user_default_fs(dbm, user, group.idx)
-        import_ootb_pipelines(dbm, lostconfig)
+        import_ootb_pipelines(dbm, user)
         copy_example_images(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
         # create_project_config(dbm)
@@ -105,15 +107,38 @@ def create_lost_filesystem_entry(dbm, lostconfig, admin_default_group):
 #     except:
 #         print('Project config already exists!')
 
-def import_ootb_pipelines(dbm, lostconfig):
-    fm = AppFileMan(lostconfig)
-    src_path = '/code/src/backend/lost/pyapi/examples/pipes/lost'
-    pp_path = fm.get_pipe_project_path()
-    dst_path = os.path.join(pp_path, os.path.basename(src_path))
-    #try:
-    shutil.copytree(src_path, dst_path, dirs_exist_ok=False)
-    importer = template_import.PipeImporter(dst_path, dbm)
-    importer.start_import()
+def import_ootb_pipelines(dbm, user):
+
+    def git(*args):
+        return subprocess.check_call(['git'] + list(args))
+    fm = AppFileMan(LOST_CONFIG)
+    git_url = LOST_CONFIG.initial_pipeline_import_url
+    if git_url != '':
+        git_branch = LOST_CONFIG.initial_pipeline_import_branch
+        git_project = os.path.splitext(os.path.basename(git_url))[0]
+        upload_path = fm.get_upload_path(user.idx, git_project)
+        if git_branch == 'main':
+            git('clone', git_url, upload_path)
+        else:
+            git('clone', git_url, upload_path, '-b', git_branch)
+        pp_path = fm.get_pipe_project_path()
+        dst_dir = os.path.basename(upload_path)
+        dst_path = os.path.join(pp_path, dst_dir)
+        shutil.copytree(upload_path, dst_path,dirs_exist_ok=True)
+
+        importer = template_import.PipeImporter(dst_path, dbm)
+        importer.start_import()
+        shutil.rmtree(upload_path)
+
+    # old way
+    # fm = AppFileMan(lostconfig)
+    # src_path = '/code/src/backend/lost/pyapi/examples/pipes/lost'
+    # pp_path = fm.get_pipe_project_path()
+    # dst_path = os.path.join(pp_path, os.path.basename(src_path))
+    # #try:
+    # shutil.copytree(src_path, dst_path, dirs_exist_ok=False)
+    # importer = template_import.PipeImporter(dst_path, dbm)
+    # importer.start_import()
 
 
 def copy_example_images(dbm, lostconfig, user):

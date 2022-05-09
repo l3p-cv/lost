@@ -19,6 +19,7 @@ from lost.utils.dump import dump
 import json 
 import os
 from io import BytesIO
+import traceback
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
 import flask
@@ -235,22 +236,30 @@ class TemplateImportZip(Resource):
                 e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
                 extract_path = os.path.join(e_path, dst_dir)
                 dst_path = os.path.join(pp_path, dst_dir)
-                extracted_path = template_import.unpack_pipe_project(upload_path, extract_path)
-                shutil.copytree(extracted_path, dst_path)
+                try:
+                    template_import.unpack_pipe_project(upload_path, extract_path)
+                except:
+                    dbm.close_session()
+                    return 'No valid pipeline found.', 200
+                shutil.copytree(extract_path, dst_path,dirs_exist_ok=True)
                 dbm = access.DBMan(LOST_CONFIG)
                 if not USER_NAMESPACE:
                     importer = template_import.PipeImporter(dst_path, dbm)
                 else:
                     importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
-                importer.start_import()
+                error_message = importer.start_import()
                 fm.fs.rm(upload_path, recursive=True)
                 fm.fs.rm(e_path, recursive=True)
                 dbm.close_session()
+                if error_message != '':
+                    return error_message, 200
                 return "success", 200
-            except:
-                # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
+            except template_import.JSONDecodeError:
                 dbm.close_session()
-                return "error", 200
+                return traceback.format_exc(), 200
+            except:
+                dbm.close_session()
+                raise
 
 @namespace.route('/project/import_git')
 class TemplateImportGit(Resource):
@@ -279,36 +288,29 @@ class TemplateImportGit(Resource):
                     git('clone', git_url, upload_path)
                 else:
                     git('clone', git_url, upload_path, '-b', git_branch)
-                
-                # USER_NAMESPACE = False
-                # if USER_NAMESPACE:
-                #     head, tail = os.path.split(upload_path)
-                #     upload_path = os.path.join(head, f'{identity}_{tail}')
-                # uploaded_file.save(upload_path)
-
-                # pp_path = fm.get_pipe_project_path()
-                # dst_dir = os.path.basename(upload_path)
-                # dst_dir = os.path.splitext(dst_dir)[0]
-                # e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
-                # extract_path = os.path.join(e_path, dst_dir)
-                # dst_path = os.path.join(pp_path, dst_dir)
-                # extracted_path = template_import.unpack_pipe_project(upload_path, extract_path)
-                # shutil.copytree(extracted_path, dst_path)
-                # dbm = access.DBMan(LOST_CONFIG)
-                # if not USER_NAMESPACE:
-                #     importer = template_import.PipeImporter(dst_path, dbm)
-                # else:
-                #     importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
-                # importer.start_import()
-                # fm.fs.rm(upload_path, recursive=True)
-                # fm.fs.rm(e_path, recursive=True)
+                pp_path = fm.get_pipe_project_path()
+                dst_dir = os.path.basename(upload_path)
+                dst_path = os.path.join(pp_path, dst_dir)
+                shutil.copytree(upload_path, dst_path,dirs_exist_ok=True)
+                USER_NAMESPACE = False
+                if not USER_NAMESPACE:
+                    importer = template_import.PipeImporter(dst_path, dbm)
+                else:
+                    importer = template_import.PipeImporter(dst_path, dbm, user_id=identity)
+                error_message = importer.start_import()
+                shutil.rmtree(upload_path)
                 dbm.close_session()
-                return "success", 200
+                if error_message != '':
+                    return error_message, 200
+                else: 
+                    return "success", 200
+            except template_import.JSONDecodeError:
+                dbm.close_session()
+                return traceback.format_exc(), 200
             except:
-                # TODO If Import fails, return specific errormessage and 200 status code here, in order to display it in frontend !
                 dbm.close_session()
                 raise
-                return "error", 200
+
 
 @namespace.route('/project/export/<string:pipe_project>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
@@ -324,12 +326,13 @@ class PipelineTemplateExport(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
         else:
             # TODO Export here !
-            fm = AppFileMan(LOST_CONFIG)
             # src = fm.get_pipe_project_path(content['namespace'])
-            src = os.path.join(fm.get_pipe_project_path(), pipe_project)
+            pipe_template = dbm.get_pipe_template_by_pipe_project(pipe_project)[0]
+
+
             f = BytesIO()
             # f = open('/home/lost/app/test.zip', 'wb')
-            template_import.pack_pipe_project_to_stream(f, src)
+            template_import.pack_pipe_project_to_stream(f, pipe_template.install_path)
             
             f.seek(0)
             resp = make_response(f.read())
@@ -353,11 +356,9 @@ class TemplateDelete(Resource):
             data = json.loads(request.data)
             fm = AppFileMan(LOST_CONFIG)
             pipe_project = data['pipeProject']
-            importer = template_import.PipeImporter(fm.get_pipe_project_path(pp_name=pipe_project), dbm)
+            pipe_template = dbm.get_pipe_template_by_pipe_project(pipe_project)[0]
+            importer = template_import.PipeImporter(pipe_template.install_path, dbm)
             importer.remove_pipe_project()
-
-            #TODO Delete here
-           
             dbm.close_session()
             return "success", 200
 @namespace.route('/project/<string:visibility>')

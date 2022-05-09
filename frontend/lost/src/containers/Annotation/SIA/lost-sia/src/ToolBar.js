@@ -109,6 +109,10 @@ class ToolBar extends Component{
         this.triggerToolBarEvent(tbe.DELETE_ALL_ANNOS)
     }
 
+    handleSave(){
+        this.triggerToolBarEvent(tbe.SAVE)
+    }
+
     triggerToolBarEvent(event, data){
         if (this.props.onToolBarEvent){
             this.props.onToolBarEvent(event, data)
@@ -246,6 +250,16 @@ class ToolBar extends Component{
         </Menu.Item>
     }
 
+    renderSaveButton(){
+        if (!this.props.enabled.save) return null
+        return <Menu.Item name='save'  key='save'
+                onClick={() => this.handleSave()}
+            >
+                {/* <Icon name='save'  color='red'/> */}
+                <Icon name='save' />
+        </Menu.Item>
+    }
+
     renderHelpButton(){
         if (!this.props.enabled.help) return null
         return <Menu.Item name='help' key='help'
@@ -366,6 +380,7 @@ class ToolBar extends Component{
             ref={this.toolBarGroup}
             style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
+                {this.renderSaveButton()}
                 {this.renderImgLabelInput()}
                 {this.renderNavigation()}
                 {this.renderToolButtons()}

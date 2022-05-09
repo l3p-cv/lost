@@ -196,6 +196,7 @@ class PipeStarter(object):
         anno_task.name = data_element['annoTask']['name']
         anno_task.instructions = data_element['annoTask']['instructions']
         anno_task.group_id = data_element['annoTask']['workerId']
+        anno_task.timestamp = datetime.now()
         if data_element['annoTask']['workerId'] == -1:
             anno_task.group_id = None
         anno_task.state = state.AnnoTask.PENDING

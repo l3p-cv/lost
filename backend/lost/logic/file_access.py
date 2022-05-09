@@ -68,6 +68,24 @@ class UserFileAccess(object):
         else:
             raise FsAccessNotPermitted()
 
+    def ls(self, path, detail=False):
+        if 'r' in self.get_permission():
+            return self.fm.ls(path, detail=detail)
+        else:
+            raise FsAccessNotPermitted()
+
+    def touch(self, file_path):
+        if 'w' in self.get_permission():
+            return self.fs.touch(file_path)
+        else:
+            raise FsAccessNotPermitted()
+
+    def mkdirs(self, path, exist_ok=False):
+        if 'w' in self.get_permission():
+            return self.fm.mkdirs(path, exist_ok=exist_ok)
+        else:
+            raise FsAccessNotPermitted()
+
     def get_media_path(self):
         return self.fm.get_media_path()
 
