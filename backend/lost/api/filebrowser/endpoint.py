@@ -66,17 +66,8 @@ class LS(Resource):
                 fs_type=data['fs']['fsType']
             )
             fm = FileMan(fs_db=db_fs, decrypt=False)
-            ufa = UserFileAccess(dbm, user, db_fs)
-            # fs_db = dbm.get_fs(name=data['fs']['name'])
-            # fm = FileMan(fs_db=fs_db)
-            # commonprefix = os.path.commonprefix([data['path'], fs_db.root_path])
-            # if commonprefix != fs_db.root_path:
-            #     path = fs_db.root_path
-            # else:
-            #     path = data['path']
             path = data['path']
-            res = ufa.ls(path, detail=True)
-            # raise Exception(res)
+            res = fm.ls(path, detail=True)
             dbm.close_session()
             return chonkyfy(res, path, fm)
 

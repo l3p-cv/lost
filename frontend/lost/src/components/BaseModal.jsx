@@ -38,6 +38,7 @@ const BaseModal = ({
                     footer || null,
                     isShowCancelButton ? (
                         <IconButton
+                            key={key}
                             isOutline={false}
                             color="secondary"
                             icon={faTimes}

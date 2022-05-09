@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import MIAImage from './MIAImage'
+import MIAImage from './NewMIAImage'
 import actions from '../../../actions'
 
 import './Cluster.scss'
@@ -71,8 +71,9 @@ class Cluster extends Component {
                     {this.props.images.map((image) => {
                         return (
                             <MIAImage
-                                image={image}
                                 key={image.id}
+                                image={image}
+                                miaKey={image.id}
                                 height={this.props.zoom}
                             ></MIAImage>
                         )
