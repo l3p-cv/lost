@@ -360,6 +360,7 @@ class ToolBar extends Component{
     renderSettingBtn(){
         if (!this.props.enabled.settings) return null
         return <SIASettingButton 
+                    enabled= {this.props.enabled.settings}
                     uiConfig={this.props.uiConfig}
                     onSettingEvent={(e,data) => this.triggerToolBarEvent(e, data)}/>
     }
@@ -367,6 +368,7 @@ class ToolBar extends Component{
     renderFilterBtn(){
         if (!this.props.enabled.filter) return null
         return <SIAFilterButton 
+                    enabled={this.props.enabled.filter}
                     onFilterEvent={(e, data) => this.triggerToolBarEvent(e, data)}
                     filter={this.props.filter}
                     imageMeta={this.props.imageMeta}

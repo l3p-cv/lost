@@ -36,10 +36,8 @@ class SIASettingButton extends Component{
         this.triggerEvent(tbe.EDIT_NODE_RADIUS, parseInt(e.target.value))
     }
 
-    render(){
-
-        if (!this.props.uiConfig) return null
-        const popupContent = <div >
+    renderInfoBoxContent(){
+        return <div>
             <Divider horizontal>Info Boxes</Divider>
             <Checkbox 
                 checked={this.props.uiConfig.annoDetails.visible} 
@@ -56,6 +54,31 @@ class SIASettingButton extends Component{
                 label="Anno Stats" toggle
                 onClick={() => this.toggleAnnoStats()}
                 />
+        </div>
+    }
+    renderInfoBoxes(){
+        if (!this.props.enabled) return null
+        if (this.props.enabled == true){
+            return this.renderInfoBoxContent()
+        } else {
+            if (this.props.enabled.infoBoxes){
+                return this.renderInfoBoxContent()
+            }
+        }
+    }
+
+    renderAnnoStyle(){
+        if (!this.props.enabled) return null
+        if (this.props.enabled == true){
+            return this.renderAnnoStyleContent()
+        } else {
+            if (this.props.enabled.annoStyle){
+                return this.renderAnnoStyleContent()
+            }
+        }
+    }
+    renderAnnoStyleContent(){
+        return <div>
             <Divider horizontal>Anno Appearance</Divider>
             <div>Stroke width: {this.props.uiConfig.strokeWidth}</div>
             <input
@@ -73,6 +96,15 @@ class SIASettingButton extends Component{
                 value={this.props.uiConfig.nodeRadius}
                 onChange={e => this.handleNodeRadiusChange(e)}
                 />
+        </div>
+    }
+
+    render(){
+
+        if (!this.props.uiConfig) return null
+        const popupContent = <div >
+            {this.renderInfoBoxes()}
+            {this.renderAnnoStyle()}
         </div>
         return(
             <Popup trigger={ 

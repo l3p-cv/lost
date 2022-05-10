@@ -548,8 +548,8 @@ class SiaWrapper extends Component {
                         fullscreen: true,
                         junk: true,
                         deleteAll: true,
-                        settings: true,
-                        filter: true,
+                        settings: {infoBoxes:true, annoStyle:true},
+                        filter: {rotate: true,clahe:false},
                         help: true
                     }}
                 />

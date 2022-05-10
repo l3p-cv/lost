@@ -124,15 +124,15 @@ import * as annoActions from './types/canvasActions'
  * @param {bool | object} toolbarEnabled Defines which toolbar buttons are 
  *      displayed or if toolbar is shown at all. 
  *          false | {
- *              imgLabel: true,
- *              nextPrev: true,
- *              toolSelection: true,
- *              fullscreen: true,
- *              junk: true,
- *              deleteAll: true,
- *              settings: true,
- *              filter: true,
- *              help: true
+ *              imgLabel: bool,
+ *              nextPrev: bool,
+ *              toolSelection: bool,
+ *              fullscreen: bool,
+ *              junk: bool,
+ *              deleteAll: bool,
+ *              settings: bool | {infoBoxes: bool, annoStyle: bool},
+ *              filter: bool | {rotate: bool, clahe:bool},
+ *              help: bool
  *          }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
