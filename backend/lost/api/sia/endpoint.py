@@ -1,3 +1,4 @@
+import traceback
 import flask
 from flask import request, send_file
 from flask_restx import Resource
@@ -163,9 +164,17 @@ class Update(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
-            data = json.loads(request.data)
-            re = sia.update(dbm, data, user.idx)
-            dbm.close_session()
+            try:
+                data = json.loads(request.data)
+                # raise Exception('jj')
+                re = sia.update(dbm, data, user.idx)
+                dbm.close_session()
+            except:
+                msg = traceback.format_exc()
+                msg += f'\nuser.idx: {user.idx}, user.name: {user.user_name}\n'
+                msg += f'Received data:\n{json.dumps(data, indent=4)}\n'
+                flask.current_app.logger.error('{}'.format(msg))
+                dbm.close_session()
             return re
 
 @namespace.route('/allowedExampler')
@@ -196,6 +205,7 @@ class NextAnnoId(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
+            # raise Exception('JJ')
             re = sia.get_next_anno_id(dbm)
             dbm.close_session()
             return re

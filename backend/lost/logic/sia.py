@@ -345,6 +345,7 @@ class SiaUpdate(object):
                         for label in self.db_man.get_all_two_d_label(two_d.idx):
                             self.db_man.delete(label)
                         self.db_man.delete(two_d)
+                        self.db_man.commit()
                 except KeyError:
                     print('SIA bug backend fix! Do not try to delete annotations that are not in db!')
             elif annotation['status'] == "new":
