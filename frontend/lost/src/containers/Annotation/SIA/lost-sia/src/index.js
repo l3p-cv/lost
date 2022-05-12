@@ -1,3 +1,6 @@
+
+import 'semantic-ui-css/semantic.min.css'
+
 export {default as Canvas} from './Canvas'
 export {default as Sia} from './Sia'
 export {default as Toolbar} from './ToolBar'

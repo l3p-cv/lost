@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react'
 
-import 'semantic-ui-css/semantic.min.css'
 import ToolBar from './ToolBar'
 import Canvas from './Canvas'
 import * as tbe from './types/toolbarEvents'
