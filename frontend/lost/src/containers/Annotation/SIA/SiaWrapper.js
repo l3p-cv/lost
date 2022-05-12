@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
-import 'semantic-ui-css/semantic.min.css'
 import * as tbe from './lost-sia/src/types/toolbarEvents'
 
 import { NotificationManager, NotificationContainer } from 'react-notifications'
@@ -549,7 +548,7 @@ class SiaWrapper extends Component {
                         junk: true,
                         deleteAll: true,
                         settings: {infoBoxes:true, annoStyle:true},
-                        filter: {rotate: true,clahe:false},
+                        filter: {rotate: true,clahe:true},
                         help: true
                     }}
                 />
