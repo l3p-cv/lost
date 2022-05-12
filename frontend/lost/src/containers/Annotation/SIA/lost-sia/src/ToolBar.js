@@ -366,7 +366,9 @@ class ToolBar extends Component{
     }
 
     renderFilterBtn(){
+        console.log('filter', this.props.filter)
         if (!this.props.enabled.filter) return null
+        if (!this.props.filter) return null
         return <SIAFilterButton 
                     enabled={this.props.enabled.filter}
                     onFilterEvent={(e, data) => this.triggerToolBarEvent(e, data)}
