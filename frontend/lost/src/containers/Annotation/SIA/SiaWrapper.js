@@ -540,6 +540,7 @@ class SiaWrapper extends Component {
                     onToolBarEvent={(e, data) => this.handleToolBarEvent(e, data)}
                     // svg={this.props.svg}
                     filter={this.props.filter}
+                    preventScrolling={false}
                     toolbarEnabled={{
                         imgLabel: true,
                         nextPrev: true,

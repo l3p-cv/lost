@@ -107,6 +107,7 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *      when no label was selected by the annotator. If not set "no label" will be used.
  *      If ID is used, it needs to be one of the possible label ids.
  * @param {bool} blocked Block canvas view with loading dimmer.
+ * @param {bool} preventScrolling Prevent scrolling on mouseEnter
  * @param {int} nextAnnoId Id that will be used for the next annotation that 
  *        will be created. If undefined, the canvas will create its own ids.
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
@@ -319,8 +320,17 @@ class Canvas extends Component{
     }
 
     onMouseOver(){
-        //Prevent scrolling on svg
         this.svg.current.focus()
+        //Prevent scrolling on svg
+        if (this.props.preventScrolling){
+            document.body.style.overflow = 'hidden'
+        }
+    }
+
+    onMouseLeave(){
+        if (this.props.preventScrolling){
+            document.body.style.overflow = ''
+        }
     }
 
     onWheel(e){
@@ -1645,6 +1655,7 @@ class Canvas extends Component{
                     <g 
                         transform={`scale(${this.state.svg.scale}) translate(${this.state.svg.translateX}, ${this.state.svg.translateY})`}
                         onMouseOver={() => {this.onMouseOver()}}
+                        onMouseLeave={() => {this.onMouseLeave()}}
                         // onMouseEnter={() => this.svg.current.focus()}
                         onMouseUp={(e) => {this.onMouseUp(e)}}
                         onWheel={(e) => this.onWheel(e)}
