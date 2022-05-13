@@ -65,6 +65,7 @@ class SiaWrapper extends Component {
             blockCanvas: false,
             nextAnnoId: undefined,
             allowedToMark: false,
+            fullscreen:false
         }
         this.canvas = undefined
     }
@@ -323,6 +324,9 @@ class SiaWrapper extends Component {
             case 'J':
                 this.props.siaImgIsJunk(!this.props.isJunk)
                 break
+            case 'f':
+                this.setState({fullscreen: !this.state.fullscreen})
+                break
             default:
                 break
         }
@@ -538,6 +542,7 @@ class SiaWrapper extends Component {
                     isJunk={this.props.isJunk}
                     blocked={this.state.blockCanvas}
                     onToolBarEvent={(e, data) => this.handleToolBarEvent(e, data)}
+                    fullscreen={this.state.fullscreen}
                     // svg={this.props.svg}
                     filter={this.props.filter}
                     preventScrolling={false}

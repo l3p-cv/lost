@@ -87,6 +87,7 @@ const toolbarEnabled = {
     help: true
 }
 
+const noAnnos = { bBoxes: [], lines: [], points: [], polygons: [] }
 const annos = {
         bBoxes: [
             {
@@ -259,5 +260,6 @@ export {
     filter,
     toolbarEnabled,
     imgMeta,
-    selectedTool
+    selectedTool,
+    noAnnos
 }
