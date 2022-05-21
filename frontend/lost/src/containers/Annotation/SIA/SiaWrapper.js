@@ -40,10 +40,10 @@ const {
 } = actions
 
 const SiaWrapper = (props) => {
-    const [didMount, setDidMount] = useState(false);
     const [image, setImage] = useState({id: undefined, data: undefined})
     const [annos, setAnnos] = useState({image: undefined, annotations: undefined})
     const [nextAnnoId, setNextAnnoId] = useState()
+    const [blockNextImageTrigger, setBlockNextImageTrigger] = useState(false)
     // const [notification, setNotification] = useState()
     const [filteredData, setFilteredData] = useState()
     const [currentRotation, setCurrentRotation] = useState(0)
@@ -85,7 +85,7 @@ const SiaWrapper = (props) => {
     useEffect(() => {
         document.body.style.overflow = 'hidden'
         // setState({ didMount: true })
-        setDidMount(true)
+        // setDidMount(true)
         window.addEventListener('resize', props.siaLayoutUpdate)
         props.getSiaAnnos(-1)
         props.getSiaLabels()
@@ -305,6 +305,7 @@ const SiaWrapper = (props) => {
         })
     }
     const getNewImage = (imageId, direction) => {
+        
         // canvas.resetZoom()
         canvas.resetZoom()
         const newAnnos = undoAnnoRotationForUpdate(props.filter)
@@ -379,10 +380,16 @@ const SiaWrapper = (props) => {
                 props.siaSelectTool(data)
                 break
             case tbe.GET_NEXT_IMAGE:
-                props.siaGetNextImage(props.currentImage.id)
+                if (!blockNextImageTrigger){
+                    setBlockNextImageTrigger(true)
+                    props.siaGetNextImage(props.currentImage.id)
+                }
                 break
             case tbe.GET_PREV_IMAGE:
-                props.siaGetPrevImage(props.currentImage.id)
+                if (!blockNextImageTrigger){
+                    setBlockNextImageTrigger(true)
+                    props.siaGetPrevImage(props.currentImage.id)
+                }
                 break
             case tbe.TASK_FINISHED:
                 props.siaSetTaskFinished()
@@ -444,7 +451,10 @@ const SiaWrapper = (props) => {
         switch (e.key) {
             case 'ArrowLeft':
                 if (!props.currentImage.isFirst) {
-                    props.siaGetPrevImage(props.currentImage.id)
+                    if (!blockNextImageTrigger){
+                        setBlockNextImageTrigger(true)
+                        props.siaGetPrevImage(props.currentImage.id)
+                    }
                 } else {
                     handleNotification({
                         notification: {
@@ -457,7 +467,10 @@ const SiaWrapper = (props) => {
                 break
             case 'ArrowRight':
                 if (!props.currentImage.isLast) {
-                    props.siaGetNextImage(props.currentImage.id)
+                    if (!blockNextImageTrigger){
+                        setBlockNextImageTrigger(true)
+                        props.siaGetNextImage(props.currentImage.id)
+                    }
                 } else {
                     handleNotification({
                         notification: {
@@ -606,11 +619,11 @@ const SiaWrapper = (props) => {
                 bAnnosNew = canvas.getAnnos(undefined, false)
             }
             setBlockCanvas(false)
-            setFilteredData(response.data)
             setAnnos({
                     image: { ...props.annos.image },
                     annotations: bAnnosNew.annotations,
                 })
+            setFilteredData(response.data)
             // setState({
             //     filteredData: response.data,
             //     blockCanvas: false,
@@ -629,6 +642,7 @@ const SiaWrapper = (props) => {
                     id: props.annos.image.id,
                     data: response ? response.data : failedToLoadImage(),
                 })
+            setBlockNextImageTrigger(false)
             setBlockCanvas(filterTools.active(props.filter))
             // setState({
             //     image: {
