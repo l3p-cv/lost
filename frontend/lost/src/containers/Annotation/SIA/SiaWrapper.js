@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
 import * as tbe from './lost-sia/src/types/toolbarEvents'
@@ -39,251 +39,399 @@ const {
     siaApplyFilter,
 } = actions
 
-class SiaWrapper extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            // fullscreenCSS: '',
-            didMount: false,
-            image: {
-                id: undefined,
-                data: undefined,
-            },
-            annos: {
-                image: undefined,
-                annotations: undefined,
-            },
-            // layoutOffset: {
-            //     left: 20,
-            //     top: 0,
-            //     bottom: 5,
-            //     right: 5
-            // },
-            notification: undefined,
-            filteredData: undefined,
-            currentRotation: 0,
-            blockCanvas: false,
-            nextAnnoId: undefined,
-            allowedToMark: false,
-            fullscreen:false
-        }
-        this.canvas = undefined
-    }
+const SiaWrapper = (props) => {
+    const [didMount, setDidMount] = useState(false);
+    const [image, setImage] = useState({id: undefined, data: undefined})
+    const [annos, setAnnos] = useState({image: undefined, annotations: undefined})
+    const [nextAnnoId, setNextAnnoId] = useState()
+    // const [notification, setNotification] = useState()
+    const [filteredData, setFilteredData] = useState()
+    const [currentRotation, setCurrentRotation] = useState(0)
+    const [blockCanvas, setBlockCanvas] = useState(false)
+    const [canvas, setCanvas] = useState()
+    const [allowedToMark, setAllowedToMark] = useState(false)
+    const [fullscreen, setFullscreen] = useState(false)
+    // const [currentImgId, setCurrentImgId] = useState()
+    // constructor(props) {
+    //     super(props)
+    //     state = {
+    //         // fullscreenCSS: '',
+    //         didMount: false,
+    //         image: {
+    //             id: undefined,
+    //             data: undefined,
+    //         },
+    //         annos: {
+    //             image: undefined,
+    //             annotations: undefined,
+    //         },
+    //         // layoutOffset: {
+    //         //     left: 20,
+    //         //     top: 0,
+    //         //     bottom: 5,
+    //         //     right: 5
+    //         // },
+    //         notification: undefined,
+    //         filteredData: undefined,
+    //         currentRotation: 0,
+    //         blockCanvas: false,
+    //         nextAnnoId: undefined,
+    //         allowedToMark: false,
+    //         fullscreen:false
+    //     }
+    //     canvas = undefined
+    // }
 
-    componentDidMount() {
+    useEffect(() => {
         document.body.style.overflow = 'hidden'
-        this.setState({ didMount: true })
-        window.addEventListener('resize', this.props.siaLayoutUpdate)
-        this.props.getSiaAnnos(-1)
-        this.props.getSiaLabels()
-        this.props.getSiaConfig()
-        this.getNextAnnoId()
-        this.allowedToMarkExample()
-    }
-    componentWillUnmount() {
-        document.body.style.overflow = ''
-        window.removeEventListener('resize', this.props.siaLayoutUpdate)
-    }
+        // setState({ didMount: true })
+        setDidMount(true)
+        window.addEventListener('resize', props.siaLayoutUpdate)
+        props.getSiaAnnos(-1)
+        props.getSiaLabels()
+        props.getSiaConfig()
+        getNextAnnoId()
+        allowedToMarkExample()
+        return () => {
+            document.body.style.overflow = ''
+            window.removeEventListener('resize', props.siaLayoutUpdate)
+        }
+    }, [])
 
-    componentDidUpdate(prevProps, prevState) {
-        // this.setFullscreen(this.props.fullscreenMode)
-        // if (prevState.fullscreenCSS !== this.state.fullscreenCSS){
-        //     this.props.siaLayoutUpdate()
-        // }
-        if (prevState.notification !== this.state.notification) {
-            const notifyTimeOut = 5000
-            if (this.state.notification) {
-                switch (this.state.notification.type) {
-                    case notificationType.WARNING:
-                        NotificationManager.warning(
-                            this.state.notification.message,
-                            this.state.notification.title,
-                            notifyTimeOut,
-                        )
-                        break
-                    case notificationType.INFO:
-                        NotificationManager.info(
-                            this.state.notification.message,
-                            this.state.notification.title,
-                            notifyTimeOut,
-                        )
-                        break
-                    case notificationType.ERROR:
-                        NotificationManager.error(
-                            this.state.notification.message,
-                            this.state.notification.title,
-                            notifyTimeOut,
-                        )
-                        break
-                    case notificationType.SUCCESS:
-                        NotificationManager.success(
-                            this.state.notification.message,
-                            this.state.notification.title,
-                            notifyTimeOut,
-                        )
-                        break
-                    default:
-                        break
+    useEffect(() => {
+        if (props.getNextImage){
+            getNewImage(props.getNextImage, 'next')
+        }
+    }, [props.getNextImage])
+
+    useEffect(() => {
+        if (props.getPrevImage){
+            getNewImage(props.getPrevImage, 'prev')
+        }
+    }, [props.getPrevImage])
+
+    useEffect(() => {
+        if (props.annos) {
+            if (props.annos.image){
+                props.siaImgIsJunk(props.annos.image.isJunk)
+                if (props.annos.image.id !== image.id) {
+                    requestImageFromBackend()
                 }
             }
+            setAnnos(props.annos)
         }
-        if (prevProps.getNextImage !== this.props.getNextImage) {
-            if (this.props.getNextImage) {
-                this.getNewImage(this.props.getNextImage, 'next')
-            }
-        }
-        if (prevProps.getPrevImage !== this.props.getPrevImage) {
-            if (this.props.getPrevImage) {
-                this.getNewImage(this.props.getPrevImage, 'prev')
-            }
-        }
-        if (prevProps.annos !== this.props.annos) {
-            this.props.siaImgIsJunk(this.props.annos.image.isJunk)
-        }
-        if (prevProps.taskFinished !== this.props.taskFinished) {
-            const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
-            this.props.siaUpdateAnnos(newAnnos).then(() => {
-                this.props.siaSendFinishToBackend().then(() => {
-                    this.props.history.push('dashboard')
+        // if (props.annos) {
+        //     if (prevProps.annos) {
+        //         if (props.annos !== prevProps.annos) {
+        //             if (props.annos.image.id) {
+        //                 requestImageFromBackend()
+        //             }
+        //         }
+        //     } else {
+        //         if (props.annos.image.id) {
+        //             requestImageFromBackend()
+        //         }
+        //     }
+        // }
+    }, [props.annos])
+
+    useEffect(() => {
+        if (props.taskFinished) {
+            const newAnnos = undoAnnoRotationForUpdate(props.filter)
+            props.siaUpdateAnnos(newAnnos).then(() => {
+                props.siaSendFinishToBackend().then(() => {
+                    props.history.push('dashboard')
                 })
             })
         }
-        if (this.props.annos) {
-            if (prevProps.annos) {
-                if (this.props.annos !== prevProps.annos) {
-                    if (this.props.annos.image.id) {
-                        this.requestImageFromBackend()
-                    }
-                }
-            } else {
-                if (this.props.annos.image.id) {
-                    this.requestImageFromBackend()
-                }
-            }
-        }
-        if (prevState.filteredData != this.state.filteredData) {
-            this.setState({
-                image: {
-                    ...this.state.image,
-                    data: this.state.filteredData,
-                },
+    }, [props.taskFinished])
+
+    useEffect(() => {
+        if (filteredData) {
+            setImage({
+                ...image,
+                data: filteredData
             })
         }
-        if (prevProps.annos !== this.props.annos) {
-            this.setState({ annos: this.props.annos })
-        }
-        if (prevProps.filter != this.props.filter) {
-            if (this.props.filter) {
-                this.filterImage(this.props.filter)
+    }, [filteredData])
+
+    useEffect(() => {
+        if (props.filter) {
+            if (props.annos.image){
+                filterImage(props.filter)
             }
         }
-    }
+    }, [props.filter])
 
-    getNextAnnoId() {
-        this.props.siaGetNextAnnoId().then((response) => {
-            this.setState({ nextAnnoId: response.data })
+        // if (prevState.filteredData != state.filteredData) {
+        //     setState({
+        //         image: {
+        //             ...state.image,
+        //             data: state.filteredData,
+        //         },
+        //     })
+        // }
+        // if (prevProps.annos !== props.annos) {
+        //     setState({ annos: props.annos })
+        // }
+        // if (prevProps.filter != props.filter) {
+        //     if (props.filter) {
+        //         filterImage(props.filter)
+        //     }
+        // }
+    // componentDidMount() {
+    //     document.body.style.overflow = 'hidden'
+    //     setState({ didMount: true })
+    //     window.addEventListener('resize', props.siaLayoutUpdate)
+    //     props.getSiaAnnos(-1)
+    //     props.getSiaLabels()
+    //     props.getSiaConfig()
+    //     getNextAnnoId()
+    //     allowedToMarkExample()
+    // }
+    // componentWillUnmount() {
+    //     document.body.style.overflow = ''
+    //     window.removeEventListener('resize', props.siaLayoutUpdate)
+    // }
+
+    // componentDidUpdate(prevProps, prevState) {
+    //     // setFullscreen(props.fullscreenMode)
+    //     // if (prevState.fullscreenCSS !== state.fullscreenCSS){
+    //     //     props.siaLayoutUpdate()
+    //     // }
+    //     // if (prevState.notification !== state.notification) {
+    //     //     const notifyTimeOut = 5000
+    //     //     if (state.notification) {
+    //     //         switch (state.notification.type) {
+    //     //             case notificationType.WARNING:
+    //     //                 NotificationManager.warning(
+    //     //                     state.notification.message,
+    //     //                     state.notification.title,
+    //     //                     notifyTimeOut,
+    //     //                 )
+    //     //                 break
+    //     //             case notificationType.INFO:
+    //     //                 NotificationManager.info(
+    //     //                     state.notification.message,
+    //     //                     state.notification.title,
+    //     //                     notifyTimeOut,
+    //     //                 )
+    //     //                 break
+    //     //             case notificationType.ERROR:
+    //     //                 NotificationManager.error(
+    //     //                     state.notification.message,
+    //     //                     state.notification.title,
+    //     //                     notifyTimeOut,
+    //     //                 )
+    //     //                 break
+    //     //             case notificationType.SUCCESS:
+    //     //                 NotificationManager.success(
+    //     //                     state.notification.message,
+    //     //                     state.notification.title,
+    //     //                     notifyTimeOut,
+    //     //                 )
+    //     //                 break
+    //     //             default:
+    //     //                 break
+    //     //         }
+    //     //     }
+    //     // }
+    //     // if (prevProps.getNextImage !== props.getNextImage) {
+    //     //     if (props.getNextImage) {
+    //     //         getNewImage(props.getNextImage, 'next')
+    //     //     }
+    //     // }
+    //     // if (prevProps.getPrevImage !== props.getPrevImage) {
+    //     //     if (props.getPrevImage) {
+    //     //         getNewImage(props.getPrevImage, 'prev')
+    //     //     }
+    //     // }
+    //     // if (prevProps.annos !== props.annos) {
+    //     //     props.siaImgIsJunk(props.annos.image.isJunk)
+    //     // }
+    //     // if (prevProps.taskFinished !== props.taskFinished) {
+    //     //     const newAnnos = undoAnnoRotationForUpdate(props.filter)
+    //     //     props.siaUpdateAnnos(newAnnos).then(() => {
+    //     //         props.siaSendFinishToBackend().then(() => {
+    //     //             props.history.push('dashboard')
+    //     //         })
+    //     //     })
+    //     // }
+    //     // if (props.annos) {
+    //     //     if (prevProps.annos) {
+    //     //         if (props.annos !== prevProps.annos) {
+    //     //             if (props.annos.image.id) {
+    //     //                 requestImageFromBackend()
+    //     //             }
+    //     //         }
+    //     //     } else {
+    //     //         if (props.annos.image.id) {
+    //     //             requestImageFromBackend()
+    //     //         }
+    //     //     }
+    //     // }
+    //     // if (prevState.filteredData != state.filteredData) {
+    //     //     setState({
+    //     //         image: {
+    //     //             ...state.image,
+    //     //             data: state.filteredData,
+    //     //         },
+    //     //     })
+    //     // }
+    //     // if (prevProps.annos !== props.annos) {
+    //     //     setState({ annos: props.annos })
+    //     // }
+    //     // if (prevProps.filter != props.filter) {
+    //     //     if (props.filter) {
+    //     //         filterImage(props.filter)
+    //     //     }
+    //     // }
+    // }
+
+    const getNextAnnoId = () => {
+        props.siaGetNextAnnoId().then((response) => {
+            setNextAnnoId(response.data)
+            // setState({ nextAnnoId: response.data })
         })
     }
-    allowedToMarkExample() {
-        this.props.siaAllowedToMarkExample().then((response) => {
+    const allowedToMarkExample = () => {
+        props.siaAllowedToMarkExample().then((response) => {
             if (response !== undefined) {
-                this.setState({ allowedToMark: response.data })
+                setAllowedToMark(response.data)
+                // setState({ allowedToMark: response.data })
             } else {
                 console.warn('Failed to call AllowedToMarkExample webservice!')
             }
         })
     }
-    getNewImage(imageId, direction) {
-        // this.canvas.resetZoom()
-        this.canvas.resetZoom()
-        const newAnnos = this.undoAnnoRotationForUpdate(this.props.filter)
-        // this.canvas.unloadImage()
-        this.canvas.unloadImage()
-        this.setState({
-            image: {
+    const getNewImage = (imageId, direction) => {
+        // canvas.resetZoom()
+        canvas.resetZoom()
+        const newAnnos = undoAnnoRotationForUpdate(props.filter)
+        // canvas.unloadImage()
+        canvas.unloadImage()
+        setImage({
                 id: undefined,
                 data: undefined,
-            },
-        })
-        this.props.siaImgIsJunk(false)
-        this.props.siaUpdateAnnos(newAnnos).then(() => {
-            this.props.getSiaAnnos(imageId, direction)
-        })
-    }
-
-    handleImgLabelInputClose() {
-        this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
-    }
-
-    handleNotification(messageObj) {
-        this.setState({
-            notification: messageObj,
+            })
+        // setState({
+        //     image: {
+        //         id: undefined,
+        //         data: undefined,
+        //     },
+        // })
+        props.siaImgIsJunk(false)
+        props.siaUpdateAnnos(newAnnos).then(() => {
+            props.getSiaAnnos(imageId, direction)
         })
     }
 
-    handleToolBarEvent(e, data) {
+    const handleImgLabelInputClose = () => {
+        props.siaShowImgLabelInput(!props.imgLabelInput.show)
+    }
+
+    const handleNotification = (messageObj) => {
+        const notifyTimeOut = 5000
+        switch (messageObj.type) {
+            case notificationType.WARNING:
+                NotificationManager.warning(
+                    messageObj.message,
+                    messageObj.title,
+                    notifyTimeOut,
+                )
+                break
+            case notificationType.INFO:
+                NotificationManager.info(
+                    messageObj.message,
+                    messageObj.title,
+                    notifyTimeOut,
+                )
+                break
+            case notificationType.ERROR:
+                NotificationManager.error(
+                    messageObj.message,
+                    messageObj.title,
+                    notifyTimeOut,
+                )
+                break
+            case notificationType.SUCCESS:
+                NotificationManager.success(
+                    messageObj.message,
+                    messageObj.title,
+                    notifyTimeOut,
+                )
+                break
+                    default:
+                        break
+                }
+        // setState({
+        //     notification: messageObj,
+        // })
+    }
+
+    const handleToolBarEvent = (e, data) => {
         console.log('action, data', e, data)
         switch (e) {
             case tbe.DELETE_ALL_ANNOS:
-                this.canvas.deleteAllAnnos()
+                canvas.deleteAllAnnos()
                 break
             case tbe.TOOL_SELECTED:
-                this.props.siaSelectTool(data)
+                props.siaSelectTool(data)
                 break
             case tbe.GET_NEXT_IMAGE:
-                this.props.siaGetNextImage(this.props.currentImage.id)
+                props.siaGetNextImage(props.currentImage.id)
                 break
             case tbe.GET_PREV_IMAGE:
-                this.props.siaGetPrevImage(this.props.currentImage.id)
+                props.siaGetPrevImage(props.currentImage.id)
                 break
             case tbe.TASK_FINISHED:
-                this.props.siaSetTaskFinished()
+                props.siaSetTaskFinished()
                 break
             case tbe.SHOW_IMAGE_LABEL_INPUT:
-                this.props.siaShowImgLabelInput(!this.props.imgLabelInput.show)
+                props.siaShowImgLabelInput(!props.imgLabelInput.show)
                 break
             case tbe.IMG_IS_JUNK:
-                this.props.siaImgIsJunk(!this.props.isJunk)
+                props.siaImgIsJunk(!props.isJunk)
                 break
             case tbe.APPLY_FILTER:
-                this.props.siaApplyFilter(data)
+                props.siaApplyFilter(data)
                 break
             case tbe.SHOW_ANNO_DETAILS:
-                this.props.siaSetUIConfig({
-                    ...this.props.uiConfig,
+                props.siaSetUIConfig({
+                    ...props.uiConfig,
                     annoDetails: {
-                        ...this.props.uiConfig.annoDetails,
-                        visible: !this.props.uiConfig.annoDetails.visible,
+                        ...props.uiConfig.annoDetails,
+                        visible: !props.uiConfig.annoDetails.visible,
                     },
                 })
                 break
             case tbe.SHOW_LABEL_INFO:
-                this.props.siaSetUIConfig({
-                    ...this.props.uiConfig,
+                props.siaSetUIConfig({
+                    ...props.uiConfig,
                     labelInfo: {
-                        ...this.props.uiConfig.labelInfo,
-                        visible: !this.props.uiConfig.labelInfo.visible,
+                        ...props.uiConfig.labelInfo,
+                        visible: !props.uiConfig.labelInfo.visible,
                     },
                 })
                 break
             case tbe.SHOW_ANNO_STATS:
-                this.props.siaSetUIConfig({
-                    ...this.props.uiConfig,
+                props.siaSetUIConfig({
+                    ...props.uiConfig,
                     annoStats: {
-                        ...this.props.uiConfig.annoStats,
-                        visible: !this.props.uiConfig.annoStats.visible,
+                        ...props.uiConfig.annoStats,
+                        visible: !props.uiConfig.annoStats.visible,
                     },
                 })
                 break
             case tbe.EDIT_STROKE_WIDTH:
-                this.props.siaSetUIConfig({
-                    ...this.props.uiConfig,
+                props.siaSetUIConfig({
+                    ...props.uiConfig,
                     strokeWidth: data,
                 })
                 break
             case tbe.EDIT_NODE_RADIUS:
-                this.props.siaSetUIConfig({
-                    ...this.props.uiConfig,
+                props.siaSetUIConfig({
+                    ...props.uiConfig,
                     nodeRadius: data,
                 })
                 break
@@ -292,13 +440,13 @@ class SiaWrapper extends Component {
         }
     }
 
-    handleCanvasKeyDown(e) {
+    const handleCanvasKeyDown = (e) => {
         switch (e.key) {
             case 'ArrowLeft':
-                if (!this.props.currentImage.isFirst) {
-                    this.props.siaGetPrevImage(this.props.currentImage.id)
+                if (!props.currentImage.isFirst) {
+                    props.siaGetPrevImage(props.currentImage.id)
                 } else {
-                    this.setState({
+                    handleNotification({
                         notification: {
                             title: 'No previous image',
                             message: 'This is the first image!',
@@ -308,10 +456,10 @@ class SiaWrapper extends Component {
                 }
                 break
             case 'ArrowRight':
-                if (!this.props.currentImage.isLast) {
-                    this.props.siaGetNextImage(this.props.currentImage.id)
+                if (!props.currentImage.isLast) {
+                    props.siaGetNextImage(props.currentImage.id)
                 } else {
-                    this.setState({
+                    handleNotification({
                         notification: {
                             title: 'No next image',
                             message: 'This is the last image!',
@@ -322,21 +470,22 @@ class SiaWrapper extends Component {
                 break
             case 'j':
             case 'J':
-                this.props.siaImgIsJunk(!this.props.isJunk)
+                props.siaImgIsJunk(!props.isJunk)
                 break
             case 'f':
-                this.setState({fullscreen: !this.state.fullscreen})
+                setFullscreen(!fullscreen)
+                // setState({fullscreen: !state.fullscreen})
                 break
             default:
                 break
         }
     }
 
-    handleAutoSave() {
-        if (this.canvas) {
-            const newAnnos = this.undoAnnoRotationForUpdate(false)
-            this.props.siaUpdateAnnos(newAnnos, true)
-            this.handleNotification({
+    const handleAutoSave = () => {
+        if (canvas) {
+            const newAnnos = undoAnnoRotationForUpdate(false)
+            props.siaUpdateAnnos(newAnnos, true)
+            handleNotification({
                 title: 'Performed AutoSave',
                 message: 'Saved SIA annotations',
                 type: notificationType.INFO,
@@ -344,51 +493,51 @@ class SiaWrapper extends Component {
         }
     }
 
-    handleAnnoPerformedAction(anno, annos, action) {
+    const handleAnnoPerformedAction = (anno, annos, action) =>  {
         switch (action) {
             case annoActions.ANNO_CREATED:
             case annoActions.ANNO_CREATED_FINAL_NODE:
-                this.getNextAnnoId()
+                getNextAnnoId()
                 break
             case annoActions.ANNO_SELECTED:
                 console.log('anno selected')
-                this.props.selectAnnotation(anno)
+                props.selectAnnotation(anno)
                 break
             default:
                 break
         }
     }
 
-    handleCanvasEvent(action, data) {
+    const handleCanvasEvent = (action, data) => {
         switch (action) {
             case annoActions.CANVAS_AUTO_SAVE:
-                this.handleAutoSave()
+                handleAutoSave()
                 break
             case annoActions.CANVAS_SVG_UPDATE:
-                this.props.siaSetSVG(data)
+                props.siaSetSVG(data)
                 break
             case annoActions.CANVAS_UI_CONFIG_UPDATE:
-                this.props.siaSetUIConfig(data)
+                props.siaSetUIConfig(data)
                 break
             case annoActions.CANVAS_LABEL_INPUT_CLOSE:
-                this.handleImgLabelInputClose()
+                handleImgLabelInputClose()
                 break
             default:
                 break
         }
     }
 
-    undoAnnoRotationForUpdate(saveState = true) {
-        if (this.state.currentRotation !== 0) {
-            return this.rotateAnnos(0, true, saveState)
+    const undoAnnoRotationForUpdate = (saveState = true) => {
+        if (currentRotation !== 0) {
+            return rotateAnnos(0, true, saveState)
         }
-        return this.canvas.getAnnos(undefined, true)
+        return canvas.getAnnos(undefined, true)
     }
 
-    rotateAnnos(absAngle, removeFrontendIds = false, saveState = true) {
-        const angle = absAngle - this.state.currentRotation
-        const bAnnos = this.canvas.getAnnos(undefined, removeFrontendIds)
-        const svg = this.props.svg
+    const rotateAnnos = (absAngle, removeFrontendIds = false, saveState = true) => {
+        const angle = absAngle - currentRotation
+        const bAnnos = canvas.getAnnos(undefined, removeFrontendIds)
+        const svg = props.svg
         let sAnnos = annoConversion.backendAnnosToCanvas(bAnnos.annotations, svg, {
             x: 0,
             y: 0,
@@ -429,7 +578,8 @@ class SiaWrapper extends Component {
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize),
         }
         if (saveState) {
-            this.setState({ currentRotation: absAngle })
+            setCurrentRotation(absAngle)
+            // setState({ currentRotation: absAngle })
         }
         return bAnnosNew
     }
@@ -442,126 +592,135 @@ class SiaWrapper extends Component {
      *   'rotate':{'angle':90}
      * }
      */
-    filterImage(filter) {
+    const filterImage = (filter) => {
         const data = {
             ...filter,
-            imageId: this.props.annos.image.id,
+            imageId: props.annos.image.id,
         }
-        this.canvas.unloadImage()
-        this.props.siaFilterImage(data).then((response) => {
+        canvas.unloadImage()
+        props.siaFilterImage(data).then((response) => {
             let bAnnosNew
             if (filter.rotate !== undefined) {
-                bAnnosNew = this.rotateAnnos(filter.rotate.angle, false)
+                bAnnosNew = rotateAnnos(filter.rotate.angle, false)
             } else {
-                bAnnosNew = this.canvas.getAnnos(undefined, false)
+                bAnnosNew = canvas.getAnnos(undefined, false)
             }
-            this.setState({
-                filteredData: response.data,
-                blockCanvas: false,
-                annos: {
-                    image: { ...this.props.annos.image },
+            setBlockCanvas(false)
+            setFilteredData(response.data)
+            setAnnos({
+                    image: { ...props.annos.image },
                     annotations: bAnnosNew.annotations,
-                },
-            })
+                })
+            // setState({
+            //     filteredData: response.data,
+            //     blockCanvas: false,
+            //     annos: {
+            //         image: { ...props.annos.image },
+            //         annotations: bAnnosNew.annotations,
+            //     },
+            // })
         })
-        this.canvas.resetZoom()
+        canvas.resetZoom()
     }
 
-    requestImageFromBackend() {
-        this.props.getSiaImage(this.props.annos.image.id).then((response) => {
-            this.setState({
-                image: {
-                    id: this.props.annos.image.id,
-                    data: response ? response.data : this.failedToLoadImage(),
-                },
-                blockCanvas: filterTools.active(this.props.filter),
-            })
+    const requestImageFromBackend = () => {
+        props.getSiaImage(props.annos.image.id).then((response) => {
+            setImage({
+                    id: props.annos.image.id,
+                    data: response ? response.data : failedToLoadImage(),
+                })
+            setBlockCanvas(filterTools.active(props.filter))
+            // setState({
+            //     image: {
+            //         id: props.annos.image.id,
+            //         data: response ? response.data : failedToLoadImage(),
+            //     },
+            //     blockCanvas: filterTools.active(props.filter),
+            // })
         })
-        this.props.getWorkingOnAnnoTask()
-        if (filterTools.active(this.props.filter)) {
-            this.filterImage(this.props.filter)
+        props.getWorkingOnAnnoTask()
+        if (filterTools.active(props.filter)) {
+            filterImage(props.filter)
         }
     }
 
-    failedToLoadImage() {
+    const failedToLoadImage = () => {
         const message = {
             title: 'Load image error',
             message: 'Failed to load image',
             type: notificationType.ERROR,
         }
-        this.handleNotification(message)
+        handleNotification(message)
         return undefined
     }
 
-    handleGetFunction(canvas) {
-        console.log('canvas', canvas)
-        this.canvas = canvas
+    const handleGetFunction = (c) => {
+        console.log('canvas', c)
+        setCanvas(c)
         // console.log(canvas.deleteAllAnnos)
 
-        // this.deleteAll = deleteAll['deleteAllAnnos']
-        // this.deleteAll = deleteAll.deleteAllAnnos
+        // deleteAll = deleteAll['deleteAllAnnos']
+        // deleteAll = deleteAll.deleteAllAnnos
     }
 
-    render() {
-        return (
-            <div>
-                <Sia
-                    onAnnoEvent={(anno, annos, action) =>
-                        this.handleAnnoPerformedAction(anno, annos, action)
-                    }
-                    onNotification={(messageObj) => this.handleNotification(messageObj)}
-                    onCanvasKeyDown={(e) => this.handleCanvasKeyDown(e)}
-                    onCanvasEvent={(action, data) => this.handleCanvasEvent(action, data)}
-                    onGetAnnoExample={(exampleArgs) =>
-                        this.props.onGetAnnoExample
-                            ? this.props.onGetAnnoExample(exampleArgs)
-                            : {}
-                    }
-                    onGetFunction={(canvasFunc) => this.handleGetFunction(canvasFunc)}
-                    canvasConfig={{
-                        ...this.props.canvasConfig,
-                        annos: { ...this.props.canvasConfig.annos, maxAnnos: null },
-                        autoSaveInterval: 60,
-                        allowedToMarkExample: this.state.allowedToMark,
-                    }}
-                    uiConfig={{
-                        ...this.props.uiConfig,
-                        imgBarVisible: true,
-                        imgLabelInputVisible: this.props.imgLabelInput.show,
-                        centerCanvasInContainer: true,
-                        maxCanvas: true,
-                    }}
-                    nextAnnoId={this.state.nextAnnoId}
-                    annos={this.state.annos.annotations}
-                    imageMeta={this.state.annos.image}
-                    imageBlob={this.state.image.data}
-                    possibleLabels={this.props.possibleLabels}
-                    exampleImg={this.props.exampleImg}
-                    layoutUpdate={this.props.layoutUpdate}
-                    selectedTool={this.props.selectedTool}
-                    isJunk={this.props.isJunk}
-                    blocked={this.state.blockCanvas}
-                    onToolBarEvent={(e, data) => this.handleToolBarEvent(e, data)}
-                    fullscreen={this.state.fullscreen}
-                    // svg={this.props.svg}
-                    filter={this.props.filter}
-                    preventScrolling={false}
-                    toolbarEnabled={{
-                        imgLabel: true,
-                        nextPrev: true,
-                        toolSelection: true,
-                        fullscreen: true,
-                        junk: true,
-                        deleteAll: true,
-                        settings: {infoBoxes:true, annoStyle:true},
-                        filter: {rotate: true,clahe:true},
-                        help: true
-                    }}
-                />
-                <NotificationContainer />
-            </div>
-        )
-    }
+    return (
+        <div>
+            <Sia
+                onAnnoEvent={(anno, annos, action) =>
+                    handleAnnoPerformedAction(anno, annos, action)
+                }
+                onNotification={(messageObj) => handleNotification(messageObj)}
+                onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
+                onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                onGetAnnoExample={(exampleArgs) =>
+                    props.onGetAnnoExample
+                        ? props.onGetAnnoExample(exampleArgs)
+                        : {}
+                }
+                onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                canvasConfig={{
+                    ...props.canvasConfig,
+                    annos: { ...props.canvasConfig.annos, maxAnnos: null },
+                    autoSaveInterval: 60,
+                    allowedToMarkExample: allowedToMark,
+                }}
+                uiConfig={{
+                    ...props.uiConfig,
+                    imgBarVisible: true,
+                    imgLabelInputVisible: props.imgLabelInput.show,
+                    centerCanvasInContainer: true,
+                    maxCanvas: true,
+                }}
+                nextAnnoId={nextAnnoId}
+                annos={annos.annotations}
+                imageMeta={annos.image}
+                imageBlob={image.data}
+                possibleLabels={props.possibleLabels}
+                exampleImg={props.exampleImg}
+                layoutUpdate={props.layoutUpdate}
+                selectedTool={props.selectedTool}
+                isJunk={props.isJunk}
+                blocked={blockCanvas}
+                onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
+                fullscreen={fullscreen}
+                // svg={props.svg}
+                filter={props.filter}
+                preventScrolling={false}
+                toolbarEnabled={{
+                    imgLabel: true,
+                    nextPrev: true,
+                    toolSelection: true,
+                    fullscreen: true,
+                    junk: true,
+                    deleteAll: true,
+                    settings: {infoBoxes:true, annoStyle:true},
+                    filter: {rotate: true,clahe:true},
+                    help: true
+                }}
+            />
+            <NotificationContainer />
+        </div>
+    )
 }
 
 function mapStateToProps(state) {
