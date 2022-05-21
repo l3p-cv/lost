@@ -44,43 +44,12 @@ const SiaWrapper = (props) => {
     const [annos, setAnnos] = useState({image: undefined, annotations: undefined})
     const [nextAnnoId, setNextAnnoId] = useState()
     const [blockNextImageTrigger, setBlockNextImageTrigger] = useState(false)
-    // const [notification, setNotification] = useState()
     const [filteredData, setFilteredData] = useState()
     const [currentRotation, setCurrentRotation] = useState(0)
     const [blockCanvas, setBlockCanvas] = useState(false)
     const [canvas, setCanvas] = useState()
     const [allowedToMark, setAllowedToMark] = useState(false)
     const [fullscreen, setFullscreen] = useState(false)
-    // const [currentImgId, setCurrentImgId] = useState()
-    // constructor(props) {
-    //     super(props)
-    //     state = {
-    //         // fullscreenCSS: '',
-    //         didMount: false,
-    //         image: {
-    //             id: undefined,
-    //             data: undefined,
-    //         },
-    //         annos: {
-    //             image: undefined,
-    //             annotations: undefined,
-    //         },
-    //         // layoutOffset: {
-    //         //     left: 20,
-    //         //     top: 0,
-    //         //     bottom: 5,
-    //         //     right: 5
-    //         // },
-    //         notification: undefined,
-    //         filteredData: undefined,
-    //         currentRotation: 0,
-    //         blockCanvas: false,
-    //         nextAnnoId: undefined,
-    //         allowedToMark: false,
-    //         fullscreen:false
-    //     }
-    //     canvas = undefined
-    // }
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -120,19 +89,6 @@ const SiaWrapper = (props) => {
             }
             setAnnos(props.annos)
         }
-        // if (props.annos) {
-        //     if (prevProps.annos) {
-        //         if (props.annos !== prevProps.annos) {
-        //             if (props.annos.image.id) {
-        //                 requestImageFromBackend()
-        //             }
-        //         }
-        //     } else {
-        //         if (props.annos.image.id) {
-        //             requestImageFromBackend()
-        //         }
-        //     }
-        // }
     }, [props.annos])
 
     useEffect(() => {
@@ -163,131 +119,6 @@ const SiaWrapper = (props) => {
         }
     }, [props.filter])
 
-        // if (prevState.filteredData != state.filteredData) {
-        //     setState({
-        //         image: {
-        //             ...state.image,
-        //             data: state.filteredData,
-        //         },
-        //     })
-        // }
-        // if (prevProps.annos !== props.annos) {
-        //     setState({ annos: props.annos })
-        // }
-        // if (prevProps.filter != props.filter) {
-        //     if (props.filter) {
-        //         filterImage(props.filter)
-        //     }
-        // }
-    // componentDidMount() {
-    //     document.body.style.overflow = 'hidden'
-    //     setState({ didMount: true })
-    //     window.addEventListener('resize', props.siaLayoutUpdate)
-    //     props.getSiaAnnos(-1)
-    //     props.getSiaLabels()
-    //     props.getSiaConfig()
-    //     getNextAnnoId()
-    //     allowedToMarkExample()
-    // }
-    // componentWillUnmount() {
-    //     document.body.style.overflow = ''
-    //     window.removeEventListener('resize', props.siaLayoutUpdate)
-    // }
-
-    // componentDidUpdate(prevProps, prevState) {
-    //     // setFullscreen(props.fullscreenMode)
-    //     // if (prevState.fullscreenCSS !== state.fullscreenCSS){
-    //     //     props.siaLayoutUpdate()
-    //     // }
-    //     // if (prevState.notification !== state.notification) {
-    //     //     const notifyTimeOut = 5000
-    //     //     if (state.notification) {
-    //     //         switch (state.notification.type) {
-    //     //             case notificationType.WARNING:
-    //     //                 NotificationManager.warning(
-    //     //                     state.notification.message,
-    //     //                     state.notification.title,
-    //     //                     notifyTimeOut,
-    //     //                 )
-    //     //                 break
-    //     //             case notificationType.INFO:
-    //     //                 NotificationManager.info(
-    //     //                     state.notification.message,
-    //     //                     state.notification.title,
-    //     //                     notifyTimeOut,
-    //     //                 )
-    //     //                 break
-    //     //             case notificationType.ERROR:
-    //     //                 NotificationManager.error(
-    //     //                     state.notification.message,
-    //     //                     state.notification.title,
-    //     //                     notifyTimeOut,
-    //     //                 )
-    //     //                 break
-    //     //             case notificationType.SUCCESS:
-    //     //                 NotificationManager.success(
-    //     //                     state.notification.message,
-    //     //                     state.notification.title,
-    //     //                     notifyTimeOut,
-    //     //                 )
-    //     //                 break
-    //     //             default:
-    //     //                 break
-    //     //         }
-    //     //     }
-    //     // }
-    //     // if (prevProps.getNextImage !== props.getNextImage) {
-    //     //     if (props.getNextImage) {
-    //     //         getNewImage(props.getNextImage, 'next')
-    //     //     }
-    //     // }
-    //     // if (prevProps.getPrevImage !== props.getPrevImage) {
-    //     //     if (props.getPrevImage) {
-    //     //         getNewImage(props.getPrevImage, 'prev')
-    //     //     }
-    //     // }
-    //     // if (prevProps.annos !== props.annos) {
-    //     //     props.siaImgIsJunk(props.annos.image.isJunk)
-    //     // }
-    //     // if (prevProps.taskFinished !== props.taskFinished) {
-    //     //     const newAnnos = undoAnnoRotationForUpdate(props.filter)
-    //     //     props.siaUpdateAnnos(newAnnos).then(() => {
-    //     //         props.siaSendFinishToBackend().then(() => {
-    //     //             props.history.push('dashboard')
-    //     //         })
-    //     //     })
-    //     // }
-    //     // if (props.annos) {
-    //     //     if (prevProps.annos) {
-    //     //         if (props.annos !== prevProps.annos) {
-    //     //             if (props.annos.image.id) {
-    //     //                 requestImageFromBackend()
-    //     //             }
-    //     //         }
-    //     //     } else {
-    //     //         if (props.annos.image.id) {
-    //     //             requestImageFromBackend()
-    //     //         }
-    //     //     }
-    //     // }
-    //     // if (prevState.filteredData != state.filteredData) {
-    //     //     setState({
-    //     //         image: {
-    //     //             ...state.image,
-    //     //             data: state.filteredData,
-    //     //         },
-    //     //     })
-    //     // }
-    //     // if (prevProps.annos !== props.annos) {
-    //     //     setState({ annos: props.annos })
-    //     // }
-    //     // if (prevProps.filter != props.filter) {
-    //     //     if (props.filter) {
-    //     //         filterImage(props.filter)
-    //     //     }
-    //     // }
-    // }
-
     const getNextAnnoId = () => {
         props.siaGetNextAnnoId().then((response) => {
             setNextAnnoId(response.data)
@@ -306,21 +137,13 @@ const SiaWrapper = (props) => {
     }
     const getNewImage = (imageId, direction) => {
         
-        // canvas.resetZoom()
         canvas.resetZoom()
         const newAnnos = undoAnnoRotationForUpdate(props.filter)
-        // canvas.unloadImage()
         canvas.unloadImage()
         setImage({
                 id: undefined,
                 data: undefined,
             })
-        // setState({
-        //     image: {
-        //         id: undefined,
-        //         data: undefined,
-        //     },
-        // })
         props.siaImgIsJunk(false)
         props.siaUpdateAnnos(newAnnos).then(() => {
             props.getSiaAnnos(imageId, direction)
@@ -365,9 +188,6 @@ const SiaWrapper = (props) => {
                     default:
                         break
                 }
-        // setState({
-        //     notification: messageObj,
-        // })
     }
 
     const handleToolBarEvent = (e, data) => {
@@ -487,7 +307,6 @@ const SiaWrapper = (props) => {
                 break
             case 'f':
                 setFullscreen(!fullscreen)
-                // setState({fullscreen: !state.fullscreen})
                 break
             default:
                 break
@@ -592,7 +411,6 @@ const SiaWrapper = (props) => {
         }
         if (saveState) {
             setCurrentRotation(absAngle)
-            // setState({ currentRotation: absAngle })
         }
         return bAnnosNew
     }
@@ -624,14 +442,6 @@ const SiaWrapper = (props) => {
                     annotations: bAnnosNew.annotations,
                 })
             setFilteredData(response.data)
-            // setState({
-            //     filteredData: response.data,
-            //     blockCanvas: false,
-            //     annos: {
-            //         image: { ...props.annos.image },
-            //         annotations: bAnnosNew.annotations,
-            //     },
-            // })
         })
         canvas.resetZoom()
     }
@@ -644,13 +454,6 @@ const SiaWrapper = (props) => {
                 })
             setBlockNextImageTrigger(false)
             setBlockCanvas(filterTools.active(props.filter))
-            // setState({
-            //     image: {
-            //         id: props.annos.image.id,
-            //         data: response ? response.data : failedToLoadImage(),
-            //     },
-            //     blockCanvas: filterTools.active(props.filter),
-            // })
         })
         props.getWorkingOnAnnoTask()
         if (filterTools.active(props.filter)) {
@@ -671,10 +474,6 @@ const SiaWrapper = (props) => {
     const handleGetFunction = (c) => {
         console.log('canvas', c)
         setCanvas(c)
-        // console.log(canvas.deleteAllAnnos)
-
-        // deleteAll = deleteAll['deleteAllAnnos']
-        // deleteAll = deleteAll.deleteAllAnnos
     }
 
     return (
@@ -717,7 +516,6 @@ const SiaWrapper = (props) => {
                 blocked={blockCanvas}
                 onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
                 fullscreen={fullscreen}
-                // svg={props.svg}
                 filter={props.filter}
                 preventScrolling={false}
                 toolbarEnabled={{
