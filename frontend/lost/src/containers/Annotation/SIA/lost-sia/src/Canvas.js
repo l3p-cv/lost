@@ -223,12 +223,14 @@ class Canvas extends Component{
             
         // }
         if (prevProps.imageMeta !== this.props.imageMeta){
-            this.setState({
-                imgLabelIds: this.props.imageMeta.labelIds,
-                imgAnnoTime: this.props.imageMeta.annoTime,
-                imgLoadTimestamp: performance.now()
-                // isJunk: this.props.annos.image.isJunk
-            })
+            if (this.props.imageMeta){
+                this.setState({
+                    imgLabelIds: this.props.imageMeta.labelIds,
+                    imgAnnoTime: this.props.imageMeta.annoTime,
+                    imgLoadTimestamp: performance.now()
+                    // isJunk: this.props.annos.image.isJunk
+                })
+            }
         }
         if (prevProps.annos !== this.props.annos){
             if (this.state.imageBlob) { 
