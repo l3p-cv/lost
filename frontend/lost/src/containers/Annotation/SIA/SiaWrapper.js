@@ -42,7 +42,6 @@ const {
 const SiaWrapper = (props) => {
     const [image, setImage] = useState({id: undefined, data: undefined})
     const [backendImage, setBackendImage] = useState({id: undefined, data: undefined})
-    const [newBackendImage, setNewBackendImage] = useState()
     const [canvasImgLoaded, setCanvasImgLoaded] = useState(0)
     const [annos, setAnnos] = useState({image: undefined, annotations: undefined})
     const [nextAnnoId, setNextAnnoId] = useState()
@@ -147,49 +146,12 @@ const SiaWrapper = (props) => {
         }
     }, [canvasImgLoaded])
 
-    // useEffect(() => {
-    //     console.log('newBackendImage -> ', newBackendImage)
-    //     if(newBackendImage!==undefined){
-    //         if (props.filter) {
-    //             if (props.annos.image){
-    //                 if(backendImage.id){
-    //                     console.log('newBackendImage -> filterImage')
-    //                     filterImage(props.filter)
-    //                     setNewBackendImage(undefined)
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }, [newBackendImage])
-
     useEffect(() => {
         console.log('New backend image: ', backendImage)
         if (backendImage.id){
             console.log('backendImage -> setImage')
             setImage({...backendImage})
-            // setNewBackendImage(backendImage.id)
-            // if (props.filter) {
-            //     if (props.annos.image){
-            //         if(backendImage.id){
-            //             console.log('backendImage -> filterImage')
-            //             filterImage(props.filter)
-            //         }
-            //     }
-            // }
         }
-        // if (props.filter) {
-        //     if (props.annos.image){
-        //         if(backendImage.id){
-        //             console.log('backendImage -> filterImage')
-        //             filterImage(props.filter)
-        //         }
-        //     }
-        // } else {
-        //     if (backendImage.id){
-        //         console.log('backendImage -> setImage')
-        //         setImage({...backendImage})
-        //     }
-        // }
     }, [backendImage])
 
     const getNextAnnoId = () => {
