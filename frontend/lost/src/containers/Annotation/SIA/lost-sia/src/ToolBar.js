@@ -384,11 +384,11 @@ class ToolBar extends Component{
             ref={this.toolBarGroup}
             style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
+                {this.renderSettingBtn()}
+                {this.renderFilterBtn()}
                 {this.renderSaveButton()}
                 {this.renderImgLabelInput()}
                 {this.renderNavigation()}
-                {this.renderSettingBtn()}
-                {this.renderFilterBtn()}
                 {this.renderToolButtons()}
                 {this.renderJunkButton()}
                 {this.renderDeleteAllAnnosButton()}
