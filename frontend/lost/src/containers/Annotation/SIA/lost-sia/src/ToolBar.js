@@ -366,7 +366,7 @@ class ToolBar extends Component{
     }
 
     renderFilterBtn(){
-        console.log('filter', this.props.filter)
+        // console.log('filter', this.props.filter)
         if (!this.props.enabled.filter) return null
         if (!this.props.filter) return null
         return <SIAFilterButton 
@@ -387,13 +387,13 @@ class ToolBar extends Component{
                 {this.renderSaveButton()}
                 {this.renderImgLabelInput()}
                 {this.renderNavigation()}
-                {this.renderToolButtons()}
-                {this.renderFullscreenBtn()}
-                {this.renderJunkButton()}
-                {this.renderDeleteAllAnnosButton()}
-                {this.renderHelpButton()}
                 {this.renderSettingBtn()}
                 {this.renderFilterBtn()}
+                {this.renderToolButtons()}
+                {this.renderJunkButton()}
+                {this.renderDeleteAllAnnosButton()}
+                {this.renderFullscreenBtn()}
+                {this.renderHelpButton()}
             </Menu>
         </div>
         )
