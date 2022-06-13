@@ -41,6 +41,9 @@ const {
 
 const SiaWrapper = (props) => {
     const [image, setImage] = useState({id: undefined, data: undefined})
+    const [backendImage, setBackendImage] = useState({id: undefined, data: undefined})
+    const [newBackendImage, setNewBackendImage] = useState()
+    const [canvasImgLoaded, setCanvasImgLoaded] = useState(0)
     const [annos, setAnnos] = useState({image: undefined, annotations: undefined})
     const [nextAnnoId, setNextAnnoId] = useState()
     const [blockNextImageTrigger, setBlockNextImageTrigger] = useState(false)
@@ -72,6 +75,7 @@ const SiaWrapper = (props) => {
             getNewImage(props.getNextImage, 'next')
         }
     }, [props.getNextImage])
+
 
     useEffect(() => {
         if (props.getPrevImage){
@@ -106,7 +110,7 @@ const SiaWrapper = (props) => {
         if (filteredData) {
             setImage({
                 ...image,
-                data: filteredData
+                data: filteredData.blob
             })
         }
     }, [filteredData])
@@ -118,6 +122,75 @@ const SiaWrapper = (props) => {
             }
         }
     }, [props.filter])
+
+    useEffect(() => {
+        if(canvasImgLoaded!==undefined){
+            if (props.filter) {
+                if (props.annos.image){
+                    if(backendImage.id){
+                        if (props.filter.clahe.active === false && props.filter.rotate.active === false){
+                            console.log('Do not filter!')
+                        } else {
+                            if (filteredData){
+                                if (filteredData.id !== backendImage.id){
+                                    console.log('canvasImgLoaded -> filterImage')
+                                    filterImage(props.filter)
+                                }
+                            } else {
+                                console.log('canvasImgLoaded -> filterImage')
+                                filterImage(props.filter)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }, [canvasImgLoaded])
+
+    // useEffect(() => {
+    //     console.log('newBackendImage -> ', newBackendImage)
+    //     if(newBackendImage!==undefined){
+    //         if (props.filter) {
+    //             if (props.annos.image){
+    //                 if(backendImage.id){
+    //                     console.log('newBackendImage -> filterImage')
+    //                     filterImage(props.filter)
+    //                     setNewBackendImage(undefined)
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }, [newBackendImage])
+
+    useEffect(() => {
+        console.log('New backend image: ', backendImage)
+        if (backendImage.id){
+            console.log('backendImage -> setImage')
+            setImage({...backendImage})
+            // setNewBackendImage(backendImage.id)
+            // if (props.filter) {
+            //     if (props.annos.image){
+            //         if(backendImage.id){
+            //             console.log('backendImage -> filterImage')
+            //             filterImage(props.filter)
+            //         }
+            //     }
+            // }
+        }
+        // if (props.filter) {
+        //     if (props.annos.image){
+        //         if(backendImage.id){
+        //             console.log('backendImage -> filterImage')
+        //             filterImage(props.filter)
+        //         }
+        //     }
+        // } else {
+        //     if (backendImage.id){
+        //         console.log('backendImage -> setImage')
+        //         setImage({...backendImage})
+        //     }
+        // }
+    }, [backendImage])
 
     const getNextAnnoId = () => {
         props.siaGetNextAnnoId().then((response) => {
@@ -354,6 +427,11 @@ const SiaWrapper = (props) => {
             case annoActions.CANVAS_LABEL_INPUT_CLOSE:
                 handleImgLabelInputClose()
                 break
+            case annoActions.CANVAS_IMG_LOADED:
+                // handleImgLabelInputClose()
+                console.log('Canvas img loaded', data)
+                setCanvasImgLoaded(canvasImgLoaded+1)
+                break
             default:
                 break
         }
@@ -428,6 +506,7 @@ const SiaWrapper = (props) => {
             ...filter,
             imageId: props.annos.image.id,
         }
+        console.log('filterImage ', data)
         canvas.unloadImage()
         props.siaFilterImage(data).then((response) => {
             let bAnnosNew
@@ -441,14 +520,14 @@ const SiaWrapper = (props) => {
                     image: { ...props.annos.image },
                     annotations: bAnnosNew.annotations,
                 })
-            setFilteredData(response.data)
+            setFilteredData({id: data.imageId, blob: response.data})
         })
         canvas.resetZoom()
     }
 
     const requestImageFromBackend = () => {
         props.getSiaImage(props.annos.image.id).then((response) => {
-            setImage({
+            setBackendImage({
                     id: props.annos.image.id,
                     data: response ? response.data : failedToLoadImage(),
                 })
@@ -456,9 +535,9 @@ const SiaWrapper = (props) => {
             setBlockCanvas(filterTools.active(props.filter))
         })
         props.getWorkingOnAnnoTask()
-        if (filterTools.active(props.filter)) {
-            filterImage(props.filter)
-        }
+        // if (filterTools.active(props.filter)) {
+        //     filterImage(props.filter)
+        // }
     }
 
     const failedToLoadImage = () => {
