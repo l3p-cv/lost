@@ -246,6 +246,12 @@ class QuickSetup(object):
             ['#LOST_JUPYTER_LAB_TOKEN','mysecrettoken'],
             ['#LOST_JUPYTER_LAB_PORT','8888']
         ]
+        if self.args.graylog and platform.system() == "Linux":
+            config.append(['#========================','#'])
+            config.append(['#=     Logging Config    ','#'])
+            config.append(['#========================','#'])
+            config.append(['LOST_USE_GRAYLOG','True'])
+
         with open(env_path, 'w') as f:
             for key, val in config:
                 f.write('{}={}\n'.format(key, val))
