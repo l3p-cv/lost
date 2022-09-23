@@ -23,6 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /
 ADD /docker/lost-base/mamba_env.sh .
 # ADD mamba_env.sh .
 RUN /bin/bash -c "source /opt/mambaforge/bin/activate && source mamba_env.sh && conda clean -ay"
-RUN /bin/bash -c "source /opt/mambaforge/bin/activate lost && pip install --no-cache-dir lost_ds shapely scikit-learn tqdm" 
+RUN /bin/bash -c "source /opt/mambaforge/bin/activate lost && pip install --no-cache-dir lost_ds shapely scikit-learn tqdm pygelf" 
 # Change to CLI
 WORKDIR /code/src/backend/lost/cli
