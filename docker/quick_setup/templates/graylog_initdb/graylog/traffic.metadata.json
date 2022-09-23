@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"graylog.traffic"},{"v":{"$numberInt":"2"},"unique":true,"key":{"bucket":{"$numberInt":"1"}},"name":"bucket_1","ns":"graylog.traffic"}],"uuid":"e698fd480deb49bb8a27f6e65a60e474"}

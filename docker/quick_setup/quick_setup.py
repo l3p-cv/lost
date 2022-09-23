@@ -2,8 +2,7 @@ import argparse
 import os
 import logging
 import shutil
-import random
-import string 
+import time
 import sys
 from cryptography.fernet import Fernet
 import pathlib
@@ -277,6 +276,24 @@ class QuickSetup(object):
             os.system(f"sudo chown -R 1000:1000 {elastic_search_dir}")
             # os.chown(gray_log_dir, 1100, 1100)
             # os.chown(elastic_search_dir, 1000, 1000)
+    
+    def import_graylog_init_db(self):
+        # restore mongodb from init data dump
+        my_dir = pathlib.Path(__file__).parent.resolve()
+        graylog_init_data_db = os.path.join(my_dir, 'templates', 'graylog_initdb')
+        docker_run_cmd = f'docker run --name mongodb_temp -d -v {self.dst_app_data_dir}/graylog/mongodb:/data/db  -v {graylog_init_data_db}:/graylog_init mongo:4.2'
+        docker_exec_cmd = f'docker exec -i mongodb_temp mongorestore /graylog_init'
+        docker_remove_cmd = f'docker rm -f mongodb_temp'
+        
+        print('Starting graylog mongodb container.')
+        os.system(docker_run_cmd)
+        print('Waiting some seconds for initialization.')
+        time.sleep(10)
+        os.system(docker_exec_cmd)
+        print('Execute DB Graylog Init.')
+        time.sleep(5)
+        os.system(docker_remove_cmd)
+
 
     def main(self):
         try:
@@ -295,6 +312,7 @@ class QuickSetup(object):
         if self.args.graylog:
             if platform.system() == 'Linux':
                 self.create_graylog_dirs()
+                self.import_graylog_init_db()
             else:
                 logging.warning('Graylog configuration is only available for Linux.')
         # example_config_path = '../compose/prod-docker-compose.yml'

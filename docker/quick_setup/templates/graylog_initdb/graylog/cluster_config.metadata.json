@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"graylog.cluster_config"},{"v":{"$numberInt":"2"},"unique":true,"key":{"type":{"$numberInt":"1"}},"name":"unique_type","ns":"graylog.cluster_config"}],"uuid":"8cfb2571208c4c7ebe08c1b55a187aba"}
