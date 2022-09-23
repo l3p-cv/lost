@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react'
+import axios from 'axios'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { store } from './store'
 import { Provider } from 'react-redux'
@@ -9,6 +10,8 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import { flatObj } from './utils'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import jwtDecode from 'jwt-decode'
+import { API_URL } from './lost_settings'
 
 const queryClient = new QueryClient()
 
@@ -45,6 +48,37 @@ const loading = () => {
 }
 
 function App() {
+    const sendError = async (event) => {
+        try {
+            const error = event.error.stack
+            const usedBrowser = event.currentTarget.clientInformation.userAgent
+            const location = event.currentTarget.location.href
+            const decodedToken = jwtDecode(localStorage.getItem('token'))
+            let userId = null
+            if (decodedToken) {
+                userId = decodedToken.identity
+            }
+            const errorObj = {
+                error,
+                usedBrowser,
+                location,
+                userId,
+            }
+
+            await axios.post(`${API_URL}/system/logs/frontend`, errorObj)
+        } catch {
+            console.log('Error while sending error message to lost.')
+        }
+    }
+
+    window.addEventListener('error', (event) => {
+        sendError(event)
+    })
+
+    window.addEventListener('unhandledrejection', (event) => {
+        sendError(event)
+    })
+
     return (
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
