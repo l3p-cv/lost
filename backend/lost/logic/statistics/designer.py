@@ -25,7 +25,10 @@ class DesignerStats():
         history_month = [] 
         for row in self.dbm.get_number_twod_annos_in_time_by_designer_group_by(self.user_id, start=self.last_month,end=self.today, group_by='day'):
             history_month.append(row[0])
-        stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        try:
+            stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        except:
+            stats['avg'] = '0.00'
         stats['history'] = { 
             'week':   ['{:.2f}'.format(element) for element in history_week],
             'month':   ['{:.2f}'.format(element) for element in history_month]
@@ -68,7 +71,10 @@ class DesignerStats():
         history_month = []
         for row in self.dbm.mean_anno_time_by_designer_group_by(self.user_id, start=self.last_month,end=self.today, group_by='day'):
             history_month.append(row[0])
-        stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        try:
+            stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        except:
+            stats['avg'] = '0.00'
         stats['history'] = { 
             'week':   ['{:.2f}'.format(element) for element in history_week],
             'month':   ['{:.2f}'.format(element) for element in history_month]
@@ -90,7 +96,10 @@ class DesignerStats():
         history_month = []
         for row in self.dbm.get_processed_anno_tasks_in_time_by_designer(self.user_id, start=self.last_month,end=self.today, group_by='day'):
             history_month.append(row[0])
-        stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        try:
+            stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        except:
+            stats['avg'] = '0.00'
         stats['history'] = { 
             'week':   ['{:.2f}'.format(element) for element in history_week],
             'month':   ['{:.2f}'.format(element) for element in history_month]
@@ -111,7 +120,10 @@ class DesignerStats():
         history_month = [] 
         for row in self.dbm.get_number_image_annos_in_time_by_designer_group_by(self.user_id, start=self.last_month,end=self.today, group_by='month'):
             history_month.append(row[0])
-        stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        try:
+            stats['avg'] = '{:.2f}'.format(sum(history_week)/len(history_week))
+        except:
+            stats['avg'] = '0.00'
         stats['history'] = { 
             'week':   ['{:.2f}'.format(element) for element in history_week],
             'month':   ['{:.2f}'.format(element) for element in history_month]
