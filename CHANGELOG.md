@@ -58,6 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Import pipelines via git/github or zipfile
 - Pipeline export:
   - Export lost pipelines to zip file
+- Extendend Logging:
+  - Added option for using graylog as central logging platform (Linux support only !)
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
