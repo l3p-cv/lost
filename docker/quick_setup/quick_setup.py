@@ -6,6 +6,9 @@ import random
 import string 
 import sys
 from cryptography.fernet import Fernet
+import pathlib
+import platform
+
 sys.path.append('../../backend')
 import lost
 logging.basicConfig(level=logging.INFO, format='(%(levelname)s): %(message)s')
@@ -78,16 +81,74 @@ class DockerComposeBuilder(object):
             '          - "${LOST_PHP_MYADMIN_PORT}:80"\n'
         )
 
+    def get_graylog_mogodb(self):
+        return (
+            '    mongodb:\n'
+            '      image: mongo:4.2\n'
+            '      container_name: mongodbgraylog\n'
+            '      volumes:\n'
+            '        - ${LOST_APP}/graylog/mongodb:/data/db\n'
+
+        )
+    
+    def get_graylog_elasticsearch(self):
+        return (
+            '    elasticsearch:\n'
+            '        image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2\n'
+            '        container_name: elasticsearchgraylog\n'
+            '        volumes:\n'
+            '          - ${LOST_APP}/graylog/elasticsearch:/usr/share/elasticsearch/data\n'
+            '        environment:\n'
+            '          - http.host=0.0.0.0\n'
+            '          - transport.host=localhost\n'
+            '          - network.host=0.0.0.0\n'
+            '          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"\n'
+            '        ulimits:\n'
+            '          memlock:\n'
+            '            soft: -1\n'
+            '            hard: -1\n'
+            '        mem_limit: 1g\n'
+        )
+    def get_graylog(self):
+        return (
+            '    graylog:\n'
+            '        image: graylog/graylog:4.3\n'
+            '        container_name: graylog\n'
+            '        volumes:\n'
+            '          - ${LOST_APP}/graylog/graylog:/usr/share/graylog/data\n'
+            '        environment:\n'
+            '          - GRAYLOG_PASSWORD_SECRET=somepasswordpepper\n'
+            '          - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918\n'
+            '          - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/\n'
+            '        entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh\n'
+            '        links:\n'
+            '            - mongodb:mongo\n'
+            '            - elasticsearch\n'
+            '        restart: always\n'
+            '        depends_on:\n'
+            '        - mongodb\n'
+            '        - elasticsearch\n'
+            '        ports:\n'
+            '        - 9000:9000\n'
+            '        - 1514:1514\n'
+            '        - 1514:1514/udp\n'
+            '        - 12201:12201\n'
+            '        - 12201:12201/udp\n'
+        )
     def _write_file(self, sotre_path, content):
         with open(sotre_path, 'w') as f:
             f.write(content)
 
-    def write_production_file(self, store_path, phpmyadmin):
+    def write_production_file(self, store_path, phpmyadmin, graylog):
         content = self.get_header()
         content += self.get_lost()
         content += self.get_lostdb()
         if phpmyadmin:
             content += self.get_phpmyadmin()
+        if graylog and platform.system() == 'Linux':
+            content += self.get_graylog_mogodb()
+            content += self.get_graylog_elasticsearch()
+            content += self.get_graylog()
         self._write_file(store_path, content)
 
 class QuickSetup(object):
@@ -111,7 +172,7 @@ class QuickSetup(object):
     def write_docker_compose(self, store_path):
         builder = DockerComposeBuilder()
         builder.dockerImageSlug = self.dockerImageSlug
-        builder.write_production_file(store_path, self.args.phpmyadmin)
+        builder.write_production_file(store_path, self.args.phpmyadmin, self.args.graylog)
         logging.info('Wrote docker-compose config to: {}'.format(store_path))
         
 
@@ -189,7 +250,28 @@ class QuickSetup(object):
             for key, val in config:
                 f.write('{}={}\n'.format(key, val))
         return
-        
+    
+    def create_graylog_dirs(self):
+            base_log_dir = os.path.join(self.dst_app_data_dir, 'graylog')
+            gray_log_dir = os.path.join(base_log_dir, 'graylog')
+            gray_log_config_dir = os.path.join(gray_log_dir, 'config')
+            elastic_search_dir = os.path.join(base_log_dir, 'elasticsearch')
+            mongodb_dir = os.path.join(base_log_dir, 'mongodb')
+            os.makedirs(gray_log_dir)
+            logging.info('Created: {}'.format(gray_log_dir))
+            os.makedirs(elastic_search_dir)
+            logging.info('Created: {}'.format(elastic_search_dir))
+            os.makedirs(mongodb_dir)
+            logging.info('Created: {}'.format(mongodb_dir))
+            # copy config files
+            my_dir = pathlib.Path(__file__).parent.resolve()
+            graylog_init_config = os.path.join(my_dir, 'templates', 'graylog_config')
+            shutil.copytree(graylog_init_config, gray_log_config_dir)
+            os.system(f"sudo chown -R 1100:1100 {gray_log_dir}")
+            os.system(f"sudo chown -R 1000:1000 {elastic_search_dir}")
+            # os.chown(gray_log_dir, 1100, 1100)
+            # os.chown(elastic_search_dir, 1000, 1000)
+
     def main(self):
         try:
             os.makedirs(args.install_path)
@@ -203,6 +285,12 @@ class QuickSetup(object):
         logging.info('Created: {}'.format(self.dst_project_data_dir))
         os.makedirs(self.dst_docker_dir)
         logging.info('Created: {}'.format(self.dst_docker_dir))
+
+        if self.args.graylog:
+            if platform.system() == 'Linux':
+                self.create_graylog_dirs()
+            else:
+                logging.warning('Graylog configuration is only available for Linux.')
         # example_config_path = '../compose/prod-docker-compose.yml'
         dst_config = os.path.join(self.dst_docker_dir, 'docker-compose.yml')
         # shutil.copy(example_config_path, dst_config)
@@ -230,6 +318,7 @@ if __name__ == "__main__":
     parser.add_argument('--testing', help='use the LOST images from testing stage.', default=None)
     # parser.add_argument('-noai', '--no_ai', help='Do not add ai examples and no lost-cv worker', action='store_true')
     parser.add_argument('--phpmyadmin', help='Add phpmyadmin to docker compose file', action='store_true')
+    parser.add_argument('--graylog', help='Add graylog logging tool to docker compose file', action='store_true')
     args = parser.parse_args()
     qs = QuickSetup(args)
     qs.main()
