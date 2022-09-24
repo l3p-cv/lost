@@ -169,13 +169,15 @@ class Update(Resource):
                 # raise Exception('jj')
                 re = sia.update(dbm, data, user.idx)
                 dbm.close_session()
+                return re
             except:
                 msg = traceback.format_exc()
                 msg += f'\nuser.idx: {user.idx}, user.name: {user.user_name}\n'
                 msg += f'Received data:\n{json.dumps(data, indent=4)}\n'
                 flask.current_app.logger.error('{}'.format(msg))
                 dbm.close_session()
-            return re
+                return 'error updating sia anno', 500
+           
 
 @namespace.route('/allowedExampler')
 class AllowedExampler(Resource):
