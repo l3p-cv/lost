@@ -106,16 +106,17 @@ def before_request():
 
 @app.after_request
 def after_request(response):
-    diff = time.time() - g.start
-    if ((response.response) and
-        (200 <= response.status_code < 300) and
-        (response.content_type.startswith('text/html'))):
-        response.set_data(response.get_data().replace(
-            b'__EXECUTION_TIME__', bytes(str(diff), 'utf-8')))
-    app.logger.info('Webservice Meta Info', extra={'response_time': diff, 
-                                         'response_code': response.status_code,
-                                         })
-    return response
+    if settings.LOST_CONFIG.use_graylog:
+        diff = time.time() - g.start
+        if ((response.response) and
+            (200 <= response.status_code < 300) and
+            (response.content_type.startswith('text/html'))):
+            response.set_data(response.get_data().replace(
+                b'__EXECUTION_TIME__', bytes(str(diff), 'utf-8')))
+        app.logger.info('Webservice Meta Info', extra={'response_time': diff, 
+                                            'response_code': response.status_code,
+                                            })
+        return response
 
 
 
