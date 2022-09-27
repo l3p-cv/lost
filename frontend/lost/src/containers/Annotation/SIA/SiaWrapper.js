@@ -359,21 +359,28 @@ const SiaWrapper = (props) => {
     const handleAutoSave = () => {
         if (canvas) {
             const newAnnos = undoAnnoRotationForUpdate(false)
-            props.siaUpdateAnnos(newAnnos, true).then((response) => {
-                if (response === 'error') {
-                    handleNotification({
-                        title: 'AutoSave failed',
-                        message: 'Error while auto saving annotations.',
-                        type: notificationType.ERROR,
-                    })
-                } else {
-                    handleNotification({
-                        title: 'Performed AutoSave',
-                        message: 'Saved SIA annotations',
-                        type: notificationType.INFO,
-                    })
-                }
-            })
+            if (
+                newAnnos.annotations.bBoxes.length ||
+                newAnnos.annotations.lines.length ||
+                newAnnos.annotations.points.length ||
+                newAnnos.annotations.polygons.length
+            ) {
+                props.siaUpdateAnnos(newAnnos, true).then((response) => {
+                    if (response === 'error') {
+                        handleNotification({
+                            title: 'AutoSave failed',
+                            message: 'Error while auto saving annotations.',
+                            type: notificationType.ERROR,
+                        })
+                    } else {
+                        handleNotification({
+                            title: 'Performed AutoSave',
+                            message: 'Saved SIA annotations',
+                            type: notificationType.INFO,
+                        })
+                    }
+                })
+            }
         }
     }
 
