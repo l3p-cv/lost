@@ -40,10 +40,10 @@ const {
 } = actions
 
 const SiaWrapper = (props) => {
-    const [image, setImage] = useState({id: undefined, data: undefined})
-    const [backendImage, setBackendImage] = useState({id: undefined, data: undefined})
+    const [image, setImage] = useState({ id: undefined, data: undefined })
+    const [backendImage, setBackendImage] = useState({ id: undefined, data: undefined })
     const [canvasImgLoaded, setCanvasImgLoaded] = useState(0)
-    const [annos, setAnnos] = useState({image: undefined, annotations: undefined})
+    const [annos, setAnnos] = useState({ image: undefined, annotations: undefined })
     const [nextAnnoId, setNextAnnoId] = useState()
     const [blockNextImageTrigger, setBlockNextImageTrigger] = useState(false)
     const [filteredData, setFilteredData] = useState()
@@ -70,21 +70,20 @@ const SiaWrapper = (props) => {
     }, [])
 
     useEffect(() => {
-        if (props.getNextImage){
+        if (props.getNextImage) {
             getNewImage(props.getNextImage, 'next')
         }
     }, [props.getNextImage])
 
-
     useEffect(() => {
-        if (props.getPrevImage){
+        if (props.getPrevImage) {
             getNewImage(props.getPrevImage, 'prev')
         }
     }, [props.getPrevImage])
 
     useEffect(() => {
         if (props.annos) {
-            if (props.annos.image){
+            if (props.annos.image) {
                 props.siaImgIsJunk(props.annos.image.isJunk)
                 if (props.annos.image.id !== image.id) {
                     requestImageFromBackend()
@@ -109,29 +108,32 @@ const SiaWrapper = (props) => {
         if (filteredData) {
             setImage({
                 ...image,
-                data: filteredData.blob
+                data: filteredData.blob,
             })
         }
     }, [filteredData])
 
     useEffect(() => {
         if (props.filter) {
-            if (props.annos.image){
+            if (props.annos.image) {
                 filterImage(props.filter)
             }
         }
     }, [props.filter])
 
     useEffect(() => {
-        if(canvasImgLoaded!==undefined){
+        if (canvasImgLoaded !== undefined) {
             if (props.filter) {
-                if (props.annos.image){
-                    if(backendImage.id){
-                        if (props.filter.clahe.active === false && props.filter.rotate.active === false){
+                if (props.annos.image) {
+                    if (backendImage.id) {
+                        if (
+                            props.filter.clahe.active === false &&
+                            props.filter.rotate.active === false
+                        ) {
                             console.log('Do not filter!')
                         } else {
-                            if (filteredData){
-                                if (filteredData.id !== backendImage.id){
+                            if (filteredData) {
+                                if (filteredData.id !== backendImage.id) {
                                     console.log('canvasImgLoaded -> filterImage')
                                     filterImage(props.filter)
                                 }
@@ -148,9 +150,9 @@ const SiaWrapper = (props) => {
 
     useEffect(() => {
         console.log('New backend image: ', backendImage)
-        if (backendImage.id){
+        if (backendImage.id) {
             console.log('backendImage -> setImage')
-            setImage({...backendImage})
+            setImage({ ...backendImage })
         }
     }, [backendImage])
 
@@ -171,16 +173,22 @@ const SiaWrapper = (props) => {
         })
     }
     const getNewImage = (imageId, direction) => {
-        
         canvas.resetZoom()
         const newAnnos = undoAnnoRotationForUpdate(props.filter)
         canvas.unloadImage()
         setImage({
-                id: undefined,
-                data: undefined,
-            })
+            id: undefined,
+            data: undefined,
+        })
         props.siaImgIsJunk(false)
-        props.siaUpdateAnnos(newAnnos).then(() => {
+        props.siaUpdateAnnos(newAnnos).then((response) => {
+            if (response === 'error') {
+                handleNotification({
+                    title: 'Saving failed',
+                    message: 'Error while saving annotations.',
+                    type: notificationType.ERROR,
+                })
+            }
             props.getSiaAnnos(imageId, direction)
         })
     }
@@ -220,9 +228,9 @@ const SiaWrapper = (props) => {
                     notifyTimeOut,
                 )
                 break
-                    default:
-                        break
-                }
+            default:
+                break
+        }
     }
 
     const handleToolBarEvent = (e, data) => {
@@ -235,13 +243,13 @@ const SiaWrapper = (props) => {
                 props.siaSelectTool(data)
                 break
             case tbe.GET_NEXT_IMAGE:
-                if (!blockNextImageTrigger){
+                if (!blockNextImageTrigger) {
                     setBlockNextImageTrigger(true)
                     props.siaGetNextImage(props.currentImage.id)
                 }
                 break
             case tbe.GET_PREV_IMAGE:
-                if (!blockNextImageTrigger){
+                if (!blockNextImageTrigger) {
                     setBlockNextImageTrigger(true)
                     props.siaGetPrevImage(props.currentImage.id)
                 }
@@ -306,7 +314,7 @@ const SiaWrapper = (props) => {
         switch (e.key) {
             case 'ArrowLeft':
                 if (!props.currentImage.isFirst) {
-                    if (!blockNextImageTrigger){
+                    if (!blockNextImageTrigger) {
                         setBlockNextImageTrigger(true)
                         props.siaGetPrevImage(props.currentImage.id)
                     }
@@ -322,7 +330,7 @@ const SiaWrapper = (props) => {
                 break
             case 'ArrowRight':
                 if (!props.currentImage.isLast) {
-                    if (!blockNextImageTrigger){
+                    if (!blockNextImageTrigger) {
                         setBlockNextImageTrigger(true)
                         props.siaGetNextImage(props.currentImage.id)
                     }
@@ -351,16 +359,25 @@ const SiaWrapper = (props) => {
     const handleAutoSave = () => {
         if (canvas) {
             const newAnnos = undoAnnoRotationForUpdate(false)
-            props.siaUpdateAnnos(newAnnos, true)
-            handleNotification({
-                title: 'Performed AutoSave',
-                message: 'Saved SIA annotations',
-                type: notificationType.INFO,
+            props.siaUpdateAnnos(newAnnos, true).then((response) => {
+                if (response === 'error') {
+                    handleNotification({
+                        title: 'AutoSave failed',
+                        message: 'Error while auto saving annotations.',
+                        type: notificationType.ERROR,
+                    })
+                } else {
+                    handleNotification({
+                        title: 'Performed AutoSave',
+                        message: 'Saved SIA annotations',
+                        type: notificationType.INFO,
+                    })
+                }
             })
         }
     }
 
-    const handleAnnoPerformedAction = (anno, annos, action) =>  {
+    const handleAnnoPerformedAction = (anno, annos, action) => {
         switch (action) {
             case annoActions.ANNO_CREATED:
             case annoActions.ANNO_CREATED_FINAL_NODE:
@@ -392,7 +409,7 @@ const SiaWrapper = (props) => {
             case annoActions.CANVAS_IMG_LOADED:
                 // handleImgLabelInputClose()
                 console.log('Canvas img loaded', data)
-                setCanvasImgLoaded(canvasImgLoaded+1)
+                setCanvasImgLoaded(canvasImgLoaded + 1)
                 break
             default:
                 break
@@ -479,10 +496,10 @@ const SiaWrapper = (props) => {
             }
             setBlockCanvas(false)
             setAnnos({
-                    image: { ...props.annos.image },
-                    annotations: bAnnosNew.annotations,
-                })
-            setFilteredData({id: data.imageId, blob: response.data})
+                image: { ...props.annos.image },
+                annotations: bAnnosNew.annotations,
+            })
+            setFilteredData({ id: data.imageId, blob: response.data })
         })
         canvas.resetZoom()
     }
@@ -490,9 +507,9 @@ const SiaWrapper = (props) => {
     const requestImageFromBackend = () => {
         props.getSiaImage(props.annos.image.id).then((response) => {
             setBackendImage({
-                    id: props.annos.image.id,
-                    data: response ? response.data : failedToLoadImage(),
-                })
+                id: props.annos.image.id,
+                data: response ? response.data : failedToLoadImage(),
+            })
             setBlockNextImageTrigger(false)
             setBlockCanvas(filterTools.active(props.filter))
         })
@@ -527,9 +544,7 @@ const SiaWrapper = (props) => {
                 onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
                 onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
                 onGetAnnoExample={(exampleArgs) =>
-                    props.onGetAnnoExample
-                        ? props.onGetAnnoExample(exampleArgs)
-                        : {}
+                    props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
                 canvasConfig={{
@@ -566,9 +581,9 @@ const SiaWrapper = (props) => {
                     fullscreen: true,
                     junk: true,
                     deleteAll: true,
-                    settings: {infoBoxes:true, annoStyle:true},
-                    filter: {rotate: true,clahe:true},
-                    help: true
+                    settings: { infoBoxes: true, annoStyle: true },
+                    filter: { rotate: true, clahe: true },
+                    help: true,
                 }}
             />
             <NotificationContainer />
