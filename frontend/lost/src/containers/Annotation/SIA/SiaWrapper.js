@@ -156,6 +156,24 @@ const SiaWrapper = (props) => {
         }
     }, [backendImage])
 
+    useEffect(() => {
+        return () => {
+            setImage({ id: undefined, data: undefined })
+            setBackendImage({ id: undefined, data: undefined })
+            setCanvasImgLoaded(0)
+            setAnnos({ image: undefined, annotations: undefined })
+            setNextAnnoId()
+            setBlockNextImageTrigger(false)
+            setFilteredData()
+            setCurrentRotation(0)
+            setBlockCanvas(false)
+            setCanvas()
+            setAllowedToMark(false)
+            setFullscreen(false)
+            console.log('cleaned up')
+        }
+    }, [])
+
     const getNextAnnoId = () => {
         props.siaGetNextAnnoId().then((response) => {
             setNextAnnoId(response.data)
@@ -173,24 +191,26 @@ const SiaWrapper = (props) => {
         })
     }
     const getNewImage = (imageId, direction) => {
-        canvas.resetZoom()
-        const newAnnos = undoAnnoRotationForUpdate(props.filter)
-        canvas.unloadImage()
-        setImage({
-            id: undefined,
-            data: undefined,
-        })
-        props.siaImgIsJunk(false)
-        props.siaUpdateAnnos(newAnnos).then((response) => {
-            if (response === 'error') {
-                handleNotification({
-                    title: 'Saving failed',
-                    message: 'Error while saving annotations.',
-                    type: notificationType.ERROR,
-                })
-            }
-            props.getSiaAnnos(imageId, direction)
-        })
+        if (canvas) {
+            canvas.resetZoom()
+            const newAnnos = undoAnnoRotationForUpdate(props.filter)
+            canvas.unloadImage()
+            setImage({
+                id: undefined,
+                data: undefined,
+            })
+            props.siaImgIsJunk(false)
+            props.siaUpdateAnnos(newAnnos).then((response) => {
+                if (response === 'error') {
+                    handleNotification({
+                        title: 'Saving failed',
+                        message: 'Error while saving annotations.',
+                        type: notificationType.ERROR,
+                    })
+                }
+                props.getSiaAnnos(imageId, direction)
+            })
+        }
     }
 
     const handleImgLabelInputClose = () => {
@@ -488,27 +508,29 @@ const SiaWrapper = (props) => {
      * }
      */
     const filterImage = (filter) => {
-        const data = {
-            ...filter,
-            imageId: props.annos.image.id,
-        }
-        console.log('filterImage ', data)
-        canvas.unloadImage()
-        props.siaFilterImage(data).then((response) => {
-            let bAnnosNew
-            if (filter.rotate !== undefined) {
-                bAnnosNew = rotateAnnos(filter.rotate.angle, false)
-            } else {
-                bAnnosNew = canvas.getAnnos(undefined, false)
+        if (canvas) {
+            const data = {
+                ...filter,
+                imageId: props.annos.image.id,
             }
-            setBlockCanvas(false)
-            setAnnos({
-                image: { ...props.annos.image },
-                annotations: bAnnosNew.annotations,
+            console.log('filterImage ', data)
+            canvas.unloadImage()
+            props.siaFilterImage(data).then((response) => {
+                let bAnnosNew
+                if (filter.rotate !== undefined) {
+                    bAnnosNew = rotateAnnos(filter.rotate.angle, false)
+                } else {
+                    bAnnosNew = canvas.getAnnos(undefined, false)
+                }
+                setBlockCanvas(false)
+                setAnnos({
+                    image: { ...props.annos.image },
+                    annotations: bAnnosNew.annotations,
+                })
+                setFilteredData({ id: data.imageId, blob: response.data })
             })
-            setFilteredData({ id: data.imageId, blob: response.data })
-        })
-        canvas.resetZoom()
+            canvas.resetZoom()
+        }
     }
 
     const requestImageFromBackend = () => {
