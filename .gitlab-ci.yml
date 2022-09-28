@@ -1,6 +1,6 @@
-image: docker:19.03
+image: docker:20.10.17
 services:
-  - docker:19.03-dind
+  - docker:20.10.17-dind
 
 stages:
 - build-lost-base
