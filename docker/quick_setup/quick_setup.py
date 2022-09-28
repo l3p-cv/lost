@@ -111,7 +111,7 @@ class DockerComposeBuilder(object):
     def get_graylog(self):
         return (
             '    graylog:\n'
-            '        image: graylog/graylog:4.3\n'
+            '        image: graylog/graylog:4.3.3\n'
             '        container_name: graylog\n'
             '        volumes:\n'
             '          - ${LOST_APP}/graylog/graylog:/usr/share/graylog/data\n'
