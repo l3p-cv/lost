@@ -116,7 +116,7 @@ def after_request(response):
         app.logger.info('Webservice Meta Info', extra={'response_time': diff, 
                                             'response_code': response.status_code,
                                             })
-        return response
+    return response
 
 
 
