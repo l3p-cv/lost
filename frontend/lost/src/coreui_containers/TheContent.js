@@ -1,5 +1,5 @@
-import React  from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
 import { CContainer, CFade } from '@coreui/react'
 
 // routes config
@@ -9,24 +9,24 @@ import { CContainer, CFade } from '@coreui/react'
 const TheContent = ({ routes }) => (
     <main className="c-main">
         <CContainer fluid>
-                <Switch>
-                    {routes.map(
-                        (route) =>
-                            route.component && (
-                                <Route
-                                    key={route.path}
-                                    path={route.path}
-                                    exact={route.exact}
-                                    name={route.name}
-                                    render={(props) => (
-                                        <CFade>
-                                            <route.component {...props} />
-                                        </CFade>
-                                    )}
-                                />
-                            ),
-                    )}
-                </Switch>
+            <Routes>
+                {routes.map(
+                    (route) =>
+                        route.component && (
+                            <Route
+                                key={route.path}
+                                path={route.path}
+                                exact={route.exact}
+                                name={route.name}
+                                element={(props) => (
+                                    <CFade>
+                                        <route.component {...props} />
+                                    </CFade>
+                                )}
+                            />
+                        ),
+                )}
+            </Routes>
         </CContainer>
     </main>
 )

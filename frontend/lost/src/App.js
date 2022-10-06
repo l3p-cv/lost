@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 import axios from 'axios'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { store } from './store'
 import { Provider } from 'react-redux'
 import './scss/style.scss'
@@ -84,21 +84,22 @@ function App() {
             <QueryClientProvider client={queryClient}>
                 <Suspense fallback={loading}>
                     <BrowserRouter>
-                        <Switch>
+                        <Routes>
                             <Route
                                 exact
                                 path="/login"
                                 name="Login Page"
-                                render={(props) => <Login {...props} />}
+                                // render={(props) => <Login {...props} />}
+                                element={<Login />}
                             />
                             <Route
                                 exact
                                 path="/logout"
                                 name="Logout Page"
-                                component={Logout}
+                                element={Logout}
                             />
-                            <Route path="/" name="Home" render={() => <TheLayout />} />
-                        </Switch>
+                            <Route path="/" name="Home" element={<TheLayout />} />
+                        </Routes>
                     </BrowserRouter>
                 </Suspense>
             </QueryClientProvider>

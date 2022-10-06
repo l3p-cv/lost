@@ -4,15 +4,15 @@ import { getColor } from './utils'
 import { Col, Row } from 'reactstrap'
 import IconButton from '../../../components/IconButton'
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { faFastForward } from '@fortawesome/free-solid-svg-icons'
 
 // class WorkingOn extends Component {
 const WorkingOn = ({ annoTask }) => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const handleContinue = (type) => {
-        history.push(`/${type.toLowerCase()}`)
+        navigate(`/${type.toLowerCase()}`)
         // history.push('')
     }
 

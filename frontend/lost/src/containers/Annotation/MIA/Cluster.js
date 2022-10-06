@@ -5,7 +5,8 @@ import actions from '../../../actions'
 
 import './Cluster.scss'
 import { Alert, Button } from 'reactstrap'
-import { withRouter } from 'react-router-dom'
+// import { withRouter } from 'react-router-dom'
+import withRouter from '../../../utils/withRouter'
 
 const { getMiaAnnos, getMiaImage, getWorkingOnAnnoTask, getMiaLabel, finishMia } = actions
 

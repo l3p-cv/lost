@@ -3,7 +3,7 @@ import { CFooter } from '@coreui/react'
 import { useInterval } from 'react-use'
 import { useSelector, useDispatch } from 'react-redux'
 import SweetAlert from 'react-bootstrap-sweetalert'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import useInactive from '../hooks/useInactive'
 import * as styles from '../components/styles'
 import actions from '../actions'
@@ -14,7 +14,7 @@ const TheFooter = () => {
         dispatch(actions.loadSettings())
     }, [])
 
-    const history = useHistory()
+    const navigate = useNavigate()
     const version = useSelector((state) => state.lost.version)
     const autoLogoutWarnTime = useSelector(
         (state) => state.lost.settings.autoLogoutWarnTime,
@@ -59,7 +59,7 @@ const TheFooter = () => {
 
     const renderAutologoutModal = () => {
         if (timer === 0) {
-            history.push('/logout#timeout')
+            navigate('/logout#timeout')
         } else if (timer < autoLogoutWarnTime) {
             return (
                 <SweetAlert

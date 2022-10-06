@@ -2,12 +2,12 @@ import React from 'react'
 import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 import { FaLock, FaUser } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import userPng from '../assets/img/avatars/user.png'
 
 const TheHeaderDropdown = () => {
     const username = useSelector((state) => state.user.ownUser.user_name)
-    const history = useHistory()
+    const navigate = useNavigate()
 
     return (
         <CDropdown inNav className="c-header-nav-items mx-2" direction="down">
@@ -26,11 +26,11 @@ const TheHeaderDropdown = () => {
                 <CDropdownItem header tag="div" color="light" className="text-center">
                     <strong>Account</strong>
                 </CDropdownItem>
-                <CDropdownItem onClick={() => history.push('/my_profile')}>
+                <CDropdownItem onClick={() => navigate('/my_profile')}>
                     <FaUser style={{ marginRight: 10 }} />
                     My Profile
                 </CDropdownItem>
-                <CDropdownItem onClick={() => history.push('/logout')}>
+                <CDropdownItem onClick={() => navigate('/logout')}>
                     <FaLock style={{ marginRight: 10 }} />
                     Logout
                 </CDropdownItem>

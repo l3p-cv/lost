@@ -2,6 +2,7 @@
   "name": "lost",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@coreui/chartjs": "^2.0.0",
     "@coreui/coreui": "^3.4.0",
@@ -45,7 +46,7 @@
     "react-notifications": "^1.7.4",
     "react-query": "^3.39.2",
     "react-redux": "^8.0.4",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "^6.4.1",
     "react-scripts": "4.0.3",
     "react-stepper-wizard": "^1.2.1",
     "react-table": "^6.5.3",

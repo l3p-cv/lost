@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import jwtDecode from 'jwt-decode'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 import TheContent from './TheContent'
@@ -13,7 +13,7 @@ import actions from '../actions'
 
 const TheLayout = () => {
     const role = useRef()
-    const history = useHistory()
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const [navItems, setNavItems] = useState([])
     const [routes, setRoutes] = useState([])
@@ -47,12 +47,16 @@ const TheLayout = () => {
                 setRoutes(newRoutes)
                 dispatch(actions.setOwnUser())
                 dispatch(actions.getVersion())
-                if(history.location.pathname === '/'){
-                    history.push(guiSetup[role.current].redirect)
+
+                // @TODO
+                console.log(navigate);
+                // if (navigate.location.pathname === '/') {
+                if (window.location.pathname === '/') {
+                    navigate(guiSetup[role.current].redirect)
                 }
             }
         } else {
-            history.push('/login')
+            navigate('/login')
         }
     }, [])
 
@@ -86,7 +90,7 @@ const TheLayout = () => {
         <div className="c-app c-default-layout">
             <TheSidebar navItems={navItems} />
             <div className="c-wrapper">
-                <TheHeader numNavItems={navItems.length}/>
+                <TheHeader numNavItems={navItems.length} />
                 <div className="c-body">
                     <TheContent routes={routes} />
                 </div>
