@@ -96,7 +96,7 @@ function App() {
                                 exact
                                 path="/logout"
                                 name="Logout Page"
-                                element={Logout}
+                                element={<Logout />}
                             />
                             <Route path="/*" name="Home" element={<TheLayout />} />
                         </Routes>
