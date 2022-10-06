@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
+import { TransformWrapper, TransformComponent } from '@pronestor/react-zoom-pan-pinch'
 import { useDispatch } from 'react-redux'
 import actions from '../../../actions'
 import BaseModal from '../../../components/BaseModal'
