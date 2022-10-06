@@ -98,7 +98,7 @@ function App() {
                                 name="Logout Page"
                                 element={Logout}
                             />
-                            <Route path="/" name="Home" element={<TheLayout />} />
+                            <Route path="/*" name="Home" element={<TheLayout />} />
                         </Routes>
                     </BrowserRouter>
                 </Suspense>

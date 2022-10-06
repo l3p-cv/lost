@@ -48,9 +48,6 @@ const TheLayout = () => {
                 dispatch(actions.setOwnUser())
                 dispatch(actions.getVersion())
 
-                // @TODO
-                console.log(navigate);
-                // if (navigate.location.pathname === '/') {
                 if (window.location.pathname === '/') {
                     navigate(guiSetup[role.current].redirect)
                 }

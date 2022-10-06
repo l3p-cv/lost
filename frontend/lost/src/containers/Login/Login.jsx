@@ -14,7 +14,7 @@ import {
     Input,
 } from 'reactstrap'
 import { CRow } from '@coreui/react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { FaUser, FaLock } from 'react-icons/fa'
 import actions from '../../actions'
 import lostLogoColor from '../../assets/img/brand/lost_logo.png'
@@ -33,7 +33,7 @@ const Login = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [errorText, setErrorText] = useState()
-    const history = useHistory()
+    const navigate = useNavigate()
     const submit = (e) => {
         e.preventDefault()
         login({
@@ -45,7 +45,7 @@ const Login = () => {
         if (loginStatus === 'success') {
             localStorage.setItem('token', loginData.token)
             localStorage.setItem('refreshToken', loginData.refresh_token)
-            history.push('/')
+            navigate('/')
         } else if (loginStatus === 'error') {
             setErrorText(errorResolver(loginError))
         }

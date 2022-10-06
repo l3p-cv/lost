@@ -78,8 +78,6 @@ const SIAReview = (props) => {
         window.addEventListener('resize', props.siaLayoutUpdate)
         // document.body.style.overflow = "hidden"
 
-        // @TODO
-        // const pipeElementId = navigate.location.pathname.split('/').slice(-1)[0]
         const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
         //direction: 'next', 'previous', 'first'
         const data = {
@@ -115,8 +113,6 @@ const SIAReview = (props) => {
     }
 
     const handleNextPrevImage = (imgId, direction) => {
-        // @TODO
-        // const pipeElementId = navigate.location.pathname.split('/').slice(-1)[0]
         const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
         const data = {
             direction: direction,
@@ -133,8 +129,6 @@ const SIAReview = (props) => {
 
     const handleSaveAnnos = async () => {
         try {
-            // @TODO
-            // const pipeElementId = navigate.location.pathname.split('/').slice(-1)[0]
             const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
             const newAnnos = canvas.getAnnos()
             // const camName = history.location.pathname.split('/').slice(-1)[0]

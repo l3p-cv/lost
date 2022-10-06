@@ -18,11 +18,14 @@ const TheContent = ({ routes }) => (
                                 path={route.path}
                                 exact={route.exact}
                                 name={route.name}
-                                element={(props) => (
-                                    <CFade>
-                                        <route.component {...props} />
-                                    </CFade>
-                                )}
+                                // element={(props) => (
+                                //     <CFade>
+                                //         <route.component {...props} />
+                                //     </CFade>
+                                // )}
+                                element={<CFade>
+                                    <route.component />
+                                </CFade>}
                             />
                         ),
                 )}
