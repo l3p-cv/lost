@@ -43,10 +43,6 @@ const TheLayout = React.lazy(() => import('./coreui_containers/TheLayout'))
 const Login = React.lazy(() => import('./containers/Login/Login'))
 const Logout = React.lazy(() => import('./containers/Logout/Logout'))
 
-const loading = () => {
-    return <div>Loading</div>
-}
-
 function App() {
     const sendError = async (event) => {
         try {
@@ -82,14 +78,13 @@ function App() {
     return (
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
-                <Suspense fallback={loading}>
+                <Suspense fallback={<div>Loading</div>}>
                     <BrowserRouter>
                         <Routes>
                             <Route
                                 exact
                                 path="/login"
                                 name="Login Page"
-                                // render={(props) => <Login {...props} />}
                                 element={<Login />}
                             />
                             <Route
