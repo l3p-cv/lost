@@ -15,6 +15,8 @@
     "@fortawesome/free-regular-svg-icons": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@reactour/tour": "^3.1.6",
+    "@semantic-ui-react/css-patch": "^1.1.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
@@ -46,7 +48,7 @@
     "react-query": "^3.39.2",
     "react-redux": "^8.0.4",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.1",
     "react-stepper-wizard": "^1.2.1",
     "react-table": "^6.5.3",
     "react-use": "^17.4.0",
@@ -63,15 +65,12 @@
     "validator": "^13.7.0",
     "web-vitals": "^3.0.3"
   },
-  "dev-dependencies": {
-    "dotenv-webpack": "^6.0.4",
-    "html-webpack-plugin": "^5.5.0"
-  },
   "scripts": {
     "start": "REACT_APP_PORT='' react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "semantic-ui-css-patch"
   },
   "eslintConfig": {
     "extends": [
