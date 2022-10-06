@@ -106,8 +106,8 @@ function csvToArray( strData, strDelimiter = "," ){
         group_id: element[groupIdIndex] === "" ? null : parseInt(element[groupIdIndex]),
         // idx: parseInt(element.idx),
         children: [],
-        is_deleted: element[isDeletedIndex] == "True" || element[isDeletedIndex] == "true" ,
-        is_root: element[isRootIndex] == "True" || element[isRootIndex] == "true",
+        is_deleted: element[isDeletedIndex] === "True" || element[isDeletedIndex] === "true" ,
+        is_root: element[isRootIndex] === "True" || element[isRootIndex] === "true",
         name: element[nameIndex],
         // parent_leaf_id: element.parent_leaf_id === "" ? null : parseInt(element.parent_leaf_id),
         timestamp: element[timestampIndex] === "" ? null : element[timestampIndex]
@@ -214,7 +214,7 @@ const CreateLabelTree = ({visLevel}) =>{
                         <IconButton
                             color="primary"
                             onClick={handleCreateSave}
-                            disabled={createLabelName == "" || createLabelDescription == ""}
+                            disabled={createLabelName === "" || createLabelDescription === ""}
                             icon={faPlus}
                             text="Add"
                         />

@@ -60,7 +60,7 @@ const EditUserModal = (props) => {
             <>
                 <CenteredCell>
                     <Input
-                        autoFocus={focusedField == 0}
+                        autoFocus={focusedField === 0}
                         placeholder="Username"
                         disabled={!props.isNewUser}
                         defaultValue={user.user_name}
@@ -82,7 +82,7 @@ const EditUserModal = (props) => {
         <>
             <CenteredCell>
                 <Input
-                    autoFocus={focusedField == 1}
+                    autoFocus={focusedField === 1}
                     placeholder="example@example.com"
                     defaultValue={user.email}
                     disabled={user.is_external}
@@ -101,7 +101,7 @@ const EditUserModal = (props) => {
         <>
             <CenteredCell>
                 <Input
-                    autoFocus={focusedField == 2}
+                    autoFocus={focusedField === 2}
                     placeholder="*******"
                     type="password"
                     defaultValue={user.password}
@@ -121,7 +121,7 @@ const EditUserModal = (props) => {
         <>
             <CenteredCell>
                 <Input
-                    autoFocus={focusedField == 3}
+                    autoFocus={focusedField === 3}
                     placeholder="*******"
                     type="password"
                     defaultValue={user.confirmPassword}

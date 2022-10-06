@@ -72,7 +72,7 @@ const EditDSModal = ({
     useEffect(() => {
         if (fsList && selectedId) {
             const sel = fsList.find((el) => {
-                return el.id == selectedId
+                return el.id === selectedId
             })
             getFullFs(sel)
         }

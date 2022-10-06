@@ -54,7 +54,7 @@ class WorkersTable extends Component {
     }
 
     componentWillReceiveProps() {
-        if (this.state.modalsIsOpen.length != this.props.workers.length) {
+        if (this.state.modalsIsOpen.length !== this.props.workers.length) {
             this.setState({
                 modalsIsOpen: this.props.workers.map((el) => ({
                     idx: el.idx,
