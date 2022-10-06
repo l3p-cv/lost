@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import actions from '../../actions'
 import LabelTreeTable from './LabelTreeTable'
 import CreateLabelTree from './CreateLabelTree'
-import BaseContainer from '../../components/BaseContainer'
 
 const Labels = ({ visLevel }) => {
     const dispatch = useDispatch()

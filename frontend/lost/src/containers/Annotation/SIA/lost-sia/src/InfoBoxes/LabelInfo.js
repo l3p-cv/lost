@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { Divider, Image, Card, Header } from 'semantic-ui-react'
+import { Divider, Image, Header } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import SiaPopup from '../SiaPopup'
 import AnnoExampleViewer from '../AnnoExampleViewer'

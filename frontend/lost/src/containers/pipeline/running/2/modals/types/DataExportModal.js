@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { ModalHeader, ModalBody } from 'reactstrap'
-import Table from '../../../../globalComponents/modals/Table'
 
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'

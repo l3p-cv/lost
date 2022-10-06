@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Card, CardBody, Form, FormGroup, Label, Input } from 'reactstrap'
-import IconButton from '../../../../components/IconButton'
+import { Form, FormGroup, Label, Input } from 'reactstrap'
 import { CRow, CCol } from '@coreui/react'
 import actions from '../../../../actions/pipeline/pipelineStart'
 import HelpButton from '../../../../components/HelpButton'

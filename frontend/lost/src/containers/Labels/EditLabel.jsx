@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
-import { CTooltip } from '@coreui/react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
 import { Alert, Input, InputGroup, InputGroupAddon } from 'reactstrap'
 import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
-import { faCheck, faPalette, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { ChromePicker } from 'react-color'
 
 const { updateLabel, deleteLabel, createLabel, cleanLabelMessages } = actions

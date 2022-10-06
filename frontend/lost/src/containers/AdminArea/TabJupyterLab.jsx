@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import actions from '../../actions'
+import React from 'react'
 
 import { Card, CardBody } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

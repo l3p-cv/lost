@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react'
+import React from 'react'
 import { Progress } from 'reactstrap'
 import { getColor } from './utils'
 import { Col, Row } from 'reactstrap'

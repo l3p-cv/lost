@@ -1,5 +1,5 @@
 import React from 'react'
-import { Col, Row, Card, CardBody } from 'reactstrap'
+import { Col, Row } from 'reactstrap'
 import GroupTable from './GroupsTable'
 import UserTable from './UsersTable'
 

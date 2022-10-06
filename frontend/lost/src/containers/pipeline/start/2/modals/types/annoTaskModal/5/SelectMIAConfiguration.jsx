@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import HelpButton from '../../../../../../../../components/HelpButton'
 import {
-    CCard,
-    CCardBody,
     CRow,
     CCol,
     CSwitch,
