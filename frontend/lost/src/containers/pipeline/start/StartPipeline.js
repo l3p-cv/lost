@@ -1,7 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import Stepper from 'react-stepper-wizard'
-import { connect } from 'react-redux'
 import actions from '../../../actions/pipeline/pipelineStart'
+import { TourProvider } from '@reactour/tour'
 
 import '../globalComponents/node.scss'
 import '../globalComponents/pipeline.scss'
@@ -10,21 +11,15 @@ import ShowStartPipeline from './2/ShowStartPipeline'
 import StartPipelineForm from './3/StartPipelineForm'
 import StartRunPipeline from './4/StartPipeline'
 import BaseContainer from '../../../components/BaseContainer'
+import PipelineTour from '../../../components/tours/PipelineTour'
+
 const { selectTab } = actions
 
-class StartPipeline extends Component {
-    constructor(){
-        super()
-        this.changeCurrentStep = this.changeCurrentStep.bind(this)
-    }
-    changeCurrentStep(newStep) {
-
-        this.props.selectTab(newStep)
-    }
-
-    renderContent() {
-
-        switch (this.props.stepperData.currentStep) {
+const StartPipeline = () => {
+    const dispatch = useDispatch()
+    const stepperData = useSelector((state) => state.pipelineStart.stepper)
+    const renderContent = () => {
+        switch (stepperData.currentStep) {
             case 0: return (<SelectPipeline />)
             case 1: return (<ShowStartPipeline />)
             case 2: return (<StartPipelineForm />)
@@ -34,24 +29,19 @@ class StartPipeline extends Component {
         }
     }
 
-
-    render() {
-        return (
-            <BaseContainer className='pipeline-start-container'>
+    return (
+        <BaseContainer className='pipeline-start-container'>
+            <TourProvider showNavigation={false}>
+                <PipelineTour currentPipelineStep={stepperData.currentStep} />
                 <Stepper
-                    stepperData={this.props.stepperData}
-                    changeCurrentStep={this.changeCurrentStep}
+                    stepperData={stepperData}
+                    changeCurrentStep={(newTab) => { dispatch(selectTab(newTab)) }}
                 />
-                {this.renderContent()}
-            </BaseContainer>
-        )
-    }
+                {renderContent()}
+            </TourProvider>
+        </BaseContainer>
+    )
 }
 
-const mapStateToProps = (state) => {
-    return { stepperData: state.pipelineStart.stepper }
-}
-export default connect(
-    mapStateToProps,
-    { selectTab }
-)(StartPipeline)
+
+export default StartPipeline

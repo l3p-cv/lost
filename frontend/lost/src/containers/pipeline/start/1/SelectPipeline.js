@@ -110,7 +110,7 @@ class SelectPipeline extends Component {
     }
 
     render() {
-        return <div className="pipeline-start-1">{this.renderDatatable()}</div>
+        return <div id="selectPipelineStart" className="pipeline-start-1">{this.renderDatatable()}</div>
     }
 }
 

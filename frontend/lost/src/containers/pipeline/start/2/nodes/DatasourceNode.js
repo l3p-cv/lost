@@ -4,7 +4,7 @@ import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 const DatasourceNode = (props) => {
     return (
-        <div className="graph-node">
+        <div id="dataSourceNode" className="graph-node">
             <VerificationTitle
                 verified={props.verified}
                 title={props.title}

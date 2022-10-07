@@ -65,7 +65,7 @@ class ShowStartPipeline extends Component {
     }
     render() {
         return (
-            <div className="pipeline-start-2">
+            <div id="pipelineGraph" className="pipeline-start-2">
                 <CRow className="justify-content-center">
                     <HelpButton
                         id={'pipeline-start-fillout'}
