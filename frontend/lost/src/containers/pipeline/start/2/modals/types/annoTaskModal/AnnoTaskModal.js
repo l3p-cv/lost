@@ -37,6 +37,7 @@ class AnnoTaskModal extends Component {
                 } else if (this.props.annoTask.type === 'mia') {
                     return <SelectMIAConfiguration {...this.props} />
                 }
+                break
             default:
                 break
         }
