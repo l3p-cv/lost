@@ -76,7 +76,7 @@ const playPipeline = (id) => async (dispatch) => {
     dispatch({ type: TYPES.PIPELINE_RUNNING_PLAY, payload: response.data })
 }
 
-const regeneratePipeline = (id) => async (dispatch) => {}
+const regeneratePipeline = (id) => async (dispatch) => { }
 
 const getLog = async (id) => {
     let response = {}
@@ -114,41 +114,43 @@ const updateArguments = (elementId, updatedArguments) => async (dispatch) => {
     // const response = await axios.post(`${API_URL}/updateArguments/6`)
 }
 
-const downloadLogfile = (id) => async (dispatch) => {
-    const token = localStorage.getItem('token')
-    const response = await http.get({
-        url: `${API_URL}/data/logs/${id}?nocache=${Math.random()}`,
-        token,
-        type: 'image',
-    })
-    const objectURL = window.URL.createObjectURL(response)
-    const link = document.createElement('a')
-    link.href = objectURL
-    link.download = `p-${id}.log`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(objectURL)
+// helper to convert a string into the browser file download dialog
+const downloadFile = (filename, text) => {
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
 }
 
-const downloadDataExport = (filePath) => async (dispatch) => {
-    const token = localStorage.getItem('token')
-    const response = await http.get({
-        url: `${API_URL}/${filePath}?nocache=${Math.random()}`,
-        token,
-        type: 'image',
-    })
-    // create blob url
-    const objectURL = window.URL.createObjectURL(response)
-    // simulate click on download button
-    const link = document.createElement('a')
-    link.href = objectURL
-    link.download = filePath.split('/').pop()
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(objectURL)
+const downloadLogfile = (id) => async (dispatch) => {
+    const response = await axios.get(`${API_URL}/data/logs/${id}?nocache=${Math.random()}`)
+    downloadFile(`p-${id}.log`, response.data)
 }
+
+// const downloadDataExport = (filePath) => async (dispatch) => {
+//     const token = localStorage.getItem('token')
+//     const response = await http.get({
+//         url: `${API_URL}/${filePath}?nocache=${Math.random()}`,
+//         token,
+//         type: 'image',
+//     })
+//     // create blob url
+//     const objectURL = window.URL.createObjectURL(response)
+//     // simulate click on download button
+//     const link = document.createElement('a')
+//     link.href = objectURL
+//     link.download = filePath.split('/').pop()
+//     document.body.appendChild(link)
+//     link.click()
+//     document.body.removeChild(link)
+//     window.URL.revokeObjectURL(objectURL)
+// }
 
 const downloadImage = (filePath) => async (dispatch) => {
     const token = localStorage.getItem('token')
