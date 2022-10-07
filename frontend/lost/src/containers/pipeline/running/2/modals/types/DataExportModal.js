@@ -3,14 +3,14 @@ import { ModalHeader, ModalBody } from 'reactstrap'
 
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
-import actions from '../../../../../../actions/pipeline/pipelineRunning'
+// import actions from '../../../../../../actions/pipeline/pipelineRunning'
 import { saveAs } from 'file-saver'
 
 import { API_URL } from '../../../../../../lost_settings'
 import IconButton from '../../../../../../components/IconButton'
 import ReactTable from 'react-table'
 
-const { downloadDataExport } = actions
+// const { downloadDataExport } = actions
 class DataExportModal extends Component {
     constructor() {
         super()
@@ -98,4 +98,4 @@ class DataExportModal extends Component {
     }
 }
 
-export default connect(null, { downloadDataExport })(DataExportModal)
+export default connect(null, {})(DataExportModal)

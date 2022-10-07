@@ -193,6 +193,5 @@ export default {
     regeneratePipeline,
     downloadLogfile,
     getLog,
-    downloadDataExport,
     downloadImage,
 }
