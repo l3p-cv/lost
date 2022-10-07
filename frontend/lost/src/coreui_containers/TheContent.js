@@ -13,7 +13,6 @@ const TheContent = ({ routes }) => (
                                 <Route
                                     key={route.path}
                                     path={route.path}
-                                    exact={route.exact}
                                     name={route.name}
                                     element={
                                         <CFade>

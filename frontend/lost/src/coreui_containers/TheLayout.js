@@ -39,7 +39,6 @@ const TheLayout = () => {
                     newRoutes2 = guiSetup.additionalRoutes.map((route) => ({
                         path: route.path,
                         name: route.path,
-                        exact: route.exact,
                         component: route.component,
                     }))
                 }

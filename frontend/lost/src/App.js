@@ -82,13 +82,11 @@ function App() {
                     <BrowserRouter>
                         <Routes>
                             <Route
-                                exact
                                 path="/login"
                                 name="Login Page"
                                 element={<Login />}
                             />
                             <Route
-                                exact
                                 path="/logout"
                                 name="Logout Page"
                                 element={<Logout />}
