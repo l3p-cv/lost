@@ -458,7 +458,7 @@ class ScriptOutput(Output):
         # db_anno_task = self._script._dbm.get_anno_task(anno_task_id=anno_task_id)
         anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
         lbl_map = anno_task.lbl_map
-        for img_path, df in lds.df.groupby(img_path_key):
+        for img_path, df in lds.df.groupby(img_path_key, sort=False):
             fs = self._get_lds_fm(df, fs_cache, fs)
             if 'img_sim_class' in df:
                 if df['img_sim_class'].values[0]:
