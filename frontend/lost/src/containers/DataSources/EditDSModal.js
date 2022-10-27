@@ -57,7 +57,7 @@ const EditDSModal = ({
     // }
 
     useEffect(() => {
-        if (fullFs) setFs(fullFs)
+        if (fullFs) setFs({...fullFs, connection: JSON.stringify(fullFs.connection)})
     }, [fullFs])
 
     useEffect(() => {
@@ -114,7 +114,10 @@ const EditDSModal = ({
                     ...fs,
                     fsType: type,
                     connection:
-                        '{"connection_string": "DefaultEndpointsProtocol=https;AccountName=myAccountName;AccountKey=myAccountKey;EndpointSuffix=core.windows.net"}',
+                        `{
+                            "connection_string": "DefaultEndpointsProtocol=https;AccountName=myAccountName;AccountKey=myAccountKey;EndpointSuffix=core.windows.net", 
+                            "use_listings_cache": False
+                        }`,
                 })
                 break
             case 's3a':

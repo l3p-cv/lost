@@ -1,4 +1,5 @@
 from datetime import time, datetime
+import ast
 import json
 from math import perm
 from lost.logic import file_access
@@ -60,8 +61,9 @@ class LS(Resource):
                 if not user.has_role(roles.ADMINISTRATOR):
                     dbm.close_session()
                     return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+            connection_dict = ast.literal_eval(data['fs']['connection'])
             db_fs = model.FileSystem(
-                connection=data['fs']['connection'],
+                connection=json.dumps(connection_dict),
                 root_path=data['fs']['rootPath'],
                 fs_type=data['fs']['fsType']
             )
@@ -202,9 +204,10 @@ class SaveFs(Resource):
                     if not user.has_role(roles.ADMINISTRATOR):
                         dbm.close_session()
                         return "Access to the local file system can only be performed by administrators.", 401
+                connection_str = json.dumps(ast.literal_eval(data['connection']))
                 new_fs_db = model.FileSystem(
                     group_id=group_id,
-                    connection=encrypt_fs_connection(data['connection']) if data['fsType'] != 'file' else data['connection'],
+                    connection=encrypt_fs_connection(connection_str) if data['fsType'] != 'file' else connection_str,
                     root_path=data['rootPath'],
                     fs_type=data['fsType'],
                     name=data['name'],
@@ -213,7 +216,8 @@ class SaveFs(Resource):
                 dbm.save_obj(new_fs_db)
             else:
                 # fs_db.group_id = 'change?'
-                fs_db.connection=encrypt_fs_connection(data['connection']) if data['fsType'] != 'file' else data['connection']
+                connection_str = json.dumps(ast.literal_eval(data['connection']))
+                fs_db.connection=encrypt_fs_connection(connection_str) if data['fsType'] != 'file' else connection_str
                 fs_db.root_path=data['rootPath']
                 fs_db.fs_type=data['fsType']
                 fs_db.name=data['name']
