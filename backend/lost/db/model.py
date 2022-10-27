@@ -732,24 +732,20 @@ class ImageAnno(Base):
         Args:
             style (str): 'flat' or 'hierarchical'. 
                 Return a dict in flat or nested style. 
-            essential (bool): Export only essential information to dict
 
         Returns:
             list of dict OR dict:
                 In 'flat' style return a list of dicts with one dict
                 per annotation.
                 In 'hierarchical' style, return a nested dictionary.
-        Note: 
-            In 'flat' style annotation data and lists of labels are
-            serialized as json strings. You may want to deserialize them
-            with json.loads()
 
         Example:
             HowTo iterate through all TwoDAnnotations of this ImageAnno 
             dictionary in *flat* style:
 
                 >>> for d in img_anno.to_dict():
-                ...     print(d['img.img_path'], d['anno.lbl.name'], d['anno.dtype'])
+                ...     print(d['img_path'], d['anno_lbl'], d['anno_dtype'])
+                path/to/img1.jpg [] None
                 path/to/img1.jpg ['Aeroplane'] bbox
                 path/to/img1.jpg ['Bicycle'] point
 
@@ -757,26 +753,22 @@ class ImageAnno(Base):
 
                 >>> img_anno.to_dict()[0].keys()
                 dict_keys([
-                    'img.idx', 'img.anno_task_id', 'img.timestamp', 
-                    'img.timestamp_lock', 'img.state', 'img.sim_class', 
-                    'img.frame_n', 'img.video_path', 'img.img_path', 
-                    'img.result_id', 'img.iteration', 'img.user_id', 
-                    'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                    'img.lbl.external_id', 'img.annotator', 'img.is_junk'
-                    'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                    'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                    'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                    'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
-                    'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
-                    'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+                    'img_uid', 'img_timestamp', 'img_state', 'img_sim_class', 
+                    'img_frame_n', 'img_path', 'img_iteration', 'img_user_id', 
+                    'img_anno_time', 'img_lbl', 'img_lbl_id', 'img_user', 
+                    'img_is_junk', 'img_fs_name', 'anno_uid', 'anno_timestamp',
+                    'anno_state', 'anno_dtype', 'anno_sim_class', 'anno_iteration',
+                    'anno_user_id', 'anno_user', 'anno_confidence', 'anno_time',
+                    'anno_lbl', 'anno_lbl_id', 'anno_style', 'anno_format', 
+                    'anno_comment', 'anno_data'
                 ])
 
             HowTo iterate through all TwoDAnnotations of this ImageAnno 
             dictionary in *hierarchical* style:
 
                 >>> h_dict = img_anno.to_dict(style='hierarchical')
-                >>> for d in h_dict['img.twod_annos']:
-                ...     print(h_dict['img.img_path'], d['anno.lbl.name'], d['anno.dtype'])
+                >>> for d in h_dict['img_2d_annos']:
+                ...     print(h_dict['img_path'], d['anno_lbl'], d['anno_dtype'])
                 path/to/img1.jpg [Aeroplane] bbox
                 path/to/img1.jpg [Bicycle] point
 
@@ -785,21 +777,18 @@ class ImageAnno(Base):
                 >>> h_dict = img_anno.to_dict(style='hierarchical')
                 >>> h_dict.keys()
                 dict_keys([
-                    'img.idx', 'img.anno_task_id', 'img.timestamp', 
-                    'img.timestamp_lock', 'img.state', 'img.sim_class', 
-                    'img.frame_n', 'img.video_path', 'img.img_path', 
-                    'img.result_id', 'img.iteration', 'img.user_id', 
-                    'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                    'img.lbl.external_id', 'img.annotator', 'img.twod_annos'
+                    'img_uid', 'img_timestamp', 'img_state', 'img_sim_class',
+                    'img_frame_n', 'img_path', 'img_iteration', 'img_user_id',
+                    'img_anno_time', 'img_lbl', 'img_lbl_id', 'img_user', 
+                    'img_is_junk', 'img_fs_name', 'img_2d_annos'
                 ])
                 >>> h_dict['img.twod_annos'][0].keys()
                 dict_keys([
-                    'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                    'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                    'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                    'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
-                    'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
-                    'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+                    'anno_uid', 'anno_timestamp', 'anno_state', 'anno_dtype',
+                    'anno_sim_class', 'anno_iteration', 'anno_user_id',
+                    'anno_user', 'anno_confidence', 'anno_time', 'anno_lbl',
+                    'anno_lbl_id', 'anno_style', 'anno_format', 'anno_comment',
+                    'anno_data'
                 ])
         '''
 
@@ -869,18 +858,13 @@ class ImageAnno(Base):
 
         Returns:
             pandas.DataFrame: Column names are:
-                'img.idx', 'img.anno_task_id', 'img.timestamp', 
-                'img.timestamp_lock', 'img.state', 'img.sim_class', 
-                'img.frame_n', 'img.video_path', 'img.img_path', 
-                'img.result_id', 'img.iteration', 'img.user_id', 
-                'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                'img.lbl.external_id', 'img.annotator', 'img.is_junk',
-                'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
-                'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
-                'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+                'img_uid', 'img_timestamp', 'img_state', 'img_sim_class', 'img_frame_n',
+                'img_path', 'img_iteration', 'img_user_id', 'img_anno_time', 'img_lbl',
+                'img_lbl_id', 'img_user', 'img_is_junk', 'img_fs_name', 'anno_uid',
+                'anno_timestamp', 'anno_state', 'anno_dtype', 'anno_sim_class',
+                'anno_iteration', 'anno_user_id', 'anno_user', 'anno_confidence',
+                'anno_time', 'anno_lbl', 'anno_lbl_id', 'anno_style', 'anno_format',
+                'anno_comment', 'anno_data'
         '''
         return pd.DataFrame(self.to_dict())
 
@@ -889,35 +873,28 @@ class ImageAnno(Base):
 
         Args:
             columns (str or list of str): 'all' OR 
-                'img.idx', 'img.anno_task_id', 'img.timestamp', 
-                'img.timestamp_lock', 'img.state', 'img.sim_class', 
-                'img.frame_n', 'img.video_path', 'img.img_path', 
-                'img.result_id', 'img.iteration', 'img.user_id', 
-                'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                'img.lbl.external_id', 'img.annotator', 'img.is_junk',
-                'anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                'anno.user_id', 'anno.img_anno_id', 'anno.annotator', 
-                'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
-                'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
-
+                'img_uid', 'img_timestamp', 'img_state', 'img_sim_class', 'img_frame_n',
+                'img_path', 'img_iteration', 'img_user_id', 'img_anno_time', 'img_lbl',
+                'img_lbl_id', 'img_user', 'img_is_junk', 'img_fs_name', 'anno_uid',
+                'anno_timestamp', 'anno_state', 'anno_dtype', 'anno_sim_class',
+                'anno_iteration', 'anno_user_id', 'anno_user', 'anno_confidence',
+                'anno_time', 'anno_lbl', 'anno_lbl_id', 'anno_style', 'anno_format',
+                'anno_comment', 'anno_data'
         Retruns:
             list OR list of lists: Desired columns
 
         Example:
-            Return just a list of serialized 2d anno labels:
+            Return just a list of 2d anno labels:
 
-                >>> img_anno.to_vec('anno.lbl.name')
-                ["['Aeroplane']", "['Bicycle']"]
+                >>> img_anno.to_vec('anno_lbl')
+                [['Aeroplane'], ['Bicycle']]
 
             Return a list of lists:
 
-                >>> img_anno.to_vec(['img.img_path', 'anno.lbl.name', 
-                ...     'anno.lbl.idx', 'anno.dtype'])
+                >>> img_anno.to_vec(['img_path', 'anno_lbl'])
                 [
-                    ['path/to/img1.jpg', "['Aeroplane']", "[14]", 'bbox'], 
-                    ['path/to/img1.jpg', "['Bicycle']", "[15]", 'point']
+                    ['path/to/img1.jpg', ['Aeroplane']], 
+                    ['path/to/img1.jpg', ['Bicycle']]
                 ]
         '''
         anno_vec = [vec.get_anno_vec() for vec in self.twod_annos]
@@ -975,8 +952,6 @@ class ImageAnno(Base):
                 >>> img_anno.anno_vec()
                 [[0.1 , 0.2 , 0.3 , 0.18],
                  [0.25, 0.25, 0.2, 0.4]]
-                >>> img_anno.get_anno_lbl_vec('name', 'bbox') #Get related label names
-                [['cow'], ['horse']]
         '''
         res = []
         for anno in self.twod_annos:
