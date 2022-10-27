@@ -49,7 +49,7 @@ def chonkyfy(fs_list, root, fs):
             res['size'] = el['size']
         elif el['type'] == 'directory':
             res['isDir'] = True
-            res['childrenCount'] = len(fs.ls(el['name']))
+            res['childrenCount'] = None #len(fs.ls(el['name']))
         else:
             raise Exception('Unknown file type')
         files.append(res)
