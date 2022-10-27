@@ -1,38 +1,39 @@
-All About Pipelines
-*******************
 #TODO JJ Review
 
 .. _aapipelines-pipe-projects:
 
-PipeProjects
-============
+Pipeline Projects
+-----------------
 
-A pipeline project in LOST is defined as a folder that contains
+A pipeline project in LOST is defined as a folder or git repository that contains
 pipeline definition files in json format and related python3 scripts.
 Additional,
 other files can be placed into this folder that can be accessed by the 
 scripts of a pipeline.
 
 Pipeline Project Examples
--------------------------
+"""""""""""""""""""""""""
 Pipeline project examples can be found here:
-`lost/backend/lost/pyapi/examples/pipes <https://github.com/l3p-cv/lost/tree/master/backend/lost/pyapi/examples/pipes>`_
+`LOST Out of the Box Pipelines <https://github.com/l3p-cv/lost_ootb_pipes>`_
 
 
-Directory Structure
--------------------
+Repository Structure 
+""""""""""""""""""""
 
-.. literalinclude:: my_pipeline_project.txt
-    :caption: Example directory structure for a pipeline project.
+.. literalinclude:: pp_repo_structure.txt
+    :caption: Example repo structure of a lost pipeline project.
     :name: pp-dir-structure
 
-The :ref:`listing above <pp-dir-structure>` show an example for a
-pipeline directory structure.
-Within the project there are two pipeline definition files
-**another_pipeline.json** and **my_pipeline.json**.
-These pipelines can use all the scripts (**an_ai_script.py**,
-**another_script.py**, **export_the_annos.py**, **my_script.py**)
-inside the project folder.
+The :ref:`listing above <pp-dir-structure>` shows an example for a
+pipeline directory structure. 
+Where the root folder **lost_ootb_pipes** is the repo name and **found** is the 
+name of the pipeline project. **found** contains all files required for the 
+pipelines of the pipeline project. 
+Within the project there are json files where each represents a pipeline 
+definition.
+A pipeline is composed from different scripts (**request_annos.py**, 
+**request_annos_again.py**, **request_images._by_lbl.py**) and other pipeline 
+elements. 
 Some of the scripts may require a special python package you have written.
 So if you want to use this package (e.g. **my_special_python_lib**),
 just place it also inside the pipeline project folder.
@@ -42,73 +43,28 @@ for example a pretrained ai model that should be loaded inside a script.
 .. _aapipelines-import:
 
 Importing a Pipeline Project into LOST
---------------------------------------
+""""""""""""""""""""""""""""""""""""""
 After creating a pipeline it needs to be imported into LOST.
-In order to do that we need to copy the  
-pipeline project folder into the 
-*lost_data_folder/my_data* in your/host file system e.g:
+In order to do that, you need to perform the following steps:
 
-    .. code-block:: bash
+1. Log into LOST as Admin
+2. Go to Admin Area
+3. Click on the Pipeline Projects tab
+4. Click on Import pipeline project button
+5. Click on Import/ Update pipeline project from a public git repository
+6. Add the url of the pipeline project you like to import
+7. Click on Import/ Update
 
-        # Copy your pipe_project into the LOST data folder
-        cp -r my_pipe_project path_to_lost_data/my_data/ 
+.. figure:: ../images/pipe_import.png
 
-Every file that is located under *lost_data_folder* will be 
-visible inside the lost docker container.
-Now we will login to the container with:
-
-    .. code-block:: bash
-
-        # Log in to the docker container.
-        # If your user is not part of the docker group, 
-        # you may need to use *sudo* 
-        docker exec -it lost bash
-
-After a successful login we can start the pipeline import.
-For this import we will use the lost command line tools.
-To import a pipeline project we use a program called 
-*import_pipe_project.py*.
-This program expects the path to the *pipeline project* as argument.
-
-If you copied your *pipeline project* to
-*/home/my_user/lost/data/my_data/my_pipe_project* on the host machine,
-it will be available inside the container under
-*/home/lost/my_data/my_pipe_project*.
-
-.. note::
-  It is just a convention to place your pipelines that should be 
-  imported into the **my_data** folder. 
-  Theoretical you could place your **pipeline projects** anywhere in the
-  *lost_data_folder*,
-  but life is easier when following this convention.
-
-Let do the import:
-
-    .. code-block:: bash
-
-        # Import my_pipe_project into LOST
-        import_pipe_project.py /home/lost/my_data/my_pipe_project
-
-The **import_pipe_project.py** program will copy your pipeline project 
-folder into the folder */home/lost/data/pipes* and write all the 
-meta information into the lost database.
-After this import the pipeline should be visible in the web gui when 
-clicking on the *Start Pipeline* button in the *Designer* view.
+    Pipeline import GUI
 
 Updating a LOST Pipeline
 ------------------------
-If you changed anything inside your pipe project, 
-e.g. bug fixes, 
-you need to update your pipe project in LOST.
-In order to do this, 
+If there was an update for one of your pipelines you need to update your pipe 
+project in LOST.In order to do this, 
 the procedure is the same as for 
-:ref:`importing a pipeline <aapipelines-import>` with the difference
-that you need to call the **update_pipe_project.py** program:
-
-    .. code-block:: bash
-
-        # Update my_pipe_project in LOST
-        update_pipe_project.py /home/lost/my_data/my_pipe_project
+:ref:`importing a pipeline <aapipelines-import>` 
 
 Namespacing
 -----------
@@ -119,7 +75,7 @@ In the same way scripts will be namespaced internally by LOST:
 **<name of pipeline project folder>.<name of python script file>**.
 
 So in :ref:`our example <pp-dir-structure>` the pipelines would be named
-**my_pipe_project.another_pipeline** and **my_pipe_project.my_pipeline**. 
+**found.mia** and **found.mia_request_again** .... 
 
 .. _aapipelines-pipe-def-files:
 
