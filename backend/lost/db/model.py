@@ -216,52 +216,23 @@ class TwoDAnno(Base):
             are json strings in contrast to the *hierarchical* style.
 
                 >>> bbox.to_dict(style='flat')
-                {
-                    'anno.idx': 88, 
-                    'anno.anno_task_id': None, 
-                    'anno.timestamp': None, 
-                    'anno.timestamp_lock': None, 
-                    'anno.state': None, 
-                    'anno.track_id': None, 
-                    'anno.dtype': 'bbox', 
-                    'anno.sim_class': None, 
-                    'anno.iteration': 0, 
-                    'anno.user_id': 47, 
-                    'anno.img_anno_id': None, 
-                    'anno.annotator': 'test', 
-                    'anno.confidence': None, 
-                    'anno.anno_time': None, 
-                    'anno.lbl.idx': '["14"]', 
-                    'anno.lbl.name': '["Aeroplane"]', 
-                    'anno.lbl.external_id': '["6"]', 
-                    'anno.data': '{"x": 0.1, "y": 0.1, "w": 0.2, "h": 0.2}'
-                }
-
-            Get a dict in hierarchical style. Note that 'anno.data'
-            is a dict in contrast to the *flat* style.
-
-                >>> bbox.to_dict(style='hierarchical')
-                {
-                    'anno.idx': 86, 
-                    'anno.anno_task_id': None, 
-                    'anno.timestamp': None, 
-                    'anno.timestamp_lock': None, 
-                    'anno.state': None, 
-                    'anno.track_id': None, 
-                    'anno.dtype': 'bbox', 
-                    'anno.sim_class': None, 
-                    'anno.iteration': 0, 
-                    'anno.user_id': 46, 
-                    'anno.img_anno_id': None, 
-                    'anno.annotator': 'test', 
-                    'anno.confidence': None, 
-                    'anno.anno_time': None, 
-                    'anno.lbl.idx': [14], 
-                    'anno.lbl.name': ['Aeroplane'], 
-                    'anno.lbl.external_id': ['6'], 
-                    'anno.data': {
-                        'x': 0.1, 'y': 0.1, 'w': 0.2, 'h': 0.2
-                    }
+                { 
+                    'anno_uid': 1,
+                    'anno_timestamp': datetime.datetime(2022, 10, 27, 11, 27, 31),
+                    'anno_state': 4,
+                    'anno_dtype': 'point',
+                    'anno_sim_class': None,
+                    'anno_iteration': 0,
+                    'anno_user_id': 1,
+                    'anno_user': 'admin',
+                    'anno_confidence': None,
+                    'anno_time': 2.5548,
+                    'anno_lbl': ['Person'],
+                    'anno_lbl_id': [16],
+                    'anno_style': 'xy',
+                    'anno_format': 'rel',
+                    'anno_comment': None,
+                    'anno_data': [[0.5683337459767269, 0.3378842004739504]]}
                 }
         '''
         anno_dict = {
@@ -333,13 +304,10 @@ class TwoDAnno(Base):
 
         Note:
             Column names are:
-                ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_id', 
-                'anno.dtype', 'anno.sim_class', 
-                'anno.iteration', 'anno.user_id', 'anno.img_anno_id', 
-                'anno.annotator', 'anno.confidence', 'anno.anno_time', 
-                'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
-                'anno.data']
+                'anno_uid', 'anno_timestamp', 'anno_state', 'anno_dtype',
+                'anno_sim_class', 'anno_iteration', 'anno_user_id', 'anno_user',
+                'anno_confidence', 'anno_time', 'anno_lbl', 'anno_lbl_id', 'anno_style',
+                'anno_format', 'anno_comment', 'anno_data'
         '''
         return pd.DataFrame(self.to_dict(), index=[0])
 
@@ -349,29 +317,20 @@ class TwoDAnno(Base):
         Args:
             columns (list of str OR str): Possible column names are:
                 'all' OR
-                ['anno.idx', 'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_id', 
-                'anno.dtype', 'anno.sim_class', 
-                'anno.iteration', 'anno.user_id', 'anno.img_anno_id', 
-                'anno.annotator', 'anno.confidence', 'anno.anno_time', 
-                'anno.lbl.idx', 'anno.lbl.name', 'anno.lbl.external_id', 
-                'anno.data']
+                'anno_uid', 'anno_timestamp', 'anno_state', 'anno_dtype',
+                'anno_sim_class', 'anno_iteration', 'anno_user_id', 'anno_user',
+                'anno_confidence', 'anno_time', 'anno_lbl', 'anno_lbl_id', 'anno_style',
+                'anno_format', 'anno_comment', 'anno_data'
+
         Returns:
             list of objects: A list of the desired columns.
 
         Example:
             If you want to get only the annotation in list style 
-            e.g. [x, y, w, h] (if this TwoDAnnotation is a bbox).
+            e.g. [xc, yc, w, h] (if this TwoDAnnotation is a bbox).
 
-            >>> anno.to_vec('anno.data')
+            >>> anno.to_vec('anno_data')
             [0.1, 0.1, 0.2, 0.2]
-
-            If you want in addition also the corresponding *label names*
-            and *label ids* for this annotation then just add additional
-            column names:
-
-            >>> bbox.to_vec(['anno.data', 'anno.lbl.idx', 'anno.lbl.name'])
-            [[0.1, 0.1, 0.2, 0.2], "[14]", "['Aeroplane']"]
         '''
         df = self.to_df().drop(columns=['anno_data'])
         df_new = df.assign(data=[self.get_anno_vec()])
