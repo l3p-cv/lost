@@ -360,13 +360,17 @@ class ToolBar extends Component{
     renderSettingBtn(){
         if (!this.props.enabled.settings) return null
         return <SIASettingButton 
+                    enabled= {this.props.enabled.settings}
                     uiConfig={this.props.uiConfig}
                     onSettingEvent={(e,data) => this.triggerToolBarEvent(e, data)}/>
     }
 
     renderFilterBtn(){
+        // console.log('filter', this.props.filter)
         if (!this.props.enabled.filter) return null
+        if (!this.props.filter) return null
         return <SIAFilterButton 
+                    enabled={this.props.enabled.filter}
                     onFilterEvent={(e, data) => this.triggerToolBarEvent(e, data)}
                     filter={this.props.filter}
                     imageMeta={this.props.imageMeta}
@@ -380,16 +384,16 @@ class ToolBar extends Component{
             ref={this.toolBarGroup}
             style={{position:'fixed', top: this.state.position.top, left:this.state.position.left}}>
             <Menu icon inverted vertical>
+                {this.renderSettingBtn()}
+                {this.renderFilterBtn()}
                 {this.renderSaveButton()}
                 {this.renderImgLabelInput()}
                 {this.renderNavigation()}
                 {this.renderToolButtons()}
-                {this.renderFullscreenBtn()}
                 {this.renderJunkButton()}
                 {this.renderDeleteAllAnnosButton()}
+                {this.renderFullscreenBtn()}
                 {this.renderHelpButton()}
-                {this.renderSettingBtn()}
-                {this.renderFilterBtn()}
             </Menu>
         </div>
         )

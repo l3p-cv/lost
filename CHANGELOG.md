@@ -58,6 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Import pipelines via git/github or zipfile
 - Pipeline export:
   - Export lost pipelines to zip file
+- Extendend Logging:
+  - Added option for using graylog as central logging platform (Linux support only !)
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
@@ -65,6 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * Do not send any image urls to frontend
     * If a mia task is annoBased, crop annos on the fly (do not store anno crops in filesystem)
   * fileMan: Use fsspec instead of os for filesystm operations
+- SiaReview: 
+  * Trigger notification if annotations have been changed but not saved when navigation to another image
 - Updated frontend to Core-UI-3
 - Use Dask as scheduler instead of clelery
 - Replace Anaconda package manager with mamba
@@ -79,7 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed raw sql in access to be compatible with postgresql
 - Fixed copy bug in import script -> Copied to wrong location, when path had tailing '/'
 - PipeStart: Empty labels in annotask not possible anymore
-- SIA: Endless image loading bug
+- SIA: 
+  - Endless image loading bug
+  - Filter Bug -> Do not copy annotations from previous image when filter is active!
 
 ## Removed
 - removed lost-cv images. This is now integrated into the lost image 

@@ -4,6 +4,7 @@ import ToolBar from './ToolBar'
 import Canvas from './Canvas'
 import * as tbe from './types/toolbarEvents'
 import * as annoActions from './types/canvasActions'
+import {noAnnos} from './siaDummyData'
 
 /**
  * SIA element that handles annotations within an image
@@ -11,15 +12,6 @@ import * as annoActions from './types/canvasActions'
  * @param {object} annos -  A json object containing all annotation 
  *      information for an image
  *      {
- *          image : {
- *              id: int, 
- *              number: int, 
- *              amount: int, 
- *              isFirst: bool, 
- *              isLast: bool,
- *              description: string, // -> optional
- *          },
- *          annotations: {
  *              bBoxes: [{
  *                  id: int, // -> Not required if status === annoStatus.NEW
  *                  data: {},
@@ -30,7 +22,6 @@ import * as annoActions from './types/canvasActions'
  *              points: []
  *              lines: []
  *              polygons: []
- *          }
  *      }
  * @param {object} possibleLabels - Possible labels that can be assigned to 
  *      an annotation.
@@ -106,6 +97,8 @@ import * as annoActions from './types/canvasActions'
  *      when no label was selected by the annotator. If not set "no label" will be used.
  *      If ID is used, it needs to be one of the possible label ids.
  * @param {bool} blocked Block canvas view with loading dimmer.
+ * @param {bool} fullscreen Set fullscreen mode if provided
+ * @param {bool} preventScrolling Prevent scrolling on mouseEnter
  * @param {int} nextAnnoId Id that will be used for the next annotation that 
  *        will be created. If undefined, the canvas will create its own ids.
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
@@ -124,15 +117,15 @@ import * as annoActions from './types/canvasActions'
  * @param {bool | object} toolbarEnabled Defines which toolbar buttons are 
  *      displayed or if toolbar is shown at all. 
  *          false | {
- *              imgLabel: true,
- *              nextPrev: true,
- *              toolSelection: true,
- *              fullscreen: true,
- *              junk: true,
- *              deleteAll: true,
- *              settings: true,
- *              filter: true,
- *              help: true
+ *              imgLabel: bool,
+ *              nextPrev: bool,
+ *              toolSelection: bool,
+ *              fullscreen: bool,
+ *              junk: bool,
+ *              deleteAll: bool,
+ *              settings: bool | {infoBoxes: bool, annoStyle: bool},
+ *              filter: bool | {rotate: bool, clahe:bool},
+ *              help: bool
  *          }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
@@ -199,6 +192,8 @@ import * as annoActions from './types/canvasActions'
 const Sia = (props) => {
 
     const [fullscreenCSS, setFullscreenCSS] = useState('')
+    const [fullscreen, setFullscreen] = useState()
+    const [annos, setAnnos] = useState(noAnnos)
     const [layoutUpdate, setLayoutUpdate] = useState(0)
     const [svg, setSvg] = useState()
     const [externalConfigUpdate, setExternalConfigUpdate] = useState(false)
@@ -232,7 +227,39 @@ const Sia = (props) => {
     useEffect(() => {
         doLayoutUpdate()
     }, [props.layoutUpdate])
+    
+    useEffect(() => {
+        console.log(annos)
+    }, [annos])
 
+    useEffect(() => {
+        console.log('props.annos', props.annos)
+        if (props.annos){
+            setAnnos(props.annos)
+        } else {
+            setAnnos({...noAnnos})
+
+        }
+    }, [props.annos])
+
+    useEffect(() => {
+        console.log('props.fullscreen', props.fullscreen)
+        console.log('fullscreen', fullscreen)
+        if (typeof props.fullscreen === 'boolean'){
+            if (fullscreen !== props.fullscreen){
+                setFullscreen(props.fullscreen)
+            }
+        }
+    }, [props.fullscreen])
+
+    useEffect(() => {
+        if (fullscreen !== undefined){
+            console.log('effect fullscreen', fullscreen)
+            // toggleFullscreen()
+            applyFullscreen(fullscreen)
+        }
+    }, [fullscreen])
+    
     useEffect(() => {
         setExternalConfigUpdate(true)
         setUiConfig({...uiConfig, ...props.uiConfig})
@@ -289,36 +316,54 @@ const Sia = (props) => {
         }
     }
 
-    const handleGetFunction = (deleteAll) =>  {
+    const handleGetFunction = (canvasFunction) =>  {
         if (props.onGetFunction){
-            props.onGetFunction(deleteAll)
+            props.onGetFunction(canvasFunction)
+        }
+    }
+
+    const applyFullscreen = (full) => {
+        if (full){
+            setFullscreenCSS('sia-fullscreen')
+            setUiConfig({...uiConfig,
+                layoutOffset: {
+                    ...uiConfig.layoutOffset,
+                    left: 50,
+                    top: 5,
+                } 
+            })
+            doLayoutUpdate()
+        } else {
+            setFullscreenCSS('')
+            setUiConfig({...uiConfig,
+                layoutOffset: {
+                    ...uiConfig.layoutOffset,
+                    left: 20,
+                    top: 0,
+                } 
+            })
+            doLayoutUpdate()
+        }
+
+    }
+
+    const toggleFullscreen = () => {
+        // if (fullscreenCSS === ''){
+        //     applyFullscreen(true)
+        // } else {
+        //     applyFullscreen(false)
+        // }
+        if (fullscreen){
+            setFullscreen(false)
+        } else {
+            setFullscreen(true)
         }
     }
 
     const handleToolBarEvent = (e, data) => {
         switch(e){
             case tbe.SET_FULLSCREEN:
-                if (fullscreenCSS === ''){
-                    setFullscreenCSS('sia-fullscreen')
-                    setUiConfig({...uiConfig,
-                        layoutOffset: {
-                            ...uiConfig.layoutOffset,
-                            left: 50,
-                            top: 5,
-                        } 
-                    })
-                    doLayoutUpdate()
-                } else {
-                    setFullscreenCSS('')
-                    setUiConfig({...uiConfig,
-                        layoutOffset: {
-                            ...uiConfig.layoutOffset,
-                            left: 20,
-                            top: 0,
-                        } 
-                    })
-                    doLayoutUpdate()
-                }
+                toggleFullscreen()
                 break
             case tbe.SHOW_ANNO_DETAILS:
                 setUiConfig({
@@ -387,7 +432,7 @@ const Sia = (props) => {
                 uiConfig={uiConfig}
 
                 nextAnnoId={props.nextAnnoId}
-                annos={props.annos}
+                annos={annos}
                 imageMeta={props.imageMeta}
                 imageBlob={props.imageBlob}
                 possibleLabels={props.possibleLabels}
@@ -398,6 +443,7 @@ const Sia = (props) => {
                 isJunk={props.isJunk}
                 blocked={props.blockCanvas}
                 defaultLabel={props.defaultLabel}
+                preventScrolling={props.preventScrolling}
             />
             <ToolBar 
                 onToolBarEvent={

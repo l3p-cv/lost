@@ -79,11 +79,11 @@ LOST releases are hosted on DockerHub and shipped in Containers. For a quick set
 5. Run quick_setup script:
     ```
     cd lost/docker/quick_setup/
-    python3 quick_setup.py /path/to/install/lost --release 2.0.0
+    python3 quick_setup.py /path/to/install/lost --release 2.0.0-alpha.21
     ```
     If you want to use phpmyadmin, you can set it via argument
     ```
-    python3 quick_setup.py /path/to/install/lost --release 2.0.0 --phpmyadmin
+    python3 quick_setup.py /path/to/install/lost --release 2.0.0-alpha.21 --phpmyadmin
     ```
 
 6. Run LOST:

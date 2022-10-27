@@ -7,7 +7,6 @@ import { Alert, Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 import Modal from 'react-modal'
 import actions from '../../../actions'
 import IconButton from '../../../components/IconButton'
-import { CCardFooter } from '@coreui/react'
 
 const { refreshToken, siaLayoutUpdate } = actions
 const customStyles = {
@@ -41,10 +40,14 @@ class WorkingOnSIA extends Component {
     }
 
     componentDidUpdate() {
-        const checkHeight = this.myref.current.getBoundingClientRect().height
-        if (checkHeight !== this.state.height) {
-            this.props.siaLayoutUpdate()
-            this.setState({ height: checkHeight })
+        if (this.myref) {
+            if (this.myref.current) {
+                const checkHeight = this.myref.current.getBoundingClientRect().height
+                if (checkHeight !== this.state.height) {
+                    this.props.siaLayoutUpdate()
+                    this.setState({ height: checkHeight })
+                }
+            }
         }
     }
     openModal() {

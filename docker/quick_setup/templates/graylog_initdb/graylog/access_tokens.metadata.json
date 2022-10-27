@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"graylog.access_tokens"},{"v":{"$numberInt":"2"},"key":{"token_type":{"$numberInt":"1"}},"name":"token_type_1","ns":"graylog.access_tokens"}],"uuid":"7a8e86d85815438e99d7be0b06bab744"}

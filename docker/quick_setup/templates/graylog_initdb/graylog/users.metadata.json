@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"graylog.users"},{"v":{"$numberInt":"2"},"key":{"roles":{"$numberInt":"1"}},"name":"roles_1","ns":"graylog.users"}],"uuid":"5e4ca773e22446dc9e5b927b22fc8df9"}

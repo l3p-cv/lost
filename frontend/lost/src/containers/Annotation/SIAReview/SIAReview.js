@@ -4,12 +4,12 @@ import { useHistory } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../../src/actions'
-import 'semantic-ui-css/semantic.min.css'
 import '../SIA/lost-sia/src/SIA.scss'
 import * as tbe from '../SIA/lost-sia/src/types/toolbarEvents'
 import * as canvasActions from '../SIA/lost-sia/src/types/canvasActions'
 
-import { NotificationManager, NotificationContainer } from 'react-notifications'
+import { NotificationManager, NotificationContainer,  } from 'react-notifications'
+import * as Notification from '../../../components/Notification'
 import 'react-notifications/lib/notifications.css'
 import * as notificationType from '../SIA/lost-sia/src/types/notificationType'
 import Sia from '../SIA/lost-sia/src/Sia'
@@ -51,6 +51,8 @@ const CANVAS_CONFIG = {
 const SIAReview = (props) => {
     const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
     const [annos, setAnnos] = useState()
+    const [annosChanged, setAnnosChanged] = useState(false)
+    const [nextPrev, setNextPrev] = useState()
     const [imageMeta, setImageMeta] = useState()
     const [imgBlob, setImgBlob] = useState()
     const [canvas, setCanvas] = useState()
@@ -63,6 +65,16 @@ const SIAReview = (props) => {
         // setState({ tool: tool })
     }
     
+    useEffect(() => {
+        if (nextPrev){
+            if (annosChanged){
+                saveRequestModal()
+            } else {
+                handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
+            }
+        }
+
+    }, [nextPrev])
     useEffect(() => {
         window.addEventListener('resize', props.siaLayoutUpdate)
         // document.body.style.overflow = "hidden"
@@ -112,6 +124,8 @@ const SIAReview = (props) => {
         // props.getSiaReviewOptions(props.pipeElementId)
         props.getSiaReviewOptions(pipeElementId)
         props.getSiaReviewAnnos(data)
+        setNextPrev(undefined)
+        setAnnosChanged(false)
     }
 
     const handleSaveAnnos = async () => {
@@ -131,6 +145,7 @@ const SIAReview = (props) => {
                 type: notificationType.INFO,
             })
             // )
+            setAnnosChanged(false)
         } catch (e) {
             console.error(e)
             handleNotification({
@@ -186,7 +201,8 @@ const SIAReview = (props) => {
         switch (e.key) {
             case 'ArrowLeft':
                 if (!props.annos.image.isFirst) {
-                    handleNextPrevImage(props.annos.image.id, 'previous')
+                    setNextPrev({imgId: props.annos.image.id, cmd: 'previous'})
+                    // handleNextPrevImage(props.annos.image.id, 'previous')
                 } else {
                     handleNotification({
                         title: 'No previous image',
@@ -197,7 +213,8 @@ const SIAReview = (props) => {
                 break
             case 'ArrowRight':
                 if (!props.annos.image.isLast) {
-                    handleNextPrevImage(props.annos.image.id, 'next')
+                    setNextPrev({imgId: props.annos.image.id, cmd: 'next'})
+                    // handleNextPrevImage(props.annos.image.id, 'next')
                 } else {
                     handleNotification({
                         title: 'No next image',
@@ -308,15 +325,47 @@ const SIAReview = (props) => {
                 break
         }
     }
+    const handleAnnoPerformedAction = (anno, annos, action) => {
+        switch (action) {
+            case canvasActions.ANNO_CREATED:
+            case canvasActions.ANNO_CREATED_FINAL_NODE:
+            case canvasActions.ANNO_DELETED:
+            case canvasActions.ANNO_MOVED:
+            case canvasActions.ANNO_LABEL_UPDATE:
+            case canvasActions.ANNO_COMMENT_UPDATE:
+                setAnnosChanged(true)
+                break
+            default:
+                break
+        }
+
+    }
+
+    const saveRequestModal = () => {
+        Notification.showDecision({
+            title: 'Annotation have been changed! Do you want to save these changes?',
+            option1: {
+                text: 'Save Changes',
+                callback: () => {
+                    handleSaveAnnos()
+                    handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
+                },
+            },
+            option2: {
+                text: 'Don\'t Save',
+                callback: () => {handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)},
+            },
+        })
+    }
 
     const renderSia = () => {
         if (!props.annos) return 'No Review Data!'
         if (!props.filterOptions) return 'No Review Data!'
         return <div>
                 <Sia
-                    // onAnnoEvent={(anno, annos, action) =>
-                    //     handleAnnoPerformedAction(anno, annos, action)
-                    // }
+                    onAnnoEvent={(anno, annos, action) =>
+                        handleAnnoPerformedAction(anno, annos, action)
+                    }
                     onNotification={(messageObj) => handleNotification(messageObj)}
                     onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
                     onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}

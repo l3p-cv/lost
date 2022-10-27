@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"graylog.sidecar_collectors"}],"uuid":"16eb81caaf63480ea3a521799a5f41ae"}

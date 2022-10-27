@@ -158,15 +158,15 @@ class FileMan(object):
                 fs_args = ast.literal_eval(fs_connection)
             else:
                 fs_args = fs_connection
-            fs = fsspec.filesystem(fs_db.fs_type, **fs_args)
+            fs = fsspec.filesystem(fs_db.fs_type, use_listings_cache=False, **fs_args)
             fs.lost_fs = fs_db
             self.fs = fs
             self.root_path = fs_db.root_path
         elif lostconfig is not None:
             if len(lostconfig.data_fs_args) > 0:
-                self.fs = fsspec.filesystem(lostconfig.data_fs_type, **lostconfig.data_fs_args)
+                self.fs = fsspec.filesystem(lostconfig.data_fs_type, use_listings_cache=False, **lostconfig.data_fs_args)
             else:
-                self.fs = fsspec.filesystem(lostconfig.data_fs_type)
+                self.fs = fsspec.filesystem(lostconfig.data_fs_type, use_listings_cache=False)
             self.root_path = lostconfig.data_path
         else:
             raise Exception('Need either lostconifg or fs_db as argument!')

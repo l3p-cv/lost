@@ -167,3 +167,6 @@ class LOSTConfig(object):
         self.jupyter_lab_root_path = ge('LOST_JUPYTER_LAB_ROOT_PATH', '/code/src')
         self.jupyter_lab_token = ge('LOST_JUPYTER_LAB_TOKEN', "")
         self.jupyter_lab_port = ge('LOST_JUPYTER_LAB_PORT', "")
+
+        # Logging 
+        self.use_graylog = ge('LOST_USE_GRAYLOG', False)

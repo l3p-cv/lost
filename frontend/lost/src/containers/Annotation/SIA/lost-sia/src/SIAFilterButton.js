@@ -89,10 +89,9 @@ class SIAFilterButton extends Component{
         // })
     }
 
-    render(){
+    renderRotateContent(){
         const filter = this.props.filter
-        if (!this.props.imageMeta) return null
-        const popupContent = <div >
+        return <div>
             <Divider horizontal>Rotate</Divider>
             <Checkbox 
                 checked={filter.rotate.active && filter.rotate.angle === 90} 
@@ -109,6 +108,24 @@ class SIAFilterButton extends Component{
                 label="Rotate 180" toggle
                 onClick={() => this.rotateImg(180)}
                 />
+        </div>
+
+    }
+
+    renderRotate(){
+        if (!this.props.enabled) return null
+        if (this.props.enabled === true){
+            return this.renderRotateContent()
+        } else {
+            if (this.props.enabled.rotate){
+                return this.renderRotateContent()
+            }
+        }
+    }
+
+    renderClaheContent(){
+        const filter = this.props.filter
+        return <div>
             <Divider horizontal>Histogram equalization</Divider>
             <Checkbox 
                 checked={filter.clahe.active} 
@@ -124,6 +141,26 @@ class SIAFilterButton extends Component{
                 onChange={e => this.handleClipLimitChange(e)}
                 onMouseUp={e => this.releaseCLAHESlider(e)}
                 />
+        </div>
+
+    }
+
+    renderClahe(){
+        if (!this.props.enabled) return null
+        if (this.props.enabled === true){
+            return this.renderClaheContent()
+        } else {
+            if (this.props.enabled.clahe){
+                return this.renderClaheContent()
+            }
+        }
+    }
+
+    render(){
+        if (!this.props.imageMeta) return null
+        const popupContent = <div >
+            {this.renderRotate()}
+            {this.renderClahe()}
         </div>
         return(
             <Popup trigger={ 

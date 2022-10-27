@@ -2,6 +2,7 @@ from enum import auto
 import lost
 import json
 import os
+import flask
 from lost.db import dtype, state, model
 from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
@@ -228,6 +229,7 @@ class SiaUpdate(object):
         """
         :type db_man: lost.db.access.DBMan
         """
+        self.logger = flask.current_app.logger
         self.sia_type = sia_type
         self.timestamp = datetime.now()
         self.db_man = db_man
@@ -345,6 +347,7 @@ class SiaUpdate(object):
                         for label in self.db_man.get_all_two_d_label(two_d.idx):
                             self.db_man.delete(label)
                         self.db_man.delete(two_d)
+                        self.db_man.commit()
                 except KeyError:
                     print('SIA bug backend fix! Do not try to delete annotations that are not in db!')
             elif annotation['status'] == "new":
@@ -358,9 +361,13 @@ class SiaUpdate(object):
                     pass
                 
                 if 'id' in annotation:
-                    two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
+                    two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno    
+                    if not two_d:
+                        two_d = model.TwoDAnno()
+                        self.logger.warning(f"Could not find a previously created TwoD Anno with ID: {annotation['id']}.")
                 else:
                     two_d = model.TwoDAnno()
+                    
                 
                 two_d.anno_task_id=self.at.idx
                 two_d.img_anno_id=self.image_anno.idx

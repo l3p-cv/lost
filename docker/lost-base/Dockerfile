@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends gnupg gnupg2 gn
 RUN wget --quiet https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh -O ~/mambaforge.sh && \
     /bin/bash ~/mambaforge.sh -b -p /opt/mambaforge && \
     rm ~/mambaforge.sh && \
-    /opt/mambaforge/bin/conda clean -tipsy && \
+    /opt/mambaforge/bin/conda clean -tip && \
     ln -s /opt/mambaforge/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/mambaforge/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate lost" >> ~/.bashrc

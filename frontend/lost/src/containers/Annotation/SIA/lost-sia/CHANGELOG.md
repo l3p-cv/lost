@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased] -
+### Changed
+- Order of buttons in ToolBar: Move setting and filter btn up
+
+## [1.3.0] - 2022-05-13
+### Added
+- Added fullscreen prop
+### Fixed 
+- Sia: Do not crash when no annos prop is provided
+
+## [1.2.0] - 2022-05-12
+### Added
+- Added preventScrolling prop onMouseEnter in canvas 
+
+## [1.1.3] - 2022-05-12
+### Changed
+- Move import of semantic-ui-css into index js
+
+## [1.1.2] - 2022-05-12
+### Added
+- Sia dummy data for quick testing
+### Changed
+- Moved semantic ui css into sia component
+### Fixed
+- Toolbar: Do not crash if no filter props is provided
+
+## [1.1.1] - 2022-05-11
+### Changed
+- Update sematic-ui-react to version 2.0.3
+
+## [1.1.0] - 2022-05-10
+### Added
+- More fine grained visibility level for toolbar elements
+
+## [1.0.3] - 2022-05-10
+### Fixed
+- Export of toolbarEvents and tools
+
 ## [1.0.2] - 2022-05-09
 ### Fixed
 - Improved internal uiConfig handling

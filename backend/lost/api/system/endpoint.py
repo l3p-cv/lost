@@ -1,3 +1,4 @@
+from flask import request
 from posix import POSIX_FADV_NOREUSE
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -7,7 +8,10 @@ from lost.settings import LOST_CONFIG
 from lost.db import access, roles
 
 import lost
-import os
+import logging
+from pygelf import GelfUdpHandler
+import json
+import flask
 
 namespace = api.namespace('system', description='System information and control.')
 
@@ -42,3 +46,19 @@ class JupyterLabUrl(Resource):
             if LOST_CONFIG.jupyter_lab_active:
                 return f'{LOST_CONFIG.jupyter_lab_port}/lab?token={LOST_CONFIG.jupyter_lab_token}' 
             return ''
+
+if LOST_CONFIG.use_graylog:
+    logger = logging.getLogger('frontend')
+    handler = GelfUdpHandler(host='graylog', port=12201, include_extra_fields=True)
+    logger.addHandler(handler)
+@namespace.route('/logs/frontend')
+class FrontendLogs(Resource):
+    def post(self):
+        data = json.loads(request.data)
+        if LOST_CONFIG.use_graylog:
+            logger.error(data['error'], extra={'type': 'daisy-frontend', 
+                                            'used_browser': data['usedBrowser'], 
+                                            'user_id': data['userId'], 
+                                            'location': data['location']})
+        else:
+            flask.current_app.logger.error(data['error'])
