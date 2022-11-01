@@ -5,11 +5,15 @@ import os
 from datetime import datetime
 import json
 import shutil
+import traceback
 import zipfile
 import lost
 import fsspec
 import numpy as np
-import cv2
+try:
+    import cv2
+except:
+    print(traceback.format_exc())
 import ast
 from lost import settings
 from lost.logic.crypt import decrypt_fs_connection
