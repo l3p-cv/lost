@@ -99,7 +99,7 @@ const SiaWrapper = (props) => {
             const newAnnos = undoAnnoRotationForUpdate(props.filter)
             props.siaUpdateAnnos(newAnnos).then(() => {
                 props.siaSendFinishToBackend().then(() => {
-                    props.history.push('dashboard')
+                    window.location.href = `${window.location.origin}/dashboard`
                 })
             })
         }

@@ -35,7 +35,6 @@ class StartPipeline extends Component {
         if (this.props.step3Data.response.status === 200) {
             if (typeof window !== 'undefined') {
                 window.location.href = `${window.location.origin}/pipelines`
-                // this.props.history.push('/pipelines')
             }
         } else {
             alertError(
