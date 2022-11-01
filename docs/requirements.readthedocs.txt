@@ -39,4 +39,4 @@ pandas
 numpy
 docutils<0.18
 fsspec
-dask
+dask[distributed]
