@@ -42,7 +42,6 @@ proposals that are presented to an annotator inside the annotation tool.
         Annotation <annotation/index.rst>
         Admin Area <admin_area/index.rst>
         Developing Pipelines <developing_pipelines/index.rst>
-        PyApi <developing_pipelines/pyapi.rst>
         Configuration <configuration/index.rst>
         Setup <setup/index.rst>
         Contribution <contribution_guide.rst>
