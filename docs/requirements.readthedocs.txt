@@ -32,9 +32,10 @@ six==1.11.0
 sk-video
 sqlalchemy==1.4.1
 urwid==2.0.1
-Werkzeug==1.0.1
+Werkzeug
 wtforms==2.2.1
 python-igraph
 pandas
 numpy
 docutils<0.18
+fsspec
