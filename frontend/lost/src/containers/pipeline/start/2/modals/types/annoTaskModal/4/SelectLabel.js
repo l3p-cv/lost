@@ -55,12 +55,6 @@ const options = {
     },
 }
 
-const graphData = {
-    nodes: [],
-    edges: [],
-    isLeafArr: [],
-}
-
 let tree
 let selectedArr
 let selectChildrenArr = []
@@ -69,23 +63,26 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
 
     const { updateLabels } = actions
     const stateElement = useSelector((element) => element)
-    const element = stateElement.pipelineStart.step1Data.elements.filter(
-        (el) => el.peN === peN,
-    )[0]
+    const [labelLeaves, setLabelLeaves] = useState()
+    const [selectedLabelTreeIndex, setSelectedLabelTreeIndex] = useState()
+    const [graphData, setGraphData] = useState({
+        nodes: [],
+        edges: [],
+        isLeafArr: [],
+    })
 
-    const selectedLabelTree = element.exportData.annoTask.selectedLabelTree
-    const labelLeaves = element.exportData.annoTask.labelLeaves
+    useEffect(() => {
+        const element = stateElement.pipelineStart.step1Data.elements.filter(
+            (el) => el.peN === peN,
+        )[0]
 
-    // const [events, setEvents] = useState(null)
-    // const [tree, setTree] = useState(null)
-    // const [selectedArr, setSelectedArr] = useState(null)
-    // const [selectChildrenArr, setSelectChildrenArr] = useState([])
-    // const [graph, setGraph] = useState(React.createRef())
-    // const [graphData, setGraphData] = useState({
-    //     nodes: [],
-    //     edges: [],
-    //     isLeafArr: [],
-    // })
+        const _selectedLabelTreeIndex = element.exportData.annoTask.selectedLabelTree
+        const _labelLeaves = element.exportData.annoTask.labelLeaves
+
+        setSelectedLabelTreeIndex(_selectedLabelTreeIndex)
+        setLabelLeaves(_labelLeaves)
+
+    }, [stateElement, peN])
 
     const graphRef = useRef()
 
@@ -96,12 +93,14 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                 selectionHandler()
                 return
             }
+
             const arr = event.nodes.map((el) => {
                 return {
                     id: el,
                     maxLabels: '3',
                 }
             })
+
             const isDuplicated =
                 labelLeaves.filter((el) => el.id === event.nodes[0]).length > 0
 
@@ -131,102 +130,55 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                     ...selectChildrenArr,
                     ...el.children.map((el3) => el3.idx),
                 ]
-                // setSelectChildrenArr([
-                //     ...selectChildrenArr,
-                //     ...el.children.map((el3) => el3.idx),
-                // ])
             }
 
             if (el.children.length) findChildren(el)
         })
     }
 
-    // useEffect(() => {
-
-    // }, [selectedArr, tree])
-
-    // useEffect(() => {
-    //     if (graphData === null) return
-
-    //     mapTreeToGraph(tree, tree.idx)
-    // }, [graphData])
-
     const selectionHandler = () => {
-        // setSelectedArr(labelLeaves.map((el) => el.id))
         selectedArr = labelLeaves.map((el) => el.id)
     }
 
-    const mapTreeToGraph = (graphData, branch, parent) => {
+    const mapTreeToGraph = (_graphData, branch, parent) => {
         branch.children.forEach((el) => {
             if (parent) {
-                graphData.edges.push({
+                _graphData.edges.push({
                     from: parent,
                     to: el.idx,
                 })
             }
+
             let nodeObj = {
                 id: el.idx,
                 label: String(el.name),
                 color: el.color ? el.color : '#10515F',
                 font: { color: '#FFFFFF' },
             }
+
             if (el.children.length) {
-                mapTreeToGraph(graphData, el, el.idx)
+                mapTreeToGraph(_graphData, el, el.idx)
             } else {
-                graphData.isLeafArr.push(el.idx)
+                _graphData.isLeafArr.push(el.idx)
             }
-            graphData.nodes.push(nodeObj)
+
+            _graphData.nodes.push(nodeObj)
         })
+
+        setGraphData(_graphData)
     }
 
     useEffect(() => {
-        // graph = React.createRef()
-
-        // const _events = {
-        //     select: (event) => {
-        //         if (graphData.isLeafArr.includes(event.nodes[0])) {
-        //             // leaf item clicked
-        //             selectionHandler()
-        //             return
-        //         }
-        //         const arr = event.nodes.map((el) => {
-        //             return {
-        //                 id: el,
-        //                 maxLabels: '3',
-        //             }
-        //         })
-        //         const isDuplicated =
-        //             labelLeaves.filter((el) => el.id === event.nodes[0]).length > 0
-
-        //         let editedArr
-
-        //         if (isDuplicated) {
-        //             // deselect --> filter array
-        //             editedArr = labelLeaves.filter(
-        //                 (el) => !(el.id === event.nodes[0]),
-        //             )
-        //         } else {
-        //             // select --> merge arrays
-        //             editedArr = _.unionBy(arr, labelLeaves, 'id')
-        //         }
-
-        //         updateLabels(peN, editedArr)
-        //         verifyTab(peN, 3, true)
-        //         selectionHandler()
-        //     },
-        // }
-
-        // setEvents(_events)
+        if (labelLeaves === undefined) return
 
         selectionHandler()
 
+        // get tree with selected index
         const _tree = availableLabelTrees.filter(
-            (el) => el.idx === selectedLabelTree,
+            (el) => el.idx === selectedLabelTreeIndex,
         )[0]
-        // setTree(_tree)
-        tree = _tree
 
-        // if (selectedArr === null || tree === null) return
+        tree = _tree
 
         const parentIsInList = selectedArr.filter((el) => el === tree.idx).length > 0
         if (parentIsInList) {
@@ -235,11 +187,16 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         }
 
         findChildren(tree)
-        console.log({ selectChildrenArr });
-        graphRef.current.Network.selectNodes(selectChildrenArr)
 
-        // const _graphData = graphData
-        graphData.nodes.push({
+        if (graphRef.current !== undefined) {
+            console.info("SELECTING NODE")
+            graphRef.current.Network.selectNodes(selectChildrenArr)
+        }
+
+        // copy graphData without reference to make useEffekt work
+        const _graphData = { ...graphData }
+
+        _graphData.nodes.push({
             id: tree.idx,
             label: tree.name,
             chosen: true,
@@ -247,16 +204,10 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
             font: { color: '#FFFFFF' },
         })
 
+        mapTreeToGraph(_graphData, tree, tree.idx)
+    }, [labelLeaves])
 
-        console.info(graphData);
-
-
-        // setGraphData(_graphData)
-
-        mapTreeToGraph(graphData, tree, tree.idx)
-    }, [])
-
-    // if (graphData === null || events === null) return 'Loading...'
+    if (graphData.nodes.length === 0) return 'Loading...'
 
     return (
         // <Card className="annotask-modal-card">
@@ -276,22 +227,11 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                 options={options}
                 events={events}
             />
+
         </>
         //     </CardBody>
         // </Card>
     )
 }
 
-// const mapStateToProps = (state, test) => {
-//     const element = state.pipelineStart.step1Data.elements.filter(
-//         (el) => el.peN === test.peN,
-//     )[0]
-
-//     return {
-//         selectedLabelTree: element.exportData.annoTask.selectedLabelTree,
-//         labelLeaves: element.exportData.annoTask.labelLeaves,
-//     }
-// }
-
-// export default connect(mapStateToProps, { updateLabels })(SelectLabel)
 export default SelectLabel
