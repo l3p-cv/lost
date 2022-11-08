@@ -442,6 +442,10 @@ class ScriptOutput(Output):
             anno_meta_keys (list or *all*): Keys that should be used for two_d_anno meta information.
                 If all, all keys of lds will be added as meta information.
             img_path_key (str): Column that should be used as img_path
+        
+        Note:
+            Annos for images are requested in same order as in the input lost 
+            dataset.
         '''
         if 'anno_format' in lds.df:
             if len( lds.df[lds.df['anno_format'] != 'rel'] ) > 0:
