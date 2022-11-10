@@ -238,7 +238,10 @@ class SiaUpdateOneThing(object):
         :type db_man: lost.db.access.DBMan
         """
         img_data = data['img']
-        self.anno = data['anno']
+        if 'anno' in data:
+            self.anno = data['anno']
+        else:
+            self.anno = None
         self.logger = flask.current_app.logger
         self.sia_type = sia_type
         self.timestamp = datetime.now()
@@ -261,7 +264,7 @@ class SiaUpdateOneThing(object):
 
     def _update_img_labels(self, data):
         if 'imgLabelChanged' in data:
-            if(data['imgLabelChanged']):
+            if data['imgLabelChanged']:
                 old = set([lbl.label_leaf_id for lbl in self.image_anno.labels])
                 new = set(data['imgLabelIds'])
                 to_delete = old - new
@@ -276,8 +279,11 @@ class SiaUpdateOneThing(object):
     def update(self):
         if self.at.pipe_element.pipe.state == state.Pipe.PAUSED:
             return "pipe is paused"
-        anno_type = dtype.TwoDAnno.STR_TO_TYPE[self.anno['type'].lower()]
-        res = self.__update_annotation(self.anno, anno_type)
+        if self.anno is not None:
+            anno_type = dtype.TwoDAnno.STR_TO_TYPE[self.anno['type'].lower()]
+            res = self.__update_annotation(self.anno, anno_type)
+        else:
+            res = None
         self.image_anno.state = state.Anno.LABELED
         # Update Image Label
         # self.image_anno.labels = self.img_labels

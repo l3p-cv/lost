@@ -321,7 +321,6 @@ const Sia = (props) => {
     }
 
     const handleAnnoSaveEvent = (action, saveData) => {
-        console.log('SIA -> handleAnnoSaveEvent', action, saveData)
         if (props.onAnnoSaveEvent){
             props.onAnnoSaveEvent(action, saveData)
         }

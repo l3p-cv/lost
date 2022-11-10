@@ -24,3 +24,5 @@ export const CANVAS_IMGBAR_CLOSE='canvasImgbarClose'
 
 //Image actions
 export const IMG_LABEL_UPDATE='imgLabelUpdate'
+export const IMG_JUNK_UPDATE='imgJunkUpdate'
+export const IMG_ANNO_TIME_UPDATE='imgAnnoTimeUpdate'

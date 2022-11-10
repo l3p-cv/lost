@@ -189,25 +189,16 @@ class UpdateOneThing(Resource):
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
-
         else:
             data = json.loads(request.data)
+            if not 'anno' in data:
+                # if not 'imgLabelIds' in data['img']:
+                #     if not 'isJunk' in data['img']:
+                if data['action'] not in ['imgAnnoTimeUpdate', 'imgJunkUpdate', 'imgLabelUpdate']:
+                    raise Exception('Expect either anno or img information!')
             re = sia.update_one_thing(dbm, data, user.idx)
             dbm.close_session()
             return re
-            raise Exception(f'Implement here: {data}')
-            # try:
-            #     re = sia.update(dbm, data, user.idx)
-            #     dbm.close_session()
-            #     return re
-            # except:
-            #     msg = traceback.format_exc()
-            #     msg += f'\nuser.idx: {user.idx}, user.name: {user.user_name}\n'
-            #     msg += f'Received data:\n{json.dumps(data, indent=4)}\n'
-            #     flask.current_app.logger.error('{}'.format(msg))
-            #     dbm.close_session()
-            #     return 'error updating sia anno', 500
-           
 
 @namespace.route('/allowedExampler')
 class AllowedExampler(Resource):
