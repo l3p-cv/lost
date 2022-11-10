@@ -23,7 +23,6 @@ const {
     getSiaConfig,
     siaSetSVG,
     getSiaImage,
-    siaUpdateAnnos,
     siaSendFinishToBackend,
     siaSetFullscreen,
     siaSetUIConfig,
@@ -45,7 +44,6 @@ const SiaWrapper = (props) => {
     const [backendImage, setBackendImage] = useState({ id: undefined, data: undefined })
     const [canvasImgLoaded, setCanvasImgLoaded] = useState(0)
     const [annos, setAnnos] = useState({ image: undefined, annotations: undefined })
-    const [nextAnnoId, setNextAnnoId] = useState()
     const [blockNextImageTrigger, setBlockNextImageTrigger] = useState(false)
     const [filteredData, setFilteredData] = useState()
     const [currentRotation, setCurrentRotation] = useState(0)
@@ -57,13 +55,10 @@ const SiaWrapper = (props) => {
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
-        // setState({ didMount: true })
-        // setDidMount(true)
         window.addEventListener('resize', props.siaLayoutUpdate)
         props.getSiaAnnos(-1)
         props.getSiaLabels()
         props.getSiaConfig()
-        getNextAnnoId()
         allowedToMarkExample()
         return () => {
             document.body.style.overflow = ''
@@ -97,15 +92,9 @@ const SiaWrapper = (props) => {
 
     useEffect(() => {
         if (props.taskFinished) {
-            // const newAnnos = undoAnnoRotationForUpdate(props.filter)
             props.siaSendFinishToBackend().then(() => {
                 props.history.push('dashboard')
             })
-            // props.siaUpdateAnnos(newAnnos).then(() => {
-            //     props.siaSendFinishToBackend().then(() => {
-            //         props.history.push('dashboard')
-            //     })
-            // })
         }
     }, [props.taskFinished])
 
@@ -167,7 +156,6 @@ const SiaWrapper = (props) => {
             setBackendImage({ id: undefined, data: undefined })
             setCanvasImgLoaded(0)
             setAnnos({ image: undefined, annotations: undefined })
-            setNextAnnoId()
             setBlockNextImageTrigger(false)
             setFilteredData()
             setCurrentRotation(0)
@@ -179,17 +167,10 @@ const SiaWrapper = (props) => {
         }
     }, [])
 
-    const getNextAnnoId = () => {
-        props.siaGetNextAnnoId().then((response) => {
-            setNextAnnoId(response.data)
-            // setState({ nextAnnoId: response.data })
-        })
-    }
     const allowedToMarkExample = () => {
         props.siaAllowedToMarkExample().then((response) => {
             if (response !== undefined) {
                 setAllowedToMark(response.data)
-                // setState({ allowedToMark: response.data })
             } else {
                 console.warn('Failed to call AllowedToMarkExample webservice!')
             }
@@ -205,16 +186,6 @@ const SiaWrapper = (props) => {
                 data: undefined,
             })
             props.siaImgIsJunk(false)
-            // props.siaUpdateAnnos(newAnnos).then((response) => {
-            //     if (response === 'error') {
-            //         handleNotification({
-            //             title: 'Saving failed',
-            //             message: 'Error while saving annotations.',
-            //             type: notificationType.ERROR,
-            //         })
-            //     }
-            //     props.getSiaAnnos(imageId, direction)
-            // })
             props.getSiaAnnos(imageId, direction)
         }
     }
@@ -223,8 +194,8 @@ const SiaWrapper = (props) => {
         props.siaShowImgLabelInput(!props.imgLabelInput.show)
     }
 
-    const handleAnnoSaveEvent = (action, saveData) => {
-        console.log('SiaWrapper -> handleAnnoSaveEvent', action, saveData)
+    const handleAnnoSaveEvent = (saveData) => {
+        console.log('SiaWrapper -> handleAnnoSaveEvent', saveData)
         props.siaUpdateOneThing(saveData).then((response) => {
             if (response === 'error') {
                 handleNotification({
@@ -235,14 +206,8 @@ const SiaWrapper = (props) => {
             } else {
                 console.log('handleAnnoSaveResponse ', response.data)
                 setAnnoSaveResponse(response.data)
-                // handleNotification({
-                //     title: 'Performed AutoSave',
-                //     message: 'Saved SIA annotations',
-                //     type: notificationType.INFO,
-                // })
             }
         })
-
     }
 
     const handleNotification = (messageObj) => {
@@ -434,10 +399,6 @@ const SiaWrapper = (props) => {
 
     const handleAnnoPerformedAction = (anno, annos, action) => {
         switch (action) {
-            case annoActions.ANNO_CREATED:
-            case annoActions.ANNO_CREATED_FINAL_NODE:
-                getNextAnnoId()
-                break
             case annoActions.ANNO_SELECTED:
                 console.log('anno selected')
                 props.selectAnnotation(anno)
@@ -683,7 +644,6 @@ export default connect(
         getSiaLabels,
         siaSetSVG,
         getSiaImage,
-        siaUpdateAnnos,
         siaSendFinishToBackend,
         selectAnnotation,
         siaSetTaskFinished,

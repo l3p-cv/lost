@@ -277,7 +277,6 @@ const Sia = (props) => {
     }
 
     const handleAnnoEvent = (anno, annos, action) => {
-        console.log('Sia handleAnnoEvent', anno, annos, action)
         if (props.onAnnoEvent){
             props.onAnnoEvent(anno, annos, action)
         }
@@ -352,11 +351,6 @@ const Sia = (props) => {
     }
 
     const toggleFullscreen = () => {
-        // if (fullscreenCSS === ''){
-        //     applyFullscreen(true)
-        // } else {
-        //     applyFullscreen(false)
-        // }
         if (fullscreen){
             setFullscreen(false)
         } else {
@@ -431,12 +425,11 @@ const Sia = (props) => {
                     (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs):{} 
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                onAnnoSaveEvent={(action, anno, img) => handleAnnoSaveEvent(action, anno, img)}
+                onAnnoSaveEvent={(saveData) => handleAnnoSaveEvent(saveData)}
 
                 annoSaveResponse={props.annoSaveResponse}
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
-                nextAnnoId={props.nextAnnoId}
                 annos={annos}
                 imageMeta={props.imageMeta}
                 imageBlob={props.imageBlob}
