@@ -101,7 +101,6 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *          }
  *      },
  *      allowedToMarkExample: bool, -> Indicates wether the current user is allowed to mark an annotation as example.
- *      autoSaveInterval: int -> Interval in seconds when an autosave will be requested by canvas
  *   }
  * @param {str or int} defaultLabel (optional) - Name or ID of the default label that is used
  *      when no label was selected by the annotator. If not set "no label" will be used.
@@ -112,8 +111,12 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *        will be created. If undefined, the canvas will create its own ids.
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
+ * @param {int} nextAnnoId Id that will be used for the next annotation that 
+-*        will be created. If undefined, the canvas will create its own ids.
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
+ * @event onAnnoSaveEvent - Callback for Notification messages
+ *      args: {action: str, saveData: object}
  * @event onKeyDown - Fires for keyDown on canvas 
  * @event onKeyUp - Fires for keyUp on canvas 
  * @event onAnnoEvent - Fires when an anno performed an action
@@ -184,7 +187,6 @@ class Canvas extends Component{
         this.keyMapper = new KeyMapper((keyAction) => this.handleKeyAction(keyAction))
         this.mousePosAbs = undefined
         this.clipboard = undefined
-        this.autoSaveI = undefined
     }
 
     componentDidMount(){
@@ -192,13 +194,6 @@ class Canvas extends Component{
         if (Number.isInteger(this.props.defaultLabel)){
 
             this.setState({prevLabel:[this.props.defaultLabel]})
-        }
-        if (this.props.canvasConfig.autoSaveInterval){
-            this.autoSaveI = setInterval(() => {
-                // console.log('AutoSave')
-                // this.props.onAutoSave()
-                this.triggerCanvasEvent(canvasActions.CANVAS_AUTO_SAVE)
-            }, this.props.canvasConfig.autoSaveInterval*1000)
         }
         if (this.props.onGetFunction){
             this.props.onGetFunction({
@@ -213,15 +208,14 @@ class Canvas extends Component{
         }
     }
 
-    componentWillUnmount(){
-        clearInterval(this.autoSaveI)
-        console.log('Cleard auto save interval!')
-    }
-
     componentDidUpdate(prevProps, prevState){
         // if (this.props.image.id !== prevProps.image.id){
             
         // }
+        if (prevProps.annoSaveResponse !== this.props.annoSaveResponse){
+            console.log('Canvas annoSaveResponse ', this.props.annoSaveResponse)
+            this.updateAnnoBySaveResponse(this.props.annoSaveResponse)
+        }
         if (prevProps.imageMeta !== this.props.imageMeta){
             if (this.props.imageMeta){
                 this.setState({
@@ -596,6 +590,7 @@ class Canvas extends Component{
                 )
                 this.showSingleAnno(undefined)
                 this.setState({annoToolBarVisible:true})
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             case canvasActions.ANNO_MOVED:
                 anno = this.stopAnnotimeMeasure(anno)
@@ -606,6 +601,7 @@ class Canvas extends Component{
                     pAction, undefined
                 )
                 this.setState({annoToolBarVisible:true})
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             case canvasActions.ANNO_ENTER_MOVE_MODE:
                 anno = this.startAnnotimeMeasure(anno)
@@ -625,6 +621,7 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             case canvasActions.ANNO_REMOVED_NODE:
                 if (!this.checkAnnoLength(anno)){
@@ -637,6 +634,7 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             case canvasActions.ANNO_EDITED:
                 anno = this.stopAnnotimeMeasure(anno)
@@ -646,15 +644,18 @@ class Canvas extends Component{
                     pAction, this.state.showSingleAnno
                 )
                 this.setState({annoToolBarVisible:true})
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             case canvasActions.ANNO_DELETED:
-                newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
+                const res = this.updateSelectedAnno(anno, modes.DELETED, true)
+                newAnnos = res.newAnnos
                 this.selectAnnotation(undefined)
                 this.showSingleAnno(undefined)
                 this.pushHist(
                     newAnnos, undefined,
                     pAction, this.state.showSingleAnno
                 )
+                this.handleAnnoSaveEvent(pAction, res.newAnno, undefined)
                 break
             case canvasActions.ANNO_COMMENT_UPDATE:
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
@@ -670,6 +671,7 @@ class Canvas extends Component{
                     message: `Saved comment: ${anno.comment}`,
                     type: notificationType.SUCCESS
                 })
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 anno = this.stopAnnotimeMeasure(anno)
@@ -683,6 +685,7 @@ class Canvas extends Component{
                     pAction, undefined
                 )
                 this.setState({annoToolBarVisible:true})
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             case canvasActions.ANNO_CREATED_NODE:
                 anno = this.stopAnnotimeMeasure(anno)
@@ -701,13 +704,30 @@ class Canvas extends Component{
                 )
                 this.showSingleAnno(undefined)
                 this.setState({annoToolBarVisible:true})
+                this.handleAnnoSaveEvent(pAction, anno, undefined)
                 break
             default:
-                console.warn('Action not handeled', pAction)
+                console.warn('Action not handled', pAction)
                 break
         }
         if (this.props.onAnnoEvent){
             this.props.onAnnoEvent(anno, newAnnos, pAction)
+        }
+    }
+
+    handleAnnoSaveEvent(action, anno, img){
+        const imgData = {...img,
+            imgId: this.props.imageMeta.id,
+            annoTime: this.props.imageMeta.annoTime + (performance.now() - this.state.imgLoadTimestamp)/1000
+        }
+        const saveData = {
+            anno: anno ? annoConversion.canvasToBackendSingleAnno(anno, this.state.svg, 
+                false, this.state.imageOffset): undefined,
+            img: imgData
+            }
+        console.log('handleAnnoSaveEvent -> ', saveData, action)
+        if (this.props.onAnnoSaveEvent){
+            this.props.onAnnoSaveEvent(action, saveData)
         }
     }
 
@@ -741,6 +761,11 @@ class Canvas extends Component{
             this.state.showSingleAnno,
             label
         )
+        const imgData = {
+            imgLabelIds: label,
+            imgLabelChanged: true
+        }
+        this.handleAnnoSaveEvent(canvasActions.IMG_LABEL_UPDATE, undefined, imgData)
     }
 
     handleCanvasClick(e){
@@ -1331,15 +1356,25 @@ class Canvas extends Component{
         return colorlut.getDefaultColor()
     }
 
+    updateAnnoBySaveResponse(res){
+        if (!res) return
+        if (res.tempId !== res.dbId){
+            const anno = this.findAnno(res.tempId)
+            anno.id = res.dbId
+            anno.status = annoStatus.DATABASE
+            this.updateSelectedAnno(anno)
+        }
+    }
+
     /**
      * Update selected anno and override mode if desired
      * 
-     * @param {object} anno - The new annotation the becomes the selected anno
+     * @param {object} anno - The new annotation that becomes the selected anno
      * @param {string} mode - The new mode for the selected anno
      * @returns The new anno that was set as selectedAnno in state and 
      *      the new annos list that was set in state
      */
-    updateSelectedAnno(anno, mode=undefined){
+    updateSelectedAnno(anno, mode=undefined, returnNewAnno=false){
         if (!anno) return
         const {newAnnos, newAnno} = this.mergeSelectedAnno(anno, mode)
         this.setState({
@@ -1352,7 +1387,11 @@ class Canvas extends Component{
         //         this.props.onAnnoSelect(newAnno)
         //     }
         // }
-        return newAnnos
+        if (returnNewAnno){
+            return {newAnnos, newAnno}
+        } else {
+            return newAnnos
+        }
     }
 
     mergeSelectedAnno(anno, mode=undefined){

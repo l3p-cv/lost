@@ -37,6 +37,7 @@ const {
     siaGetPrevImage,
     siaFilterImage,
     siaApplyFilter,
+    siaUpdateOneThing
 } = actions
 
 const SiaWrapper = (props) => {
@@ -52,6 +53,7 @@ const SiaWrapper = (props) => {
     const [canvas, setCanvas] = useState()
     const [allowedToMark, setAllowedToMark] = useState(false)
     const [fullscreen, setFullscreen] = useState(false)
+    const [annoSaveResponse, setAnnoSaveResponse] = useState()
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -95,12 +97,15 @@ const SiaWrapper = (props) => {
 
     useEffect(() => {
         if (props.taskFinished) {
-            const newAnnos = undoAnnoRotationForUpdate(props.filter)
-            props.siaUpdateAnnos(newAnnos).then(() => {
-                props.siaSendFinishToBackend().then(() => {
-                    props.history.push('dashboard')
-                })
+            // const newAnnos = undoAnnoRotationForUpdate(props.filter)
+            props.siaSendFinishToBackend().then(() => {
+                props.history.push('dashboard')
             })
+            // props.siaUpdateAnnos(newAnnos).then(() => {
+            //     props.siaSendFinishToBackend().then(() => {
+            //         props.history.push('dashboard')
+            //     })
+            // })
         }
     }, [props.taskFinished])
 
@@ -200,21 +205,44 @@ const SiaWrapper = (props) => {
                 data: undefined,
             })
             props.siaImgIsJunk(false)
-            props.siaUpdateAnnos(newAnnos).then((response) => {
-                if (response === 'error') {
-                    handleNotification({
-                        title: 'Saving failed',
-                        message: 'Error while saving annotations.',
-                        type: notificationType.ERROR,
-                    })
-                }
-                props.getSiaAnnos(imageId, direction)
-            })
+            // props.siaUpdateAnnos(newAnnos).then((response) => {
+            //     if (response === 'error') {
+            //         handleNotification({
+            //             title: 'Saving failed',
+            //             message: 'Error while saving annotations.',
+            //             type: notificationType.ERROR,
+            //         })
+            //     }
+            //     props.getSiaAnnos(imageId, direction)
+            // })
+            props.getSiaAnnos(imageId, direction)
         }
     }
 
     const handleImgLabelInputClose = () => {
         props.siaShowImgLabelInput(!props.imgLabelInput.show)
+    }
+
+    const handleAnnoSaveEvent = (action, saveData) => {
+        console.log('SiaWrapper -> handleAnnoSaveEvent', action, saveData)
+        props.siaUpdateOneThing(saveData).then((response) => {
+            if (response === 'error') {
+                handleNotification({
+                    title: 'Anno save failed',
+                    message: 'Error while saving annotation.',
+                    type: notificationType.ERROR,
+                })
+            } else {
+                console.log('handleAnnoSaveResponse ', response.data)
+                setAnnoSaveResponse(response.data)
+                // handleNotification({
+                //     title: 'Performed AutoSave',
+                //     message: 'Saved SIA annotations',
+                //     type: notificationType.INFO,
+                // })
+            }
+        })
+
     }
 
     const handleNotification = (messageObj) => {
@@ -376,33 +404,33 @@ const SiaWrapper = (props) => {
         }
     }
 
-    const handleAutoSave = () => {
-        if (canvas) {
-            const newAnnos = undoAnnoRotationForUpdate(false)
-            if (
-                newAnnos.annotations.bBoxes.length ||
-                newAnnos.annotations.lines.length ||
-                newAnnos.annotations.points.length ||
-                newAnnos.annotations.polygons.length
-            ) {
-                props.siaUpdateAnnos(newAnnos, true).then((response) => {
-                    if (response === 'error') {
-                        handleNotification({
-                            title: 'AutoSave failed',
-                            message: 'Error while auto saving annotations.',
-                            type: notificationType.ERROR,
-                        })
-                    } else {
-                        handleNotification({
-                            title: 'Performed AutoSave',
-                            message: 'Saved SIA annotations',
-                            type: notificationType.INFO,
-                        })
-                    }
-                })
-            }
-        }
-    }
+    // const handleAutoSave = () => {
+    //     if (canvas) {
+    //         const newAnnos = undoAnnoRotationForUpdate(false)
+    //         if (
+    //             newAnnos.annotations.bBoxes.length ||
+    //             newAnnos.annotations.lines.length ||
+    //             newAnnos.annotations.points.length ||
+    //             newAnnos.annotations.polygons.length
+    //         ) {
+    //             props.siaUpdateAnnos(newAnnos, true).then((response) => {
+    //                 if (response === 'error') {
+    //                     handleNotification({
+    //                         title: 'AutoSave failed',
+    //                         message: 'Error while auto saving annotations.',
+    //                         type: notificationType.ERROR,
+    //                     })
+    //                 } else {
+    //                     handleNotification({
+    //                         title: 'Performed AutoSave',
+    //                         message: 'Saved SIA annotations',
+    //                         type: notificationType.INFO,
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //     }
+    // }
 
     const handleAnnoPerformedAction = (anno, annos, action) => {
         switch (action) {
@@ -421,9 +449,9 @@ const SiaWrapper = (props) => {
 
     const handleCanvasEvent = (action, data) => {
         switch (action) {
-            case annoActions.CANVAS_AUTO_SAVE:
-                handleAutoSave()
-                break
+            // case annoActions.CANVAS_AUTO_SAVE:
+            //     handleAutoSave()
+            //     break
             case annoActions.CANVAS_SVG_UPDATE:
                 props.siaSetSVG(data)
                 break
@@ -576,10 +604,11 @@ const SiaWrapper = (props) => {
                     props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                onAnnoSaveEvent={(action, saveData) => handleAnnoSaveEvent(action, saveData)}
                 canvasConfig={{
                     ...props.canvasConfig,
                     annos: { ...props.canvasConfig.annos, maxAnnos: null },
-                    autoSaveInterval: 60,
+                    // autoSaveInterval: 60,
                     allowedToMarkExample: allowedToMark,
                 }}
                 uiConfig={{
@@ -589,7 +618,8 @@ const SiaWrapper = (props) => {
                     centerCanvasInContainer: true,
                     maxCanvas: true,
                 }}
-                nextAnnoId={nextAnnoId}
+                // nextAnnoId={nextAnnoId}
+                annoSaveResponse={annoSaveResponse}
                 annos={annos.annotations}
                 imageMeta={annos.image}
                 imageBlob={image.data}
@@ -611,7 +641,7 @@ const SiaWrapper = (props) => {
                     junk: true,
                     deleteAll: true,
                     settings: { infoBoxes: true, annoStyle: true },
-                    filter: { rotate: true, clahe: true },
+                    filter: { rotate: false, clahe: true },
                     help: true,
                 }}
             />
@@ -669,6 +699,7 @@ export default connect(
         siaGetPrevImage,
         siaFilterImage,
         siaApplyFilter,
+        siaUpdateOneThing,
     },
     null,
     {},

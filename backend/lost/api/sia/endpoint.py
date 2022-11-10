@@ -177,6 +177,36 @@ class Update(Resource):
                 flask.current_app.logger.error('{}'.format(msg))
                 dbm.close_session()
                 return 'error updating sia anno', 500
+
+@namespace.route('/updateOneThing')
+class UpdateOneThing(Resource):
+    # @api.expect(sia_update)
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+
+        else:
+            data = json.loads(request.data)
+            re = sia.update_one_thing(dbm, data, user.idx)
+            dbm.close_session()
+            return re
+            raise Exception(f'Implement here: {data}')
+            # try:
+            #     re = sia.update(dbm, data, user.idx)
+            #     dbm.close_session()
+            #     return re
+            # except:
+            #     msg = traceback.format_exc()
+            #     msg += f'\nuser.idx: {user.idx}, user.name: {user.user_name}\n'
+            #     msg += f'Received data:\n{json.dumps(data, indent=4)}\n'
+            #     flask.current_app.logger.error('{}'.format(msg))
+            #     dbm.close_session()
+            #     return 'error updating sia anno', 500
            
 
 @namespace.route('/allowedExampler')

@@ -91,7 +91,6 @@ import {noAnnos} from './siaDummyData'
  *          }
  *      },
  *      allowedToMarkExample: bool, -> Indicates wether the current user is allowed to mark an annotation as example.
- *      autoSaveInterval: int -> Interval in seconds when an autosave will be requested by canvas
  *   }
  * @param {str or int} defaultLabel (optional) - Name or ID of the default label that is used
  *      when no label was selected by the annotator. If not set "no label" will be used.
@@ -99,8 +98,6 @@ import {noAnnos} from './siaDummyData'
  * @param {bool} blocked Block canvas view with loading dimmer.
  * @param {bool} fullscreen Set fullscreen mode if provided
  * @param {bool} preventScrolling Prevent scrolling on mouseEnter
- * @param {int} nextAnnoId Id that will be used for the next annotation that 
- *        will be created. If undefined, the canvas will create its own ids.
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
  * @param {object} filter Information for the filter Popup
@@ -280,6 +277,7 @@ const Sia = (props) => {
     }
 
     const handleAnnoEvent = (anno, annos, action) => {
+        console.log('Sia handleAnnoEvent', anno, annos, action)
         if (props.onAnnoEvent){
             props.onAnnoEvent(anno, annos, action)
         }
@@ -319,6 +317,13 @@ const Sia = (props) => {
     const handleGetFunction = (canvasFunction) =>  {
         if (props.onGetFunction){
             props.onGetFunction(canvasFunction)
+        }
+    }
+
+    const handleAnnoSaveEvent = (action, saveData) => {
+        console.log('SIA -> handleAnnoSaveEvent', action, saveData)
+        if (props.onAnnoSaveEvent){
+            props.onAnnoSaveEvent(action, saveData)
         }
     }
 
@@ -427,10 +432,11 @@ const Sia = (props) => {
                     (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs):{} 
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                onAnnoSaveEvent={(action, anno, img) => handleAnnoSaveEvent(action, anno, img)}
 
+                annoSaveResponse={props.annoSaveResponse}
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
-
                 nextAnnoId={props.nextAnnoId}
                 annos={annos}
                 imageMeta={props.imageMeta}
