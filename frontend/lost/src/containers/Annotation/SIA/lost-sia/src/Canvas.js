@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import _ from 'lodash'
+import _, { transform } from 'lodash'
 import Annotation from './Annotation/Annotation'
 import AnnoLabelInput from './AnnoLabelInput'
 import ImgBar from './ImgBar'
@@ -13,6 +13,7 @@ import KeyMapper from './utils/keyActions'
 import * as TOOLS from './types/tools'
 import * as modes from './types/modes'
 import UndoRedo from './utils/hist'
+import * as transformAnnos from './utils/transform'
 import * as annoStatus from './types/annoStatus'
 import * as canvasActions from './types/canvasActions'
 import { Loader, Dimmer, Icon, Header, Button, Form, TextArea} from 'semantic-ui-react';
@@ -811,24 +812,30 @@ class Canvas extends Component{
     }
 
     pasteAnnotation(offset=0){
+                // const corrected = transform.correctAnnotation(anno.data, this.props.svg, this.props.imageOffset)
         if (this.clipboard){
             let annos = [...this.state.annos]
             const uid = _.uniqueId('new')
-            annos.push({
+            // this.handleAnnoEvent()
+            const newData = this.clipboard.data.map(e => {
+                    return {x: e.x+offset, y: e.y+offset}
+                })
+            const newAnno ={
                 ...this.clipboard,
                 id: uid,
                 annoTime: 0,
                 status: annoStatus.NEW,
-                data: this.clipboard.data.map(e => {
-                    return {x: e.x+offset, y: e.y+offset}
-                })
-            })
+                mode: modes.VIEW,
+                data: transformAnnos.correctAnnotation(newData, this.state.svg, this.state.imageOffset)
+            } 
+            annos.push(newAnno)
             this.setState({annos: annos, selectedAnnoId: uid})
             this.handleNotification({
                 title: "Pasted annotation to canvas",
                 message: 'Pasted and selected '+this.clipboard.type,
                 type: notificationType.SUCCESS
             })
+            this.handleAnnoSaveEvent(canvasActions.ANNO_CREATED, newAnno)
         }
     }
 
@@ -928,11 +935,13 @@ class Canvas extends Component{
             showSingleAnno: showSingleAnno,
             imgLabelIds: imgLabelIds
         }, pAction)
+        console.log('hist', this.hist)
     }
 
     undo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.undo()
+            console.log('hist', this.hist)
             this.setCanvasState(
                 cState.entry.annotations,
                 cState.entry.imgLabelIds, 
@@ -944,11 +953,13 @@ class Canvas extends Component{
     redo(){
         if (!this.hist.isEmpty()){
             const cState = this.hist.redo()
+            console.log('hist', this.hist)
             this.setCanvasState(
                 cState.entry.annotations,
                 cState.entry.imgLabelIds, 
                 cState.entry.selectedAnnoId,
-                cState.entry.showSingleAnno)
+                cState.entry.showSingleAnno
+            )
         }
     }
 
