@@ -712,22 +712,32 @@ class Canvas extends Component{
         this.triggerCanvasEvent(canvasActions.CANVAS_IMGBAR_CLOSE)
     }
 
+    gotNewLabel(label){
+        let ret = false
+        console.log('handleImgLabelUpdate foreach',label.forEach(e => {
+            if (!this.state.imgLabelIds.includes(e)) ret = true
+        }))
+        return ret
+    }
+
     handleImgLabelUpdate(label){
-        this.setState({
-            imgLabelIds: label,
-            imgLabelChanged: true,
-        })
-        this.pushHist(this.state.annos,
-            this.state.selectedAnnoId,
-            canvasActions.IMG_LABEL_UPDATE,
-            this.state.showSingleAnno,
-            label
-        )
-        const imgData = {
-            imgLabelIds: label,
-            imgLabelChanged: true
+        if (this.gotNewLabel(label)){
+            this.setState({
+                imgLabelIds: label,
+                imgLabelChanged: true,
+            })
+            this.pushHist(this.state.annos,
+                this.state.selectedAnnoId,
+                canvasActions.IMG_LABEL_UPDATE,
+                this.state.showSingleAnno,
+                label
+            )
+            const imgData = {
+                imgLabelIds: label,
+                imgLabelChanged: true
+            }
+            this.handleAnnoSaveEvent(canvasActions.IMG_LABEL_UPDATE, undefined, imgData)
         }
-        this.handleAnnoSaveEvent(canvasActions.IMG_LABEL_UPDATE, undefined, imgData)
     }
 
     handleCanvasClick(e){
@@ -1506,12 +1516,12 @@ class Canvas extends Component{
                     multilabels={this.props.canvasConfig.img.multilabels}
                     // relatedId={this.props.annos.image.id}
                     visible={true}
-                    // onLabelUpdate={label => this.handleImgLabelUpdate(label)}
+                    onLabelUpdate={label => this.handleImgLabelUpdate(label)}
                     possibleLabels={this.state.possibleLabels}
                     initLabelIds={this.state.imgLabelIds}
                     relatedId={this.props.imageMeta.id}
                     defaultLabel={this.props.defaultLabel}
-                    onLabelConfirmed = {label => this.handleImgLabelUpdate(label)}
+                    // onLabelConfirmed = {label => this.handleImgLabelUpdate(label)}
                     // disabled={!this.props.allowedActions.label}
                     // renderPopup
                 />
