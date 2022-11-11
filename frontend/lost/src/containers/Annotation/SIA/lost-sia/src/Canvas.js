@@ -714,9 +714,9 @@ class Canvas extends Component{
 
     gotNewLabel(label){
         let ret = false
-        console.log('handleImgLabelUpdate foreach',label.forEach(e => {
+        label.forEach(e => {
             if (!this.state.imgLabelIds.includes(e)) ret = true
-        }))
+        })
         return ret
     }
 
