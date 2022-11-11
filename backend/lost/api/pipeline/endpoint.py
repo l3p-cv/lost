@@ -256,7 +256,7 @@ class TemplateImportZip(Resource):
                 return "success", 200
             except template_import.JSONDecodeError:
                 dbm.close_session()
-                return traceback.format_exc(), 200
+                return traceback.format_exc(), 500
             except:
                 dbm.close_session()
                 raise
@@ -306,7 +306,7 @@ class TemplateImportGit(Resource):
                     return "success", 200
             except template_import.JSONDecodeError:
                 dbm.close_session()
-                return traceback.format_exc(), 200
+                return traceback.format_exc(), 500
             except:
                 dbm.close_session()
                 raise
