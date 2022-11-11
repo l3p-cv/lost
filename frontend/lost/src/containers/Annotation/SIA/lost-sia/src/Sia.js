@@ -23,6 +23,12 @@ import {noAnnos} from './siaDummyData'
  *              lines: []
  *              polygons: []
  *      }
+ * @param {object} annoSaveResponse - Backend response when updating an annotation in backend
+ *                  {
+ *                      tempId: int or str, // temporal frontend Id 
+ *                      dbId: int, // Id from backend
+ *                      newStatus: str // new Status for the annotation
+ *                  }
  * @param {object} possibleLabels - Possible labels that can be assigned to 
  *      an annotation.
  *      [{   
@@ -106,10 +112,6 @@ import {noAnnos} from './siaDummyData'
  *                  "clipLimit": int,
  *                  "active": bool
  *              },
- *              "rotate": {
- *                  "angle": 90 | -90 | 180,
- *                  "active": bool
- *              }
  *          } 
  * @param {bool | object} toolbarEnabled Defines which toolbar buttons are 
  *      displayed or if toolbar is shown at all. 
@@ -124,6 +126,13 @@ import {noAnnos} from './siaDummyData'
  *              filter: bool | {rotate: bool, clahe:bool},
  *              help: bool
  *          }
+ * @event onAnnoSaveEvent - Callback with update information for a single 
+ *          annotation or the current image that can be used for backend updates
+ *          args: {
+ *                      action: the action that was performed in frontend, 
+ *                      anno: anno information, 
+ *                      img: image information
+ *              }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
  * @event onCanvasKeyDown - Fires for keyDown on canvas 
