@@ -23,6 +23,12 @@ import {noAnnos} from './siaDummyData'
  *              lines: []
  *              polygons: []
  *      }
+ * @param {object} annoSaveResponse - Backend response when updating an annotation in backend
+ *                  {
+ *                      tempId: int or str, // temporal frontend Id 
+ *                      dbId: int, // Id from backend
+ *                      newStatus: str // new Status for the annotation
+ *                  }
  * @param {object} possibleLabels - Possible labels that can be assigned to 
  *      an annotation.
  *      [{   
@@ -91,7 +97,6 @@ import {noAnnos} from './siaDummyData'
  *          }
  *      },
  *      allowedToMarkExample: bool, -> Indicates wether the current user is allowed to mark an annotation as example.
- *      autoSaveInterval: int -> Interval in seconds when an autosave will be requested by canvas
  *   }
  * @param {str or int} defaultLabel (optional) - Name or ID of the default label that is used
  *      when no label was selected by the annotator. If not set "no label" will be used.
@@ -99,8 +104,6 @@ import {noAnnos} from './siaDummyData'
  * @param {bool} blocked Block canvas view with loading dimmer.
  * @param {bool} fullscreen Set fullscreen mode if provided
  * @param {bool} preventScrolling Prevent scrolling on mouseEnter
- * @param {int} nextAnnoId Id that will be used for the next annotation that 
- *        will be created. If undefined, the canvas will create its own ids.
  * @param {bool} lockedAnnos A list of AnnoIds of annos that should only be displayed.
  *      Such annos can not be edited in any way.
  * @param {object} filter Information for the filter Popup
@@ -109,10 +112,6 @@ import {noAnnos} from './siaDummyData'
  *                  "clipLimit": int,
  *                  "active": bool
  *              },
- *              "rotate": {
- *                  "angle": 90 | -90 | 180,
- *                  "active": bool
- *              }
  *          } 
  * @param {bool | object} toolbarEnabled Defines which toolbar buttons are 
  *      displayed or if toolbar is shown at all. 
@@ -127,6 +126,13 @@ import {noAnnos} from './siaDummyData'
  *              filter: bool | {rotate: bool, clahe:bool},
  *              help: bool
  *          }
+ * @event onAnnoSaveEvent - Callback with update information for a single 
+ *          annotation or the current image that can be used for backend updates
+ *          args: {
+ *                      action: the action that was performed in frontend, 
+ *                      anno: anno information, 
+ *                      img: image information
+ *              }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
  * @event onCanvasKeyDown - Fires for keyDown on canvas 
@@ -280,6 +286,7 @@ const Sia = (props) => {
     }
 
     const handleAnnoEvent = (anno, annos, action) => {
+        console.log('handleAnnoEvent anno, annos, action', anno, annos, action)
         if (props.onAnnoEvent){
             props.onAnnoEvent(anno, annos, action)
         }
@@ -322,6 +329,12 @@ const Sia = (props) => {
         }
     }
 
+    const handleAnnoSaveEvent = (action, saveData) => {
+        if (props.onAnnoSaveEvent){
+            props.onAnnoSaveEvent(action, saveData)
+        }
+    }
+
     const applyFullscreen = (full) => {
         if (full){
             setFullscreenCSS('sia-fullscreen')
@@ -348,11 +361,6 @@ const Sia = (props) => {
     }
 
     const toggleFullscreen = () => {
-        // if (fullscreenCSS === ''){
-        //     applyFullscreen(true)
-        // } else {
-        //     applyFullscreen(false)
-        // }
         if (fullscreen){
             setFullscreen(false)
         } else {
@@ -427,11 +435,11 @@ const Sia = (props) => {
                     (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs):{} 
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                onAnnoSaveEvent={(saveData) => handleAnnoSaveEvent(saveData)}
 
+                annoSaveResponse={props.annoSaveResponse}
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
-
-                nextAnnoId={props.nextAnnoId}
                 annos={annos}
                 imageMeta={props.imageMeta}
                 imageBlob={props.imageBlob}

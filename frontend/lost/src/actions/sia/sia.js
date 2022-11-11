@@ -28,6 +28,20 @@ export const siaUpdateAnnos =
         }
     }
 
+export const siaUpdateOneThing =
+    (data) =>
+    async (dispatch) => {
+        const sendData = { ...data}
+        try {
+            const response = await axios.post(API_URL + '/sia/updateOneThing', sendData)
+            // console.log('REQUEST: siaUpdateAnnos: wrongLoad ', response)
+            return response
+        } catch (e) {
+            console.error(e)
+            return 'error'
+        }
+    }
+
 export const siaGetNextAnnoId = () => async (dispatch) => {
     try {
         const response = await axios.get(API_URL + '/sia/nextAnnoId')

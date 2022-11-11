@@ -142,6 +142,7 @@ class LabelInput extends Component{
     }
 
     annoLabelUpdate(label){
+        console.log('LabelInput -> annoLabelUpdate ', label)
         if (this.props.onLabelUpdate){
             this.props.onLabelUpdate(label.filter(val=>{
                 return val !== -1
@@ -156,6 +157,12 @@ class LabelInput extends Component{
     }
 
     closeLabelInput(){
+        console.log('LabelInput -> closeLabelInput')
+        if (this.props.onLabelConfirmed){
+            this.props.onLabelConfirmed(this.state.label.filter(val=>{
+                return val !== -1
+            }))
+        }
         if (this.props.onClose){
             this.props.onClose()
         }
