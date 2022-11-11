@@ -52,6 +52,7 @@ const SiaWrapper = (props) => {
     const [allowedToMark, setAllowedToMark] = useState(false)
     const [fullscreen, setFullscreen] = useState(false)
     const [annoSaveResponse, setAnnoSaveResponse] = useState()
+    const [inAnnoCreateNode, setInAnnoCreateNode] = useState(false)
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -326,32 +327,52 @@ const SiaWrapper = (props) => {
     const handleCanvasKeyDown = (e) => {
         switch (e.key) {
             case 'ArrowLeft':
-                if (!props.currentImage.isFirst) {
-                    if (!blockNextImageTrigger) {
-                        setBlockNextImageTrigger(true)
-                        props.siaGetPrevImage(props.currentImage.id)
+                if (!inAnnoCreateNode){
+                    if (!props.currentImage.isFirst) {
+                        if (!blockNextImageTrigger) {
+                            setBlockNextImageTrigger(true)
+                            props.siaGetPrevImage(props.currentImage.id)
+                        }
+                    } else {
+                        handleNotification({
+                            notification: {
+                                title: 'No previous image',
+                                message: 'This is the first image!',
+                                type: notificationType.WARNING,
+                            },
+                        })
                     }
                 } else {
                     handleNotification({
                         notification: {
-                            title: 'No previous image',
-                            message: 'This is the first image!',
+                            title: 'Can not change image!',
+                            message: 'Can not change image in anno create mode',
                             type: notificationType.WARNING,
                         },
                     })
                 }
                 break
             case 'ArrowRight':
-                if (!props.currentImage.isLast) {
-                    if (!blockNextImageTrigger) {
-                        setBlockNextImageTrigger(true)
-                        props.siaGetNextImage(props.currentImage.id)
+                if (!inAnnoCreateNode){
+                    if (!props.currentImage.isLast) {
+                        if (!blockNextImageTrigger) {
+                            setBlockNextImageTrigger(true)
+                            props.siaGetNextImage(props.currentImage.id)
+                        }
+                    } else {
+                        handleNotification({
+                            notification: {
+                                title: 'No next image',
+                                message: 'This is the last image!',
+                                type: notificationType.WARNING,
+                            },
+                        })
                     }
                 } else {
                     handleNotification({
                         notification: {
-                            title: 'No next image',
-                            message: 'This is the last image!',
+                            title: 'Can not change image!',
+                            message: 'Can not change image in anno create mode',
                             type: notificationType.WARNING,
                         },
                     })
@@ -402,6 +423,15 @@ const SiaWrapper = (props) => {
             case annoActions.ANNO_SELECTED:
                 console.log('anno selected')
                 props.selectAnnotation(anno)
+                break
+            case annoActions.ANNO_ENTER_CREATE_MODE:
+                console.log('handleAnnoPerformedAction', action)
+                setInAnnoCreateNode(true)
+                break
+            case annoActions.ANNO_CREATED:
+            case annoActions.ANNO_CREATED_FINAL_NODE:
+                setInAnnoCreateNode(false)
+                console.log('handleAnnoPerformedAction', action)
                 break
             default:
                 break
