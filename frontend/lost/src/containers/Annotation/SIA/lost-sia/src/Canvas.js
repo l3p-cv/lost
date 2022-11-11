@@ -124,8 +124,6 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *              }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
- * @event onAnnoSaveEvent - Callback for Notification messages
- *      args: {action: str, saveData: object}
  * @event onKeyDown - Fires for keyDown on canvas 
  * @event onKeyUp - Fires for keyUp on canvas 
  * @event onAnnoEvent - Fires when an anno performed an action
@@ -527,6 +525,8 @@ class Canvas extends Component{
     handleAnnoEvent(anno, pAction){
         let newAnnos = undefined
         switch(pAction){
+            case canvasActions.ANNO_ENTER_CREATE_MODE:
+                break
             case canvasActions.ANNO_MARK_EXAMPLE:
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
@@ -1205,6 +1205,7 @@ class Canvas extends Component{
                     newAnno.id
                 )
             }
+            this.handleAnnoEvent(newAnno, canvasActions.ANNO_ENTER_CREATE_MODE)
         }
     }
 

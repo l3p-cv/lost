@@ -14,6 +14,7 @@ export const ANNO_CREATED_FINAL_NODE='annoCreatedFinalNode'
 export const ANNO_START_CREATING='annoStartCreating'
 export const ANNO_COMMENT_UPDATE='annoCommentUpdate'
 export const ANNO_MARK_EXAMPLE='annoMarkExample'
+export const ANNO_ENTER_CREATE_MODE='annoEnterCreateMode'
 
 export const CANVAS_SVG_UPDATE='canvasSvgUpdate'
 export const CANVAS_UI_CONFIG_UPDATE='canvasUiConfigUpdate'

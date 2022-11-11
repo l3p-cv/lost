@@ -277,6 +277,7 @@ const Sia = (props) => {
     }
 
     const handleAnnoEvent = (anno, annos, action) => {
+        console.log('handleAnnoEvent anno, annos, action', anno, annos, action)
         if (props.onAnnoEvent){
             props.onAnnoEvent(anno, annos, action)
         }
