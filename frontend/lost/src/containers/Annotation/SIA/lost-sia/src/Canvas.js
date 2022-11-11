@@ -534,6 +534,7 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
+                this.handleAnnoSaveEvent(pAction, anno)
                 break
             case canvasActions.ANNO_SELECTED:
                 this.selectAnnotation(anno.id)
