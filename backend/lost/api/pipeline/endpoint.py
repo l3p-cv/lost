@@ -236,6 +236,8 @@ class TemplateImportZip(Resource):
                 e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
                 extract_path = os.path.join(e_path, dst_dir)
                 dst_path = os.path.join(pp_path, dst_dir)
+                if os.path.exists(dst_path):
+                    shutil.rmtree(dst_path)
                 try:
                     template_import.unpack_pipe_project(upload_path, extract_path)
                 except:
@@ -256,9 +258,11 @@ class TemplateImportZip(Resource):
                 return "success", 200
             except template_import.JSONDecodeError:
                 dbm.close_session()
+                shutil.rmtree(upload_path)
                 return traceback.format_exc(), 500
             except:
                 dbm.close_session()
+                shutil.rmtree(upload_path)
                 raise
 
 @namespace.route('/project/import_git')
@@ -291,7 +295,9 @@ class TemplateImportGit(Resource):
                 pp_path = fm.get_pipe_project_path()
                 dst_dir = os.path.basename(upload_path)
                 dst_path = os.path.join(pp_path, dst_dir)
-                shutil.copytree(upload_path, dst_path,dirs_exist_ok=True)
+                if os.path.exists(dst_path):
+                    shutil.rmtree(dst_path)
+                shutil.copytree(upload_path, dst_path, dirs_exist_ok=True)
                 USER_NAMESPACE = False
                 if not USER_NAMESPACE:
                     importer = template_import.PipeImporter(dst_path, dbm)
@@ -306,9 +312,11 @@ class TemplateImportGit(Resource):
                     return "success", 200
             except template_import.JSONDecodeError:
                 dbm.close_session()
+                shutil.rmtree(upload_path)
                 return traceback.format_exc(), 500
             except:
                 dbm.close_session()
+                shutil.rmtree(upload_path)
                 raise
 
 
