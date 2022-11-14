@@ -429,6 +429,8 @@ const SiaWrapper = (props) => {
                 setInAnnoCreateNode(true)
                 break
             case annoActions.ANNO_CREATED:
+            case annoActions.ANNO_DELETED:
+            case annoActions.ANNO_LABEL_UPDATE:
             case annoActions.ANNO_CREATED_FINAL_NODE:
                 setInAnnoCreateNode(false)
                 console.log('handleAnnoPerformedAction', action)
@@ -439,6 +441,7 @@ const SiaWrapper = (props) => {
     }
 
     const handleCanvasEvent = (action, data) => {
+        console.log('handleCanvasEvent', action)
         switch (action) {
             // case annoActions.CANVAS_AUTO_SAVE:
             //     handleAutoSave()
