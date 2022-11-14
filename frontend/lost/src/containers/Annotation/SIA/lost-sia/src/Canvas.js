@@ -524,6 +524,7 @@ class Canvas extends Component{
      * @param {String} pAction Action that was performed
      */
     handleAnnoEvent(anno, pAction){
+        console.log('handleAnnoEvent', pAction, anno)
         let newAnnos = undefined
         switch(pAction){
             case canvasActions.ANNO_ENTER_CREATE_MODE:
@@ -1328,11 +1329,13 @@ class Canvas extends Component{
         if (!res) return
         if (res.tempId !== res.dbId){
             const anno = this.findAnno(res.tempId)
+            if (!anno) return
             anno.id = res.dbId
             anno.status = annoStatus.DATABASE
             this.updateSelectedAnno(anno)
         } else {
             const anno = this.findAnno(res.dbId)
+            if (!anno) return
             anno.status = res.newStatus
             this.updateSelectedAnno(anno)
         }
