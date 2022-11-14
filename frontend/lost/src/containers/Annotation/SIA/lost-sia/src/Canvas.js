@@ -1335,6 +1335,7 @@ class Canvas extends Component{
             this.updateSelectedAnno(anno)
         } else {
             const anno = this.findAnno(res.dbId)
+            if (!anno) return
             anno.status = res.newStatus
             this.updateSelectedAnno(anno)
         }
