@@ -716,6 +716,13 @@ class Canvas extends Component{
 
     gotNewLabel(label){
         let ret = false
+        if (label.length === 0) {
+            if (this.state.imgLabelIds.length !== 0) {
+                return true
+            } else {
+                return false
+            }
+        }
         label.forEach(e => {
             if (!this.state.imgLabelIds.includes(e)) ret = true
         })
@@ -724,6 +731,7 @@ class Canvas extends Component{
 
     handleImgLabelUpdate(label){
         if (this.gotNewLabel(label)){
+            console.log('gotNewLabel', label)
             this.setState({
                 imgLabelIds: label,
                 imgLabelChanged: true,
