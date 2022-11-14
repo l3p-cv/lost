@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added an InfoBox (AnnoStats) that shows the number of annotation per label in an image
     - This box allows also to hide annotations of a specific label
     - See #86, #160 and #161
-  - Added sia auto save feature
 - MIA:
   - Show labels as tags
   - Allow to zoom into images in an extra modal
@@ -77,6 +76,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed unused columns from dataframe
   - Export anno_data to lists instead of dicts
   - Changed dot column name style to underscore style
+- SIA:
+  - Save changed and created annotations instantly to backend
 ## Fixed
 - PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
   not first element in pipeline graph

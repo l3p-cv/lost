@@ -14,7 +14,7 @@ import * as pipelinedProjectsApi from '../../actions/pipeline/pipeline_projects_
 import * as Notification from '../../components/Notification'
 import HelpButton from '../../components/HelpButton'
 import CollapseCard from '../../containers/pipeline/globalComponents/modals/CollapseCard'
-const AddPipelineProject = ({ visLevel, projectNames = [] }) => {
+const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
@@ -88,6 +88,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [] }) => {
                 setGitUrl('')
                 setGitBranch('main')
                 setIsModalOpen(false)
+                refetch()
                 Notification.showSuccess('Import succeeded.')
             }
         }

@@ -64,24 +64,28 @@ export function backendAnnosToCanvas(backendAnnos, imgSize, imgOffset){
     return annos
 }
 
-export function canvasToBackendAnnos(annos, imgSize, forBackendPost=false, imgOffset={x:0,y:0}){
-    let myAnnos = annos
-    const bAnnos = myAnnos.map( el => {
+export function canvasToBackendSingleAnno(anno, imgSize, removeFrontedId=false, imgOffset={x:0,y:0}){
         var annoId 
-        if (forBackendPost){
+        if (removeFrontedId){
             // If an annotation will be send to backend,
             // ids of new created annoations need to be set to 
             // undefined.
-            annoId = (typeof el.id) === "string" ? undefined : el.id
+            annoId = (typeof anno.id) === "string" ? undefined : anno.id
         } else {
-            annoId = el.id
+            annoId = anno.id
         }
         return {
-            ...el,
+            ...anno,
             id: annoId,
             mode: modes.VIEW,
-            data: transform.toBackend(el.data, imgSize, el.type, imgOffset)
+            data: transform.toBackend(anno.data, imgSize, anno.type, imgOffset)
         }
+}
+
+export function canvasToBackendAnnos(annos, imgSize, forBackendPost=false, imgOffset={x:0,y:0}){
+    let myAnnos = annos
+    const bAnnos = myAnnos.map( el => {
+        return canvasToBackendSingleAnno(el, imgSize, forBackendPost, imgOffset)
     })
 
     const backendFormat = {

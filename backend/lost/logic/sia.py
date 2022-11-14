@@ -192,6 +192,14 @@ def update(db_man, data, user_id, auto_save=False):
     sia_update = SiaUpdate(db_man, data, user_id, anno_task)
     return sia_update.update(auto_save)
 
+def update_one_thing(db_man, data, user_id):
+    """ Update Image and TwoDAnnotation from SIA
+    :type db_man: lost.db.access.DBMan
+    """
+    anno_task = get_sia_anno_task(db_man, user_id)
+    sia_update = SiaUpdateOneThing(db_man, data, user_id, anno_task)
+    return sia_update.update()
+
 def review_update(db_man, data, user_id, pe_id):
     """ Update Image and TwoDAnnotation from SIA
     :type db_man: lost.db.access.DBMan
@@ -223,6 +231,211 @@ def get_next_anno_id(dbman):
     anno = model.TwoDAnno(timestamp=datetime.now())
     dbman.save_obj(anno)
     return anno.idx
+
+class SiaUpdateOneThing(object):
+    def __init__(self, db_man, data, user_id, anno_task, sia_type='sia'):
+        """
+        :type db_man: lost.db.access.DBMan
+        """
+        img_data = data['img']
+        if 'anno' in data:
+            self.anno = data['anno']
+        else:
+            self.anno = None
+        self.logger = flask.current_app.logger
+        self.sia_type = sia_type
+        self.timestamp = datetime.now()
+        self.db_man = db_man
+        self.user_id = user_id 
+        self.at = anno_task #type: lost.db.model.AnnoTask
+        # self.sia_history_file = FileMan(self.db_man.lostconfig).get_sia_history_path(self.at)
+        self.iteration = db_man.get_pipe_element(pipe_e_id=self.at.pipe_element_id).iteration
+        self.image_anno = self.db_man.get_image_annotation(img_data['imgId'])
+        self.image_anno.timestamp = self.timestamp
+        if self.image_anno.anno_time is None:
+            self.image_anno.anno_time = 0.0
+        if self.sia_type == 'sia':
+            # Do not update image annotation time for sia review
+            self.image_anno.anno_time = img_data['annoTime']
+        self._update_img_labels(img_data)  
+        if 'isJunk' in img_data:
+            self.image_anno.is_junk = img_data['isJunk']   
+
+
+    def _update_img_labels(self, data):
+        if 'imgLabelChanged' in data:
+            if data['imgLabelChanged']:
+                old = set([lbl.label_leaf_id for lbl in self.image_anno.labels])
+                new = set(data['imgLabelIds'])
+                to_delete = old - new
+                to_add = new - old
+                for lbl in self.image_anno.labels:
+                    if lbl.label_leaf_id in to_delete:
+                        self.image_anno.labels.remove(lbl)
+                        # self.db_man.delete(lbl)
+                for ll_id in to_add:
+                    self.image_anno.labels.append(model.Label(label_leaf_id=ll_id))
+
+    def update(self):
+        if self.at.pipe_element.pipe.state == state.Pipe.PAUSED:
+            return "pipe is paused"
+        if self.anno is not None:
+            anno_type = dtype.TwoDAnno.STR_TO_TYPE[self.anno['type'].lower()]
+            res = self.__update_annotation(self.anno, anno_type)
+        else:
+            res = None
+        self.image_anno.state = state.Anno.LABELED
+        # Update Image Label
+        # self.image_anno.labels = self.img_labels
+        self.db_man.add(self.image_anno)
+        self.db_man.commit()
+        # self.__update_history_json_file()
+        update_anno_task(self.db_man, self.at.idx, self.user_id)
+        return res
+
+    def __update_annotation(self, annotation, two_d_type):
+        two_d = None
+        annotation_json = dict()
+        annotation_json['unchanged'] = list()
+        annotation_json['deleted'] = list()
+        annotation_json['new'] = list()
+        annotation_json['changed'] = list()
+   
+        if annotation['status'] != "database" \
+        and annotation['status'] != "deleted" \
+        and annotation['status'] != "new" \
+        and annotation['status'] != "changed":
+            error_msg = "Status: '" + str(annotation['status']) + "' is not valid."
+            raise SiaStatusNotFoundError(error_msg)
+
+        if annotation['status'] == "database":
+            two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
+            two_d.user_id = self.user_id
+            two_d.state = state.Anno.LABELED
+            two_d.timestamp = self.timestamp
+            two_d.timestamp_lock = self.image_anno.timestamp_lock
+            if two_d.anno_time is None:
+                two_d.anno_time = 0.0
+            # two_d.anno_time += average_anno_time
+            self.db_man.save_obj(two_d)
+            return None
+        elif annotation['status'] == "deleted":
+            # try:
+            #     two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
+            #     # Do not try to delete an annotation if it has already been 
+            #     # deleted in database <- This could be the case for auto save commands
+            #     if two_d is not None: 
+            #         for label in self.db_man.get_all_two_d_label(two_d.idx):
+            #             self.db_man.delete(label)
+            #         self.db_man.delete(two_d)
+            #         self.db_man.commit()
+            # except KeyError:
+            #     print('SIA bug backend fix! Do not try to delete annotations that are not in db!')
+            two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
+            # Do not try to delete an annotation if it has already been 
+            # deleted in database <- This could be the case for auto save commands
+            if two_d is not None: 
+                for label in self.db_man.get_all_two_d_label(two_d.idx):
+                    self.db_man.delete(label)
+                self.db_man.delete(two_d)
+                self.db_man.commit()
+            return {'tempId':annotation['id'], 'dbId': two_d.idx, 'newStatus': 'deleted'}
+        elif annotation['status'] == "new":
+            annotation_data = annotation['data']
+            # if 'id' in annotation:
+            #     two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno    
+            #     if not two_d:
+            #         two_d = model.TwoDAnno()
+            #         self.logger.warning(f"Could not find a previously created TwoD Anno with ID: {annotation['id']}.")
+            # else:
+            #     two_d = model.TwoDAnno()
+            two_d = model.TwoDAnno()
+            
+            two_d.anno_task_id=self.at.idx
+            two_d.img_anno_id=self.image_anno.idx
+            two_d.timestamp=self.timestamp
+            two_d.timestamp_lock=self.image_anno.timestamp_lock
+            two_d.anno_time=annotation['annoTime']
+            two_d.data=json.dumps(annotation_data)
+            two_d.user_id=self.user_id
+            two_d.iteration=self.iteration
+            two_d.dtype=two_d_type
+            two_d.state=state.Anno.LABELED
+            for lbl in two_d.labels:
+                self.db_man.delete(lbl)
+            if 'comment' in annotation:
+                two_d.description = annotation['comment']
+            if 'isExample' in annotation:
+                two_d.is_example = annotation['isExample']
+            self.db_man.save_obj(two_d)
+            for l_id in annotation['labelIds']:
+                label = model.Label(two_d_anno_id=two_d.idx,
+                                    label_leaf_id=l_id,
+                                    dtype=dtype.Label.TWO_D_ANNO,
+                                    timestamp=self.timestamp,
+                                    annotator_id=self.user_id,
+                                    timestamp_lock=self.image_anno.timestamp_lock,
+                                    anno_time=annotation['annoTime'])
+                self.db_man.save_obj(label)
+            return {'tempId':annotation['id'], 'dbId': two_d.idx, 'newStatus': 'database'}
+        elif annotation['status'] == "changed":
+            annotation_data = annotation['data']
+            try:
+                annotation_data.pop('left')
+                annotation_data.pop('right')
+                annotation_data.pop('top')
+                annotation_data.pop('bottom')
+            except:
+                pass
+            two_d = self.db_man.get_two_d_anno(annotation['id']) #type: lost.db.model.TwoDAnno
+            two_d.timestamp = self.timestamp
+            two_d.timestamp_lock = self.image_anno.timestamp_lock
+            two_d.data = json.dumps(annotation_data)
+            two_d.user_id = self.user_id
+            if two_d.anno_time is None:
+                two_d.anno_time = 0.0
+            two_d.anno_time = annotation['annoTime']
+            two_d.state = state.Anno.LABELED
+            if 'comment' in annotation:
+                two_d.description = annotation['comment']
+            if 'isExample' in annotation:
+                two_d.is_example = annotation['isExample']
+
+            l_id_list = list()
+            # get all labels of that two_d_anno.
+            for label in self.db_man.get_all_two_d_label(two_d.idx):
+                # save id.
+                l_id_list.append(label.idx)
+                # delete labels, that are not in user labels list.
+                if label.idx not in annotation['labelIds']:
+                    self.db_man.delete(label)
+                # labels that are in the list get a new anno_time
+                else:   
+                    if label.anno_time is None:
+                        label.anno_time = 0.0
+                    label.anno_time = annotation['annoTime']
+                    label.timestamp = self.timestamp
+                    label.annotator_id=self.user_id,
+                    label.timestamp_lock = self.image_anno.timestamp_lock
+                    self.db_man.save_obj(label)
+            # new labels 
+            for l_id in annotation['labelIds']:
+                if l_id not in l_id_list:
+                    label = model.Label(two_d_anno_id=two_d.idx,
+                                    label_leaf_id=l_id,
+                                    dtype=dtype.Label.TWO_D_ANNO,
+                                    timestamp=self.timestamp,
+                                    annotator_id=self.user_id,
+                                    timestamp_lock=self.image_anno.timestamp_lock,
+                                    anno_time=annotation['annoTime'])
+                    self.db_man.save_obj(label) 
+            self.db_man.save_obj(two_d)
+            return {'tempId':annotation['id'], 'dbId': two_d.idx, 'newStatus': 'database'}
+        if two_d is not None:
+            return {'tempId':annotation['id'], 'dbId': two_d.idx}
+        else:
+            return None
+        return "success"
 
 class SiaUpdate(object):
     def __init__(self, db_man, data, user_id, anno_task, sia_type='sia'):
