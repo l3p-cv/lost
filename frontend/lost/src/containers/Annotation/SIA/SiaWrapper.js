@@ -425,6 +425,8 @@ const SiaWrapper = (props) => {
                 props.selectAnnotation(anno)
                 break
             case annoActions.ANNO_ENTER_CREATE_MODE:
+            case annoActions.ANNO_ENTER_EDIT_MODE:
+            case annoActions.ANNO_ENTER_MOVE_MODE:
                 console.log('handleAnnoPerformedAction', action)
                 setInAnnoCreateNode(true)
                 break
@@ -432,6 +434,8 @@ const SiaWrapper = (props) => {
             case annoActions.ANNO_DELETED:
             case annoActions.ANNO_LABEL_UPDATE:
             case annoActions.ANNO_CREATED_FINAL_NODE:
+            case annoActions.ANNO_MOVED:
+            case annoActions.ANNO_EDITED:
                 setInAnnoCreateNode(false)
                 console.log('handleAnnoPerformedAction', action)
                 break

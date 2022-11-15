@@ -1297,6 +1297,7 @@ class Canvas extends Component{
         })
 
         console.log("Annotation recreated")
+        this.handleAnnoEvent(newAnno, canvasActions.ANNO_ENTER_CREATE_MODE)
     }
 
     putSelectedOnTop(prevState){
