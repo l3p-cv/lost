@@ -1359,17 +1359,19 @@ class Canvas extends Component{
         // handling tempIds is only required if instant anno backend update is 
         // used.
         if (this.props.onAnnoSaveEvent){
-            if (!(anno.id in this.tempIdMap)){
-                let myAnno = undefined
-                if (anno.id in this.delayedBackendUpdates){
-                    this.delayedBackendUpdates[anno.id] = {anno, action}
-                } else {
-                    this.delayedBackendUpdates[anno.id] = null
-                    myAnno = anno
-                }
-                console.log('addDelayedBackendUpdate ', myAnno, action, anno, this.delayedBackendUpdates)
-                return myAnno
-            } 
+            if ((typeof anno.id) === "string"){
+                if (!(anno.id in this.tempIdMap)){
+                    let myAnno = undefined
+                    if (anno.id in this.delayedBackendUpdates){
+                        this.delayedBackendUpdates[anno.id] = {anno, action}
+                    } else {
+                        this.delayedBackendUpdates[anno.id] = null
+                        myAnno = anno
+                    }
+                    console.log('addDelayedBackendUpdate ', myAnno, action, anno, this.delayedBackendUpdates)
+                    return myAnno
+                } 
+            }
             // else if ((typeof anno.id) === "string"){
             //     this.delayedBackendUpdates[anno.id] = {anno, action}
             // }
