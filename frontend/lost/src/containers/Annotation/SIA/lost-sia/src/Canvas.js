@@ -194,6 +194,7 @@ class Canvas extends Component{
         this.mousePosAbs = undefined
         this.clipboard = undefined
         this.delayedBackendUpdates = {}
+        this.tempIdMap = {}
     }
 
     componentDidMount(){
@@ -554,7 +555,7 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_CREATED:
                 anno = this.stopAnnotimeMeasure(anno)
-                newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                newAnnos = this.updateSelectedAnno({...anno, status:annoStatus.DATABASE}, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
                     pAction, undefined
@@ -666,7 +667,7 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_CREATED_FINAL_NODE:
                 anno = this.stopAnnotimeMeasure(anno)
-                newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                newAnnos = this.updateSelectedAnno({...anno, status:annoStatus.DATABASE}, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
                     pAction, undefined
@@ -691,8 +692,11 @@ class Canvas extends Component{
         }
         let backendAnno = undefined
         if (anno){
-            const myAnno = this.addDelayedBackendUpdate(anno, action)
+            let myAnno = this.addDelayedBackendUpdate(anno, action)
             if (!myAnno) return
+            if (myAnno.id in this.tempIdMap) {
+                myAnno = {...myAnno, id: this.tempIdMap[myAnno.id]}
+            }
             backendAnno = annoConversion.canvasToBackendSingleAnno(myAnno, this.state.svg, 
                             false, this.state.imageOffset)
         }
@@ -1334,11 +1338,11 @@ class Canvas extends Component{
 
     updateDelayedBackendUpdates(tempId, dbId){
         console.log('updateDelayedBackendUpdates ', tempId, dbId, this.delayedBackendUpdates)
+        if (tempId !== dbId) this.tempIdMap[tempId] = dbId
         if (tempId in this.delayedBackendUpdates){
             if (this.delayedBackendUpdates[tempId] !== null){
                 const {anno, action} = this.delayedBackendUpdates[tempId]
                 const myAnno = {...anno, 
-                    id: dbId,
                     status: anno.status === annoStatus.NEW ? annoStatus.CHANGED : anno.status}
                 delete this.delayedBackendUpdates[tempId]
                 console.log('PerformDelayedBackendUpdate', action, myAnno)
@@ -1354,7 +1358,7 @@ class Canvas extends Component{
         // handling tempIds is only required if instant anno backend update is 
         // used.
         if (this.props.onAnnoSaveEvent){
-            if (anno.status === annoStatus.NEW){
+            if (!(anno.id in this.tempIdMap)){
                 let myAnno = undefined
                 if (anno.id in this.delayedBackendUpdates){
                     this.delayedBackendUpdates[anno.id] = {anno, action}
@@ -1368,29 +1372,31 @@ class Canvas extends Component{
             // else if ((typeof anno.id) === "string"){
             //     this.delayedBackendUpdates[anno.id] = {anno, action}
             // }
+        } else {
+            console.error('onAnnoSaveEvent needs to be provided in order to use SIA Canvas in a correct war!')
         }
         return anno
     }
 
     updateAnnoBySaveResponse(res){
-        console.log('updateAnnoBySaveResponse', res, this.state)
         if (!res) return
         if (res.tempId !== res.dbId){
             //TODO: Replace tempId with dbId in undo/redo hist
             const anno = this.findAnno(res.tempId)
             if (!anno) return
-            anno.id = res.dbId
-            anno.status = annoStatus.DATABASE
+            // anno.id = res.dbId
+            // anno.status = annoStatus.DATABASE
             //TODO: Should not update if the anno is currently in edit or move mode
-            this.updateAnno(anno)
-            if (this.state.selectedAnnoId === res.tempId) this.setState({selectedAnnoId: res.dbId}) 
+            // this.updateAnno(anno)
+            // if (this.state.selectedAnnoId === res.tempId) this.setState({selectedAnnoId: res.dbId}) 
             this.updateDelayedBackendUpdates(res.tempId, res.dbId)
-        } else {
-            const anno = this.findAnno(res.dbId)
-            if (!anno) return
-            anno.status = res.newStatus
-            this.updateAnno(anno)
-        }
+        } 
+        // else {
+        //     const anno = this.findAnno(res.dbId)
+        //     if (!anno) return
+        //     anno.status = res.newStatus
+        //     // this.updateAnno(anno)
+        // }
     }
 
     /**
