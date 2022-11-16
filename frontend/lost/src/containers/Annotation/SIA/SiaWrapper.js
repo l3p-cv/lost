@@ -52,7 +52,7 @@ const SiaWrapper = (props) => {
     const [allowedToMark, setAllowedToMark] = useState(false)
     const [fullscreen, setFullscreen] = useState(false)
     const [annoSaveResponse, setAnnoSaveResponse] = useState()
-    const [inAnnoCreateNode, setInAnnoCreateNode] = useState(false)
+    const [blockImageChange, setBlockImageChange] = useState(false)
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -327,12 +327,12 @@ const SiaWrapper = (props) => {
     const handleCanvasKeyDown = (e) => {
         switch (e.key) {
             case 'ArrowLeft':
-                if (!inAnnoCreateNode){
+                if (!blockImageChange){
                     if (!props.currentImage.isFirst) {
                         if (!blockNextImageTrigger) {
                             setBlockNextImageTrigger(true)
                             props.siaGetPrevImage(props.currentImage.id)
-                        }
+                        } 
                     } else {
                         handleNotification({
                             notification: {
@@ -353,7 +353,7 @@ const SiaWrapper = (props) => {
                 }
                 break
             case 'ArrowRight':
-                if (!inAnnoCreateNode){
+                if (!blockImageChange){
                     if (!props.currentImage.isLast) {
                         if (!blockNextImageTrigger) {
                             setBlockNextImageTrigger(true)
@@ -428,7 +428,7 @@ const SiaWrapper = (props) => {
             case annoActions.ANNO_ENTER_EDIT_MODE:
             case annoActions.ANNO_ENTER_MOVE_MODE:
                 console.log('handleAnnoPerformedAction', action)
-                setInAnnoCreateNode(true)
+                setBlockImageChange(true)
                 break
             case annoActions.ANNO_CREATED:
             case annoActions.ANNO_DELETED:
@@ -436,7 +436,7 @@ const SiaWrapper = (props) => {
             case annoActions.ANNO_CREATED_FINAL_NODE:
             case annoActions.ANNO_MOVED:
             case annoActions.ANNO_EDITED:
-                setInAnnoCreateNode(false)
+                setBlockImageChange(false)
                 console.log('handleAnnoPerformedAction', action)
                 break
             default:
@@ -463,6 +463,7 @@ const SiaWrapper = (props) => {
                 // handleImgLabelInputClose()
                 console.log('Canvas img loaded', data)
                 setCanvasImgLoaded(canvasImgLoaded + 1)
+                setBlockNextImageTrigger(false)
                 break
             default:
                 break
@@ -565,7 +566,7 @@ const SiaWrapper = (props) => {
                 id: props.annos.image.id,
                 data: response ? response.data : failedToLoadImage(),
             })
-            setBlockNextImageTrigger(false)
+            // setBlockNextImageTrigger(false)
             setBlockCanvas(filterTools.active(props.filter))
         })
         props.getWorkingOnAnnoTask()
