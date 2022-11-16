@@ -191,13 +191,17 @@ class UpdateOneThing(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
         else:
             data = json.loads(request.data)
-            if not 'anno' in data:
-                # if not 'imgLabelIds' in data['img']:
-                #     if not 'isJunk' in data['img']:
-                if data['action'] not in ['imgAnnoTimeUpdate', 'imgJunkUpdate', 'imgLabelUpdate']:
-                    raise Exception('Expect either anno or img information!')
-            re = sia.update_one_thing(dbm, data, user.idx)
-            dbm.close_session()
+            try:
+                if not 'anno' in data:
+                    # if not 'imgLabelIds' in data['img']:
+                    #     if not 'isJunk' in data['img']:
+                    if data['action'] not in ['imgAnnoTimeUpdate', 'imgJunkUpdate', 'imgLabelUpdate']:
+                        raise Exception('Expect either anno or img information!')
+                re = sia.update_one_thing(dbm, data, user.idx)
+                dbm.close_session()
+            except:
+                dbm.close_session()
+                raise
             return re
 
 @namespace.route('/allowedExampler')
