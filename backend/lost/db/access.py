@@ -328,12 +328,14 @@ class DBMan(object):
         return self.session.query(model.ImageAnno)\
             .filter((model.ImageAnno.anno_task_id==anno_task_id)\
                     & ((model.ImageAnno.state == state.Anno.LOCKED)\
+                    | (model.ImageAnno.state == state.Anno.LABELED_LOCKED)\
                        | (model.ImageAnno.state == state.Anno.LOCKED_PRIORITY))).all()
 
     def get_locked_two_d_annos(self, anno_task_id):
         return self.session.query(model.TwoDAnno)\
             .filter((model.TwoDAnno.anno_task_id==anno_task_id)\
                     & ((model.TwoDAnno.state == state.Anno.LOCKED)\
+                    | (model.TwoDAnno.state == state.Anno.LABELED_LOCKED)\
                        | (model.TwoDAnno.state == state.Anno.LOCKED_PRIORITY))).all()
 
     def get_resultlinks_pe_n(self, pe_n_id):
