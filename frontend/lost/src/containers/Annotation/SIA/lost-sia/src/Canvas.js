@@ -673,7 +673,7 @@ class Canvas extends Component{
                 if (anno.mode === modes.DELETED){
                     this.updateSelectedAnno(anno, modes.DELETED)
                 } else {
-                    this.updateSelectedAnno(anno, modes.VIEW)
+                    this.updateSelectedAnno({...anno, status:annoStatus.DATABASE}, modes.VIEW)
                 }
                 // if (!this.checkAnnoLength(anno)){
                 //     newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
