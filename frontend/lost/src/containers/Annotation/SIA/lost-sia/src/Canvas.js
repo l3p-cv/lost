@@ -867,7 +867,7 @@ class Canvas extends Component{
     pasteAnnotation(offset=0){
                 // const corrected = transform.correctAnnotation(anno.data, this.props.svg, this.props.imageOffset)
         if (this.clipboard){
-            let annos = [...this.state.annos]
+            // let annos = [...this.state.annos]
             const uid = _.uniqueId('new')
             // this.handleAnnoEvent()
             const newData = this.clipboard.data.map(e => {
@@ -881,14 +881,15 @@ class Canvas extends Component{
                 mode: modes.VIEW,
                 data: transformAnnos.correctAnnotation(newData, this.state.svg, this.state.imageOffset)
             } 
-            annos.push(newAnno)
-            this.setState({annos: annos, selectedAnnoId: uid})
+            // annos.push(newAnno)
+            // this.setState({annos: annos, selectedAnnoId: uid})
             this.handleNotification({
                 title: "Pasted annotation to canvas",
                 message: 'Pasted and selected '+this.clipboard.type,
                 type: notificationType.SUCCESS
             })
-            this.handleAnnoSaveEvent(canvasActions.ANNO_CREATED, newAnno)
+            this.handleAnnoEvent(newAnno, canvasActions.ANNO_CREATED)
+            // this.handleAnnoSaveEvent(canvasActions.ANNO_CREATED, newAnno)
         }
     }
 
@@ -912,14 +913,14 @@ class Canvas extends Component{
     
     stopAnnotimeMeasure(anno){
         if (anno.timestamp === undefined){
-            console.error('No timestamp for annotime measurement. Check if you started measurement', anno)
-            return undefined
+            console.warn('No timestamp for annotime measurement. Check if you started measurement', anno)
         } else {
             let now = performance.now()
             anno.annoTime += (now - anno.timestamp) / 1000
             anno.timestamp = now
             return anno
         }
+        return anno
     }
 
     updatePossibleLabels(){
@@ -1471,9 +1472,10 @@ class Canvas extends Component{
     }
 
     mergeSelectedAnno(anno, mode=undefined){
-        const filtered = this.state.annos.filter( (el) => {
+        let filtered = this.state.annos.filter( (el) => {
             return el.id !== anno.id
         }) 
+        filtered = filtered.map(e => {return {...e, mode:modes.VIEW}})
         let newAnno
         if (mode){
             newAnno = {...anno, mode:mode}
