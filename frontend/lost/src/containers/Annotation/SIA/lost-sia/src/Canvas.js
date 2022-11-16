@@ -520,6 +520,28 @@ class Canvas extends Component{
         }
     }
 
+    checkAndCorrectAnno(anno){
+        // Check if annoation is within image bounds
+        const corrected = transformAnnos.correctAnnotation(anno.data, this.state.svg, this.state.imageOffset)
+        let newAnno = {...anno, data: corrected}
+        const area = transformAnnos.getArea(corrected, this.state.svg, anno.type, this.state.image)
+        if (area!==undefined){
+            if(area < this.props.canvasConfig.annos.minArea){
+                this.handleNotification({
+                    title: "Annotation to small",
+                    message: 'Annotation area was '+Math.round(area)+'px but needs to be bigger than '+ this.props.canvasConfig.annos.minArea+' px',
+                    type: notificationType.WARNING
+                })
+                // newAnno = {...newAnno, mode: modes.DELETED}
+                newAnno = {...newAnno, mode: modes.DELETED}
+            }     
+        }
+        if (!this.checkAnnoLength(anno)){
+            newAnno = {...newAnno, mode: modes.DELETED}
+        }
+        return newAnno
+    }
+
     /**
      * Handle actions that have been performed by an annotation 
      * @param {Number} anno Id of the annotation
@@ -645,17 +667,27 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 anno = this.stopAnnotimeMeasure(anno)
-                if (!this.checkAnnoLength(anno)){
-                    newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
+                anno = this.checkAndCorrectAnno(anno)
+                console.log('ANNO_LABEL_UPDATE aftercheckAndCorrect', anno)
+                // this.updateSelectedAnno(anno, anno.mode)
+                if (anno.mode === modes.DELETED){
+                    this.updateSelectedAnno(anno, modes.DELETED)
                 } else {
-                    newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                    this.updateSelectedAnno(anno, modes.VIEW)
                 }
-                this.pushHist(
-                    newAnnos, anno.id,
-                    pAction, undefined
-                )
+                // if (!this.checkAnnoLength(anno)){
+                //     newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
+                // } else {
+                //     newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                // }
                 this.setState({annoToolBarVisible:true})
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                if (anno.mode !== modes.DELETED){
+                    this.pushHist(
+                        newAnnos, anno.id,
+                        pAction, undefined
+                    )
+                    this.handleAnnoSaveEvent(pAction, anno, undefined)
+                }
                 break
             case canvasActions.ANNO_CREATED_NODE:
                 anno = this.stopAnnotimeMeasure(anno)
