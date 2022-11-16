@@ -520,6 +520,28 @@ class Canvas extends Component{
         }
     }
 
+    checkAndCorrectAnno(anno){
+        // Check if annoation is within image bounds
+        const corrected = transformAnnos.correctAnnotation(anno.data, this.state.svg, this.state.imageOffset)
+        let newAnno = {...anno, data: corrected}
+        const area = transformAnnos.getArea(corrected, this.state.svg, anno.type, this.state.image)
+        if (area!==undefined){
+            if(area < this.props.canvasConfig.annos.minArea){
+                this.handleNotification({
+                    title: "Annotation to small",
+                    message: 'Annotation area was '+Math.round(area)+'px but needs to be bigger than '+ this.props.canvasConfig.annos.minArea+' px',
+                    type: notificationType.WARNING
+                })
+                // newAnno = {...newAnno, mode: modes.DELETED}
+                newAnno = {...newAnno, mode: modes.DELETED}
+            }     
+        }
+        if (!this.checkAnnoLength(anno)){
+            newAnno = {...newAnno, mode: modes.DELETED}
+        }
+        return newAnno
+    }
+
     /**
      * Handle actions that have been performed by an annotation 
      * @param {Number} anno Id of the annotation
@@ -645,17 +667,27 @@ class Canvas extends Component{
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
                 anno = this.stopAnnotimeMeasure(anno)
-                if (!this.checkAnnoLength(anno)){
-                    newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
+                anno = this.checkAndCorrectAnno(anno)
+                console.log('ANNO_LABEL_UPDATE aftercheckAndCorrect', anno)
+                // this.updateSelectedAnno(anno, anno.mode)
+                if (anno.mode === modes.DELETED){
+                    this.updateSelectedAnno(anno, modes.DELETED)
                 } else {
-                    newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                    this.updateSelectedAnno(anno, modes.VIEW)
                 }
-                this.pushHist(
-                    newAnnos, anno.id,
-                    pAction, undefined
-                )
+                // if (!this.checkAnnoLength(anno)){
+                //     newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
+                // } else {
+                //     newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
+                // }
                 this.setState({annoToolBarVisible:true})
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                if (anno.mode !== modes.DELETED){
+                    this.pushHist(
+                        newAnnos, anno.id,
+                        pAction, undefined
+                    )
+                    this.handleAnnoSaveEvent(pAction, anno, undefined)
+                }
                 break
             case canvasActions.ANNO_CREATED_NODE:
                 anno = this.stopAnnotimeMeasure(anno)
@@ -835,7 +867,7 @@ class Canvas extends Component{
     pasteAnnotation(offset=0){
                 // const corrected = transform.correctAnnotation(anno.data, this.props.svg, this.props.imageOffset)
         if (this.clipboard){
-            let annos = [...this.state.annos]
+            // let annos = [...this.state.annos]
             const uid = _.uniqueId('new')
             // this.handleAnnoEvent()
             const newData = this.clipboard.data.map(e => {
@@ -849,14 +881,15 @@ class Canvas extends Component{
                 mode: modes.VIEW,
                 data: transformAnnos.correctAnnotation(newData, this.state.svg, this.state.imageOffset)
             } 
-            annos.push(newAnno)
-            this.setState({annos: annos, selectedAnnoId: uid})
+            // annos.push(newAnno)
+            // this.setState({annos: annos, selectedAnnoId: uid})
             this.handleNotification({
                 title: "Pasted annotation to canvas",
                 message: 'Pasted and selected '+this.clipboard.type,
                 type: notificationType.SUCCESS
             })
-            this.handleAnnoSaveEvent(canvasActions.ANNO_CREATED, newAnno)
+            this.handleAnnoEvent(newAnno, canvasActions.ANNO_CREATED)
+            // this.handleAnnoSaveEvent(canvasActions.ANNO_CREATED, newAnno)
         }
     }
 
@@ -880,14 +913,14 @@ class Canvas extends Component{
     
     stopAnnotimeMeasure(anno){
         if (anno.timestamp === undefined){
-            console.error('No timestamp for annotime measurement. Check if you started measurement', anno)
-            return undefined
+            console.warn('No timestamp for annotime measurement. Check if you started measurement', anno)
         } else {
             let now = performance.now()
             anno.annoTime += (now - anno.timestamp) / 1000
             anno.timestamp = now
             return anno
         }
+        return anno
     }
 
     updatePossibleLabels(){
@@ -1439,9 +1472,10 @@ class Canvas extends Component{
     }
 
     mergeSelectedAnno(anno, mode=undefined){
-        const filtered = this.state.annos.filter( (el) => {
+        let filtered = this.state.annos.filter( (el) => {
             return el.id !== anno.id
         }) 
+        filtered = filtered.map(e => {return {...e, mode:modes.VIEW}})
         let newAnno
         if (mode){
             newAnno = {...anno, mode:mode}
