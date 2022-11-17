@@ -628,7 +628,9 @@ class Canvas extends Component{
                     newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                if (anno.status !== annoStatus.NEW){
+                    this.handleAnnoSaveEvent(pAction, anno, undefined)
+                }
                 break
             case canvasActions.ANNO_EDITED:
                 anno = this.stopAnnotimeMeasure(anno)
