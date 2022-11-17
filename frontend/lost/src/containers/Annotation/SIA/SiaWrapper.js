@@ -53,6 +53,7 @@ const SiaWrapper = (props) => {
     const [fullscreen, setFullscreen] = useState(false)
     const [annoSaveResponse, setAnnoSaveResponse] = useState()
     const [blockImageChange, setBlockImageChange] = useState(false)
+    const [localTaskFinished, setLocalTaskFinished] = useState(0)
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -91,13 +92,13 @@ const SiaWrapper = (props) => {
         }
     }, [props.annos])
 
-    useEffect(() => {
-        if (props.taskFinished) {
-            props.siaSendFinishToBackend().then(() => {
-                props.history.push('dashboard')
-            })
-        }
-    }, [props.taskFinished])
+    // useEffect(() => {
+    //     if (props.taskFinished) {
+    //         props.siaSendFinishToBackend().then(() => {
+    //             props.history.push('dashboard')
+    //         })
+    //     }
+    // }, [props.taskFinished])
 
     useEffect(() => {
         if (filteredData) {
@@ -270,6 +271,9 @@ const SiaWrapper = (props) => {
                 break
             case tbe.TASK_FINISHED:
                 props.siaSetTaskFinished()
+                props.siaSendFinishToBackend().then(() => {
+                    props.history.push('dashboard')
+                })
                 break
             case tbe.SHOW_IMAGE_LABEL_INPUT:
                 props.siaShowImgLabelInput(!props.imgLabelInput.show)
