@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import HelpButton from '../../../../../../../../components/HelpButton'
 import { CRow } from '@coreui/react'
-import _ from 'lodash'
+import { Label } from 'semantic-ui-react'
 
 const options = {
     height: '600px',
@@ -61,7 +61,7 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
     const stateElement = useSelector((element) => element)
     const [selectedTree, setSelectedTree] = useState()
     const [selectedNodeIDs, setSelectedNodeIDs] = useState([])
-    const [selectedLeaves, setSelectedLeaves] = useState([])
+    const [availableLabels, setAvailableLabels] = useState([])
     const [selectedLabelTreeIndex, setSelectedLabelTreeIndex] = useState()
     const [graphNet, setGraphNet] = useState()
     const [graphData, setGraphData] = useState({
@@ -76,31 +76,33 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         )[0]
 
         const _selectedLabelTreeIndex = element.exportData.annoTask.selectedLabelTree
-        // const _labelLeaves = element.exportData.annoTask.labelLeaves
-
         setSelectedLabelTreeIndex(_selectedLabelTreeIndex)
-        // setLabelLeaves(_labelLeaves)
 
     }, [stateElement, peN])
 
     const graphRef = useRef()
 
+    /**
+     * recursive function to get all children from a given nodeID inside a given tree
+     * @param {*} branch the tree to search in
+     * @param {int} selectedNodeID nodeID to get the children from
+     * @returns {Array<int>} children of node
+     */
+    const findDirectChildren = (branch, selectedNodeID) => {
 
-    const findChildren = (branch, _selectedNodes, _foundChildren = []) => {
+        // if the current node is the searched node, return all children ids
+        if (branch.idx === selectedNodeID) return branch.children.map((childNode) => childNode.idx)
 
-        branch.children.forEach((el) => {
-            const isInList = _selectedNodes.filter((el2) => el2 === el.idx).length > 0
-            if (isInList) {
-                _foundChildren = [
-                    ..._foundChildren,
-                    ...el.children.map((el3) => el3.idx),
-                ]
-            }
+        // since we cant return from inside the forEach function
+        let children = []
 
-            if (el.children.length) return findChildren(el, _selectedNodes, _foundChildren)
+        // check node children if available
+        branch.children.forEach((node) => {
+            const foundChildren = findDirectChildren(node, selectedNodeID)
+            if (foundChildren.length) children = foundChildren
         })
 
-        return _foundChildren
+        return children
     }
 
     // removes a value from array
@@ -108,47 +110,28 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         array.splice(array.indexOf(value), 1)
     }
 
-    const updateSelectedNodeIDs = (clickedNodeID) => {
+    // updated the selected nodes when the user has clicked onto a node
+    // the children of the clicked node will be toggled (but not children of children)
+    const handleNodeClick = (clickedNodeID) => {
+
+        console.info(graphData.edges)
+
+        const nodeChildren = findDirectChildren(selectedTree, clickedNodeID)
 
         // copy without reference to make useState work
         const _selectedNodeIDs = [...selectedNodeIDs]
 
-        // toggle the index of the node that the user has clicked
-        // (remove if its inside array, otherwise add it)
-        if (_selectedNodeIDs.includes(clickedNodeID)) removeFromArr(_selectedNodeIDs, clickedNodeID)
-        else {
+        // toggle each child for selectedLabels
+        nodeChildren.forEach((child) => {
+            console.info(child)
 
-            // remove children of clicked node from selectedNodesArray (double selection)
-            const nodeChildren = findChildren(selectedTree, [clickedNodeID])
-            nodeChildren.forEach((nodeChild) => {
-                if (_selectedNodeIDs.includes(nodeChild)) removeFromArr(_selectedNodeIDs, clickedNodeID)
-            })
-
-            _selectedNodeIDs.push(clickedNodeID)
-        }
+            // remove node id inside array if it exists, otherwise add it)
+            if (_selectedNodeIDs.includes(child)) removeFromArr(_selectedNodeIDs, child)
+            else _selectedNodeIDs.push(child)
+        })
 
         setSelectedNodeIDs(_selectedNodeIDs)
     }
-
-    // update selected node children if selected node ids has changed
-    useEffect(() => {
-        if (selectedTree === undefined) return
-
-        console.info({ selectedNodeIDs })
-
-        const _selectedLeaves = findChildren(selectedTree, selectedNodeIDs)
-        setSelectedLeaves(_selectedLeaves)
-
-        if (graphNet !== undefined) graphNet.selectNodes(selectedNodeIDs)
-    }, [selectedNodeIDs, selectedTree])
-
-    useEffect(() => {
-        if (selectedLeaves.length === 0 || graphNet === undefined) return
-
-        console.info({ selectedLeaves })
-
-        graphNet.selectNodes(selectedLeaves)
-    }, [selectedLeaves])
 
     const events = {
         select: (event) => {
@@ -156,12 +139,7 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
 
             if (clickedNodeID === undefined) return
 
-            if (!graphData.isLeafArr.includes(clickedNodeID)) {
-
-                updateSelectedNodeIDs(clickedNodeID)
-            }
-
-            verifyTab(peN, 3, true)
+            handleNodeClick(clickedNodeID)
         },
     }
 
@@ -193,6 +171,40 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         setGraphData(_graphData)
     }
 
+    /**
+     * recursively get all available labels (except root label) in a flat list
+     * label data is accessible via label index
+     * @param {LabelTree Object} tree label tree with root label
+     * @returns {Object} flat list of objects with label idx as key
+     */
+    const getAvailableLabelsFlat = (tree) => {
+        let result = {}
+        tree.children.map((obj) => {
+            if (obj.children) {
+                const el = { ...obj, ...{} }
+                delete el.children
+                result[el.idx] = el
+
+                // recursively check for children
+                obj.children.forEach((child) => {
+                    result = {
+                        ...result,
+                        ...getAvailableLabelsFlat(child)
+                    }
+                })
+
+                Object.values(obj.children).map((v, i) => {
+                    result[v.idx] = v
+                })
+            }
+            else result[obj.idx] = obj
+        })
+
+        console.info(result)
+
+        return result
+    }
+
     useEffect(() => {
         if (selectedLabelTreeIndex === undefined) return
 
@@ -202,12 +214,16 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         )[0]
 
         setSelectedTree(_tree)
-    }, [selectedLabelTreeIndex])
+
+
+        // create a flat list of all labels inside tree
+        const _availableLabels = getAvailableLabelsFlat(_tree)
+        setAvailableLabels(_availableLabels)
+
+    }, [selectedLabelTreeIndex, availableLabelTrees])
 
     useEffect(() => {
         if (selectedTree === undefined) return
-
-        // @TODO handle situation if single branch
 
         // copy graphData without reference to make useEffekt work
         const _graphData = { ...graphData }
@@ -223,9 +239,44 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         mapTreeToGraph(_graphData, selectedTree, selectedTree.idx)
     }, [selectedTree])
 
-    // useEffect(() => {
-    //     console.info(graphNet);
-    // }, [graphNet])
+    useEffect(() => {
+        if (graphNet === undefined) return
+
+        graphNet.selectNodes(selectedNodeIDs)
+
+        // allow access to settings step
+        if (selectedNodeIDs.length) verifyTab(peN, 3, true)
+    }, [selectedNodeIDs, graphNet])
+
+    const buildLabelInfo = () => {
+
+        let html = []
+        selectedNodeIDs.forEach((nodeID) => html.push(
+            <Label
+                as="a"
+                tag
+                key={nodeID}
+                style={{
+                    marginTop: 5,
+                    marginLeft: 30,
+                    opacity: 1,
+                    cursor: 'default',
+                    background: availableLabels[nodeID].color
+                }}
+            >
+                {availableLabels[nodeID].name}
+            </Label>
+        ))
+
+        if (html.length === 0) html = '(No labels selected)'
+
+        return (
+            <>
+                <h4>Labels that will be available in your annotation task:</h4>
+                {html}
+            </>
+        )
+    }
 
     if (graphData.nodes.length === 0) return 'Loading...'
 
@@ -251,6 +302,7 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                     setGraphNet(network)
                 }}
             />
+            {buildLabelInfo()}
 
         </>
         //     </CardBody>
