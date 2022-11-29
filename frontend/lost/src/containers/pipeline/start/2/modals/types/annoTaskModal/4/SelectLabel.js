@@ -159,7 +159,10 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         const selectedParentData = []
         selectedParents.forEach((parent) => {
             selectedParentData.push({
-                id: parent
+                id: parent,
+
+                // @TODO not used, but required for backend
+                maxLabels: "3"
             })
         })
 
