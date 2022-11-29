@@ -51,6 +51,7 @@ const PTTable = ({ visLevel }) => {
     }, 1000)
     useEffect(() => {
         if (deletePipelineProjectStatus === 'success') {
+            refetch()
             Notification.showSuccess('Deletion succeeded.')
         }
         if (deletePipelineProjectStatus === 'error') {
@@ -61,7 +62,11 @@ const PTTable = ({ visLevel }) => {
     return (
         <>
             <CRow style={{ marginBottom: 10, marginLeft: 3 }}>
-                <AddPipelineProject visLevel={visLevel} projectNames={projectNames} />
+                <AddPipelineProject
+                    visLevel={visLevel}
+                    projectNames={projectNames}
+                    refetch={refetch}
+                />
             </CRow>
             {tableData.length > 0 ? (
                 <Datatable
