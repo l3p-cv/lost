@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Graph from 'react-graph-vis'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import HelpButton from '../../../../../../../../components/HelpButton'
 import { CRow } from '@coreui/react'
@@ -57,18 +57,39 @@ const options = {
 
 const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
 
+    const dispatch = useDispatch()
     const { updateLabels } = actions
     const stateElement = useSelector((element) => element)
     const [selectedTree, setSelectedTree] = useState()
     const [selectedNodeIDs, setSelectedNodeIDs] = useState([])
-    const [availableLabels, setAvailableLabels] = useState([])
+    const [availableLabels, setAvailableLabels] = useState()
     const [selectedLabelTreeIndex, setSelectedLabelTreeIndex] = useState()
+    const [areLabelsLoaded, setAreLabelsLoaded] = useState(false)
     const [graphNet, setGraphNet] = useState()
     const [graphData, setGraphData] = useState({
         nodes: [],
         edges: [],
         isLeafArr: [],
     })
+
+    // load already selected labels from redux
+    const loadLabelsFromRedux = (labelParents) => {
+        const _selectedLabels = []
+        labelParents.forEach((labelParent) => {
+            const children = availableLabels[labelParent.id].children
+
+            // add all label children ids if available
+            if (children !== undefined)
+                children.forEach((child) => {
+                    _selectedLabels.push(child.idx)
+                })
+        })
+
+        // prevent update loop
+        setAreLabelsLoaded(true)
+
+        setSelectedNodeIDs(_selectedLabels)
+    }
 
     useEffect(() => {
         const element = stateElement.pipelineStart.step1Data.elements.filter(
@@ -78,7 +99,19 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         const _selectedLabelTreeIndex = element.exportData.annoTask.selectedLabelTree
         setSelectedLabelTreeIndex(_selectedLabelTreeIndex)
 
-    }, [stateElement, peN])
+        // load selected labels from redux in case modal is opened a second time
+        if (availableLabels !== undefined && areLabelsLoaded === false) {
+            loadLabelsFromRedux(element.exportData.annoTask.labelLeaves)
+        }
+    }, [stateElement, peN, availableLabels, areLabelsLoaded])
+
+    // allow getting labels from redux when modal closed
+    useEffect(() => {
+        // on component unmount
+        return () => {
+            setAreLabelsLoaded(false)
+        }
+    }, [])
 
     const graphRef = useRef()
 
@@ -110,11 +143,32 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         array.splice(array.indexOf(value), 1)
     }
 
+    /**
+     * returns all parent ids from selected labels in redux ready format
+     */
+    const getParentsOfSelectedLabels = () => {
+        // get all parent ids
+        const selectedParents = []
+        selectedNodeIDs.forEach((nodeID) => {
+            const parentID = availableLabels[nodeID].parent_leaf_id
+
+            if (!selectedParents.includes(parentID)) selectedParents.push(parentID)
+        })
+
+        // format parent IDs for redux
+        const selectedParentData = []
+        selectedParents.forEach((parent) => {
+            selectedParentData.push({
+                id: parent
+            })
+        })
+
+        return selectedParentData
+    }
+
     // updated the selected nodes when the user has clicked onto a node
     // the children of the clicked node will be toggled (but not children of children)
     const handleNodeClick = (clickedNodeID) => {
-
-        console.info(graphData.edges)
 
         const nodeChildren = findDirectChildren(selectedTree, clickedNodeID)
 
@@ -123,8 +177,6 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
 
         // toggle each child for selectedLabels
         nodeChildren.forEach((child) => {
-            console.info(child)
-
             // remove node id inside array if it exists, otherwise add it)
             if (_selectedNodeIDs.includes(child)) removeFromArr(_selectedNodeIDs, child)
             else _selectedNodeIDs.push(child)
@@ -172,17 +224,21 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
     }
 
     /**
-     * recursively get all available labels (except root label) in a flat list
+     * recursively get all available labels in a flat list
      * label data is accessible via label index
      * @param {LabelTree Object} tree label tree with root label
      * @returns {Object} flat list of objects with label idx as key
      */
     const getAvailableLabelsFlat = (tree) => {
         let result = {}
-        tree.children.map((obj) => {
+
+        // also get root node (others will be overwritten by children key)
+        result[tree.idx] = tree
+
+        tree.children.forEach((obj) => {
             if (obj.children) {
                 const el = { ...obj, ...{} }
-                delete el.children
+                // delete el.children
                 result[el.idx] = el
 
                 // recursively check for children
@@ -193,14 +249,12 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                     }
                 })
 
-                Object.values(obj.children).map((v, i) => {
+                Object.values(obj.children).forEach((v, i) => {
                     result[v.idx] = v
                 })
             }
             else result[obj.idx] = obj
         })
-
-        console.info(result)
 
         return result
     }
@@ -246,6 +300,11 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
 
         // allow access to settings step
         if (selectedNodeIDs.length) verifyTab(peN, 3, true)
+
+        // update redux action
+        const selectedParentData = getParentsOfSelectedLabels()
+        dispatch(updateLabels(peN, selectedParentData))
+
     }, [selectedNodeIDs, graphNet])
 
     const buildLabelInfo = () => {
@@ -261,6 +320,7 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                     marginLeft: 30,
                     opacity: 1,
                     cursor: 'default',
+                    color: 'white',
                     background: availableLabels[nodeID].color
                 }}
             >
