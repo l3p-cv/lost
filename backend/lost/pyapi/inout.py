@@ -179,7 +179,7 @@ class Input(object):
         '''
         for result in self._results:
             for img_anno in result.img_annos:
-                for twod_anno in img_anno.two_d_annos:
+                for twod_anno in img_anno.twod_annos:
                     yield twod_anno #type: lost.db.model.TwoDAnno
 
     @property
