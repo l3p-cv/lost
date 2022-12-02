@@ -10,6 +10,7 @@ import lost
 import fsspec
 import numpy as np
 import cv2
+import socket
 import ast
 from lost import settings
 from lost.logic.crypt import decrypt_fs_connection
@@ -55,6 +56,9 @@ def chonkyfy(fs_list, root, fs):
         files.append(res)
     
     return {'files': files, 'folderChain': folder_chain}
+
+def _check_if_ip_exists(ip_address):
+    socket.gethostbyaddr(ip_address)
 
 class DummyFileMan(object):
     def __init__(self, fs_db):
@@ -147,6 +151,7 @@ class AppFileMan(object):
         root_path = self.lostconfig.app_path
         pipe_path = os.path.join(root_path, PIPE_ROOT_PATH)
         return pipe_path
+
 class FileMan(object):
     def __init__(self, lostconfig=None, fs_db=None, decrypt=True):
         if fs_db is not None:
@@ -161,6 +166,8 @@ class FileMan(object):
                     fs_args = ast.literal_eval(fs_connection)
             else:
                 fs_args = fs_connection
+            if fs_db.fs_type == 'ssh':
+                _check_if_ip_exists(fs_args['host'])
             fs = fsspec.filesystem(fs_db.fs_type, **fs_args)
             fs.lost_fs = fs_db
             self.fs = fs
