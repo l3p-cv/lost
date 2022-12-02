@@ -7,6 +7,8 @@ from lost.db import dtype
 from lost.pyapi.pe_base import Element
 from lost.pyapi import script
 from lost.logic.file_man import FileMan
+from lost.logic.file_access import UserFileAccess
+
 # class RawFile(Element):
 
 #     def __init__(self, pe, dbm):
@@ -36,7 +38,7 @@ class Datasource(Element):
             dbm (object): Database Management object.
         '''
         super().__init__(pe, dbm)
-        self.file_man = FileMan(fs_db=pe.datasource.fs)
+        self.ufa = UserFileAccess(dbm, pe.pipe.manager, pe.datasource.fs)
 
     @property
     def path(self):
@@ -45,7 +47,7 @@ class Datasource(Element):
 
     def get_fs(self):
         '''Get filesystem for this datasource'''
-        return self.file_man.fs
+        return self.ufa.get_fs(fs_id=self.pe.datasource.fs.idx)
 
 class AnnoTask(Element):
 
