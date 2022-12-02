@@ -92,8 +92,8 @@ LOST releases are hosted on DockerHub and shipped in Containers. For a quick set
     printed in the command line.
 
 
-## I want to annotate now !
-A detailed step by step guide is provided here:  [Start your first Pipeline ](./docs/GettingStartedFirstPipeline.md)
+<!-- ## I want to annotate now !
+A detailed step by step guide is provided here:  [Start your first Pipeline ](./docs/GettingStartedFirstPipeline.md) -->
 
 # Roadmap
 See our [Roadmap](https://github.com/l3p-cv/lost/milestone/1)
