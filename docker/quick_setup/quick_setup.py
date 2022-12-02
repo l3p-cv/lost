@@ -243,7 +243,15 @@ class QuickSetup(object):
             ['#LOST_JUPYTER_LAB_ACTIVE','True'],
             ['#LOST_JUPYTER_LAB_ROOT_PATH','/code/src'],
             ['#LOST_JUPYTER_LAB_TOKEN','mysecrettoken'],
-            ['#LOST_JUPYTER_LAB_PORT','8888']
+            ['#LOST_JUPYTER_LAB_PORT','8888'],
+            ['#========================','#'],
+            ['#=    Git Credentials    ','#'],
+            ['#========================','#'],
+            ['# In order to enable git support inside your container please uncomment the following lines','#'],
+            ['# See here how to create a personal access token https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token ','#'],
+            ['#LOST_GIT_USER','your_git_user_name'],
+            ['#LOST_GIT_EMAIL','your@email.com'],
+            ['#LOST_GIT_ACCESS_TOKEN','mysecrettoken']
         ]
         if self.args.graylog and platform.system() == "Linux":
             config.append(['#========================','#'])

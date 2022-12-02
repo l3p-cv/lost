@@ -32,6 +32,7 @@ In order to add your dataset just copy it to the path above e.g.:
 
 LabelTrees
 ----------------------
+#TODO Review + add import export feature link 
 Labels are organized in LabelTrees.
 Each LabelLeaf need to have at least a **name**.
 Optional information for a LabelLeaf are a **description**,
@@ -46,6 +47,7 @@ navigation bar.
 
 Users, Groups and Roles
 =======================
+#TODO GR Add Admin Role + Link to visibilty docs
 There are two main user roles in LOST: 
 A **Designer** and an **Annotator** role.
 Both roles have different views and access to information.
@@ -66,6 +68,7 @@ manage users.
 
 Starting an Annotation Pipeline
 ===============================
+#TODO GR Review !
 All annotation processes in LOST are modeled as pipelines.
 Such a pipeline defines the order in which specific pipeline elements will
 be executed.
@@ -120,8 +123,13 @@ dashboard.
 To get to a specific pipeline click on the **Dashboard** button in the 
 left navigation bar and select a pipeline in the table.
 
+Out of the box pipelines
+====================
+#TODO GR 
+
 Annotate Your Images
 ====================
+#TODO GR Update + Add links to SIA / MIA docs
 Once your pipeline has requested all annotations for an **AnnotationTask**,
 selected annotators will be able to work on it.
 If you are logged in as a user with role **Designer** you can now 
@@ -139,6 +147,18 @@ Now instructions will pop up and you are ready to annotate.
 
 Download Your Annotation Results
 ================================
+
+Instant Annotation Export
+----------------------
+#TODO GR
+
+Out Of The Box pack_dataset Pipeline
+----------------------
+#TODO GR
+
+Data Export Pipeline Element
+----------------------
+#TODO GR
 All example pipelines in LOST have a **Script** element that will export
 your annotations to a CSV file when the annotation process has finished.
 To download this file go to the **Designer** dashboard that is part of the
