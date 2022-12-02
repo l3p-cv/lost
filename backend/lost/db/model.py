@@ -1,8 +1,9 @@
 __author__ = 'Jonas Jaeger, Gereon Reus'
+import io
 from flask_user import current_user, UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, BLOB
 # from sqlalchemy.dialects.mysql import DATETIME
 from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
@@ -170,6 +171,7 @@ class TwoDAnno(Base):
     anno_time = Column(Float)
     description = Column(Text)
     meta = Column(Text)
+    meta_blob = Column(BLOB)
     is_example = Column(Boolean)
 
     def __init__(self, anno_task_id=None,
@@ -178,7 +180,7 @@ class TwoDAnno(Base):
                  img_anno_id=None, timestamp_lock=None,
                  iteration=0, data=None, dtype=None,
                  confidence=None, anno_time=None,
-                 description=None, meta=None, is_example=False
+                 description=None, meta=None, is_example=False, meta_blob=None
                  ):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
@@ -195,6 +197,7 @@ class TwoDAnno(Base):
         self.anno_time = anno_time
         self.description = description
         self.meta = meta
+        self.meta_blob = meta_blob
         self.is_example = is_example
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
@@ -257,9 +260,12 @@ class TwoDAnno(Base):
             'anno_comment': self.description
         }
         try:
-            if self.meta is not None:
-                for key, val in json.loads(self.meta).items():
+            if self.meta_blob is not None:
+                fp = io.BytesIO(self.meta_blob)
+                series = pd.read_pickle(fp)
+                for key, val in series.to_dict().items():
                     anno_dict[f'meta_{key}'] = val
+                fp.close()
         except:
             pass
         try:
@@ -309,7 +315,7 @@ class TwoDAnno(Base):
                 'anno_confidence', 'anno_time', 'anno_lbl', 'anno_lbl_id', 'anno_style',
                 'anno_format', 'anno_comment', 'anno_data'
         '''
-        return pd.DataFrame(self.to_dict(), index=[0])
+        return pd.DataFrame(self.to_dict())
 
     def to_vec(self, columns='all'):
         '''Tansfrom this annotation in list style.
@@ -659,6 +665,7 @@ class ImageAnno(Base):
     fs_id = Column(Integer, ForeignKey('filesystem.idx'))
     fs = relationship('FileSystem', uselist=False)
     meta = Column(Text)
+    meta_blob = Column(BLOB)
 
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
@@ -666,7 +673,7 @@ class ImageAnno(Base):
                  frame_n=None,
                  video_path=None,
                  iteration=0, anno_time=None, is_junk=None,
-                 description=None, fs_id=None, meta=None):
+                 description=None, fs_id=None, meta=None, meta_blob=None):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
         self.timestamp = timestamp
@@ -682,6 +689,7 @@ class ImageAnno(Base):
         self.description = description
         self.fs_id = fs_id
         self.meta = meta
+        self.meta_blob = meta_blob
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -771,9 +779,17 @@ class ImageAnno(Base):
             'img_fs_name': self.fs.name
         }
         try:
-            if self.meta is not None:
-                for key, val in json.loads(self.meta).items():
+            # TODO: Load meta_blob here as in TwoDAnnos
+            # TODO: Take care when same meta data is stored for image an 2d anno!
+            if self.meta_blob is not None:
+                fp = io.BytesIO(self.meta_blob)
+                series = pd.read_pickle(fp)
+                for key, val in series.to_dict().items():
                     img_dict[f'meta_{key}'] = val
+                fp.close()
+            # if self.meta is not None:
+            #     for key, val in json.loads(self.meta).items():
+            #         img_dict[f'meta_{key}'] = val
         except:
             pass
         try:

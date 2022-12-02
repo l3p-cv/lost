@@ -1,4 +1,5 @@
 from shutil import ExecError
+import io
 from lost.logic import file_man
 from lost.logic.user import get_user_default_group
 from lost.pyapi import pipe_elements
@@ -473,7 +474,11 @@ class ScriptOutput(Output):
                                     fs_id=fs.lost_fs.idx)
             if len(img_meta_keys) > 0:
                 # anno.meta = json.dumps(row[img_meta_keys].to_dict())
-                img_anno.meta = json.dumps(df.iloc[0][img_meta_keys].to_dict(), default=_json_default)
+                fp = io.BytesIO()
+                # img_anno.meta = json.dumps(df.iloc[0][img_meta_keys].to_dict(), default=_json_default)
+                df.iloc[0].to_pickle(fp)
+                img_anno.meta_blob = fp.getvalue()
+                fp.close()
             self._script._dbm.add(img_anno)
             # if img_labels is not None:
             if 'img_lbl' in df:
@@ -490,9 +495,17 @@ class ScriptOutput(Output):
                             anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
                         if len(anno_meta_keys) > 0:
                             if anno_meta_keys == 'all':
-                                anno.meta = json.dumps(row.to_dict(), default=_json_default)
+                                fp = io.BytesIO()
+                                row.to_pickle(fp)
+                                anno.meta_blob = fp.getvalue()
+                                fp.close()
+                                # anno.meta = json.dumps(row.to_dict(), default=_json_default)
                             else:
-                                anno.meta = json.dumps(row[anno_meta_keys].to_dict(), default=_json_default)
+                                fp = io.BytesIO()
+                                row[anno_meta_keys].to_pickle(fp)
+                                anno.meta_blob = fp.getvalue()
+                                fp.close()
+                                # anno.meta = json.dumps(row[anno_meta_keys].to_dict(), default=_json_default)
                         if row['anno_dtype'] == 'point':
                             anno.point = row['anno_data']
                         elif row['anno_dtype'] == 'bbox':

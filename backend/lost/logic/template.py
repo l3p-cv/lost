@@ -161,7 +161,10 @@ class TemplateSerialize(object):
     def __get_filesystem_infos(self):
         res = []
         for fs in self.available_fs:
-            ufa = UserFileAccess(self.dbm, self.user, fs)
+            try:
+                ufa = UserFileAccess(self.dbm, self.user, fs)
+            except:
+                pass
             res.append({
                 'name': fs.name,
                 'id': fs.idx,
