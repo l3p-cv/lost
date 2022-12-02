@@ -1,14 +1,14 @@
 import TYPES from '../types/index'
 
 // import {uiConfig} from '../containers/SIA/lost-sia/src/utils/uiConfig'
-import {uiConfig} from '../containers/Annotation/SIA/lost-sia/src/utils/uiConfig'
+import { uiConfig } from '../containers/Annotation/SIA/lost-sia/src/utils/uiConfig'
 
 const INITIAL_STATE = {
     annos: {},
     selectedAnno: {
         annoId: undefined,
         anno: undefined,
-        type: undefined
+        type: undefined,
     },
     keyUp: undefined,
     keyDown: undefined,
@@ -24,40 +24,40 @@ const INITIAL_STATE = {
     requestAnnoUpdate: 0,
     appliedFullscreen: false,
     layoutUpdate: 0,
-    imgLabelInput : {
-        show: false
+    imgLabelInput: {
+        show: false,
     },
-    svg : undefined,
-    config : {
+    svg: undefined,
+    config: {
         tools: {
             point: true,
             line: true,
             polygon: true,
             bbox: true,
-            junk: true
+            junk: true,
         },
-        annos:{
+        annos: {
             multilabels: false,
             actions: {
                 draw: true,
                 label: true,
                 edit: true,
             },
-            minArea: 500
+            minArea: 500,
         },
         img: {
             multilabels: false,
             actions: {
                 label: true,
-            }
-        }
+            },
+        },
     },
     taskFinished: 0,
     isJunk: false,
     filter: {
-        'clahe' : {'clipLimit':3.0, 'active': false},
-        'rotate':{'angle':0, 'active':false}
-    }
+        clahe: { clipLimit: 3.0, active: false },
+        rotate: { angle: 0, active: false },
+    },
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -65,136 +65,133 @@ export default function (state = INITIAL_STATE, action) {
         case TYPES.GET_SIA_ANNOS:
             return {
                 ...state,
-                annos: action.payload
+                annos: action.payload,
             }
         case TYPES.GET_SIA_CONFIG:
             return {
                 ...state,
-                config: action.payload
+                config: action.payload,
             }
         case TYPES.SIA_APPLY_FILTER:
             return {
                 ...state,
-                filter: {...action.payload}
+                filter: { ...action.payload },
             }
         case TYPES.SIA_SELECT_ANNO:
-            if (action.payload){
+            if (action.payload) {
                 return {
                     ...state,
-                    selectedAnno: {...action.payload}
+                    selectedAnno: { ...action.payload },
                 }
             } else {
                 return {
                     ...state,
-                    selectedAnno: { id: undefined}
+                    selectedAnno: { id: undefined },
                 }
             }
         case TYPES.GET_SIA_LABELS:
             return {
                 ...state,
-                possibleLabels: [...action.payload]
+                possibleLabels: [...action.payload],
             }
         case TYPES.SIA_KEY_DOWN:
             return {
                 ...state,
                 keyDown: action.payload.key,
-                keyUp: undefined
+                keyUp: undefined,
             }
         case TYPES.SIA_KEY_UP:
             return {
                 ...state,
                 keyUp: action.payload.key,
-                keyDown: undefined
+                keyDown: undefined,
             }
         case TYPES.SIA_SET_UICONFIG:
             return {
                 ...state,
-                uiConfig: {...state.uiConfig,...action.payload}
+                uiConfig: { ...state.uiConfig, ...action.payload },
             }
         case TYPES.SIA_SHOW_SINGLE_ANNO:
             return {
                 ...state,
-                showSingleAnno: action.payload
-
+                showSingleAnno: action.payload,
             }
         case TYPES.SIA_SELECT_TOOL:
             return {
                 ...state,
-                selectedTool: action.payload
-
+                selectedTool: action.payload,
             }
         case TYPES.SIA_SHOW_LABEL_INPUT:
             return {
                 ...state,
-                showLabelInput: action.payload
-
+                showLabelInput: action.payload,
             }
         case TYPES.SIA_GET_NEXT_IMAGE:
             return {
                 ...state,
                 getNextImage: action.payload,
-                getPrevImage: undefined
+                getPrevImage: undefined,
             }
         case TYPES.SIA_GET_PREV_IMAGE:
             return {
                 ...state,
                 getPrevImage: action.payload,
-                getNextImage: undefined
+                getNextImage: undefined,
             }
         case TYPES.SIA_FULLSCREEN:
             return {
                 ...state,
-                fullscreenMode: action.payload
+                fullscreenMode: action.payload,
             }
         case TYPES.SIA_IMAGE_LOADED:
             return {
                 ...state,
-                imageLoaded: action.payload
+                imageLoaded: action.payload,
             }
         case TYPES.SIA_UPDATE_REDUX_ANNOS:
             return {
                 ...state,
-                annos: action.payload
+                annos: action.payload,
             }
         case TYPES.SIA_REQUEST_ANNO_UPDATE:
             return {
                 ...state,
-                requestAnnoUpdate: state.requestAnnoUpdate + 1
+                requestAnnoUpdate: state.requestAnnoUpdate + 1,
             }
         case TYPES.SIA_APPLIED_FULLSCREEN:
             return {
                 ...state,
-                appliedFullscreen: action.payload
+                appliedFullscreen: action.payload,
             }
         case TYPES.SIA_LAYOUT_UPDATE:
             return {
                 ...state,
-                layoutUpdate: state.layoutUpdate + 1
+                layoutUpdate: state.layoutUpdate + 1,
             }
         case TYPES.SIA_IMGLABELINPUT_SHOW:
             return {
                 ...state,
                 imgLabelInput: {
                     ...state.imgLabelInput,
-                    show:action.payload
-                }
+                    show: action.payload,
+                },
             }
         case TYPES.SIA_SET_SVG:
             return {
                 ...state,
                 svg: {
-                    ...action.payload
-                }
+                    ...action.payload,
+                },
             }
         case TYPES.SIA_TASK_FINISHED:
             return {
                 ...state,
-                taskFinished: state.taskFinished + 1
+                taskFinished: state.taskFinished + 1,
             }
-            case TYPES.SIA_IMG_JUNK:
+        case TYPES.SIA_IMG_JUNK:
             return {
                 ...state,
-                isJunk: action.payload
+                isJunk: action.payload,
             }
         default:
             return state

@@ -49,7 +49,7 @@ def chonkyfy(fs_list, root, fs):
             res['size'] = el['size']
         elif el['type'] == 'directory':
             res['isDir'] = True
-            res['childrenCount'] = len(fs.ls(el['name']))
+            res['childrenCount'] = None #len(fs.ls(el['name']))
         else:
             raise Exception('Unknown file type')
         files.append(res)
@@ -155,7 +155,10 @@ class FileMan(object):
             else:
                 fs_connection = fs_db.connection
             if type(fs_connection) != dict:
-                fs_args = ast.literal_eval(fs_connection)
+                try:
+                    fs_args = json.loads(fs_connection)
+                except:
+                    fs_args = ast.literal_eval(fs_connection)
             else:
                 fs_args = fs_connection
             fs = fsspec.filesystem(fs_db.fs_type, **fs_args)

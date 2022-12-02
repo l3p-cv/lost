@@ -22,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added an InfoBox (AnnoStats) that shows the number of annotation per label in an image
     - This box allows also to hide annotations of a specific label
     - See #86, #160 and #161
-  - Added sia auto save feature
 - MIA:
   - Show labels as tags
   - Allow to zoom into images in an extra modal
@@ -58,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Import pipelines via git/github or zipfile
 - Pipeline export:
   - Export lost pipelines to zip file
+- Extendend Logging:
+  - Added option for using graylog as central logging platform (Linux support only !)
 ## Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
@@ -65,6 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * Do not send any image urls to frontend
     * If a mia task is annoBased, crop annos on the fly (do not store anno crops in filesystem)
   * fileMan: Use fsspec instead of os for filesystm operations
+- SiaReview: 
+  * Trigger notification if annotations have been changed but not saved when navigation to another image
 - Updated frontend to Core-UI-3
 - Use Dask as scheduler instead of clelery
 - Replace Anaconda package manager with mamba
@@ -73,13 +76,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed unused columns from dataframe
   - Export anno_data to lists instead of dicts
   - Changed dot column name style to underscore style
+- SIA:
+  - Save changed and created annotations instantly to backend
 ## Fixed
 - PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
   not first element in pipeline graph
 - Fixed raw sql in access to be compatible with postgresql
 - Fixed copy bug in import script -> Copied to wrong location, when path had tailing '/'
 - PipeStart: Empty labels in annotask not possible anymore
-- SIA: Endless image loading bug
+- SIA: 
+  - Endless image loading bug
+  - Filter Bug -> Do not copy annotations from previous image when filter is active!
 
 ## Removed
 - removed lost-cv images. This is now integrated into the lost image 

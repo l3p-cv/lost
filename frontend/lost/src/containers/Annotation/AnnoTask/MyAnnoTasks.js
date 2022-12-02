@@ -294,7 +294,7 @@ class MyAnnoTasks extends Component {
                                 )
                                 return (
                                     <>
-                                        {progress < 100 ? (
+                                        {row.original.status === 'inProgress' ? (
                                             <IconButton
                                                 onClick={() =>
                                                     this.handleRowClick(row.original)

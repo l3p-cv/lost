@@ -48,6 +48,13 @@ def get_args():
 
     return config.LOSTConfig()
 
+def _unlock_anno(anno):
+    if anno.state == state.Anno.LABELED_LOCKED:
+        anno.state = state.Anno.LABELED
+    else:
+        anno.state = state.Anno.UNLOCKED
+    return anno
+
 def force_anno_release(dbm, anno_task_id):
     '''Force a release of all annotations that are currently locked by a user for annotation
 
@@ -58,11 +65,11 @@ def force_anno_release(dbm, anno_task_id):
     c_imgs = 0
     c_2dannos = 0
     for anno in dbm.get_locked_img_annos(anno_task_id):
-        anno.state = state.Anno.UNLOCKED
+        anno = _unlock_anno(anno)
         dbm.add(anno)
         c_imgs += 1
     for anno in dbm.get_locked_two_d_annos(anno_task_id):
-        anno.state = state.Anno.UNLOCKED
+        anno = _unlock_anno(anno)
         dbm.add(anno)
         c_2dannos += 1
     dbm.commit()
@@ -83,13 +90,13 @@ def release_annos_by_timeout(dbm, timeout):
         for anno in dbm.get_locked_img_annos(anno_task.idx):
             if anno.timestamp_lock is not None:
                 if anno.timestamp_lock < unlock_time:
-                    anno.state = state.Anno.UNLOCKED
+                    anno = _unlock_anno(anno)
                     dbm.add(anno)
                     c_imgs += 1
         for anno in dbm.get_locked_two_d_annos(anno_task.idx):
             if anno.timestamp_lock is not None:
                 if anno.timestamp_lock < unlock_time:
-                    anno.state = state.Anno.UNLOCKED
+                    anno = _unlock_anno(anno)
                     dbm.add(anno)
                     c_2dannos += 1
         dbm.commit()
@@ -112,7 +119,7 @@ def release_user_annos(dbm, user_id):
         locked_user_annos = [anno for anno in locked_annos if anno.user_id == user_id]
         # print(locked_user_annos)
         for anno in locked_user_annos:
-            anno.state = state.Anno.UNLOCKED
+            anno = _unlock_anno(anno)
             dbm.add(anno)
                 
         locked_annos = dbm.get_locked_two_d_annos(anno_task.idx)
@@ -123,7 +130,7 @@ def release_user_annos(dbm, user_id):
         locked_user_annos = [anno for anno in locked_annos if anno.user_id == user_id]
         # print(locked_user_annos)
         for anno in locked_user_annos:
-            anno.state = state.Anno.UNLOCKED
+            anno = _unlock_anno(anno)
             dbm.add(anno)
         dbm.commit()
 

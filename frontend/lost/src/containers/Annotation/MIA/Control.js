@@ -14,7 +14,6 @@ import {
     DropdownItem,
 } from 'reactstrap'
 import { Icon, Label } from 'semantic-ui-react'
-import 'semantic-ui-css/semantic.min.css'
 
 import './Tag.scss'
 import UndoRedo from '../../../libs/hist'

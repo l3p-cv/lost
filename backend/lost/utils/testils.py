@@ -54,6 +54,13 @@ def get_voc_label_tree(dbm):
         tree = LabelTree(dbm, name=name)
     return tree
 
+def create_required_label_leaves(anno_task_id, label_leaf_id):
+    required_label_leaf = model.RequiredLabelLeaf()
+    required_label_leaf.anno_task_id = anno_task_id
+    required_label_leaf.label_leaf_id = label_leaf_id
+    required_label_leaf.max_labels = 3
+    return required_label_leaf
+
 def get_script_pipeline_fragment(dbm):
     '''Get a fragment of a pipeline
 
@@ -90,6 +97,11 @@ def get_script_pipeline_fragment(dbm):
     # pe_a.result_in.append(script_result)
     # pe_a.result_out.append(script_result)
     dbm.add(pe_a)
+    dbm.commit()
+
+    tree = get_voc_label_tree(dbm)
+    required_label_leaf = create_required_label_leaves(anno_task.idx, tree.root.idx)
+    dbm.add(required_label_leaf)
     dbm.commit()
 
     # pe_s.pe_outs.append(pe_a)

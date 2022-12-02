@@ -442,6 +442,10 @@ class ScriptOutput(Output):
             anno_meta_keys (list or *all*): Keys that should be used for two_d_anno meta information.
                 If all, all keys of lds will be added as meta information.
             img_path_key (str): Column that should be used as img_path
+        
+        Note:
+            Annos for images are requested in same order as in the input lost 
+            dataset.
         '''
         if 'anno_format' in lds.df:
             if len( lds.df[lds.df['anno_format'] != 'rel'] ) > 0:
@@ -458,7 +462,7 @@ class ScriptOutput(Output):
         # db_anno_task = self._script._dbm.get_anno_task(anno_task_id=anno_task_id)
         anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
         lbl_map = anno_task.lbl_map
-        for img_path, df in lds.df.groupby(img_path_key):
+        for img_path, df in lds.df.groupby(img_path_key, sort=False):
             fs = self._get_lds_fm(df, fs_cache, fs)
             if 'img_sim_class' in df:
                 if df['img_sim_class'].values[0]:
@@ -596,11 +600,13 @@ class ScriptOutput(Output):
                                     sim_class=img_sim_class,
                                     fs_id=fs.lost_fs.idx,
                                     description=img_comment)
+            anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
+            lbl_map = anno_task.lbl_map
             if img_meta is not None:
                 img_anno.meta = json.dumps(img_meta, default=_json_default)
             self._script._dbm.add(img_anno)
             if img_labels is not None:
-                self._update_labels(img_labels, img_anno)
+                self._update_labels(img_labels, img_anno, lbl_map)
             if len(annos) != len(anno_types):
                 raise ValueError('*anno_types* and *annos* need to be of same size!')            
             for i, vec in enumerate(annos):
@@ -622,7 +628,7 @@ class ScriptOutput(Output):
                     if len(anno_labels) != len(annos):
                         raise ValueError('*anno_labels* and *annos* need to be of same size!')
                     label_leaf_ids = anno_labels[i]
-                    self._update_labels(label_leaf_ids, anno)
+                    self._update_labels(label_leaf_ids, anno, lbl_map)
                 if anno_sim_classes:
                     if len(anno_sim_classes) != len(annos):
                         raise ValueError('*anno_sim_classes* and *annos* need to have same size!')

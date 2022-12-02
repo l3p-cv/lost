@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { createWriteStream } from 'streamsaver'
+import { saveAs } from 'file-saver'
 import { Progress } from 'reactstrap'
 import ReactTable from 'react-table'
 import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -17,34 +18,46 @@ const TabAvailableExports = (props) => {
     } = annoTaskApi.useDeleteExport()
 
     const downloadFile = (dataExportId, dataExportType, dataExportName) => {
-        return fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
-            headers: new Headers({
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            }),
-        })
-            .then((res) => {
-                const fileStream = createWriteStream(
-                    `${dataExportName}.${dataExportType}`,
-                )
-                const writer = fileStream.getWriter()
-                if (res.body.pipeTo) {
-                    writer.releaseLock()
-                    return res.body.pipeTo(fileStream)
-                }
-
-                const reader = res.body.getReader()
-                const pump = () =>
-                    reader
-                        .read()
-                        .then(({ value, done }) =>
-                            done ? writer.close() : writer.write(value).then(pump),
-                        )
-
-                return pump()
+        const isFirefox = typeof InstallTrigger !== 'undefined'
+        if (isFirefox) {
+            fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
+                method: 'get',
+                headers: new Headers({
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }),
             })
-            .catch((e) => {
-                Notification.showError('Failed to download annotation export.')
+                .then((res) => res.blob())
+                .then((blob) => saveAs(blob, `${dataExportName}.${dataExportType}`))
+        } else {
+            return fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
+                headers: new Headers({
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }),
             })
+                .then((res) => {
+                    const fileStream = createWriteStream(
+                        `${dataExportName}.${dataExportType}`,
+                    )
+                    const writer = fileStream.getWriter()
+                    if (res.body.pipeTo) {
+                        writer.releaseLock()
+                        return res.body.pipeTo(fileStream)
+                    }
+
+                    const reader = res.body.getReader()
+                    const pump = () =>
+                        reader
+                            .read()
+                            .then(({ value, done }) =>
+                                done ? writer.close() : writer.write(value).then(pump),
+                            )
+
+                    return pump()
+                })
+                .catch((e) => {
+                    Notification.showError('Failed to download annotation export.')
+                })
+        }
     }
 
     const handleAnnotaskExportDelete = (annoTaskExportId) => {
