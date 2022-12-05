@@ -1,5 +1,6 @@
 import lost
-from lost import settings
+
+STRF_TIME = "%Y-%m-%dT%H:%M:%S.000Z"
 
 class PipeInfo(object):
 
@@ -23,13 +24,13 @@ class PipeInfo(object):
     def timestamp(self):
         '''str: Timestamp when pipeline was started.
         '''
-        return self._pipe.timestamp.strftime(settings.STRF_TIME)
+        return self._pipe.timestamp.strftime(STRF_TIME)
 
     @property
     def timestamp_finished(self):
         '''str: Timestamp when pipeline was finished.
         '''
-        return self._pipe.timestamp_finished.strftime(settings.STRF_TIME)
+        return self._pipe.timestamp_finished.strftime(STRF_TIME)
 
     @property
     def description(self):

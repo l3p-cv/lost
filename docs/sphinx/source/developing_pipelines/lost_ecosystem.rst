@@ -2,6 +2,7 @@
 
 The LOST Ecosystem
 ******************
+#TODO JJ Review
 
 LOST was designed as a web-based framework that is able to run and visualize
 user defined annotation pipelines.

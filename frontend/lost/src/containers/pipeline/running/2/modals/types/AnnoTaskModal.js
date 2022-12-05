@@ -1,10 +1,9 @@
 import React from 'react'
 import { ModalHeader, ModalBody } from 'reactstrap'
+import { faEye, faCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
-import { alertSuccess } from '../../../../globalComponents/Sweetalert'
-
-import { faEye, faCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import * as Notification from '../../../../../../components/Notification'
 import { useHistory } from 'react-router-dom'
 import IconButton from '../../../../../../components/IconButton'
 import AnnoTaskTabs from './AnnoTaskModalUtils/AnnoTaskTabs'
@@ -34,7 +33,7 @@ function handleSiaRewiewClick(props, callback) {
 }
 
 function annotationReleaseSuccessful() {
-    alertSuccess('Annotation release successful')
+    Notification.showSuccess('Annotations were successfully released.')
 }
 
 function handleForceAnnotationRelease(props) {

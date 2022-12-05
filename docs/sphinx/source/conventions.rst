@@ -1,6 +1,6 @@
 Conventions
 *******************
-
+#TODO JJ Review
 
 Image coordinate system
 =======================

@@ -1,4 +1,5 @@
 from shutil import ExecError
+import io
 from lost.logic import file_man
 from lost.logic.user import get_user_default_group
 from lost.pyapi import pipe_elements
@@ -107,18 +108,13 @@ class Input(object):
 
         Args:
             columns (str or list of str): 'all' OR 
-                'img.idx', 'img.anno_task_id', 'img.timestamp', 
-                'img.timestamp_lock', 'img.state', 'img.sim_class', 
-                'img.frame_n', 'img.video_path', 'img.img_path', 
-                'img.result_id', 'img.iteration', 'img.group_id', 
-                'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                'img.lbl.external_id', 'img.annotator', 'anno.idx', 
-                'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
-                'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
-                'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+                'img_uid', img_timestamp', img_state', img_sim_class', img_frame_n',
+                'img_path','img_iteration','img_user_id','img_anno_time','img_lbl',
+                'img_lbl_id','img_user','img_is_junk','img_fs_name','anno_uid',
+                'anno_timestamp','anno_state','anno_dtype','anno_sim_class',
+                'anno_iteration','anno_user_id','anno_user','anno_confidence',
+                'anno_time','anno_lbl','anno_lbl_id','anno_style','anno_format',
+                'anno_comment','anno_data'
         
         Retruns:
             list OR list of lists: Desired columns
@@ -126,18 +122,18 @@ class Input(object):
         Example:
             Return just a list of 2d anno labels:
 
-                >>> img_anno.to_vec('anno.lbl.name')
-                ['Aeroplane', 'Bicycle', 'Bottle', 'Horse']
+                >>> self.outp.to_vec('anno_lbl')
+                [['Person'],[],['Cat'],[],['Car'],['Person'],[],['Bird'],['Bird']]
 
             Return a list of lists:
 
-                >>> self.inp.get_anno_vec.(['img.img_path', 'anno.lbl.name', 
-                ...     'anno.data', 'anno.dtype'])
+                >>> self.outp.to_vec(['img_path', 'anno_lbl', 
+                ...     'anno_data', 'anno_dtype'])
                 [
-                    ['path/to/img1.jpg', 'Aeroplane', [0.1, 0.1, 0.2, 0.2], 'bbox'], 
-                    ['path/to/img1.jpg', 'Bicycle', [0.1, 0.1], 'point'], 
-                    ['path/to/img2.jpg', 'Bottle', [[0.1, 0.1], [0.2, 0.2]], 'line'],
-                    ['path/to/img3.jpg', 'Horse', [0.2, 0.15, 0.3, 0.18], 'bbox'] 
+                    ['path/to/img1.jpg', ['Aeroplane'], [[0.1, 0.1, 0.2, 0.2]], 'bbox'], 
+                    ['path/to/img1.jpg', ['Bicycle'], [[0.1, 0.1]], 'point'], 
+                    ['path/to/img2.jpg', ['Bottle'], [[0.1, 0.1], [0.2, 0.2]], 'line'],
+                    ['path/to/img3.jpg', ['Horse'], [[0.2, 0.15, 0.3, 0.18]], 'bbox'] 
                 ]
         '''
         vec_list = []
@@ -151,18 +147,13 @@ class Input(object):
 
         Returns:
             pandas.DataFrame: Column names are:
-                'img.idx', 'img.anno_task_id', 'img.timestamp', 
-                'img.timestamp_lock', 'img.state', 'img.sim_class', 
-                'img.frame_n', 'img.video_path', 'img.img_path', 
-                'img.result_id', 'img.iteration', 'img.group_id', 
-                'img.anno_time', 'img.lbl.idx', 'img.lbl.name', 
-                'img.lbl.external_id', 'img.annotator', 'anno.idx', 
-                'anno.anno_task_id', 'anno.timestamp', 
-                'anno.timestamp_lock', 'anno.state', 'anno.track_n', 
-                'anno.dtype', 'anno.sim_class', 'anno.iteration', 
-                'anno.group_id', 'anno.img_anno_id', 'anno.annotator', 
-                'anno.confidence', 'anno.anno_time', 'anno.lbl.idx', 
-                'anno.lbl.name', 'anno.lbl.external_id', 'anno.data'
+                'img_uid', img_timestamp', img_state', img_sim_class', img_frame_n',
+                'img_path','img_iteration','img_user_id','img_anno_time','img_lbl',
+                'img_lbl_id','img_user','img_is_junk','img_fs_name','anno_uid',
+                'anno_timestamp','anno_state','anno_dtype','anno_sim_class',
+                'anno_iteration','anno_user_id','anno_user','anno_confidence',
+                'anno_time','anno_lbl','anno_lbl_id','anno_style','anno_format',
+                'anno_comment','anno_data'
         '''
         df_list = []
         for result in self._results:
@@ -179,7 +170,7 @@ class Input(object):
         '''
         for result in self._results:
             for img_anno in result.img_annos:
-                for twod_anno in img_anno.two_d_annos:
+                for twod_anno in img_anno.twod_annos:
                     yield twod_anno #type: lost.db.model.TwoDAnno
 
     @property
@@ -349,7 +340,7 @@ class ScriptOutput(Output):
         Example:
             Request human annotations for an image with annotation proposals::
 
-                 >>> self.outp.add_annos('path/to/img.jpg',
+                 >>> self.outp.request_annos('path/to/img.jpg',
                 ...     annos = [
                 ...         [0.1, 0.1, 0.2, 0.2], 
                 ...         [0.1, 0.2], 
@@ -483,7 +474,11 @@ class ScriptOutput(Output):
                                     fs_id=fs.lost_fs.idx)
             if len(img_meta_keys) > 0:
                 # anno.meta = json.dumps(row[img_meta_keys].to_dict())
-                img_anno.meta = json.dumps(df.iloc[0][img_meta_keys].to_dict(), default=_json_default)
+                fp = io.BytesIO()
+                # img_anno.meta = json.dumps(df.iloc[0][img_meta_keys].to_dict(), default=_json_default)
+                df.iloc[0].to_pickle(fp)
+                img_anno.meta_blob = fp.getvalue()
+                fp.close()
             self._script._dbm.add(img_anno)
             # if img_labels is not None:
             if 'img_lbl' in df:
@@ -500,9 +495,17 @@ class ScriptOutput(Output):
                             anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
                         if len(anno_meta_keys) > 0:
                             if anno_meta_keys == 'all':
-                                anno.meta = json.dumps(row.to_dict(), default=_json_default)
+                                fp = io.BytesIO()
+                                row.to_pickle(fp)
+                                anno.meta_blob = fp.getvalue()
+                                fp.close()
+                                # anno.meta = json.dumps(row.to_dict(), default=_json_default)
                             else:
-                                anno.meta = json.dumps(row[anno_meta_keys].to_dict(), default=_json_default)
+                                fp = io.BytesIO()
+                                row[anno_meta_keys].to_pickle(fp)
+                                anno.meta_blob = fp.getvalue()
+                                fp.close()
+                                # anno.meta = json.dumps(row[anno_meta_keys].to_dict(), default=_json_default)
                         if row['anno_dtype'] == 'point':
                             anno.point = row['anno_data']
                         elif row['anno_dtype'] == 'bbox':
