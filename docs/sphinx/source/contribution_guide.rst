@@ -1,5 +1,6 @@
 Contribution Guide
 ******************
+#TODO JJ Review
 
 How to contribute new features or bug fixes?
 ============================================

@@ -146,17 +146,20 @@ class FsList(Resource):
                 fs_list += list(dbm.get_fs(group_id=group_id))
             ret = []
             for fs in fs_list:
-                ufa = UserFileAccess(dbm, user, fs)
-                ret.append({
-                    'id': fs.idx,
-                    'groupId': fs.group_id,
-                    # 'connection': fs.connection,
-                    'rootPath': fs.root_path,
-                    'fsType': fs.fs_type,
-                    'name' : fs.name,
-                    'permission': ufa.get_permission(),
-                    'timestamp': fs.timestamp.isoformat()
-                })
+                try:
+                    ufa = UserFileAccess(dbm, user, fs)
+                    ret.append({
+                        'id': fs.idx,
+                        'groupId': fs.group_id,
+                        # 'connection': fs.connection,
+                        'rootPath': fs.root_path,
+                        'fsType': fs.fs_type,
+                        'name' : fs.name,
+                        'permission': ufa.get_permission(),
+                        'timestamp': fs.timestamp.isoformat()
+                    })
+                except:
+                    pass
             dbm.close_session()
             return ret
 

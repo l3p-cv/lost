@@ -190,7 +190,8 @@ def write_df (base_path, df, export_type, zip_file=None, fs_stream=None):
         else:
             raise Exception('Either zip_file or fs_stream need to be provided!')
         
-    df = prep_parquet(df)
+    df = prep_parquet(df, True)
+    # ds = lds.LOSTDataset(df)
     if export_type == 'LOST_Dataset':
         zip_dir = f'{base_path}.parquet'
         with BytesIO() as bytestream:
