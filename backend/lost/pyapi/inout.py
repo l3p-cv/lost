@@ -399,7 +399,7 @@ class ScriptOutput(Output):
             else:
                 raise Exception('No possible filesystem found')
 
-    def request_lds_annos(self, lds, fs=None, anno_meta_keys=[], img_meta_keys=[], img_path_key=None):
+    def request_lds_annos(self, lds, fs=None, anno_meta_keys=[], img_meta_keys=[], img_path_key='img_path'):
         '''Request annos from LOSTDataset.
         
         Args:
@@ -476,7 +476,7 @@ class ScriptOutput(Output):
                 # anno.meta = json.dumps(row[img_meta_keys].to_dict())
                 fp = io.BytesIO()
                 # img_anno.meta = json.dumps(df.iloc[0][img_meta_keys].to_dict(), default=_json_default)
-                df.iloc[0].to_pickle(fp)
+                df.iloc[0][img_meta_keys].to_pickle(fp)
                 img_anno.meta_blob = fp.getvalue()
                 fp.close()
             self._script._dbm.add(img_anno)
@@ -514,6 +514,8 @@ class ScriptOutput(Output):
                             anno.line = row['anno_data']
                         elif row['anno_dtype'] == 'polygon':
                             anno.polygon = row['anno_data']
+                        if 'anno_comment' in row:
+                            anno.description = row['anno_comment']
                         if 'anno_lbl' in row:
                             if len(row['anno_lbl']) > 0 :
                                 # if len(anno_labels) != len(annos):
