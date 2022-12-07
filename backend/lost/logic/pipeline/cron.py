@@ -450,7 +450,7 @@ def exec_script_in_subprocess(pipe_element_id):
         file_man = AppFileMan(lostconfig)
         pipe = pipe_e.pipe
 
-        cmd = gen_run_cmd("pudb3", pipe_e, lostconfig)
+        cmd = gen_run_cmd("pudb", pipe_e, lostconfig)
         debug_script_path = file_man.get_debug_path(pipe_e)
         debug_script_path = os.path.join(debug_script_path, 'debug.sh')
         with open(debug_script_path, 'w') as sfile:
