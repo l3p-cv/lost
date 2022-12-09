@@ -100,7 +100,7 @@ class PipeEngine(pipe_model.PipeEngine):
         debug_path = self.file_man.create_debug_path(pipe_element=pipe_e)
         debug_file_path = os.path.join(debug_path, 'debug.sh')
         # init = self.lostconfig.py3_init + '\n'
-        cmd = self.__gen_run_cmd('pudb3', pipe_e)
+        cmd = self.__gen_run_cmd('pudb', pipe_e)
         # script_content = init + cmd
         script_content = cmd
         with open(debug_file_path, 'w') as dfile:
@@ -450,7 +450,7 @@ def exec_script_in_subprocess(pipe_element_id):
         file_man = AppFileMan(lostconfig)
         pipe = pipe_e.pipe
 
-        cmd = gen_run_cmd("pudb3", pipe_e, lostconfig)
+        cmd = gen_run_cmd("pudb", pipe_e, lostconfig)
         debug_script_path = file_man.get_debug_path(pipe_e)
         debug_script_path = os.path.join(debug_script_path, 'debug.sh')
         with open(debug_script_path, 'w') as sfile:
