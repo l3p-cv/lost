@@ -14,7 +14,8 @@ image = api.model('Image', {
     'labelIds': fields.List(fields.Integer(readOnly=True, description='Label id.'), description='All label ids which belongs to this image.'),
     'isJunk': fields.Boolean(readOnly=True, description='Indicates if the image was marked as Junk.'),
     'annoTime': fields.Float(readOnly=True, description='Annotation time in seconds'),
-    'description': fields.String(readOnly=True, description='Description comment for this image')
+    'description': fields.String(readOnly=True, description='Description comment for this image'),
+    'imgActions': fields.List(fields.String(readOnly=True, description='imgAction'), description='Image actions that have been performed by user')
 })
 
 bbox_data = api.model('BBox Data',{

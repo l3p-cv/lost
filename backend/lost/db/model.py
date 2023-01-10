@@ -641,6 +641,7 @@ class ImageAnno(Base):
             annotator or algorithm.
         fs_id (int): Id of the filesystem where image is located
         meta (str): A field for meta information added by a script
+        img_actions (str): Actions performed by users for this image
     """
     __tablename__ = "image_anno"
 
@@ -666,6 +667,7 @@ class ImageAnno(Base):
     fs = relationship('FileSystem', uselist=False)
     meta = Column(Text)
     meta_blob = Column(BLOB)
+    img_actions = Column(Text)
 
     def __init__(self, anno_task_id=None, user_id=None,
                  timestamp=None, state=None,
@@ -673,7 +675,8 @@ class ImageAnno(Base):
                  frame_n=None,
                  video_path=None,
                  iteration=0, anno_time=None, is_junk=None,
-                 description=None, fs_id=None, meta=None, meta_blob=None):
+                 description=None, fs_id=None, meta=None, meta_blob=None,
+                 img_actions=None):
         self.anno_task_id = anno_task_id
         self.user_id = user_id
         self.timestamp = timestamp
@@ -690,6 +693,7 @@ class ImageAnno(Base):
         self.fs_id = fs_id
         self.meta = meta
         self.meta_blob = meta_blob
+        self.img_actions = img_actions
         # if label_leaf_id is not None:
         #     self.label = Label(label_leaf_id=label_leaf_id)
 
@@ -779,7 +783,6 @@ class ImageAnno(Base):
             'img_fs_name': self.fs.name
         }
         try:
-            # TODO: Load meta_blob here as in TwoDAnnos
             # TODO: Take care when same meta data is stored for image an 2d anno!
             if self.meta_blob is not None:
                 fp = io.BytesIO(self.meta_blob)
@@ -790,6 +793,10 @@ class ImageAnno(Base):
             # if self.meta is not None:
             #     for key, val in json.loads(self.meta).items():
             #         img_dict[f'meta_{key}'] = val
+        except:
+            pass
+        try:
+            img_dict['img_actions'] = json.loads(self.img_actions)
         except:
             pass
         try:

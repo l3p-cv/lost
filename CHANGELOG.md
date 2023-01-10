@@ -87,7 +87,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SIA: 
   - Endless image loading bug
   - Filter Bug -> Do not copy annotations from previous image when filter is active!
-
 ## Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 
