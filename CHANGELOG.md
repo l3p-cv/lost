@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - request_annos: Added ability to deal with ImageAnno objects from database in order to request annos for a copy of the ImageAnno object.
 - Configurations for LOST via database
 - pyAPI: Allow to add a image comment via api. This comment will be shown in ImgBar in SIA
+- ImageAnnos: Added img_actions attribute -> Tracks all annotation actions performed by an annotator   
 - SIA: 
   - Added max canvas size mode. Where canvas takes the maximum container size and is not 
   image oriented as before.
