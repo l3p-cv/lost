@@ -257,6 +257,8 @@ class SiaUpdateOneThing(object):
         if self.sia_type == 'sia':
             # Do not update image annotation time for sia review
             self.image_anno.anno_time = img_data['annoTime']
+        if 'imgActions' in img_data:
+            self.image_anno.img_actions = json.dumps(img_data['imgActions'])
         self._update_img_labels(img_data)  
         if 'isJunk' in img_data:
             self.image_anno.is_junk = img_data['isJunk']   
@@ -735,6 +737,10 @@ class SiaSerialize(object):
         self.sia_json['image']['isJunk'] = self.image_anno.is_junk
         self.sia_json['image']['annoTime'] = self.image_anno.anno_time
         self.sia_json['image']['description'] = self.image_anno.description
+        if self.image_anno.img_actions is not None:
+            self.sia_json['image']['imgActions'] = json.loads(self.image_anno.img_actions)
+        else:
+            self.sia_json['image']['imgActions'] = []
         if self.image_anno.labels is None:
             self.sia_json['image']['labelIds'] = []
         else:

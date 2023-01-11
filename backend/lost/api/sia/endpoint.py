@@ -41,7 +41,7 @@ class First(Resource):
 @namespace.route('/next/<string:last_img_id>')
 @namespace.param('last_img_id', 'The id of the last annotated image.')
 class Next(Resource):
-    @api.marshal_with(sia_anno)
+    # @api.marshal_with(sia_anno)
     @jwt_required 
     def get(self, last_img_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -60,7 +60,7 @@ class Next(Resource):
 @namespace.route('/prev/<int:last_img_id>')
 @namespace.param('last_img_id', 'The id of the last annotated image.')
 class Prev(Resource):
-    @api.marshal_with(sia_anno)
+    # @api.marshal_with(sia_anno)
     @jwt_required 
     def get(self,last_img_id):
         dbm = access.DBMan(LOST_CONFIG)

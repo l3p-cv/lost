@@ -42,6 +42,10 @@ class ImageSerialize(object):
             image['id'] = anno.idx
             # image['path'] = anno.img_path
             image['type'] = 'imageBased' 
+            if anno.img_actions is not None:
+                image['imgActions'] = json.loads(anno.img_actions)
+            else:
+                image['imgActions'] = []
             self.mia_json['images'].append(image) 
 
 class TwoDSerialize(object):
@@ -279,6 +283,8 @@ def __update_image_annotation(db_man, user_id, data):
         else:
             image.state = state.Anno.LOCKED_PRIORITY
             db_man.add(image)
+        if 'imgActions' in img:
+            image.img_actions = json.dumps(img['imgActions'])
         db_man.commit()
 
 def __update_two_d_annotation(db_man, user_id, data):
@@ -307,6 +313,15 @@ def __update_two_d_annotation(db_man, user_id, data):
         else:
             two_d_anno.state = state.Anno.LOCKED_PRIORITY
             db_man.add(two_d_anno)
+        if 'imgActions' in img:
+            image = db_man.get_image_annotation(img_anno_id=two_d_anno.idx)
+            if image.img_actions is not None:
+                prev_actions = json.loads(image.img_actions)
+            else:
+                prev_actions = []
+            new_actions = prev_actions + img['imgActions']
+            image.img_actions = json.dumps(new_actions)
+            db_man.add(image)
         db_man.commit()
 
 def get_proposed_label(db_man, anno, user_id):

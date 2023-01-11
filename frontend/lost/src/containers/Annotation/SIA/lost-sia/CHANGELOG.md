@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Order of buttons in ToolBar: Move setting and filter btn up
 ### Added 
-- onAnnoSaveEvent and annoSaveResponse for instant annotation update in backend
+- imgActions poperty that will record all actions a user performs during the annotation process
 ### Removed 
 - autoSave Feature since it caused a lot of runtime errors and instability
+### Breaking Changes
+- onAnnoSaveEvent and annoSaveResponse for instant annotation update in backend -> will also change some internal behaviour 
 
 ## [1.3.0] - 2022-05-13
 ### Added

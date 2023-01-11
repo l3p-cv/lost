@@ -41,6 +41,7 @@ import InfoBoxes from './InfoBoxes/InfoBoxArea'
  *              isFirst: bool, 
  *              isLast: bool,
  *              description: string, // -> optional
+ *              imgActions: list of string, // -> optional 
  *          },
  *          annotations: {
  *              bBoxes: [{
@@ -185,6 +186,7 @@ class Canvas extends Component{
             annoToolBarVisible: false,
             possibleLabels: undefined,
             annoCommentInputTrigger: 0,
+            imgActions: [],
         }
         this.img = React.createRef()
         this.svg = React.createRef()
@@ -222,6 +224,7 @@ class Canvas extends Component{
                 this.setState({
                     imgLabelIds: this.props.imageMeta.labelIds,
                     imgAnnoTime: this.props.imageMeta.annoTime,
+                    imgActions: this.props.imageMeta.imgActions ? this.props.imageMeta.imgActions : [],
                     imgLoadTimestamp: performance.now()
                 })
             }
@@ -550,6 +553,8 @@ class Canvas extends Component{
     handleAnnoEvent(anno, pAction){
         console.log('handleAnnoEvent', pAction, anno)
         let newAnnos = undefined
+        let actionHistoryStore = undefined
+
         switch(pAction){
             case canvasActions.ANNO_ENTER_CREATE_MODE:
                 break
@@ -566,7 +571,7 @@ class Canvas extends Component{
                 // this.pushHist(
                 //     this.state.annos, anno.id,
                 //     pAction, this.state.showSingleAnno
-                // )
+                // )    
                 break
             case canvasActions.ANNO_START_CREATING:
                 newAnnos = this.updateSelectedAnno(anno)
@@ -576,6 +581,7 @@ class Canvas extends Component{
                 )
                 break
             case canvasActions.ANNO_CREATED:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno({...anno, status:annoStatus.DATABASE}, modes.VIEW)
                 this.pushHist(
@@ -584,9 +590,10 @@ class Canvas extends Component{
                 )
                 this.showSingleAnno(undefined)
                 this.setState({annoToolBarVisible:true})
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                this.handleAnnoSaveEvent(pAction, anno, {imgActions: actionHistoryStore})
                 break
             case canvasActions.ANNO_MOVED:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.showSingleAnno(undefined)
@@ -595,7 +602,7 @@ class Canvas extends Component{
                     pAction, undefined
                 )
                 this.setState({annoToolBarVisible:true})
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                this.handleAnnoSaveEvent(pAction, anno, {imgActions: actionHistoryStore})
                 break
             case canvasActions.ANNO_ENTER_MOVE_MODE:
                 anno = this.startAnnotimeMeasure(anno)
@@ -610,14 +617,16 @@ class Canvas extends Component{
                 this.setState({annoToolBarVisible:false})
                 break
             case canvasActions.ANNO_ADDED_NODE:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
                     newAnnos, anno.id,
                     pAction, this.state.showSingleAnno
                 )
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                this.handleAnnoSaveEvent(pAction, anno, {imgActions: actionHistoryStore})
                 break
             case canvasActions.ANNO_REMOVED_NODE:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 if (!this.checkAnnoLength(anno)){
                     newAnnos = this.updateSelectedAnno(anno, modes.DELETED)
                     this.showSingleAnno(undefined)
@@ -629,10 +638,11 @@ class Canvas extends Component{
                     pAction, this.state.showSingleAnno
                 )
                 if (anno.status !== annoStatus.NEW){
-                    this.handleAnnoSaveEvent(pAction, anno, undefined)
+                    this.handleAnnoSaveEvent(pAction, anno, {imgActions: actionHistoryStore})
                 }
                 break
             case canvasActions.ANNO_EDITED:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.VIEW)
                 this.pushHist(
@@ -640,9 +650,10 @@ class Canvas extends Component{
                     pAction, this.state.showSingleAnno
                 )
                 this.setState({annoToolBarVisible:true})
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                this.handleAnnoSaveEvent(pAction, anno,{imgActions: actionHistoryStore})
                 break
             case canvasActions.ANNO_DELETED:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 const res = this.updateSelectedAnno(anno, modes.DELETED, true)
                 newAnnos = res.newAnnos
                 this.selectAnnotation(undefined)
@@ -651,9 +662,10 @@ class Canvas extends Component{
                     newAnnos, undefined,
                     pAction, this.state.showSingleAnno
                 )
-                this.handleAnnoSaveEvent(pAction, res.newAnno, undefined)
+                this.handleAnnoSaveEvent(pAction, res.newAnno, {imgActions: actionHistoryStore})
                 break
             case canvasActions.ANNO_COMMENT_UPDATE:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 const res_comment = this.updateSelectedAnno(anno, modes.VIEW, true)
                 newAnnos = res_comment.newAnnos
                 this.pushHist(
@@ -665,9 +677,10 @@ class Canvas extends Component{
                     message: `Saved comment: ${anno.comment}`,
                     type: notificationType.SUCCESS
                 })
-                this.handleAnnoSaveEvent(pAction, res_comment.newAnno, undefined)
+                this.handleAnnoSaveEvent(pAction, res_comment.newAnno, {imgActions: actionHistoryStore})
                 break
             case canvasActions.ANNO_LABEL_UPDATE:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 anno = this.stopAnnotimeMeasure(anno)
                 anno = this.checkAndCorrectAnno(anno)
                 console.log('ANNO_LABEL_UPDATE aftercheckAndCorrect', anno)
@@ -688,10 +701,11 @@ class Canvas extends Component{
                         newAnnos, anno.id,
                         pAction, undefined
                     )
-                    this.handleAnnoSaveEvent(pAction, anno, undefined)
+                    this.handleAnnoSaveEvent(pAction, anno, {imgActions: actionHistoryStore})
                 }
                 break
             case canvasActions.ANNO_CREATED_NODE:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno(anno, modes.CREATE)
                 this.pushHist(
@@ -700,6 +714,7 @@ class Canvas extends Component{
                 )
                 break
             case canvasActions.ANNO_CREATED_FINAL_NODE:
+                actionHistoryStore = [...this.state.imgActions, pAction]
                 anno = this.stopAnnotimeMeasure(anno)
                 newAnnos = this.updateSelectedAnno({...anno, status:annoStatus.DATABASE}, modes.VIEW)
                 this.pushHist(
@@ -708,11 +723,14 @@ class Canvas extends Component{
                 )
                 this.showSingleAnno(undefined)
                 this.setState({annoToolBarVisible:true})
-                this.handleAnnoSaveEvent(pAction, anno, undefined)
+                this.handleAnnoSaveEvent(pAction, anno, {imgActions: actionHistoryStore})
                 break
             default:
                 console.warn('Action not handled', pAction)
                 break
+        }
+        if (actionHistoryStore){
+            this.setState({imgActions: actionHistoryStore})
         }
         if (this.props.onAnnoEvent){
             this.props.onAnnoEvent(anno, newAnnos, pAction)
@@ -777,10 +795,12 @@ class Canvas extends Component{
 
     handleImgLabelUpdate(label){
         if (this.gotNewLabel(label)){
+            const imgActions = [...this.state.imgActions, canvasActions.IMG_LABEL_UPDATE]
             console.log('gotNewLabel', label)
             this.setState({
                 imgLabelIds: label,
                 imgLabelChanged: true,
+                imgActions: imgActions,
             })
             this.pushHist(this.state.annos,
                 this.state.selectedAnnoId,
@@ -790,7 +810,8 @@ class Canvas extends Component{
             )
             const imgData = {
                 imgLabelIds: label,
-                imgLabelChanged: true
+                imgLabelChanged: true,
+                imgActions: imgActions,
             }
             this.handleAnnoSaveEvent(canvasActions.IMG_LABEL_UPDATE, undefined, imgData)
         }
@@ -1143,6 +1164,7 @@ class Canvas extends Component{
             imgId: this.props.imageMeta.id,
             imgLabelIds: this.state.imgLabelIds,
             imgLabelChanged: this.state.imgLabelChanged,
+            imgActions: this.state.imgActions,
             annotations: backendFormat,
             isJunk: this.state.isJunk,
             annoTime: this.props.imageMeta.annoTime + (performance.now() - this.state.imgLoadTimestamp)/1000
