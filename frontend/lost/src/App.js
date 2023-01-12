@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react'
 import axios from 'axios'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { store } from './store'
 import { Provider } from 'react-redux'
 import './scss/style.scss'
@@ -43,10 +43,6 @@ const TheLayout = React.lazy(() => import('./coreui_containers/TheLayout'))
 const Login = React.lazy(() => import('./containers/Login/Login'))
 const Logout = React.lazy(() => import('./containers/Logout/Logout'))
 
-const loading = () => {
-    return <div>Loading</div>
-}
-
 function App() {
     const sendError = async (event) => {
         try {
@@ -82,23 +78,21 @@ function App() {
     return (
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
-                <Suspense fallback={loading}>
+                <Suspense fallback={<div>Loading</div>}>
                     <BrowserRouter>
-                        <Switch>
+                        <Routes>
                             <Route
-                                exact
                                 path="/login"
                                 name="Login Page"
-                                render={(props) => <Login {...props} />}
+                                element={<Login />}
                             />
                             <Route
-                                exact
                                 path="/logout"
                                 name="Logout Page"
-                                component={Logout}
+                                element={<Logout />}
                             />
-                            <Route path="/" name="Home" render={() => <TheLayout />} />
-                        </Switch>
+                            <Route path="/*" name="Home" element={<TheLayout />} />
+                        </Routes>
                     </BrowserRouter>
                 </Suspense>
             </QueryClientProvider>

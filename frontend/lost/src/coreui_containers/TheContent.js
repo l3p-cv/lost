@@ -1,32 +1,29 @@
-import React  from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
 import { CContainer, CFade } from '@coreui/react'
-
-// routes config
-// import routes from '../routes'
-
 
 const TheContent = ({ routes }) => (
     <main className="c-main">
         <CContainer fluid>
-                <Switch>
-                    {routes.map(
+            <Routes>
+                {
+                    routes.map(
                         (route) =>
                             route.component && (
                                 <Route
                                     key={route.path}
                                     path={route.path}
-                                    exact={route.exact}
                                     name={route.name}
-                                    render={(props) => (
+                                    element={
                                         <CFade>
-                                            <route.component {...props} />
+                                            <route.component />
                                         </CFade>
-                                    )}
+                                    }
                                 />
                             ),
-                    )}
-                </Switch>
+                    )
+                }
+            </Routes>
         </CContainer>
     </main>
 )

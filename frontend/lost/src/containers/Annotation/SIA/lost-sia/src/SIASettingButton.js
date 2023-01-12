@@ -58,7 +58,7 @@ class SIASettingButton extends Component{
     }
     renderInfoBoxes(){
         if (!this.props.enabled) return null
-        if (this.props.enabled == true){
+        if (this.props.enabled === true){
             return this.renderInfoBoxContent()
         } else {
             if (this.props.enabled.infoBoxes){
@@ -69,7 +69,7 @@ class SIASettingButton extends Component{
 
     renderAnnoStyle(){
         if (!this.props.enabled) return null
-        if (this.props.enabled == true){
+        if (this.props.enabled === true){
             return this.renderAnnoStyleContent()
         } else {
             if (this.props.enabled.annoStyle){

@@ -1,5 +1,5 @@
 import { FaUpload } from 'react-icons/fa'
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
 import IconButton from './IconButton2'
 

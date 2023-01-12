@@ -1,12 +1,10 @@
 import React, { Component } from 'react'
 
 import { connect } from 'react-redux'
-import { Badge, Button, Card, CardHeader, CardBody, Table } from 'reactstrap'
+import { Badge, Button, Table } from 'reactstrap'
 // import Modal from 'react-modal'
 import LogModal from '../../components/LogModal'
 import actions from '../../actions'
-import * as Notification from '../../components/Notification'
-import BaseContainer from '../../components/BaseContainer'
 
 const { getWorkers, getWorkerLogFile } = actions
 
@@ -56,7 +54,7 @@ class WorkersTable extends Component {
     }
 
     componentWillReceiveProps() {
-        if (this.state.modalsIsOpen.length != this.props.workers.length) {
+        if (this.state.modalsIsOpen.length !== this.props.workers.length) {
             this.setState({
                 modalsIsOpen: this.props.workers.map((el) => ({
                     idx: el.idx,

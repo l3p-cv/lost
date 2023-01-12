@@ -1,10 +1,10 @@
 import React from 'react'
 import { ModalHeader, ModalBody } from 'reactstrap'
 import { faEye, faCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
 import Table from '../../../../globalComponents/modals/Table'
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 import * as Notification from '../../../../../../components/Notification'
-import { useHistory } from 'react-router-dom'
 import IconButton from '../../../../../../components/IconButton'
 import AnnoTaskTabs from './AnnoTaskModalUtils/AnnoTaskTabs'
 
@@ -41,7 +41,7 @@ function handleForceAnnotationRelease(props) {
 }
 
 const AnnoTaskModal = (props) => {
-    const hist = useHistory()
+    const navigate = useNavigate()
 
     return (
         <>
@@ -112,7 +112,7 @@ const AnnoTaskModal = (props) => {
                     style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
                     onClick={(e) =>
                         handleSiaRewiewClick(props, () => {
-                            hist.push(`/sia-review/${props.id}`)
+                            navigate(`/sia-review/${props.id}`)
                         })
                     }
                     text="Review Annotations"

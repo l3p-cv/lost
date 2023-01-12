@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { faEarListen, faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useInterval } from 'react-use'
 import IconButton from '../../components/IconButton'
 import Datatable from '../../components/Datatable'

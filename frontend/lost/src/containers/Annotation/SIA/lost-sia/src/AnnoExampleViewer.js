@@ -1,6 +1,6 @@
 import Prompt from './Prompt'
-import React, {useState} from 'react'
-import { Card, Divider, Dimmer, Header, Image } from 'semantic-ui-react'
+import React from 'react'
+import { Card, Divider, Header, Image } from 'semantic-ui-react'
 
 const LabelExampleViewer = (props) => {
 

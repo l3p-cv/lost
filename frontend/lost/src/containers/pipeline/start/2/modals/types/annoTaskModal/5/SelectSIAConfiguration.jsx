@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import HelpButton from '../../../../../../../../components/HelpButton'
-import { CCard, CCardBody, CRow, CCol, CSwitch, CInput } from '@coreui/react'
+import { CRow, CCol, CSwitch, CInput } from '@coreui/react'
 
 import { useSelector, useDispatch } from 'react-redux'
 

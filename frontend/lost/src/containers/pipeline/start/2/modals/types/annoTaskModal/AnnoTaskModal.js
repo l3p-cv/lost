@@ -30,13 +30,18 @@ class AnnoTaskModal extends Component {
             case 2:
                 return <SelectTree {...this.props} />
             case 3:
-                return <SelectLabel {...this.props} />
+                return <SelectLabel
+                    availableLabelTrees={this.props.availableLabelTrees}
+                    peN={this.props.peN}
+                    verifyTab={this.props.verifyTab}
+                />
             case 4:
                 if (this.props.annoTask.type === 'sia') {
                     return <SelectSIAConfiguration {...this.props} />
                 } else if (this.props.annoTask.type === 'mia') {
                     return <SelectMIAConfiguration {...this.props} />
                 }
+                break
             default:
                 break
         }

@@ -1,14 +1,13 @@
 import axios from 'axios'
 import { API_URL } from '../../../../src/lost_settings'
-import { useHistory } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../../src/actions'
 import '../SIA/lost-sia/src/SIA.scss'
 import * as tbe from '../SIA/lost-sia/src/types/toolbarEvents'
 import * as canvasActions from '../SIA/lost-sia/src/types/canvasActions'
-
-import { NotificationManager, NotificationContainer,  } from 'react-notifications'
+import { useNavigate } from 'react-router-dom'
+import { NotificationManager, NotificationContainer, } from 'react-notifications'
 import * as Notification from '../../../components/Notification'
 import 'react-notifications/lib/notifications.css'
 import * as notificationType from '../SIA/lost-sia/src/types/notificationType'
@@ -24,29 +23,29 @@ const {
 } = actions
 
 const CANVAS_CONFIG = {
-                        tools: {
-                            point: true,
-                            line: true,
-                            polygon: true,
-                            bbox: true,
-                            junk: true,
-                        },
-                        annos: {
-                            minArea: 20,
-                            multilabels: true,
-                            actions: {
-                                draw: true,
-                                label: true,
-                                edit: true,
-                            },
-                        },
-                        img: {
-                            multilabels: true,
-                            actions: {
-                                label: true,
-                            },
-                        },
-                    }
+    tools: {
+        point: true,
+        line: true,
+        polygon: true,
+        bbox: true,
+        junk: true,
+    },
+    annos: {
+        minArea: 20,
+        multilabels: true,
+        actions: {
+            draw: true,
+            label: true,
+            edit: true,
+        },
+    },
+    img: {
+        multilabels: true,
+        actions: {
+            label: true,
+        },
+    },
+}
 
 const SIAReview = (props) => {
     const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
@@ -58,16 +57,16 @@ const SIAReview = (props) => {
     const [canvas, setCanvas] = useState()
     const [isJunk, setIsJunk] = useState(false)
     const [selectedTool, setSelectedTool] = useState()
-    const history = useHistory()
+    const navigate = useNavigate()
 
-    const handleToolSelected = (tool) =>  {
+    const handleToolSelected = (tool) => {
         setSelectedTool(tool)
         // setState({ tool: tool })
     }
-    
+
     useEffect(() => {
-        if (nextPrev){
-            if (annosChanged){
+        if (nextPrev) {
+            if (annosChanged) {
                 saveRequestModal()
             } else {
                 handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
@@ -79,7 +78,7 @@ const SIAReview = (props) => {
         window.addEventListener('resize', props.siaLayoutUpdate)
         // document.body.style.overflow = "hidden"
 
-        const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
+        const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
         //direction: 'next', 'previous', 'first'
         const data = {
             direction: 'first',
@@ -104,7 +103,7 @@ const SIAReview = (props) => {
     }, [props.annos])
 
     const requestImageFromBackend = () => {
-        if (canvas){
+        if (canvas) {
             canvas.resetZoom()
             canvas.unloadImage()
         }
@@ -114,7 +113,7 @@ const SIAReview = (props) => {
     }
 
     const handleNextPrevImage = (imgId, direction) => {
-        const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
+        const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
         const data = {
             direction: direction,
             image_anno_id: imgId,
@@ -130,7 +129,7 @@ const SIAReview = (props) => {
 
     const handleSaveAnnos = async () => {
         try {
-            const pipeElementId = history.location.pathname.split('/').slice(-1)[0]
+            const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
             const newAnnos = canvas.getAnnos()
             // const camName = history.location.pathname.split('/').slice(-1)[0]
             const response = await axios.post(
@@ -201,7 +200,7 @@ const SIAReview = (props) => {
         switch (e.key) {
             case 'ArrowLeft':
                 if (!props.annos.image.isFirst) {
-                    setNextPrev({imgId: props.annos.image.id, cmd: 'previous'})
+                    setNextPrev({ imgId: props.annos.image.id, cmd: 'previous' })
                     // handleNextPrevImage(props.annos.image.id, 'previous')
                 } else {
                     handleNotification({
@@ -213,7 +212,7 @@ const SIAReview = (props) => {
                 break
             case 'ArrowRight':
                 if (!props.annos.image.isLast) {
-                    setNextPrev({imgId: props.annos.image.id, cmd: 'next'})
+                    setNextPrev({ imgId: props.annos.image.id, cmd: 'next' })
                     // handleNextPrevImage(props.annos.image.id, 'next')
                 } else {
                     handleNotification({
@@ -305,7 +304,7 @@ const SIAReview = (props) => {
                 break
         }
     }
-    
+
     const handleCanvasEvent = (action, data) => {
         // console.log('Handle canvas event', action, data)
         switch (action) {
@@ -353,7 +352,7 @@ const SIAReview = (props) => {
             },
             option2: {
                 text: 'Don\'t Save',
-                callback: () => {handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)},
+                callback: () => { handleNextPrevImage(nextPrev.imgId, nextPrev.cmd) },
             },
         })
     }
@@ -362,62 +361,62 @@ const SIAReview = (props) => {
         if (!props.annos) return 'No Review Data!'
         if (!props.filterOptions) return 'No Review Data!'
         return <div>
-                <Sia
-                    onAnnoEvent={(anno, annos, action) =>
-                        handleAnnoPerformedAction(anno, annos, action)
-                    }
-                    onNotification={(messageObj) => handleNotification(messageObj)}
-                    onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
-                    onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
-                    // onGetAnnoExample={(exampleArgs) =>
-                    //     props.onGetAnnoExample
-                    //         ? props.onGetAnnoExample(exampleArgs)
-                    //         : {}
+            <Sia
+                onAnnoEvent={(anno, annos, action) =>
+                    handleAnnoPerformedAction(anno, annos, action)
+                }
+                onNotification={(messageObj) => handleNotification(messageObj)}
+                onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
+                onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                // onGetAnnoExample={(exampleArgs) =>
+                //     props.onGetAnnoExample
+                //         ? props.onGetAnnoExample(exampleArgs)
+                //         : {}
+                // }
+                onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                canvasConfig={
+                    CANVAS_CONFIG
+                    // {
+                    // ...props.canvasConfig,
+                    // annos: { ...props.canvasConfig.annos, maxAnnos: null },
+                    // autoSaveInterval: 60,
+                    // allowedToMarkExample: state.allowedToMark,
                     // }
-                    onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                    canvasConfig={
-                        CANVAS_CONFIG
-                        // {
-                        // ...props.canvasConfig,
-                        // annos: { ...props.canvasConfig.annos, maxAnnos: null },
-                        // autoSaveInterval: 60,
-                        // allowedToMarkExample: state.allowedToMark,
-                        // }
-                    }
-                    uiConfig={{
-                        ...props.uiConfig,
-                        imgBarVisible: true,
-                        imgLabelInputVisible: imgLabelInputVisible,
-                        centerCanvasInContainer: true,
-                        maxCanvas: true,
-                    }}
-                    // nextAnnoId={state.nextAnnoId}
-                    annos={props.annos.annotations}
-                    imageMeta={props.annos.image}
-                    imageBlob={imgBlob}
-                    possibleLabels={props.filterOptions.possible_labels}
-                    // exampleImg={props.exampleImg}
-                    layoutUpdate={props.layoutUpdate}
-                    selectedTool={selectedTool}
-                    isJunk={isJunk}
-                    // blocked={state.blockCanvas}
-                    onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
-                    // svg={props.svg}
-                    // filter={props.filter}
-                    toolbarEnabled={{
-                        save:true,
-                        imgLabel: true,
-                        nextPrev: true,
-                        toolSelection: true,
-                        fullscreen: true,
-                        junk: true,
-                        deleteAll: true,
-                        settings: true,
-                        filter: false,
-                        help: true
-                    }}
-                />
-            </div>
+                }
+                uiConfig={{
+                    ...props.uiConfig,
+                    imgBarVisible: true,
+                    imgLabelInputVisible: imgLabelInputVisible,
+                    centerCanvasInContainer: true,
+                    maxCanvas: true,
+                }}
+                // nextAnnoId={state.nextAnnoId}
+                annos={props.annos.annotations}
+                imageMeta={props.annos.image}
+                imageBlob={imgBlob}
+                possibleLabels={props.filterOptions.possible_labels}
+                // exampleImg={props.exampleImg}
+                layoutUpdate={props.layoutUpdate}
+                selectedTool={selectedTool}
+                isJunk={isJunk}
+                // blocked={state.blockCanvas}
+                onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
+                // svg={props.svg}
+                // filter={props.filter}
+                toolbarEnabled={{
+                    save: true,
+                    imgLabel: true,
+                    nextPrev: true,
+                    toolSelection: true,
+                    fullscreen: true,
+                    junk: true,
+                    deleteAll: true,
+                    settings: true,
+                    filter: false,
+                    help: true
+                }}
+            />
+        </div>
     }
 
     return (
@@ -426,7 +425,7 @@ const SIAReview = (props) => {
             <NotificationContainer />
         </div>
     )
-    
+
 }
 
 function mapStateToProps(state) {

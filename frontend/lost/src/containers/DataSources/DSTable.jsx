@@ -9,7 +9,6 @@ import {
     faTrash,
     faFolderOpen,
     faTimes,
-    faSave,
 } from '@fortawesome/free-solid-svg-icons'
 import EditDSModal from './EditDSModal'
 import * as Notification from '../../components/Notification'

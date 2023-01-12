@@ -95,20 +95,17 @@ const Annotation = {
 }
 
 const Sia = {
-    path: '/sia',
-    exact: false,
+    path: '/sia/*',
     component: SiaComponent,
 }
 
 const SiaReview = {
-    path: '/sia-review',
-    exact: false,
+    path: '/sia-review/*',
     component: SiaReviwComponent,
 }
 
 const Mia = {
-    path: '/mia',
-    exact: false,
+    path: '/mia/*',
     component: MiaComponent,
 }
 
@@ -134,8 +131,7 @@ const AdminArea = {
 }
 
 const MyProfile = {
-    path: '/my_profile',
-    exact: false,
+    path: '/my_profile/*',
     component: MyProfileComponent,
 }
 

@@ -1,6 +1,6 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 // import {connect} from 'react-redux'
-import { List, Table, Button, Icon, Divider, Header, TextArea, Form, Label} from 'semantic-ui-react'
+import { List, Label} from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import * as colorlut from '../utils/colorlut'
 // import actions from '../../../../actions'

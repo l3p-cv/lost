@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { List, Divider, Button, TextArea, Form, Label, Icon } from 'semantic-ui-react'
+import { List, Divider, TextArea, Form, Label, Icon } from 'semantic-ui-react'
 import InfoBox from './InfoBox'
 import PopUp from '../SiaPopup'
 

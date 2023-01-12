@@ -4,7 +4,8 @@ import actions from '../../../actions'
 import * as tbe from './lost-sia/src/types/toolbarEvents'
 
 import { NotificationManager, NotificationContainer } from 'react-notifications'
-import { withRouter } from 'react-router-dom'
+// import { withRouter } from 'react-router-dom'
+import withRouter from '../../../utils/withRouter'
 import 'react-notifications/lib/notifications.css'
 
 import * as notificationType from './lost-sia/src/types/notificationType'
@@ -331,12 +332,12 @@ const SiaWrapper = (props) => {
     const handleCanvasKeyDown = (e) => {
         switch (e.key) {
             case 'ArrowLeft':
-                if (!blockImageChange){
+                if (!blockImageChange) {
                     if (!props.currentImage.isFirst) {
                         if (!blockNextImageTrigger) {
                             setBlockNextImageTrigger(true)
                             props.siaGetPrevImage(props.currentImage.id)
-                        } 
+                        }
                     } else {
                         handleNotification({
                             notification: {
@@ -357,7 +358,7 @@ const SiaWrapper = (props) => {
                 }
                 break
             case 'ArrowRight':
-                if (!blockImageChange){
+                if (!blockImageChange) {
                     if (!props.currentImage.isLast) {
                         if (!blockNextImageTrigger) {
                             setBlockNextImageTrigger(true)
@@ -515,7 +516,7 @@ const SiaWrapper = (props) => {
         })
 
         let newSize, minCorner, maxCorner
-        ;[minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
+        [minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
         newSize = {
             width: maxCorner.x - minCorner.x,
             height: maxCorner.y - minCorner.y,
