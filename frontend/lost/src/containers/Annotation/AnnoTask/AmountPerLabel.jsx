@@ -45,12 +45,8 @@ const AmountPerLabel = ({ stats }) => {
     if (barData.labels.length > 0) {
         return (
             <div className="chart-wrapper">
-                <CChart
-                    type="bar"
-                    datasets={barData.datasets}
-                    options={chartOptions}
-                    labels={barData.labels}
-                />
+                {console.log(barData)}
+                <CChart type="bar" options={chartOptions} data={barData} />
             </div>
         )
     } else {

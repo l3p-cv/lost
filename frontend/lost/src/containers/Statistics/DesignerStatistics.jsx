@@ -120,9 +120,14 @@ const DesignerStatistics = () => {
     }
 
     const chartOptions = {
-        maintainAspectRatio: true,
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            maintainAspectRatio: true,
+        },
     }
-
     return (
         <BaseContainer>
             <CRow style={{ marginBottom: 10 }}>
@@ -213,21 +218,11 @@ const DesignerStatistics = () => {
             </CRow>
             <CRow>
                 <CCol sm="12" lg="6">
-                    <CChart
-                        type="bar"
-                        datasets={annoLabels.datasets}
-                        options={chartOptions}
-                        labels={annoLabels.labels}
-                    />
+                    <CChart type="bar" data={annoLabels} options={chartOptions} />
                 </CCol>
 
                 <CCol sm="12" lg="6">
-                    <CChart
-                        type="bar"
-                        datasets={annoTypes.datasets}
-                        options={chartOptions}
-                        labels={annoTypes.labels}
-                    />
+                    <CChart type="bar" data={annoTypes} options={chartOptions} />
                 </CCol>
             </CRow>
         </BaseContainer>

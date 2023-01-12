@@ -280,21 +280,12 @@ const PersonalStatistics = () => {
             </CRow>
             <CRow>
                 <CCol sm="12" lg="6">
-                    <CChart
-                        type="bar"
-                        datasets={annoLabels.datasets}
-                        options={chartOptions}
-                        labels={annoLabels.labels}
-                    />
+                    {console.log(annoLabels)}
+                    <CChart type="bar" data={annoLabels} options={chartOptions} />
                 </CCol>
 
                 <CCol sm="12" lg="6">
-                    <CChart
-                        type="bar"
-                        datasets={annoTypes.datasets}
-                        options={chartOptions}
-                        labels={annoTypes.labels}
-                    />
+                    <CChart type="bar" data={annoTypes} options={chartOptions} />
                 </CCol>
             </CRow>
         </>

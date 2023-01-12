@@ -98,7 +98,7 @@ const AnnosPerHour = ({ data }) => {
     return (
         <CChartLine
             style={{ minHeight: 350 }}
-            datasets={defaultDatasets}
+            data={{ datasets: defaultDatasets, labels: data.labels }}
             options={defaultOptions}
             labels={data.labels}
         />
