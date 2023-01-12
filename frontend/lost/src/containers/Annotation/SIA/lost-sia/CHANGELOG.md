@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Changed
 - Order of buttons in ToolBar: Move setting and filter btn up
+- Added notification that redo/undo is currently not supported
 ### Added 
 - imgActions poperty that will record all actions a user performs during the annotation process
 ### Removed 
