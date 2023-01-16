@@ -76,7 +76,7 @@ const DesignerStatistics = () => {
                     statistics !
                 </CRow>
                 <CRow style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Loading size="xl" />
+                    <Loading size={40} />
                 </CRow>
             </>
         )
@@ -145,7 +145,7 @@ const DesignerStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={designerStatistics.annos.today}
+                        rightHeader={'' + designerStatistics.annos.today}
                         rightFooter="Today"
                         leftHeader={designerStatistics.annos.allTime}
                         leftFooter="All time"
@@ -157,7 +157,7 @@ const DesignerStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={designerStatistics.annotasks.today}
+                        rightHeader={'' + designerStatistics.annotasks.today}
                         rightFooter="Today"
                         leftHeader={designerStatistics.annotasks.allTime}
                         leftFooter="All time"
@@ -169,7 +169,7 @@ const DesignerStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={designerStatistics.annotime.today}
+                        rightHeader={'' + designerStatistics.annotime.today}
                         rightFooter="Today"
                         leftHeader={designerStatistics.annotime.allTime}
                         leftFooter="All time"
@@ -181,7 +181,7 @@ const DesignerStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={designerStatistics.processedImages.today}
+                        rightHeader={'' + designerStatistics.processedImages.today}
                         rightFooter="Today"
                         leftHeader={designerStatistics.processedImages.allTime}
                         leftFooter="All time"

@@ -74,7 +74,7 @@ const PersonalStatistics = () => {
                     statistics !
                 </CRow>
                 <CRow style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Loading size="xl" />
+                    <Loading size={40} />
                 </CRow>
             </>
         )
@@ -136,9 +136,9 @@ const PersonalStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={personalStatistics.annos.today}
+                        rightHeader={'' + personalStatistics.annos.today}
                         rightFooter="Today"
-                        leftHeader={personalStatistics.annos.allTime}
+                        leftHeader={'' + personalStatistics.annos.allTime}
                         leftFooter="All time"
                     >
                         <h2>Annotations</h2>
@@ -148,9 +148,9 @@ const PersonalStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={personalStatistics.annotasks.today}
+                        rightHeader={'' + personalStatistics.annotasks.today}
                         rightFooter="Today"
-                        leftHeader={personalStatistics.annotasks.allTime}
+                        leftHeader={'' + personalStatistics.annotasks.allTime}
                         leftFooter="All time"
                     >
                         <h2>Annotasks</h2>
@@ -160,9 +160,9 @@ const PersonalStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={personalStatistics.annotime.today}
+                        rightHeader={'' + personalStatistics.annotime.today}
                         rightFooter="Today"
-                        leftHeader={personalStatistics.annotime.allTime}
+                        leftHeader={'' + personalStatistics.annotime.allTime}
                         leftFooter="All time"
                     >
                         <h2>Time per Annotation</h2>
@@ -172,9 +172,9 @@ const PersonalStatistics = () => {
                 <CCol sm="6" lg="6" xl="3">
                     <CWidgetBrand
                         color="primary"
-                        rightHeader={personalStatistics.processedImages.today}
+                        rightHeader={'' + personalStatistics.processedImages.today}
                         rightFooter="Today"
-                        leftHeader={personalStatistics.processedImages.allTime}
+                        leftHeader={'' + personalStatistics.processedImages.allTime}
                         leftFooter="All time"
                     >
                         <h2>Processed images</h2>

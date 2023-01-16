@@ -8,7 +8,7 @@ const SelectFileButton = ({ text, className, accept, onSelect, disabled }) => {
     const selectVideoFaker = () => {
         inputRef.current.click()
     }
-    
+
     const onFileChange = (e) => {
         const file = e.target.files[0]
         if (file) {
@@ -46,7 +46,6 @@ SelectFileButton.propTypes = {
     className: PropTypes.string,
     accept: PropTypes.string,
     onSelect: PropTypes.func,
-    disabled: false
 }
 
 SelectFileButton.defaultProps = {
