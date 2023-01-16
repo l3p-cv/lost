@@ -33,7 +33,7 @@ const AnnosPerHour = ({ data }) => {
 
     const defaultOptions = (() => {
         return {
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             legend: {
                 display: false,
             },
@@ -97,7 +97,7 @@ const AnnosPerHour = ({ data }) => {
     // render
     return (
         <CChartLine
-            style={{ minHeight: 350 }}
+            style={{ minHeight: 350, maxHeight: '900' }}
             data={{ datasets: defaultDatasets, labels: data.labels }}
             options={defaultOptions}
             labels={data.labels}

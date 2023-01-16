@@ -4,7 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
-    "@coreui/chartjs": "^2.0.0",
+    "@coreui/chartjs": "^3.0.0",
     "@coreui/coreui": "^3.4.0",
     "@coreui/icons": "^2.0.0-rc.0",
     "@coreui/icons-react": "^1.1.0",
