@@ -148,6 +148,18 @@ const EditDSModal = ({
 }`,
                 })
                 break
+            case 'ftp':
+                setFs({
+                    ...fs,
+                    fsType: type,
+                    connection: `{
+    'host': 'IP-Address',
+    'username': 'my_user_name',
+    'port': 21,
+    'password': 'My-Secret-PW'
+}`,
+                })
+                break
             default:
                 setFs({ ...fs, connection: '{}' })
         }
@@ -190,6 +202,13 @@ const EditDSModal = ({
                         icon={faNetworkWired}
                         style={{ marginRight: 8 }}
                         onClick={() => loadPreset('ssh')}
+                    />
+                    <IconButton
+                        text="FTP"
+                        isOutline={false}
+                        icon={faNetworkWired}
+                        style={{ marginRight: 8 }}
+                        onClick={() => loadPreset('ftp')}
                     />
                 </CRow>
                 {/* <hr></hr> */}

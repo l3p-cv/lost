@@ -226,13 +226,17 @@ class GetImage(Resource):
                 # ds.to_abs(inplace=True)
                 # ds.df.anno_lbl = ""
                 # image = lds.vis_sample(image, ds.df, radius=10)
-                crops, _ = anno_helper.crop_boxes(
-                    df['anno_data'].values,
-                    df['anno_dtype'].values,
-                    image, context=context, draw_annotations=draw_anno 
-                )
-                # img = image
-                img = crops[0]
+                # print(df.anno_data) 
+                ds = lds.LOSTDataset(df)
+                # df.anno_data = df.anno_data.apply(lambda x: np.array(x) if x else None)
+                img = lds.vis_sample(image, ds.df, lbl_col=None)
+                # crops, _ = anno_helper.crop_boxes(
+                #     df['anno_data'].values,
+                #     df['anno_dtype'].values,
+                #     image, context=context, draw_annotations=draw_anno 
+                # )
+                # # img = image
+                # img = crops[0]
             else:
                 raise Exception('Unknown mia image type')
             _, data = cv2.imencode('.jpg', img)

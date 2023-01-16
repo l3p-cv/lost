@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [2.0.0] - unreleased
-## Added
+### Added
 - Install script for installations without docker
 - JupyterLab Integration for Administrators
 - pyAPI:
@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Export lost pipelines to zip file
 - Extendend Logging:
   - Added option for using graylog as central logging platform (Linux support only !)
-## Changed
+### Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend
   * MIA
@@ -79,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed dot column name style to underscore style
 - SIA:
   - Save changed and created annotations instantly to backend
-## Fixed
+### Fixed
 - PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
   not first element in pipeline graph
 - Fixed raw sql in access to be compatible with postgresql
@@ -88,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SIA: 
   - Endless image loading bug
   - Filter Bug -> Do not copy annotations from previous image when filter is active!
-## Removed
+### Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 
   - request_bbox_annos since it is a special case of request_annos
