@@ -20,11 +20,11 @@ class AnnotatorDashboard extends Component {
     componentDidMount() {
         this.props.getAnnoTasks()
         this.props.getWorkingOnAnnoTask()
-        this.timer = setInterval(() => this.props.getAnnoTasks(), 1000)
+        // this.timer = setInterval(() => this.props.getAnnoTasks(), 1000)
     }
     componentWillUnmount() {
-        clearInterval(this.timer)
-        this.timer = null
+        // clearInterval(this.timer)
+        // this.timer = null
     }
 
     chooseAnnoTask(id, type) {
