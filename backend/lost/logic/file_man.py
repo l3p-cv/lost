@@ -209,6 +209,7 @@ class FileMan(object):
         Returns:
             np.array: The loaded image
         '''
+        # raise Exception(f'load_img: {path}')
         if color_type == 'color':
             color = cv2.IMREAD_COLOR
         else:

@@ -1,4 +1,4 @@
-from shutil import ExecError
+import traceback
 import io
 from lost.logic import file_man
 from lost.logic.user import get_user_default_group
@@ -453,15 +453,44 @@ class ScriptOutput(Output):
         # db_anno_task = self._script._dbm.get_anno_task(anno_task_id=anno_task_id)
         anno_task = pipe_elements.AnnoTask(pe, self._script._dbm)
         lbl_map = anno_task.lbl_map
+        def calc_sim_class(df, pre='img'):
+            if isinstance(df, pd.Series):
+                df = pd.DataFrame([df])
+            try:
+                sim_class_col = f'{pre}_sim_class'
+                lbl_id_col = f'{pre}_lbl_id'
+                lbl_col = f'{pre}_lbl'
+                if sim_class_col in df:
+                    if df[sim_class_col].values[0]:
+                        sim_class = df[sim_class_col].values[0]
+                        return sim_class
+                # if lbl_id_col in df:
+                #     if len(df[lbl_id_col].values[0]) > 0:
+                #         sim_class = df[lbl_id_col].values[0][0]
+                #         return sim_class
+                if lbl_col in df:
+                    if len(df[lbl_col].values[0]) > 0:
+                        lbl = df[lbl_col].values[0][0]
+                        sim_class = self._lbl_name_to_id(lbl, lbl_map)
+                        return sim_class
+                sim_class = 1
+                return sim_class
+            except:
+                self._script.logger.warning(f'Could not calculate sim class: {traceback.format_exc()}')
+                return 1
+            
         for img_path, df in lds.df.groupby(img_path_key, sort=False):
             fs = self._get_lds_fm(df, fs_cache, fs)
-            if 'img_sim_class' in df:
-                if df['img_sim_class'].values[0]:
-                    img_sim_class = df['img_sim_class'].values[0]
-                else:
-                    img_sim_class = 1
-            else:
-                img_sim_class = 1
+            # if 'img_sim_class' in df:
+            #     if df['img_sim_class'].values[0]:
+            #         img_sim_class = df['img_sim_class'].values[0]
+            #     elif len(df['img_lbl_id'].values[0]) > 0:
+            #         img_sim_class = df['img_lbl_id'].values[0][0]
+            #     else:
+            #         img_sim_class = 1
+            # else:
+            #     img_sim_class = 1
+            img_sim_class = calc_sim_class(df,'img')
             # rel_img_path = fm.make_path_relative(img_path)
             anno_task_id = pe.anno_task.idx
             img_anno = model.ImageAnno(anno_task_id=anno_task_id,
@@ -491,8 +520,11 @@ class ScriptOutput(Output):
                 if len(anno_df) > 0:
                     # for i, vec in enumerate(annos):
                     for idx, row in anno_df.iterrows():
-                        anno = model.TwoDAnno(iteration=self._script._pipe_element.iteration,
-                            anno_task_id=anno_task_id, state=state.Anno.UNLOCKED)
+                        anno_sim_class = calc_sim_class(row, 'anno')
+                        anno = model.TwoDAnno(
+                            iteration=self._script._pipe_element.iteration,
+                            anno_task_id=anno_task_id, 
+                            state=state.Anno.UNLOCKED, sim_class=anno_sim_class)
                         if len(anno_meta_keys) > 0:
                             if anno_meta_keys == 'all':
                                 fp = io.BytesIO()

@@ -205,6 +205,8 @@ class GetImage(Resource):
                 ufa = UserFileAccess(dbm, user, db_img.fs)
                 # image = fm.load_img(db_img.img_path)
                 image = load_img(db_img, ufa, user)
+                img_h = image.shape[0]
+                img_w = image.shape[1]
                 
                 # get annotation_task config
                 draw_anno = False
@@ -220,23 +222,35 @@ class GetImage(Resource):
                 
                 df = db_img.to_df()
                 df = df[df['anno_uid'] == db_anno.idx]
-                # ds = lds.LOSTDataset(df, filesystem=fm.fs)
-                # ds.df.img_path = ds.df.abs_path
-                # ds.transform_bbox_style('x1y1x2y2', inplace=True)
+                ds = lds.LOSTDataset(df, filesystem=ufa.fs)
                 # ds.to_abs(inplace=True)
-                # ds.df.anno_lbl = ""
-                # image = lds.vis_sample(image, ds.df, radius=10)
-                # print(df.anno_data) 
-                ds = lds.LOSTDataset(df)
-                # df.anno_data = df.anno_data.apply(lambda x: np.array(x) if x else None)
-                img = lds.vis_sample(image, ds.df, lbl_col=None)
-                # crops, _ = anno_helper.crop_boxes(
-                #     df['anno_data'].values,
-                #     df['anno_dtype'].values,
-                #     image, context=context, draw_annotations=draw_anno 
-                # )
-                # # img = image
-                # img = crops[0]
+                if draw_anno:
+                    # img = lds.vis_sample(image, ds.df, lbl_col=None)
+                    img = lds.vis_sample(image, ds.df, lbl_col=None, line_thickness=1)
+                else:
+                    img = image
+                anno = ds.df['anno_data'].iloc[0]
+                # to_abs
+                anno = anno * [img_w, img_h]
+                my_min = anno.min(axis=0).astype(int)
+                my_max = anno.max(axis=0).astype(int)
+                if context == 0:
+                    img = img[my_min[1]:my_max[1], my_min[0]:my_max[0]]
+                else:
+                    anno_w = my_max[0] - my_min[0]
+                    anno_h = my_max[1] - my_min[1]
+                    x_cont = int((anno_w)*context/2)
+                    y_cont = int((anno_h)*context/2)
+
+                    x_min = max(0, my_min[0]-x_cont)
+                    y_min = max(0, my_min[1]-y_cont)
+                    x_max = min(img_w, my_max[0]+x_cont)
+                    y_max = min(img_h, my_max[1]+y_cont)
+
+                    print(f'x_con: {x_cont}, y_con: {y_cont}, anno_w: {anno_w}, anno_h: {anno_h}, img_w: {img_w}, img_h: {img_h}')
+                    print(f'x_min: {x_min}, x_max: {x_max}, y_min: {y_min}, y_max: {y_max}')
+
+                    img = img[y_min:y_max, x_min:x_max]
             else:
                 raise Exception('Unknown mia image type')
             _, data = cv2.imencode('.jpg', img)
