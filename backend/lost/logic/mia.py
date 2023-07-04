@@ -321,7 +321,7 @@ def __update_two_d_annotation(db_man, user_id, data):
             two_d_anno.state = state.Anno.LOCKED_PRIORITY
             db_man.add(two_d_anno)
         if 'imgActions' in img:
-            image = db_man.get_image_annotation(img_anno_id=two_d_anno.idx)
+            image = db_man.get_image_annotation(img_anno_id=two_d_anno.img_anno_id)
             if image.img_actions is not None:
                 prev_actions = json.loads(image.img_actions)
             else:
