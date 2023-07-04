@@ -1,4 +1,5 @@
 import lost
+import traceback
 import json
 import os
 from lost.db import dtype, state, model
@@ -140,7 +141,7 @@ def __get_next_two_d_anno(db_man, user_id, at, max_amount):
         for anno in annos:
             anno.timestamp_lock = datetime.now()
             db_man.save_obj(anno)
-        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, proposedLabel=False)
+        image_serialize = TwoDSerialize(db_man, annos, user_id, at.idx, proposedLabel=True)
         image_serialize.serialize()
         return image_serialize.mia_json
 
@@ -269,6 +270,9 @@ def __update_image_annotation(db_man, user_id, data):
                 anno_time = anno_time/anno_count
             image.user_id = user_id
             image.anno_time = anno_time
+            # Only one label is currently supported by mia -> Remove other labels if present
+            for lbl in image.labels:
+                db_man.delete(lbl)
             db_man.add(image)
             for label in data['labels']:
                 
@@ -300,6 +304,9 @@ def __update_two_d_annotation(db_man, user_id, data):
                 anno_time = anno_time/anno_count
             two_d_anno.user_id = user_id
             two_d_anno.anno_time = anno_time
+            # Only one label is currently supported by mia -> Remove other labels if present
+            for lbl in two_d_anno.labels:
+                db_man.delete(lbl)
             db_man.add(two_d_anno)
             for label in data['labels']:
                 lab = model.Label(dtype=dtype.Label.TWO_D_ANNO,
