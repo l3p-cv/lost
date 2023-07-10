@@ -1,4 +1,5 @@
 from datetime import datetime
+import flask
 from random import random, triangular
 from flask_restx import Resource
 from flask import request, make_response
@@ -221,10 +222,15 @@ class GenerateExport(Resource):
                                                 )
                 dbm.save_obj(dExport)
                 client = dask_session.get_client(user)
+                # flask.current_app.logger.info(f'pe_id: {anno_task.pipe_element_id}, identity: {identity}, export_id: {dExport.idx}, export_name: {dExport.name}, splits: {splits}, export_type: {export_type}, include_images: {include_images}, annotated_images_only: {annotated_images_only}')
+                # export_ds(anno_task.pipe_element_id, identity, 
+                #     dExport.idx, dExport.name, splits, 
+                #     export_type, include_images, 
+                #     annotated_images_only)
                 client.submit(export_ds, anno_task.pipe_element_id, identity, 
                                     dExport.idx, dExport.name, splits, 
-                                    export_type, include_imgs=include_images, 
-                                    annotated_images_only=annotated_images_only)
+                                    export_type, include_images, 
+                                    annotated_images_only)
                 dbm.close_session()
                 return "Success", 200
     

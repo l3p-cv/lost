@@ -26,9 +26,9 @@ def get_stream_logger(name, stream):
 def get_graylog_logger(name):
     logger = logging.getLogger(name)
     if LOSTConfig().use_graylog:
-        from pygelf import GelfUdpHandler
-        logger.addHandler(GelfUdpHandler(host='graylog', port=12201,  _type=name, include_extra_fields=True))
-       
+        if len(logger.handlers) == 0:
+            from pygelf import GelfUdpHandler
+            logger.addHandler(GelfUdpHandler(host='graylog', port=12201,  _type=name, include_extra_fields=True))
     logger.setLevel(logging.DEBUG)
     return logger
 

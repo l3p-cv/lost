@@ -12,6 +12,7 @@ from lost.pyapi import pipe_elements
 from lost.logic.db_access import UserDbAccess
 import lost_ds as lds
 from lost_ds.util import prep_parquet
+from lost.logic.log import get_graylog_logger
 
 try:
     from lost.db import access
@@ -218,75 +219,81 @@ def write_df (base_path, df, export_type, zip_file=None, fs_stream=None):
     
 def export_ds(pe_id, user_id, export_id, export_name, splits, export_type, 
               include_imgs, annotated_images_only):
-    dbm = access.DBMan(config.LOSTConfig())
-    ate = dbm.get_anno_task_export(anno_task_export_id=export_id)
-    user = dbm.get_user(user_id)
-    fs_db = dbm.get_user_default_fs(user_id)
-    dba = UserDbAccess(dbm, user_id)
-    ufa = UserFileAccess(dbm, user, fs_db)
-    pe = dba.get_alien(pe_id)
-   
-    alien = pipe_elements.AnnoTask(pe, dbm)
+    try:
+        dbm = access.DBMan(config.LOSTConfig())
+        ate = dbm.get_anno_task_export(anno_task_export_id=export_id)
+        user = dbm.get_user(user_id)
+        fs_db = dbm.get_user_default_fs(user_id)
+        dba = UserDbAccess(dbm, user_id)
+        ufa = UserFileAccess(dbm, user, fs_db)
+        pe = dba.get_alien(pe_id)
+    
+        alien = pipe_elements.AnnoTask(pe, dbm)
+        my_logger = get_graylog_logger('export_ds')
+        my_logger.info(f'pe_id: {pe_id}, user_id: {user_id}, export_id: {export_id}, export_name: {export_name}, splits: {splits}, export_type: {export_type}, include_images: {include_imgs}, annotated_images_only: {annotated_images_only}')
 
-    df = alien.inp.to_df()
-    if annotated_images_only:
-        df = df[df['img_state'] == 4]
-    fs_name = df.img_fs_name.unique()[0]
-    # src_fs = self.get_fs(name=fs_name)
-    src_fs = ufa.get_fs(name=fs_name)
-    # dst_fs = self.get_fs()
-    dst_fs = ufa.get_user_default_fs()
-    ds = lds.LOSTDataset(df, src_fs)
-    root_path = ufa.get_export_ds_path(export_id)
-    root_path = os.path.join(root_path, f'{export_name}')
-    # root_path = self.get_path(self.get_arg('ds_name'), context='instance')
+        df = alien.inp.to_df()
+        if annotated_images_only:
+            df = df[df['img_state'] == 4]
+        fs_name = df.img_fs_name.unique()[0]
+        # src_fs = self.get_fs(name=fs_name)
+        src_fs = ufa.get_fs(name=fs_name)
+        # dst_fs = self.get_fs()
+        dst_fs = ufa.get_user_default_fs()
+        ds = lds.LOSTDataset(df, src_fs)
+        root_path = ufa.get_export_ds_path(export_id)
+        root_path = os.path.join(root_path, f'{export_name}')
+        # root_path = self.get_path(self.get_arg('ds_name'), context='instance')
 
-    def progress_callback(pg):
-        ate.progress=pg
+        def progress_callback(pg):
+            ate.progress=pg
+            dbm.save_obj(ate)
+
+        if not include_imgs and splits is None:
+            df = ds.df
+            # df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
+            root_path = f'{root_path}{get_file_ext_from_export_type(export_type)}'
+            ate.file_path = root_path
+            dbm.save_obj(ate)
+            with dst_fs.open(root_path, 'wb') as f:
+                write_df(root_path, df, export_type, fs_stream=f)
+        else:
+            root_path = f'{root_path}.zip'
+            ate.file_path = root_path
+            dbm.save_obj(ate)
+            with dst_fs.open(root_path, 'wb') as f:
+                with ZipFile(f, 'w') as zip_file:
+                    if include_imgs:
+                        df = lds.pack_ds(ds.df, root_path, filesystem=src_fs, 
+                                        zip_file=zip_file, progress_callback=progress_callback)
+                        df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
+                    else:
+                        df = ds.df
+                    out_base = os.path.basename(root_path)
+                    out_base = os.path.splitext(out_base)[0]
+                    if splits is not None:
+                        ds = lds.LOSTDataset(df)
+                        df_splits = ds.split_by_img_path(test_size=float(splits['test']),
+                                            val_size=float(splits['val']))
+                        df_names = ['train', 'test', 'val']
+                        for s in df_splits:
+                            df_name = df_names.pop()
+                            df_path = os.path.join(out_base, df_name)
+                            write_df(df_path, s, export_type, zip_file)
+                    else:
+                        df_path = os.path.join(out_base, 'ds')
+                        write_df(df_path, df, export_type, zip_file)
+                    # Write parquet file
+        my_info = dst_fs.info(root_path)
+
+        ate.file_size = str(my_info['size'])
+        ate.progress = 100
         dbm.save_obj(ate)
-
-    if not include_imgs and splits is None:
-        df = ds.df
-        # df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
-        root_path = f'{root_path}{get_file_ext_from_export_type(export_type)}'
-        ate.file_path = root_path
-        dbm.save_obj(ate)
-        with dst_fs.open(root_path, 'wb') as f:
-            write_df(root_path, df, export_type, fs_stream=f)
-    else:
-        root_path = f'{root_path}.zip'
-        ate.file_path = root_path
-        dbm.save_obj(ate)
-        with dst_fs.open(root_path, 'wb') as f:
-            with ZipFile(f, 'w') as zip_file:
-                if include_imgs:
-                    df = lds.pack_ds(ds.df, root_path, filesystem=src_fs, 
-                                    zip_file=zip_file, progress_callback=progress_callback)
-                    df['img_path'] = df['img_path'].apply(lambda x: os.path.join(*x.split('/')[-2:]))
-                else:
-                    df = ds.df
-                out_base = os.path.basename(root_path)
-                out_base = os.path.splitext(out_base)[0]
-                if splits is not None:
-                    ds = lds.LOSTDataset(df)
-                    df_splits = ds.split_by_img_path(test_size=float(splits['test']),
-                                        val_size=float(splits['val']))
-                    df_names = ['train', 'test', 'val']
-                    for s in df_splits:
-                        df_name = df_names.pop()
-                        df_path = os.path.join(out_base, df_name)
-                        write_df(df_path, s, export_type, zip_file)
-                else:
-                    df_path = os.path.join(out_base, 'ds')
-                    write_df(df_path, df, export_type, zip_file)
-                # Write parquet file
-    my_info = dst_fs.info(root_path)
-
-    ate.file_size = str(my_info['size'])
-    ate.progress = 100
-    dbm.save_obj(ate)
-    dbm.close_session()
-    return root_path
+        dbm.close_session()
+        return root_path
+    except:
+        my_logger.error(traceback.format_exc())
+        
 
 def delete_ds_export(export_id, user_id):
     dbm = access.DBMan(config.LOSTConfig())
