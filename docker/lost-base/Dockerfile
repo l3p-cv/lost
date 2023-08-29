@@ -5,7 +5,7 @@ ENV LC_ALL C.UTF-8
 
 # Install Backend Dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends wget curl bzip2 python3.5 \
-    python3-pip python3-setuptools python3-dev build-essential netcat nano \
+    python3-pip python3-setuptools python3-dev build-essential netcat-traditional nano \
     htop libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y --no-install-recommends gnupg gnupg2 gnupg1 && rm -rf /var/lib/apt/lists/*
 
@@ -16,7 +16,7 @@ RUN wget --quiet https://github.com/conda-forge/miniforge/releases/latest/downlo
     ln -s /opt/mambaforge/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/mambaforge/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate lost" >> ~/.bashrc
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 # ADD /docker/lost-base/environment.yml .
