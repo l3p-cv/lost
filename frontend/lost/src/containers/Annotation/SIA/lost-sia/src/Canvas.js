@@ -1016,28 +1016,42 @@ class Canvas extends Component{
     }
 
     undo(){
-        if (!this.hist.isEmpty()){
-            const cState = this.hist.undo()
-            console.log('hist', this.hist)
-            this.setCanvasState(
-                cState.entry.annotations,
-                cState.entry.imgLabelIds, 
-                cState.entry.selectedAnnoId,
-                cState.entry.showSingleAnno)
-        }
+        this.handleNotification({
+                title: "Redo/ Undo not supported",
+                message: `Redo and Undo functions are currently not supported`,
+                type: notificationType.WARNING
+            })
+        return
+        //TODO: Make UNDO great again
+        // if (!this.hist.isEmpty()){
+        //     const cState = this.hist.undo()
+        //     console.log('hist', this.hist)
+        //     this.setCanvasState(
+        //         cState.entry.annotations,
+        //         cState.entry.imgLabelIds, 
+        //         cState.entry.selectedAnnoId,
+        //         cState.entry.showSingleAnno)
+        // }
     }
 
     redo(){
-        if (!this.hist.isEmpty()){
-            const cState = this.hist.redo()
-            console.log('hist', this.hist)
-            this.setCanvasState(
-                cState.entry.annotations,
-                cState.entry.imgLabelIds, 
-                cState.entry.selectedAnnoId,
-                cState.entry.showSingleAnno
-            )
-        }
+        this.handleNotification({
+                title: "Redo/ Undo not supported",
+                message: `Redo and Undo functions are currently not supported`,
+                type: notificationType.WARNING
+            })
+        return
+        //TODO: Make REDO great again
+        // if (!this.hist.isEmpty()){
+        //     const cState = this.hist.redo()
+        //     console.log('hist', this.hist)
+        //     this.setCanvasState(
+        //         cState.entry.annotations,
+        //         cState.entry.imgLabelIds, 
+        //         cState.entry.selectedAnnoId,
+        //         cState.entry.showSingleAnno
+        //     )
+        // }
     }
 
     deleteAnnotation(anno) {

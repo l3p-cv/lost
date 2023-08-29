@@ -54,7 +54,7 @@ const SiaWrapper = (props) => {
     const [fullscreen, setFullscreen] = useState(false)
     const [annoSaveResponse, setAnnoSaveResponse] = useState()
     const [blockImageChange, setBlockImageChange] = useState(false)
-    const [localTaskFinished, setLocalTaskFinished] = useState(0)
+    const [localTaskFinished, setLocalTaskFinished] = useState(false)
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -68,6 +68,13 @@ const SiaWrapper = (props) => {
             window.removeEventListener('resize', props.siaLayoutUpdate)
         }
     }, [])
+
+    useEffect(() => {
+        if (localTaskFinished){
+            console.log('localTaskFinished!', localTaskFinished)
+            canvas.unloadImage()
+        }
+    }, [localTaskFinished])
 
     useEffect(() => {
         if (props.getNextImage) {
@@ -209,6 +216,12 @@ const SiaWrapper = (props) => {
             } else {
                 console.log('handleAnnoSaveResponse ', response.data)
                 setAnnoSaveResponse(response.data)
+                if (localTaskFinished){
+                    props.siaSetTaskFinished()
+                    props.siaSendFinishToBackend().then(() => {
+                        props.history.push('dashboard')
+                    })
+                }
             }
         })
     }
@@ -271,10 +284,7 @@ const SiaWrapper = (props) => {
                 }
                 break
             case tbe.TASK_FINISHED:
-                props.siaSetTaskFinished()
-                props.siaSendFinishToBackend().then(() => {
-                    props.history.push('dashboard')
-                })
+                setLocalTaskFinished(true)
                 break
             case tbe.SHOW_IMAGE_LABEL_INPUT:
                 props.siaShowImgLabelInput(!props.imgLabelInput.show)

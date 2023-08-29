@@ -67,7 +67,7 @@
     "web-vitals": "^3.1.0"
   },
   "scripts": {
-    "start": "REACT_APP_PORT='' react-scripts start",
+    "start": "REACT_APP_PORT='9998' react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

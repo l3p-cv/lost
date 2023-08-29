@@ -21,12 +21,12 @@ const AnnotatorDashboard = () => {
         dispatch(getAnnoTasks())
         dispatch(getWorkingOnAnnoTask())
 
-        const intervalAction = () => dispatch(getAnnoTasks())
-        const interval = setInterval(intervalAction, 1000)
+        // const intervalAction = () => dispatch(getAnnoTasks())
+        // const interval = setInterval(intervalAction, 1000)
 
-        return () => {
-            clearInterval(interval)
-        }
+        // return () => {
+        //     clearInterval(interval)
+        // }
     }, [])
 
     const gotoAnnoTask = (id, type) => {
