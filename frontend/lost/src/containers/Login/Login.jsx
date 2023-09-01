@@ -8,7 +8,6 @@ import {
     Container,
     Form,
     InputGroup,
-    InputGroupAddon,
     InputGroupText,
     Row,
     Input,
@@ -61,7 +60,7 @@ const Login = () => {
                     style={{ margin: '10% 0% 5% 0%' }}
                     className="justify-content-center"
                 >
-                    <img width="500px" src={lostLogoColor} alt="" />
+                    <img src={lostLogoColor} alt="" style={{ width: '500px' }} />
                 </Row>
                 <Row className="justify-content-center">
                     <Col md="4">
@@ -74,11 +73,11 @@ const Login = () => {
                                             Sign in to your account
                                         </p>
                                         <InputGroup className="mb-3">
-                                            <InputGroupAddon addonType="prepend">
-                                                <InputGroupText>
-                                                    <FaUser />
-                                                </InputGroupText>
-                                            </InputGroupAddon>
+                                            {/* <InputGroupAddon addonType="prepend"> */}
+                                            <InputGroupText>
+                                                <FaUser />
+                                            </InputGroupText>
+                                            {/* </InputGroupAddon> */}
                                             <Input
                                                 onChange={(e) =>
                                                     setUsername(e.currentTarget.value)
@@ -90,11 +89,11 @@ const Login = () => {
                                             />
                                         </InputGroup>
                                         <InputGroup className="mb-4">
-                                            <InputGroupAddon addonType="prepend">
-                                                <InputGroupText>
-                                                    <FaLock />
-                                                </InputGroupText>
-                                            </InputGroupAddon>
+                                            {/* <InputGroupAddon addonType="prepend"> */}
+                                            <InputGroupText>
+                                                <FaLock />
+                                            </InputGroupText>
+                                            {/* </InputGroupAddon> */}
                                             <Input
                                                 onChange={(e) =>
                                                     setPassword(e.currentTarget.value)
