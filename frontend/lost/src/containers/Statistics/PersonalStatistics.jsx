@@ -3,10 +3,8 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 import * as statistics_api from '../../actions/statistics/statistics_api'
 
-import { CWidgetDropdown, CRow, CCol, CWidgetBrand } from '@coreui/react'
-
-import { CChart } from '@coreui/react-chartjs'
-import ChartLineSimple from './ChartLineSimple'
+import { CRow, CCol, CWidgetStatsA, CWidgetStatsD } from '@coreui/react'
+import { CChart, CChartLine } from '@coreui/react-chartjs'
 import Loading from '../../components/Loading'
 
 const PersonalStatistics = () => {
@@ -121,20 +119,63 @@ const PersonalStatistics = () => {
         maintainAspectRatio: true,
     }
 
+    const lineChartOptions = {
+        plugins: {
+            legend: {
+                display: false,
+            },
+        },
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: {
+                    display: false,
+                    drawBorder: false,
+                },
+                ticks: {
+                    display: false,
+                },
+            },
+            y: {
+                min: 30,
+                max: 89,
+                display: false,
+                grid: {
+                    display: false,
+                },
+                ticks: {
+                    display: false,
+                },
+            },
+        },
+        elements: {
+            line: {
+                borderWidth: 1,
+                tension: 0.4,
+            },
+            point: {
+                radius: 4,
+                hitRadius: 10,
+                hoverRadius: 4,
+            },
+        },
+    }
+
     return (
         <>
             <CRow style={{ marginBottom: 10 }}>
                 <CCol sm="5">
-                    <h3 id="traffic" className="card-title mb-0">
+                    <h2 id="traffic" className="card-title mb-2">
                         Personal statistics
-                    </h3>
+                    </h2>
                     {/* <div className="small text-muted">last seven days</div> */}
                 </CCol>
                 <CCol sm="7" className="d-none d-md-block"></CCol>
             </CRow>
             <CRow>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* CWidgedBrand here */}
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + personalStatistics.annos.today}
                         rightFooter="Today"
@@ -142,11 +183,21 @@ const PersonalStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Annotations</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Annotations</h3>}
+                        values={[
+                            { title: 'Today', value: '' + personalStatistics.annos.today },
+                            { title: 'All time', value: '' + personalStatistics.annos.allTime },
+                        ]}
+                    />
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* CWidgedBrand here */}
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + personalStatistics.annotasks.today}
                         rightFooter="Today"
@@ -154,11 +205,21 @@ const PersonalStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Annotasks</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Annotasks</h3>}
+                        values={[
+                            { title: 'Today', value: '' + personalStatistics.annotasks.today },
+                            { title: 'All time', value: '' + personalStatistics.annotasks.allTime },
+                        ]}
+                    />
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* CWidgedBrand here */}
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + personalStatistics.annotime.today}
                         rightFooter="Today"
@@ -166,11 +227,20 @@ const PersonalStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Time per Annotation</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Time per Annotation</h3>}
+                        values={[
+                            { title: 'Today', value: '' + personalStatistics.annotime.today },
+                            { title: 'All time', value: '' + personalStatistics.annotime.allTime },
+                        ]}
+                    />
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + personalStatistics.processedImages.today}
                         rightFooter="Today"
@@ -178,103 +248,113 @@ const PersonalStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Processed images</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Processed images</h3>}
+                        values={[
+                            { title: 'Today', value: '' + personalStatistics.processedImages.today },
+                            { title: 'All time', value: '' + personalStatistics.processedImages.allTime },
+                        ]}
+                    />
                 </CCol>
             </CRow>
             <CRow style={{ marginBottom: 5 }}>
                 <CCol sm="5">
-                    <h4 id="traffic" className="card-title mb-0">
+                    <h2 id="traffic" className="card-title mb-0">
                         Averages
-                    </h4>
-                    <div className="small text-muted">Last 7 days</div>
+                    </h2>
+                    <div className="text-muted mb-2">Last 7 days</div>
                 </CCol>
                 <CCol sm="7" className="d-none d-md-block"></CCol>
             </CRow>
             <CRow>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetDropdown
+                    <CWidgetStatsA
                         color="primary"
-                        header={'Ø ' + personalStatistics.annos.avg}
-                        text="Annotations / Day"
-                        footerSlot={
-                            <ChartLineSimple
+                        title="Annotations / Day"
+                        value={'Ø ' + personalStatistics.annos.avg}
+                        chart={
+                            <CChartLine
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={personalStatistics.annos.history.week}
-                                options={{ elements: { line: { borderWidth: 2.5 } } }}
+                                data={personalStatistics.annos.history.week}
+                                // options={{ elements: { line: { borderWidth: 2.5 } } }}
+                                options={lineChartOptions}
                                 pointHoverBackgroundColor="primary"
                                 label="Annotations"
                                 labels="days"
                             />
                         }
-                    ></CWidgetDropdown>
+                    ></CWidgetStatsA>
                 </CCol>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetDropdown
+                    <CWidgetStatsA
                         color="primary"
-                        header={'Ø ' + personalStatistics.annotasks.avg}
-                        text="Annotasks / Day"
-                        footerSlot={
-                            <ChartLineSimple
+                        title="Annotasks / Day"
+                        value={'Ø ' + personalStatistics.annotasks.avg}
+                        chart={
+                            <CChartLine
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
                                 dataPoints={personalStatistics.annotasks.history.week}
-                                options={{ elements: { line: { borderWidth: 2.5 } } }}
+                                options={lineChartOptions}
                                 pointHoverBackgroundColor="primary"
                                 label="Annotasks"
                                 labels="days"
                             />
                         }
-                    ></CWidgetDropdown>
+                    ></CWidgetStatsA>
                 </CCol>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetDropdown
+                    <CWidgetStatsA
                         color="primary"
-                        header={'Ø ' + personalStatistics.annotime.avg}
-                        text="Time per Annotation / Day"
-                        footerSlot={
-                            <ChartLineSimple
+                        title="Time per Annotation / Day"
+                        value={'Ø ' + personalStatistics.annotime.avg}
+                        chart={
+                            <CChartLine
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
                                 dataPoints={personalStatistics.annotime.history.week}
-                                options={{ elements: { line: { borderWidth: 2.5 } } }}
+                                options={lineChartOptions}
                                 pointHoverBackgroundColor="primary"
                                 label="Seconds"
                             />
                         }
-                    ></CWidgetDropdown>
+                    ></CWidgetStatsA>
                 </CCol>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetDropdown
+                    <CWidgetStatsA
                         color="primary"
-                        header={'Ø ' + personalStatistics.processedImages.avg}
-                        text="Processed Images / Day"
-                        footerSlot={
-                            <ChartLineSimple
+                        title="Processed Images / Day"
+                        value={'Ø ' + personalStatistics.processedImages.avg}
+                        chart={
+                            <CChartLine
                                 className="mt-3"
                                 style={{ height: '70px' }}
                                 backgroundColor="rgba(255,255,255,.2)"
                                 dataPoints={
                                     personalStatistics.processedImages.history.week
                                 }
-                                options={{ elements: { line: { borderWidth: 2.5 } } }}
+                                options={lineChartOptions}
                                 pointHoverBackgroundColor="primary"
                                 label="Images"
                             />
                         }
-                    ></CWidgetDropdown>
+                    ></CWidgetStatsA>
                 </CCol>
-            </CRow>
+            </CRow >
 
             <CRow>
                 <CCol sm="5">
-                    <h4 id="traffic" className="card-title mb-0">
+                    <h2 id="traffic" className="card-title mb-0">
                         Annotations / Label and Type
-                    </h4>
-                    <div className="small text-muted">Total time period</div>
+                    </h2>
+                    <div className="text-muted mb-2">Total time period</div>
                 </CCol>
                 <CCol sm="7" className="d-none d-md-block"></CCol>
             </CRow>
