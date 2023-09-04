@@ -12,7 +12,7 @@ const Loading = ({ size, marginTop }) => (
 )
 
 Loading.propTypes = {
-    size: PropTypes.number,
+    size: PropTypes.string,
     marginTop: PropTypes.number,
 }
 
