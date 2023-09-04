@@ -25,7 +25,7 @@ const Logout = () => {
                     style={{ margin: '10% 0% 5% 0%' }}
                     className="justify-content-center"
                 >
-                    <img width="500px" src={lostLogoColor} alt="" />
+                    <img src={lostLogoColor} alt="" style={{ width: '500px' }} />
                 </Row>
                 <Row className="justify-content-center">
                     <CardGroup>
