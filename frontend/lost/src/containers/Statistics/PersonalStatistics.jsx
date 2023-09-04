@@ -6,6 +6,7 @@ import * as statistics_api from '../../actions/statistics/statistics_api'
 import { CRow, CCol, CWidgetStatsA, CWidgetStatsD } from '@coreui/react'
 import { CChart, CChartLine } from '@coreui/react-chartjs'
 import Loading from '../../components/Loading'
+import LineChartWidget from '../../components/LineChartWidget'
 
 const PersonalStatistics = () => {
     const dispatch = useDispatch()
@@ -72,7 +73,7 @@ const PersonalStatistics = () => {
                     statistics !
                 </CRow>
                 <CRow style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Loading size={40} />
+                    <Loading size="3x" />
                 </CRow>
             </>
         )
@@ -271,81 +272,16 @@ const PersonalStatistics = () => {
             </CRow>
             <CRow>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetStatsA
-                        color="primary"
-                        title="Annotations / Day"
-                        value={'Ø ' + personalStatistics.annos.avg}
-                        chart={
-                            <CChartLine
-                                className="mt-3"
-                                style={{ height: '70px' }}
-                                backgroundColor="rgba(255,255,255,.2)"
-                                data={personalStatistics.annos.history.week}
-                                // options={{ elements: { line: { borderWidth: 2.5 } } }}
-                                options={lineChartOptions}
-                                pointHoverBackgroundColor="primary"
-                                label="Annotations"
-                                labels="days"
-                            />
-                        }
-                    ></CWidgetStatsA>
+                    <LineChartWidget title="Annotations / Day" value={'Ø ' + personalStatistics.annos.avg} chartData={personalStatistics.annos.history.week}></LineChartWidget>
                 </CCol>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetStatsA
-                        color="primary"
-                        title="Annotasks / Day"
-                        value={'Ø ' + personalStatistics.annotasks.avg}
-                        chart={
-                            <CChartLine
-                                className="mt-3"
-                                style={{ height: '70px' }}
-                                backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={personalStatistics.annotasks.history.week}
-                                options={lineChartOptions}
-                                pointHoverBackgroundColor="primary"
-                                label="Annotasks"
-                                labels="days"
-                            />
-                        }
-                    ></CWidgetStatsA>
+                    <LineChartWidget title="Annotasks / Day" value={'Ø ' + personalStatistics.annotasks.avg} chartData={personalStatistics.annotasks.history.week}></LineChartWidget>
                 </CCol>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetStatsA
-                        color="primary"
-                        title="Time per Annotation / Day"
-                        value={'Ø ' + personalStatistics.annotime.avg}
-                        chart={
-                            <CChartLine
-                                className="mt-3"
-                                style={{ height: '70px' }}
-                                backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={personalStatistics.annotime.history.week}
-                                options={lineChartOptions}
-                                pointHoverBackgroundColor="primary"
-                                label="Seconds"
-                            />
-                        }
-                    ></CWidgetStatsA>
+                    <LineChartWidget title="Time per Annotation / Day" value={'Ø ' + personalStatistics.annotime.avg} chartData={personalStatistics.annotime.history.week}></LineChartWidget>
                 </CCol>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetStatsA
-                        color="primary"
-                        title="Processed Images / Day"
-                        value={'Ø ' + personalStatistics.processedImages.avg}
-                        chart={
-                            <CChartLine
-                                className="mt-3"
-                                style={{ height: '70px' }}
-                                backgroundColor="rgba(255,255,255,.2)"
-                                dataPoints={
-                                    personalStatistics.processedImages.history.week
-                                }
-                                options={lineChartOptions}
-                                pointHoverBackgroundColor="primary"
-                                label="Images"
-                            />
-                        }
-                    ></CWidgetStatsA>
+                    <LineChartWidget title="Processed Images / Day" value={'Ø ' + personalStatistics.processedImages.avg} chartData={personalStatistics.processedImages.history.week}></LineChartWidget>
                 </CCol>
             </CRow >
 
@@ -360,7 +296,6 @@ const PersonalStatistics = () => {
             </CRow>
             <CRow>
                 <CCol sm="12" lg="6">
-                    {console.log(annoLabels)}
                     <CChart type="bar" data={annoLabels} options={chartOptions} />
                 </CCol>
 
