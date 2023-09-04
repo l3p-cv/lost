@@ -1,6 +1,6 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { CContainer, CFade } from '@coreui/react'
+import { CContainer } from '@coreui/react'
 
 const TheContent = ({ routes }) => (
     <main className="c-main">
@@ -15,9 +15,9 @@ const TheContent = ({ routes }) => (
                                     path={route.path}
                                     name={route.name}
                                     element={
-                                        <CFade>
-                                            <route.component />
-                                        </CFade>
+                                        // <CFade>
+                                        <route.component />
+                                        // </CFade>
                                     }
                                 />
                             ),

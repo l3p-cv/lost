@@ -77,7 +77,7 @@ const TheFooter = () => {
     }
 
     return (
-        <CFooter fixed={false}>
+        <CFooter>
             <div>
                 <span className="ml-1">
                     Powered by{' '}

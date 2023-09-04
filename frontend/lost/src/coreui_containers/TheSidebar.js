@@ -1,15 +1,12 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-    CCreateElement,
     CSidebar,
     CSidebarBrand,
     CSidebarNav,
-    CSidebarNavDivider,
-    CSidebarNavTitle,
-    CSidebarMinimizer,
-    CSidebarNavDropdown,
-    CSidebarNavItem,
+    CNavTitle,
+    CNavItem,
+    CSidebarToggler,
 } from '@coreui/react'
 
 import actions from '../actions'
@@ -20,11 +17,38 @@ const TheSidebar = ({ navItems }) => {
     const isNavBarVisible = useSelector((state) => state.lost.isNavBarVisible)
     // remove component key from navItems
     const onShowChange = () => {
-        dispatch(actions.setNavbarVisible(!isNavBarVisible))
+        console.log("Navbar visibility change event");
+        // dispatch(actions.setNavbarVisible(!isNavBarVisible))
     }
     if (navItems) {
+        const navbarItemsDom = []
+        let itemKey = 0;
+        navItems.forEach((item) => {
+            let newItem = ''
+            switch (item._tag) {
+                case "CSidebarNavTitle":
+                    newItem = (<CNavTitle key={itemKey++}>{item._children[0]}</CNavTitle>)
+                    break;
+                case "CSidebarNavItem":
+                    newItem = (
+                        <CNavItem key={itemKey++} href={item.to}>
+                            {item.icon}
+                            {item.name}
+                        </CNavItem>
+                    )
+                    break;
+                default:
+                    newItem = (
+                        <CNavItem key={itemKey++} href="#">
+                            {item.name}
+                        </CNavItem>
+                    )
+            }
+            navbarItemsDom.push(newItem)
+        })
+
         return (
-            <CSidebar show={isNavBarVisible} onShowChange={onShowChange}>
+            <CSidebar position="fixed" visible={isNavBarVisible} onVisibleChange={onShowChange}>
                 <CSidebarBrand className="d-md-down-none" to="/dashboard">
                     <img
                         alt=""
@@ -34,17 +58,22 @@ const TheSidebar = ({ navItems }) => {
                     />
                 </CSidebarBrand>
                 <CSidebarNav>
-                    <CCreateElement
+                    {navbarItemsDom}
+                    {/* <CreateElement
                         items={navItems}
                         components={{
-                            CSidebarNavDivider,
-                            CSidebarNavDropdown,
-                            CSidebarNavItem,
-                            CSidebarNavTitle,
+                            // CNavDivider,
+                            CNavGroup,
+                            CNavItem,
+                            CNavTitle,
                         }}
-                    />
+                    /> */}
                 </CSidebarNav>
-                <CSidebarMinimizer className="c-d-md-down-none" />
+                {/* <CSidebarMinimizer className="c-d-md-down-none" /> */}
+                <CSidebarToggler
+                    className="d-none d-lg-flex"
+                    onClick={() => dispatch(actions.setNavbarVisible(!isNavBarVisible))}
+                />
             </CSidebar>
         )
     }

@@ -1,6 +1,8 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { CHeader, CToggler, CHeaderBrand, CHeaderNav } from '@coreui/react'
+import { CHeader, CHeaderToggler, CHeaderBrand, CHeaderNav } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import { cilMenu } from '@coreui/icons'
 // import { useTranslation } from 'react-i18next'
 // routes config
 
@@ -24,7 +26,19 @@ const TheHeader = ({ numNavItems }) => {
             if (numNavItems > 1) {
                 return (
                     <>
-                        <CToggler
+                        <CHeaderToggler
+                            className="ps-1 ml-md-3 d-lg-none"
+                            onClick={toggleSidebarMobile}
+                        >
+                            <CIcon icon={cilMenu} size="lg" />
+                        </CHeaderToggler >
+                        <CHeaderToggler
+                            className="ps-1 ml-3 d-md-down-none"
+                            onClick={toggleSidebar}
+                        >
+                            <CIcon icon={cilMenu} size="lg" />
+                        </CHeaderToggler >
+                        {/* <CToggler
                             inHeader
                             className="ml-md-3 d-lg-none"
                             onClick={toggleSidebarMobile}
@@ -33,7 +47,7 @@ const TheHeader = ({ numNavItems }) => {
                             inHeader
                             className="ml-3 d-md-down-none"
                             onClick={toggleSidebar}
-                        />
+                        /> */}
                     </>
                 )
             } else {
@@ -45,13 +59,11 @@ const TheHeader = ({ numNavItems }) => {
 
     // const { t } = useTranslation()
     return (
-        <CHeader withSubheader>
+        <CHeader>
             {renderSidebarToggler()}
             <CHeaderBrand className="mx-auto d-lg-none" to="/dashboard">
                 <img alt="" style={{ height: 40 }} className="img-avatar" />
             </CHeaderBrand>
-
-            <CHeaderNav className="d-md-down-none mr-auto" />
 
             <CHeaderNav className="px-3">
                 {/* <div>{t('general.selectedLanguage')}</div>
