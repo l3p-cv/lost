@@ -109,7 +109,7 @@ const Login = () => {
                                         </div>
                                         {loginStatus === 'loading' ? (
                                             <CRow className="justify-content-center">
-                                                <Loading></Loading>
+                                                <Loading size="3x"></Loading>
                                             </CRow>
                                         ) : (
                                             ''
