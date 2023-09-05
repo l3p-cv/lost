@@ -21,7 +21,6 @@ import {
     CNavLink,
     CTabContent,
     CTabPane,
-    CTabs,
 } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
@@ -66,7 +65,7 @@ const AdminArea = () => {
     return (
         <BaseContainer>
             <CCol xs="12" md="12" className="mb-4">
-                <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
+                <CNav variant="tabs" role="tablist">
                     <CNav variant="tabs">
                         {/* <CNavItem>
                             <CNavLink>
@@ -79,7 +78,7 @@ const AdminArea = () => {
                             </CNavLink>
                         </CNavItem> */}
                         <CNavItem>
-                            <CNavLink>
+                            <CNavLink active={active === 0} onClick={() => setActive(0)}>
                                 <FontAwesomeIcon
                                     color="#092F38"
                                     size="1x"
@@ -89,7 +88,7 @@ const AdminArea = () => {
                             </CNavLink>
                         </CNavItem>
                         <CNavItem>
-                            <CNavLink>
+                            <CNavLink active={active === 1} onClick={() => setActive(1)}>
                                 <FontAwesomeIcon
                                     color="#092F38"
                                     size="1x"
@@ -99,7 +98,7 @@ const AdminArea = () => {
                             </CNavLink>
                         </CNavItem>
                         <CNavItem>
-                            <CNavLink>
+                            <CNavLink active={active === 2} onClick={() => setActive(2)}>
                                 <FontAwesomeIcon
                                     color="#092F38"
                                     size="1x"
@@ -109,7 +108,7 @@ const AdminArea = () => {
                             </CNavLink>
                         </CNavItem>
                         <CNavItem>
-                            <CNavLink>
+                            <CNavLink active={active === 3} onClick={() => setActive(3)}>
                                 <FontAwesomeIcon
                                     color="#092F38"
                                     size="1x"
@@ -129,7 +128,7 @@ const AdminArea = () => {
                             </CNavLink>
                         </CNavItem> */}
                         <CNavItem>
-                            <CNavLink>
+                            <CNavLink active={active === 4} onClick={() => setActive(4)}>
                                 <FontAwesomeIcon
                                     color="#092F38"
                                     size="1x"
@@ -139,7 +138,7 @@ const AdminArea = () => {
                             </CNavLink>
                         </CNavItem>
                         {/* <CNavItem>
-                            <CNavLink>
+                            <CNavLink active={active=== 5} onClick={() => setActive(5)}>
                                 <FontAwesomeIcon
                                     color="#092F38"
                                     size="1x"
@@ -150,20 +149,20 @@ const AdminArea = () => {
                         </CNavItem> */}
                         {renderJupyterLabNav()}
                     </CNav>
-                    <CTabContent>
-                        <CTabPane style={{ marginTop: 30 }}>
+                    <CTabContent className='w-100'>
+                        <CTabPane role="tabpanel" aria-labelledby="users-tab-pane" visible={active === 0} style={{ marginTop: 30 }}>
                             <UsersAndGroups></UsersAndGroups>
                         </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
+                        <CTabPane role="tabpanel" aria-labelledby="pipelineprojects-tab-pane" visible={active === 1} style={{ marginTop: 30 }}>
                             <PipelineProjects visLevel="global"></PipelineProjects>
                         </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
+                        <CTabPane role="tabpanel" aria-labelledby="datasources-tab-pane" visible={active === 2} style={{ marginTop: 30 }}>
                             <DSTable visLevel="global"></DSTable>
                         </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
+                        <CTabPane role="tabpanel" aria-labelledby="labels-tab-pane" visible={active === 3} style={{ marginTop: 30 }}>
                             <Labels visLevel="global"></Labels>
                         </CTabPane>
-                        <CTabPane style={{ marginTop: 30 }}>
+                        <CTabPane role="tabpanel" aria-labelledby="workers-tab-pane" visible={active === 4} style={{ marginTop: 30 }}>
                             <WorkersTable></WorkersTable>
                         </CTabPane>
                         {/* <CTabPane style={{ marginTop: 30 }}>
@@ -173,7 +172,7 @@ const AdminArea = () => {
                         </CTabPane> */}
                         {renderJupyterLabTab()}
                     </CTabContent>
-                </CTabs>
+                </CNav>
             </CCol>
         </BaseContainer>
     )

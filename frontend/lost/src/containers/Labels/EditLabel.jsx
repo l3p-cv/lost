@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../actions'
-import { Alert, Input, InputGroup, InputGroupAddon } from 'reactstrap'
+import { Alert, Input, InputGroup } from 'reactstrap'
 import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
@@ -212,22 +212,22 @@ class EditLabel extends Component {
                             onChange={this.handleEditLabelColor}
                             invalid={this.state.invalidEditColor}
                         ></Input>
-                        <InputGroupAddon addonType="append">
-                            <IconButton
-                                color="danger"
-                                onClick={this.handleEditDelete}
-                                icon={faTrash}
-                                isOutline={false}
-                                disabled={this.props.label.children.length > 0}
-                            />
-                            <IconButton
-                                color="primary"
-                                isOutline={false}
-                                icon={faCheck}
-                                onClick={this.handleEditSave}
-                                text="Save"
-                            />
-                        </InputGroupAddon>
+                        {/* <InputGroupAddon addonType="append"> */}
+                        <IconButton
+                            color="danger"
+                            onClick={this.handleEditDelete}
+                            icon={faTrash}
+                            isOutline={false}
+                            disabled={this.props.label.children.length > 0}
+                        />
+                        <IconButton
+                            color="primary"
+                            isOutline={false}
+                            icon={faCheck}
+                            onClick={this.handleEditSave}
+                            text="Save"
+                        />
+                        {/* </InputGroupAddon> */}
                     </InputGroup>
                     <hr></hr>
                     <b>
@@ -265,16 +265,16 @@ class EditLabel extends Component {
                             onChange={this.handleCreateLabelColor}
                             invalid={this.state.invalidCreateColor}
                         ></Input>
-                        <InputGroupAddon addonType="append">
-                            <IconButton
-                                color="primary"
-                                onClick={this.handleCreateSave}
-                                text="Add"
-                                icon={faPlus}
-                                isOutline={false}
-                                disabled={this.state.invalidCreateColor}
-                            />
-                        </InputGroupAddon>
+                        {/* <InputGroupAddon addonType="append"> */}
+                        <IconButton
+                            color="primary"
+                            onClick={this.handleCreateSave}
+                            text="Add"
+                            icon={faPlus}
+                            isOutline={false}
+                            disabled={this.state.invalidCreateColor}
+                        />
+                        {/* </InputGroupAddon> */}
                     </InputGroup>
                     <NotificationContainer />
                 </>

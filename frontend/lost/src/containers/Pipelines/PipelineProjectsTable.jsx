@@ -5,7 +5,7 @@ import IconButton from '../../components/IconButton'
 import Datatable from '../../components/Datatable'
 import { API_URL } from '../../lost_settings'
 import { saveAs } from 'file-saver'
-import { CRow, CBadge } from '@coreui/react'
+import { CBadge } from '@coreui/react'
 import * as Notification from '../../components/Notification'
 
 import * as pipelineProjectsApi from '../../actions/pipeline/pipeline_projects_api'
@@ -61,13 +61,13 @@ const PTTable = ({ visLevel }) => {
 
     return (
         <>
-            <CRow style={{ marginBottom: 10, marginLeft: 3 }}>
-                <AddPipelineProject
-                    visLevel={visLevel}
-                    projectNames={projectNames}
-                    refetch={refetch}
-                />
-            </CRow>
+            {/* <CRow style={{ marginBottom: 10, marginLeft: 3 }}> */}
+            <AddPipelineProject
+                visLevel={visLevel}
+                projectNames={projectNames}
+                refetch={refetch}
+            />
+            {/* </CRow> */}
             {tableData.length > 0 ? (
                 <Datatable
                     data={tableData}

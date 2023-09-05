@@ -20,7 +20,7 @@ import {
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import * as Notification from '../../components/Notification'
-import { CRow } from '@coreui/react'
+import { CRow, CCol } from '@coreui/react'
 import { useSelector } from 'react-redux'
 import * as fbAPI from '../../actions/fb/fb_api'
 
@@ -57,7 +57,7 @@ const EditDSModal = ({
     // }
 
     useEffect(() => {
-        if (fullFs) setFs({...fullFs, connection: JSON.stringify(fullFs.connection)})
+        if (fullFs) setFs({ ...fullFs, connection: JSON.stringify(fullFs.connection) })
     }, [fullFs])
 
     useEffect(() => {
@@ -167,49 +167,59 @@ const EditDSModal = ({
     const renderDsTypeButtons = () => {
         return (
             <>
-                <CRow alignHorizontal="center">
+                <CRow alignHorizontal="center" className='mb-2'>
                     <b>Load Preset</b>
                 </CRow>
-                <CRow alignHorizontal="center" style={{ marginTop: 8, marginBottom: 20 }}>
+                <CRow alignHorizontal="center" className="justify-content-center mb-3" style={{ marginTop: 8, marginBottom: 20 }}>
                     {roles.find((el) => el.name === 'Administrator') ? (
-                        <IconButton
-                            text="File"
-                            isOutline={false}
-                            icon={faFile}
-                            style={{ marginRight: 8 }}
-                            onClick={() => loadPreset('file')}
-                        />
+                        <CCol md={2}>
+                            <IconButton
+                                text="File"
+                                isOutline={false}
+                                icon={faFile}
+                                style={{ marginRight: 8 }}
+                                onClick={() => loadPreset('file')}
+                            />
+                        </CCol>
                     ) : (
                         ''
                     )}
-                    <IconButton
-                        text="S3 Bucket"
-                        isOutline={false}
-                        icon={faAws}
-                        style={{ marginRight: 8 }}
-                        onClick={() => loadPreset('s3')}
-                    />
-                    <IconButton
-                        text="Azure Blob Storage"
-                        isOutline={false}
-                        icon={faMicrosoft}
-                        style={{ marginRight: 8 }}
-                        onClick={() => loadPreset('abfs')}
-                    />
-                    <IconButton
-                        text="SSH/ SFTP"
-                        isOutline={false}
-                        icon={faNetworkWired}
-                        style={{ marginRight: 8 }}
-                        onClick={() => loadPreset('ssh')}
-                    />
-                    <IconButton
-                        text="FTP"
-                        isOutline={false}
-                        icon={faNetworkWired}
-                        style={{ marginRight: 8 }}
-                        onClick={() => loadPreset('ftp')}
-                    />
+                    <CCol md={2}>
+                        <IconButton
+                            text="S3 Bucket"
+                            isOutline={false}
+                            icon={faAws}
+                            style={{ marginRight: 8 }}
+                            onClick={() => loadPreset('s3')}
+                        />
+                    </CCol>
+                    <CCol md={3}>
+                        <IconButton
+                            text="Azure Blob Storage"
+                            isOutline={false}
+                            icon={faMicrosoft}
+                            style={{ marginRight: 8 }}
+                            onClick={() => loadPreset('abfs')}
+                        />
+                    </CCol>
+                    <CCol md={2}>
+                        <IconButton
+                            text="SSH/ SFTP"
+                            isOutline={false}
+                            icon={faNetworkWired}
+                            style={{ marginRight: 8 }}
+                            onClick={() => loadPreset('ssh')}
+                        />
+                    </CCol>
+                    <CCol md={2}>
+                        <IconButton
+                            text="FTP"
+                            isOutline={false}
+                            icon={faNetworkWired}
+                            style={{ marginRight: 8 }}
+                            onClick={() => loadPreset('ftp')}
+                        />
+                    </CCol>
                 </CRow>
                 {/* <hr></hr> */}
             </>

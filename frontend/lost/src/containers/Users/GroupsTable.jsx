@@ -66,9 +66,9 @@ export const Groups = () => {
                     value={newGroup}
                     onChange={(e) => setNewGroup(e.currentTarget.value)}
                 />
-                <InputGroupAddon addonType="append">
-                    <IconButton color="primary" icon={faPlus} onClick={addGroup} />
-                </InputGroupAddon>
+                {/* <InputGroupAddon addonType="append"> */}
+                <IconButton color="primary" icon={faPlus} onClick={addGroup} />
+                {/* </InputGroupAddon> */}
             </InputGroup>
             <Datatable
                 showPageSizeOptions={false}

@@ -9,7 +9,7 @@ import {
     faDownload,
 } from '@fortawesome/free-solid-svg-icons'
 
-import { CNav, CNavItem, CNavLink, CTabContent, CTabPane, CTabs } from '@coreui/react'
+import { CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
 
 import TabUser from './TabUser'
 import TabGenerateExport from './TabGenerateExport'
@@ -114,7 +114,8 @@ const AnnoTaskTabs = (props) => {
         )
     }
     return (
-        <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
+        // <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
+        <CNav variant="tabs" role="tablist" activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
             <CNav variant="tabs" style={{ marginTop: '20px', marginLeft: '5px' }}>
                 {renderGenOrShowExportLinks()}
 
@@ -149,7 +150,8 @@ const AnnoTaskTabs = (props) => {
                     <TabAdaptConfiguration annoTask={props.annotask} />
                 </CTabPane>
             </CTabContent>
-        </CTabs>
+            {/* </CTabs> */}
+        </CNav>
     )
 }
 export default AnnoTaskTabs

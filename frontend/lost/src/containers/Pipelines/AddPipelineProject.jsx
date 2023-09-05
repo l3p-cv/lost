@@ -9,7 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import BaseModal from '../../components/BaseModal'
 import { useDropzone } from 'react-dropzone'
-import { CRow, CCol, CInput } from '@coreui/react'
+import { CRow, CCol, CForm, CFormInput } from '@coreui/react'
 import * as pipelinedProjectsApi from '../../actions/pipeline/pipeline_projects_api'
 import * as Notification from '../../components/Notification'
 import HelpButton from '../../components/HelpButton'
@@ -115,7 +115,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                     },
                     option2: {
                         text: 'No',
-                        callback: () => {},
+                        callback: () => { },
                     },
                 })
             } else {
@@ -150,7 +150,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                     },
                     option2: {
                         text: 'No',
-                        callback: () => {},
+                        callback: () => { },
                     },
                 })
             } else {
@@ -169,6 +169,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
             />
         )
     }
+
     return (
         <>
             <BaseModal
@@ -259,75 +260,64 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                         >
                             <CRow>
                                 <CCol sm="12">
-                                    <CRow
-                                        style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}
-                                    >
-                                        <CInput
-                                            type="text"
-                                            style={{ maxWidth: '40%' }}
-                                            value={gitUrl}
-                                            onChange={(e) =>
-                                                setGitUrl(e.currentTarget.value)
-                                            }
-                                        />
-                                        <b
-                                            style={{
-                                                marginLeft: '20px',
-                                                display: 'inline',
-                                            }}
-                                        >
-                                            Git Url
-                                            <HelpButton
-                                                id="url"
-                                                text={`Enter a git url to a public git repository that 
+                                    <CForm>
+                                        <CRow>
+                                            <CCol md={6}>
+                                                <CFormInput
+                                                    type="text"
+                                                    placeholder="https://github.com/l3p-cv/lost_ootb_pipes.git"
+                                                    value={gitUrl}
+                                                    onChange={(e) =>
+                                                        setGitUrl(e.currentTarget.value)
+                                                    }
+                                                />
+                                            </CCol>
+                                            <CCol md={6}>
+                                                <span style={{ verticalAlign: 'middle' }}><b>Git Url</b></span>
+                                                <HelpButton
+                                                    id="url"
+                                                    text={`Enter a git url to a public git repository that 
                                                 contains the LOST pipeline project. `}
-                                            />
-                                        </b>
-                                    </CRow>
-                                    <CRow
-                                        style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}
-                                    >
-                                        <CInput
-                                            type="text"
-                                            style={{ maxWidth: '40%' }}
-                                            value={gitBranch}
-                                            onChange={(e) =>
-                                                setGitBranch(e.currentTarget.value)
-                                            }
-                                        />
-                                        <b
-                                            style={{
-                                                marginLeft: '20px',
-                                                display: 'inline',
-                                            }}
-                                        >
-                                            Git Branch
-                                            <HelpButton
-                                                id="branch"
-                                                text={`Specify a branch or tag name of the Git repository to checkout on import to this branch or tag. 
+                                                />
+                                            </CCol>
+
+                                        </CRow>
+                                        <CRow className='mt-3'>
+
+                                            <CCol md={6}>
+                                                <CFormInput
+                                                    type="text"
+                                                    placeholder="main"
+                                                    value={gitBranch}
+                                                    onChange={(e) =>
+                                                        setGitBranch(e.currentTarget.value)
+                                                    }
+                                                />
+                                            </CCol>
+                                            <CCol md={6}>
+                                                <span style={{ verticalAlign: 'middle' }}><b>Git Branch</b></span>
+
+                                                <HelpButton
+                                                    id="branch"
+                                                    text={`Specify a branch or tag name of the Git repository to checkout on import to this branch or tag. 
                                             If no branch is specified, "main" is used by default. `}
-                                            />
-                                        </b>
-                                    </CRow>
-                                    <IconButton
-                                        style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                            marginBottom: '20px',
-                                        }}
-                                        color="primary"
-                                        isOutline={false}
-                                        disabled={gitUrl === undefined}
-                                        onClick={() => onImportGit()}
-                                        icon={faUpload}
-                                        text="Import / Update"
-                                    />
+                                                />
+                                            </CCol>
+                                        </CRow>
+
+                                        <CRow className='mt-3'>
+                                            <CCol>
+                                                <IconButton
+                                                    color="primary"
+                                                    isOutline={false}
+                                                    disabled={gitUrl === undefined}
+                                                    onClick={() => onImportGit()}
+                                                    icon={faUpload}
+                                                    text="Import / Update"
+                                                />
+                                            </CCol>
+                                        </CRow>
+                                    </CForm>
                                 </CCol>
                             </CRow>
                         </CollapseCard>
@@ -338,6 +328,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                 icon={faPlus}
                 text="Import pipeline project"
                 onClick={() => setIsModalOpen(true)}
+                style={{ marginBottom: 20 }}
             />
         </>
     )
