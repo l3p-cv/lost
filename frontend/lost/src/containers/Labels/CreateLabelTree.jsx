@@ -210,38 +210,38 @@ const CreateLabelTree = ({ visLevel }) => {
                     value={createLabelDescription}
                     onChange={handleCreateLabelDescription}
                 ></Input>
-                <InputGroupAddon addonType="append">
-                    <IconButton
-                        color="primary"
-                        onClick={handleCreateSave}
-                        disabled={createLabelName === "" || createLabelDescription === ""}
-                        icon={faPlus}
-                        text="Add"
-                    />
-                </InputGroupAddon>
-                <InputGroupAddon addonType="append">
-                    <SelectFileButton
-                        accept='.csv'
-                        onSelect={(file) => {
-                            const reader = new FileReader();
-                            reader.onload = function (event) {
-                                const text = event.target.result
-                                const arr = csvToArray(text)
-                                // delete header
-                                header.current = arr.shift()
-                                // add Id to the start of the array because pandas.df export
-                                header.current.unshift("id")
-                                const first = arr.shift()
-                                const parsed = parseElement(first, header.current)
-                                // The Id from the tree is needed. The remaining Labels were added afterwards in useEffect hook. 
-                                dispatch(actions.createLabelTree(parsed, visLevel))
-                                labelsToAdd.current = arr
-                            };
-                            reader.readAsText(file);
-                        }}
-                        text="Import"
-                    />
-                </InputGroupAddon>
+                {/* <InputGroupAddon addonType="append"> */}
+                <IconButton
+                    color="primary"
+                    onClick={handleCreateSave}
+                    disabled={createLabelName === "" || createLabelDescription === ""}
+                    icon={faPlus}
+                    text="Add"
+                />
+                {/* </InputGroupAddon> */}
+                {/* <InputGroupAddon addonType="append"> */}
+                <SelectFileButton
+                    accept='.csv'
+                    onSelect={(file) => {
+                        const reader = new FileReader();
+                        reader.onload = function (event) {
+                            const text = event.target.result
+                            const arr = csvToArray(text)
+                            // delete header
+                            header.current = arr.shift()
+                            // add Id to the start of the array because pandas.df export
+                            header.current.unshift("id")
+                            const first = arr.shift()
+                            const parsed = parseElement(first, header.current)
+                            // The Id from the tree is needed. The remaining Labels were added afterwards in useEffect hook. 
+                            dispatch(actions.createLabelTree(parsed, visLevel))
+                            labelsToAdd.current = arr
+                        };
+                        reader.readAsText(file);
+                    }}
+                    text="Import"
+                />
+                {/* </InputGroupAddon> */}
             </InputGroup>
             <NotificationContainer />
         </>
