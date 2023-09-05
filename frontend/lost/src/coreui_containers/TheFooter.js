@@ -77,11 +77,11 @@ const TheFooter = () => {
     }
 
     return (
-        <CFooter>
+        <CFooter className='mt-2'>
             <div>
                 <span className="ml-1">
                     Powered by{' '}
-                    <a href="https://github.com/l3p-cv/lost" target="_blank">
+                    <a href="https://github.com/l3p-cv/lost" target="_blank" rel="noreferrer">
                         LOST Community
                     </a>
                 </span>
