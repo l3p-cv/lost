@@ -108,7 +108,7 @@ class SIASettingButton extends Component {
         </div>
         return (
             <Popup trigger={
-                <Menu.Item name='setting'>
+                <Menu.Item name='setting' style={this.props.toolbarItemStyle}>
                     <Icon name='setting' />
                 </Menu.Item>
             }

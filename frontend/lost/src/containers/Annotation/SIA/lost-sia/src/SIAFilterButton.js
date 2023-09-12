@@ -164,7 +164,7 @@ class SIAFilterButton extends Component {
         </div>
         return (
             <Popup trigger={
-                <Menu.Item name='filter' active={this.state.active}>
+                <Menu.Item name='filter' active={this.state.active} style={this.props.toolbarItemStyle}>
                     <Icon name='filter' color={this.state.color} />
                 </Menu.Item>
             }

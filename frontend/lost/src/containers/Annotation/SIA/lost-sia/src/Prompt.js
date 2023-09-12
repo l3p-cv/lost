@@ -34,7 +34,7 @@ class Prompt extends Component {
                 style={{ zIndex: 7000 }}
                 onClick={e => this.handleClick(e)}
             >
-                <Header as="h3" inverted>
+                <Header as="h3" inverted style={{ background: 'rgba(0,0,0,0)' }}>
                     {this.props.header}
                 </Header>
                 {this.props.content}

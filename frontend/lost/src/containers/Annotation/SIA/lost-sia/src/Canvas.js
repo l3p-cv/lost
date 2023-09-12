@@ -1770,7 +1770,7 @@ class Canvas extends Component {
                     />
                     <Dimmer active={!this.state.imageLoaded || this.props.blocked}><Loader>Loading</Loader></Dimmer>
                     <Dimmer active={this.state.isJunk}>
-                        <Header as='h2' icon inverted>
+                        <Header as='h2' icon inverted style={{ background: 'rgba(0,0,0,0)' }}>
                             <Icon name='ban' />
                             Marked as Junk
                         </Header>

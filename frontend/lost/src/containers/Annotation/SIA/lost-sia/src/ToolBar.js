@@ -25,6 +25,8 @@ class ToolBar extends Component {
         this.toolBarGroup = React.createRef()
     }
 
+    toolbarItemStyle = { background: '#1b1c1d' }
+
     componentDidMount() {
 
     }
@@ -130,6 +132,7 @@ class ToolBar extends Component {
                 <Menu.Item name='dot circle' key={TOOLS.POINT}
                     active={this.props.active.selectedTool === TOOLS.POINT}
                     onClick={e => this.onClick(e, TOOLS.POINT)}
+                    style={this.toolbarItemStyle}
                 >
                     {siaIcons.pointIcon()}
                 </Menu.Item>
@@ -140,6 +143,7 @@ class ToolBar extends Component {
                 <Menu.Item name='paint brush' key={TOOLS.LINE}
                     active={this.props.active.selectedTool === TOOLS.LINE}
                     onClick={e => this.onClick(e, TOOLS.LINE)}
+                    style={this.toolbarItemStyle}
                 >
                     {siaIcons.lineIcon()}
                 </Menu.Item>
@@ -150,6 +154,7 @@ class ToolBar extends Component {
                 <Menu.Item name='square outline' key={TOOLS.BBOX}
                     active={this.props.active.selectedTool === TOOLS.BBOX}
                     onClick={e => this.onClick(e, TOOLS.BBOX)}
+                    style={this.toolbarItemStyle}
                 >
                     {siaIcons.bBoxIcon()}
                 </Menu.Item>
@@ -160,6 +165,7 @@ class ToolBar extends Component {
                 <Menu.Item name='pencil alternate' key={TOOLS.POLYGON}
                     active={this.props.active.selectedTool === TOOLS.POLYGON}
                     onClick={e => this.onClick(e, TOOLS.POLYGON)}
+                    style={this.toolbarItemStyle}
                 >
                     {siaIcons.polygonIcon()}
                 </Menu.Item>
@@ -204,6 +210,7 @@ class ToolBar extends Component {
                     <Menu.Item name='paper plane outline' key='finish'
                         active={false}
                         onClick={() => this.toggleFinishPrompt()}
+                        style={this.toolbarItemStyle}
                     >
                         <Icon name='paper plane outline' />
                         {this.renderFinishPrompt()}
@@ -214,6 +221,7 @@ class ToolBar extends Component {
                     <Menu.Item name='arrow right' key='next'
                         active={false}
                         onClick={() => this.getNextImg()}
+                        style={this.toolbarItemStyle}
                     >
                         <Icon name='arrow right' />
                     </Menu.Item>
@@ -224,6 +232,7 @@ class ToolBar extends Component {
                     active={false}
                     onClick={() => this.getPrevImg()}
                     disabled={this.props.imageMeta.isFirst}
+                    style={this.toolbarItemStyle}
                 >
                     <Icon name='arrow left' />
                 </Menu.Item>
@@ -237,6 +246,7 @@ class ToolBar extends Component {
         return <Menu.Item name='ban' key='junk'
             active={this.props.active.isJunk}
             onClick={() => this.toggleJunk()}
+            style={this.toolbarItemStyle}
         >
             <Icon name='ban' />
         </Menu.Item>
@@ -246,6 +256,7 @@ class ToolBar extends Component {
         if (!this.props.enabled.deleteAll) return null
         return <Menu.Item name='trash alternate outline' key='deleteAllAnnos'
             onClick={() => this.handleOnDeleteAllAnnos()}
+            style={this.toolbarItemStyle}
         >
             <Icon name='trash alternate outline' />
         </Menu.Item>
@@ -255,8 +266,8 @@ class ToolBar extends Component {
         if (!this.props.enabled.save) return null
         return <Menu.Item name='save' key='save'
             onClick={() => this.handleSave()}
+            style={this.toolbarItemStyle}
         >
-            {/* <Icon name='save'  color='red'/> */}
             <Icon name='save' />
         </Menu.Item>
     }
@@ -264,8 +275,9 @@ class ToolBar extends Component {
     renderHelpButton() {
         if (!this.props.enabled.help) return null
         return <Menu.Item name='help' key='help'
-            active={false}
+            active
             onClick={() => this.toggleHelp()}
+            style={this.toolbarItemStyle}
         >
             <Icon name='help' />
             <Prompt active={this.state.showHelp}
@@ -340,6 +352,7 @@ class ToolBar extends Component {
             return <Menu.Item name='img label input'
                 // active={this.props.imgLabelInput.show} 
                 onClick={() => this.toggleImgLabelInput()}
+                style={this.toolbarItemStyle}
             >
                 {/* <Icon name='pencil' /> */}
                 {siaIcons.textIcon()}
@@ -353,6 +366,7 @@ class ToolBar extends Component {
         return <Menu.Item name='expand arrows alternate'
             active={this.props.active.fullscreen}
             onClick={() => this.toggleFullscreen()}
+            style={this.toolbarItemStyle}
         >
             <Icon name='expand arrows alternate' />
         </Menu.Item>
@@ -363,7 +377,9 @@ class ToolBar extends Component {
         return <SIASettingButton
             enabled={this.props.enabled.settings}
             uiConfig={this.props.uiConfig}
-            onSettingEvent={(e, data) => this.triggerToolBarEvent(e, data)} />
+            onSettingEvent={(e, data) => this.triggerToolBarEvent(e, data)}
+            toolbarItemStyle={this.toolbarItemStyle}
+        />
     }
 
     renderFilterBtn() {
@@ -375,6 +391,7 @@ class ToolBar extends Component {
             onFilterEvent={(e, data) => this.triggerToolBarEvent(e, data)}
             filter={this.props.filter}
             imageMeta={this.props.imageMeta}
+            toolbarItemStyle={this.toolbarItemStyle}
         />
     }
 
