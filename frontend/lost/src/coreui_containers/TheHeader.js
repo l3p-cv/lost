@@ -11,15 +11,14 @@ import TheHeaderDropdownAccount from './TheHeaderDropdownAccount'
 
 import actions from '../actions'
 
-const TheHeader = ({ numNavItems }) => {
+const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar }) => {
     const dispatch = useDispatch()
-    const isNavBarVisible = useSelector((state) => state.lost.isNavBarVisible)
-    const toggleSidebar = () => {
-        dispatch(actions.setNavbarVisible(!isNavBarVisible))
-    }
-    const toggleSidebarMobile = () => {
-        dispatch(actions.setNavbarVisible(!isNavBarVisible))
-    }
+    // const isNavBarVisible = useSelector((state) => state.lost.isNavBarVisible)
+    // const sidebarShow = useSelector((state) => state.lost.sidebarShow)
+    // const sidebarShow = useSelector((state) => state.lost.isNavBarVisible)
+    // const toggleSidebar = () => {
+    //     dispatch(actions.setNavbarVisible(!isNavBarVisible))
+    // }
 
     const renderSidebarToggler = () => {
         if (numNavItems) {
@@ -27,27 +26,11 @@ const TheHeader = ({ numNavItems }) => {
                 return (
                     <>
                         <CHeaderToggler
-                            className="ps-1 ml-md-3 d-lg-none"
-                            onClick={toggleSidebarMobile}
+                            className="ps-1"
+                            onClick={() => setCanShowSidebar(!canShowSidebar)}
                         >
                             <CIcon icon={cilMenu} size="lg" />
-                        </CHeaderToggler >
-                        <CHeaderToggler
-                            className="ps-1 ml-3 d-md-down-none"
-                            onClick={toggleSidebar}
-                        >
-                            <CIcon icon={cilMenu} size="lg" />
-                        </CHeaderToggler >
-                        {/* <CToggler
-                            inHeader
-                            className="ml-md-3 d-lg-none"
-                            onClick={toggleSidebarMobile}
-                        />
-                        <CToggler
-                            inHeader
-                            className="ml-3 d-md-down-none"
-                            onClick={toggleSidebar}
-                        /> */}
+                        </CHeaderToggler>
                     </>
                 )
             } else {

@@ -17,6 +17,7 @@ const TheLayout = () => {
     const dispatch = useDispatch()
     const [navItems, setNavItems] = useState([])
     const [routes, setRoutes] = useState([])
+    const [canShowSidebar, setCanShowSidebar] = useState(true)
     const { i18n } = useTranslation()
     useEffect(() => {
         const token = localStorage.getItem('token')
@@ -83,19 +84,15 @@ const TheLayout = () => {
     }, [i18n.language])
 
     return (
-        // <div className="c-app c-default-layout">
         <div>
-            <TheSidebar navItems={navItems} />
-            {/* <div className="c-wrapper"> */}
+            <TheSidebar navItems={navItems} canShowSidebar={canShowSidebar} setCanShowSidebar={setCanShowSidebar} />
             <div className="wrapper d-flex flex-column min-vh-100 bg-light">
-                <TheHeader numNavItems={navItems.length} />
-                <div className="c-body">
-                    <div className="body flex-grow-1 px-3">
-                        <TheContent routes={routes} />
-                    </div>
-                    <TheFooter />
+                <TheHeader numNavItems={navItems.length} canShowSidebar={canShowSidebar} setCanShowSidebar={setCanShowSidebar} />
+                <div className="body flex-grow-1 px-3">
+                    <TheContent routes={routes} />
                 </div>
-            </div >
+                <TheFooter />
+            </div>
         </div>
     )
 }

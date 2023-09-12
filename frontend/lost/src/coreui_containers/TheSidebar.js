@@ -1,25 +1,26 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import {
+    CNavItem,
+    CNavLink,
+    CNavTitle,
     CSidebar,
     CSidebarBrand,
     CSidebarNav,
-    CNavTitle,
-    CNavItem,
     CSidebarToggler,
 } from '@coreui/react'
 
-import actions from '../actions'
+// import actions from '../actions'
 import lostLogoPng from '../assets/img/brand/lost_logo.png'
 
-const TheSidebar = ({ navItems }) => {
-    const dispatch = useDispatch()
-    const isNavBarVisible = useSelector((state) => state.lost.isNavBarVisible)
+const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
+    const [isUnfoldable, setisUnfoldable] = useState(false)
+
     // remove component key from navItems
-    const onShowChange = () => {
-        console.log("Navbar visibility change event");
-        // dispatch(actions.setNavbarVisible(!isNavBarVisible))
-    }
+    // const onShowChange = () => {
+    //     console.log("Navbar visibility change event");
+    //     // dispatch(actions.setNavbarVisible(!isNavBarVisible))
+    // }
     if (navItems) {
         const navbarItemsDom = []
         let itemKey = 0;
@@ -31,10 +32,14 @@ const TheSidebar = ({ navItems }) => {
                     break;
                 case "CSidebarNavItem":
                     newItem = (
-                        <CNavItem key={itemKey++} href={item.to}>
-                            {item.icon}
-                            {item.name}
-                        </CNavItem>
+                        <CNavItem key={itemKey++}>
+                            <NavLink key={itemKey++} to={item.to}>
+                                <CNavLink>
+                                    <span style={{ width: '20px', marginLeft: '5px', marginRight: '25px' }}>{item.icon}</span>
+                                    {item.name}
+                                </CNavLink>
+                            </NavLink>
+                        </CNavItem >
                     )
                     break;
                 default:
@@ -48,7 +53,14 @@ const TheSidebar = ({ navItems }) => {
         })
 
         return (
-            <CSidebar position="fixed" visible={isNavBarVisible} onVisibleChange={onShowChange}>
+            <CSidebar
+                position="fixed"
+                unfoldable={isUnfoldable}
+                visible={canShowSidebar}
+                onVisibleChange={(visible) => {
+                    setCanShowSidebar(visible)
+                }}
+            >
                 <CSidebarBrand className="d-md-down-none" to="/dashboard">
                     <img
                         alt=""
@@ -59,20 +71,10 @@ const TheSidebar = ({ navItems }) => {
                 </CSidebarBrand>
                 <CSidebarNav>
                     {navbarItemsDom}
-                    {/* <CreateElement
-                        items={navItems}
-                        components={{
-                            // CNavDivider,
-                            CNavGroup,
-                            CNavItem,
-                            CNavTitle,
-                        }}
-                    /> */}
                 </CSidebarNav>
-                {/* <CSidebarMinimizer className="c-d-md-down-none" /> */}
                 <CSidebarToggler
                     className="d-none d-lg-flex"
-                    onClick={() => dispatch(actions.setNavbarVisible(!isNavBarVisible))}
+                    onClick={() => setisUnfoldable(!isUnfoldable)}
                 />
             </CSidebar>
         )
