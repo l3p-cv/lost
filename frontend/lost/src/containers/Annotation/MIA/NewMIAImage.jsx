@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import actions from '../../../actions'
 import BaseModal from '../../../components/BaseModal'
 import ImageLoading from './ImageLoading'
-import { CRow, CSwitch } from '@coreui/react'
+import { CRow, CFormSwitch } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
@@ -45,16 +45,18 @@ const MIAImage = (props) => {
                     if (props.image.is_active) {
                         dispatch(
                             actions.miaToggleActive({
-                                image: { ...props.image, is_active: false, 
-                                    imgActions: props.image.imgActions ? [...props.image.imgActions, 'miaClick']: ['miaClick'] 
+                                image: {
+                                    ...props.image, is_active: false,
+                                    imgActions: props.image.imgActions ? [...props.image.imgActions, 'miaClick'] : ['miaClick']
                                 },
                             }),
                         )
                     } else {
                         dispatch(
                             actions.miaToggleActive({
-                                image: { ...props.image, is_active: true,
-                                    imgActions: props.image.imgActions ? [...props.image.imgActions, 'miaClick']: ['miaClick'] 
+                                image: {
+                                    ...props.image, is_active: true,
+                                    imgActions: props.image.imgActions ? [...props.image.imgActions, 'miaClick'] : ['miaClick']
                                 },
                             }),
                         )
@@ -75,7 +77,7 @@ const MIAImage = (props) => {
     const modalFooter = () => {
         return (
             <>
-                <CSwitch
+                <CFormSwitch
                     className={'mx-1'}
                     variant={'3d'}
                     color={'primary'}
@@ -102,6 +104,7 @@ const MIAImage = (props) => {
                                 color={'red'}
                                 icon={faTimes}
                             />
+                            &nbsp;
                             <b>Excluded</b>
                         </>
                     )}
