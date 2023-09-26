@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 import * as statistics_api from '../../actions/statistics/statistics_api'
 
-import { CRow, CCol, CWidgetBrand } from '@coreui/react'
+import { CRow, CCol, CWidgetStatsD } from '@coreui/react'
 
 import AnnosPerHour from './AnnosPerHour'
 import { CChart } from '@coreui/react-chartjs'
@@ -76,7 +76,7 @@ const DesignerStatistics = () => {
                     statistics !
                 </CRow>
                 <CRow style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Loading size={40} />
+                    <Loading size="3x" />
                 </CRow>
             </>
         )
@@ -143,7 +143,7 @@ const DesignerStatistics = () => {
             </CRow>
             <CRow>
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + designerStatistics.annos.today}
                         rightFooter="Today"
@@ -151,11 +151,20 @@ const DesignerStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Annotations</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Annotations</h3>}
+                        values={[
+                            { title: 'Today', value: '' + designerStatistics.annos.today },
+                            { title: 'All time', value: '' + designerStatistics.annos.allTime },
+                        ]}
+                    />
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + designerStatistics.annotasks.today}
                         rightFooter="Today"
@@ -163,11 +172,20 @@ const DesignerStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Annotasks</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Annotasks</h3>}
+                        values={[
+                            { title: 'Today', value: '' + designerStatistics.annotasks.today },
+                            { title: 'All time', value: '' + designerStatistics.annotasks.allTime },
+                        ]}
+                    />
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + designerStatistics.annotime.today}
                         rightFooter="Today"
@@ -175,11 +193,20 @@ const DesignerStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Time per Annotation</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Time per Annotation</h3>}
+                        values={[
+                            { title: 'Today', value: '' + designerStatistics.annotime.today },
+                            { title: 'All time', value: '' + designerStatistics.annotime.allTime },
+                        ]}
+                    />
                 </CCol>
 
                 <CCol sm="6" lg="6" xl="3">
-                    <CWidgetBrand
+                    {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + designerStatistics.processedImages.today}
                         rightFooter="Today"
@@ -187,7 +214,16 @@ const DesignerStatistics = () => {
                         leftFooter="All time"
                     >
                         <h2>Processed images</h2>
-                    </CWidgetBrand>
+                    </CWidgetBrand> */}
+                    <CWidgetStatsD
+                        className="mb-4"
+                        color="primary"
+                        icon={<h3 className='text-white'>Processed images</h3>}
+                        values={[
+                            { title: 'Today', value: '' + designerStatistics.processedImages.today },
+                            { title: 'All time', value: '' + designerStatistics.processedImages.allTime },
+                        ]}
+                    />
                 </CCol>
             </CRow>
             <CRow>
