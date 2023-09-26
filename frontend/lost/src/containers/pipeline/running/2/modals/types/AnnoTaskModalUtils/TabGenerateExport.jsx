@@ -7,9 +7,10 @@ import {
     CDropdownMenu,
     CRow,
     CCol,
-    CSwitch,
-    CInput,
+    CFormSwitch,
+    CFormInput,
     CBadge,
+    CContainer,
 } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import HelpButton from '../../../../../../../components/HelpButton'
@@ -68,10 +69,10 @@ const TabGenerateExport = (props) => {
     }
 
     return (
-        <>
+        <CContainer>
             <CRow style={{ marginLeft: '5px' }}>
                 <CCol sm="6">
-                    <CRow style={{ marginTop: '10px', marginBottom: '20px' }}>
+                    <CRow xs={{ gutterY: 3 }}>
                         <CCol sm="12">
                             <h4>
                                 Export Name
@@ -80,40 +81,27 @@ const TabGenerateExport = (props) => {
                                     text={`Give your export file a name.`}
                                 />
                             </h4>
-                            <CRow
-                                style={{
-                                    marginLeft: '5px',
-                                    marginTop: '10px',
-                                }}
-                            >
-                                <CInput
-                                    type="text"
-                                    style={{ maxWidth: '50%' }}
-                                    value={newExport.exportName}
-                                    onChange={(e) =>
-                                        setNewExport({
-                                            ...newExport,
-                                            exportName: e.currentTarget.value,
-                                        })
-                                    }
-                                />
-                            </CRow>
-                        </CCol>
-                    </CRow>
-                    <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>
-                        <CCol sm="12">
-                            <h4>
-                                {`Annotated only`}
-                                <HelpButton
-                                    id="anno-only"
-                                    text={
-                                        'Only add annotations from already annotated images to the export.'
-                                    }
-                                />
-                            </h4>
                             <CRow>
                                 <CCol>
-                                    <CSwitch
+                                    <CFormInput
+                                        type="text"
+                                        value={newExport.exportName}
+                                        onChange={(e) =>
+                                            setNewExport({
+                                                ...newExport,
+                                                exportName: e.currentTarget.value,
+                                            })
+                                        }
+                                    />
+                                </CCol>
+                            </CRow>
+                        </CCol>
+
+                        <CCol sm="12">
+                            <CRow>
+                                <CCol sm="2">
+                                    <CFormSwitch
+                                        size="xl"
                                         className={'mx-1'}
                                         variant={'3d'}
                                         color={'primary'}
@@ -126,23 +114,24 @@ const TabGenerateExport = (props) => {
                                         }
                                     />
                                 </CCol>
+                                <CCol>
+                                    <h4>Annotated only
+                                        <HelpButton
+                                            id="anno-only"
+                                            text={
+                                                'Only add annotations from already annotated images to the export.'
+                                            }
+                                        />
+                                    </h4>
+                                </CCol>
                             </CRow>
                         </CCol>
-                    </CRow>
-                    <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>
+
                         <CCol sm="12">
-                            <h4>
-                                {`Include Images`}
-                                <HelpButton
-                                    id="include-images"
-                                    text={
-                                        'Whether images should be packed into the export. (Attention, the file size can become very large). '
-                                    }
-                                />
-                            </h4>
                             <CRow>
-                                <CCol sm="12">
-                                    <CSwitch
+                                <CCol sm="2">
+                                    <CFormSwitch
+                                        size="xl"
                                         className={'mx-1'}
                                         variant={'3d'}
                                         color={'primary'}
@@ -168,38 +157,40 @@ const TabGenerateExport = (props) => {
                                         ''
                                     )}
                                 </CCol>
+                                <CCol>
+                                    <h4>
+                                        Include Images
+                                        <HelpButton
+                                            id="include-images"
+                                            text={
+                                                'Whether images should be packed into the export. (Attention, the file size can become very large). '
+                                            }
+                                        />
+                                    </h4>
+                                </CCol>
                             </CRow>
                         </CCol>
-                    </CRow>
-                    <CRow style={{ marginTop: '10px', marginBottom: '10px' }}>
+
                         <CCol sm="12">
-                            <h4>
-                                Export Type
-                                <HelpButton
-                                    id="export-type"
-                                    text={'Type of data export. '}
-                                />
-                            </h4>
                             <CRow>
-                                <CCol sm="12">
-                                    <CRow style={{ marginLeft: '5px' }}>
-                                        <CDropdown>
-                                            <CDropdownToggle color="secondary">
-                                                {newExport.exportType}
-                                            </CDropdownToggle>
-                                            <CDropdownMenu>
-                                                <CDropdownItem
-                                                    href="#"
-                                                    onClick={(e) =>
-                                                        setNewExport({
-                                                            ...newExport,
-                                                            exportType: 'LOST_Dataset',
-                                                        })
-                                                    }
-                                                >
-                                                    LOST_Dataset
-                                                </CDropdownItem>
-                                                {/* <CDropdownItem
+                                <CCol xs="12" lg="5">
+                                    <CDropdown>
+                                        <CDropdownToggle color="secondary">
+                                            {newExport.exportType}
+                                        </CDropdownToggle>
+                                        <CDropdownMenu>
+                                            <CDropdownItem
+                                                href="#"
+                                                onClick={(e) =>
+                                                    setNewExport({
+                                                        ...newExport,
+                                                        exportType: 'LOST_Dataset',
+                                                    })
+                                                }
+                                            >
+                                                LOST_Dataset
+                                            </CDropdownItem>
+                                            {/* <CDropdownItem
                                                     href="#"
                                                     onClick={(e) =>
                                                         setNewExport({
@@ -233,22 +224,40 @@ const TabGenerateExport = (props) => {
                                                     YOLO
                                                 </CDropdownItem> */}
 
-                                                <CDropdownItem
-                                                    href="#"
-                                                    onClick={(e) =>
-                                                        setNewExport({
-                                                            ...newExport,
-                                                            exportType: 'CSV',
-                                                        })
-                                                    }
-                                                >
-                                                    CSV
-                                                </CDropdownItem>
-                                            </CDropdownMenu>
-                                        </CDropdown>
-                                    </CRow>
+                                            <CDropdownItem
+                                                href="#"
+                                                onClick={(e) =>
+                                                    setNewExport({
+                                                        ...newExport,
+                                                        exportType: 'CSV',
+                                                    })
+                                                }
+                                            >
+                                                CSV
+                                            </CDropdownItem>
+                                        </CDropdownMenu>
+                                    </CDropdown>
+
+                                </CCol>
+                                <CCol>
+                                    <h4>
+                                        Export Type
+                                        <HelpButton
+                                            id="export-type"
+                                            text={'Type of data export. '}
+                                        />
+                                    </h4>
                                 </CCol>
                             </CRow>
+
+
+                            {/* <CRow>
+                                <CCol sm="12">
+                                    <CRow style={{ marginLeft: '5px' }}>
+                                        
+                                    </CRow>
+                                </CCol>
+                            </CRow> */}
                         </CCol>
                     </CRow>
                 </CCol>
@@ -266,144 +275,151 @@ const TabGenerateExport = (props) => {
                             </h4>
                             <CRow>
                                 <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={newExport.randomSplits.active}
-                                        onChange={(e) =>
-                                            setNewExport({
-                                                ...newExport,
-                                                randomSplits: {
-                                                    train: newExport.randomSplits.train,
-                                                    test: newExport.randomSplits.test,
-                                                    val: newExport.randomSplits.val,
-                                                    active: !newExport.randomSplits
-                                                        .active,
-                                                },
-                                            })
-                                        }
-                                    />{' '}
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Active
-                                        <HelpButton
-                                            id="random-splits"
-                                            text={'Enable random splits'}
-                                        />
-                                    </b>
+                                    <CRow>
+                                        <CCol md="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={newExport.randomSplits.active}
+                                                onChange={(e) =>
+                                                    setNewExport({
+                                                        ...newExport,
+                                                        randomSplits: {
+                                                            train: newExport.randomSplits.train,
+                                                            test: newExport.randomSplits.test,
+                                                            val: newExport.randomSplits.val,
+                                                            active: !newExport.randomSplits
+                                                                .active,
+                                                        },
+                                                    })
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b
+                                                style={{
+                                                    marginLeft: '20px',
+                                                }}
+                                            >
+                                                Active
+                                                <HelpButton
+                                                    id="random-splits"
+                                                    text={'Enable random splits'}
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
+
                                 </CCol>
+
+                                {newExport.randomSplits.active ? (
+                                    <>
+                                        <div style={{
+                                            marginLeft: '5px',
+                                            marginTop: '10px',
+                                        }}>
+                                            <CRow>
+                                                <CCol md="6">
+                                                    <CFormInput
+                                                        type="number"
+                                                        min={0.0}
+                                                        step={0.01}
+                                                        max={1.0}
+                                                        value={newExport.randomSplits.train}
+                                                        onChange={(e) =>
+                                                            validateSplit(
+                                                                'train',
+                                                                e.currentTarget.value,
+                                                            )
+                                                        }
+                                                    />
+                                                </CCol>
+                                                <CCol>
+                                                    <b>
+                                                        Train
+                                                        <HelpButton
+                                                            id="split-train"
+                                                            text={'Split for train.'}
+                                                        />
+                                                    </b>
+                                                </CCol>
+                                            </CRow>
+                                        </div>
+                                        <div style={{
+                                            marginLeft: '5px',
+                                            marginTop: '10px',
+                                        }}>
+                                            <CRow>
+
+                                                <CCol md="6">
+                                                    <CFormInput
+                                                        type="number"
+                                                        min={0.0}
+                                                        step={0.01}
+                                                        max={1.0}
+                                                        value={newExport.randomSplits.test}
+                                                        onChange={(e) =>
+                                                            validateSplit(
+                                                                'test',
+                                                                e.currentTarget.value,
+                                                            )
+                                                        }
+                                                    />
+                                                </CCol>
+                                                <CCol>
+                                                    <b>
+                                                        Test
+                                                        <HelpButton
+                                                            id="split-test"
+                                                            text={'Split for test.'}
+                                                        />
+                                                    </b>
+                                                </CCol>
+                                            </CRow>
+                                        </div>
+                                        <div style={{
+                                            marginLeft: '5px',
+                                            marginTop: '10px',
+                                        }}>
+                                            <CRow>
+                                                <CCol md="6">
+                                                    <CFormInput
+                                                        type="number"
+                                                        min={0.0}
+                                                        step={0.01}
+                                                        max={1.0}
+                                                        value={newExport.randomSplits.val}
+                                                        onChange={(e) =>
+                                                            validateSplit(
+                                                                'val',
+                                                                e.currentTarget.value,
+                                                            )
+                                                        }
+                                                    />
+                                                </CCol>
+                                                <CCol>
+                                                    <b>
+                                                        Val
+                                                        <HelpButton
+                                                            id="split-val"
+                                                            text={'Split for val.'}
+                                                        />
+                                                    </b>
+                                                </CCol>
+                                            </CRow>
+                                        </div>
+                                    </>
+                                ) : (
+                                    ''
+                                )}
                             </CRow>
-                            {newExport.randomSplits.active ? (
-                                <>
-                                    <CRow
-                                        style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}
-                                    >
-                                        <CInput
-                                            type="number"
-                                            min={0.0}
-                                            step={0.01}
-                                            max={1.0}
-                                            style={{ maxWidth: '20%' }}
-                                            value={newExport.randomSplits.train}
-                                            onChange={(e) =>
-                                                validateSplit(
-                                                    'train',
-                                                    e.currentTarget.value,
-                                                )
-                                            }
-                                        />
-                                        <b
-                                            style={{
-                                                marginLeft: '20px',
-                                            }}
-                                        >
-                                            Train
-                                            <HelpButton
-                                                id="split-train"
-                                                text={'Split for train.'}
-                                            />
-                                        </b>
-                                    </CRow>
-                                    <CRow
-                                        style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}
-                                    >
-                                        <CInput
-                                            type="number"
-                                            min={0.0}
-                                            step={0.01}
-                                            max={1.0}
-                                            style={{ maxWidth: '20%' }}
-                                            value={newExport.randomSplits.test}
-                                            onChange={(e) =>
-                                                validateSplit(
-                                                    'test',
-                                                    e.currentTarget.value,
-                                                )
-                                            }
-                                        />
-                                        <b
-                                            style={{
-                                                marginLeft: '20px',
-                                            }}
-                                        >
-                                            Test
-                                            <HelpButton
-                                                id="split-test"
-                                                text={'Split for test.'}
-                                            />
-                                        </b>
-                                    </CRow>
-                                    <CRow
-                                        style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}
-                                    >
-                                        <CInput
-                                            type="number"
-                                            min={0.0}
-                                            step={0.01}
-                                            max={1.0}
-                                            style={{ maxWidth: '20%' }}
-                                            value={newExport.randomSplits.val}
-                                            onChange={(e) =>
-                                                validateSplit(
-                                                    'val',
-                                                    e.currentTarget.value,
-                                                )
-                                            }
-                                        />
-                                        <b
-                                            style={{
-                                                marginLeft: '20px',
-                                            }}
-                                        >
-                                            Val
-                                            <HelpButton
-                                                id="split-val"
-                                                text={'Split for val.'}
-                                            />
-                                        </b>
-                                    </CRow>
-                                </>
-                            ) : (
-                                ''
-                            )}
                         </CCol>
                     </CRow>
                 </CCol>
             </CRow>
-            <CRow className="justify-content-center" style={{ marginBottom: '20px' }}>
+            <CRow className="justify-content-center">
                 <IconButton
                     isOutline={false}
                     disabled={newExport.exportName === ''}
@@ -411,10 +427,10 @@ const TabGenerateExport = (props) => {
                     onClick={() => onGenerateExport()}
                     icon={faPlay}
                     text="Generate export"
-                    style={{ marginRight: '20px' }}
+                    style={{ marginTop: '20px', marginRight: '20px', maxWidth: '175px' }}
                 ></IconButton>
             </CRow>
-        </>
+        </CContainer>
     )
 }
 

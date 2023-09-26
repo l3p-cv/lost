@@ -37,7 +37,7 @@ const AnnoTaskTabs = (props) => {
             return (
                 <>
                     <CNavItem>
-                        <CNavLink>
+                        <CNavLink active={active === 0} onClick={() => setActive(0)}>
                             <FontAwesomeIcon
                                 color="#092F38"
                                 size="1x"
@@ -47,7 +47,7 @@ const AnnoTaskTabs = (props) => {
                         </CNavLink>
                     </CNavItem>
                     <CNavItem>
-                        <CNavLink>
+                        <CNavLink active={active === 1} onClick={() => setActive(1)}>
                             <FontAwesomeIcon
                                 color="#092F38"
                                 size="1x"
@@ -62,7 +62,7 @@ const AnnoTaskTabs = (props) => {
         return (
             <>
                 <CNavItem>
-                    <CNavLink>
+                    <CNavLink active={active === 0} onClick={() => setActive(0)}>
                         <FontAwesomeIcon
                             color="#092F38"
                             size="1x"
@@ -72,7 +72,7 @@ const AnnoTaskTabs = (props) => {
                     </CNavLink>
                 </CNavItem>
                 <CNavItem>
-                    <CNavLink>
+                    <CNavLink active={active === 1} onClick={() => setActive(1)}>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faDownload} />
                         {active === 1 && ' Available Exports'}
                     </CNavLink>
@@ -84,13 +84,13 @@ const AnnoTaskTabs = (props) => {
         if (dataExports.length > 0) {
             return (
                 <>
-                    <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
+                    <CTabPane visible={active === 0} style={{ marginTop: 30, marginLeft: 5 }}>
                         <TabAvailableExports
                             dataExports={dataExports}
                             annotaskId={props.annotask.id}
                         />
                     </CTabPane>
-                    <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
+                    <CTabPane visible={active === 1} style={{ marginTop: 30, marginLeft: 5 }}>
                         <TabGenerateExport
                             annotask={props.annotask}
                             setActive={setActive}
@@ -101,10 +101,10 @@ const AnnoTaskTabs = (props) => {
         }
         return (
             <>
-                <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={active === 0} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabGenerateExport annotask={props.annotask} setActive={setActive} />
                 </CTabPane>
-                <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={active === 1} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabAvailableExports
                         dataExports={dataExports}
                         annotaskId={props.annotask.id}
@@ -115,38 +115,38 @@ const AnnoTaskTabs = (props) => {
     }
     return (
         // <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
-        <CNav variant="tabs" role="tablist" activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
-            <CNav variant="tabs" style={{ marginTop: '20px', marginLeft: '5px' }}>
+        <CNav variant="tabs" role="tablist" className='w-100'>
+            <CNav variant="tabs" className='w-100' style={{ marginTop: '20px', marginLeft: '5px' }}>
                 {renderGenOrShowExportLinks()}
 
                 <CNavItem>
-                    <CNavLink>
+                    <CNavLink active={active === 2} onClick={() => setActive(2)}>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faUsers} />
                         {active === 2 && ' Adapt Users'}
                     </CNavLink>
                 </CNavItem>
                 <CNavItem>
-                    <CNavLink>
+                    <CNavLink active={active === 3} onClick={() => setActive(3)}>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
                         {active === 3 && ' Show Labels'}
                     </CNavLink>
                 </CNavItem>
                 <CNavItem>
-                    <CNavLink>
+                    <CNavLink active={active === 4} onClick={() => setActive(4)}>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faGears} />
                         {active === 4 && ' Adapt Configuration'}
                     </CNavLink>
                 </CNavItem>
             </CNav>
-            <CTabContent>
+            <CTabContent className='w-100' style={{ paddingBottom: '10px' }}>
                 {renderGenOrShowExport()}
-                <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={active === 2} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabUser changeUser={props.changeUser} annoTask={props.annotask} />
                 </CTabPane>
-                <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={active === 3} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabShowLabels annoTask={props.annotask} />
                 </CTabPane>
-                <CTabPane style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={active === 4} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabAdaptConfiguration annoTask={props.annotask} />
                 </CTabPane>
             </CTabContent>

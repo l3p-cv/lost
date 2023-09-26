@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import HelpButton from '../../../../../../../../components/HelpButton'
-import { CRow, CCol, CSwitch, CInput } from '@coreui/react'
+import { CRow, CCol, CFormSwitch, CFormInput } from '@coreui/react'
 
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -98,105 +98,117 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                         <CCol sm="6">
                             <h4>Annotation Types</h4>
                             <CRow>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={configuration.tools.bbox}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'tool-bbox',
-                                                !configuration.tools.bbox,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Bbox
-                                        <HelpButton
-                                            id="bbox"
-                                            text={'Allow to add / edit bboxes'}
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={configuration.tools.bbox}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'tool-bbox',
+                                                        !configuration.tools.bbox,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Bbox
+                                                <HelpButton
+                                                    id="bbox"
+                                                    text={'Allow to add / edit bboxes'}
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={configuration.tools.polygon}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'tool-polygon',
-                                                !configuration.tools.polygon,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Polygon
-                                        <HelpButton
-                                            id="polygon"
-                                            text={'Allow to add / edit polygons'}
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={configuration.tools.polygon}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'tool-polygon',
+                                                        !configuration.tools.polygon,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Polygon
+                                                <HelpButton
+                                                    id="polygon"
+                                                    text={'Allow to add / edit polygons'}
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={configuration.tools.point}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'tool-point',
-                                                !configuration.tools.point,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Point
-                                        <HelpButton
-                                            id="point"
-                                            text={'Allow to add / edit points'}
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={configuration.tools.point}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'tool-point',
+                                                        !configuration.tools.point,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Point
+                                                <HelpButton
+                                                    id="point"
+                                                    text={'Allow to add / edit points'}
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={configuration.tools.line}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'tool-line',
-                                                !configuration.tools.line,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Line
-                                        <HelpButton
-                                            id="line"
-                                            text={'Allow to add / edit lines'}
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={configuration.tools.line}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'tool-line',
+                                                        !configuration.tools.line,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Line
+                                                <HelpButton
+                                                    id="line"
+                                                    text={'Allow to add / edit lines'}
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
                             </CRow>
                         </CCol>
@@ -204,119 +216,131 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                             {' '}
                             <h4>Annotation Actions</h4>
                             <CRow>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={configuration.annos.actions.draw}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'action-draw',
-                                                !configuration.annos.actions.draw,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Draw
-                                        <HelpButton
-                                            id="draw-anno"
-                                            text={'Allow to add new annotations'}
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={configuration.annos.actions.draw}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'action-draw',
+                                                        !configuration.annos.actions.draw,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Draw
+                                                <HelpButton
+                                                    id="draw-anno"
+                                                    text={'Allow to add new annotations'}
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={configuration.annos.actions.edit}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'action-edit',
-                                                !configuration.annos.actions.edit,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Edit
-                                        <HelpButton
-                                            id="edit-anno"
-                                            text={
-                                                'Allow to edit an annotation (move / change size and points)'
-                                            }
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={configuration.annos.actions.edit}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'action-edit',
+                                                        !configuration.annos.actions.edit,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Edit
+                                                <HelpButton
+                                                    id="edit-anno"
+                                                    text={
+                                                        'Allow to edit an annotation (move / change size and points)'
+                                                    }
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        checked={configuration.annos.actions.label}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'action-label',
-                                                !configuration.annos.actions.label,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Label
-                                        <HelpButton
-                                            id="label-anno"
-                                            text={
-                                                'Allow to apply a label to an annotation'
-                                            }
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={configuration.annos.actions.label}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'action-label',
+                                                        !configuration.annos.actions.label,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Label
+                                                <HelpButton
+                                                    id="label-anno"
+                                                    text={
+                                                        'Allow to apply a label to an annotation'
+                                                    }
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
-                                <CCol sm="12">
-                                    <CSwitch
-                                        className={'mx-1'}
-                                        variant={'3d'}
-                                        color={'primary'}
-                                        defaultChecked
-                                        checked={configuration.annos.multilabels}
-                                        onChange={(e) =>
-                                            changeValue(
-                                                'action-multilabel',
-                                                !configuration.annos.multilabels,
-                                            )
-                                        }
-                                    />
-                                    <b
-                                        style={{
-                                            marginLeft: '20px',
-                                        }}
-                                    >
-                                        Multilabel
-                                        <HelpButton
-                                            id="multilabel-anno"
-                                            text={
-                                                'Allow to apply multiple labels to an annotation'
-                                            }
-                                        />
-                                    </b>
+                                <CCol sm="12" style={{ marginTop: '5px' }}>
+                                    <CRow>
+                                        <CCol sm="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                defaultChecked
+                                                checked={configuration.annos.multilabels}
+                                                onChange={(e) =>
+                                                    changeValue(
+                                                        'action-multilabel',
+                                                        !configuration.annos.multilabels,
+                                                    )
+                                                }
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b>
+                                                Multilabel
+                                                <HelpButton
+                                                    id="multilabel-anno"
+                                                    text={
+                                                        'Allow to apply multiple labels to an annotation'
+                                                    }
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
                                 </CCol>
                             </CRow>
                         </CCol>
-                    </CRow>
-                    <hr></hr>
+                    </CRow >
+                    <hr />
                     <CRow style={{ margin: '5px' }}>
-                        <CCol sm="12">
+                        <CCol sm="12" style={{ marginTop: '5px' }}>
                             <h4>
                                 Minimum Annotation Size{' '}
                                 <HelpButton
@@ -326,7 +350,7 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                                     }
                                 />
                             </h4>
-                            <CInput
+                            <CFormInput
                                 type="number"
                                 min={1}
                                 step={1}
@@ -337,86 +361,95 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                             />
                         </CCol>
                     </CRow>
-                    <hr></hr>
+                    <hr />
                     <CRow style={{ margin: '5px' }}>
-                        <CCol sm="12">
+                        <CCol sm="12" style={{ marginTop: '5px' }}>
                             <h4>Image</h4>
-                            <CCol sm="12">
-                                <CSwitch
-                                    className={'mx-1'}
-                                    variant={'3d'}
-                                    color={'primary'}
-                                    checked={configuration.tools.junk}
-                                    onChange={(e) =>
-                                        changeValue(
-                                            'image-junk',
-                                            !configuration.tools.junk,
-                                        )
-                                    }
-                                />
-                                <b
-                                    style={{
-                                        marginLeft: '20px',
-                                    }}
-                                >
-                                    Junk
-                                    <HelpButton
-                                        id="junk-image"
-                                        text={'Allow to mark whole image as junk'}
-                                    />
-                                </b>
+                            <CCol sm="12" style={{ marginTop: '5px' }}>
+                                <CRow>
+                                    <CCol sm="2">
+                                        <CFormSwitch
+                                            size="xl"
+                                            className={'mx-1'}
+                                            variant={'3d'}
+                                            color={'primary'}
+                                            checked={configuration.tools.junk}
+                                            onChange={(e) =>
+                                                changeValue(
+                                                    'image-junk',
+                                                    !configuration.tools.junk,
+                                                )
+                                            }
+                                        />
+                                    </CCol>
+                                    <CCol>
+                                        <b>
+                                            Junk
+                                            <HelpButton
+                                                id="junk-image"
+                                                text={'Allow to mark whole image as junk'}
+                                            />
+                                        </b>
+                                    </CCol>
+                                </CRow>
                             </CCol>
-                            <CCol sm="12">
-                                <CSwitch
-                                    className={'mx-1'}
-                                    variant={'3d'}
-                                    color={'primary'}
-                                    checked={configuration.img.actions.label}
-                                    onChange={(e) =>
-                                        changeValue(
-                                            'image-label',
-                                            !configuration.img.actions.label,
-                                        )
-                                    }
-                                />
-                                <b
-                                    style={{
-                                        marginLeft: '20px',
-                                    }}
-                                >
-                                    Label
-                                    <HelpButton
-                                        id="label-image"
-                                        text={'Allow to label the whole image'}
-                                    />
-                                </b>
+                            <CCol sm="12" style={{ marginTop: '5px' }}>
+                                <CRow>
+                                    <CCol sm="2">
+                                        <CFormSwitch
+                                            size="xl"
+                                            className={'mx-1'}
+                                            variant={'3d'}
+                                            color={'primary'}
+                                            checked={configuration.img.actions.label}
+                                            onChange={(e) =>
+                                                changeValue(
+                                                    'image-label',
+                                                    !configuration.img.actions.label,
+                                                )
+                                            }
+                                        />
+                                    </CCol>
+                                    <CCol>
+                                        <b>
+                                            Label
+                                            <HelpButton
+                                                id="label-image"
+                                                text={'Allow to label the whole image'}
+                                            />
+                                        </b>
+                                    </CCol>
+                                </CRow>
                             </CCol>
-                            <CCol sm="12">
-                                <CSwitch
-                                    className={'mx-1'}
-                                    variant={'3d'}
-                                    color={'primary'}
-                                    checked={configuration.img.multilabels}
-                                    onChange={(e) =>
-                                        changeValue(
-                                            'image-multilabel',
-                                            !configuration.img.multilabels,
-                                        )
-                                    }
-                                />
-                                <b
-                                    style={{
-                                        marginLeft: '20px',
-                                    }}
-                                >
-                                    Multilabel
-                                    <HelpButton
-                                        id="multilabel-image"
-                                        text={
-                                            'Allow to apply multiple labels to the whole image'
-                                        }
-                                    />
-                                </b>
+                            <CCol sm="12" style={{ marginTop: '5px' }}>
+                                <CRow>
+                                    <CCol sm="2">
+                                        <CFormSwitch
+                                            size="xl"
+                                            className={'mx-1'}
+                                            variant={'3d'}
+                                            color={'primary'}
+                                            checked={configuration.img.multilabels}
+                                            onChange={(e) =>
+                                                changeValue(
+                                                    'image-multilabel',
+                                                    !configuration.img.multilabels,
+                                                )
+                                            }
+                                        />
+                                    </CCol>
+                                    <CCol>
+                                        <b>
+                                            Multilabel
+                                            <HelpButton
+                                                id="multilabel-image"
+                                                text={
+                                                    'Allow to apply multiple labels to the whole image'
+                                                }
+                                            />
+                                        </b>
+                                    </CCol>
+                                </CRow>
                             </CCol>
                         </CCol>
                     </CRow>

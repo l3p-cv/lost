@@ -3,8 +3,8 @@ import HelpButton from '../../../../../../../../components/HelpButton'
 import {
     CRow,
     CCol,
-    CSwitch,
-    CInput,
+    CFormSwitch,
+    CFormInput,
     CDropdown,
     CDropdownItem,
     CDropdownMenu,
@@ -84,7 +84,7 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                             <h4>MIA Configuration</h4>
                             <CRow>
                                 <CCol sm="12">
-                                    <CSwitch
+                                    <CFormSwitch
                                         className={'mx-1'}
                                         variant={'3d'}
                                         color={'primary'}
@@ -160,7 +160,7 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                                 {configuration.type === 'annoBased' ? (
                                     <>
                                         <CCol sm="12" style={{ marginTop: '15px' }}>
-                                            <CSwitch
+                                            <CFormSwitch
                                                 className={'mx-1'}
                                                 variant={'3d'}
                                                 color={'primary'}
@@ -193,7 +193,7 @@ export const SelectMIAConfiguration = ({ ...props }) => {
                                                     marginTop: '10px',
                                                 }}
                                             >
-                                                <CInput
+                                                <CFormInput
                                                     type="number"
                                                     min={0.0}
                                                     step={0.01}
