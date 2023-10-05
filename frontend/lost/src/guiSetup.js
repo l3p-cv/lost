@@ -7,6 +7,7 @@ import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import SiaReviwComponent from './containers/Annotation/SIAReviewAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
+import DatasetsComponent from './containers/Datasets/Datasets'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import MyProfileComponent from './containers/Profile/Profile'
 
@@ -24,6 +25,7 @@ import {
     FaTools,
     FaTasks,
     FaChartLine,
+    FaBox,
 } from 'react-icons/fa'
 
 const iconProps = {
@@ -78,6 +80,13 @@ const Labels = {
     to: '/labels',
     component: LabelsComponent,
     icon: <FaTag {...iconProps} />,
+}
+
+const Datasets = {
+    name: 'Datasets',
+    to: '/datasets',
+    component: DatasetsComponent,
+    icon: <FaBox {...iconProps} />,
 }
 
 const DataSources = {
@@ -145,6 +154,7 @@ const guiSetup = {
             RunningPipelines,
             StartPipelines,
             Labels,
+            Datasets,
             DataSources,
             DesignerStatistics,
             TitleAnnotation,
@@ -161,6 +171,7 @@ const guiSetup = {
             RunningPipelines,
             StartPipelines,
             Labels,
+            Datasets,
             DataSources,
             DesignerStatistics,
             TitleAnnotation,

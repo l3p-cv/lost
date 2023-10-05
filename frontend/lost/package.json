@@ -19,6 +19,7 @@
     "@pronestor/react-zoom-pan-pinch": "^2.4.5",
     "@reactour/tour": "^3.5.0",
     "@semantic-ui-react/css-patch": "^1.1.3",
+    "@tanstack/react-table": "^8.10.3",
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
