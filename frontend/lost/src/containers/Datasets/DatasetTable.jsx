@@ -66,7 +66,7 @@ const DatasetTable = ({ datasets, datasources }) => {
             }
         }),
         columnHelper.accessor('created_at', {
-            header: () => 'created at',
+            header: () => 'Created at',
         }),
         columnHelper.display({
             id: 'showAnnotasks',
