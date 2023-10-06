@@ -34,7 +34,7 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                     newItem = (
                         <CNavItem key={itemKey++}>
                             <NavLink key={itemKey++} to={item.to}>
-                                <CNavLink>
+                                <CNavLink key={itemKey++}>
                                     <span style={{ width: '20px', marginLeft: '5px', marginRight: '25px' }}>{item.icon}</span>
                                     {item.name}
                                 </CNavLink>
