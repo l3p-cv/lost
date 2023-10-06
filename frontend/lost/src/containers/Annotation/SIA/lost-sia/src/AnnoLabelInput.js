@@ -82,7 +82,7 @@ class AnnoLabelInput extends Component {
                     relatedId={this.props.selectedAnno.id}
                     visible={this.props.visible}
                     onLabelUpdate={label => this.updateAnnoLabel(label)}
-                    possibleLabels={this.props.possibleLabels}
+                    possibleLabelsProp={this.props.possibleLabels}
                     multilabels={this.props.multilabels}
                     disabled={!this.props.allowedActions.label}
                     renderPopup

@@ -1698,7 +1698,7 @@ class Canvas extends Component {
                     // relatedId={this.props.annos.image.id}
                     visible={true}
                     onLabelUpdate={label => this.handleImgLabelUpdate(label)}
-                    possibleLabels={this.state.possibleLabels}
+                    possibleLabelsProp={this.state.possibleLabels}
                     initLabelIds={this.state.imgLabelIds}
                     relatedId={this.props.imageMeta.id}
                     defaultLabel={this.props.defaultLabel}

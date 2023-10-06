@@ -1,257 +1,224 @@
-import React, {Component} from 'react'
-import { Dropdown, Ref, Popup, Header} from 'semantic-ui-react'
+import React, { useState, useEffect, useRef } from 'react';
+import { Dropdown, Ref, Popup, Header } from 'semantic-ui-react';
 
-class LabelInput extends Component{
+const LabelInput = ({ defaultLabel, disabled, focusOnRender, initLabelIds, multilabels, possibleLabelsProp, relatedId, renderPopup, visible, open, onClose, onLabelConfirmed, onLabelUpdate }) => {
+    const [label, setLabel] = useState([]);
+    const [possibleLabels, setPossibleLabels] = useState([]);
+    const [performInit, setPerformInit] = useState(true);
+    const [confirmLabel, setConfirmLabel] = useState(0);
 
-    constructor(props){
-        super(props)
-        this.state = {
-            label: [],
-            possibleLabels: [],
-            performInit: true,
-            enterHits: 0,
-            confirmLabel: 0
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        updatePossibleLabels();
+    }, []);
+
+    useEffect(() => {
+        if (initLabelIds) {
+            setPerformInit(true);
         }
-        this.inputRef = React.createRef()
-    }
+    }, [initLabelIds]);
 
-    componentWillMount(){
-        this.updatePossibleLabels()
-    }
-
-    componentDidMount(){
-        if(this.props.initLabelIds){
-            this.setState({performInit:true})
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState){
-        if (this.props.visible){
-            if (this.props.focusOnRender){
-                if (this.inputRef.current){
-                    this.inputRef.current.click()
+    useEffect(() => {
+        if (visible) {
+            if (focusOnRender) {
+                if (inputRef.current) {
+                    inputRef.current.click();
                 }
             }
+        }
 
+        if (confirmLabel !== 0) {
+            annoLabelUpdate(label);
+            closeLabelInput();
         }
-        if (prevState.confirmLabel !== this.state.confirmLabel){
-            this.annoLabelUpdate(this.state.label)
-            this.closeLabelInput()
-        }
-        if (prevProps.possibleLabels !== this.props.possibleLabels){
-            this.updatePossibleLabels()
-        }
-        if (this.props.initLabelIds){
-            if (this.state.performInit){
-                this.setState({performInit: false})
-                if(this.props.initLabelIds.length > 0){
-                    this.setState({label: this.props.initLabelIds})
-                    // const lbl = this.state.possibleLabels.find(e => {
-                    //     return e.value === this.props.initLabelIds[0]
-                    // })
-                    // if (lbl){
-                    //     this.setState({label:lbl.value})
-                    // }
+
+        if (initLabelIds) {
+            if (performInit) {
+                setPerformInit(false);
+
+                if (initLabelIds.length > 0) {
+                    setLabel(initLabelIds);
                 } else {
-                        this.setState({label:[]})
+                    setLabel([]);
                 }
             }
-            if (prevProps.initLabelIds !== this.props.initLabelIds){
-                this.setState({performInit:true})
-            }
         }
-        if(prevProps.relatedId !== this.props.relatedId){
-            this.setState({performInit:true})
-        }
-    }
-    /*************
-     * EVENTS    *
-    **************/
-    onKeyDown(e: Event){
-        e.stopPropagation()
-        this.performKeyAction(e.key)
+    }, [visible, focusOnRender, label, confirmLabel, possibleLabelsProp, initLabelIds, relatedId]);
 
+    const onKeyDown = (e) => {
+        e.stopPropagation();
+        performKeyAction(e.key);
     }
 
-    onChange(e, item ){
-        let lbl 
-        if (this.props.multilabels){
-            lbl = item.value !== -1 ? item.value : []
+    const onChange = (e, item) => {
+        let lbl;
+
+        if (multilabels) {
+            lbl = item.value !== -1 ? item.value : [];
         } else {
-            lbl = item.value !== -1 ? [item.value] : []
+            lbl = item.value !== -1 ? [item.value] : [];
         }
-        this.setState({ label: lbl})
-        this.annoLabelUpdate(lbl)
-        // this.inputRef.current.click()
+
+        setLabel(lbl);
+        annoLabelUpdate(lbl);
     }
 
-    onItemClick(e, item){
-        this.confirmLabel()
+    const onItemClick = (e, item) => {
+        incrementConfirmLabel();
     }
 
+    const updatePossibleLabels = () => {
+        let _possibleLabels = [];
+        let _defaultLabel;
 
-    /*************
-     * LOGIC     *
-     *************/
-    updatePossibleLabels(){
-        let possibleLabels = []
-        let defaultLabel
-        if (this.props.defaultLabel){
-            if (Number.isInteger(this.props.defaultLabel)){
-                defaultLabel = undefined
+        if (defaultLabel) {
+            if (Number.isInteger(defaultLabel)) {
+                _defaultLabel = undefined;
             } else {
-                defaultLabel = this.props.defaultLabel
+                _defaultLabel = defaultLabel;
             }
         } else {
-            defaultLabel = 'no label'
+            _defaultLabel = 'no label';
         }
-        
-        if (this.props.possibleLabels.length > 0){
-            possibleLabels = this.props.possibleLabels.map(e => {
+
+        if (possibleLabelsProp.length > 0) {
+            _possibleLabels = possibleLabelsProp.map(e => {
                 return {
-                    key: e.id, value: e.id, text: e.label,
-                    content: (<div onClick={(event) => this.onItemClick(event, e.id)}>
-                        {e.label}</div>)
-                }
-            })
+                    key: e.id,
+                    value: e.id,
+                    text: e.label,
+                    content: (
+                        <div onClick={(event) => onItemClick(event, e.id)}>
+                            {e.label}
+                        </div>
+                    )
+                };
+            });
         }
-        if (defaultLabel){
-            possibleLabels.unshift({
-                key: -1, value: -1, text: defaultLabel,
-                content: (<div onClick={(event) => this.onItemClick(event, -1)}>
-                {defaultLabel}</div>)
-            })
-        }
-        this.setState({possibleLabels})
 
+        if (_defaultLabel) {
+            _possibleLabels.unshift({
+                key: -1,
+                value: -1,
+                text: _defaultLabel,
+                content: (
+                    <div onClick={(event) => onItemClick(event, -1)}>
+                        {_defaultLabel}
+                    </div>
+                )
+            });
+        }
+
+        setPossibleLabels(_possibleLabels);
     }
 
-    performKeyAction(key){
-        switch(key){
+    const performKeyAction = (key) => {
+        switch (key) {
             case 'Enter':
-                if (!this.props.multilabels){
-                    if (this.props.visible) this.confirmLabel()
+                if (!multilabels) {
+                    if (visible) incrementConfirmLabel();
                 }
-                break
+                break;
             case 'Escape':
-                this.closeLabelInput()
-                break
+                closeLabelInput();
+                break;
             default:
-                break
+                break;
         }
     }
 
-    annoLabelUpdate(label){
-        console.log('LabelInput -> annoLabelUpdate ', label)
-        if (this.props.onLabelUpdate){
-            this.props.onLabelUpdate(label.filter(val=>{
-                return val !== -1
-            }))
+    const annoLabelUpdate = (label) => {
+        console.log('LabelInput -> annoLabelUpdate ', label);
+
+        if (onLabelUpdate) {
+            onLabelUpdate(label.filter(val => val !== -1));
         }
     }
 
-
-    confirmLabel(){
-        //If not allowed to label -> return
-        this.setState({confirmLabel: this.state.confirmLabel+1})
+    const incrementConfirmLabel = () => {
+        setConfirmLabel(confirmLabel + 1);
     }
 
-    closeLabelInput(){
-        console.log('LabelInput -> closeLabelInput')
-        if (this.props.onLabelConfirmed){
-            this.props.onLabelConfirmed(this.state.label.filter(val=>{
-                return val !== -1
-            }))
-        }
-        if (this.props.onClose){
-            this.props.onClose()
-        }
+    const closeLabelInput = () => {
+        console.log('LabelInput -> closeLabelInput');
+
+        if (onLabelConfirmed) onLabelConfirmed(label.filter(val => val !== -1));
+        if (onClose) onClose();
     }
 
-    // triggerPopup(visible=true){
-    //     this.setState({
-    //         popupOpen: visible
-    //     })
-    // }
+    const renderLabelInput = () => {
+        let lbl;
 
-    /*************
-     * RENDERING *
-    **************/
-    renderLabelInput(){
-        let lbl
-        if (this.props.multilabels){
-            lbl = this.state.label
-        } else {
-            if (this.state.label.length > 0){
-                lbl = this.state.label[0]
-            } else {
-                lbl = -1
-            }
+        if (multilabels) lbl = label;
+        else {
+            lbl = (label.length > 0 ? label[0] : -1)
         }
 
         return (
-            <Ref innerRef={this.inputRef}>
-                    <Dropdown
-                        multiple={this.props.multilabels}
-                        search
-                        selection
-                        closeOnChange
-                        icon="search"
-                        options={this.state.possibleLabels}
-                        placeholder='Enter label'
-                        tabIndex={0}
-                        onKeyDown= {e => this.onKeyDown(e)}
-                        value={lbl}
-                        onChange={(e, item) => this.onChange(e, item)}
-                        style={{opacity:0.8}}
-                        disabled={this.props.disabled}
-                        open={this.props.open}
-                    />
-                </Ref>
-        )
+            <Ref innerRef={inputRef}>
+                <Dropdown
+                    multiple={multilabels}
+                    search
+                    selection
+                    closeOnChange
+                    icon="search"
+                    options={possibleLabels}
+                    placeholder='Enter label'
+                    tabIndex={0}
+                    onKeyDown={e => onKeyDown(e)}
+                    value={lbl}
+                    onChange={(e, item) => onChange(e, item)}
+                    style={{ opacity: 0.8 }}
+                    disabled={disabled}
+                    open={open}
+                />
+            </Ref>
+        );
     }
-    renderLabelInfo(){
-        if (!this.state.label) return null
-        let lbl = undefined
-        if (this.state.label.length > 0){
-            lbl = this.props.possibleLabels.find(e => {
-                return this.state.label[this.state.label.length-1] === e.id
-            })
+
+    const renderLabelInfo = () => {
+        if (!label) return null;
+
+        let lbl = undefined;
+
+        if (label.length > 0) {
+            lbl = possibleLabels.find(e => label[label.length - 1] === e.id);
         }
-        if (!lbl) return "No label"
-        return <div>
-            <Header>{
-                lbl.label
-            }</Header>
-            <div dangerouslySetInnerHTML={{__html: lbl.description}} />
-        </div>
+
+        if (!lbl) return "No label";
+
+        return (
+            <div>
+                <Header>{lbl.label}</Header>
+                <div dangerouslySetInnerHTML={{ __html: lbl.description }} />
+            </div>
+        );
     }
 
-    renderPopupContent(){
-        return <div>
-            {this.renderLabelInfo()}
-            {/* {this.renderAnnoDetails()} */}
-        </div>
+    const renderPopupContent = () => {
+        return (
+            <div>
+                {renderLabelInfo()}
+            </div>
+        );
     }
 
+    if (!visible) return null;
 
-    render(){
-        if (!this.props.visible) return null
-        if (this.props.renderPopup){
-            return (
-                <Popup trigger={this.renderLabelInput()}
-                content={this.renderPopupContent()}
+    if (renderPopup) {
+        return (
+            <Popup
+                trigger={renderLabelInput()}
+                content={renderPopupContent()}
                 open
                 position="right center"
-                style={{opacity:0.9}}
-                />
-            )
-        } else {
-            return this.renderLabelInput()
-        }
-
+                style={{ opacity: 0.9 }}
+            />
+        );
+    } else {
+        return renderLabelInput();
     }
-
 }
 
-export default LabelInput
+export default LabelInput;
