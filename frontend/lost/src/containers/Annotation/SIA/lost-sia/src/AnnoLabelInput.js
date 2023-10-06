@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import LabelInput from './LabelInput'
 import * as constraints from './utils/constraints'
 import * as annoStatus from './types/annoStatus'
 
-class AnnoLabelInput extends Component{
+class AnnoLabelInput extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props)
         this.state = {
             top: 400,
@@ -17,27 +17,27 @@ class AnnoLabelInput extends Component{
         this.inputGroupRef = React.createRef()
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.setPosition()
     }
-    
-    componentDidUpdate(prevProps){
-        if (this.props.visible){
-            this.setPosition()
-        } 
 
-        
+    componentDidUpdate(prevProps) {
+        if (this.props.visible) {
+            this.setPosition()
+        }
+
+
     }
 
     /*************
      * LOGIC     *
      *************/
-    setPosition(){
+    setPosition() {
 
-        if (this.props.mousePos){
+        if (this.props.mousePos) {
             const top = this.props.mousePos.y + this.props.svg.top - 10
             const left = this.props.mousePos.x + this.props.svg.left - 10
-            if (this.state.top !== top|| this.state.left !== left){  
+            if (this.state.top !== top || this.state.left !== left) {
                 this.setState({
                     top: top,
                     left: left,
@@ -46,19 +46,19 @@ class AnnoLabelInput extends Component{
         }
     }
 
-    onClose(){
-        if (this.props.onClose){
+    onClose() {
+        if (this.props.onClose) {
             this.props.onClose()
         }
     }
-    
-    annoLabelUpdate(anno){
-        if (this.props.onLabelUpdate){
+
+    annoLabelUpdate(anno) {
+        if (this.props.onLabelUpdate) {
             this.props.onLabelUpdate(anno)
         }
     }
 
-    updateAnnoLabel(label){
+    updateAnnoLabel(label) {
         if (!constraints.allowedToLabel(
             this.props.allowedActions, this.props.selectedAnno)) return
         this.annoLabelUpdate({
@@ -72,10 +72,10 @@ class AnnoLabelInput extends Component{
     /*************
      * RENDERING *
     **************/
-    render(){
+    render() {
         if (!this.props.visible) return null
         return (
-            <div ref={this.inputGroupRef} style={{position:'fixed', top:this.state.top, left:this.state.left}}>
+            <div ref={this.inputGroupRef} style={{ position: 'fixed', top: this.state.top, left: this.state.left }}>
                 <LabelInput svg={this.props.svg}
                     onClose={() => this.onClose()}
                     initLabelIds={this.props.selectedAnno.labelIds}
@@ -89,11 +89,11 @@ class AnnoLabelInput extends Component{
                     focusOnRender
                     open={true}
                     defaultLabel={this.props.defaultLabel}
-                    />
+                />
             </div>
         )
     }
-    
+
 }
 
 export default AnnoLabelInput
