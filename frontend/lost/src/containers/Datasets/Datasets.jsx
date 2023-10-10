@@ -5,13 +5,22 @@ import { faFolderPlus, faTag } from '@fortawesome/free-solid-svg-icons'
 import DatasetTable from './DatasetTable'
 import DatasetExportModal from './DatasetExportModal'
 
-const datasources = {
+const datastores = {
+    0: "This LOST instance",
     1: "MLDATA-SSI",
     2: "DerGeraet-SSH",
     3: "FTP01"
 }
 
 const datasetList = [
+    {
+        "id": 0,
+        "name": "No Dataset",
+        "description": "Dataset for all annotation tasks that have no dataset selected",
+        "datasource": 0,
+        "created_at": "2023-09-05 12:05:14",
+        "annotasks": [],
+    },
     {
         "id": 1,
         "name": "DS 1",
@@ -263,7 +272,8 @@ const Datasets = () => {
                 name="Test"
                 description="Test"
                 annoTask={annotask}
-                datasourceList={datasources}
+                datastoreList={datastores}
+                datasetList={datasetList}
             />
             <CContainer>
                 <CRow>
@@ -290,7 +300,7 @@ const Datasets = () => {
                 </CRow>
                 <CRow>
                     <CCol>
-                        <DatasetTable datasets={datasetList} datasources={datasources} />
+                        <DatasetTable datasets={datasetList} datasources={datastores} />
                     </CCol>
                 </CRow>
             </CContainer>

@@ -6,19 +6,20 @@ import IconButton from '../../components/IconButton'
 import DatasetExportTabs from './DatasetExportTabs'
 
 
-const DatasetExportModal = ({ name, description, annoTask, datasourceList }) => {
+const DatasetExportModal = ({ name, description, annoTask, datastoreList, datasetList }) => {
     const navigate = useNavigate()
 
     return (
         <>
             <ModalHeader>{name} Dataset</ModalHeader>
             <ModalBody>
-                <div class="mt-2">
+                <div className="mt-2">
                     {description}
                 </div>
                 <DatasetExportTabs
                     annotask={annoTask}
-                    datasourceList={datasourceList}
+                    datastoreList={datastoreList}
+                    datasetList={datasetList}
                 />
 
                 <hr></hr>

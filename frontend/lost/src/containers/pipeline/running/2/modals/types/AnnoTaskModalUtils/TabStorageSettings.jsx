@@ -1,11 +1,49 @@
-import React from 'react'
-import { CCol, CContainer, CFormInput, CRow } from '@coreui/react'
+import React, { useEffect, useState } from 'react'
+import { CCol, CContainer, CRow } from '@coreui/react'
 import HelpButton from '../../../../../../../components/HelpButton'
-import LabelInput from '../../../../../../Annotation/SIA/lost-sia/src/LabelInput'
+import { Dropdown } from 'semantic-ui-react'
 
-const TabStorageSettings = ({ annoTask, datasetList, datasourceList }) => {
+const TabStorageSettings = ({ annoTask, datasetList, datastoreList }) => {
 
-    console.log(datasourceList);
+    const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
+    const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
+
+    const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
+    const [selectedDatasetID, setSelectedDatasetID] = useState(0)
+
+
+    // convert the datasource list (id: name) to a list compatible to the Dropdown options
+    const converDatasourcesToDropdownOptions = (datastores) => {
+        const options = []
+        Object.keys(datastores).forEach((datasourceID) => {
+            options.push({
+                key: datasourceID,
+                value: datasourceID,
+                text: datastores[datasourceID]
+            })
+        })
+        setDatastoreDropdownOptions(options)
+    }
+
+    const convertDatasetToDropdownOptions = (datasets) => {
+        const options = []
+        datasets.forEach((dataset) => {
+            options.push({
+                key: dataset.id,
+                value: dataset.id,
+                text: dataset.name
+            })
+        })
+        setDatasetDropdownOptions(options)
+    }
+
+    useEffect(() => {
+        converDatasourcesToDropdownOptions(datastoreList)
+    }, [datastoreList])
+
+    useEffect(() => {
+        convertDatasetToDropdownOptions(datasetList);
+    }, [datasetList])
 
     return (
         <CContainer>
@@ -14,27 +52,49 @@ const TabStorageSettings = ({ annoTask, datasetList, datasourceList }) => {
                     <CRow xs={{ gutterY: 3 }}>
                         <CCol sm="12">
                             <h4>
-                                Export Name
+                                Destination Datastore
                                 <HelpButton
-                                    id="export-name"
-                                    text={`Give your export file a name.`}
+                                    text={`Select the datastore where the annotations are saved after the pipeline has finished.`}
                                 />
                             </h4>
                             <CRow>
                                 <CCol>
-                                    <CFormInput
-                                        type="text"
-                                        id="dataset"
-                                        list="datasetOptions"
-                                    // value={newExport.exportName}
-                                    // onChange={(e) =>
-                                    //     setNewExport({
-                                    //         ...newExport,
-                                    //         exportName: e.currentTarget.value,
-                                    //     })
-                                    // }
+                                    <Dropdown
+                                        placeholder='Select Datasource'
+                                        fluid
+                                        search
+                                        selection
+                                        multiple={false}
+                                        options={datastoreDropdownOptions}
+                                        value={selectedDatastoreID}
+                                        onChange={(_, data) => {
+                                            setSelectedDatastoreID(data.value)
+                                        }}
                                     />
-                                    <LabelInput possibleLabelsProp={Object.values(datasourceList)} />
+                                </CCol>
+                            </CRow>
+                        </CCol>
+                        <CCol sm="12">
+                            <h4>
+                                Dataset
+                                <HelpButton
+                                    text={`Select the dataset where the annotations are linked to.`}
+                                />
+                            </h4>
+                            <CRow>
+                                <CCol>
+                                    <Dropdown
+                                        placeholder='Select Dataset'
+                                        fluid
+                                        search
+                                        selection
+                                        multiple={false}
+                                        options={datasetDropdownOptions}
+                                        value={selectedDatasetID}
+                                        onChange={(_, data) => {
+                                            setSelectedDatasetID(data.value)
+                                        }}
+                                    />
                                 </CCol>
                             </CRow>
                         </CCol>

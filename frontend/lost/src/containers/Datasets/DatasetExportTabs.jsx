@@ -21,15 +21,12 @@ import TabAvailableExports from '../pipeline/running/2/modals/types/AnnoTaskModa
 import * as annoTaskApi from '../../actions/annoTask/anno_task_api'
 import TabStorageSettings from '../pipeline/running/2/modals/types/AnnoTaskModalUtils/TabStorageSettings'
 
-const DatasetExportTabs = ({ annotask, datasourceList }) => {
+const DatasetExportTabs = ({ annotask, datastoreList, datasetList }) => {
     const [active, setActive] = useState(0)
     const [dataExports, setDataExports] = useState([])
     const { data: dataExportData, refetch } = annoTaskApi.useGetDataexports(
         annotask.id,
     )
-
-    console.log("DAAAAS");
-    console.log(annotask);
 
     useInterval(() => {
         refetch()
@@ -139,7 +136,7 @@ const DatasetExportTabs = ({ annotask, datasourceList }) => {
             <CTabContent className='w-100' style={{ paddingBottom: '10px' }}>
                 {renderGenOrShowExport()}
                 <CTabPane visible={active === 2} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabStorageSettings annoTask={annotask} datasourceList={datasourceList} />
+                    <TabStorageSettings annoTask={annotask} datastoreList={datastoreList} datasetList={datasetList} />
                 </CTabPane>
                 {/* <CTabPane visible={active === 2} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabUser changeUser={props.changeUser} annoTask={props.annotask} />
