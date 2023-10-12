@@ -1753,7 +1753,7 @@ class FileSystem(Base):
 class Config(Base):
     __tablename__ = "config"
     idx = Column(Integer, primary_key=True)
-    key = Column(String(3072), unique=True)
+    key = Column(String(1024), unique=True)
     default_value = Column(Text)
     value = Column(Text)
     config = Column(Text)
