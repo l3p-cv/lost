@@ -9,7 +9,6 @@
 - [ ] The destination branch has been merged into my branch before I created this merge request
 - [ ] All interfaces to the outside world have been documented
   - For Python use [google doc style](https://google.github.io/styleguide/pyguide.html) -> [examples here](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) 
-- [ ] I am aware of the [l3bm git rules](https://wiki.l3bm.com/books/development/page/git-regeln)
 
 ## Types of changes
 <!--- What types of changes does your code introduce? Put an `x` in all the boxes that apply: -->
