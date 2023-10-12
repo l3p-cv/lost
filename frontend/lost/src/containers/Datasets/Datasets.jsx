@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { CCol, CContainer, CRow } from '@coreui/react'
 import IconButton from '../../components/IconButton'
 import { faFolderPlus, faTag } from '@fortawesome/free-solid-svg-icons'
@@ -22,7 +22,7 @@ const datasetList = [
         "annotasks": [],
     },
     {
-        "id": 1,
+        "id": 4,
         "name": "DS 1",
         "description": "Dataset about car parts",
         "datasource": 1,
@@ -30,7 +30,7 @@ const datasetList = [
         "annotasks": [],
     },
     {
-        "id": 2,
+        "id": 9,
         "name": "DS 2",
         "description": "Dataset 2",
         "datasource": 3,
@@ -44,7 +44,7 @@ const datasetList = [
         }]
     },
     {
-        "id": 3,
+        "id": 5,
         "name": "DS 3",
         "description": "Dataset 3",
         "datasource": 2,
@@ -258,6 +258,8 @@ const annotask = {
 
 const Datasets = () => {
 
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+
     const openAddDatasetMenu = () => {
         console.log("Clicked on openAddDatasetMenu")
     }
@@ -266,10 +268,21 @@ const Datasets = () => {
         console.log("Clicked on assign annotask")
     }
 
+    const openExportModal = (datasetID) => {
+        // set content to selected dataset
+        // @TODO
+
+        console.log("openExportModal", datasetID);
+
+        // open modal
+        setIsExportModalOpen(true)
+    }
+
     return (
         <>
             <DatasetExportModal
-                name="Test"
+                isVisible={isExportModalOpen}
+                datasetName="Test"
                 description="Test"
                 annoTask={annotask}
                 datastoreList={datastores}
@@ -300,7 +313,11 @@ const Datasets = () => {
                 </CRow>
                 <CRow>
                     <CCol>
-                        <DatasetTable datasets={datasetList} datasources={datastores} />
+                        <DatasetTable
+                            datasets={datasetList}
+                            datasources={datastores}
+                            onExportButtonClicked={openExportModal}
+                        />
                     </CCol>
                 </CRow>
             </CContainer>

@@ -86,6 +86,11 @@ const AnnoTaskModal = (props) => {
                 <AnnoTaskTabs
                     annotask={props.annoTask}
                     changeUser={props.changeUser}
+                    datasetList={[]}
+                    datastoreList={[]}
+                    hasChangeUser={true}
+                    hasShowLabels={true}
+                    hasAdaptConfiguration={true}
                 ></AnnoTaskTabs>
 
                 {/* <IconButton

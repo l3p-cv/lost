@@ -7,6 +7,7 @@ import {
     faTags,
     faGears,
     faDownload,
+    faBox,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
@@ -17,12 +18,13 @@ import TabAvailableExports from './TabAvailableExports'
 import TabShowLabels from './TabShowLabel'
 import TabAdaptConfiguration from './TabAdaptConfiguration'
 import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
+import TabStorageSettings from './TabStorageSettings'
 
-const AnnoTaskTabs = (props) => {
+const AnnoTaskTabs = ({ annotask, changeUser, datastoreList, datasetList, hasChangeUser = true, hasShowLabels = true, hasAdaptConfiguration = true }) => {
     const [active, setActive] = useState(0)
     const [dataExports, setDataExports] = useState([])
     const { data: dataExportData, refetch } = annoTaskApi.useGetDataexports(
-        props.annotask.id,
+        annotask.id,
     )
     useInterval(() => {
         refetch()
@@ -87,12 +89,12 @@ const AnnoTaskTabs = (props) => {
                     <CTabPane visible={active === 0} style={{ marginTop: 30, marginLeft: 5 }}>
                         <TabAvailableExports
                             dataExports={dataExports}
-                            annotaskId={props.annotask.id}
+                            annotaskId={annotask.id}
                         />
                     </CTabPane>
                     <CTabPane visible={active === 1} style={{ marginTop: 30, marginLeft: 5 }}>
                         <TabGenerateExport
-                            annotask={props.annotask}
+                            annotask={annotask}
                             setActive={setActive}
                         />
                     </CTabPane>
@@ -102,12 +104,12 @@ const AnnoTaskTabs = (props) => {
         return (
             <>
                 <CTabPane visible={active === 0} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabGenerateExport annotask={props.annotask} setActive={setActive} />
+                    <TabGenerateExport annotask={annotask} setActive={setActive} />
                 </CTabPane>
                 <CTabPane visible={active === 1} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabAvailableExports
                         dataExports={dataExports}
-                        annotaskId={props.annotask.id}
+                        annotaskId={annotask.id}
                     />
                 </CTabPane>
             </>
@@ -121,34 +123,64 @@ const AnnoTaskTabs = (props) => {
 
                 <CNavItem>
                     <CNavLink active={active === 2} onClick={() => setActive(2)}>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faUsers} />
-                        {active === 2 && ' Adapt Users'}
+                        <FontAwesomeIcon
+                            color="#092F38"
+                            size="1x"
+                            icon={faBox}
+                        />
+                        {active === 2 && ' Storage options'}
                     </CNavLink>
                 </CNavItem>
-                <CNavItem>
-                    <CNavLink active={active === 3} onClick={() => setActive(3)}>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
-                        {active === 3 && ' Show Labels'}
-                    </CNavLink>
-                </CNavItem>
-                <CNavItem>
-                    <CNavLink active={active === 4} onClick={() => setActive(4)}>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faGears} />
-                        {active === 4 && ' Adapt Configuration'}
-                    </CNavLink>
-                </CNavItem>
+
+                {hasChangeUser && (
+                    <CNavItem>
+                        <CNavLink active={active === 3} onClick={() => setActive(3)}>
+                            <FontAwesomeIcon color="#092F38" size="1x" icon={faUsers} />
+                            {active === 3 && ' Adapt Users'}
+                        </CNavLink>
+                    </CNavItem>
+                )}
+                {hasShowLabels && (
+                    <CNavItem>
+                        <CNavLink active={active === 4} onClick={() => setActive(4)}>
+                            <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
+                            {active === 4 && ' Show Labels'}
+                        </CNavLink>
+                    </CNavItem>
+                )}
+                {hasAdaptConfiguration && (
+                    <CNavItem>
+                        <CNavLink active={active === 5} onClick={() => setActive(5)}>
+                            <FontAwesomeIcon color="#092F38" size="1x" icon={faGears} />
+                            {active === 5 && ' Adapt Configuration'}
+                        </CNavLink>
+                    </CNavItem>
+                )}
             </CNav>
             <CTabContent className='w-100' style={{ paddingBottom: '10px' }}>
                 {renderGenOrShowExport()}
+
                 <CTabPane visible={active === 2} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabUser changeUser={props.changeUser} annoTask={props.annotask} />
+                    <TabStorageSettings annoTask={annotask} datastoreList={datastoreList} datasetList={datasetList} />
                 </CTabPane>
-                <CTabPane visible={active === 3} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabShowLabels annoTask={props.annotask} />
-                </CTabPane>
-                <CTabPane visible={active === 4} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabAdaptConfiguration annoTask={props.annotask} />
-                </CTabPane>
+
+                {hasChangeUser && (
+                    <CTabPane visible={active === 3} style={{ marginTop: 30, marginLeft: 5 }}>
+                        <TabUser changeUser={changeUser} annoTask={annotask} />
+                    </CTabPane>
+                )}
+
+                {hasShowLabels && (
+                    <CTabPane visible={active === 4} style={{ marginTop: 30, marginLeft: 5 }}>
+                        <TabShowLabels annoTask={annotask} />
+                    </CTabPane>
+                )}
+
+                {hasAdaptConfiguration && (
+                    <CTabPane visible={active === 5} style={{ marginTop: 30, marginLeft: 5 }}>
+                        <TabAdaptConfiguration annoTask={annotask} />
+                    </CTabPane>
+                )}
             </CTabContent>
             {/* </CTabs> */}
         </CNav>

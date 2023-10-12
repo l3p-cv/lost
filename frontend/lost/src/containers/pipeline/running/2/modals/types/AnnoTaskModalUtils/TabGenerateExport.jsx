@@ -99,7 +99,7 @@ const TabGenerateExport = (props) => {
 
                         <CCol sm="12">
                             <CRow>
-                                <CCol sm="2">
+                                <CCol xs="12" lg="5">
                                     <CFormSwitch
                                         size="xl"
                                         className={'mx-1'}
@@ -129,7 +129,7 @@ const TabGenerateExport = (props) => {
 
                         <CCol sm="12">
                             <CRow>
-                                <CCol sm="2">
+                                <CCol xs="12" lg="5">
                                     <CFormSwitch
                                         size="xl"
                                         className={'mx-1'}
@@ -240,7 +240,7 @@ const TabGenerateExport = (props) => {
 
                                 </CCol>
                                 <CCol>
-                                    <h4>
+                                    <h4 className='mb-3'>
                                         Export Type
                                         <HelpButton
                                             id="export-type"
@@ -414,6 +414,41 @@ const TabGenerateExport = (props) => {
                                 ) : (
                                     ''
                                 )}
+                            </CRow>
+                        </CCol>
+                        <CCol sm="12">
+                            <h4 className='mt-3'>Datastore</h4>
+                            <CRow>
+                                <CCol sm="12">
+                                    <CRow>
+                                        <CCol md="2">
+                                            <CFormSwitch
+                                                size="xl"
+                                                className={'mx-1'}
+                                                variant={'3d'}
+                                                color={'primary'}
+                                                checked={newExport.randomSplits.active}
+                                                onChange={(e) => {
+                                                    console.log("export to datastore switch flipped");
+                                                }}
+                                            />
+                                        </CCol>
+                                        <CCol>
+                                            <b
+                                                style={{
+                                                    marginLeft: '20px',
+                                                }}
+                                            >
+                                                Export to Datastore
+                                                <HelpButton
+                                                    id="store-to-datastore"
+                                                    text={`If this setting is active, 
+                                the exported file will be saved on the selected datastore instead of this LOST instance.`}
+                                                />
+                                            </b>
+                                        </CCol>
+                                    </CRow>
+                                </CCol>
                             </CRow>
                         </CCol>
                     </CRow>

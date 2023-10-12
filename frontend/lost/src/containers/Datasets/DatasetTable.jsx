@@ -13,17 +13,13 @@ import { CTable, CTableBody, CTableHead } from '@coreui/react'
 import { faCaretDown, faCaretRight, faDownload, faEye, faFile } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
 
-const DatasetTable = ({ datasets, datasources }) => {
+const DatasetTable = ({ datasets, datasources, onExportButtonClicked }) => {
     const [data, setData] = React.useState(() => [...datasets])
 
     const columnHelper = createColumnHelper()
 
-    const showAnnotasks = (row) => {
-        console.log("SHOW ANNOTASKS")
-    }
-
-    const showExportMenu = (row) => {
-        console.log("Clicked on export menu")
+    const showAnnotasks = (datasetID) => {
+        console.log("SHOW ANNOTASKS:", datasetID)
     }
 
     const renderRowIcon = (row) => {
@@ -75,7 +71,10 @@ const DatasetTable = ({ datasets, datasources }) => {
                 icon={faEye}
                 color="primary"
                 isOutline={false}
-                onClick={(row) => showAnnotasks(row)}
+                onClick={() => {
+                    const datasetID = props.row.original.id
+                    showAnnotasks(datasetID)
+                }}
                 disabled={false}
                 text="Review"
             />)
@@ -88,7 +87,10 @@ const DatasetTable = ({ datasets, datasources }) => {
                     icon={faDownload}
                     color="primary"
                     isOutline={false}
-                    onClick={(row) => showExportMenu(row)}
+                    onClick={() => {
+                        const datasetID = props.row.original.id
+                        onExportButtonClicked(datasetID)
+                    }}
                     disabled={false}
                     text="Export"
                 />
