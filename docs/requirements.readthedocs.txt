@@ -24,7 +24,7 @@ passlib==1.7.1
 pudb==2018.1
 pycparser==2.19
 pygments==2.2.0
-pyjwt==1.6.4
+pyjwt==2.4.0
 pymysql==0.9.2
 pytz==2018.7
 scikit-image
