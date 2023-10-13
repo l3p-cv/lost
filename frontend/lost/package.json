@@ -46,7 +46,7 @@
     "react-query": "^3.31.0",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.1",
     "react-stepper-wizard": "^1.1.5",
     "react-table": "^6.5.3",
     "react-use": "^17.1.0",
