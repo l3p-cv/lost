@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import HelpButton from '../../../../../../../../components/HelpButton'
 import IconButton from '../../../../../../../../components/IconButton'
@@ -6,32 +6,20 @@ import { faTags } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
 import { Card, CardBody } from 'reactstrap'
 import ReactTable from 'react-table'
+
 const { selectLabelTree } = actions
-class SelectTree extends Component {
-    constructor() {
-        super()
-        this.selectRow = this.selectRow.bind(this)
+
+const SelectTree = ({ peN, availableLabelTrees, selectLabelTree, verifyTab, selectTab }) => {
+    const selectRow = (row) => {
+        selectLabelTree(peN, row.idx)
+        verifyTab(peN, 2, true)
+        selectTab(peN, 3)
     }
 
-    selectRow(row) {
-        this.props.selectLabelTree(this.props.peN, row.idx)
-        this.props.verifyTab(this.props.peN, 2, true)
-        this.props.selectTab(this.props.peN, 3)
-    }
-
-    renderTable() {
-        // return this.props.availableLabelTrees.map((el)=>{
-        //     return(
-        //         <div key={el.idx} id={el.idx} onClick={this.selectRow}>{el.name}</div>
-        //     )
-        // })
+    const renderTable = () => {
         return (
             <ReactTable
                 columns={[
-                    // {
-                    //     Header: 'ID',
-                    //     accessor: 'idx',
-                    // },
                     {
                         Header: 'Name',
                         accessor: 'name',
@@ -58,7 +46,7 @@ class SelectTree extends Component {
                                     color="primary"
                                     icon={faTags}
                                     text="Choose"
-                                    onClick={() => this.selectRow(row.original)}
+                                    onClick={() => selectRow(row.original)}
                                 />
                             )
                         },
@@ -73,19 +61,18 @@ class SelectTree extends Component {
                         desc: true,
                     },
                 ]}
-                data={this.props.availableLabelTrees}
+                data={availableLabelTrees}
                 defaultPageSize={10}
                 className="-striped -highlight"
             />
         )
     }
-    render() {
-        return (
-            <Card className="annotask-modal-card">
-                <CardBody>{this.renderTable()}</CardBody>
-            </Card>
-        )
-    }
+
+    return (
+        <Card className="annotask-modal-card">
+            <CardBody>{renderTable()}</CardBody>
+        </Card>
+    )
 }
 
 export default connect(null, { selectLabelTree })(SelectTree)

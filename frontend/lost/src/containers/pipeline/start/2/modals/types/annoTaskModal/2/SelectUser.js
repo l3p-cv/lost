@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
@@ -6,20 +6,17 @@ import { Card, CardBody } from 'reactstrap'
 import { CBadge } from '@coreui/react'
 import ReactTable from 'react-table'
 import IconButton from '../../../../../../../../components/IconButton'
+
 const { selectUser } = actions
-class SelectUser extends Component {
-    constructor() {
-        super()
-        this.selectRow = this.selectRow.bind(this)
+
+const SelectUser = ({ peN, availableGroups, selectUser, verifyTab, selectTab }) => {
+    const selectRow = (row) => {
+        selectUser(peN, row.groupName, row.id)
+        verifyTab(peN, 1, true)
+        selectTab(peN, 2)
     }
 
-    selectRow(row) {
-        this.props.selectUser(this.props.peN, row.groupName, row.id)
-        this.props.verifyTab(this.props.peN, 1, true)
-        this.props.selectTab(this.props.peN, 2)
-    }
-
-    renderTable() {
+    const renderTable = () => {
         return (
             <ReactTable
                 columns={[
@@ -55,7 +52,7 @@ class SelectUser extends Component {
                                     color="primary"
                                     icon={row.original.isUserDefault ? faUser : faUsers}
                                     text="Choose"
-                                    onClick={() => this.selectRow(row.original)}
+                                    onClick={() => selectRow(row.original)}
                                 />
                             )
                         },
@@ -70,19 +67,18 @@ class SelectUser extends Component {
                         desc: true,
                     },
                 ]}
-                data={this.props.availableGroups}
+                data={availableGroups}
                 defaultPageSize={10}
                 className="-striped -highlight"
             />
         )
     }
-    render() {
-        return (
-            <Card className="annotask-modal-card">
-                <CardBody>{this.renderTable()}</CardBody>
-            </Card>
-        )
-    }
+
+    return (
+        <Card className="annotask-modal-card">
+            <CardBody>{renderTable()}</CardBody>
+        </Card>
+    )
 }
 
 export default connect(null, { selectUser })(SelectUser)

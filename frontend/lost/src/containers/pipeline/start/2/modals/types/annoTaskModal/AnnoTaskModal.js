@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useCallback } from 'react'
 import Stepper from 'react-stepper-wizard'
 import { connect } from 'react-redux'
 import actions from '../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
@@ -12,34 +12,30 @@ import SelectMIAConfiguration from './5/SelectMIAConfiguration'
 
 const { selectTab, verifyTab } = actions
 
-class AnnoTaskModal extends Component {
-    constructor() {
-        super()
-        this.changeCurrentStep = this.changeCurrentStep.bind(this)
-    }
-    changeCurrentStep(newStep) {
-        this.props.selectTab(this.props.peN, newStep)
-    }
+const AnnoTaskModal = (props) => {
+    const changeCurrentStep = useCallback((newStep) => {
+        props.selectTab(props.peN, newStep);
+    }, [props])
 
-    renderContent() {
-        switch (this.props.stepper.currentStep) {
+    const renderContent = () => {
+        switch (props.stepper.currentStep) {
             case 0:
-                return <UserInfo {...this.props} />
+                return <UserInfo {...props} />
             case 1:
-                return <SelectUser {...this.props} />
+                return <SelectUser {...props} />
             case 2:
-                return <SelectTree {...this.props} />
+                return <SelectTree {...props} />
             case 3:
                 return <SelectLabel
-                    availableLabelTrees={this.props.availableLabelTrees}
-                    peN={this.props.peN}
-                    verifyTab={this.props.verifyTab}
+                    availableLabelTrees={props.availableLabelTrees}
+                    peN={props.peN}
+                    verifyTab={props.verifyTab}
                 />
             case 4:
-                if (this.props.annoTask.type === 'sia') {
-                    return <SelectSIAConfiguration {...this.props} />
-                } else if (this.props.annoTask.type === 'mia') {
-                    return <SelectMIAConfiguration {...this.props} />
+                if (props.annoTask.type === 'sia') {
+                    return <SelectSIAConfiguration {...props} />
+                } else if (props.annoTask.type === 'mia') {
+                    return <SelectMIAConfiguration {...props} />
                 }
                 break
             default:
@@ -47,25 +43,23 @@ class AnnoTaskModal extends Component {
         }
     }
 
-    renderStepper() {
-        if (this.props.stepper.steps) {
+    const renderStepper = () => {
+        if (props.stepper.steps) {
             return (
                 <Stepper
-                    stepperData={this.props.stepper}
-                    changeCurrentStep={this.changeCurrentStep}
+                    stepperData={props.stepper}
+                    changeCurrentStep={changeCurrentStep}
                 />
             )
         }
     }
 
-    render() {
-        return (
-            <div>
-                {this.renderStepper()}
-                {this.renderContent()}
-            </div>
-        )
-    }
+    return (
+        <div>
+            {renderStepper()}
+            {renderContent()}
+        </div>
+    )
 }
 
 export default connect(null, { selectTab, verifyTab })(AnnoTaskModal)
