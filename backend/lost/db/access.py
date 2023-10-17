@@ -736,6 +736,9 @@ class DBMan(object):
 
     def get_users(self):
         return self.session.query(model.User).all()
+    
+    def get_users_name_id(self):
+        return self.session.query(model.User).with_entities(model.User.idx, model.User.user_name).all()
 
     def get_groups(self):
         return self.session.query(model.Group).all()
