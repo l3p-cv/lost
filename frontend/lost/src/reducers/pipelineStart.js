@@ -119,6 +119,14 @@ const INITITAL_STATE_SIA_ANNO_TASK_MODAL = {
         },
         {
             text: '5',
+            icon: 'fa-box',
+            shapeBorderColor: '#092F38',
+            shapeBackgroundColor: 'white',
+            shapeContentColor: '#092F38',
+            verified: false,
+        },
+        {
+            text: '6',
             icon: 'fa-gears',
             shapeBorderColor: '#092F38',
             shapeBackgroundColor: 'white',
@@ -587,8 +595,8 @@ export default (state = INITITAL_STATE, action) => {
                                 id: el.peN,
                                 verified: el.script.arguments
                                     ? Object.keys(el.script.arguments).filter(
-                                          (el2) => !el.script.arguments[el2].value,
-                                      ).length === 0
+                                        (el2) => !el.script.arguments[el2].value,
+                                    ).length === 0
                                     : true,
                                 type: 'script',
                                 title: 'Script',

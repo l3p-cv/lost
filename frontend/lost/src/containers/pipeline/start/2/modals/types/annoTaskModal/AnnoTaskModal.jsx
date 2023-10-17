@@ -8,6 +8,8 @@ import SelectTree from './3/SelectTree'
 import SelectLabel from './4/SelectLabel'
 import SelectSIAConfiguration from './5/SelectSIAConfiguration'
 import SelectMIAConfiguration from './5/SelectMIAConfiguration'
+import SelectStorageSettings from './5/SelectStorageSettings'
+
 // import GrayLine from '../../..&globalComponents/GrayLine'
 
 const { selectTab, verifyTab } = actions
@@ -32,6 +34,11 @@ const AnnoTaskModal = (props) => {
                     verifyTab={props.verifyTab}
                 />
             case 4:
+                return <SelectStorageSettings
+                    datasetList={[]}
+                    datastoreList={[]}
+                />
+            case 5:
                 if (props.annoTask.type === 'sia') {
                     return <SelectSIAConfiguration {...props} />
                 } else if (props.annoTask.type === 'mia') {
