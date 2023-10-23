@@ -257,3 +257,15 @@ class GetImage(Resource):
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()
             return u'data:img/jpg;base64,'+data64.decode('utf-8')
+        
+@namespace.route('/datastoresKey')
+class GetDatastoresByKey(Resource):
+    @jwt_required
+    def get(self):
+        return {    
+            1: "Datastore 1",
+            2: "Datastore 2",
+            3: "Datastore 3",
+            4: "Datastore 4",
+            5: "Datastore 5"
+        }

@@ -13,6 +13,7 @@ from lost.api.sia.endpoint import namespace as sia_namespace
 from lost.api.mia.endpoint import namespace as mia_namespace
 from lost.api.pipeline.endpoint import namespace as pipeline_namespace
 from lost.api.annotask.endpoint import namespace as annotask_namespace
+from lost.api.dataset.endpoint import namespace as dataset_namespace
 from lost.api.data.endpoint import namespace as data_namespace
 from lost.api.label.endpoint import namespace as label_namespace
 from lost.api.worker.endpoint import namespace as worker_namespace
@@ -77,6 +78,7 @@ api.add_namespace(sia_namespace)
 api.add_namespace(mia_namespace)
 api.add_namespace(pipeline_namespace)
 api.add_namespace(annotask_namespace)
+api.add_namespace(dataset_namespace)
 api.add_namespace(data_namespace)
 api.add_namespace(label_namespace)
 api.add_namespace(worker_namespace)
