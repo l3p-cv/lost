@@ -24,7 +24,7 @@ class Datasets(Resource):
                         "id": 5,
                         "name": "Dataset 5",
                         "description": "Description for Dataset 5",
-                        "datasourceId": 1,
+                        "datasourceId": 5,
                         "createdAt": "2023-10-02 12:34:56",
                         "children": []
                     },
@@ -32,9 +32,27 @@ class Datasets(Resource):
                         "id": 6,
                         "name": "Dataset 6",
                         "description": "Description for Dataset 6",
-                        "datasourceId": 1,
+                        "datasourceId": 3,
                         "createdAt": "2023-10-02 12:34:56",
-                        "children": []
+                        "children": [
+                            {
+                                "id": 10,
+                                "name": "Dataset 10",
+                                "description": "Description for Dataset 10",
+                                "datasourceId": 3,
+                                "createdAt": "2023-10-02 12:34:56",
+                                "children": [
+                                    {
+                                        "id": 6,
+                                        "name": "Annotask 1",
+                                        "description": "Description for Annotask 1",
+                                        "datasourceId": 3,
+                                        "createdAt": "2023-10-02 12:34:56",
+                                        "children": []
+                                    }
+                                ]
+                            }
+                        ]
                     },
                 ]
             },
@@ -42,7 +60,7 @@ class Datasets(Resource):
                 "id": 2,
                 "name": "Dataset 2",
                 "description": "Description for Dataset 2",
-                "datasourceId": 1,
+                "datasourceId": 2,
                 "createdAt": "2023-10-02 12:34:56",
                 "children": []
             },

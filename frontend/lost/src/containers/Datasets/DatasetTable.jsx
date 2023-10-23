@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import {
     createColumnHelper,
     flexRender,
@@ -13,8 +13,14 @@ import { CTable, CTableBody, CTableHead } from '@coreui/react'
 import { faCaretDown, faCaretRight, faDownload, faEye, faFile } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
 
-const DatasetTable = ({ datasets, datasources, onExportButtonClicked }) => {
-    const [data, setData] = React.useState(() => [...datasets])
+const DatasetTable = ({ datasetList, datasources, onExportButtonClicked }) => {
+    const [tableData, setTableData] = React.useState(() => [...datasetList])
+
+    // update the table when the parameter data changes
+    useEffect(() => {
+        // possibility to change data between HTTP response and table refresh event
+        setTableData(datasetList)
+    }, [datasetList])
 
     const columnHelper = createColumnHelper()
 
@@ -25,17 +31,20 @@ const DatasetTable = ({ datasets, datasources, onExportButtonClicked }) => {
     const renderRowIcon = (row) => {
 
         // show file icon for annotasks
-        if (row.original.isAnnotask) {
-            return <FontAwesomeIcon size="xl" icon={faFile} style={{ marginLeft: '20px' }} />
+        if (row.depth.isAnnotask) {
+            // also use icon to indent child row (margin)
+            return <FontAwesomeIcon size="xl" icon={faFile} style={{ marginLeft: row.depth * 20 }} />
         }
 
         // dataset that can be opened
         if (row.getCanExpand()) {
-            return <FontAwesomeIcon size="2xl" icon={row.getIsExpanded() ? faCaretDown : faCaretRight} onClick={() => row.toggleExpanded()} />
+            // also use icon to indent child row (margin)
+            return <FontAwesomeIcon size="2xl" icon={row.getIsExpanded() ? faCaretDown : faCaretRight} onClick={() => row.toggleExpanded()} style={{ marginLeft: row.depth * 20 }} />
         }
 
         // dataset that cannot be openened (it has no annotasks assigned)
-        return <FontAwesomeIcon size="2xl" icon={faCaretRight} color="grey" />
+        // also use icon to indent child row (margin)
+        return <FontAwesomeIcon size="2xl" icon={faCaretRight} color="grey" style={{ marginLeft: row.depth * 20 }} />
     }
 
     const columns = [
@@ -49,7 +58,7 @@ const DatasetTable = ({ datasets, datasources, onExportButtonClicked }) => {
         columnHelper.accessor('description', {
             header: 'Description'
         }),
-        columnHelper.accessor('datasource', {
+        columnHelper.accessor('datasourceId', {
             header: () => 'Datasource',
             cell: info => {
                 const datasourceID = info.renderValue()
@@ -61,7 +70,7 @@ const DatasetTable = ({ datasets, datasources, onExportButtonClicked }) => {
                 return ""
             }
         }),
-        columnHelper.accessor('created_at', {
+        columnHelper.accessor('createdAt', {
             header: () => 'Created at',
         }),
         columnHelper.display({
@@ -101,13 +110,13 @@ const DatasetTable = ({ datasets, datasources, onExportButtonClicked }) => {
     const [expanded, setExpanded] = React.useState({})
 
     const table = useReactTable({
-        data,
+        data: tableData,
         columns,
         state: {
             expanded,
         },
         onExpandedChange: setExpanded,
-        getSubRows: row => row.annotasks,
+        getSubRows: row => row.children,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),

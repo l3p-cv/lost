@@ -1,68 +1,10 @@
 import React, { useState } from 'react'
-import { CCol, CContainer, CRow } from '@coreui/react'
+import { CCol, CContainer, CRow, CSpinner } from '@coreui/react'
 import IconButton from '../../components/IconButton'
 import { faFolderPlus, faTag } from '@fortawesome/free-solid-svg-icons'
 import DatasetTable from './DatasetTable'
 import DatasetExportModal from './DatasetExportModal'
-
-const datastores = {
-    0: "This LOST instance",
-    1: "MLDATA-SSI",
-    2: "DerGeraet-SSH",
-    3: "FTP01"
-}
-
-const datasetList = [
-    {
-        "id": 0,
-        "name": "No Dataset",
-        "description": "Dataset for all annotation tasks that have no dataset selected",
-        "datasource": 0,
-        "created_at": "2023-09-05 12:05:14",
-        "annotasks": [],
-    },
-    {
-        "id": 4,
-        "name": "DS 1",
-        "description": "Dataset about car parts",
-        "datasource": 1,
-        "created_at": "2023-09-05 12:05:14",
-        "annotasks": [],
-    },
-    {
-        "id": 9,
-        "name": "DS 2",
-        "description": "Dataset 2",
-        "datasource": 3,
-        "created_at": "2023-09-05 12:05:14",
-        "annotasks": [{
-            "isAnnotask": true,
-            "id": 1,
-            "name": "Annotask3475",
-            "description": "Dataset about car parts",
-            "created_at": "2023-09-05 12:05:14"
-        }]
-    },
-    {
-        "id": 5,
-        "name": "DS 3",
-        "description": "Dataset 3",
-        "datasource": 2,
-        "created_at": "2023-09-05 12:05:14",
-        "annotasks": [{
-            "isAnnotask": true,
-            "id": 4,
-            "name": "Annotask6553",
-            "description": "Test Annotask",
-            "created_at": "2023-06-05 15:05:57"
-        }, {
-            "isAnnotask": true,
-            "id": 7,
-            "name": "My next Annotask",
-            "created_at": "2023-09-05 04:07:33"
-        }]
-    }
-]
+import * as datasetApi from '../../actions/dataset/dataset_api'
 
 const annotask = {
     "elements": [
@@ -258,6 +200,9 @@ const annotask = {
 
 const Datasets = () => {
 
+    const { data: datasetList } = datasetApi.useDatasets()
+    const { data: datastores } = datasetApi.useDatastoreKeys()
+
     const [isExportModalOpen, setIsExportModalOpen] = useState(false)
 
     const openAddDatasetMenu = () => {
@@ -314,7 +259,7 @@ const Datasets = () => {
                 <CRow>
                     <CCol>
                         <DatasetTable
-                            datasets={datasetList}
+                            datasetList={datasetList}
                             datasources={datastores}
                             onExportButtonClicked={openExportModal}
                         />
