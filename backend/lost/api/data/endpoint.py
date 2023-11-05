@@ -1,7 +1,7 @@
 from typing import BinaryIO
 from sqlalchemy import engine
 from sqlalchemy.sql.schema import DEFAULT_NAMING_CONVENTION
-from flask_restx import Resource
+from flask_restx import Resource, fields
 from flask import request, send_from_directory, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
@@ -259,6 +259,10 @@ class GetImage(Resource):
             return u'data:img/jpg;base64,'+data64.decode('utf-8')
         
 @namespace.route('/datastoresKey')
+@api.doc(security='apikey')
+@api.response(200, 'success', api.model('DatastoreKeys', {
+    "1": fields.String(description="Name of datastore", example="Default Datastore")
+}))
 class GetDatastoresByKey(Resource):
     @jwt_required
     def get(self):
