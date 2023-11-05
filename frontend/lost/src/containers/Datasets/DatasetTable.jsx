@@ -13,7 +13,7 @@ import { CTable, CTableBody, CTableHead } from '@coreui/react'
 import { faCaretDown, faCaretRight, faDownload, faEye, faFile } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
 
-const DatasetTable = ({ datasetList, datasources, onExportButtonClicked }) => {
+const DatasetTable = ({ datasetList, datastores, onExportButtonClicked }) => {
     const [tableData, setTableData] = React.useState(() => [...datasetList])
 
     // update the table when the parameter data changes
@@ -58,19 +58,19 @@ const DatasetTable = ({ datasetList, datasources, onExportButtonClicked }) => {
         columnHelper.accessor('description', {
             header: 'Description'
         }),
-        columnHelper.accessor('datasourceId', {
-            header: () => 'Datasource',
+        columnHelper.accessor('datastore_id', {
+            header: () => 'Datastore',
             cell: info => {
-                const datasourceID = info.renderValue()
+                const datastoreID = info.renderValue()
 
-                if (datasourceID in datasources) {
-                    return datasources[datasourceID]
+                if (datastoreID in datastores) {
+                    return datastores[datastoreID]
                 }
 
                 return ""
             }
         }),
-        columnHelper.accessor('createdAt', {
+        columnHelper.accessor('created_at', {
             header: () => 'Created at',
         }),
         columnHelper.display({

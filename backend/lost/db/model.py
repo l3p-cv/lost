@@ -9,6 +9,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy import orm
+from sqlalchemy.sql import func
 from lost.db import dtype
 import json
 import os
@@ -958,6 +959,7 @@ class AnnoTask(Base):
         instructions (str): Instructions for the annotator of this AnnoTask.
         name (str): A name for this annotask.
         configuration (str): Configuration of this annotask.
+        dataset_id (int): Foreign key to the dataset the annotask belongs to
 
     Warning:
         *annotator_id = None* means that all users are assigned to this task.
@@ -980,17 +982,21 @@ class AnnoTask(Base):
     configuration = Column(Text)
     last_activity = Column(DateTime())
     last_annotator_id = Column(Integer, ForeignKey('user.idx'))
+    dataset_id = Column(Integer, ForeignKey('dataset.idx'), nullable=True)
+    datastore_id = Column(Integer, ForeignKey('datasource.idx'), nullable=True)
+    
     users = relationship("ChoosenAnnoTask", back_populates="anno_task", lazy='joined')
     last_annotator = relationship(
         "User", foreign_keys='AnnoTask.last_annotator_id', uselist=False)
     req_label_leaves = relationship('RequiredLabelLeaf')
     pipe_element = relationship(
         "PipeElement", foreign_keys='AnnoTask.pipe_element_id', uselist=False)
+    dataset = relationship('Dataset', foreign_keys='AnnoTask.dataset_id', uselist=False)
 
     def __init__(self, idx=None, manager_id=None, group_id=None, state=None,
                  progress=None, dtype=None, pipe_element_id=None,
                  timestamp=None, name=None, instructions=None,
-                 configuration=None, last_activity=None, last_annotator=None):
+                 configuration=None, last_activity=None, last_annotator=None, dataset_id=None, datastore_id=None):
         self.idx = idx
         self.manager_id = manager_id
         self.group_id = group_id
@@ -1004,6 +1010,30 @@ class AnnoTask(Base):
         self.configuration = configuration
         self.last_activity = last_activity
         self.last_annotator = last_annotator
+        self.dataset_id = dataset_id
+        self.datastore_id = datastore_id
+        
+    def to_dict(self):
+        '''Transform this object to a dict.
+
+        Returns:
+            dict:
+        '''
+        return {
+            "idx": self.idx,
+            "manager_id": self.manager_id,
+            "group_id": self.group_id,
+            "state": self.state,
+            "progress": self.progress,
+            "dtype": self.dtype,
+            "pipe_element_id": self.pipe_element_id,
+            "dataset_id": self.dataset_id,
+            "datastore_id": self.datastore_id,
+            "created_at": self.timestamp,
+            "name": self.name,
+            "description": f'Progress: {round(self.progress)}%',
+            "is_annotask": True
+        }
 
 
 class Pipe(Base):
@@ -1786,4 +1816,53 @@ class Config(Base):
             'description': self.description,
             'is_user_specific': self.is_user_specific
 
+        }
+
+class Dataset(Base):
+    '''Represents a dataset that can have annotations and other datasets as its children
+
+    Attributes:
+        idx (int): ID of the dataset.
+        name (String): Name of the dataset
+        description (String): Short description what the dataset is about
+        datastore_id (int): foreign key to the datastore (datasource) the dataset can be exported to
+        parent_id (int): foreign key to a parent dataset
+        created_at (DateTime): Timestamp the dataset was created
+    '''
+    __tablename__ = "dataset"
+    idx = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=False)
+    description = Column(String(255))
+    datastore_id = Column(Integer, ForeignKey('datasource.idx'))
+    parent_id = Column(Integer, ForeignKey('dataset.idx'))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    datastore = relationship('Datasource', foreign_keys='Dataset.datastore_id', uselist=False)
+    parent = relationship('Dataset', backref='dataset_children', remote_side=[idx])
+    annotask_children = relationship(AnnoTask, back_populates="dataset")
+
+    def __init__(self, idx=None, name=None, description=None, datastore_id=None, created_at=None, parent_dataset_id=None):
+        self.idx = idx
+        self.name = name
+        self.description = description
+        self.datastore_id = datastore_id
+        self.parent_id = parent_dataset_id
+        self.created_at = created_at
+        
+    def to_dict(self):
+        
+        # convert all children (recursively)
+        children_json = []
+        if self.children != None:
+            for child in self.children:
+                children_json.append(child.to_dict())
+
+        return {
+            'idx': self.idx,
+            'name': self.name,
+            'description': self.description,
+            'datastore_id': self.datastore_id,
+            'parent_id': self.parent_id,
+            'created_at': self.created_at,
+            'children': children_json
         }

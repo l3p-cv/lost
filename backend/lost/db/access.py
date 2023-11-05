@@ -1227,3 +1227,8 @@ class DBMan(object):
         '''
         return self.session.query(sqlalchemy.func.count(model.Pipe.idx))\
         .filter(model.Pipe.pipe_template_id == pipe_template_id)
+        
+    def get_datasets_with_no_parent(self):
+        ''' Returns all datasets that don't have a parent assigned in a onedimensional list
+        '''
+        return self.session.query(model.Dataset).filter(model.Dataset.parent_id == None).all()

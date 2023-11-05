@@ -1,8 +1,10 @@
-from flask import request
+from flask import jsonify
 from flask_restx import Resource, fields
 from flask_jwt_extended import jwt_required
 
 from lost.api.api import api
+from lost.db import access
+from lost.settings import LOST_CONFIG
 
 namespace = api.namespace('datasets', description='Dataset API')
 
@@ -33,85 +35,46 @@ class Datasets(Resource):
     @api.response(200, 'success', [datasetModel])
     @jwt_required
     def get(self):
-        return [
-            {
-                "id": 1,
-                "name": "Dataset 1",
-                "description": "Description for Dataset 1",
-                "datasourceId": 1,
-                "createdAt": "2023-10-02 12:34:56",
-                "children": [
-                    {
-                        "id": 5,
-                        "name": "Dataset 5",
-                        "description": "Description for Dataset 5",
-                        "datasourceId": 5,
-                        "createdAt": "2023-10-02 12:34:56",
-                        "children": []
-                    },
-                    {
-                        "id": 6,
-                        "name": "Dataset 6",
-                        "description": "Description for Dataset 6",
-                        "datasourceId": 3,
-                        "createdAt": "2023-10-02 12:34:56",
-                        "children": [
-                            {
-                                "id": 10,
-                                "name": "Dataset 10",
-                                "description": "Description for Dataset 10",
-                                "datasourceId": 3,
-                                "createdAt": "2023-10-02 12:34:56",
-                                "children": [
-                                    {
-                                        "id": 6,
-                                        "name": "Annotask 1",
-                                        "description": "Description for Annotask 1",
-                                        "datasourceId": 3,
-                                        "createdAt": "2023-10-02 12:34:56",
-                                        "children": []
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                ]
-            },
-            {
-                "id": 2,
-                "name": "Dataset 2",
-                "description": "Description for Dataset 2",
-                "datasourceId": 2,
-                "createdAt": "2023-10-02 12:34:56",
-                "children": []
-            },
-            {
-                "id": 3,
-                "name": "Dataset 3",
-                "description": "Description for Dataset 3",
-                "datasourceId": 1,
-                "createdAt": "2023-10-02 12:34:56",
-                "children": [
-                    {
-                        "id": 7,
-                        "name": "Dataset 7",
-                        "description": "Description for Dataset 7",
-                        "datasourceId": 1,
-                        "createdAt": "2023-10-02 12:34:56",
-                        "children": []
-                    }
-                ]
-            },
-            {
-                "id": 4,
-                "name": "Dataset 4",
-                "description": "Description for Dataset 4",
-                "datasourceId": 1,
-                "createdAt": "2023-10-02 12:34:56",
-                "children": []
-            },
-        ]
         
+        dbm = access.DBMan(LOST_CONFIG)
+        datasets = dbm.get_datasets_with_no_parent()
+        
+        
+        # find all children of every dataset (recursively)
+        datasets_json = []
+        for dataset in datasets:
+            newDS = self.__build_dataset_children_tree(dataset)
+            datasets_json.append(newDS.to_dict())
+        
+        return jsonify(datasets_json)
+
+    
+    def __build_dataset_children_tree(self, dataset):
+        ''' recursive helper method to find all children of a dataset
+        '''
+        
+        children = dataset.dataset_children
+        
+        if(len(children) == 0):
+            dataset.children = []
+            return dataset
+        
+        subchildren = []
+        for child in children:
+            # redo request for children of children
+            subchildren.append(self.__build_dataset_children_tree(child))
+            
+        # add annotask children (annotasks can't have a child)
+        annotasks = dataset.annotask_children
+        if annotasks is not None:
+            for annotask in annotasks:
+                subchildren.append(annotask)
+        
+        dataset.children = subchildren
+        
+        return dataset
+
+
     @jwt_required
     @api.doc(description="Creates a new dataset.")
     @api.expect(datasetModelCreate)
@@ -120,8 +83,8 @@ class Datasets(Resource):
     def put(self):
         print("TODO")
         return ('', 201)
-    
-    
+
+  
     @api.doc(description="Updates a single dataset.")
     @api.expect(datasetModelUpdate)
     @api.response(204, 'success')

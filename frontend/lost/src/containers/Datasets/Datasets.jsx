@@ -260,7 +260,7 @@ const Datasets = () => {
                     <CCol>
                         <DatasetTable
                             datasetList={datasetList}
-                            datasources={datastores}
+                            datastores={datastores}
                             onExportButtonClicked={openExportModal}
                         />
                     </CCol>
