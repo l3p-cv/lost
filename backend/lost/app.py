@@ -37,9 +37,9 @@ if settings.LOST_CONFIG.use_graylog:
     app.logger.info('Started LOST Flask Application.')  
 
 
-app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTPLUS_SWAGGER_EXPANSIONS
-app.config['RESTPLUS_VALIDATE'] = settings.RESTPLUS_VAL
-app.config['RESTPLUS_MASK_SWAGGER'] = settings.RESTPLUS_MASK_SWAGGER
+app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTX_SWAGGER_EXPANSIONS
+app.config['RESTX_VALIDATE'] = settings.RESTX_VAL
+app.config['RESTX_MASK_SWAGGER'] = settings.RESTX_MASK_SWAGGER
 app.config['SECRET_KEY'] = settings.SECRET_KEY
 app.config['USER_APP_NAME'] = settings.USER_APP_NAME
 app.config['USER_ENABLE_EMAIL'] = settings.USER_ENABLE_EMAIL
