@@ -21,6 +21,7 @@ import os
 namespace = api.namespace('fb', description='Lost Filebrowser API')
 
 @namespace.route('/ls')
+@api.doc(security='apikey')
 class LS(Resource):
     @jwt_required 
     def post(self):
@@ -46,6 +47,7 @@ class LS(Resource):
             return chonkyfy(res, path, fm)
 
 @namespace.route('/lsTest')
+@api.doc(security='apikey')
 class LS(Resource):
     @jwt_required 
     def post(self):
@@ -74,6 +76,7 @@ class LS(Resource):
             return chonkyfy(res, path, fm)
 
 @namespace.route('/rm')
+@api.doc(security='apikey')
 class RM(Resource):
     @jwt_required 
     def post(self):
@@ -96,6 +99,7 @@ class RM(Resource):
             return 'success', 200 
 
 @namespace.route('/delete')
+@api.doc(security='apikey')
 class Delete(Resource):
     @jwt_required 
     def post(self):
@@ -123,6 +127,7 @@ class Delete(Resource):
             return {'deleted': 'mu ha ha!'}
 
 @namespace.route('/fslist/<string:visibility>')
+@api.doc(security='apikey')
 class FsList(Resource):
     @jwt_required 
     def get(self, visibility):
@@ -164,6 +169,7 @@ class FsList(Resource):
             return ret
 
 @namespace.route('/fstypes')
+@api.doc(security='apikey')
 class FsTypes(Resource):
     @jwt_required 
     def get(self):
@@ -178,6 +184,7 @@ class FsTypes(Resource):
         #return list(known_implementations.keys())
 
 @namespace.route('/savefs')
+@api.doc(security='apikey')
 class SaveFs(Resource):
     @jwt_required 
     def post(self):
@@ -230,6 +237,7 @@ class SaveFs(Resource):
             return 'success', 200 
 
 @namespace.route('/fullfs')
+@api.doc(security='apikey')
 class FullFs(Resource):
     @jwt_required 
     def post(self):
@@ -263,6 +271,7 @@ class FullFs(Resource):
                     'timestamp': fs.timestamp.isoformat()
                 }
 @namespace.route('/upload')
+@api.doc(security='apikey')
 class Upload(Resource):
     @jwt_required
     def post(self):
@@ -292,6 +301,7 @@ class Upload(Resource):
                 return 'Not allowed to upload to this filesystem', 403
 
 @namespace.route('/mkdirs')
+@api.doc(security='apikey')
 class MkDirs(Resource): 
     @jwt_required 
     def post(self):
