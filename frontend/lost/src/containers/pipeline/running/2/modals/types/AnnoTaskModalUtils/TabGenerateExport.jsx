@@ -18,7 +18,7 @@ import IconButton from '../../../../../../../components/IconButton'
 import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
 import * as Notification from '../../../../../../../components/Notification'
 
-const TabGenerateExport = (props) => {
+const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive }) => {
     const {
         data: annoTaskExportData,
         mutate: generateExport,
@@ -48,9 +48,9 @@ const TabGenerateExport = (props) => {
     }, [generateExportStatus])
 
     const onGenerateExport = () => {
-        const data = { annotaskId: props.annotask.id, exportConfig: newExport }
+        const data = { annotaskId: annotaskId, exportConfig: newExport }
         generateExport(data)
-        props.setActive(0)
+        setActive(0)
     }
     const validateSplit = (splitType, value) => {
         let splits = {}
@@ -150,8 +150,8 @@ const TabGenerateExport = (props) => {
                                             style={{ marginLeft: '20px' }}
                                         >
                                             {newExport.annotatedOnly
-                                                ? `${props.annotask.annotatedImgCount} images`
-                                                : `${props.annotask.imgCount} images`}
+                                                ? `${annotatedImgCount} images`
+                                                : `${imgCount} images`}
                                         </CBadge>
                                     ) : (
                                         ''

@@ -6,7 +6,7 @@ import * as userApi from '../../../../../../../actions/user/user_api'
 import { alertSuccess } from '../../../../../globalComponents/Sweetalert'
 import IconButton from '../../../../../../../components/IconButton'
 
-const TabUser = (props) => {
+const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
     const { data: users } = userApi.useAnnotaskUser()
     // const users = useSelector((state) => state.user.users)
     const dispatch = useDispatch()
@@ -21,8 +21,10 @@ const TabUser = (props) => {
         alertSuccess('Change user successful')
     }
 
-    function handleChangeUser(props, groupId) {
-        props.changeUser(props.annoTask.id, groupId, changeUserSuccessful)
+    function handleChangeUser(groupId) {
+        console.info(annotaskId)
+        console.info(annotaskUser)
+        changeUser(annotaskId, groupId, changeUserSuccessful)
     }
     const dataTableData = [
         ...users.map((user) => ({
@@ -36,6 +38,8 @@ const TabUser = (props) => {
             name: `${group.name} (group)`,
         })),
     ]
+
+    console.info(users, groups);
 
     return (
         <>
@@ -55,7 +59,7 @@ const TabUser = (props) => {
                             Header: 'Change',
                             id: 'change',
                             accessor: (d) => {
-                                if (d.rawName === props.annoTask.userName) {
+                                if (d.rawName === annotaskUser) {
                                     return (
                                         <IconButton
                                             color="success"
@@ -65,11 +69,13 @@ const TabUser = (props) => {
                                         />
                                     )
                                 }
+
+                                console.info(d)
                                 return (
                                     <IconButton
                                         color="primary"
                                         text="Change"
-                                        onClick={() => handleChangeUser(props, d.idx)}
+                                        onClick={() => handleChangeUser(d.idx)}
                                     />
                                 )
                             },

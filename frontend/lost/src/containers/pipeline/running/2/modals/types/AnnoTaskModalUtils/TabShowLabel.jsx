@@ -1,7 +1,7 @@
 import React from 'react'
 import { Badge } from 'reactstrap'
 
-const TabShowLabels = (props) => {
+const TabShowLabels = ({ labelLeaves }) => {
     return (
         <>
             <div>
@@ -9,7 +9,7 @@ const TabShowLabels = (props) => {
             </div>
             <h5>
                 <Badge color="primary" pill>
-                    {props.annoTask.labelLeaves.map((l) => {
+                    {labelLeaves.map((l) => {
                         return l.name
                     })}
                 </Badge>

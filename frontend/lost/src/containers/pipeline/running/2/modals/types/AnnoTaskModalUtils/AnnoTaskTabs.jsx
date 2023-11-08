@@ -94,17 +94,25 @@ const AnnoTaskTabs = ({ annotask, changeUser, datastoreList, datasetList, hasCha
                     </CTabPane>
                     <CTabPane visible={active === 1} style={{ marginTop: 30, marginLeft: 5 }}>
                         <TabGenerateExport
-                            annotask={annotask}
+                            annotaskId={annotask.id}
+                            imgCount={annotask.imgCount}
+                            annotatedImgCount={annotask.annotatedImgCount}
                             setActive={setActive}
                         />
                     </CTabPane>
                 </>
             )
         }
+
         return (
             <>
                 <CTabPane visible={active === 0} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabGenerateExport annotask={annotask} setActive={setActive} />
+                    <TabGenerateExport
+                        annotaskId={annotask.id}
+                        imgCount={annotask.imgCount}
+                        annotatedImgCount={annotask.annotatedImgCount}
+                        setActive={setActive}
+                    />
                 </CTabPane>
                 <CTabPane visible={active === 1} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabAvailableExports
@@ -161,24 +169,32 @@ const AnnoTaskTabs = ({ annotask, changeUser, datastoreList, datasetList, hasCha
                 {renderGenOrShowExport()}
 
                 <CTabPane visible={active === 2} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabStorageSettings annoTask={annotask} datastoreList={datastoreList} datasetList={datasetList} />
+                    <TabStorageSettings datastoreList={datastoreList} datasetList={datasetList} />
                 </CTabPane>
 
                 {hasChangeUser && (
                     <CTabPane visible={active === 3} style={{ marginTop: 30, marginLeft: 5 }}>
-                        <TabUser changeUser={changeUser} annoTask={annotask} />
+                        <TabUser
+                            annotaskId={annotask.id}
+                            annotaskUser={annotask.userName}
+                            changeUser={changeUser}
+                        />
                     </CTabPane>
                 )}
 
                 {hasShowLabels && (
                     <CTabPane visible={active === 4} style={{ marginTop: 30, marginLeft: 5 }}>
-                        <TabShowLabels annoTask={annotask} />
+                        <TabShowLabels labelLeaves={annotask.labelLeaves} />
                     </CTabPane>
                 )}
 
                 {hasAdaptConfiguration && (
                     <CTabPane visible={active === 5} style={{ marginTop: 30, marginLeft: 5 }}>
-                        <TabAdaptConfiguration annoTask={annotask} />
+                        <TabAdaptConfiguration
+                            id={annotask.id}
+                            type={annotask.type}
+                            configuration={annotask.configuration}
+                        />
                     </CTabPane>
                 )}
             </CTabContent>

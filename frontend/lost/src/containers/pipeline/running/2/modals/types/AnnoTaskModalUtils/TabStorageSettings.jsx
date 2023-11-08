@@ -3,7 +3,7 @@ import { CCol, CContainer, CRow } from '@coreui/react'
 import HelpButton from '../../../../../../../components/HelpButton'
 import { Dropdown } from 'semantic-ui-react'
 
-const TabStorageSettings = ({ annoTask, datasetList, datastoreList }) => {
+const TabStorageSettings = ({ datasetList, datastoreList }) => {
 
     const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
     const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
@@ -60,7 +60,7 @@ const TabStorageSettings = ({ annoTask, datasetList, datastoreList }) => {
                             <CRow>
                                 <CCol>
                                     <Dropdown
-                                        placeholder='Select Datasource'
+                                        placeholder='Select Datastore'
                                         fluid
                                         search
                                         selection
