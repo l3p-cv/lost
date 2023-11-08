@@ -127,7 +127,15 @@ class UserListAnnoTask(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            users = dbm.get_users_name_id()
+            users = dbm.get_users()
+            
+            # remove sensitive user information
+            for user in users:
+                user.api_token = None
+                user.email = None
+                user.email_confirmed_at = None
+                user.password = None
+            
             dbm.close_session()
             ulist = {'users':users}
             return ulist 
