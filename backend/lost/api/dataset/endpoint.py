@@ -1,17 +1,20 @@
-from flask import jsonify
+from flask import jsonify, request
 from flask_restx import Resource, fields
 from flask_jwt_extended import jwt_required
+from werkzeug.datastructures import ImmutableMultiDict
 
 from lost.api.api import api
 from lost.db import access
 from lost.settings import LOST_CONFIG
+from lost.api.dataset.form_validation import CreateDatasetForm, UpdateDatasetForm
+from lost.db.model import Dataset
 
 namespace = api.namespace('datasets', description='Dataset API')
 
 datasetModelCreate = api.model("DatasetCreate", {
     "name": fields.String(description="Name of the dataset", example="My dataset"),
     "description": fields.String(description="Short description what the dataset is about", example="Dataset containing all the fancy stuff"),
-    "datasourceId": fields.Integer(description="ID of the datasource the dataset saves its content to", example="1"),
+    "datastoreId": fields.Integer(description="ID of the datastore the dataset saves its content to", example="1"),
 })
 
 datasetModelUpdate = api.inherit('DatasetUpdate', datasetModelCreate, {
@@ -73,6 +76,22 @@ class Datasets(Resource):
         dataset.children = subchildren
         
         return dataset
+    
+    def __create_validation_error_message(self, form):
+        """Creates a error message string out of a failed wtform
+        """
+        error_fields = form.errors.items()
+        error_msgs = ""
+        
+        # go through all errors from all fields
+        for field in error_fields:
+            errors = field[1]
+            for error in errors:
+                # combine all errors into a single string
+                error_msg = f'Error in field {field[0]}: {error}'
+                error_msgs = error_msgs + error_msg
+
+        return error_msgs
 
 
     @jwt_required
@@ -80,8 +99,27 @@ class Datasets(Resource):
     @api.expect(datasetModelCreate)
     @api.response(201, 'success')
     @api.response(400, 'error', errorMessage)
-    def put(self):
-        print("TODO")
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+
+        # convert json input into a format readable by wtforms
+        form_input = ImmutableMultiDict(request.json)
+        form = CreateDatasetForm(form_input)
+        
+        # abort if form validation fails
+        if not form.validate():
+            errors_str = self.__create_validation_error_message(form)
+            return (errors_str, 400)
+
+        # use the safe validated data to create a new DB entry        
+        data = form.data
+        db_dataset = Dataset(
+            name=data['name'],
+            description=data['description'],
+            datastore_id=data['datastoreId']
+        )
+        dbm.save_obj(db_dataset)
+
         return ('', 201)
 
   
@@ -90,7 +128,26 @@ class Datasets(Resource):
     @api.response(204, 'success')
     @api.response(400, 'error', errorMessage)
     @jwt_required
-    def patch(self, id):
-        print("TODO")
-        print("ID:", id)
+    def patch(self):
+        dbm = access.DBMan(LOST_CONFIG)
+
+        # convert json input into a format readable by wtforms
+        form_input = ImmutableMultiDict(request.json)
+        form = UpdateDatasetForm(form_input)
+        
+        # abort if form validation fails
+        if not form.validate():
+            errors_str = self.__create_validation_error_message(form)
+            return (errors_str, 400)
+
+        # use the safe validated data to update the DB entry        
+        data = form.data
+        dataset_id = data['id']
+        
+        db_dataset = dbm.get_dataset(dataset_id)
+        db_dataset.name = data['name']
+        db_dataset.description = data['description']
+        db_dataset.datastore_id = data['datastoreId']
+        dbm.save_obj(db_dataset)
+
         return ('', 204)

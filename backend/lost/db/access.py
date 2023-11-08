@@ -1232,3 +1232,14 @@ class DBMan(object):
         ''' Returns all datasets that don't have a parent assigned in a onedimensional list
         '''
         return self.session.query(model.Dataset).filter(model.Dataset.parent_id == None).all()
+
+    def get_dataset(self, dataset_id):
+        '''Get dataset by idx
+        '''
+        return self.session.query(model.Dataset)\
+        .filter(model.Dataset.idx==dataset_id).first()
+    
+    def get_datastores(self):
+        ''' Returns all datasources what can be used to store data
+        '''
+        return self.session.query(model.Datasource).filter(model.Datasource.is_datastore == True).all()
