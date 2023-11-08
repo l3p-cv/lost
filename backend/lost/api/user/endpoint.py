@@ -19,6 +19,7 @@ namespace = api.namespace('user', description='Users in System.')
 
 @namespace.route('')
 @api.doc(description='User Api get method.')
+@api.doc(security='apikey')
 class UserList(Resource):
     @api.marshal_with(user_list)
     @jwt_required 
@@ -114,6 +115,7 @@ class UserList(Resource):
          
 @namespace.route('/anno_task_user')
 @api.doc(description='User Api get method for anno task users.')
+@api.doc(security='apikey')
 class UserListAnnoTask(Resource):
     @api.marshal_with(user_list)
     @jwt_required 
@@ -132,6 +134,7 @@ class UserListAnnoTask(Resource):
 
 @namespace.route('/<int:id>')
 @namespace.param('id', 'The user identifier')
+@api.doc(security='apikey')
 class User(Resource):
     @api.marshal_with(user)
     @jwt_required 
@@ -259,6 +262,7 @@ class User(Resource):
     
  
 @namespace.route('/self')
+@api.doc(security='apikey')
 class UserSelf(Resource):
     @api.marshal_with(user)
     @jwt_required 
@@ -293,6 +297,7 @@ class UserSelf(Resource):
             return "No user found.", 405
 
 @namespace.route('/logout')
+@api.doc(security='apikey')
 class UserLogout(Resource):
     @jwt_required 
     def post(self):
@@ -308,6 +313,7 @@ class UserLogout(Resource):
         return {"msg": "Successfully logged out"}, 200
 
 @namespace.route('/logout2')
+@api.doc(security='apikey')
 class UserLogoutRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
@@ -316,6 +322,7 @@ class UserLogoutRefresh(Resource):
         return {"msg": "Successfully logged out"}, 200
 
 @namespace.route('/refresh')
+@api.doc(security='apikey')
 class UserTokenRefresh(Resource):
     @jwt_refresh_token_required
     def post(self):
@@ -339,6 +346,7 @@ class UserTokenRefresh(Resource):
         return {'message': 'Invalid user'}, 401
 
 @namespace.route('/login')
+@api.doc(security='apikey')
 class UserLogin(Resource):
     @api.expect(user_login)
     def post(self):
@@ -354,7 +362,8 @@ class UserLogin(Resource):
         dbm.close_session()
         return response
 
-@namespace.route('/token') 
+@namespace.route('/token')
+@api.doc(security='apikey')
 class Token(Resource):
     @api.expect(user_login)
     def post(self):

@@ -23,6 +23,7 @@ namespace = api.namespace('annotask', description='AnnoTask API.')
 
 
 @namespace.route('')
+@api.doc(security='apikey')
 class Available(Resource):
     #@api.marshal_with(anno_task_list)
     @jwt_required 
@@ -59,6 +60,7 @@ class Available(Resource):
             return "success"
 
 @namespace.route('/working')
+@api.doc(security='apikey')
 class Working(Resource):
     #@api.marshal_with(anno_task)
     @jwt_required 
@@ -81,6 +83,7 @@ class Working(Resource):
 
 @namespace.route('/statistic/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
 class Statistic(Resource):
     @jwt_required 
     def get(self, annotask_id):
@@ -96,6 +99,7 @@ class Statistic(Resource):
             return annotask_statistics
 
 @namespace.route('/report')
+@api.doc(security='apikey')
 class ReportService(Resource):
     @jwt_required 
     def post(self):
@@ -114,6 +118,7 @@ class ReportService(Resource):
 
 @namespace.route('/force_release/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
 class ForceRelease(Resource):
     @jwt_required 
     def get(self, annotask_id):
@@ -131,6 +136,7 @@ class ForceRelease(Resource):
 @namespace.route('/change_user/<int:annotask_id>/<int:group_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
 @namespace.param('group_id', 'The id of the annotation task should belong to.')
+@api.doc(security='apikey')
 class ChangeUser(Resource):
     @jwt_required 
     def get(self, annotask_id, group_id):
@@ -153,6 +159,7 @@ class ChangeUser(Resource):
             return "You are not authorized.", 401
 @namespace.route('/update_config/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
 class UpdateAnnoTaskConfig(Resource):
     @jwt_required 
     def post(self, annotask_id):
@@ -177,6 +184,7 @@ class UpdateAnnoTaskConfig(Resource):
 
 @namespace.route('/generate_export/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
 class GenerateExport(Resource):
     @jwt_required 
     def post(self, annotask_id):
@@ -239,6 +247,7 @@ class GenerateExport(Resource):
 
 @namespace.route('/anno_task_exports/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
 class DataExports(Resource):
     @jwt_required 
     def get(self, annotask_id):
@@ -276,6 +285,7 @@ class DataExports(Resource):
             return ret_json, 200
 @namespace.route('/download_export/<int:anno_task_export_id>')
 @namespace.param('anno_task_export_id', 'The id of the anno_task_export to download.')
+@api.doc(security='apikey')
 class DataExportDownload(Resource):
     @jwt_required 
     def get(self, anno_task_export_id):
@@ -309,6 +319,7 @@ class DataExportDownload(Resource):
 
 @namespace.route('/delete_export/<int:anno_task_export_id>')
 @namespace.param('anno_task_export_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
 class DeleteExport(Resource):
     @jwt_required 
     def post(self, anno_task_export_id):
