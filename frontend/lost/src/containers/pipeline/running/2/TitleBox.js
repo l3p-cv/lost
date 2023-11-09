@@ -1,10 +1,10 @@
 import React from 'react'
 
-const TitleBox = (props) => {
+const TitleBox = ({ name, timestamp }) => {
     return (
         <div>
-            <div>Name: {props.name}</div>
-            <div>timestamp: {new Date(props.timestamp).toLocaleString()}</div>
+            <div>Name: {name}</div>
+            <div>timestamp: {new Date(timestamp).toLocaleString()}</div>
         </div>
         //     <CCard style={{ width: '200px' }}>
         //     <CCardHeader style={{ backgroundColor: '#092F38', color: 'white' }}>
