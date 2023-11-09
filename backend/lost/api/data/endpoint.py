@@ -25,6 +25,7 @@ import random
 namespace = api.namespace('data', description='Data API.')
 
 @namespace.route('/<string:path>')
+@api.doc(security='apikey')
 class Data(Resource): 
     @jwt_required 
     def get(self, path):
@@ -62,6 +63,7 @@ class Data(Resource):
 
 @namespace.route('/logs/<int:pe_id>')
 #@namespace.param('path', 'Path to logfile')
+@api.doc(security='apikey')
 class Logs(Resource):
     @jwt_required 
     def get(self, pe_id):
@@ -81,6 +83,7 @@ class Logs(Resource):
 
 @namespace.route('/dataexport/<deid>')
 #@namespace.param('path', 'Path to logfile')
+@api.doc(security='apikey')
 class DataExport(Resource):
     @jwt_required 
     def get(self, deid):
@@ -102,6 +105,7 @@ class DataExport(Resource):
             return resp
 
 @namespace.route('/annoexport_parquet/<peid>')
+@api.doc(security='apikey')
 class AnnoExportParquet(Resource):
     @jwt_required 
     def get(self, peid):
@@ -125,6 +129,7 @@ class AnnoExportParquet(Resource):
              return resp
 
 @namespace.route('/annoexport_csv/<peid>')
+@api.doc(security='apikey')
 class AnnoExportCSV(Resource):
     @jwt_required 
     def get(self, peid):
@@ -147,6 +152,7 @@ class AnnoExportCSV(Resource):
              resp.headers["Content-Type"] = "blob"
              return resp
 @namespace.route('/workerlogs/<int:worker_id>')
+@api.doc(security='apikey')
 class Logs(Resource): 
     @jwt_required 
     def get(self, worker_id):
@@ -180,6 +186,7 @@ def load_img(db_img, ufa, user):
     return img
 
 @namespace.route('/getImage')
+@api.doc(security='apikey')
 class GetImage(Resource):
 
     @jwt_required 

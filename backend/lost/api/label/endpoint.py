@@ -14,6 +14,7 @@ import flask
 namespace = api.namespace('label', description='Label API.')
 
 @namespace.route('/tree/<string:visibility>') 
+@api.doc(security='apikey')
 class LabelTrees(Resource):
     #@api.marshal_with()
     @jwt_required 
@@ -60,6 +61,7 @@ class LabelTrees(Resource):
 
 
 @namespace.route('/<string:visibility>')
+@api.doc(security='apikey')
 class LabelEditNew(Resource):
     @api.expect(update_label_parser)
     @jwt_required 
@@ -123,6 +125,7 @@ class LabelEditNew(Resource):
 
 @namespace.route('/<int:label_leaf_id>')
 @namespace.param('label_leaf_id', 'The group identifier')
+@api.doc(security='apikey')
 class Label(Resource):
     @api.marshal_with(label_leaf)
     @jwt_required 
@@ -154,6 +157,7 @@ class Label(Resource):
             return "success"
 
 @namespace.route('/export/<int:label_leaf_id>')
+@api.doc(security='apikey')
 class ExportLabelTree(Resource):
     @jwt_required 
     def get(self,label_leaf_id):

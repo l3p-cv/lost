@@ -16,6 +16,7 @@ import flask
 namespace = api.namespace('system', description='System information and control.')
 
 @namespace.route('/version')
+@api.doc(security='apikey')
 class Version(Resource):
     def get(self):
         try:
@@ -24,6 +25,7 @@ class Version(Resource):
             return 'development'
 
 @namespace.route('/settings')
+@api.doc(security='apikey')
 class Version(Resource):
     def get(self):
         return {
@@ -32,6 +34,7 @@ class Version(Resource):
             'isDevMode': LOST_CONFIG.debug
         }
 @namespace.route('/jupyter')
+@api.doc(security='apikey')
 class JupyterLabUrl(Resource):
     @jwt_required 
     def get(self):
@@ -52,6 +55,7 @@ if LOST_CONFIG.use_graylog:
     handler = GelfUdpHandler(host='graylog', port=12201, include_extra_fields=True)
     logger.addHandler(handler)
 @namespace.route('/logs/frontend')
+@api.doc(security='apikey')
 class FrontendLogs(Resource):
     def post(self):
         data = json.loads(request.data)

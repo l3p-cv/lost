@@ -25,7 +25,9 @@ namespace = api.namespace('pipeline', description='Pipeline API.')
 import flask
 
 
+
 @namespace.route('/template/<string:visibility>')
+@api.doc(security='apikey')
 class TemplateList(Resource):
     @api.marshal_with(templates)
     @jwt_required
@@ -61,6 +63,7 @@ class TemplateList(Resource):
 
 @namespace.route('/template/<int:template_id>')
 @namespace.param('template_id', 'The id of the template.')
+@api.doc(security='apikey')
 class Template(Resource):
     @api.marshal_with(template, skip_none=True)
     @jwt_required
@@ -79,6 +82,7 @@ class Template(Resource):
 
 
 @namespace.route('')
+@api.doc(security='apikey')
 class PipelineList(Resource):
     # marshal caused problems json string was fine, api returned { pipelines: null }.
     # @api.marshal_with(pipelines) 
@@ -104,6 +108,7 @@ class PipelineList(Resource):
 
 @namespace.route('/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
+@api.doc(security='apikey')
 class Pipeline(Resource):
     # @api.marshal_with(pipeline)
     @jwt_required
@@ -134,6 +139,7 @@ class Pipeline(Resource):
 
 
 @namespace.route('/start')
+@api.doc(security='apikey')
 class PipelineStart(Resource):
     # @api.marshal_with(pipeline_start)
     @jwt_required
@@ -163,6 +169,7 @@ class PipelineStart(Resource):
 
 
 @namespace.route('/updateArguments')
+@api.doc(security='apikey')
 class PipelineUpdateArguments(Resource):
     @jwt_required
     def post(self):
@@ -179,6 +186,7 @@ class PipelineUpdateArguments(Resource):
 
 @namespace.route('/pause/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
+@api.doc(security='apikey')
 class PipelinePause(Resource):
     @jwt_required
     def post(self, pipeline_id):
@@ -195,6 +203,7 @@ class PipelinePause(Resource):
 
 @namespace.route('/play/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
+@api.doc(security='apikey')
 class PipelinePlay(Resource):
     @jwt_required
     def post(self, pipeline_id):
@@ -210,6 +219,7 @@ class PipelinePlay(Resource):
             return "success"
 
 @namespace.route('/project/import_zip')
+@api.doc(security='apikey')
 class TemplateImportZip(Resource):
     @jwt_required
     def post(self):
@@ -266,6 +276,7 @@ class TemplateImportZip(Resource):
                 raise
 
 @namespace.route('/project/import_git')
+@api.doc(security='apikey')
 class TemplateImportGit(Resource):
     @jwt_required
     def post(self):
@@ -322,6 +333,7 @@ class TemplateImportGit(Resource):
 
 @namespace.route('/project/export/<string:pipe_project>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
+@api.doc(security='apikey')
 class PipelineTemplateExport(Resource):
     # @api.marshal_with(pipeline)
     @jwt_required
@@ -350,6 +362,7 @@ class PipelineTemplateExport(Resource):
             return resp
 
 @namespace.route('/project/delete')
+@api.doc(security='apikey')
 class TemplateDelete(Resource):
     @jwt_required
     def post(self):
@@ -370,6 +383,7 @@ class TemplateDelete(Resource):
             dbm.close_session()
             return "success", 200
 @namespace.route('/project/<string:visibility>')
+@api.doc(security='apikey')
 class ProjectList(Resource):
     @api.marshal_with(templates)
     @jwt_required

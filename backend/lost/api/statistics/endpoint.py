@@ -11,6 +11,7 @@ from lost.logic.statistics import personal, designer
 namespace = api.namespace('statistics', description='LOST Statistics API')
 
 @namespace.route('/personal')
+@api.doc(security='apikey')
 class Personal(Resource):
     @jwt_required 
     def get(self):
@@ -34,6 +35,7 @@ class Personal(Resource):
             dbm.close_session()
             return example_stats
 @namespace.route('/designer')
+@api.doc(security='apikey')
 class Designer(Resource):
     @jwt_required 
     def get(self):
@@ -57,4 +59,3 @@ class Designer(Resource):
 
             dbm.close_session()
             return example_stats
-         

@@ -64,6 +64,7 @@ if not key in db_key_list:
 
 @namespace.route('')
 @api.doc(description='Get all config entrys ')
+@api.doc(security='apikey')
 class ConfigList(Resource):
     @api.marshal_with(config)
     @jwt_required

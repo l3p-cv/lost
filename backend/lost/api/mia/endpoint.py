@@ -19,6 +19,7 @@ from lost.logic import dask_session
 namespace = api.namespace('mia', description='MIA Annotation API.')
 
 @namespace.route('/next/<int:max_amount>')
+@api.doc(security='apikey')
 class Next(Resource):
     #@api.marshal_with(mia_anno)
     @jwt_required 
@@ -35,6 +36,7 @@ class Next(Resource):
             return re
 
 @namespace.route('/label')
+@api.doc(security='apikey')
 class Label(Resource):
     #@api.marshal_with(label_trees)
     @jwt_required 
@@ -51,6 +53,7 @@ class Label(Resource):
             return re
 
 @namespace.route('/update')
+@api.doc(security='apikey')
 class Update(Resource):
     @jwt_required 
     def post(self):
@@ -68,6 +71,7 @@ class Update(Resource):
             return re
 
 @namespace.route('/finish')
+@api.doc(security='apikey')
 class Finish(Resource):
     @jwt_required 
     def get(self):
@@ -84,6 +88,7 @@ class Finish(Resource):
             return re
 
 @namespace.route('/special')
+@api.doc(security='apikey')
 class Special(Resource):
     @jwt_required 
     def post(self):

@@ -23,6 +23,7 @@ from lost.logic import dask_session
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
 @namespace.route('/first')
+@api.doc(security='apikey')
 class First(Resource):
     @api.marshal_with(sia_anno)
     @jwt_required 
@@ -40,6 +41,7 @@ class First(Resource):
 
 @namespace.route('/next/<string:last_img_id>')
 @namespace.param('last_img_id', 'The id of the last annotated image.')
+@api.doc(security='apikey')
 class Next(Resource):
     # @api.marshal_with(sia_anno)
     @jwt_required 
@@ -59,6 +61,7 @@ class Next(Resource):
 
 @namespace.route('/prev/<int:last_img_id>')
 @namespace.param('last_img_id', 'The id of the last annotated image.')
+@api.doc(security='apikey')
 class Prev(Resource):
     # @api.marshal_with(sia_anno)
     @jwt_required 
@@ -76,6 +79,7 @@ class Prev(Resource):
             return re
 
 @namespace.route('/lastedited')
+@api.doc(security='apikey')
 class Last(Resource):
     @api.marshal_with(sia_anno)
     @jwt_required 
@@ -97,6 +101,7 @@ class Last(Resource):
             return re
 
 @namespace.route('/filter')
+@api.doc(security='apikey')
 class Filter(Resource):
     # @api.expect(sia_update)
     @jwt_required 
@@ -152,6 +157,7 @@ class Filter(Resource):
             # return 'success'
 
 @namespace.route('/update')
+@api.doc(security='apikey')
 class Update(Resource):
     # @api.expect(sia_update)
     @jwt_required 
@@ -179,6 +185,7 @@ class Update(Resource):
                 return 'error updating sia anno', 500
 
 @namespace.route('/updateOneThing')
+@api.doc(security='apikey')
 class UpdateOneThing(Resource):
     # @api.expect(sia_update)
     @jwt_required 
@@ -205,6 +212,7 @@ class UpdateOneThing(Resource):
             return re
 
 @namespace.route('/allowedExampler')
+@api.doc(security='apikey')
 class AllowedExampler(Resource):
     @jwt_required 
     def get(self):
@@ -220,6 +228,7 @@ class AllowedExampler(Resource):
             return up.allowed_to_mark_example()
 
 @namespace.route('/nextAnnoId')
+@api.doc(security='apikey')
 class NextAnnoId(Resource):
     # @api.expect(sia_update)
     @jwt_required 
@@ -238,6 +247,7 @@ class NextAnnoId(Resource):
             return re
 
 @namespace.route('/finish')
+@api.doc(security='apikey')
 class Finish(Resource):
     @jwt_required 
     def get(self):
@@ -271,6 +281,7 @@ class Finish(Resource):
 #             return re
 
 @namespace.route('/label')
+@api.doc(security='apikey')
 class Label(Resource):
     #@api.marshal_with(label_trees)
     @jwt_required 
@@ -287,6 +298,7 @@ class Label(Resource):
             return re
 
 @namespace.route('/configuration')
+@api.doc(security='apikey')
 class Configuration(Resource):
     @api.marshal_with(sia_config)
     @jwt_required 
@@ -303,6 +315,7 @@ class Configuration(Resource):
             return re
 
 @namespace.route('/review')
+@api.doc(security='apikey')
 class Review(Resource):
     @jwt_required 
     def post(self):
@@ -322,6 +335,7 @@ class Review(Resource):
 
 @namespace.route('/reviewoptions/<int:pe_id>')
 @namespace.param('pe_id', 'The id of reviewed pipe element.')
+@api.doc(security='apikey')
 class ReviewOptions(Resource):
     @jwt_required 
     def get(self, pe_id):
@@ -339,6 +353,7 @@ class ReviewOptions(Resource):
 
 @namespace.route('/reviewupdate/<int:pe_id>')
 @namespace.param('pe_id', 'The id of reviewed pipe element.')
+@api.doc(security='apikey')
 class ReviewUpdate(Resource):
     @jwt_required 
     def post(self, pe_id):

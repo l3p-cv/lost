@@ -10,6 +10,7 @@ from lost.settings import LOST_CONFIG
 namespace = api.namespace('group', description='Groups in System.')
 
 @namespace.route('')
+@api.doc(security='apikey')
 class GroupList(Resource):
     @api.marshal_with(group_list)
     @jwt_required 
@@ -44,6 +45,7 @@ class GroupList(Resource):
 
 @namespace.route('/<int:id>')
 @namespace.param('id', 'The group identifier')
+@api.doc(security='apikey')
 class Group(Resource):
     @api.marshal_with(group)
     @jwt_required 
@@ -76,5 +78,3 @@ class Group(Resource):
         else:
             dbm.close_session()
             return "Group with ID '{}' not found.".format(id), 400
-
-    

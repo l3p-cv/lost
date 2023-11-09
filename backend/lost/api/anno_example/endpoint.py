@@ -18,6 +18,7 @@ namespace = api.namespace('annoExample', description='API to get annotation exam
 
 
 @namespace.route('/getAnnoExample')
+@api.doc(security='apikey')
 class GetAnnoExample(Resource):
 
     @jwt_required 

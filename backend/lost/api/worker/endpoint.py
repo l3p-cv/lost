@@ -9,6 +9,7 @@ namespace = api.namespace('worker', description='Workers in System.')
 
 @namespace.route('')
 @api.doc(description='Worker Api get method.')
+@api.doc(security='apikey')
 class WorkerList(Resource):
     @api.marshal_with(worker_list)
     @jwt_required 
