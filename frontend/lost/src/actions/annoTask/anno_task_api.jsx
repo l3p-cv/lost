@@ -51,7 +51,7 @@ export const useAnnotask = () => {
 
 export const useChooseAnnotask = () => {
     return useMutation(
-        (annoTaskId) => axios.post(`${API_URL}/annotask/${annoTaskId}`).then((res) => res.data)
+        (annoTaskId) => axios.post(`${API_URL}/annotask?id=${annoTaskId}`).then((res) => res.data)
     )
 }
 
