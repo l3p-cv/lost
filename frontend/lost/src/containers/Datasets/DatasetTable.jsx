@@ -12,8 +12,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CTable, CTableBody, CTableHead } from '@coreui/react'
 import { faCaretDown, faCaretRight, faDownload, faEye, faFile, faPen } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
+import { useNavigate } from 'react-router-dom'
+import * as annotaskApi from '../../actions/annoTask/anno_task_api'
 
 const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditButtonClicked }) => {
+    const navigate = useNavigate()
+    const { mutate: chooseAnnoTask } = annotaskApi.useChooseAnnotask()
+
     const [tableData, setTableData] = React.useState(() => [...datasetList])
 
     // update the table when the parameter data changes
@@ -24,8 +29,17 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
 
     const columnHelper = createColumnHelper()
 
-    const showAnnotasks = (datasetID) => {
-        console.log("SHOW ANNOTASKS:", datasetID)
+    const openReview = async (index, isAnnotask) => {
+        console.log("OPEN REVIEW:", index, isAnnotask)
+
+
+        if (isAnnotask) {
+
+            // select current annotask, then open it
+            await chooseAnnoTask(index)
+
+            navigate(`/sia-review/${index}`)
+        }
     }
 
     const renderRowIcon = (row) => {
@@ -81,8 +95,9 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                 color="primary"
                 isOutline={false}
                 onClick={() => {
-                    const datasetID = props.row.original.id
-                    showAnnotasks(datasetID)
+                    const rowData = props.row.original
+                    const isAnnotask = rowData.is_annotask === true
+                    openReview(rowData.idx, isAnnotask)
                 }}
                 disabled={false}
             // text="Review"
