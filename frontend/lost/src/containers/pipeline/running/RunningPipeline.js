@@ -1,5 +1,5 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
+import React from 'react'
+import { connect } from 'react-redux'
 
 import '../globalComponents/node.scss'
 import '../globalComponents/pipeline.scss'
@@ -9,58 +9,39 @@ import ShowRunningPipeline from './2/ShowRunningPipeline'
 import actions from '../../../actions/pipeline/pipelineRunning'
 import BaseContainer from '../../../components/BaseContainer'
 
-const {selectTab} = actions
+const { selectTab } = actions
 
+const RunningPipeline = ({ pipelineRunning, selectTab }) => {
 
-class RunningPipeline extends Component{
-    constructor(){
-        super()
-        this.changeCurrentStep = this.changeCurrentStep.bind(this)
+  const renderContent = () => {
+    switch (pipelineRunning.currentStep) {
+      case 0: return <SelectPipeline />
+      case 1: return <ShowRunningPipeline />
+      default:
+        return ""
     }
+  }
 
+  const changeCurrentStep = (newStep) => {
+    selectTab(newStep)
+  }
 
-    renderContent() {
-        switch (this.props.pipelineRunning.currentStep) {
-          case 0: return (<SelectPipeline />)
-          case 1: return (<ShowRunningPipeline />)
-          default:
-            break
-        }
-      }
-    
-
-
-
-      changeCurrentStep(newStep) {    
-        this.props.selectTab(newStep)
-      }
-    
-
-
-    render(){
-        return(
-            <BaseContainer className='pipeline-running-container'>
-            <Stepper
-            stepperData={this.props.pipelineRunning}
-            changeCurrentStep={this.changeCurrentStep}
-          />
-
-          
-  
-          {this.renderContent()}
-          </BaseContainer>
-        )
-    }
+  return (
+    <BaseContainer className='pipeline-running-container'>
+      <Stepper
+        stepperData={pipelineRunning}
+        changeCurrentStep={changeCurrentStep}
+      />
+      {renderContent()}
+    </BaseContainer>
+  )
 }
-
-
 
 const mapStateToProps = (state) => {
-  return {pipelineRunning: state.pipelineRunning}
+  return { pipelineRunning: state.pipelineRunning }
 }
-
 
 export default connect(
   mapStateToProps,
-  {selectTab}
-) (RunningPipeline)
+  { selectTab }
+)(RunningPipeline)
