@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 
 export const useDatasets = () => {
@@ -21,3 +21,16 @@ export const useDatastoreKeys = () => {
         },
     )
 }
+
+export const useCreateDataset = () => {
+    return useMutation((data) =>
+        axios.post(`${API_URL}/datasets`, data).then((res) => res.data),
+    )
+}
+
+export const useUpdateDataset = () => {
+    return useMutation((data) =>
+        axios.patch(`${API_URL}/datasets`, data).then((res) => res.data),
+    )
+}
+

@@ -42,3 +42,10 @@ export const useDeleteExport = () => {
             .then((res) => res.data),
     )
 }
+
+export const useAnnotask = () => {
+    return useMutation(
+        (annoTaskId) => axios.get(`${API_URL}/annotask/id/${annoTaskId}`).then((res) => res.data)
+    )
+}
+

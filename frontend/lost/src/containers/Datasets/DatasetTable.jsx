@@ -91,20 +91,26 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
         columnHelper.display({
             id: 'showExport',
             header: () => 'Export',
-            cell: props => (
-                <IconButton
+            cell: props => {
+                const rowData = props.row.original
+
+                // only show edit icon for annotasks
+                // @TODO add support for exporting datasets
+                if (!rowData.is_annotask) return ""
+
+                return <IconButton
                     icon={faDownload}
                     color="primary"
                     isOutline={false}
                     onClick={() => {
-                        const datasetID = props.row.original.idx
-                        const isAnnotask = props.row.original.is_annotask === true
+                        const datasetID = rowData.idx
+                        const isAnnotask = rowData.is_annotask === true
                         onExportButtonClicked(datasetID, isAnnotask)
                     }}
                     disabled={false}
                 // text="Export"
                 />
-            )
+            }
         }),
         columnHelper.display({
             id: 'showEdit',

@@ -9,7 +9,7 @@ from lost.api.api import api
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.logic.file_man import AppFileMan
 from lost.logic.file_access import UserFileAccess
-from lost.db import access, roles, model
+from lost.db import access, roles, model, dtype
 from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
 from lost.logic.jobs.jobs import force_anno_release, export_ds, delete_ds_export
@@ -79,6 +79,70 @@ class Working(Resource):
             #    data = json.load(f)
             #return data
             return working_task
+        
+@namespace.route('/id/<int:annotask_id>')
+@namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
+class AnnotaskById(Resource):
+    @jwt_required 
+    def get(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            annotask = dbm.get_anno_task(anno_task_id=annotask_id)
+            
+            # add image count
+            for r in dbm.count_all_image_annos(anno_task_id=annotask.idx)[0]:
+                img_count = r
+            for r in dbm.count_image_remaining_annos(anno_task_id=annotask.idx):
+                annotated_img_count = img_count - r
+
+            # find annotask user
+            annotask_user_name = "All Users"
+            if annotask.group_id:
+                annotask_user_name = annotask.group.name
+            
+            # add annotask type
+            annotask_type = ""
+            if annotask.dtype == dtype.AnnoTask.MIA:
+                annotask_type = "mia"
+            elif annotask.dtype == dtype.AnnoTask.SIA:
+                annotask_type = "sia"
+                
+            # add label leaves
+            label_leaves = []
+            db_leaves = dbm.get_all_required_label_leaves(annotask_id)
+            for db_leaf in db_leaves:
+                leaf = db_leaf.label_leaf
+                leaf_json = dict()
+                leaf_json['id'] = leaf.idx
+                leaf_json['name'] = leaf.name
+                leaf_json['color'] = leaf.color
+                label_leaves.append(leaf_json)
+            
+            # collect annotask info
+            anno_task_json = {
+                'id': annotask.idx,
+                'name': annotask.name,
+                'type': annotask_type,
+                'userName': annotask_user_name,
+                'progress': annotask.progress,
+                'progress': annotask.progress,
+                'imgCount': img_count,
+                'annotatedImgCount': annotated_img_count,
+                'instructions': annotask.instructions,
+                'labelLeaves': label_leaves
+            }
+            
+            # add annotask configuration only if available
+            if annotask.configuration:
+                anno_task_json['configuration'] = json.loads(annotask.configuration)
+            
+            return anno_task_json
 
 
 @namespace.route('/statistic/<int:annotask_id>')

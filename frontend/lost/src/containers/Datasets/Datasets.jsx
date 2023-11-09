@@ -1,237 +1,109 @@
-import React, { useState } from 'react'
-import { CCol, CContainer, CRow, CSpinner } from '@coreui/react'
+import React, { useEffect, useState } from 'react'
+import { CCol, CContainer, CRow } from '@coreui/react'
 import IconButton from '../../components/IconButton'
-import { faFolderPlus, faTag } from '@fortawesome/free-solid-svg-icons'
+import { faFolderPlus } from '@fortawesome/free-solid-svg-icons'
 import DatasetTable from './DatasetTable'
 import DatasetExportModal from './DatasetExportModal'
 import * as datasetApi from '../../actions/dataset/dataset_api'
-
-const annotask = {
-    "elements": [
-        {
-            "id": 16,
-            "peN": 16,
-            "peOut": [
-                17
-            ],
-            "state": "finished",
-            "datasource": {
-                "id": 6,
-                "rawFilePath": "/home/lost/data/1/media/images/layout"
-            }
-        },
-        {
-            "id": 17,
-            "peN": 17,
-            "peOut": [
-                18
-            ],
-            "state": "finished",
-            "script": {
-                "id": 1,
-                "isDebug": false,
-                "debugSession": null,
-                "name": "found.request_annos.py",
-                "description": "Request annotations for all images in a folder.",
-                "path": "pipes/lost_ootb_pipes/found/request_annos.py",
-                "arguments": {
-                    "recursive": {
-                        "value": "true",
-                        "help": "Walk recursive through folder structure"
-                    },
-                    "valid_imgtypes": {
-                        "value": "['.jpg', '.jpeg', '.png', '.bmp']",
-                        "help": "Img types where annotations will be requested for!"
-                    },
-                    "shuffle": {
-                        "value": "false",
-                        "help": "Shuffle images before requesting annotations for them."
-                    }
-                },
-                "envs": "[\"lost\"]",
-                "progress": 100.0,
-                "errorMsg": null,
-                "warningMsg": null,
-                "logMsg": null
-            }
-        },
-        {
-            "id": 18,
-            "peN": 18,
-            "peOut": [],
-            "state": "in_progress",
-            "annoTask": {
-                "id": 6,
-                "name": "Single Image Annotation Task",
-                "type": "sia",
-                "userName": "admin",
-                "progress": 0.0,
-                "imgCount": 5,
-                "annotatedImgCount": 0,
-                "instructions": "Please draw bounding boxes for all objects in image.",
-                "configuration": {
-                    "tools": {
-                        "point": true,
-                        "line": true,
-                        "polygon": true,
-                        "bbox": true,
-                        "junk": true
-                    },
-                    "annos": {
-                        "multilabels": false,
-                        "actions": {
-                            "draw": true,
-                            "label": true,
-                            "edit": true
-                        },
-                        "minArea": 250
-                    },
-                    "img": {
-                        "multilabels": true,
-                        "actions": {
-                            "label": true
-                        }
-                    }
-                },
-                "labelLeaves": [
-                    {
-                        "id": 1,
-                        "name": "VOC2012",
-                        "color": null
-                    }
-                ]
-            }
-        }
-    ],
-    "id": 6,
-    "name": "3",
-    "description": "3",
-    "managerName": "LOST Admin",
-    "templateId": 1,
-    "timestamp": "2023-09-26T08:33:14.000Z",
-    "isDebug": false,
-    "logfilePath": "/home/lost/data/1/logs/pipes/p-6.log",
-    "progress": "66%",
-    "startDefinition": {
-        "name": "3",
-        "description": "3",
-        "elements": [
-            {
-                "peN": 0,
-                "datasource": {
-                    "rawFilePath": null,
-                    "selectedPath": "/home/lost/data/1/media/images/layout",
-                    "fs_id": 2
-                }
-            },
-            {
-                "peN": 1,
-                "script": {
-                    "arguments": {
-                        "recursive": {
-                            "value": "true",
-                            "help": "Walk recursive through folder structure"
-                        },
-                        "valid_imgtypes": {
-                            "value": "['.jpg', '.jpeg', '.png', '.bmp']",
-                            "help": "Img types where annotations will be requested for!"
-                        },
-                        "shuffle": {
-                            "value": "false",
-                            "help": "Shuffle images before requesting annotations for them."
-                        }
-                    },
-                    "description": "Request annotations for all images in a folder.",
-                    "envs": "[\"lost\"]",
-                    "id": 1,
-                    "name": "found.request_annos.py",
-                    "path": "request_annos.py",
-                    "isDebug": false
-                }
-            },
-            {
-                "peN": 2,
-                "annoTask": {
-                    "name": "Single Image Annotation Task",
-                    "type": "sia",
-                    "instructions": "Please draw bounding boxes for all objects in image.",
-                    "configuration": {
-                        "tools": {
-                            "point": true,
-                            "line": true,
-                            "polygon": true,
-                            "bbox": true,
-                            "junk": true
-                        },
-                        "annos": {
-                            "multilabels": false,
-                            "actions": {
-                                "draw": true,
-                                "label": true,
-                                "edit": true
-                            },
-                            "minArea": 250
-                        },
-                        "img": {
-                            "multilabels": false,
-                            "actions": {
-                                "label": true
-                            }
-                        }
-                    },
-                    "assignee": "admin (user)",
-                    "workerId": 1,
-                    "labelLeaves": [
-                        {
-                            "id": 1,
-                            "maxLabels": "3"
-                        }
-                    ],
-                    "selectedLabelTree": 1
-                }
-            }
-        ],
-        "templateId": 1
-    }
-}
-
-
+import * as annotaskApi from '../../actions/annoTask/anno_task_api'
+import DatasetEditModal from './DatasetEditModal'
 
 
 const Datasets = () => {
 
     const { data: datasetList } = datasetApi.useDatasets()
     const { data: datastores } = datasetApi.useDatastoreKeys()
+    const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotask()
 
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [isExportModalOpen, setIsExportModalOpen] = useState(false)
+    const [annotask, setAnnotask] = useState()
+
+    const [editedDatasetObj, setEditedDatasetObj] = useState()
 
     const openAddDatasetMenu = () => {
         console.log("Clicked on openAddDatasetMenu")
-    }
-
-    const openAssignAnnotaskMenu = () => {
-        console.log("Clicked on assign annotask")
-    }
-
-    const openExportModal = (datasetID) => {
-        // set content to selected dataset
-        // @TODO
-
-        console.log("openExportModal", datasetID);
 
         // open modal
-        setIsExportModalOpen(true)
+        setIsEditModalOpen(true)
     }
+
+    const openEditDatasetMenu = (datasetRowObj) => {
+        console.log("Clicked on openEditDatasetMenu")
+
+        // only select necessary properties out of row data
+        const datasetObj = (({ idx, name, description, datastore_id }) => ({ idx, name, description, datastore_id }))(datasetRowObj)
+
+        // update data for the editing modal
+        setEditedDatasetObj(datasetObj)
+
+        // open modal
+        setIsEditModalOpen(true)
+    }
+
+    // const openAssignAnnotaskMenu = () => {
+    //     console.log("Clicked on assign annotask")
+    // }
+
+    const openExportModal = async (idx, isAnnotask) => {
+        // set content to selected dataset
+        // @TODO
+        console.log("openExportModal", idx, isAnnotask);
+
+        if (isAnnotask) {
+
+            // remove previous content (in case request fails)
+            setAnnotask(undefined)
+
+            // loadAnnotaskData
+            await loadAnnotask(idx)
+
+        } else {
+            // loadDatasetData
+            // @TODO implement exporting for datasets
+            console.log("Export for datasets not implemented yet.")
+            return
+        }
+    }
+
+    // triggered after loadAnnotask response is available
+    useEffect(() => {
+
+        // dont open modal at beginning
+        if (annotaskResponse === undefined) return
+
+        console.log(annotaskResponse);
+
+        setAnnotask(annotaskResponse)
+    }, [annotaskResponse])
+
+    // triggered if loadAnnotask response contained valid data
+    useEffect(() => {
+
+        // dont open modal without data
+        if (annotask === undefined) return
+
+        console.log(annotask);
+
+        setIsExportModalOpen(true)
+    }, [annotask])
 
     return (
         <>
             <DatasetExportModal
                 isVisible={isExportModalOpen}
+                setIsVisible={setIsExportModalOpen}
                 datasetName="Test"
                 description="Test"
                 annoTask={annotask}
                 datastoreList={datastores}
                 datasetList={datasetList}
+            />
+            <DatasetEditModal
+                isVisible={isEditModalOpen}
+                setIsVisible={setIsEditModalOpen}
+                editedDatasetObj={editedDatasetObj}
+                datastoreList={datastores}
             />
             <CContainer>
                 <CRow>
@@ -245,7 +117,7 @@ const Datasets = () => {
                             style={{ marginTop: '15px' }}
                         />
                     </CCol>
-                    <CCol sm="auto">
+                    {/* <CCol sm="auto">
                         <IconButton
                             isOutline={false}
                             color="primary"
@@ -254,7 +126,7 @@ const Datasets = () => {
                             onClick={openAssignAnnotaskMenu}
                             style={{ marginTop: '15px' }}
                         />
-                    </CCol>
+                    </CCol> */}
                 </CRow>
                 <CRow>
                     <CCol>
@@ -262,6 +134,7 @@ const Datasets = () => {
                             datasetList={datasetList}
                             datastores={datastores}
                             onExportButtonClicked={openExportModal}
+                            onEditButtonClicked={openEditDatasetMenu}
                         />
                     </CCol>
                 </CRow>
