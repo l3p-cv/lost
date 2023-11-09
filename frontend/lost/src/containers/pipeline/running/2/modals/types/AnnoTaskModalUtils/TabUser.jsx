@@ -22,8 +22,6 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
     }
 
     function handleChangeUser(groupId) {
-        console.info(annotaskId)
-        console.info(annotaskUser)
         changeUser(annotaskId, groupId, changeUserSuccessful)
     }
     const dataTableData = [
@@ -38,8 +36,6 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
             name: `${group.name} (group)`,
         })),
     ]
-
-    console.info(users, groups);
 
     return (
         <>
@@ -70,7 +66,6 @@ const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
                                     )
                                 }
 
-                                console.info(d)
                                 return (
                                     <IconButton
                                         color="primary"
