@@ -39,6 +39,9 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
             await chooseAnnoTask(index)
 
             navigate(`/sia-review/${index}`)
+        } else {
+            // navigate to corresponding dataset review page
+            navigate(`/datasets/${index}/review`)
         }
     }
 

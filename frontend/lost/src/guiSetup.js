@@ -8,6 +8,7 @@ import SiaComponent from './containers/Annotation/SingleImageAnnotation'
 import SiaReviwComponent from './containers/Annotation/SIAReviewAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
 import DatasetsComponent from './containers/Datasets/Datasets'
+import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import MyProfileComponent from './containers/Profile/Profile'
 
@@ -89,6 +90,11 @@ const Datasets = {
     icon: <FaBox {...iconProps} />,
 }
 
+const DatasetsReview = {
+    path: '/datasets/:datasetId/review',
+    component: DatasetsReviewComponent,
+}
+
 const DataSources = {
     name: 'Datasources',
     to: '/datasources',
@@ -145,7 +151,7 @@ const MyProfile = {
 }
 
 const guiSetup = {
-    additionalRoutes: [Sia, Mia, MyProfile, SiaReview],
+    additionalRoutes: [Sia, Mia, MyProfile, SiaReview, DatasetsReview],
     Administrator: {
         redirect: '/dashboard',
         navItems: [
