@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Menu } from 'semantic-ui-react'
 
-const ImgBar = ({ svg, imgLabelIds, possibleLabels, imageMeta, annos, visible, onLabelUpdate, onMouseEnter, onClose }) => {
+const ImgBar = ({ svg, imgLabelIds, possibleLabels, imageMeta, annos, annoTaskId, visible, onLabelUpdate, onMouseEnter, onClose }) => {
     const [position, setPosition] = useState({ top: 0, left: 0 })
 
     useEffect(() => {
@@ -81,6 +81,15 @@ const ImgBar = ({ svg, imgLabelIds, possibleLabels, imageMeta, annos, visible, o
         }
     }
 
+    const renderAnnoTaskId = () => {
+
+        if (!annoTaskId) return null
+
+        return <Menu.Item>
+            Annotask ID: {annoTaskId}
+        </Menu.Item>
+    }
+
     if (!visible) return null
     if (!imageMeta) return null
 
@@ -97,6 +106,7 @@ const ImgBar = ({ svg, imgLabelIds, possibleLabels, imageMeta, annos, visible, o
             <Menu inverted style={{ opacity: 0.9, justifyContent: 'center', alignItems: 'center' }}>
                 {/* { renderImgLabelInput() } */}
                 {renderImgDescription()}
+                {renderAnnoTaskId()}
                 <Menu.Item>
                     {/* { annos.image.url.split('/').pop() +" (ID: " + annos.image.id + ")" } */}
                     {"ID: " + imageMeta.id}

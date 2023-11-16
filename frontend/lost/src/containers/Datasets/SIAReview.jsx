@@ -338,6 +338,7 @@ const SIAReview = ({ datasetId }) => {
         if (!reviewOptions) return 'No Review Data!'
         return <div>
             <Sia
+                annoTaskId={reviewPageData.current_annotask_idx}
                 onAnnoEvent={(anno, annos, action) =>
                     handleAnnoPerformedAction(anno, annos, action)
                 }

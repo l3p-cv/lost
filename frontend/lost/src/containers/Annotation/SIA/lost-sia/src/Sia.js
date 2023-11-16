@@ -443,6 +443,7 @@ const Sia = (props) => {
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
                 annos={annos}
+                annoTaskId={props.annoTaskId}
                 imageMeta={props.imageMeta}
                 imageBlob={props.imageBlob}
                 possibleLabels={props.possibleLabels}

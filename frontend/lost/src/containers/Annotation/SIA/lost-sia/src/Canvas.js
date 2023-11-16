@@ -1758,6 +1758,7 @@ class Canvas extends Component {
                         visible={this.state.imgBarVisible}
                         possibleLabels={this.state.possibleLabels}
                         annos={this.props.annos}
+                        annoTaskId={this.props.annoTaskId}
                         svg={this.state.svg}
                         imageMeta={this.props.imageMeta}
                         onClose={() => this.handleImgBarClose()}
