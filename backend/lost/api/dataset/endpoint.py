@@ -178,17 +178,39 @@ class DatasetReview(Resource):
         serialized_review_data = self.review(dbm, dataset_id, user.idx, data)
         
         return serialized_review_data
+    
+
+    def __next_annotask_index(self, annotask_keys, current_index):
+        position = annotask_keys.index(current_index)
+        position = position + 1
+        if position >= len(annotask_keys): return None
+        next_annotask_idx = annotask_keys[position]
+        return next_annotask_idx
+    
+
+    def __prev_annotask_index(self, annotask_keys, current_index):
+        position = annotask_keys.index(current_index)
+        position = position - 1
+        if position < 0: return None
+        prev_annotask_idx = annotask_keys[position]
+        return prev_annotask_idx
 
         
     def review(self, dbm, dataset_id, user_id, data):
         
         dataset = dbm.get_dataset(dataset_id)
-        annotasks = dataset.annotask_children
+        annotasks_list = dataset.annotask_children
         annotask_lengths = {}
+        annotask_keys = []
         
+        # use annotask idx as key
+        annotasks = {}
         # get length of review by summarizing all images
         total_image_amount = 0
-        for annotask in annotasks:
+        for annotask in annotasks_list:
+            annotasks[annotask.idx] = annotask
+            annotask_keys.append(annotask.idx)
+
             annotask_length = get_total_image_amount(dbm, annotask)
             annotask_lengths[annotask.idx] = annotask_length
             total_image_amount = total_image_amount + annotask_length
@@ -198,14 +220,15 @@ class DatasetReview(Resource):
         iteration = data['iteration']
         is_first_image = False
         
-        # get annotask selected by user or the first one if he didn't select one
-        current_annotask_idx = data['annotask_idx'] if 'annotask_idx' in data else 0
+        first_annotask_key = annotask_keys[0]
+        first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
         
-        first_anno = dbm.get_sia_review_first(annotasks[0].idx, iteration)
+        # get annotask selected by user or the first one if he didn't select one
+        current_annotask_idx = data['annotask_idx'] if 'annotask_idx' in data else first_annotask_key
         current_annotask = annotasks[current_annotask_idx]
 
         if direction == 'first':
-            image_anno = first_anno
+            image_anno = first_annotask
         elif direction == 'next':
             # get progress of current annotation task
             anno_current_image_number, anno_total_image_amount = get_image_progress(dbm, annotasks[current_annotask_idx], current_idx, iteration)
@@ -214,7 +237,7 @@ class DatasetReview(Resource):
             # then we should move to the next annotask
             if anno_current_image_number == anno_total_image_amount:
                 # get the next annotation task
-                current_annotask_idx = current_annotask_idx + 1
+                current_annotask_idx = self.__next_annotask_index(annotask_keys, current_annotask_idx)
                 current_annotask = annotasks[current_annotask_idx]
                 
                 # switch to the first image of the annotask
@@ -230,7 +253,7 @@ class DatasetReview(Resource):
             # then we should move to the previous annotask
             if anno_current_image_number == 1:
                 # get the previous annotation task
-                current_annotask_idx = current_annotask_idx - 1
+                current_annotask_idx = self.__prev_annotask_index(annotask_keys, current_annotask_idx)
                 current_annotask = annotasks[current_annotask_idx]
                 
                 # switch to the last image of the annotask
@@ -244,20 +267,18 @@ class DatasetReview(Resource):
             return 'no annotation found'
         
         anno_current_image_number, anno_total_image_amount = get_image_progress(dbm, annotasks[current_annotask_idx], image_anno.idx, iteration)
-        
         current_image_number = anno_current_image_number
         
         # convert progress of annotask to progress of dataset / all annotasks
         # add the image count of previous annotasks to image number
-        tmp_annotask_idx = current_annotask_idx
-        while tmp_annotask_idx > 0:
-            tmp_annotask_idx = tmp_annotask_idx - 1
-            prev_annotask = annotasks[tmp_annotask_idx]
-            current_image_number = current_image_number + annotask_lengths[prev_annotask.idx]
-
+        prev_annotask_idx = self.__prev_annotask_index(annotask_keys, current_annotask_idx)
+        while prev_annotask_idx:
+            current_image_number = current_image_number + annotask_lengths[prev_annotask_idx]
+            prev_annotask_idx = self.__prev_annotask_index(annotask_keys, prev_annotask_idx)
+            
         # check if user moved to the first of all images
         is_first_image = False
-        if first_anno.idx == image_anno.idx:
+        if first_annotask.idx == image_anno.idx:
             is_first_image = True
 
         # check if user moved to the last of all images
