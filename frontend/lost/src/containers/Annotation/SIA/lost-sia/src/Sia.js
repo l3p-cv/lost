@@ -4,7 +4,7 @@ import ToolBar from './ToolBar'
 import Canvas from './Canvas'
 import * as tbe from './types/toolbarEvents'
 import * as annoActions from './types/canvasActions'
-import {noAnnos} from './siaDummyData'
+import { noAnnos } from './siaDummyData'
 
 /**
  * SIA element that handles annotations within an image
@@ -233,17 +233,17 @@ const Sia = (props) => {
     useEffect(() => {
         doLayoutUpdate()
     }, [props.layoutUpdate])
-    
+
     useEffect(() => {
         console.log(annos)
     }, [annos])
 
     useEffect(() => {
         console.log('props.annos', props.annos)
-        if (props.annos){
+        if (props.annos) {
             setAnnos(props.annos)
         } else {
-            setAnnos({...noAnnos})
+            setAnnos({ ...noAnnos })
 
         }
     }, [props.annos])
@@ -251,31 +251,31 @@ const Sia = (props) => {
     useEffect(() => {
         console.log('props.fullscreen', props.fullscreen)
         console.log('fullscreen', fullscreen)
-        if (typeof props.fullscreen === 'boolean'){
-            if (fullscreen !== props.fullscreen){
+        if (typeof props.fullscreen === 'boolean') {
+            if (fullscreen !== props.fullscreen) {
                 setFullscreen(props.fullscreen)
             }
         }
     }, [props.fullscreen])
 
     useEffect(() => {
-        if (fullscreen !== undefined){
+        if (fullscreen !== undefined) {
             console.log('effect fullscreen', fullscreen)
             // toggleFullscreen()
             applyFullscreen(fullscreen)
         }
     }, [fullscreen])
-    
+
     useEffect(() => {
         setExternalConfigUpdate(true)
-        setUiConfig({...uiConfig, ...props.uiConfig})
+        setUiConfig({ ...uiConfig, ...props.uiConfig })
     }, [props.uiConfig])
 
     useEffect(() => {
-        if (externalConfigUpdate){
+        if (externalConfigUpdate) {
             setExternalConfigUpdate(false)
-        }else{
-            if (props.onCanvasEvent){
+        } else {
+            if (props.onCanvasEvent) {
                 props.onCanvasEvent(annoActions.CANVAS_UI_CONFIG_UPDATE, uiConfig)
             }
         }
@@ -287,73 +287,75 @@ const Sia = (props) => {
 
     const handleAnnoEvent = (anno, annos, action) => {
         console.log('handleAnnoEvent anno, annos, action', anno, annos, action)
-        if (props.onAnnoEvent){
+        if (props.onAnnoEvent) {
             props.onAnnoEvent(anno, annos, action)
         }
 
     }
 
     const handleNotification = (msg) => {
-        if (props.onNotification){
+        if (props.onNotification) {
             props.onNotification(msg)
         }
 
     }
 
     const handleCanvasKeyDown = (e) => {
-        if (props.onCanvasKeyDown){
+        if (props.onCanvasKeyDown) {
             props.onCanvasKeyDown(e)
         }
 
     }
 
     const handleCanvasEvent = (e, data) => {
-        switch(e){
+        switch (e) {
             case annoActions.CANVAS_SVG_UPDATE:
                 setSvg(data)
                 break
             case annoActions.CANVAS_UI_CONFIG_UPDATE:
-                setUiConfig({...uiConfig, ...data})
+                setUiConfig({ ...uiConfig, ...data })
                 break
             default:
                 break
         }
-        if (props.onCanvasEvent){
+        if (props.onCanvasEvent) {
             props.onCanvasEvent(e, data)
         }
     }
 
-    const handleGetFunction = (canvasFunction) =>  {
-        if (props.onGetFunction){
+    const handleGetFunction = (canvasFunction) => {
+        if (props.onGetFunction) {
             props.onGetFunction(canvasFunction)
         }
     }
 
     const handleAnnoSaveEvent = (action, saveData) => {
-        if (props.onAnnoSaveEvent){
+        if (props.onAnnoSaveEvent) {
             props.onAnnoSaveEvent(action, saveData)
         }
     }
 
     const applyFullscreen = (full) => {
-        if (full){
+        if (full) {
             setFullscreenCSS('sia-fullscreen')
-            setUiConfig({...uiConfig,
+            setUiConfig({
+                ...uiConfig,
                 layoutOffset: {
                     ...uiConfig.layoutOffset,
                     left: 50,
                     top: 5,
-                } 
+                }
             })
             doLayoutUpdate()
         } else {
             setFullscreenCSS('')
-            setUiConfig({...uiConfig,
+            setUiConfig({
+                ...uiConfig,
                 layoutOffset: {
                     ...uiConfig.layoutOffset,
                     left: 20,
                     top: 0,
-                } 
+                }
             })
             doLayoutUpdate()
         }
@@ -361,7 +363,7 @@ const Sia = (props) => {
     }
 
     const toggleFullscreen = () => {
-        if (fullscreen){
+        if (fullscreen) {
             setFullscreen(false)
         } else {
             setFullscreen(true)
@@ -369,7 +371,7 @@ const Sia = (props) => {
     }
 
     const handleToolBarEvent = (e, data) => {
-        switch(e){
+        switch (e) {
             case tbe.SET_FULLSCREEN:
                 toggleFullscreen()
                 break
@@ -401,15 +403,15 @@ const Sia = (props) => {
                 })
                 break
             case tbe.EDIT_STROKE_WIDTH:
-                setUiConfig({...uiConfig, strokeWidth: data})
+                setUiConfig({ ...uiConfig, strokeWidth: data })
                 break
             case tbe.EDIT_NODE_RADIUS:
-                setUiConfig({...uiConfig, nodeRadius: data})
+                setUiConfig({ ...uiConfig, nodeRadius: data })
                 break
             default:
                 break
         }
-        if (props.onToolBarEvent){
+        if (props.onToolBarEvent) {
             props.onToolBarEvent(e, data)
         }
     }
@@ -432,7 +434,7 @@ const Sia = (props) => {
                     (action, data) => handleCanvasEvent(action, data)
                 }
                 onGetAnnoExample={
-                    (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs):{} 
+                    (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
                 onAnnoSaveEvent={(saveData) => handleAnnoSaveEvent(saveData)}
@@ -453,7 +455,7 @@ const Sia = (props) => {
                 defaultLabel={props.defaultLabel}
                 preventScrolling={props.preventScrolling}
             />
-            <ToolBar 
+            <ToolBar
                 onToolBarEvent={
                     (e, data) => handleToolBarEvent(e, data)
                 }
