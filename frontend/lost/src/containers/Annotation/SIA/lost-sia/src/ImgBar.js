@@ -1,51 +1,34 @@
-import React, {Component} from 'react'
+import React, { useState, useEffect } from 'react'
 import { Menu } from 'semantic-ui-react'
 
-class ImgBar extends Component{
+const ImgBar = (props) => {
+    const [position, setPosition] = useState({ top: 0, left: 0 })
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            position: {
-                top: 0,
-                left: 0,
-            },
-        }
-    }
-
-    componentDidMount(){
-        
-    }
-    componentDidUpdate(prevProps){
-
-        if (this.props.svg !== prevProps.svg){
-            this.setState({
-                position: {...this.state.position,
-                left: this.props.svg.left,
-                top: this.props.svg.top,
-                }
+    useEffect(() => {
+        if (props.svg) {
+            setPosition({
+                ...position,
+                left: props.svg.left,
+                top: props.svg.top,
             })
         }
-    }
+    }, [props.svg])
 
-    /*********
-     * Events
-     *********/
-    handleLabelUpdate(label){
-        if (this.props.onLabelUpdate){
-            this.props.onLabelUpdate(label)
-        }
-    }
-    
-    handleClose(){
-        if (this.props.onClose){
-            this.props.onClose()
+    const handleLabelUpdate = (label) => {
+        if (props.onLabelUpdate) {
+            props.onLabelUpdate(label)
         }
     }
 
-    handleMouseEnter(e){
-        if (this.props.onMouseEnter){
-            this.props.onMouseEnter(e)
+    const handleClose = () => {
+        if (props.onClose) {
+            props.onClose()
+        }
+    }
+
+    const handleMouseEnter = (e) => {
+        if (props.onMouseEnter) {
+            props.onMouseEnter(e)
         }
     }
 
@@ -69,64 +52,62 @@ class ImgBar extends Component{
     //     }
     // }
 
-    renderImgLabels(){
+    const renderImgLabels = () => {
         let label = ''
-        if (this.props.imgLabelIds && this.props.imgLabelIds.length > 0){
-            let labelObject 
-            this.props.imgLabelIds.forEach((lbl, idx) => {
-                labelObject = this.props.possibleLabels.find(el => {
+        if (props.imgLabelIds && props.imgLabelIds.length > 0) {
+            let labelObject
+            props.imgLabelIds.forEach((lbl, idx) => {
+                labelObject = props.possibleLabels.find(el => {
                     return el.id === lbl
                 })
                 if (idx > 0) label += ', '
                 label += labelObject.label
             })
-            return <Menu.Item >
-                    {label}
-                </Menu.Item>
-        } else {
-            return null
-        }
-    }
-
-    renderImgDescription(){
-        if(this.props.imageMeta.description){
-           return <Menu.Item>
-               {this.props.imageMeta.description}
+            return <Menu.Item>
+                {label}
             </Menu.Item>
         } else {
             return null
         }
     }
-    render(){
-        if (!this.props.visible) return null
-        if (!this.props.imageMeta) return null
-        // if (!this.props.annos.image.url) return null
-        return(
+
+    const renderImgDescription = () => {
+        if (props.imageMeta.description) {
+            return <Menu.Item>
+                {props.imageMeta.description}
+            </Menu.Item>
+        } else {
+            return null
+        }
+    }
+
+    if (!props.visible) return null
+    if (!props.imageMeta) return null
+
+    return (
         <div style={{
-            position:'fixed', 
-            top: this.state.position.top, 
-            left:this.state.position.left,
-            width: this.props.svg.width,
+            position: 'fixed',
+            top: position.top,
+            left: position.left,
+            width: props.svg.width,
             minWidth: '300px'
-            }}
-            onMouseEnter={e => {this.handleMouseEnter(e)}}    
+        }}
+            onMouseEnter={e => { handleMouseEnter(e) }}
         >
-            <Menu inverted style={{opacity:0.9, justifyContent:'center', alignItems:'center'}}>
-                    {/* {this.renderImgLabelInput()} */}
-                    {this.renderImgDescription()}
-                    <Menu.Item>
+            <Menu inverted style={{ opacity: 0.9, justifyContent: 'center', alignItems: 'center' }}>
+                {/* {this.renderImgLabelInput()} */}
+                {renderImgDescription()}
+                <Menu.Item>
                     {/* {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"} */}
-                    {"ID: "+this.props.imageMeta.id}
-                    </Menu.Item>
-                    <Menu.Item  
-                    >
-                    {this.props.imageMeta.number +" / "+ this.props.imageMeta.amount}
-                    </Menu.Item>
-                    {this.renderImgLabels()}
+                    {"ID: " + props.imageMeta.id}
+                </Menu.Item>
+                <Menu.Item>
+                    {props.imageMeta.number + " / " + props.imageMeta.amount}
+                </Menu.Item>
+                {renderImgLabels()}
             </Menu>
         </div>
-        )
-    }
+    )
 }
 
 export default ImgBar
