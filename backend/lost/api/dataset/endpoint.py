@@ -1,13 +1,14 @@
 from flask import jsonify, request
 from flask_restx import Resource, fields
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.datastructures import ImmutableMultiDict
 
 from lost.api.api import api
 from lost.db import access
-from lost.settings import LOST_CONFIG
-from lost.api.dataset.form_validation import CreateDatasetForm, UpdateDatasetForm
+from lost.settings import LOST_CONFIG, DATA_URL
+from lost.api.dataset.form_validation import create_validation_error_message, CreateDatasetForm, DatasetReviewForm, UpdateDatasetForm
 from lost.db.model import Dataset
+from lost.logic.sia import SiaSerialize, get_image_progress, get_total_image_amount
 
 namespace = api.namespace('datasets', description='Dataset API')
 
@@ -87,23 +88,6 @@ class Datasets(Resource):
         dataset.children = subchildren
         
         return dataset
-    
-    def __create_validation_error_message(self, form):
-        """Creates a error message string out of a failed wtform
-        """
-        error_fields = form.errors.items()
-        error_msgs = ""
-        
-        # go through all errors from all fields
-        for field in error_fields:
-            errors = field[1]
-            for error in errors:
-                # combine all errors into a single string
-                error_msg = f'Error in field {field[0]}: {error}'
-                error_msgs = error_msgs + error_msg
-
-        return error_msgs
-
 
     @jwt_required
     @api.doc(description="Creates a new dataset.")
@@ -119,7 +103,7 @@ class Datasets(Resource):
         
         # abort if form validation fails
         if not form.validate():
-            errors_str = self.__create_validation_error_message(form)
+            errors_str = create_validation_error_message(form)
             return (errors_str, 400)
 
         # use the safe validated data to create a new DB entry        
@@ -148,7 +132,7 @@ class Datasets(Resource):
         
         # abort if form validation fails
         if not form.validate():
-            errors_str = self.__create_validation_error_message(form)
+            errors_str = create_validation_error_message(form)
             return (errors_str, 400)
 
         # use the safe validated data to update the DB entry        
@@ -173,41 +157,122 @@ class DatasetReview(Resource):
     @jwt_required
     def post(self, dataset_id):
         
-        # dbm = access.DBMan(LOST_CONFIG)
-        # datasets = dbm.get_datasets_with_no_parent()
+        # convert json input into a format readable by wtforms
+        # form_input = ImmutableMultiDict(request.json)
+        # form = DatasetReviewForm(form_input)
         
-        
-        # find all children of every dataset (recursively)
-        # datasets_json = []
-        # for dataset in datasets:
-        #     newDS = self.__build_dataset_children_tree(dataset)
-        #     datasets_json.append(newDS.to_dict())
-        
-        # return jsonify(datasets_json)
-    
-        return {
-            "image": {
-                "id": 106,
-                "url": "//home/lost/data/1/media/images/10_voc2012/2008_006623.jpg",
-                "isFirst": True,
-                "isLast": False,
-                "number": 1,
-                "amount": 10,
-                "isJunk": None,
-                "annoTime": None,
-                "description": None,
-                "imgActions": [],
-                "labelIds": []
-            },
-            "annotations": {
-                "bBoxes": [],
-                "points": [],
-                "lines": [],
-                "polygons": []
-            }
-        }
+        # # abort if form validation fails
+        # if not form.validate():
+        #     errors_str = create_validation_error_message(form)
+        #     return (errors_str, 400)
 
-    
+        # use the safe validated data to update the DB entry        
+        # data = form.data
+        data = request.json
+        
+        dbm = access.DBMan(LOST_CONFIG)
+        
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        
+        serialized_review_data = self.review(dbm, dataset_id, user.idx, data)
+        
+        return serialized_review_data
+
+        
+    def review(self, dbm, dataset_id, user_id, data):
+        
+        dataset = dbm.get_dataset(dataset_id)
+        annotasks = dataset.annotask_children
+        annotask_lengths = {}
+        
+        # get length of review by summarizing all images
+        total_image_amount = 0
+        for annotask in annotasks:
+            annotask_length = get_total_image_amount(dbm, annotask)
+            annotask_lengths[annotask.idx] = annotask_length
+            total_image_amount = total_image_amount + annotask_length
+        
+        direction = data['direction']
+        current_idx = data['image_anno_id']
+        iteration = data['iteration']
+        is_first_image = False
+        
+        # get annotask selected by user or the first one if he didn't select one
+        current_annotask_idx = data['annotask_idx'] if 'annotask_idx' in data else 0
+        
+        first_anno = dbm.get_sia_review_first(annotasks[0].idx, iteration)
+        current_annotask = annotasks[current_annotask_idx]
+
+        if direction == 'first':
+            image_anno = first_anno
+        elif direction == 'next':
+            # get progress of current annotation task
+            anno_current_image_number, anno_total_image_amount = get_image_progress(dbm, annotasks[current_annotask_idx], current_idx, iteration)
+        
+            # check if current image is the last image of current annotask
+            # then we should move to the next annotask
+            if anno_current_image_number == anno_total_image_amount:
+                # get the next annotation task
+                current_annotask_idx = current_annotask_idx + 1
+                current_annotask = annotasks[current_annotask_idx]
+                
+                # switch to the first image of the annotask
+                image_anno = dbm.get_sia_review_first(current_annotask.idx, iteration)
+            else:
+                # get the next image of the same annotation task
+                image_anno = dbm.get_sia_review_next(current_annotask.idx, current_idx, iteration)
+        elif direction == 'previous':
+            # get progress of current annotation task
+            anno_current_image_number, anno_total_image_amount = get_image_progress(dbm, annotasks[current_annotask_idx], current_idx, iteration)
+            
+            # check if current image is the first image of current annotask
+            # then we should move to the previous annotask
+            if anno_current_image_number == 1:
+                # get the previous annotation task
+                current_annotask_idx = current_annotask_idx - 1
+                current_annotask = annotasks[current_annotask_idx]
+                
+                # switch to the last image of the annotask
+                image_anno = dbm.get_sia_review_last(current_annotask.idx, iteration)
+                
+            else:
+                # get the previous image of the same annotation task
+                image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
+        
+        if not image_anno:
+            return 'no annotation found'
+        
+        anno_current_image_number, anno_total_image_amount = get_image_progress(dbm, annotasks[current_annotask_idx], image_anno.idx, iteration)
+        
+        current_image_number = anno_current_image_number
+        
+        # convert progress of annotask to progress of dataset / all annotasks
+        # add the image count of previous annotasks to image number
+        tmp_annotask_idx = current_annotask_idx
+        while tmp_annotask_idx > 0:
+            tmp_annotask_idx = tmp_annotask_idx - 1
+            prev_annotask = annotasks[tmp_annotask_idx]
+            current_image_number = current_image_number + annotask_lengths[prev_annotask.idx]
+
+        # check if user moved to the first of all images
+        is_first_image = False
+        if first_anno.idx == image_anno.idx:
+            is_first_image = True
+
+        # check if user moved to the last of all images
+        is_last_image = False
+        if current_image_number == total_image_amount:
+            is_last_image = True
+
+        #return image_anno, is_first_image, is_last_image, current_image_number
+        sia_serialize = SiaSerialize(image_anno, user_id, DATA_URL, is_first_image, is_last_image, current_image_number, total_image_amount)
+        json_response = sia_serialize.serialize()
+        
+        # add current annotation task index to response
+        json_response['current_annotask_idx'] = current_annotask_idx
+
+        return json_response
     
 @namespace.route('/<int:dataset_id>/reviewOptions')
 @api.doc(security='apikey')

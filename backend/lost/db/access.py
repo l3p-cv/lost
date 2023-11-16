@@ -879,13 +879,22 @@ class DBMan(object):
                                                             model.PipeElement.error_reported==False)
     
     def get_sia_review_first(self, anno_task_id, iteration=None):
-        ''' Get next sia annotation of an anno_task
+        ''' Get first sia annotation of an anno_task
         '''
         if iteration is not None:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
                                                            model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.asc()).first()
         else:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id).order_by(model.ImageAnno.idx.asc()).first()
+        
+    def get_sia_review_last(self, anno_task_id, iteration=None):
+        ''' Get last sia annotation of an anno_task
+        '''
+        if iteration is not None:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                           model.ImageAnno.iteration==iteration).order_by(model.ImageAnno.idx.desc()).first()
+        else:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id).order_by(model.ImageAnno.idx.desc()).first()
 
 
     def get_sia_review_next(self, anno_task_id, img_anno_id, iteration=None):

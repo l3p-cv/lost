@@ -157,6 +157,18 @@ def get_image_progress(db_man, anno_task, img_id, iteration=None):
 
     return current_image_number, total_image_amount
 
+def get_total_image_amount(db_man, anno_task, iteration=None):
+    anno_ids = []
+    if iteration is None:
+        for anno in db_man.get_all_image_annos(anno_task.idx):
+            anno_ids.append(anno.idx)
+    else:
+        for anno in db_man.get_all_image_annos_by_iteration(anno_task.idx, iteration):
+            anno_ids.append(anno.idx)
+    total_image_amount = len(anno_ids)
+
+    return total_image_amount
+
 def __is_last_image__(db_man, user_id, at_id, iteration, img_id):
     """
         :type db_man: lost.db.access.DBMan
