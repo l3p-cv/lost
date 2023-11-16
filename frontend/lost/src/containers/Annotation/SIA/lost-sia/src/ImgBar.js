@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react'
 import { Menu } from 'semantic-ui-react'
 
-const ImgBar = (props) => {
+const ImgBar = ({ svg, imgLabelIds, possibleLabels, imageMeta, annos, visible, onLabelUpdate, onMouseEnter, onClose }) => {
     const [position, setPosition] = useState({ top: 0, left: 0 })
 
     useEffect(() => {
-        if (props.svg) {
+        if (svg) {
             setPosition({
                 ...position,
-                left: props.svg.left,
-                top: props.svg.top,
+                left: svg.left,
+                top: svg.top,
             })
         }
-    }, [props.svg])
+    }, [svg])
 
-    const handleLabelUpdate = (label) => {
-        if (props.onLabelUpdate) {
-            props.onLabelUpdate(label)
-        }
-    }
+    // const handleLabelUpdate = (label) => {
+    //     if (onLabelUpdate) {
+    //         onLabelUpdate(label)
+    //     }
+    // }
 
-    const handleClose = () => {
-        if (props.onClose) {
-            props.onClose()
-        }
-    }
+    // const handleClose = () => {
+    //     if (onClose) {
+    //         onClose()
+    //     }
+    // }
 
     const handleMouseEnter = (e) => {
-        if (props.onMouseEnter) {
-            props.onMouseEnter(e)
+        if (onMouseEnter) {
+            onMouseEnter(e)
         }
     }
 
@@ -54,10 +54,10 @@ const ImgBar = (props) => {
 
     const renderImgLabels = () => {
         let label = ''
-        if (props.imgLabelIds && props.imgLabelIds.length > 0) {
+        if (imgLabelIds && imgLabelIds.length > 0) {
             let labelObject
-            props.imgLabelIds.forEach((lbl, idx) => {
-                labelObject = props.possibleLabels.find(el => {
+            imgLabelIds.forEach((lbl, idx) => {
+                labelObject = possibleLabels.find(el => {
                     return el.id === lbl
                 })
                 if (idx > 0) label += ', '
@@ -72,37 +72,37 @@ const ImgBar = (props) => {
     }
 
     const renderImgDescription = () => {
-        if (props.imageMeta.description) {
+        if (imageMeta.description) {
             return <Menu.Item>
-                {props.imageMeta.description}
+                {imageMeta.description}
             </Menu.Item>
         } else {
             return null
         }
     }
 
-    if (!props.visible) return null
-    if (!props.imageMeta) return null
+    if (!visible) return null
+    if (!imageMeta) return null
 
     return (
         <div style={{
             position: 'fixed',
             top: position.top,
             left: position.left,
-            width: props.svg.width,
+            width: svg.width,
             minWidth: '300px'
         }}
             onMouseEnter={e => { handleMouseEnter(e) }}
         >
             <Menu inverted style={{ opacity: 0.9, justifyContent: 'center', alignItems: 'center' }}>
-                {/* {this.renderImgLabelInput()} */}
+                {/* { renderImgLabelInput() } */}
                 {renderImgDescription()}
                 <Menu.Item>
-                    {/* {this.props.annos.image.url.split('/').pop() +" (ID: "+this.props.annos.image.id+")"} */}
-                    {"ID: " + props.imageMeta.id}
+                    {/* { annos.image.url.split('/').pop() +" (ID: " + annos.image.id + ")" } */}
+                    {"ID: " + imageMeta.id}
                 </Menu.Item>
                 <Menu.Item>
-                    {props.imageMeta.number + " / " + props.imageMeta.amount}
+                    {imageMeta.number + " / " + imageMeta.amount}
                 </Menu.Item>
                 {renderImgLabels()}
             </Menu>
