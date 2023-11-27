@@ -37,6 +37,10 @@ datasetReviewOptionsModel = api.model("DatasetReviewOptions", {
     # "possible_labels": fields.List(description="List of all labels allowed for the annotation process"),
 })
 
+datasetImageSearchRequestModel = api.model("DatasetImageSearchRequestModel", {
+    "query": fields.String(description="Query to search for images (e.g. image name)", example="ExampleImgName")
+})
+
 errorMessage = api.model("ErrorMessage", {
     "message": fields.String(description="Error message describing what went wrong", example="Invalid value in example field")
 })
@@ -216,7 +220,7 @@ class DatasetReview(Resource):
             total_image_amount = total_image_amount + annotask_length
         
         direction = data['direction']
-        current_idx = data['image_anno_id']
+        current_idx = data['imageAnnoId']
         iteration = data['iteration']
         is_first_image = False
         
@@ -224,7 +228,7 @@ class DatasetReview(Resource):
         first_annotask = dbm.get_sia_review_first(first_annotask_key, iteration)
         
         # get annotask selected by user or the first one if he didn't select one
-        current_annotask_idx = data['annotask_idx'] if 'annotask_idx' in data else first_annotask_key
+        current_annotask_idx = data['annotaskIdx'] if 'annotaskIdx' in data else first_annotask_key
         current_annotask = annotasks[current_annotask_idx]
 
         if direction == 'first':
@@ -262,6 +266,8 @@ class DatasetReview(Resource):
             else:
                 # get the previous image of the same annotation task
                 image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
+        elif direction == "specificImage":
+            image_anno = dbm.get_sia_review_id(current_annotask_idx, current_idx, iteration)
         
         if not image_anno:
             return 'no annotation found'
@@ -451,3 +457,31 @@ class DatasetReviewOptions(Resource):
                 }
             ]
         }
+
+
+@namespace.route('/<int:dataset_id>/review/searchImage')
+@api.doc(security='apikey')
+class DatasetReviewImageSearch(Resource):
+    @api.doc(description="Get data for the next dataset review annotation")
+    @api.expect(datasetImageSearchRequestModel)
+    @api.response(200, 'success', [datasetModel])
+    @jwt_required
+    def post(self, dataset_id):
+        
+        data = request.json
+        search_str = data['filter']
+        
+        dbm = access.DBMan(LOST_CONFIG)
+        db_result = dbm.get_search_images_in_dataset(dataset_id, search_str)
+        
+        found_images = []
+        
+        for entry in db_result:
+            found_images.append({
+                'annotationIndex': entry.idx,
+                'imageName': entry.img_path,
+                'annotationId': entry.anno_task_id,
+                'annotationName': entry.name
+            })
+        
+        return found_images

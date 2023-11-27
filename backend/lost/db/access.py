@@ -923,6 +923,15 @@ class DBMan(object):
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()
         else:
             return None
+        
+    def get_sia_review_id(self, anno_task_id, image_anno_id, iteration=None):
+        ''' Get last sia annotation of an anno_task
+        '''
+        if iteration is not None:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \
+                                                           model.ImageAnno.iteration==iteration, model.ImageAnno.idx == image_anno_id).order_by(model.ImageAnno.idx.desc()).first()
+        else:
+            return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, model.ImageAnno.idx == image_anno_id).order_by(model.ImageAnno.idx.desc()).first()
     
     def count_two_d_annos_per_label_by_pe(self, pipe_element_id, user_id=None, iteration=None, date_from=None, date_to=None, exclude_current_iteration=False):
         user_id_str = ""
@@ -1249,3 +1258,10 @@ class DBMan(object):
         ''' Returns all datasources what can be used to store data
         '''
         return self.session.query(model.Datasource).filter(model.Datasource.is_datastore == True).all()
+    
+    def get_search_images_in_dataset(self, dataset_idx, search_str=""):
+        sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name FROM anno_task a, image_anno i \
+            WHERE a.dataset_id = {dataset_idx} \
+            AND a.idx = i.anno_task_id \
+            AND i.img_path LIKE '%{search_str}%';"
+        return self.session.execute(text(sql))
