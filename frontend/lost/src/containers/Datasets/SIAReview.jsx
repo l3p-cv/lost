@@ -246,10 +246,10 @@ const SIAReview = ({ datasetId }) => {
                 handleToolSelected(data)
                 break
             case tbe.GET_NEXT_IMAGE:
-                handleNextPrevImage(reviewPageData.image.id, 'next')
+                setNextPrev({ imgId: reviewPageData.image.id, cmd: 'next' })
                 break
             case tbe.GET_PREV_IMAGE:
-                handleNextPrevImage(reviewPageData.image.id, 'previous')
+                setNextPrev({ imgId: reviewPageData.image.id, cmd: 'previous' })
                 break
             case tbe.TASK_FINISHED:
                 break
@@ -351,6 +351,10 @@ const SIAReview = ({ datasetId }) => {
         loadNextReviewPage([datasetId, data])
     }
 
+    const onAnnoSaveEvent = (data) => {
+        console.info(data);
+    }
+
     const renderSia = () => {
         if (!reviewPageData) return 'No Review Data!'
         if (!reviewOptions) return 'No Review Data!'
@@ -369,6 +373,7 @@ const SIAReview = ({ datasetId }) => {
                 //         : {}
                 // }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                onAnnoSaveEvent={onAnnoSaveEvent}
                 canvasConfig={
                     CANVAS_CONFIG
                     // {
