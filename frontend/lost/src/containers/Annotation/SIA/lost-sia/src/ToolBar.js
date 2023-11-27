@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Icon, Menu, Button, Card } from 'semantic-ui-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import SIASettingButton from './SIASettingButton'
 import SIAFilterButton from './SIAFilterButton'
 import Prompt from './Prompt'
@@ -341,6 +343,19 @@ const ToolBar = (props) => {
         }
     }
 
+    const renderImageSearch = () => {
+        if (!props.enabled.imgSearch) return null
+
+        return <Menu.Item
+            onClick={() => {
+                if (props.onImgageSearchClicked) return props.onImgageSearchClicked()
+            }}
+            style={toolbarItemStyle}
+        >
+            <FontAwesomeIcon icon={faSearch} />
+        </Menu.Item>
+    }
+
     const renderFullscreenBtn = () => {
         if (!props.enabled.fullscreen) return null
         return (
@@ -387,6 +402,7 @@ const ToolBar = (props) => {
                 {renderFilterBtn()}
                 {renderSaveButton()}
                 {renderImgLabelInput()}
+                {renderImageSearch()}
                 {renderNavigation()}
                 {renderToolButtons()}
                 {renderJunkButton()}

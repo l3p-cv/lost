@@ -11,6 +11,7 @@ import 'react-notifications/lib/notifications.css'
 import * as notificationType from '../Annotation/SIA/lost-sia/src/types/notificationType'
 import Sia from '../Annotation/SIA/lost-sia/src/Sia'
 import * as reviewApi from '../../actions/dataset/dataset_review_api'
+import SIAImageSearchModal from './SIAImageSearchModal'
 
 const CANVAS_CONFIG = {
     tools: {
@@ -45,6 +46,8 @@ const SIAReview = ({ datasetId }) => {
     const { data: uiConfig, refetch: getUIConfig } = reviewApi.useGetUIConfig()
 
     const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
+    const [isImgSearchVisible, setIsImgSearchVisible] = useState(false)
+    const [isImgSearchModalVisible, setIsImgSearchModalVisible] = useState(false)
     const [annos, setAnnos] = useState()
     const [annosChanged, setAnnosChanged] = useState(false)
     const [nextPrev, setNextPrev] = useState()
@@ -80,7 +83,7 @@ const SIAReview = ({ datasetId }) => {
 
         const data = {
             direction: 'first',
-            image_anno_id: null,
+            imageAnnoId: null,
             iteration: null
         }
         getReviewOptions()
@@ -120,9 +123,9 @@ const SIAReview = ({ datasetId }) => {
 
         const data = {
             direction: direction,
-            image_anno_id: imgId,
+            imageAnnoId: imgId,
             iteration: null,
-            annotask_idx: (reviewPageData.current_annotask_idx === undefined ? null : reviewPageData.current_annotask_idx)
+            annotaskIdx: (reviewPageData.current_annotask_idx === undefined ? null : reviewPageData.current_annotask_idx)
         }
 
         getReviewOptions()
@@ -333,6 +336,21 @@ const SIAReview = ({ datasetId }) => {
         })
     }
 
+    const onImgageSearchClicked = () => {
+        setIsImgSearchModalVisible(true)
+    }
+
+    const switchSIAImage = (annotaskId, imageAnnoId) => {
+        const data = {
+            direction: 'specificImage',
+            annotaskIdx: annotaskId,
+            imageAnnoId: imageAnnoId,
+            iteration: null
+        }
+
+        loadNextReviewPage([datasetId, data])
+    }
+
     const renderSia = () => {
         if (!reviewPageData) return 'No Review Data!'
         if (!reviewOptions) return 'No Review Data!'
@@ -364,6 +382,7 @@ const SIAReview = ({ datasetId }) => {
                     ...uiConfig,
                     imgBarVisible: true,
                     imgLabelInputVisible: imgLabelInputVisible,
+                    isImgSearchVisible,
                     centerCanvasInContainer: true,
                     maxCanvas: true,
                 }}
@@ -378,11 +397,13 @@ const SIAReview = ({ datasetId }) => {
                 isJunk={isJunk}
                 // blocked={state.blockCanvas}
                 onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
+                onImgageSearchClicked={onImgageSearchClicked}
                 // svg={props.svg}
                 // filter={props.filter}
                 toolbarEnabled={{
                     save: true,
                     imgLabel: true,
+                    imgSearch: true,
                     nextPrev: true,
                     toolSelection: true,
                     fullscreen: true,
@@ -398,6 +419,12 @@ const SIAReview = ({ datasetId }) => {
 
     return (
         <div>
+            <SIAImageSearchModal
+                datasetId={datasetId}
+                isVisible={isImgSearchModalVisible}
+                setIsVisible={setIsImgSearchModalVisible}
+                onChooseImage={switchSIAImage}
+            />
             {renderSia()}
             <NotificationContainer />
         </div>

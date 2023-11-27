@@ -34,3 +34,12 @@ export const useUpdateDataset = () => {
     )
 }
 
+export const useImageSearch = () => {
+    return useMutation((requestData) => {
+        const [datasetId, query] = requestData
+        const payload = {
+            filter: query
+        }
+        return axios.post(`${API_URL}/datasets/${datasetId}/review/searchImage`, payload)
+    })
+}

@@ -472,6 +472,9 @@ const Sia = (props) => {
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
                 filter={props.filter}
+                onImgageSearchClicked={() => {
+                    if (props.onImgageSearchClicked) return props.onImgageSearchClicked()
+                }}
             />
         </div>
     )
