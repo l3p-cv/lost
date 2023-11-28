@@ -14,7 +14,7 @@ export const useReview = () => {
 
 export const useReviewOptions = () => {
     return useQuery(
-        ['datasets'],
+        ['datasetReviewOptions'],
         () => axios.get(`${API_URL}/datasets/1/reviewOptions`).then((res) => res.data),
         {
             initialData: [],
