@@ -2,9 +2,12 @@ from flask import jsonify, request
 from flask_restx import Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.datastructures import ImmutableMultiDict
+import json
 
 from lost.api.api import api
-from lost.db import access
+from lost.api.sia.api_definition import annotations, image
+from lost.db import access, roles
+from lost.logic import sia
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.api.dataset.form_validation import create_validation_error_message, CreateDatasetForm, DatasetReviewForm, UpdateDatasetForm
 from lost.db.model import Dataset
@@ -43,6 +46,15 @@ datasetImageSearchRequestModel = api.model("DatasetImageSearchRequestModel", {
 
 errorMessage = api.model("ErrorMessage", {
     "message": fields.String(description="Error message describing what went wrong", example="Invalid value in example field")
+})
+
+imageWithAnnotation = api.inherit("ImageWithAnnotation", image, {
+    "annotations": annotations
+})
+
+reviewUpdateAnnotation = api.model("ReviewUpdateAnnotation", {
+    "annotaskId": fields.Integer(description="ID of the annotation task", example="1"),
+    "annotationChanges": imageWithAnnotation
 })
 
 
@@ -485,3 +497,28 @@ class DatasetReviewImageSearch(Resource):
             })
         
         return found_images
+
+@namespace.route('/<int:dataset_id>/review/updateAnnotations')
+@api.doc(security='apikey')
+class DatasetReviewUpdateAnnotation(Resource):
+    @api.doc(description="Update an annotation during a dataset review")
+    # @api.expect(reviewUpdateAnnotation)
+    @api.response(200, 'success', [datasetModel])
+    @jwt_required
+    def post(self, dataset_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            data = json.loads(request.data)
+            annotask_id = data['annotaskId']
+            annotations = data['annotations']
+            re = sia.review_update_annotask(dbm, annotations, user.idx, annotask_id)
+            dbm.close_session()
+            return re
+
+

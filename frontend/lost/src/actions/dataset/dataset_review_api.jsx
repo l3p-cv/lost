@@ -40,6 +40,21 @@ export const useGetAnnotations = () => {
     )
 }
 
+export const useUpdateAnnotations = () => {
+    return useMutation((requestData) => {
+        const [datasetId, annotaskId, annotations] = requestData
+
+        const parameters = {
+            annotaskId,
+            annotations
+        }
+
+        return axios.post(`${API_URL}/datasets/${datasetId}/review/updateAnnotations`, parameters)
+            .then((res) => res.data)
+            .catch((error) => error)
+    })
+}
+
 export const useGetUIConfig = () => {
 
     const uiConfigJson = localStorage.getItem('sia-ui-config')
@@ -47,4 +62,3 @@ export const useGetUIConfig = () => {
 
     return uiConfig
 }
-

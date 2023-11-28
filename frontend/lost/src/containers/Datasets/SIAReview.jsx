@@ -44,11 +44,11 @@ const SIAReview = ({ datasetId }) => {
     const { data: reviewOptions, refetch: getReviewOptions } = reviewApi.useReviewOptions()
     const { data: reviewImage, mutate: loadReviewImage } = reviewApi.useGetImage()
     const { data: uiConfig, refetch: getUIConfig } = reviewApi.useGetUIConfig()
+    const { data: updateAnnotationsResponse, mutate: updateAnnotations } = reviewApi.useUpdateAnnotations()
 
     const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
     const [isImgSearchVisible, setIsImgSearchVisible] = useState(false)
     const [isImgSearchModalVisible, setIsImgSearchModalVisible] = useState(false)
-    const [annos, setAnnos] = useState()
     const [annosChanged, setAnnosChanged] = useState(false)
     const [nextPrev, setNextPrev] = useState()
     const [imageMeta, setImageMeta] = useState()
@@ -135,29 +135,34 @@ const SIAReview = ({ datasetId }) => {
         setAnnosChanged(false)
     }
 
-    const handleSaveAnnos = async () => {
-        try {
-            const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
-            const newAnnos = canvas.getAnnos()
-            const response = await axios.post(
-                API_URL + '/sia/reviewupdate/' + pipeElementId,
-                newAnnos,
-            )
-            console.log('REQUEST: siaReviewUpdate ', response)
+    useEffect(() => {
+
+        // dont show a notification on initialisation
+        if (updateAnnotationsResponse === undefined) return
+
+
+        if (updateAnnotationsResponse === "success") {
+            setAnnosChanged(false)
             handleNotification({
                 title: 'Saved',
                 message: 'Annotations have been saved!',
                 type: notificationType.INFO,
             })
-            setAnnosChanged(false)
-        } catch (e) {
-            console.error(e)
+        } else {
             handleNotification({
                 title: 'Could not save!!!',
                 message: 'Server Error',
                 type: notificationType.ERROR,
             })
         }
+
+    }, [updateAnnotationsResponse])
+
+    const handleSaveAnnos = () => {
+
+        const newAnnos = canvas.getAnnos()
+
+        updateAnnotations([datasetId, reviewPageData.current_annotask_idx, newAnnos])
     }
 
     const handleNotification = (notification) => {

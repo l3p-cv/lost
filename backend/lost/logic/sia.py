@@ -221,6 +221,14 @@ def review_update(db_man, data, user_id, pe_id):
     sia_update = SiaUpdate(db_man, data, user_id, at, sia_type='review')
     return sia_update.update()
 
+def review_update_annotask(db_man, data, user_id, annotask_id):
+    """ Update Image and TwoDAnnotation from SIA
+    :type db_man: lost.db.access.DBMan
+    """
+    at = db_man.get_anno_task(annotask_id)
+    sia_update = SiaUpdate(db_man, data, user_id, at, sia_type='review')
+    return sia_update.update()
+
 def finish(db_man, user_id):
     at = get_sia_anno_task(db_man, user_id)
     if at.idx: 
