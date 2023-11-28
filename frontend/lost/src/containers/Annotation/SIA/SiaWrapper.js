@@ -70,7 +70,7 @@ const SiaWrapper = (props) => {
     }, [])
 
     useEffect(() => {
-        if (localTaskFinished){
+        if (localTaskFinished) {
             console.log('localTaskFinished!', localTaskFinished)
             canvas.unloadImage()
         }
@@ -216,7 +216,7 @@ const SiaWrapper = (props) => {
             } else {
                 console.log('handleAnnoSaveResponse ', response.data)
                 setAnnoSaveResponse(response.data)
-                if (localTaskFinished){
+                if (localTaskFinished) {
                     props.siaSetTaskFinished()
                     props.siaSendFinishToBackend().then(() => {
                         props.history.push('dashboard')

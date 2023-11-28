@@ -328,7 +328,6 @@ def get_running_pipe(db_man, identity, pipe_id, media_url):
     Returns:
         json content of running pipe
     '''
-    # self.logger.info('This is A test Message: {}'.format("HEy ho"))
     pipe = db_man.get_pipe(pipe_id)
     if pipe is None: #or pipe.state == state.Pipe.FINISHED
         error_msg = "Pipe with ID '"+ str(pipe_id) + "' does not exist."
