@@ -9,6 +9,7 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
 
     const { data: searchResults, mutate: doSearch } = datasetApi.useImageSearch()
     const [enteredSearch, setEnteredSearch] = useState("")
+    const [isFirstSearch, setIsFirstSearch] = useState(true)
     const [tableData, setTableData] = useState(() => [])
 
     useEffect(() => {
@@ -39,6 +40,7 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
                 color="primary"
                 isOutline={false}
                 onClick={() => {
+                    setIsVisible(false)
                     const rowData = props.row.original
                     onChooseImage(rowData.annotationId, rowData.annotationIndex)
                 }}
@@ -59,40 +61,55 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
 
     const renderFoundAnnotations = () => {
 
-        if (tableData.length === 0) return
+        if (tableData.length === 0) {
+
+            // don't show the "no images found" when the user did not do a search before
+            if (isFirstSearch) return null
+
+            return <CRow>
+                <CCol sm="2">Results:</CCol>
+                <CCol md="6">No images found</CCol>
+            </CRow>
+        }
 
         return (
-            <CTable>
-                <CTableHead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <th key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                </th>
+            <CRow>
+                <CCol sm="2">Results:</CCol>
+                <CCol md="6">
+                    <div style={{ marginTop: '25px' }}></div>
+                    <CTable>
+                        <CTableHead>
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th key={header.id}>
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </th>
+                                    ))}
+                                </tr>
                             ))}
-                        </tr>
-                    ))}
-                </CTableHead>
-                <CTableBody>
-                    {table.getRowModel().rows.map(row => (
-                        <Fragment key={row.id}>
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
-                                ))}
-                            </tr>
-                        </Fragment>
-                    ))}
-                </CTableBody>
-            </CTable>
+                        </CTableHead>
+                        <CTableBody>
+                            {table.getRowModel().rows.map(row => (
+                                <Fragment key={row.id}>
+                                    <tr key={row.id}>
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                </Fragment>
+                            ))}
+                        </CTableBody>
+                    </CTable>
+                </CCol>
+            </CRow>
         )
     }
 
@@ -114,20 +131,19 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
                         />
                         <IconButton
                             isOutline={false}
-                            color="secondary"
+                            color="primary"
                             icon={faSearch}
                             text="Search"
-                            onClick={() => doSearch([datasetId, enteredSearch])}
+                            onClick={() => {
+                                setIsFirstSearch(false)
+                                doSearch([datasetId, enteredSearch])
+                            }}
                             style={{ marginTop: '15px' }}
                         ></IconButton>
                     </CCol>
                 </CRow>
-                <CRow>
-                    <CCol md="6">
-                        <div style={{ marginTop: '25px' }}></div>
-                        {renderFoundAnnotations()}
-                    </CCol>
-                </CRow>
+                <div style={{ marginTop: '25px' }}>&nbsp;</div>
+                {renderFoundAnnotations()}
             </CModalBody>
         </CModal >
     )
