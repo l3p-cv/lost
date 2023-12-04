@@ -20,17 +20,17 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
     const columnHelper = createColumnHelper()
 
     const columns = [
-        columnHelper.accessor('annotationIndex', {
+        columnHelper.accessor('imageId', {
             header: 'Image ID'
         }),
         columnHelper.accessor('imageName', {
             header: 'Image name'
         }),
         columnHelper.accessor('annotationId', {
-            header: 'Annotation ID'
+            header: 'AnnoTask ID'
         }),
         columnHelper.accessor('annotationName', {
-            header: 'Annotation Name'
+            header: 'AnnoTask Name'
         }),
         columnHelper.display({
             id: 'chooseImage',

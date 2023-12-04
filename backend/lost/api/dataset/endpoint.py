@@ -490,7 +490,7 @@ class DatasetReviewImageSearch(Resource):
         
         for entry in db_result:
             found_images.append({
-                'annotationIndex': entry.idx,
+                'imageId': entry.idx,
                 'imageName': entry.img_path,
                 'annotationId': entry.anno_task_id,
                 'annotationName': entry.name
