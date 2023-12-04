@@ -40,6 +40,16 @@ export const useGetAnnotations = () => {
     )
 }
 
+export const useUpdateAnnotation = () => {
+    return useMutation((requestData) => {
+        // returns [isSuccessful (bool), data (Object)]
+        return axios.post(`${API_URL}/sia/updateOneThing`, requestData)
+            .then((res) => [true, res.data])
+            .catch((error) => [false, error])
+    })
+}
+
+
 export const useUpdateAnnotations = () => {
     return useMutation((requestData) => {
         const [datasetId, annotaskId, annotations] = requestData

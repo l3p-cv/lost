@@ -1,12 +1,8 @@
-import axios from 'axios'
-import { API_URL } from '../../lost_settings'
 import React, { useState, useEffect } from 'react'
 import '../Annotation/SIA/lost-sia/src/SIA.scss'
 import * as tbe from '../Annotation/SIA/lost-sia/src/types/toolbarEvents'
 import * as canvasActions from '../Annotation/SIA/lost-sia/src/types/canvasActions'
-import { useNavigate } from 'react-router-dom'
 import { NotificationManager, NotificationContainer, } from 'react-notifications'
-import * as Notification from '../../components/Notification'
 import 'react-notifications/lib/notifications.css'
 import * as notificationType from '../Annotation/SIA/lost-sia/src/types/notificationType'
 import Sia from '../Annotation/SIA/lost-sia/src/Sia'
@@ -43,20 +39,17 @@ const SIAReview = ({ datasetId }) => {
     const { data: reviewPageData, mutate: loadNextReviewPage } = reviewApi.useReview()
     const { data: reviewOptions, refetch: getReviewOptions } = reviewApi.useReviewOptions()
     const { data: reviewImage, mutate: loadReviewImage } = reviewApi.useGetImage()
-    const { data: uiConfig, refetch: getUIConfig } = reviewApi.useGetUIConfig()
-    const { data: updateAnnotationsResponse, mutate: updateAnnotations } = reviewApi.useUpdateAnnotations()
+    const { data: uiConfig } = reviewApi.useGetUIConfig()
+    const { data: updateAnnotationResponse, mutate: updateAnnotation } = reviewApi.useUpdateAnnotation()
 
     const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
-    const [isImgSearchVisible, setIsImgSearchVisible] = useState(false)
     const [isImgSearchModalVisible, setIsImgSearchModalVisible] = useState(false)
-    const [annosChanged, setAnnosChanged] = useState(false)
+    const [annoSaveResponse, setAnnoSaveResponse] = useState(false)
     const [nextPrev, setNextPrev] = useState()
-    const [imageMeta, setImageMeta] = useState()
     const [imgBlob, setImgBlob] = useState()
     const [canvas, setCanvas] = useState()
     const [isJunk, setIsJunk] = useState(false)
     const [selectedTool, setSelectedTool] = useState()
-    const navigate = useNavigate()
 
     const handleToolSelected = (tool) => {
         setSelectedTool(tool)
@@ -68,14 +61,9 @@ const SIAReview = ({ datasetId }) => {
     }
 
     useEffect(() => {
-        if (nextPrev) {
-            if (annosChanged) {
-                saveRequestModal()
-            } else {
-                handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
-            }
-        }
+        if (nextPrev === undefined) return
 
+        handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
     }, [nextPrev])
 
     useEffect(() => {
@@ -132,23 +120,20 @@ const SIAReview = ({ datasetId }) => {
         loadNextReviewPage([datasetId, data])
 
         setNextPrev(undefined)
-        setAnnosChanged(false)
     }
 
     useEffect(() => {
-
         // dont show a notification on initialisation
-        if (updateAnnotationsResponse === undefined) return
+        if (updateAnnotationResponse === undefined) return
 
+        const [isSuccessful, response] = updateAnnotationResponse
 
-        if (updateAnnotationsResponse === "success") {
-            setAnnosChanged(false)
-            handleNotification({
-                title: 'Saved',
-                message: 'Annotations have been saved!',
-                type: notificationType.INFO,
-            })
+        // make sure the type is a boolean
+        if (isSuccessful === true) {
+            console.log('handleAnnoSaveResponse ', response)
+            setAnnoSaveResponse(response)
         } else {
+            console.warn(response)
             handleNotification({
                 title: 'Could not save!!!',
                 message: 'Server Error',
@@ -156,14 +141,7 @@ const SIAReview = ({ datasetId }) => {
             })
         }
 
-    }, [updateAnnotationsResponse])
-
-    const handleSaveAnnos = () => {
-
-        const newAnnos = canvas.getAnnos()
-
-        updateAnnotations([datasetId, reviewPageData.current_annotask_idx, newAnnos])
-    }
+    }, [updateAnnotationResponse])
 
     const handleNotification = (notification) => {
         const notifyTimeOut = 5000
@@ -241,9 +219,6 @@ const SIAReview = ({ datasetId }) => {
 
     const handleToolBarEvent = (e, data) => {
         switch (e) {
-            case tbe.SAVE:
-                handleSaveAnnos()
-                break
             case tbe.DELETE_ALL_ANNOS:
                 canvas.deleteAllAnnos()
                 break
@@ -308,38 +283,6 @@ const SIAReview = ({ datasetId }) => {
                 break
         }
     }
-    const handleAnnoPerformedAction = (anno, annos, action) => {
-        switch (action) {
-            case canvasActions.ANNO_CREATED:
-            case canvasActions.ANNO_CREATED_FINAL_NODE:
-            case canvasActions.ANNO_DELETED:
-            case canvasActions.ANNO_MOVED:
-            case canvasActions.ANNO_LABEL_UPDATE:
-            case canvasActions.ANNO_COMMENT_UPDATE:
-                setAnnosChanged(true)
-                break
-            default:
-                break
-        }
-
-    }
-
-    const saveRequestModal = () => {
-        Notification.showDecision({
-            title: 'Annotation have been changed! Do you want to save these changes?',
-            option1: {
-                text: 'Save Changes',
-                callback: () => {
-                    handleSaveAnnos()
-                    handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
-                },
-            },
-            option2: {
-                text: 'Don\'t Save',
-                callback: () => { handleNextPrevImage(nextPrev.imgId, nextPrev.cmd) },
-            },
-        })
-    }
 
     const onImgageSearchClicked = () => {
         setIsImgSearchModalVisible(true)
@@ -356,19 +299,13 @@ const SIAReview = ({ datasetId }) => {
         loadNextReviewPage([datasetId, data])
     }
 
-    const onAnnoSaveEvent = (data) => {
-        console.info(data);
-    }
-
     const renderSia = () => {
         if (!reviewPageData) return 'No Review Data!'
         if (!reviewOptions) return 'No Review Data!'
         return <div>
             <Sia
                 annoTaskId={reviewPageData.current_annotask_idx}
-                onAnnoEvent={(anno, annos, action) =>
-                    handleAnnoPerformedAction(anno, annos, action)
-                }
+                annoSaveResponse={annoSaveResponse}
                 onNotification={(messageObj) => handleNotification(messageObj)}
                 onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
                 onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
@@ -378,7 +315,7 @@ const SIAReview = ({ datasetId }) => {
                 //         : {}
                 // }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                onAnnoSaveEvent={onAnnoSaveEvent}
+                onAnnoSaveEvent={updateAnnotation}
                 canvasConfig={
                     CANVAS_CONFIG
                     // {
@@ -392,7 +329,6 @@ const SIAReview = ({ datasetId }) => {
                     ...uiConfig,
                     imgBarVisible: true,
                     imgLabelInputVisible: imgLabelInputVisible,
-                    isImgSearchVisible,
                     centerCanvasInContainer: true,
                     maxCanvas: true,
                 }}
@@ -411,7 +347,6 @@ const SIAReview = ({ datasetId }) => {
                 // svg={props.svg}
                 // filter={props.filter}
                 toolbarEnabled={{
-                    save: true,
                     imgLabel: true,
                     imgSearch: true,
                     nextPrev: true,
