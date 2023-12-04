@@ -1841,13 +1841,12 @@ class Dataset(Base):
     parent = relationship('Dataset', backref='dataset_children', remote_side=[idx])
     annotask_children = relationship(AnnoTask, back_populates="dataset")
 
-    def __init__(self, idx=None, name=None, description=None, datastore_id=None, created_at=None, parent_dataset_id=None):
+    def __init__(self, idx=None, name=None, description=None, datastore_id=None, parent_dataset_id=None):
         self.idx = idx
         self.name = name
         self.description = description
         self.datastore_id = datastore_id
         self.parent_id = parent_dataset_id
-        self.created_at = created_at
         
     def to_dict(self):
         
