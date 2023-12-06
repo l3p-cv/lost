@@ -42,7 +42,7 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
                 onClick={() => {
                     setIsVisible(false)
                     const rowData = props.row.original
-                    onChooseImage(rowData.annotationId, rowData.annotationIndex)
+                    onChooseImage(rowData.annotationId, rowData.imageId)
                 }}
                 disabled={false}
             />)
