@@ -88,7 +88,6 @@ class Datasets(Resource):
         
         if(len(children) == 0):
             dataset.children = []
-            return dataset
         
         subchildren = []
         for child in children:
@@ -191,7 +190,7 @@ class DatasetReview(Resource):
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         
-        serialized_review_data = self.review(dbm, dataset_id, user.idx, data)
+        serialized_review_data = self.__review(dbm, dataset_id, user.idx, data)
         
         return serialized_review_data
     
@@ -211,11 +210,42 @@ class DatasetReview(Resource):
         prev_annotask_idx = annotask_keys[position]
         return prev_annotask_idx
 
+
+    def __get_dataset_children(self,  dataset):
+        """recursive method to get all children datasets (and their children...) to a dataset
+        """
+        all_dataset_children = []
+        direct_children = dataset.dataset_children
         
-    def review(self, dbm, dataset_id, user_id, data):
-        
+        all_dataset_children.extend(direct_children)
+
+        for child in direct_children:
+            dataset_children = self.__get_dataset_children(child)
+            all_dataset_children.extend(dataset_children)
+        return all_dataset_children
+    
+    
+    def __generate_annotask_list(self, dbm, dataset_id):
+        """create a list with all annotation tasks needed for a given dataset
+        """
+
+        # create a list with all datasets we need the annotasks of
         dataset = dbm.get_dataset(dataset_id)
-        annotasks_list = dataset.annotask_children
+        datasets = [dataset]
+        dataset_children = self.__get_dataset_children(dataset)
+        datasets.extend(dataset_children)
+        
+        # combine annotasks from all datasets into one list
+        annotasks_list = []
+        for dataset in datasets:
+            annotasks_list.extend(dataset.annotask_children)
+            
+        return annotasks_list
+
+        
+    def __review(self, dbm, dataset_id, user_id, data):
+        
+        annotasks_list = self.__generate_annotask_list(dbm, dataset_id)        
         annotask_lengths = {}
         annotask_keys = []
         
