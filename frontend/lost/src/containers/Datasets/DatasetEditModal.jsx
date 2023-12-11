@@ -2,36 +2,39 @@ import React, { useEffect, useState } from 'react'
 import { CCol, CModal, CModalBody, CModalHeader, CFormInput, CRow } from '@coreui/react'
 import IconButton from '../../components/IconButton'
 import { faSave } from '@fortawesome/free-solid-svg-icons'
-import { Dropdown } from 'semantic-ui-react'
+// import { Dropdown } from 'semantic-ui-react'
 import * as datasetApi from '../../actions/dataset/dataset_api'
+import { NotificationManager } from 'react-notifications'
 
+const NOTIFICATION_TIMEOUT_MS = 5000
 
 const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, datastoreList }) => {
 
-    const { mutate: updateDatasetList } = datasetApi.useUpdateDataset()
+    const { mutate: createDatasetApi, data: createResponse } = datasetApi.useCreateDataset()
+    const { mutate: updateDatasetApi, data: updateResponse } = datasetApi.useUpdateDataset()
 
     const [idx, setIdx] = useState(-1)
     const [name, setName] = useState("")
     const [description, setDescription] = useState("")
-    const [datastoreId, setDatastoreId] = useState("0")
-    const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
+    // const [datastoreId, setDatastoreId] = useState("0")
+    // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
 
     // convert the datasource list (id: name) to a list compatible to the Dropdown options
-    const converDatastoreToDropdownOptions = (datastores) => {
-        const options = []
-        Object.keys(datastores).forEach((datasourceID) => {
-            options.push({
-                key: datasourceID,
-                value: datasourceID,
-                text: datastores[datasourceID]
-            })
-        })
-        setDatastoreDropdownOptions(options)
-    }
+    // const converDatastoreToDropdownOptions = (datastores) => {
+    //     const options = []
+    //     Object.keys(datastores).forEach((datasourceID) => {
+    //         options.push({
+    //             key: datasourceID,
+    //             value: datasourceID,
+    //             text: datastores[datasourceID]
+    //         })
+    //     })
+    //     setDatastoreDropdownOptions(options)
+    // }
 
-    useEffect(() => {
-        converDatastoreToDropdownOptions(datastoreList)
-    }, [datastoreList])
+    // useEffect(() => {
+    //     converDatastoreToDropdownOptions(datastoreList)
+    // }, [datastoreList])
 
     useEffect(() => {
         // only continue if data available
@@ -42,20 +45,85 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, datastore
         setDescription(editedDatasetObj.description)
 
         // convert int to string to be recognized by semantic UIs Dropdown
-        setDatastoreId("" + editedDatasetObj.datastore_id)
+        // setDatastoreId("" + editedDatasetObj.datastore_id)
 
     }, [editedDatasetObj])
+
+    useEffect(() => {
+        // dont show a notification on initialisation
+        if (createResponse === undefined) return
+
+        const [isSuccessful, response] = createResponse
+
+        // make sure the type is a boolean
+        if (isSuccessful === true) {
+            NotificationManager.success(
+                "",
+                "Dataset created successfully",
+                NOTIFICATION_TIMEOUT_MS,
+            )
+
+            // close the modal
+            setIsVisible(false)
+        } else {
+            const errorMessage = response.data
+            NotificationManager.error(
+                errorMessage,
+                "Error creating dataset",
+                NOTIFICATION_TIMEOUT_MS,
+            )
+        }
+    }, [createResponse, setIsVisible])
+
+    useEffect(() => {
+        // dont show a notification on initialisation
+        if (updateResponse === undefined) return
+
+        const [isSuccessful, response] = updateResponse
+
+        // make sure the type is a boolean
+        if (isSuccessful === true) {
+            NotificationManager.success(
+                "",
+                "Dataset updated successfully",
+                NOTIFICATION_TIMEOUT_MS,
+            )
+
+            // close the modal
+            setIsVisible(false)
+        } else {
+            const errorMessage = response.data
+            NotificationManager.error(
+                errorMessage,
+                "Error updating dataset",
+                NOTIFICATION_TIMEOUT_MS,
+            )
+        }
+    }, [updateResponse, setIsVisible])
 
     const updateDataset = () => {
         const dataset = {
             id: idx,
             name,
             description,
-            datastoreId: parseInt(datastoreId)
+            // datastoreId: parseInt(datastoreId)
         }
 
-        updateDatasetList(dataset)
+        updateDatasetApi(dataset)
     }
+
+    const createDataset = () => {
+        console.info("CREATE DS")
+        const dataset = {
+            name,
+            description,
+            // datastoreId: parseInt(datastoreId)
+        }
+
+        createDatasetApi(dataset)
+    }
+
+
 
     return (
         <CModal
@@ -86,7 +154,7 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, datastore
                         />
                     </CCol>
                 </CRow>
-                <CRow>&nbsp;</CRow>
+                {/* <CRow>&nbsp;</CRow>
                 <CRow>
                     <CCol sm="2">Datastore</CCol>
                     <CCol sm="6">
@@ -103,7 +171,7 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, datastore
                             }}
                         />
                     </CCol>
-                </CRow>
+                </CRow> */}
                 <CRow>
                     <CCol sm="2">&nbsp;</CCol>
                     <CCol sm="6">
@@ -112,7 +180,7 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, datastore
                             color="primary"
                             icon={faSave}
                             text="Add Dataset"
-                            onClick={updateDataset}
+                            onClick={() => (idx === -1 ? createDataset() : updateDataset())}
                             style={{ marginTop: '15px', float: 'right' }}
                         />
                     </CCol>

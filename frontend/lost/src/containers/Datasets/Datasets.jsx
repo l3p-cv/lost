@@ -7,11 +7,12 @@ import DatasetExportModal from './DatasetExportModal'
 import * as datasetApi from '../../actions/dataset/dataset_api'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
 import DatasetEditModal from './DatasetEditModal'
+import { NotificationContainer } from 'react-notifications'
 
 
 const Datasets = () => {
 
-    const { data: datasetList } = datasetApi.useDatasets()
+    const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
     const { data: datastores } = datasetApi.useDatastoreKeys()
     const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotask()
 
@@ -88,6 +89,11 @@ const Datasets = () => {
         setIsExportModalOpen(true)
     }, [annotask])
 
+    useEffect(() => {
+        // update the list after the data has changed (modal closes on API response)
+        if (isEditModalOpen === false) reloadDatasetList()
+    }, [isEditModalOpen])
+
     return (
         <>
             <DatasetExportModal
@@ -139,6 +145,7 @@ const Datasets = () => {
                     </CCol>
                 </CRow>
             </CContainer>
+            <NotificationContainer />
         </>
 
     )

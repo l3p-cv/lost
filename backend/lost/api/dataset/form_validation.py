@@ -3,16 +3,15 @@ from wtforms import Form, IntegerField, StringField, validators
 class CreateDatasetForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=254)])
     description = StringField('Description', [validators.Length(min=1, max=254)])
-    datastoreId = IntegerField('DatastoreId', [validators.NumberRange(min=0)])
+    # datastoreId = IntegerField('DatastoreId', [validators.NumberRange(min=0)])
 
 class UpdateDatasetForm(CreateDatasetForm):
     id = IntegerField('Index', [validators.NumberRange(min=0)])
-    datastoreId = IntegerField('DatastoreId', [validators.NumberRange(min=0)])
     
 class DatasetReviewForm(Form):
     direction = StringField('Direction', [validators.Length(min=1, max=254)])
 
-def create_validation_error_message(self, form):
+def create_validation_error_message(form):
         """Creates a error message string out of a failed wtform
         """
         error_fields = form.errors.items()

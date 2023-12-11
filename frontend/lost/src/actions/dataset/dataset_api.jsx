@@ -24,13 +24,17 @@ export const useDatastoreKeys = () => {
 
 export const useCreateDataset = () => {
     return useMutation((data) =>
-        axios.post(`${API_URL}/datasets`, data).then((res) => res.data),
+        axios.post(`${API_URL}/datasets`, data)
+            .then((res) => [true, res.data])
+            .catch((error) => [false, error.response]),
     )
 }
 
 export const useUpdateDataset = () => {
     return useMutation((data) =>
-        axios.patch(`${API_URL}/datasets`, data).then((res) => res.data),
+        axios.patch(`${API_URL}/datasets`, data)
+            .then((res) => [true, res.data])
+            .catch((error) => [false, error.response])
     )
 }
 
