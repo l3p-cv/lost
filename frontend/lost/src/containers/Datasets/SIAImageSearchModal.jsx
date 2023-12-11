@@ -1,8 +1,8 @@
-import { CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow, CTable, CTableBody, CTableHead } from "@coreui/react"
+import { CContainer, CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow, CTable, CTableBody, CTableHead } from "@coreui/react"
 import { createColumnHelper, flexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table"
 import { Fragment, useEffect, useState } from "react"
 import IconButton from "../../components/IconButton"
-import { faArrowRight, faSearch } from "@fortawesome/free-solid-svg-icons"
+import { faAngleLeft, faAngleRight, faArrowRight, faSearch } from "@fortawesome/free-solid-svg-icons"
 import * as datasetApi from '../../actions/dataset/dataset_api'
 
 const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage }) => {
@@ -75,39 +75,85 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
         return (
             <CRow>
                 <CCol sm="2">Results:</CCol>
-                <CCol md="6">
+                <CCol md="8">
                     <div style={{ marginTop: '25px' }}></div>
-                    <CTable>
-                        <CTableHead>
-                            {table.getHeaderGroups().map(headerGroup => (
-                                <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => (
-                                        <th key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </th>
-                                    ))}
-                                </tr>
-                            ))}
-                        </CTableHead>
-                        <CTableBody>
-                            {table.getRowModel().rows.map(row => (
-                                <Fragment key={row.id}>
-                                    <tr key={row.id}>
-                                        {row.getVisibleCells().map(cell => (
-                                            <td key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </td>
+                    <CContainer style={{ background: 'white', padding: 15, borderRadius: 10, border: '1px solid #cce2ff' }}>
+                        <CTable>
+                            <CTableHead>
+                                {table.getHeaderGroups().map(headerGroup => (
+                                    <tr key={headerGroup.id}>
+                                        {headerGroup.headers.map(header => (
+                                            <th key={header.id}>
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                            </th>
                                         ))}
                                     </tr>
-                                </Fragment>
-                            ))}
-                        </CTableBody>
-                    </CTable>
+                                ))}
+                            </CTableHead>
+                            <CTableBody>
+                                {table.getRowModel().rows.map(row => (
+                                    <Fragment key={row.id}>
+                                        <tr key={row.id}>
+                                            {row.getVisibleCells().map(cell => (
+                                                <td key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    </Fragment>
+                                ))}
+                            </CTableBody>
+                        </CTable>
+                        <CRow>
+                            <CCol>
+                                {<IconButton
+                                    icon={faAngleLeft}
+                                    text="Previous"
+                                    onClick={() => table.previousPage()}
+                                    disabled={!table.getCanPreviousPage()}
+                                />}
+                            </CCol>
+                            <CCol>
+                                <span style={{ lineHeight: 2 }}>
+                                    Page
+                                    <strong>
+                                        {table.getState().pagination.pageIndex + 1} of{' '}
+                                        {table.getPageCount()}
+                                    </strong>
+                                </span>
+                            </CCol>
+                            <CCol>
+                                <span style={{ lineHeight: 2 }}>
+                                    <select
+                                        value={table.getState().pagination.pageSize}
+                                        onChange={e => {
+                                            table.setPageSize(Number(e.target.value))
+                                        }}
+                                    >
+                                        {[10, 20, 30, 40, 50].map(pageSize => (
+                                            <option key={pageSize} value={pageSize}>
+                                                Show {pageSize}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </span>
+                            </CCol>
+                            <CCol>
+                                {<IconButton
+                                    icon={faAngleRight}
+                                    text="Next"
+                                    onClick={() => table.nextPage()}
+                                    disabled={!table.getCanNextPage()}
+                                    style={{ float: 'right' }}
+                                />}
+                            </CCol>
+                        </CRow>
+                    </CContainer>
                 </CCol>
             </CRow>
         )
@@ -145,7 +191,7 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
                 <div style={{ marginTop: '25px' }}>&nbsp;</div>
                 {renderFoundAnnotations()}
             </CModalBody>
-        </CModal >
+        </CModal>
     )
 }
 
