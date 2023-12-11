@@ -1849,10 +1849,9 @@ class Dataset(Base):
         self.parent_id = parent_dataset_id
         
     def to_dict(self):
-        
         # convert all children (recursively)
         children_json = []
-        if self.children != None:
+        if hasattr(self, 'children') and self.children != None:
             for child in self.children:
                 children_json.append(child.to_dict())
 

@@ -3,6 +3,7 @@ from wtforms import Form, IntegerField, StringField, validators
 class CreateDatasetForm(Form):
     name = StringField('Name', [validators.Length(min=1, max=254)])
     description = StringField('Description', [validators.Length(min=1, max=254)])
+    parentDatasetId = IntegerField('Parent', [validators.NumberRange(min=-1)])
     # datastoreId = IntegerField('DatastoreId', [validators.NumberRange(min=0)])
 
 class UpdateDatasetForm(CreateDatasetForm):

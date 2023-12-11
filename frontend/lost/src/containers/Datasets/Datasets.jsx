@@ -13,6 +13,8 @@ import { NotificationContainer } from 'react-notifications'
 const Datasets = () => {
 
     const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
+    const { data: flatDatasetList, refetch: reloadFlatDatasetList } = datasetApi.useFlatDatasets()
+
     const { data: datastores } = datasetApi.useDatastoreKeys()
     const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotask()
 
@@ -30,10 +32,8 @@ const Datasets = () => {
     }
 
     const openEditDatasetMenu = (datasetRowObj) => {
-        console.log("Clicked on openEditDatasetMenu")
-
         // only select necessary properties out of row data
-        const datasetObj = (({ idx, name, description, datastore_id }) => ({ idx, name, description, datastore_id }))(datasetRowObj)
+        const datasetObj = (({ idx, name, description, parent_id, datastore_id }) => ({ idx, name, description, parent_id, datastore_id }))(datasetRowObj)
 
         // update data for the editing modal
         setEditedDatasetObj(datasetObj)
@@ -91,8 +91,11 @@ const Datasets = () => {
 
     useEffect(() => {
         // update the list after the data has changed (modal closes on API response)
-        if (isEditModalOpen === false) reloadDatasetList()
-    }, [isEditModalOpen])
+        if (isEditModalOpen === false) {
+            reloadDatasetList()
+            reloadFlatDatasetList()
+        }
+    }, [isEditModalOpen, reloadDatasetList, reloadFlatDatasetList])
 
     return (
         <>
@@ -109,6 +112,7 @@ const Datasets = () => {
                 isVisible={isEditModalOpen}
                 setIsVisible={setIsEditModalOpen}
                 editedDatasetObj={editedDatasetObj}
+                flatDatasetList={flatDatasetList}
                 datastoreList={datastores}
             />
             <CContainer>

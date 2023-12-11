@@ -1247,6 +1247,11 @@ class DBMan(object):
         ''' Returns all datasets that don't have a parent assigned in a onedimensional list
         '''
         return self.session.query(model.Dataset).filter(model.Dataset.parent_id == None).all()
+    
+    def get_datasets(self):
+        '''Get all datasets
+        '''
+        return self.session.query(model.Dataset).all()
 
     def get_dataset(self, dataset_id):
         '''Get dataset by idx

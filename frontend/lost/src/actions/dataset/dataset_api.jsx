@@ -12,6 +12,16 @@ export const useDatasets = () => {
     )
 }
 
+export const useFlatDatasets = () => {
+    return useQuery(
+        ['datasetsFlat'],
+        () => axios.get(`${API_URL}/datasets/flat`).then((res) => res.data),
+        {
+            initialData: [],
+        },
+    )
+}
+
 export const useDatastoreKeys = () => {
     return useQuery(
         ['datastoresKey'],

@@ -62,7 +62,7 @@ reviewUpdateAnnotation = api.model("ReviewUpdateAnnotation", {
 @namespace.route('')
 @api.doc(security='apikey')
 class Datasets(Resource):
-    @api.doc(description="Lists all available datasets.")
+    @api.doc(description="Lists all available datasets with children and annotation tasks.")
     @api.response(200, 'success', [datasetModel])
     @jwt_required
     def get(self):
@@ -123,9 +123,16 @@ class Datasets(Resource):
 
         # use the safe validated data to create a new DB entry        
         data = form.data
+        
+        # parent_id = -1 => no parent
+        parent_id = data['parentDatasetId']
+        if parent_id == -1:
+            parent_id = None
+        
         db_dataset = Dataset(
             name=data['name'],
-            description=data['description']
+            description=data['description'],
+            parent_dataset_id = parent_id
             # datastore_id=data['datastoreId']
         )
         dbm.save_obj(db_dataset)
@@ -158,9 +165,35 @@ class Datasets(Resource):
         db_dataset.name = data['name']
         db_dataset.description = data['description']
         # db_dataset.datastore_id = data['datastoreId']
+        
+        # parent_id = -1 => no parent
+        parent_id = data['parentDatasetId']
+        if parent_id == -1:
+            parent_id = None
+        db_dataset.parent_id = parent_id
+
         dbm.save_obj(db_dataset)
 
         return ('', 204)
+
+@namespace.route('/flat/')
+@namespace.route('/flat')
+@api.doc(security='apikey')
+class DatasetsFlat(Resource):
+    @api.doc(description="Lists all available datasets in a flat list.")
+    @api.response(200, 'success', [datasetModel])
+    @jwt_required
+    def get(self):
+        
+        dbm = access.DBMan(LOST_CONFIG)
+        datasets = dbm.get_datasets()
+        
+        # find all children of every dataset (recursively)
+        datasets_json = {}
+        for dataset in datasets:
+            datasets_json[dataset.idx] = dataset.name
+        
+        return jsonify(datasets_json)
 
 
 @namespace.route('/<int:dataset_id>/review')
