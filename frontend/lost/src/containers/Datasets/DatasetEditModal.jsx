@@ -64,8 +64,6 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
         // only continue if data available
         if (editedDatasetObj === undefined) return
 
-        console.log(editedDatasetObj);
-
         setIdx(editedDatasetObj.idx)
         setName(editedDatasetObj.name)
         setDescription(editedDatasetObj.description)

@@ -25,7 +25,8 @@ const Datasets = () => {
     const [editedDatasetObj, setEditedDatasetObj] = useState()
 
     const openAddDatasetMenu = () => {
-        console.log("Clicked on openAddDatasetMenu")
+        // clear data from previous modal editings
+        setEditedDatasetObj({})
 
         // open modal
         setIsEditModalOpen(true)
