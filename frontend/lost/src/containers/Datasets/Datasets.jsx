@@ -141,6 +141,7 @@ const Datasets = () => {
                 </CRow>
                 <CRow>
                     <CCol>
+                        <div className="h-4">&nbsp;</div>
                         <DatasetTable
                             datasetList={datasetList}
                             datastores={datastores}
