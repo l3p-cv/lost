@@ -125,8 +125,8 @@ class Datasets(Resource):
         data = form.data
         db_dataset = Dataset(
             name=data['name'],
-            description=data['description'],
-            datastore_id=data['datastoreId']
+            description=data['description']
+            # datastore_id=data['datastoreId']
         )
         dbm.save_obj(db_dataset)
 
@@ -157,7 +157,7 @@ class Datasets(Resource):
         db_dataset = dbm.get_dataset(dataset_id)
         db_dataset.name = data['name']
         db_dataset.description = data['description']
-        db_dataset.datastore_id = data['datastoreId']
+        # db_dataset.datastore_id = data['datastoreId']
         dbm.save_obj(db_dataset)
 
         return ('', 204)
