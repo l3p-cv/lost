@@ -64,7 +64,8 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
         // only continue if data available
         if (editedDatasetObj === undefined) return
 
-        setIdx(editedDatasetObj.idx)
+        // set idx to -1 when object is empty => creation mode
+        setIdx(editedDatasetObj.idx === undefined ? -1 : editedDatasetObj.idx)
         setName(editedDatasetObj.name)
         setDescription(editedDatasetObj.description)
 
