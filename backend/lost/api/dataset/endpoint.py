@@ -170,11 +170,42 @@ class Datasets(Resource):
         parent_id = data['parentDatasetId']
         if parent_id == -1:
             parent_id = None
+        else:
+            if dataset_id == parent_id:
+                return ("Dataset can't have itself as its parent", 400)
+            
+            has_valid_parent = self.__check_selected_parent_is_not_in_children(db_dataset, parent_id)
+            
+            if not has_valid_parent:
+                return ("Chosen parent can't be a child of the current dataset", 400)
+            
+            
         db_dataset.parent_id = parent_id
 
         dbm.save_obj(db_dataset)
 
         return ('', 204)
+    
+    def __check_selected_parent_is_not_in_children(self, dataset, parentId):
+        """ recursive method to check if the dataset's parent is not one of its children (or grandchildren, ...)
+        """
+        
+        print(dataset)
+
+        for child in dataset.dataset_children:
+            # check if one of the children has the parentId
+            if child.idx == parentId:
+                return False
+            
+            # check if one of the child's children has the parentId
+            if self.__check_selected_parent_is_not_in_children(child, parentId) == False:
+                return False
+        
+        # no children left to check - parent is not a child
+        return True
+            
+            
+            
 
 @namespace.route('/flat/')
 @namespace.route('/flat')
