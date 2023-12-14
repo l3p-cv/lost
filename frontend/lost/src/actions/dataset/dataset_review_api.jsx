@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
+import { uiConfig, SIA_INITIAL_UI_CONFIG } from '../../containers/Annotation/SIA/lost-sia/src/utils/uiConfig'
 
 export const useReview = () => {
     return useMutation((requestArguments) => {
@@ -67,8 +68,10 @@ export const useUpdateAnnotations = () => {
 
 export const useGetUIConfig = () => {
 
-    const uiConfigJson = localStorage.getItem('sia-ui-config')
-    const uiConfig = JSON.parse(uiConfigJson)
+    // insert default config if no config in storage (first run)
+    if (localStorage.getItem('sia-ui-config') === null) {
+        localStorage.setItem('sia-ui-config', JSON.stringify(SIA_INITIAL_UI_CONFIG))
+    }
 
     return uiConfig
 }
