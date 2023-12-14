@@ -57,7 +57,6 @@ reviewUpdateAnnotation = api.model("ReviewUpdateAnnotation", {
     "annotationChanges": imageWithAnnotation
 })
 
-
 @namespace.route('/')
 @namespace.route('')
 @api.doc(security='apikey')
@@ -66,8 +65,13 @@ class Datasets(Resource):
     @api.response(200, 'success', [datasetModel])
     @jwt_required
     def get(self):
-        
         dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        
         datasets = dbm.get_datasets_with_no_parent()
         
         
@@ -111,6 +115,11 @@ class Datasets(Resource):
     @api.response(400, 'error', errorMessage)
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
 
         # convert json input into a format readable by wtforms
         form_input = ImmutableMultiDict(request.json)
@@ -147,6 +156,11 @@ class Datasets(Resource):
     @jwt_required
     def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
 
         # convert json input into a format readable by wtforms
         form_input = ImmutableMultiDict(request.json)
@@ -189,8 +203,6 @@ class Datasets(Resource):
     def __check_selected_parent_is_not_in_children(self, dataset, parentId):
         """ recursive method to check if the dataset's parent is not one of its children (or grandchildren, ...)
         """
-        
-        print(dataset)
 
         for child in dataset.dataset_children:
             # check if one of the children has the parentId
@@ -214,9 +226,14 @@ class DatasetsFlat(Resource):
     @api.doc(description="Lists all available datasets in a flat list.")
     @api.response(200, 'success', [datasetModel])
     @jwt_required
-    def get(self):
-        
+    def get(self):        
         dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
         datasets = dbm.get_datasets()
         
         # find all children of every dataset (recursively)
@@ -235,6 +252,12 @@ class DatasetReview(Resource):
     @api.response(200, 'success', [datasetModel])
     @jwt_required
     def post(self, dataset_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         
         # convert json input into a format readable by wtforms
         # form_input = ImmutableMultiDict(request.json)
@@ -247,12 +270,9 @@ class DatasetReview(Resource):
 
         # use the safe validated data to update the DB entry        
         # data = form.data
+        
+        
         data = request.json
-        
-        dbm = access.DBMan(LOST_CONFIG)
-        
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
         
         serialized_review_data = self.__review(dbm, dataset_id, user.idx, data)
         
@@ -414,9 +434,12 @@ class DatasetReviewOptions(Resource):
     @api.response(200, 'success', [datasetReviewOptionsModel])
     @jwt_required
     def get(self, dataset_id):
-        
-        # dbm = access.DBMan(LOST_CONFIG)
-        # datasets = dbm.get_datasets_with_no_parent()
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         
         return {
             "max_iteration": 0,
@@ -573,11 +596,16 @@ class DatasetReviewImageSearch(Resource):
     @api.response(200, 'success', [datasetModel])
     @jwt_required
     def post(self, dataset_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         
         data = request.json
         search_str = data['filter']
-        
-        dbm = access.DBMan(LOST_CONFIG)
+
         db_result = dbm.get_search_images_in_dataset(dataset_id, search_str)
         
         found_images = []
@@ -591,28 +619,3 @@ class DatasetReviewImageSearch(Resource):
             })
         
         return found_images
-
-@namespace.route('/<int:dataset_id>/review/updateAnnotations')
-@api.doc(security='apikey')
-class DatasetReviewUpdateAnnotation(Resource):
-    @api.doc(description="Update an annotation during a dataset review")
-    # @api.expect(reviewUpdateAnnotation)
-    @api.response(200, 'success', [datasetModel])
-    @jwt_required
-    def post(self, dataset_id):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-
-        else:
-            data = json.loads(request.data)
-            annotask_id = data['annotaskId']
-            annotations = data['annotations']
-            re = sia.review_update_annotask(dbm, annotations, user.idx, annotask_id)
-            dbm.close_session()
-            return re
-
-
