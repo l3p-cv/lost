@@ -302,7 +302,10 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         graphNet.selectNodes(selectedNodeIDs)
 
         // allow access to settings step
-        if (selectedNodeIDs.length) verifyTab(peN, 3, true)
+        if (selectedNodeIDs.length) {
+            verifyTab(peN, 3, true)
+            verifyTab(peN, 4, true)
+        }
 
         // update redux action
         const selectedParentData = getParentsOfSelectedLabels()
