@@ -35,8 +35,7 @@ const AnnoTaskModal = (props) => {
                 />
             case 4:
                 return <SelectStorageSettings
-                    datasetList={[]}
-                    datastoreList={[]}
+                // datastoreList={[]}
                 />
             case 5:
                 if (props.annoTask.type === 'sia') {
