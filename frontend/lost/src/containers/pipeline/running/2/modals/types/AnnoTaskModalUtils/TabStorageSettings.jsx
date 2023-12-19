@@ -2,55 +2,64 @@ import React, { useEffect, useState } from 'react'
 import { CCol, CContainer, CRow } from '@coreui/react'
 import HelpButton from '../../../../../../../components/HelpButton'
 import { Dropdown } from 'semantic-ui-react'
+import * as datasetApi from '../../../../../../../actions/dataset/dataset_api'
 
-const TabStorageSettings = ({ datasetList, datastoreList }) => {
+// const TabStorageSettings = ({ datastoreList }) => {
+const TabStorageSettings = () => {
 
-    const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
+    const { data: flatDatasetList } = datasetApi.useFlatDatasets()
+
+    // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
     const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
 
-    const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
+    // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
     const [selectedDatasetID, setSelectedDatasetID] = useState(0)
 
 
     // convert the datasource list (id: name) to a list compatible to the Dropdown options
-    const converDatasourcesToDropdownOptions = (datastores) => {
-        const options = []
-        Object.keys(datastores).forEach((datasourceID) => {
-            options.push({
-                key: datasourceID,
-                value: datasourceID,
-                text: datastores[datasourceID]
-            })
-        })
-        setDatastoreDropdownOptions(options)
-    }
+    // const converDatasourcesToDropdownOptions = (datastores) => {
+    //     const options = []
+    //     Object.keys(datastores).forEach((datasourceID) => {
+    //         options.push({
+    //             key: datasourceID,
+    //             value: datasourceID,
+    //             text: datastores[datasourceID]
+    //         })
+    //     })
+    //     setDatastoreDropdownOptions(options)
+    // }
 
     const convertDatasetToDropdownOptions = (datasets) => {
-        const options = []
-        datasets.forEach((dataset) => {
+        const options = [{
+            key: "-1",
+            value: "-1",
+            text: "No Dataset"
+        }]
+
+        Object.keys(datasets).forEach((datasetId) => {
             options.push({
-                key: dataset.id,
-                value: dataset.id,
-                text: dataset.name
+                key: datasetId,
+                value: datasetId,
+                text: datasets[datasetId]
             })
         })
         setDatasetDropdownOptions(options)
     }
 
-    useEffect(() => {
-        converDatasourcesToDropdownOptions(datastoreList)
-    }, [datastoreList])
+    // useEffect(() => {
+    //     converDatasourcesToDropdownOptions(datastoreList)
+    // }, [datastoreList])
 
     useEffect(() => {
-        convertDatasetToDropdownOptions(datasetList);
-    }, [datasetList])
+        convertDatasetToDropdownOptions(flatDatasetList);
+    }, [flatDatasetList])
 
     return (
         <CContainer>
             <CRow style={{ marginLeft: '5px' }}>
                 <CCol sm="6">
                     <CRow xs={{ gutterY: 3 }}>
-                        <CCol sm="12">
+                        {/* <CCol sm="12">
                             <h4>
                                 Destination Datastore
                                 <HelpButton
@@ -73,7 +82,7 @@ const TabStorageSettings = ({ datasetList, datastoreList }) => {
                                     />
                                 </CCol>
                             </CRow>
-                        </CCol>
+                        </CCol> */}
                         <CCol sm="12">
                             <h4>
                                 Dataset
