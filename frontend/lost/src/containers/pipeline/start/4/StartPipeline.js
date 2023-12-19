@@ -2,35 +2,35 @@ import React, { useEffect } from 'react'
 import { faPlayCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from 'reactstrap'
-import { connect } from 'react-redux'
-// import actions from "actions/pipeline/pipelineStart";
-import actions from '../../../../actions/pipeline/pipelineStart'
-
 import { alertLoading, alertClose, alertError } from '../../globalComponents/Sweetalert'
-const { postPipeline } = actions
+import { connect } from 'react-redux'
+import * as pipelineApi from '../../../../actions/pipeline/pipeline_api'
 
-const StartPipeline = (props) => {
+const StartPipeline = ({ step0Data, step1Data, step2Data }) => {
+    const { data: postPipelineResponse, mutate: postPipeline } = pipelineApi.useCreateAndStartPipeline()
+
     useEffect(() => {
-
-        if (props.step3Data === undefined) return
+        if (postPipelineResponse === undefined) return
 
         alertClose()
-        if (props.step3Data.response.status === 200) {
+
+        if (postPipelineResponse.status === 200 && postPipelineResponse.data === "success") {
             if (typeof window !== 'undefined') {
                 window.location.href = `${window.location.origin}/pipelines`
             }
         } else {
             alertError(
-                `(${props.step3Data.response.response.status}) ${props.step3Data.response.response.statusText}`,
+                `(${postPipelineResponse.status}) ${postPipelineResponse.data}`,
             )
         }
-    }, [props.step3Data])
+    }, [postPipelineResponse])
+
 
     const startPipe = () => {
         const json = {
-            name: props.step2Data.name,
-            description: props.step2Data.description,
-            elements: props.step1Data.elements.map((el) => {
+            name: step2Data.name,
+            description: step2Data.description,
+            elements: step1Data.elements.map((el) => {
                 if ('loop' in el.exportData) {
                     if (el.exportData.loop.maxIteration === -1) {
                         el.exportData.loop.maxIteration = null
@@ -38,9 +38,10 @@ const StartPipeline = (props) => {
                 }
                 return el.exportData
             }),
-            templateId: props.step0Data.templateId,
+            templateId: step0Data.templateId,
         }
-        props.postPipeline(json)
+
+        postPipeline(json)
         alertLoading()
     }
 
@@ -65,4 +66,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, { postPipeline })(StartPipeline)
+export default connect(mapStateToProps)(StartPipeline)
