@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Stepper from 'react-stepper-wizard'
 import { connect } from 'react-redux'
 import actions from '../../../actions/pipeline/pipelineStart'
@@ -12,19 +12,15 @@ import StartRunPipeline from './4/StartPipeline'
 import BaseContainer from '../../../components/BaseContainer'
 const { selectTab } = actions
 
-class StartPipeline extends Component {
-    constructor(){
-        super()
-        this.changeCurrentStep = this.changeCurrentStep.bind(this)
-    }
-    changeCurrentStep(newStep) {
+const StartPipeline = ({ stepperData, selectTab }) => {
 
-        this.props.selectTab(newStep)
+    const changeCurrentStep = (newStep) => {
+        selectTab(newStep)
     }
 
-    renderContent() {
+    const renderContent = () => {
 
-        switch (this.props.stepperData.currentStep) {
+        switch (stepperData.currentStep) {
             case 0: return (<SelectPipeline />)
             case 1: return (<ShowStartPipeline />)
             case 2: return (<StartPipelineForm />)
@@ -34,18 +30,15 @@ class StartPipeline extends Component {
         }
     }
 
-
-    render() {
-        return (
-            <BaseContainer className='pipeline-start-container'>
-                <Stepper
-                    stepperData={this.props.stepperData}
-                    changeCurrentStep={this.changeCurrentStep}
-                />
-                {this.renderContent()}
-            </BaseContainer>
-        )
-    }
+    return (
+        <BaseContainer className='pipeline-start-container'>
+            <Stepper
+                stepperData={stepperData}
+                changeCurrentStep={changeCurrentStep}
+            />
+            {renderContent()}
+        </BaseContainer>
+    )
 }
 
 const mapStateToProps = (state) => {
