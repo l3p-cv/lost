@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useLayoutEffect } from 'react'
 import '../Annotation/SIA/lost-sia/src/SIA.scss'
 import * as tbe from '../Annotation/SIA/lost-sia/src/types/toolbarEvents'
 import * as canvasActions from '../Annotation/SIA/lost-sia/src/types/canvasActions'
@@ -50,15 +50,16 @@ const SIAReview = ({ datasetId }) => {
     const [canvas, setCanvas] = useState()
     const [isJunk, setIsJunk] = useState(false)
     const [selectedTool, setSelectedTool] = useState()
+    const [updateSize, setUpdateSize] = useState()
+    const [layoutUpdateInt, setLayoutUpdateInt] = useState(0)
 
     const handleToolSelected = (tool) => {
         setSelectedTool(tool)
     }
 
-    // @TODO add functionality for placeholder method
-    const layoutUpdate = () => {
-        console.log("LAYOUT UPDATE");
-    }
+    useEffect(() => {
+        setLayoutUpdateInt(layoutUpdateInt + 1)
+    }, [updateSize])
 
     useEffect(() => {
         if (nextPrev === undefined) return
@@ -66,9 +67,18 @@ const SIAReview = ({ datasetId }) => {
         handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
     }, [nextPrev])
 
-    useEffect(() => {
-        window.addEventListener('resize', layoutUpdate)
+    useLayoutEffect(() => {
+        const windowSizeUpdate = () => {
+            setUpdateSize([window.innerWidth, window.innerHeight])
+        }
 
+        window.addEventListener('resize', windowSizeUpdate)
+        windowSizeUpdate()
+
+        return () => window.removeEventListener('resize', windowSizeUpdate)
+    }, [])
+
+    useEffect(() => {
         const data = {
             direction: 'first',
             imageAnnoId: null,
@@ -76,10 +86,6 @@ const SIAReview = ({ datasetId }) => {
         }
         getReviewOptions()
         loadNextReviewPage([datasetId, data])
-
-        return () => {
-            window.removeEventListener('resize', layoutUpdate)
-        }
     }, [])
 
     useEffect(() => {
@@ -89,7 +95,6 @@ const SIAReview = ({ datasetId }) => {
 
         // check if image is junk
         const { isJunk } = reviewPageData.image
-        console.info("JUNK", isJunk);
         setIsJunk(isJunk)
     }, [reviewPageData])
 
@@ -340,7 +345,7 @@ const SIAReview = ({ datasetId }) => {
                 imageBlob={imgBlob}
                 possibleLabels={reviewOptions.possible_labels}
                 // exampleImg={props.exampleImg}
-                layoutUpdate={layoutUpdate}
+                layoutUpdate={layoutUpdateInt}
                 selectedTool={selectedTool}
                 isJunk={isJunk}
                 // blocked={state.blockCanvas}
