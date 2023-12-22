@@ -1,13 +1,13 @@
 export const SIA_INITIAL_UI_CONFIG = {
     nodeRadius: 4,
     strokeWidth: 4,
-    annoDetails:{
+    annoDetails: {
         visible: false
     },
-    labelInfo:{
+    labelInfo: {
         visible: false
     },
-    annoStats:{
+    annoStats: {
         visible: false
     }
 }
@@ -19,16 +19,16 @@ const iniFromStorage = localStorage.getItem('sia-ui-config') ? JSON.parse(localS
 // collect object keys and its type in order to describe the object
 const collectDescription = (obj, array) => {
     Object.keys(obj).forEach(key => {
-        
+
         const description = {
             key: key,
-            type: typeof(obj[key])
+            type: typeof (obj[key])
         }
         array.push(description)
 
         if (typeof obj[key] === 'object') {
             collectDescription(obj[key], array)
-        } 
+        }
     })
 }
 
@@ -44,12 +44,11 @@ collectDescription(iniFromStorage, storageObjectDescriptor)
 // compare both object descriptions
 
 const getUiConfig = () => {
-    if (JSON.stringify(iniObjectDescriptor) === JSON.stringify(storageObjectDescriptor)){
+    if (JSON.stringify(iniObjectDescriptor) === JSON.stringify(storageObjectDescriptor)) {
         return iniFromStorage
     }
     else {
         // ini description dif from storage: send ini ui-config and store it to local storage
-        localStorage.setItem('sia-ui-config', JSON.stringify(SIA_INITIAL_UI_CONFIG)) 
         return SIA_INITIAL_UI_CONFIG
     }
 }

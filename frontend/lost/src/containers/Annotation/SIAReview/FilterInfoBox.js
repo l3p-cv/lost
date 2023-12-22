@@ -1,16 +1,16 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import { Card, Dropdown } from 'semantic-ui-react'
 import _ from 'lodash'
 import InfoBox from '../SIA/lost-sia/src/InfoBoxes/InfoBox'
 
 const getOptions = (number, prefix = 'Iteration ') =>
-  _.times(number, (index) => ({
-    key: index,
-    text: `${prefix}${index}`,
-    value: index,
-  }))
+    _.times(number, (index) => ({
+        key: index,
+        text: `${prefix}${index}`,
+        value: index,
+    }))
 
-class FilterInfoBox extends Component{
+class FilterInfoBox extends Component {
 
     constructor(props) {
         super(props)
@@ -18,52 +18,52 @@ class FilterInfoBox extends Component{
         }
     }
 
-    componentDidMount(){
-        
+    componentDidMount() {
+
     }
-    componentDidUpdate(prevProps){
+    componentDidUpdate(prevProps) {
 
     }
 
-    renderMeta(){
-        if (this.props.anno.id){
+    renderMeta() {
+        if (this.props.anno.id) {
             return (
                 <Card.Meta>Type: {this.props.anno.type} </Card.Meta>
             )
         }
     }
 
-     /*********
-     * Events
-     *********/
-    handleIterationChange(e, item){
+    /*********
+    * Events
+    *********/
+    handleIterationChange(e, item) {
         console.log('Iteration Changed', e, item)
-        if (this.props.onIterationChange){
+        if (this.props.onIterationChange) {
             this.props.onIterationChange(item.value)
         }
     }
 
-    onDismiss(){
-        if (this.props.onDismiss){
+    onDismiss() {
+        if (this.props.onDismiss) {
             this.props.onDismiss()
         }
     }
 
-    renderDescription(){
-        return <Dropdown 
+    renderDescription() {
+        return <Dropdown
             // text='Filter iteration'
             placeholder='Filter iteration'
-            icon='filter' 
+            icon='filter'
             floating
-            search  
+            search
             selection
-            options={getOptions(this.props.options.max_iteration + 1)} 
+            options={getOptions(this.props.options.max_iteration + 1)}
             onChange={(e, item) => this.handleIterationChange(e, item)}
         />
     }
 
-    
-    render(){
+
+    render() {
         return <InfoBox
             header="Filter Info"
             content={this.renderDescription()}

@@ -333,9 +333,6 @@ export default (state = INITITAL_STATE, action) => {
         // ANNO TASK START
 
         case 'PIPELINE_START_ANNO_TASK_SELECT_TAB':
-
-            console.info("THIS IS HALLOWEEN")
-
             const test = {
                 ...state,
                 step1Data: {
@@ -355,11 +352,8 @@ export default (state = INITITAL_STATE, action) => {
                 },
             }
 
-            console.info("HIMOM", test)
-
             return test
         case 'PIPELINE_START_ANNO_TASK_VERIFY_TAB':
-            console.info("THIS IS HALLOWEEN 2")
             const test2 = {
                 ...state,
                 step1Data: {
