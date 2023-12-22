@@ -83,13 +83,14 @@ const SIAReview = ({ datasetId }) => {
     }, [])
 
     useEffect(() => {
-        if (reviewPageData) {
-            requestImageFromBackend(reviewPageData.image.id)
+        if (!reviewPageData) return
 
-            // @TODO support junk option
-            // props.siaImgIsJunk(reviewPageData.image.isJunk)
-        }
+        requestImageFromBackend(reviewPageData.image.id)
 
+        // check if image is junk
+        const { isJunk } = reviewPageData.image
+        console.info("JUNK", isJunk);
+        setIsJunk(isJunk)
     }, [reviewPageData])
 
     useEffect(() => {
@@ -302,6 +303,7 @@ const SIAReview = ({ datasetId }) => {
     const renderSia = () => {
         if (!reviewPageData) return 'No Review Data!'
         if (!reviewOptions) return 'No Review Data!'
+
         return <div>
             <Sia
                 annoTaskId={reviewPageData.current_annotask_idx}
