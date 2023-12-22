@@ -14,13 +14,9 @@ export const useReview = () => {
 }
 
 export const useReviewOptions = () => {
-    return useQuery(
-        ['datasetReviewOptions'],
-        () => axios.get(`${API_URL}/datasets/1/reviewOptions`).then((res) => res.data),
-        {
-            initialData: [],
-        },
-    )
+    return useMutation((annotaskId) => {
+        return axios.get(`${API_URL}/sia/reviewoptionsAnnotask/${annotaskId}`).then((res) => res.data)
+    })
 }
 
 export const useGetImage = () => {
@@ -31,8 +27,7 @@ export const useGetImage = () => {
         }
 
         return axios.post(`${API_URL}/data/getImage`, data).then((res) => res.data)
-    }
-    )
+    })
 }
 
 export const useGetAnnotations = () => {

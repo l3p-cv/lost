@@ -874,3 +874,11 @@ def reviewoptions(dbm, pe_id, user_id):
         options['max_iteration'] = pipe_element.iteration
     options['possible_labels'] = get_label_trees(dbm, user_id, pipe_element.anno_task)['labels']
     return options
+
+def reviewoptions_annotask(dbm, at_id, user_id):
+    options = {}
+    options['max_iteration'] = 0
+    
+    anno_task = dbm.get_anno_task(anno_task_id=at_id)
+    options['possible_labels'] = get_label_trees(dbm, user_id, anno_task)['labels']
+    return options

@@ -37,7 +37,7 @@ const CANVAS_CONFIG = {
 const SIAReview = ({ datasetId }) => {
 
     const { data: reviewPageData, mutate: loadNextReviewPage } = reviewApi.useReview()
-    const { data: reviewOptions, refetch: getReviewOptions } = reviewApi.useReviewOptions()
+    const { data: reviewOptions, mutate: getReviewOptions } = reviewApi.useReviewOptions()
     const { data: reviewImage, mutate: loadReviewImage } = reviewApi.useGetImage()
     const { data: uiConfig } = reviewApi.useGetUIConfig()
     const { data: updateAnnotationResponse, mutate: updateAnnotation } = reviewApi.useUpdateAnnotation()
@@ -84,13 +84,14 @@ const SIAReview = ({ datasetId }) => {
             imageAnnoId: null,
             iteration: null
         }
-        getReviewOptions()
+
         loadNextReviewPage([datasetId, data])
     }, [])
 
     useEffect(() => {
         if (!reviewPageData) return
 
+        getReviewOptions(reviewPageData.current_annotask_idx)
         requestImageFromBackend(reviewPageData.image.id)
 
         // check if image is junk

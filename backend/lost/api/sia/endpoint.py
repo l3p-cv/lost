@@ -351,6 +351,25 @@ class ReviewOptions(Resource):
             dbm.close_session()
             return re
 
+@namespace.route('/reviewoptionsAnnotask/<int:at_id>')
+@namespace.param('at_id', 'The id of the annotask.')
+@api.doc(security='apikey')
+class ReviewOptions(Resource):
+    @jwt_required 
+    def get(self, at_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            re = sia.reviewoptions_annotask(dbm, at_id, user.idx)
+            dbm.close_session()
+            return re
+
+
 @namespace.route('/reviewupdate/<int:pe_id>')
 @namespace.param('pe_id', 'The id of reviewed pipe element.')
 @api.doc(security='apikey')
