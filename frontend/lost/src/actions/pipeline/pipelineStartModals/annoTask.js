@@ -79,6 +79,17 @@ const verifyTab = (elementId, tabId, verified) => {
     }
 }
 
+const setStorageSettings = (datasetId, elementId) => {
+    return {
+        type: 'PIPELINE_START_ANNO_TASK_STORAGE_SETTINGS',
+        payload: {
+            datasetId,
+            elementId,
+        },
+    }
+}
+
+
 export default {
     nameOnInput,
     instructionsOnInput,
@@ -88,4 +99,5 @@ export default {
     selectUser,
     selectLabelTree,
     updateConfiguration,
+    setStorageSettings,
 }

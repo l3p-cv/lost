@@ -49,7 +49,7 @@ const StartPipeline = ({ step0Data, step1Data, step2Data }) => {
         <div className="pipeline-start-4">
             <h3>Complete</h3>
             <p>You have successfully completed all steps.</p>
-            <Button onClick={startPipe} color="primary" size="lg">
+            <Button onClick={() => startPipe()} color="primary" size="lg">
                 <FontAwesomeIcon icon={faPlayCircle} size="5x" />
                 Start Pipe
             </Button>

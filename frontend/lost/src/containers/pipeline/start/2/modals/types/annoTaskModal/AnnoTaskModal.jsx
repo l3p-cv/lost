@@ -35,6 +35,7 @@ const AnnoTaskModal = (props) => {
                 />
             case 4:
                 return <SelectStorageSettings
+                    peN={props.peN}
                 // datastoreList={[]}
                 />
             case 5:

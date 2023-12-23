@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
+import { connect } from 'react-redux'
 import { CCol, CContainer, CRow } from '@coreui/react'
 import { Dropdown } from 'semantic-ui-react'
 import HelpButton from '../../../../../../../../components/HelpButton'
 import * as datasetApi from '../../../../../../../../actions/dataset/dataset_api'
+import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
+
+const { setStorageSettings } = actions
 
 // const SelectStorageSettings = ({ datasetList, datastoreList }) => {
-const SelectStorageSettings = () => {
+const SelectStorageSettings = ({ peN, setStorageSettings }) => {
 
     const { data: flatDatasetList } = datasetApi.useFlatDatasets()
 
@@ -14,6 +18,10 @@ const SelectStorageSettings = () => {
 
     // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
     const [selectedDatasetID, setSelectedDatasetID] = useState("-1")
+
+    useEffect(() => {
+        setStorageSettings(selectedDatasetID, peN)
+    }, [selectedDatasetID])
 
     // convert the datasource list (id: name) to a list compatible to the Dropdown options
     // const converDatasourcesToDropdownOptions = (datastores) => {
@@ -113,4 +121,4 @@ const SelectStorageSettings = () => {
     )
 }
 
-export default SelectStorageSettings
+export default connect(null, { setStorageSettings })(SelectStorageSettings)

@@ -353,6 +353,33 @@ export default (state = INITITAL_STATE, action) => {
             }
 
             return test
+
+        case 'PIPELINE_START_ANNO_TASK_STORAGE_SETTINGS':
+            return {
+                ...state,
+                step1Data: {
+                    ...state.step1Data,
+                    elements: state.step1Data.elements.map((el) => {
+                        if ('annoTask' in el && el.peN === action.payload.elementId) {
+                            return {
+                                ...el,
+                                exportData: {
+                                    ...el.exportData,
+                                    annoTask: {
+                                        ...el.exportData.annoTask,
+                                        storage: {
+                                            ...el.storage,
+                                            datasetId: action.payload.datasetId,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return el
+                    }),
+                },
+            }
+
         case 'PIPELINE_START_ANNO_TASK_VERIFY_TAB':
             const test2 = {
                 ...state,
