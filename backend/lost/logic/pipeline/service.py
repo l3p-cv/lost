@@ -197,6 +197,17 @@ class PipeStarter(object):
         anno_task.instructions = data_element['annoTask']['instructions']
         anno_task.group_id = data_element['annoTask']['workerId']
         anno_task.timestamp = datetime.now()
+        
+        # save dataset if given
+        if 'storage' in data_element['annoTask']:
+            if 'datasetId' in data_element['annoTask']['storage']:
+                dataset_id = data_element['annoTask']['storage']['datasetId']
+                
+                # -1 = no dataset given
+                if str(dataset_id) != '-1':
+                    anno_task.dataset_id = data_element['annoTask']['storage']['datasetId']
+        
+        
         if data_element['annoTask']['workerId'] == -1:
             anno_task.group_id = None
         anno_task.state = state.AnnoTask.PENDING
