@@ -221,6 +221,7 @@ class ChangeUser(Resource):
     
             dbm.close_session()
             return "You are not authorized.", 401
+
 @namespace.route('/update_config/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
 @api.doc(security='apikey')
@@ -245,6 +246,34 @@ class UpdateAnnoTaskConfig(Resource):
     
             dbm.close_session()
             return "You are not authorized.", 401
+        
+@namespace.route('/update_storage_settings/<int:annotask_id>')
+@namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
+class UpdateAnnoTaskStorageSettings(Resource):
+    @jwt_required
+    def post(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity() 
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        
+        anno_task = dbm.get_anno_task(annotask_id)
+        data = json.loads(request.data)
+        
+        # save dataset if given
+        if 'datasetId' in data:
+            dataset_id = data['datasetId']
+            anno_task.dataset_id = dataset_id
+            
+            # -1 = no dataset given (remove ds id in case there was one before)
+            if str(dataset_id) == '-1':
+                anno_task.dataset_id = None
+            
+            dbm.save_obj(anno_task)
+        
 
 @namespace.route('/generate_export/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')

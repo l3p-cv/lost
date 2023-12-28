@@ -169,7 +169,7 @@ const AnnoTaskTabs = ({ annotask, changeUser, datastoreList, datasetList, hasCha
                 {renderGenOrShowExport()}
 
                 <CTabPane visible={active === 2} style={{ marginTop: 30, marginLeft: 5 }}>
-                    <TabStorageSettings datastoreList={datastoreList} datasetList={datasetList} />
+                    <TabStorageSettings annotaskId={annotask.id} />
                 </CTabPane>
 
                 {hasChangeUser && (

@@ -3,17 +3,24 @@ import { CCol, CContainer, CRow } from '@coreui/react'
 import HelpButton from '../../../../../../../components/HelpButton'
 import { Dropdown } from 'semantic-ui-react'
 import * as datasetApi from '../../../../../../../actions/dataset/dataset_api'
+import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
+import { NotificationContainer, NotificationManager } from 'react-notifications'
+
+const NOTIFICATION_TIMEOUT_MS = 5000
 
 // const TabStorageSettings = ({ datastoreList }) => {
-const TabStorageSettings = () => {
+const TabStorageSettings = ({ annotaskId }) => {
 
     const { data: flatDatasetList } = datasetApi.useFlatDatasets()
+    const { data: updateStorageSettingsResponse, mutate: updateStorageSettings } = annoTaskApi.useUpdateStorageSettings()
+
+
 
     // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
     const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
 
     // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
-    const [selectedDatasetID, setSelectedDatasetID] = useState(0)
+    const [selectedDatasetID, setSelectedDatasetID] = useState()
 
 
     // convert the datasource list (id: name) to a list compatible to the Dropdown options
@@ -54,12 +61,38 @@ const TabStorageSettings = () => {
         convertDatasetToDropdownOptions(flatDatasetList);
     }, [flatDatasetList])
 
+    useEffect(() => {
+
+        if (updateStorageSettingsResponse === undefined) return
+
+        if (updateStorageSettingsResponse.status === 200) {
+            NotificationManager.success(
+                "",
+                "Dataset changed successfully",
+                NOTIFICATION_TIMEOUT_MS,
+            )
+        }
+    }, [updateStorageSettingsResponse])
+
+    useEffect(() => {
+
+        if (selectedDatasetID === undefined) return
+
+        const data = {
+            annotaskId,
+            datasetId: selectedDatasetID
+        }
+
+        updateStorageSettings(data)
+    }, [selectedDatasetID])
+
     return (
-        <CContainer>
-            <CRow style={{ marginLeft: '5px' }}>
-                <CCol sm="6">
-                    <CRow xs={{ gutterY: 3 }}>
-                        {/* <CCol sm="12">
+        <>
+            <CContainer>
+                <CRow style={{ marginLeft: '5px' }}>
+                    <CCol sm="6">
+                        <CRow xs={{ gutterY: 3 }}>
+                            {/* <CCol sm="12">
                             <h4>
                                 Destination Datastore
                                 <HelpButton
@@ -83,34 +116,36 @@ const TabStorageSettings = () => {
                                 </CCol>
                             </CRow>
                         </CCol> */}
-                        <CCol sm="12">
-                            <h4>
-                                Dataset
-                                <HelpButton
-                                    text={`Select the dataset where the annotations are linked to.`}
-                                />
-                            </h4>
-                            <CRow>
-                                <CCol>
-                                    <Dropdown
-                                        placeholder='Select Dataset'
-                                        fluid
-                                        search
-                                        selection
-                                        multiple={false}
-                                        options={datasetDropdownOptions}
-                                        value={selectedDatasetID}
-                                        onChange={(_, data) => {
-                                            setSelectedDatasetID(data.value)
-                                        }}
+                            <CCol sm="12">
+                                <h4>
+                                    Dataset
+                                    <HelpButton
+                                        text={`Select the dataset where the annotations are linked to.`}
                                     />
-                                </CCol>
-                            </CRow>
-                        </CCol>
-                    </CRow>
-                </CCol>
-            </CRow>
-        </CContainer>
+                                </h4>
+                                <CRow>
+                                    <CCol>
+                                        <Dropdown
+                                            placeholder='Select Dataset'
+                                            fluid
+                                            search
+                                            selection
+                                            multiple={false}
+                                            options={datasetDropdownOptions}
+                                            value={selectedDatasetID}
+                                            onChange={(_, data) => {
+                                                setSelectedDatasetID(data.value)
+                                            }}
+                                        />
+                                    </CCol>
+                                </CRow>
+                            </CCol>
+                        </CRow>
+                    </CCol>
+                </CRow>
+            </CContainer>
+            <NotificationContainer />
+        </>
     )
 }
 

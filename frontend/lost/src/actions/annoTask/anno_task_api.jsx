@@ -12,6 +12,14 @@ export const useUpdateConfig = () => {
     )
 }
 
+export const useUpdateStorageSettings = () => {
+    return useMutation((data) =>
+        axios
+            .post(`${API_URL}/annotask/update_storage_settings/${data.annotaskId}`, data)
+            .then((res) => res),
+    )
+}
+
 export const useGenerateExport = () => {
     return useMutation((data) =>
         axios
