@@ -416,7 +416,7 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                 )}
                             </CRow>
                         </CCol>
-                        <CCol sm="12">
+                        {/* <CCol sm="12">
                             <h4 className='mt-3'>Datastore</h4>
                             <CRow>
                                 <CCol sm="12">
@@ -450,7 +450,7 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                     </CRow>
                                 </CCol>
                             </CRow>
-                        </CCol>
+                        </CCol> */}
                     </CRow>
                 </CCol>
             </CRow>

@@ -75,18 +75,18 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
         columnHelper.accessor('description', {
             header: 'Description'
         }),
-        columnHelper.accessor('datastore_id', {
-            header: () => 'Datastore',
-            cell: info => {
-                const datastoreID = info.renderValue()
+        // columnHelper.accessor('datastore_id', {
+        //     header: () => 'Datastore',
+        //     cell: info => {
+        //         const datastoreID = info.renderValue()
 
-                if (datastoreID in datastores) {
-                    return datastores[datastoreID]
-                }
+        //         if (datastoreID in datastores) {
+        //             return datastores[datastoreID]
+        //         }
 
-                return ""
-            }
-        }),
+        //         return ""
+        //     }
+        // }),
         columnHelper.accessor('created_at', {
             header: () => 'Created at',
         }),
