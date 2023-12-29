@@ -5,6 +5,7 @@ from lost.api.api import api
 from lost.db import access, roles
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic.sia import SiaSerialize, SiaUpdateOneThing, get_image_progress
+from lost.api.dataset.endpoint import datasetImageSearchRequestModel
 import json
 
 namespace = api.namespace('annotasks', description='AnnoTask API.')
@@ -74,6 +75,38 @@ class AnnotaskReview(Resource):
         json_response['current_annotask_idx'] = current_annotask_idx
 
         return json_response
+
+
+@namespace.route('/<int:annotask_id>/review/searchImage')
+@api.doc(security='apikey')
+class DatasetReviewImageSearch(Resource):
+    @api.doc(description="Get data for the next dataset review annotation")
+    @api.expect(datasetImageSearchRequestModel)
+    @jwt_required
+    def post(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        
+        data = request.json
+        search_str = data['filter']
+
+        db_result = dbm.get_search_images_in_annotask(annotask_id, search_str)
+        
+        found_images = []
+        
+        for entry in db_result:
+            found_images.append({
+                'imageId': entry.idx,
+                'imageName': entry.img_path,
+                'annotationId': entry.anno_task_id,
+                'annotationName': entry.name
+            })
+        
+        return found_images
 
 
 @namespace.route('/<int:annotask_id>/updateAnnotation')

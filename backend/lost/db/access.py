@@ -1270,3 +1270,10 @@ class DBMan(object):
             AND a.idx = i.anno_task_id \
             AND i.img_path LIKE '%{search_str}%';"
         return self.session.execute(text(sql))
+    
+    def get_search_images_in_annotask(self, annotask_idx, search_str=""):
+        sql = f"SELECT i.idx, i.anno_task_id, i.img_path, a.name FROM anno_task a, image_anno i \
+            WHERE a.idx = {annotask_idx} \
+            AND a.idx = i.anno_task_id \
+            AND i.img_path LIKE '%{search_str}%';"
+        return self.session.execute(text(sql))

@@ -305,7 +305,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
             iteration: null
         }
 
-        loadNextReviewPage([datasetId, data])
+        loadNextReviewPage([id, data])
     }
 
     const renderSia = () => {
@@ -375,7 +375,8 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
     return (
         <div>
             <SIAImageSearchModal
-                datasetId={datasetId}
+                isAnnotaskReview={isAnnotaskReview}
+                id={id}
                 isVisible={isImgSearchModalVisible}
                 setIsVisible={setIsImgSearchModalVisible}
                 onChooseImage={switchSIAImage}

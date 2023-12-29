@@ -57,3 +57,16 @@ export const useGetUIConfig = () => {
 
     return uiConfig
 }
+
+export const useImageSearch = (isAnnotaskReview) => {
+    const reviewType = isAnnotaskReview ? 'annotasks' : 'datasets'
+
+    return useMutation((requestData) => {
+        // annotaskId task or datasetId (depends on review mode)
+        const [id, query] = requestData
+        const payload = {
+            filter: query
+        }
+        return axios.post(`${API_URL}/${reviewType}/${id}/review/searchImage`, payload)
+    })
+}

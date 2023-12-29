@@ -3,11 +3,11 @@ import { createColumnHelper, flexRender, getCoreRowModel, getExpandedRowModel, g
 import { Fragment, useEffect, useState } from "react"
 import IconButton from "../../components/IconButton"
 import { faAngleLeft, faAngleRight, faArrowRight, faSearch } from "@fortawesome/free-solid-svg-icons"
-import * as datasetApi from '../../actions/dataset/dataset_api'
+import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 
-const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage }) => {
+const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, onChooseImage }) => {
 
-    const { data: searchResults, mutate: doSearch } = datasetApi.useImageSearch()
+    const { data: searchResults, mutate: doSearch } = datasetReviewApi.useImageSearch(isAnnotaskReview)
     const [enteredSearch, setEnteredSearch] = useState("")
     const [isFirstSearch, setIsFirstSearch] = useState(true)
     const [tableData, setTableData] = useState(() => [])
@@ -182,7 +182,7 @@ const SIAImageSearchModal = ({ datasetId, isVisible, setIsVisible, onChooseImage
                             text="Search"
                             onClick={() => {
                                 setIsFirstSearch(false)
-                                doSearch([datasetId, enteredSearch])
+                                doSearch([id, enteredSearch])
                             }}
                             style={{ marginTop: '15px' }}
                         ></IconButton>
