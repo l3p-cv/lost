@@ -1019,6 +1019,12 @@ class AnnoTask(Base):
         Returns:
             dict:
         '''
+        
+        # round progress if available to avoid decimals
+        annotask_progress = 0
+        if self.progress:
+            annotask_progress = round(self.progress)
+            
         return {
             "idx": self.idx,
             "manager_id": self.manager_id,
@@ -1031,7 +1037,7 @@ class AnnoTask(Base):
             "datastore_id": self.datastore_id,
             "created_at": self.timestamp,
             "name": self.name,
-            "description": f'Progress: {round(self.progress)}%',
+            "description": f'Progress: {annotask_progress}%',
             "is_annotask": True
         }
 
