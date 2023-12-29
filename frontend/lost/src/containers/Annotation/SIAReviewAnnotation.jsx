@@ -1,9 +1,9 @@
-import React, { Component } from "react"
-import {connect} from 'react-redux'
+import React, { useEffect } from "react"
+import { connect } from 'react-redux'
 
-import { 
+import {
 	Col,
-    Row
+	Row
 } from 'reactstrap'
 // import MIA from './MIA/MIA'
 import SIAReview from './SIAReview/SIAReview'
@@ -11,33 +11,31 @@ import SIAReview from './SIAReview/SIAReview'
 
 
 import actions from '../../actions'
-const {getWorkingOnAnnoTask} = actions
+const { getWorkingOnAnnoTask } = actions
 
-class MultiImageAnnotation extends Component {
+const SiaReviewComponent = ({ }) => {
 
-	componentDidMount(){
-		// this.props.getWorkingOnAnnoTask()
-	
-	}
-	render(){
-		return (
-			<Row>
-				<Col>
-					<Row>
-						<Col  xs='12' sm='12' lg='12'>
-							{/* <WorkingOnMIA annoTask={this.props.workingOnAnnoTask}></WorkingOnMIA> */}
-                            <SIAReview />
-						</Col>
-					</Row>
-				</Col>
-			</Row>
-			
-		)
-	}
+	useEffect(() => {
+		// getWorkingOnAnnoTask()
+	}, [getWorkingOnAnnoTask])
+
+	return (
+		<Row>
+			<Col>
+				<Row>
+					<Col xs='12' sm='12' lg='12'>
+						{/* <WorkingOnMIA annoTask={this.props.workingOnAnnoTask}></WorkingOnMIA> */}
+						<SIAReview />
+					</Col>
+				</Row>
+			</Col>
+		</Row>
+
+	)
 }
 
 function mapStateToProps(state) {
-    return ({workingOnAnnoTask: state.annoTask.workingOnAnnoTask})
+	return ({ workingOnAnnoTask: state.annoTask.workingOnAnnoTask })
 }
 
-export default connect(mapStateToProps, {getWorkingOnAnnoTask})(MultiImageAnnotation)
+export default connect(mapStateToProps, { getWorkingOnAnnoTask })(SiaReviewComponent)
