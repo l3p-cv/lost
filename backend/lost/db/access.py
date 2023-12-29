@@ -925,7 +925,7 @@ class DBMan(object):
             return None
         
     def get_sia_review_id(self, anno_task_id, image_anno_id, iteration=None):
-        ''' Get last sia annotation of an anno_task
+        ''' Get a sia annotation of an anno_task specified by its id
         '''
         if iteration is not None:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.anno_task_id==anno_task_id, \

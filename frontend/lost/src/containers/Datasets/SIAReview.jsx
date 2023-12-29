@@ -34,9 +34,12 @@ const CANVAS_CONFIG = {
     },
 }
 
-const SIAReview = ({ datasetId }) => {
+const SIAReview = ({ datasetId = null, annotaskId = null }) => {
 
-    const { data: reviewPageData, mutate: loadNextReviewPage } = reviewApi.useReview()
+    const isAnnotaskReview = (annotaskId !== null)
+    const id = (isAnnotaskReview ? annotaskId : datasetId)
+
+    const { data: reviewPageData, mutate: loadNextReviewPage } = reviewApi.useReview(isAnnotaskReview)
     const { data: reviewOptions, mutate: getReviewOptions } = reviewApi.useReviewOptions()
     const { data: reviewImage, mutate: loadReviewImage } = reviewApi.useGetImage()
     const { data: uiConfig } = reviewApi.useGetUIConfig()
@@ -85,7 +88,7 @@ const SIAReview = ({ datasetId }) => {
             iteration: null
         }
 
-        loadNextReviewPage([datasetId, data])
+        loadNextReviewPage([id, data])
     }, [])
 
     useEffect(() => {
@@ -123,8 +126,7 @@ const SIAReview = ({ datasetId }) => {
             annotaskIdx: (reviewPageData.current_annotask_idx === undefined ? null : reviewPageData.current_annotask_idx)
         }
 
-        getReviewOptions()
-        loadNextReviewPage([datasetId, data])
+        loadNextReviewPage([id, data])
 
         setNextPrev(undefined)
     }
@@ -323,7 +325,7 @@ const SIAReview = ({ datasetId }) => {
                 //         : {}
                 // }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                onAnnoSaveEvent={updateAnnotation}
+                onAnnoSaveEvent={(saveData) => updateAnnotation([reviewPageData.current_annotask_idx, saveData])}
                 canvasConfig={
                     CANVAS_CONFIG
                     // {

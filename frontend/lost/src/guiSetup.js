@@ -5,10 +5,11 @@ import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
-import SiaReviwComponent from './containers/Annotation/SIAReviewAnnotation'
+import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
 import DatasetsComponent from './containers/Datasets/Datasets'
 import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
+import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import MyProfileComponent from './containers/Profile/Profile'
 
@@ -95,6 +96,11 @@ const DatasetsReview = {
     component: DatasetsReviewComponent,
 }
 
+const AnnotaskReview = {
+    path: '/annotasks/:annotaskId/review',
+    component: AnnotasksReviewComponent,
+}
+
 const DataSources = {
     name: 'Datasources',
     to: '/datasources',
@@ -116,7 +122,7 @@ const Sia = {
 
 const SiaReview = {
     path: '/sia-review/*',
-    component: SiaReviwComponent,
+    component: SiaReviewComponent,
 }
 
 const Mia = {
@@ -151,7 +157,7 @@ const MyProfile = {
 }
 
 const guiSetup = {
-    additionalRoutes: [Sia, Mia, MyProfile, SiaReview, DatasetsReview],
+    additionalRoutes: [Sia, Mia, MyProfile, SiaReview, AnnotaskReview, DatasetsReview],
     Administrator: {
         redirect: '/dashboard',
         navItems: [

@@ -1,16 +1,18 @@
 import axios from 'axios'
-import { useMutation, useQuery } from 'react-query'
+import { useMutation } from 'react-query'
 import { API_URL } from '../../lost_settings'
 import { uiConfig, SIA_INITIAL_UI_CONFIG } from '../../containers/Annotation/SIA/lost-sia/src/utils/uiConfig'
 
-export const useReview = () => {
+export const useReview = (isAnnotaskReview) => {
     return useMutation((requestArguments) => {
 
+        const reviewType = isAnnotaskReview ? 'annotasks' : 'datasets'
+
         // destructure arguments array (useMutation only accepts one data parameter)
-        const [datasetId, data] = requestArguments
-        return axios.post(`${API_URL}/datasets/${datasetId}/review`, data).then((res) => res.data)
-    }
-    )
+        // annotaskId task or datasetId (depends on review mode)
+        const [id, data] = requestArguments
+        return axios.post(`${API_URL}/${reviewType}/${id}/review`, data).then((res) => res.data)
+    })
 }
 
 export const useReviewOptions = () => {
@@ -38,26 +40,11 @@ export const useGetAnnotations = () => {
 
 export const useUpdateAnnotation = () => {
     return useMutation((requestData) => {
-        // returns [isSuccessful (bool), data (Object)]
-        return axios.post(`${API_URL}/sia/updateOneThing`, requestData)
+        const [annotaskId, annotationData] = requestData
+
+        return axios.post(`${API_URL}/annotasks/${annotaskId}/updateAnnotation`, annotationData)
             .then((res) => [true, res.data])
             .catch((error) => [false, error])
-    })
-}
-
-
-export const useUpdateAnnotations = () => {
-    return useMutation((requestData) => {
-        const [datasetId, annotaskId, annotations] = requestData
-
-        const parameters = {
-            annotaskId,
-            annotations
-        }
-
-        return axios.post(`${API_URL}/datasets/${datasetId}/review/updateAnnotations`, parameters)
-            .then((res) => res.data)
-            .catch((error) => error)
     })
 }
 

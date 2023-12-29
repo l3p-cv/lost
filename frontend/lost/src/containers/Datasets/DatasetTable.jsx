@@ -30,19 +30,9 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
     const columnHelper = createColumnHelper()
 
     const openReview = async (index, isAnnotask) => {
-        console.log("OPEN REVIEW:", index, isAnnotask)
-
-
-        if (isAnnotask) {
-
-            // select current annotask, then open it
-            await chooseAnnoTask(index)
-
-            navigate(`/sia-review/${index}`)
-        } else {
-            // navigate to corresponding dataset review page
-            navigate(`/datasets/${index}/review`)
-        }
+        // move to annotation review or dataset review (depending on clicked item)
+        const reviewType = (isAnnotask ? 'annotasks' : 'datasets')
+        navigate(`/${reviewType}/${index}/review`)
     }
 
     const renderRowIcon = (row) => {
