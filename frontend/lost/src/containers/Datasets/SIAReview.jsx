@@ -217,6 +217,10 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                     })
                 }
                 break
+            case 'j':
+            case 'J':
+                setIsJunk(!isJunk)
+                break
             default:
                 break
         }
