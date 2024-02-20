@@ -783,7 +783,9 @@ def calculate_progress(db_man, pipe_id):
     for element in elements:
         if element.state == state.PipeElement.FINISHED:
             finished += 1
-    progress = str(int(100*(finished/len(elements)))) + "%"
+    progress = "0%"
+    if len(elements) > 0:
+        progress = str(int(100*(finished/len(elements)))) + "%"
     return progress
 class PipeNotFoundError(Exception):
     """ Base class for PipeNotFoundError
