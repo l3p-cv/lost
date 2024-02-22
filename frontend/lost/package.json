@@ -2,7 +2,7 @@
   "name": "lost",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "/",
   "dependencies": {
     "@coreui/chartjs": "^3.1.2",
     "@coreui/coreui": "^4.3.0",
