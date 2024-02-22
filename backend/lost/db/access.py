@@ -912,11 +912,10 @@ class DBMan(object):
         ''' Get a previous image annotation by current annotation id
         '''
         if iteration is not None:
-            sql = "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
-            FROM image_anno WHERE idx<%d)"\
+            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND iteration=%d AND idx<%d ORDER BY idx DESC LIMIT 1"\
             %(iteration, anno_task_id, img_anno_id)
         else:
-            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx=(SELECT max(idx) FROM image_anno WHERE idx<%d)"\
+            sql = "SELECT * FROM image_anno WHERE anno_task_id=%d AND idx<%d ORDER BY idx DESC LIMIT 1"\
             %(anno_task_id, img_anno_id)
         img_anno = self.session.execute(text(sql)).first()
         if img_anno:
