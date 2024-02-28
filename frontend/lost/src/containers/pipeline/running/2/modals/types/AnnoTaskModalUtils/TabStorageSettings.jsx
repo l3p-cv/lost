@@ -5,16 +5,18 @@ import { Dropdown } from 'semantic-ui-react'
 import * as datasetApi from '../../../../../../../actions/dataset/dataset_api'
 import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
 import { NotificationContainer, NotificationManager } from 'react-notifications'
+import IconButton from '../../../../../../../components/IconButton'
+import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
+import DatasetEditModal from '../../../../../../Datasets/DatasetEditModal'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
 // const TabStorageSettings = ({ datastoreList }) => {
 const TabStorageSettings = ({ annotaskId }) => {
 
-    const { data: flatDatasetList } = datasetApi.useFlatDatasets()
+    const { data: flatDatasetList, refetch: reloadFlatDatasetList } = datasetApi.useFlatDatasets()
     const { data: storageSettings, refetch: getStorageSettings } = annoTaskApi.useGetStorageSettings(annotaskId)
     const { data: updateStorageSettingsResponse, mutate: updateStorageSettings } = annoTaskApi.useUpdateStorageSettings()
-
 
 
     // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
@@ -22,6 +24,7 @@ const TabStorageSettings = ({ annotaskId }) => {
 
     // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
     const [selectedDatasetID, setSelectedDatasetID] = useState()
+    const [isCreateDatasetModalOpen, setIsCreateDatasetModalOpen] = useState(false)
 
 
     // convert the datasource list (id: name) to a list compatible to the Dropdown options
@@ -64,9 +67,6 @@ const TabStorageSettings = ({ annotaskId }) => {
 
         let datasetId = "-1"
         if (storageSettings.datasetId !== null) datasetId = `${storageSettings.datasetId}`
-        console.info("1", storageSettings);
-        console.info("2", storageSettings.datasetId);
-        console.info("3", datasetId);
 
         setSelectedDatasetID(datasetId)
     }, [storageSettings])
@@ -155,12 +155,33 @@ const TabStorageSettings = ({ annotaskId }) => {
                                         />
                                     </CCol>
                                 </CRow>
+                                <CRow>
+                                    <CCol>
+                                        <IconButton
+                                            isOutline={false}
+                                            color="primary"
+                                            icon={faBoxesPacking}
+                                            text="Create new dataset"
+                                            onClick={() => { setIsCreateDatasetModalOpen(true) }}
+                                            className="mt-2"
+                                        />
+                                    </CCol>
+                                </CRow>
                             </CCol>
                         </CRow>
                     </CCol>
                 </CRow>
             </CContainer>
             <NotificationContainer />
+            <DatasetEditModal
+                isVisible={isCreateDatasetModalOpen}
+                setIsVisible={setIsCreateDatasetModalOpen}
+                flatDatasetList={flatDatasetList}
+                onDatasetCreated={(datasetId) => {
+                    reloadFlatDatasetList()
+                    updateSelectedDatasetID(`${datasetId}`)
+                }}
+            />
         </>
     )
 }

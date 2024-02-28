@@ -144,9 +144,12 @@ class Datasets(Resource):
             parent_dataset_id = parent_id
             # datastore_id=data['datastoreId']
         )
-        dbm.save_obj(db_dataset)
+        
+        dataset_idx = dbm.save_obj_get_idx(db_dataset)
+        
+        print(dataset_idx)
 
-        return ('', 201)
+        return ({"datasetId": dataset_idx}, 201)
 
   
     @api.doc(description="Updates a single dataset.")

@@ -89,6 +89,20 @@ class DBMan(object):
         '''
         self.session.add(obj)
         self.session.commit()
+        
+    def save_obj_get_idx(self, obj):
+        '''Store an object to database and redurn its idx.
+
+        Args:
+            obj (object): An object from data_model.
+            
+        Returns:
+            idx (int): Index of object in database
+        '''
+        self.session.add(obj)
+        self.session.commit()
+        self.session.refresh(obj)
+        return obj.idx
 
     def get_anno_task(self, anno_task_id=None, pipe_element_id=None, state=None):
         '''Get an AnnoationTask object.

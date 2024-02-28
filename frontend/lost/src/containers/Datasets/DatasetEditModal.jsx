@@ -8,7 +8,7 @@ import { NotificationManager } from 'react-notifications'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
-const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatasetList, datastoreList }) => {
+const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatasetList, datastoreList, onDatasetCreated }) => {
 
     const { mutate: createDatasetApi, data: createResponse } = datasetApi.useCreateDataset()
     const { mutate: updateDatasetApi, data: updateResponse } = datasetApi.useUpdateDataset()
@@ -94,6 +94,9 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
 
             // close the modal
             setIsVisible(false)
+
+            const datasetId = response.datasetId
+            if (onDatasetCreated) onDatasetCreated(datasetId)
         } else {
             const errorMessage = response.data
             NotificationManager.error(
