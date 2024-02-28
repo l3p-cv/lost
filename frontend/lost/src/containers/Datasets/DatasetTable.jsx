@@ -13,11 +13,9 @@ import { CContainer, CRow, CTable, CTableBody, CTableHead, CCol } from '@coreui/
 import { faAngleLeft, faAngleRight, faCaretDown, faCaretRight, faDownload, faEye, faFile, faPen } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
 import { useNavigate } from 'react-router-dom'
-import * as annotaskApi from '../../actions/annoTask/anno_task_api'
 
 const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditButtonClicked }) => {
     const navigate = useNavigate()
-    const { mutate: chooseAnnoTask } = annotaskApi.useChooseAnnotask()
 
     const [tableData, setTableData] = React.useState(() => [...datasetList])
 
@@ -83,18 +81,24 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
         columnHelper.display({
             id: 'review',
             header: () => 'Review',
-            cell: props => (<IconButton
-                icon={faEye}
-                color="primary"
-                isOutline={false}
-                onClick={() => {
-                    const rowData = props.row.original
-                    const isAnnotask = rowData.is_annotask === true
-                    openReview(rowData.idx, isAnnotask)
-                }}
-                disabled={false}
-            // text="Review"
-            />)
+            cell: props => {
+
+                // reviewing metadatasets is impossible
+                if (props.row.original.isMetaDataset) return ""
+
+                return <IconButton
+                    icon={faEye}
+                    color="primary"
+                    isOutline={false}
+                    onClick={() => {
+                        const rowData = props.row.original
+                        const isAnnotask = rowData.is_annotask === true
+                        openReview(rowData.idx, isAnnotask)
+                    }}
+                    disabled={false}
+                // text="Review"
+                />
+            }
         }),
         columnHelper.display({
             id: 'showExport',
@@ -127,7 +131,7 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                 const rowData = props.row.original
 
                 // only show edit icon for datasets
-                if (rowData.is_annotask) return ""
+                if (rowData.is_annotask || rowData.isMetaDataset) return ""
 
                 return (
                     <IconButton

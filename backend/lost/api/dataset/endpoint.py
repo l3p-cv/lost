@@ -80,6 +80,24 @@ class Datasets(Resource):
         for dataset in datasets:
             newDS = self.__build_dataset_children_tree(dataset)
             datasets_json.append(newDS.to_dict())
+      
+        # add all annotasks without a dataset to a meta-dataset 
+        annotasks_without_dataset = dbm.get_annotasks_without_dataset()
+        annotasks_without_dataset_json = []
+        for annotask in annotasks_without_dataset:
+            annotasks_without_dataset_json.append(annotask.to_dict())
+        
+        meta_ds = {
+            'isMetaDataset': True,
+            'idx': "-1",
+            'name': "Annotasks without a Dataset",
+            'description': "Meta dataset that contains all annotation tasks that are not assigned to a dataset",
+            'datastore_id': None,
+            'parent_id': None,
+            'created_at': '(meta dataset)',
+            'children': annotasks_without_dataset_json
+        }
+        datasets_json.append(meta_ds)
         
         return jsonify(datasets_json)
 

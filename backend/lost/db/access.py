@@ -1255,6 +1255,11 @@ class DBMan(object):
         '''
         return self.session.query(sqlalchemy.func.count(model.Pipe.idx))\
         .filter(model.Pipe.pipe_template_id == pipe_template_id)
+
+    def get_annotasks_without_dataset(self):
+        ''' Returns a list of all annotations tasks that don't have a dataset assigned
+        '''
+        return self.session.query(model.AnnoTask).filter(model.AnnoTask.dataset_id == None).all()
         
     def get_datasets_with_no_parent(self):
         ''' Returns all datasets that don't have a parent assigned in a onedimensional list
