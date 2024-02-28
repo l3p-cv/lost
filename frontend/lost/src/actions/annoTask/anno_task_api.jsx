@@ -12,6 +12,16 @@ export const useUpdateConfig = () => {
     )
 }
 
+export const useGetStorageSettings = (annoTaskId) => {
+    return useQuery(
+        ['annoDataStorageSettings'],
+        () =>
+            axios
+                .get(`${API_URL}/annotask/get_storage_settings/${annoTaskId}`)
+                .then((res) => res.data)
+    )
+}
+
 export const useUpdateStorageSettings = () => {
     return useMutation((data) =>
         axios

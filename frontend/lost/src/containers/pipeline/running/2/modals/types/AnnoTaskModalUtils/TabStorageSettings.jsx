@@ -12,6 +12,7 @@ const NOTIFICATION_TIMEOUT_MS = 5000
 const TabStorageSettings = ({ annotaskId }) => {
 
     const { data: flatDatasetList } = datasetApi.useFlatDatasets()
+    const { data: storageSettings, refetch: getStorageSettings } = annoTaskApi.useGetStorageSettings(annotaskId)
     const { data: updateStorageSettingsResponse, mutate: updateStorageSettings } = annoTaskApi.useUpdateStorageSettings()
 
 
@@ -53,6 +54,23 @@ const TabStorageSettings = ({ annotaskId }) => {
         setDatasetDropdownOptions(options)
     }
 
+    useEffect(() => {
+        getStorageSettings()
+    }, [])
+
+    useEffect(() => {
+        if (storageSettings === undefined || storageSettings === null) return
+
+
+        let datasetId = "-1"
+        if (storageSettings.datasetId !== null) datasetId = `${storageSettings.datasetId}`
+        console.info("1", storageSettings);
+        console.info("2", storageSettings.datasetId);
+        console.info("3", datasetId);
+
+        setSelectedDatasetID(datasetId)
+    }, [storageSettings])
+
     // useEffect(() => {
     //     converDatasourcesToDropdownOptions(datastoreList)
     // }, [datastoreList])
@@ -74,17 +92,15 @@ const TabStorageSettings = ({ annotaskId }) => {
         }
     }, [updateStorageSettingsResponse])
 
-    useEffect(() => {
-
-        if (selectedDatasetID === undefined) return
-
+    const updateSelectedDatasetID = (datasetId) => {
         const data = {
             annotaskId,
-            datasetId: selectedDatasetID
+            datasetId: datasetId
         }
 
         updateStorageSettings(data)
-    }, [selectedDatasetID])
+        setSelectedDatasetID(datasetId)
+    }
 
     return (
         <>
@@ -134,7 +150,7 @@ const TabStorageSettings = ({ annotaskId }) => {
                                             options={datasetDropdownOptions}
                                             value={selectedDatasetID}
                                             onChange={(_, data) => {
-                                                setSelectedDatasetID(data.value)
+                                                updateSelectedDatasetID(data.value)
                                             }}
                                         />
                                     </CCol>
