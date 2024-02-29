@@ -98,7 +98,6 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
 
             if (onSuccessCallback) onSuccessCallback(response)
         } else {
-            console.info(response)
             const errorMessage = response.data
             NotificationManager.error(
                 errorMessage,
@@ -109,10 +108,7 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
     }
 
     useEffect(() => {
-        showApiResponse(updateResponse, "created", "creating", (response) => {
-            const datasetId = response.datasetId
-            if (onDatasetCreated) onDatasetCreated(datasetId)
-        })
+        showApiResponse(createResponse, "created", "creating", (response) => { onDatasetCreated(response.datasetId) })
     }, [createResponse])
 
     useEffect(() => {
