@@ -1,84 +1,80 @@
 import React from 'react'
-import { Progress } from 'reactstrap'
 import { getColor } from './utils'
-import { Col, Row } from 'reactstrap'
 import IconButton from '../../../components/IconButton'
 
 import { useNavigate } from 'react-router-dom'
 import { faFastForward } from '@fortawesome/free-solid-svg-icons'
+import { CCol, CProgress, CRow } from '@coreui/react'
 
-// class WorkingOn extends Component {
 const WorkingOn = ({ annoTask }) => {
     const navigate = useNavigate()
 
     const handleContinue = (type) => {
         navigate(`/${type.toLowerCase()}`)
-        // history.push('')
     }
 
     const progress = Math.floor((annoTask.finished / annoTask.size) * 100)
 
     return (
-        <div>
-            <Row>
-                <Col xs="3" md="3" xl="3">
-                    <div className="callout callout-danger">
-                        <small className="text-muted">Working on</small>
-                        <br />
-                        <strong>{annoTask.name}</strong>
+        <>
+            <CRow>
+                <CCol xs={12} md={6} className='mt-2'>
+                    <div className="border-start border-start-4 border-start-danger py-1 px-3">
+                        <div className="text-body-secondary text-truncate small">Working on</div>
+                        <div className="fs-5 fw-semibold">{annoTask.name}</div>
                     </div>
-                </Col>
-                <Col xs="3" md="3" xl="3">
-                    <div className="callout callout-info">
-                        <small className="text-muted">Pipeline</small>
-                        <br />
-                        <strong>{annoTask.pipelineName}</strong>
+                </CCol>
+                <CCol xs={12} md={6} className='mt-2'>
+                    <div className="border-start border-start-4 border-start-info py-1 px-3">
+                        <div className="text-body-secondary text-truncate small">Pipeline</div>
+                        <div className="fs-5 fw-semibold">{annoTask.pipelineName}</div>
                     </div>
-                </Col>
-                <Col xs="3" md="3" xl="3">
-                    <div className="callout callout-warning">
-                        <small className="text-muted">Annotations</small>
-                        <br />
-                        <strong className="h4">
-                            {annoTask.finished}/{annoTask.size}
-                        </strong>
+                </CCol>
+                <CCol xs={12} md={6} className='mt-2'>
+                    <div className="border-start border-start-4 border-start-warning py-1 px-3">
+                        <div className="text-body-secondary text-truncate small">Annotations</div>
+                        <div className="fs-5 fw-semibold">{annoTask.finished}/{annoTask.size}</div>
                     </div>
-                </Col>
-                <Col xs="3" md="3" xl="3">
-                    <div className="callout callout-success">
-                        <small className="text-muted">Seconds/Annotation</small>
-                        <br />
-                        <strong className="h4">
-                            &#8709; {annoTask.statistic.secondsPerAnno}
-                        </strong>
+                </CCol>
+                <CCol xs={12} md={6} className='mt-2'>
+                    <div className="border-start border-start-4 border-start-success py-1 px-3">
+                        <div className="text-body-secondary text-truncate small">Seconds/Annotation</div>
+                        <div className="fs-5 fw-semibold">&#8709; {annoTask.statistic.secondsPerAnno}</div>
                     </div>
-                </Col>
-            </Row>
-            <div className="clearfix">
-                <div className="float-left">
+                </CCol>
+            </CRow>
+            <CRow>
+                <CCol className='mt-3'>
                     <strong>{progress}%</strong>
-                </div>
-                <div className="float-right">
-                    <small className="text-muted">
-                        Started at: {new Date(annoTask.createdAt).toLocaleString()}
-                    </small>
-                </div>
-            </div>
-            <Progress
-                className="progress-xs"
-                color={getColor(progress)}
-                value={progress}
-            />
-            <br />
-            <br />
-            <IconButton
-                onClick={() => handleContinue(annoTask.type)}
-                color="primary"
-                isOutline={false}
-                icon={faFastForward}
-                text="Continue"
-            />
-        </div>
+                </CCol>
+            </CRow>
+            <CRow>
+                <CCol>
+                    Started at: {new Date(annoTask.createdAt).toLocaleString()}
+                </CCol>
+            </CRow>
+            <CRow>
+                <CCol>
+                    <CProgress
+                        className="progress-xs"
+                        color={getColor(progress)}
+                        value={progress}
+                    />
+                </CCol>
+            </CRow>
+
+            <CRow>
+                <CCol className='mt-5'>
+                    <IconButton
+                        onClick={() => handleContinue(annoTask.type)}
+                        color="primary"
+                        isOutline={false}
+                        icon={faFastForward}
+                        text="Continue"
+                    />
+                </CCol>
+            </CRow>
+        </>
     )
 }
 

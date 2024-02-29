@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
 // import Facts from '../../../components/Dashboard/Annotator/Facts'
 // import ImagesPerDay from '../../../components/Dashboard/Annotator/ImagesPerDay'
 import AmountPerLabel from './AnnoTask/AmountPerLabel'
@@ -8,6 +7,7 @@ import MyAnnoTasks from './AnnoTask/MyAnnoTasks'
 import WorkingOn from './AnnoTask/WorkingOn'
 import actions from '../../actions'
 import { useNavigate } from 'react-router-dom'
+import { CCard, CCardBody, CCardHeader, CCol, CContainer, CRow } from '@coreui/react'
 
 const { getAnnoTasks, getWorkingOnAnnoTask, chooseAnnoTask } = actions
 
@@ -40,49 +40,53 @@ const AnnotatorDashboard = () => {
     const renderWorkingOn = () => {
         if (workingOnAnnoTask !== null) {
             return (
-                <Row>
-                    <Col>
-                        <Card>
-                            <CardHeader>Working on</CardHeader>
-                            <CardBody>
-                                <Row>
-                                    <Col xs="6" md="6" xl="6">
+                <CRow>
+                    <CCol className='mt-3'>
+                        <CCard>
+                            <CCardHeader>
+                                <h4>Working on</h4>
+                            </CCardHeader>
+                            <CCardBody>
+                                <CRow>
+                                    <CCol xs="12" md="6" xl="6">
                                         <WorkingOn
                                             annoTask={workingOnAnnoTask}
                                         ></WorkingOn>
-                                    </Col>
-                                    <Col xs="6" md="6" xl="6">
+                                    </CCol>
+                                    <CCol xs="12" md="6" xl="6">
                                         <AmountPerLabel
                                             stats={
                                                 workingOnAnnoTask.statistic.amountPerLabel
                                             }
                                         ></AmountPerLabel>
-                                    </Col>
-                                </Row>
-                            </CardBody>
-                        </Card>
-                    </Col>
-                </Row>
+                                    </CCol>
+                                </CRow>
+                            </CCardBody>
+                        </CCard>
+                    </CCol>
+                </CRow>
             )
         }
         return <React.Fragment></React.Fragment>
     }
 
     return (
-        <div className="animated fadeIn">
+        <CContainer>
             {renderWorkingOn()}
-            <Row>
-                <Col>
-                    <Card>
-                        <CardHeader>My Annotation Tasks</CardHeader>
-                        <CardBody>
-                            <br />
+            <CRow>
+                <CCol className='mt-3'>
+
+                    <CCard>
+                        <CCardHeader>
+                            <h4>My Annotation Tasks</h4>
+                        </CCardHeader>
+                        <CCardBody>
                             <MyAnnoTasks
                                 annoTasks={annoTasks}
                                 callBack={(id, type) => gotoAnnoTask(id, type)}
                             ></MyAnnoTasks>
-                        </CardBody>
-                    </Card>
+                        </CCardBody>
+                    </CCard>
                     {/* <Card>
                         <CardHeader>
                             Statistics
@@ -95,9 +99,9 @@ const AnnotatorDashboard = () => {
                             <ImagesPerDay></ImagesPerDay>
                         </CardBody>
                     </Card> */}
-                </Col>
-            </Row>
-        </div>
+                </CCol>
+            </CRow>
+        </CContainer>
     )
 }
 
