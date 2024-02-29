@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 import * as statistics_api from '../../actions/statistics/statistics_api'
 
-import { CRow, CCol, CWidgetStatsA, CWidgetStatsD } from '@coreui/react'
-import { CChart, CChartLine } from '@coreui/react-chartjs'
+import { CRow, CCol, CWidgetStatsD, CContainer } from '@coreui/react'
+import { CChart } from '@coreui/react-chartjs'
 import Loading from '../../components/Loading'
 import LineChartWidget from '../../components/LineChartWidget'
 
@@ -163,8 +163,8 @@ const PersonalStatistics = () => {
     }
 
     return (
-        <>
-            <CRow style={{ marginBottom: 10 }}>
+        <CContainer style={{ marginTop: 15 }}>
+            <CRow>
                 <CCol sm="5">
                     <h2 id="traffic" className="card-title mb-2">
                         Personal statistics
@@ -261,7 +261,7 @@ const PersonalStatistics = () => {
                     />
                 </CCol>
             </CRow>
-            <CRow style={{ marginBottom: 5 }}>
+            <CRow>
                 <CCol sm="5">
                     <h2 id="traffic" className="card-title mb-0">
                         Averages
@@ -270,17 +270,17 @@ const PersonalStatistics = () => {
                 </CCol>
                 <CCol sm="7" className="d-none d-md-block"></CCol>
             </CRow>
-            <CRow>
-                <CCol sm="6" lg="6" xl="3">
+            <CRow className='mb-5'>
+                <CCol sm="6" lg="6" xl="3" className='mb-3'>
                     <LineChartWidget title="Annotations / Day" value={'Ø ' + personalStatistics.annos.avg} chartData={personalStatistics.annos.history.week}></LineChartWidget>
                 </CCol>
-                <CCol sm="6" lg="6" xl="3">
+                <CCol sm="6" lg="6" xl="3" className='mb-3'>
                     <LineChartWidget title="Annotasks / Day" value={'Ø ' + personalStatistics.annotasks.avg} chartData={personalStatistics.annotasks.history.week}></LineChartWidget>
                 </CCol>
-                <CCol sm="6" lg="6" xl="3">
+                <CCol sm="6" lg="6" xl="3" className='mb-3'>
                     <LineChartWidget title="Time per Annotation / Day" value={'Ø ' + personalStatistics.annotime.avg} chartData={personalStatistics.annotime.history.week}></LineChartWidget>
                 </CCol>
-                <CCol sm="6" lg="6" xl="3">
+                <CCol sm="6" lg="6" xl="3" className='mb-3'>
                     <LineChartWidget title="Processed Images / Day" value={'Ø ' + personalStatistics.processedImages.avg} chartData={personalStatistics.processedImages.history.week}></LineChartWidget>
                 </CCol>
             </CRow >
@@ -303,7 +303,7 @@ const PersonalStatistics = () => {
                     <CChart type="bar" data={annoTypes} options={chartOptions} />
                 </CCol>
             </CRow>
-        </>
+        </CContainer>
     )
 }
 export default PersonalStatistics

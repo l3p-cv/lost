@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import actions from '../../actions'
 import * as statistics_api from '../../actions/statistics/statistics_api'
 
-import { CRow, CCol, CWidgetStatsD } from '@coreui/react'
+import { CRow, CCol, CWidgetStatsD, CContainer } from '@coreui/react'
 
 import AnnosPerHour from './AnnosPerHour'
 import { CChart } from '@coreui/react-chartjs'
@@ -129,9 +129,9 @@ const DesignerStatistics = () => {
         },
     }
     return (
-        <BaseContainer>
-            <CRow style={{ marginBottom: 10 }}>
-                <CCol sm="5">
+        <CContainer style={{ marginTop: 15 }}>
+            <CRow>
+                <CCol sm="5" className='mb-3'>
                     <h3 id="traffic" className="card-title mb-0">
                         Designer statistics
                     </h3>
@@ -205,7 +205,7 @@ const DesignerStatistics = () => {
                     />
                 </CCol>
 
-                <CCol sm="6" lg="6" xl="3">
+                <CCol sm="6" lg="6" xl="3" className="mb-3">
                     {/* <CWidgetBrand
                         color="primary"
                         rightHeader={'' + designerStatistics.processedImages.today}
@@ -236,14 +236,14 @@ const DesignerStatistics = () => {
                 <CCol sm="7" className="d-none d-md-block"></CCol>
             </CRow>
             <CRow>
-                <CCol sm="12">
+                <CCol sm="12" className="mb-3">
                     <AnnosPerHour
                         data={designerStatistics.annosPerHour}
                         style={{ height: '300px', marginTop: '40px' }}
                     />
                 </CCol>
             </CRow>
-            <CRow style={{ marginBottom: 5, marginTop: 15 }}>
+            <CRow>
                 <CCol sm="5">
                     <h4 id="traffic" className="card-title mb-0">
                         Annotations / Label and Type
@@ -257,11 +257,11 @@ const DesignerStatistics = () => {
                     <CChart type="bar" data={annoLabels} options={chartOptions} />
                 </CCol>
 
-                <CCol sm="12" lg="6">
+                <CCol sm="12" lg="6" className="mb-3">
                     <CChart type="bar" data={annoTypes} options={chartOptions} />
                 </CCol>
             </CRow>
-        </BaseContainer>
+        </CContainer>
     )
 }
 export default DesignerStatistics

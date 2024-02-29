@@ -1,13 +1,9 @@
+import { CContainer } from '@coreui/react'
 import React from 'react'
-import { Row, Col, Card, CardBody } from 'reactstrap'
 
 const BaseContainer = (props) => (
-    <Row>
-        <Col xs="12" sm="12" lg="12">
-            <Card>
-                <CardBody>{props.children}</CardBody>
-            </Card>
-        </Col>
-    </Row>
+    <CContainer style={{ background: 'white', padding: 15, borderRadius: 10, border: '1px solid rgba(9, 47, 56, 0.16)' }}>
+        {props.children}
+    </CContainer>
 )
 export default BaseContainer

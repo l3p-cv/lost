@@ -1,5 +1,3 @@
-import DesignerDashboardComponent from './containers/Dashboard/DesignerDashboard'
-import AnnotatorDashboardComponent from './containers/Dashboard/AnnotatorDashboard'
 import RunningPipelineComponent from './containers/pipeline/running/RunningPipeline'
 import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
 import LabelsComponent from './containers/Labels/LabelDashboard'
@@ -29,6 +27,7 @@ import {
     FaChartLine,
     FaBox,
 } from 'react-icons/fa'
+import PersonalStatistics from './containers/Statistics/PersonalStatistics'
 
 const iconProps = {
     size: 20,
@@ -41,16 +40,14 @@ const iconProps = {
 const DesignerDashboard = {
     name: 'Dashboard',
     to: '/dashboard',
-    component: DesignerDashboardComponent,
-    //component: PipelinesComponent,
+    component: PersonalStatistics,
     icon: <FaTachometerAlt {...iconProps} />,
 }
 
 const AnnotatorDashboard = {
     name: 'Dashboard',
     to: '/dashboard',
-    component: AnnotatorDashboardComponent,
-    //component: PipelinesComponent,
+    component: PersonalStatistics,
     icon: <FaTachometerAlt {...iconProps} />,
 }
 
@@ -58,7 +55,6 @@ const DesignerStatistics = {
     name: 'Statistics',
     to: '/statistics',
     component: DesignerStatisticsComponent,
-    //component: PipelinesComponent,
     icon: <FaChartLine {...iconProps} />,
 }
 
