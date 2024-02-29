@@ -15,7 +15,8 @@ import * as Notification from '../../components/Notification'
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 // import { deleteFs } from '../../access/fb'
 import * as fbAPI from '../../actions/fb/fb_api'
-import { CBadge } from '@coreui/react'
+import { CBadge, CCol, CRow } from '@coreui/react'
+import BaseContainer from '../../components/BaseContainer'
 
 export const DSTable = ({ visLevel }) => {
     const [isNewDS, setIsNewDS] = useState(false)
@@ -61,7 +62,7 @@ export const DSTable = ({ visLevel }) => {
         }
     }, [deleteStatus])
 
-    useEffect(() => {}, [possibleFsTypes])
+    useEffect(() => { }, [possibleFsTypes])
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
     const [selectedDs, setSelectedDs] = useState()
@@ -119,7 +120,7 @@ export const DSTable = ({ visLevel }) => {
             },
             option2: {
                 text: 'NO!',
-                callback: () => {},
+                callback: () => { },
             },
         })
     }
@@ -135,7 +136,7 @@ export const DSTable = ({ visLevel }) => {
             },
             option2: {
                 text: 'Cancel',
-                callback: () => {},
+                callback: () => { },
             },
         })
     }
@@ -163,7 +164,7 @@ export const DSTable = ({ visLevel }) => {
     }
 
     return (
-        <div>
+        <>
             <BaseModal
                 isOpen={browseOpen}
                 title="Browse Files"
@@ -196,92 +197,103 @@ export const DSTable = ({ visLevel }) => {
                 />
             )}
 
-            <IconButton
-                color="primary"
-                icon={faUserPlus}
-                text="Add Datasource"
-                onClick={createNewDS}
-                style={{ marginBottom: 20 }}
-            />
+            <CRow>
+                <CCol sm="auto">
 
-            <Datatable
-                data={fsList}
-                columns={[
-                    {
-                        Header: 'Name',
-                        accessor: 'name',
-                    },
-                    {
-                        Header: 'Type',
-                        accessor: 'fsType',
-                    },
-                    // {
-                    //     Header: 'Root Path',
-                    //     accessor: 'rootPath',
-                    // },
-                    // {
-                    //     Header: 'Connection',
-                    //     accessor: 'connection',
-                    // },
-                    {
-                        Header: 'Global',
-                        id: 'groupId',
-                        accessor: (d) => {
-                            if (d.groupId) {
-                                return <CBadge color="success">User</CBadge>
-                            }
-                            return <CBadge color="primary">Global</CBadge>
-                        },
-                    },
-                    {
-                        Header: 'Delete',
-                        id: 'delete',
-                        accessor: (row) => {
-                            return (
-                                <IconButton
-                                    icon={faTrash}
-                                    color="danger"
-                                    onClick={() => onDeleteDs(row)}
-                                    disabled={checkEditable(row)}
-                                    text="Delete"
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Edit',
-                        id: 'edit',
-                        accessor: (row) => {
-                            return (
-                                <IconButton
-                                    icon={faEdit}
-                                    color="primary"
-                                    onClick={() => onEditDs(row)}
-                                    disabled={checkEditable(row)}
-                                    text="Edit"
-                                    // isOutline={false}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Browse',
-                        id: 'browse',
-                        accessor: (row) => {
-                            return (
-                                <IconButton
-                                    icon={faFolderOpen}
-                                    color="primary"
-                                    onClick={() => onOpenFileBrowser(row)}
-                                    text="Browse"
-                                    // isOutline={false}
-                                />
-                            )
-                        },
-                    },
-                ]}
-            />
-        </div>
+                    <IconButton
+                        isOutline={false}
+                        color="primary"
+                        icon={faUserPlus}
+                        text="Add Datasource"
+                        onClick={createNewDS}
+                        style={{ marginTop: 15, marginBottom: 20 }}
+                    />
+                </CCol>
+            </CRow>
+            <CRow>
+                <CCol>
+                    <BaseContainer>
+                        <Datatable
+                            data={fsList}
+                            columns={[
+                                {
+                                    Header: 'Name',
+                                    accessor: 'name',
+                                },
+                                {
+                                    Header: 'Type',
+                                    accessor: 'fsType',
+                                },
+                                // {
+                                //     Header: 'Root Path',
+                                //     accessor: 'rootPath',
+                                // },
+                                // {
+                                //     Header: 'Connection',
+                                //     accessor: 'connection',
+                                // },
+                                {
+                                    Header: 'Global',
+                                    id: 'groupId',
+                                    accessor: (d) => {
+                                        if (d.groupId) {
+                                            return <CBadge color="success">User</CBadge>
+                                        }
+                                        return <CBadge color="primary">Global</CBadge>
+                                    },
+                                },
+                                {
+                                    Header: 'Delete',
+                                    id: 'delete',
+                                    accessor: (row) => {
+                                        return (
+                                            <IconButton
+                                                icon={faTrash}
+                                                color="danger"
+                                                onClick={() => onDeleteDs(row)}
+                                                disabled={checkEditable(row)}
+                                                text="Delete"
+                                            />
+                                        )
+                                    },
+                                },
+                                {
+                                    Header: 'Edit',
+                                    id: 'edit',
+                                    accessor: (row) => {
+                                        return (
+                                            <IconButton
+                                                icon={faEdit}
+                                                color="primary"
+                                                onClick={() => onEditDs(row)}
+                                                disabled={checkEditable(row)}
+                                                text="Edit"
+                                            // isOutline={false}
+                                            />
+                                        )
+                                    },
+                                },
+                                {
+                                    Header: 'Browse',
+                                    id: 'browse',
+                                    accessor: (row) => {
+                                        return (
+                                            <IconButton
+                                                icon={faFolderOpen}
+                                                color="primary"
+                                                onClick={() => onOpenFileBrowser(row)}
+                                                text="Browse"
+                                            // isOutline={false}
+                                            />
+                                        )
+                                    },
+                                },
+                            ]}
+                        />
+                    </BaseContainer>
+                </CCol>
+            </CRow>
+        </>
     )
 }
 

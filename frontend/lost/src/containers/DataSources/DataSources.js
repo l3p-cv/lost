@@ -1,11 +1,11 @@
 import React from 'react'
 import DSTable from './DSTable'
-import BaseContainer from '../../components/BaseContainer'
+import { CContainer } from '@coreui/react'
 
 const DataSources = () => (
-    <BaseContainer>
+    <CContainer>
         <DSTable visLevel="all"></DSTable>
-    </BaseContainer>
+    </CContainer>
 )
 
 export default DataSources

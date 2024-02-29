@@ -9,10 +9,11 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CContainer, CRow, CTable, CTableBody, CTableHead, CCol } from '@coreui/react'
+import { CRow, CTable, CTableBody, CTableHead, CCol } from '@coreui/react'
 import { faAngleLeft, faAngleRight, faCaretDown, faCaretRight, faDownload, faEye, faFile, faPen } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
 import { useNavigate } from 'react-router-dom'
+import BaseContainer from '../../components/BaseContainer'
 
 const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditButtonClicked }) => {
     const navigate = useNavigate()
@@ -169,86 +170,84 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
     })
 
     return (
-        <>
-            <CContainer style={{ background: 'white', padding: 15, borderRadius: 10, border: '1px solid #cce2ff' }}>
-                <CTable striped>
-                    <CTableHead>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
-                                    <th key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </th>
+        <BaseContainer>
+            <CTable striped>
+                <CTableHead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
+                                <th key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </CTableHead>
+                <CTableBody>
+                    {table.getRowModel().rows.map(row => (
+                        <Fragment key={row.id}>
+                            <tr key={row.id}>
+                                {row.getVisibleCells().map(cell => (
+                                    <td key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </td>
                                 ))}
                             </tr>
-                        ))}
-                    </CTableHead>
-                    <CTableBody>
-                        {table.getRowModel().rows.map(row => (
-                            <Fragment key={row.id}>
-                                <tr key={row.id}>
-                                    {row.getVisibleCells().map(cell => (
-                                        <td key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </td>
-                                    ))}
-                                </tr>
-                            </Fragment>
-                        ))}
-                    </CTableBody>
-                </CTable>
+                        </Fragment>
+                    ))}
+                </CTableBody>
+            </CTable>
 
-                <CRow>
-                    <CCol>
-                        {<IconButton
-                            icon={faAngleLeft}
-                            text="Previous"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        />}
-                    </CCol>
-                    <CCol>
-                        <span style={{ lineHeight: 2 }}>
-                            Page
-                            <strong>
-                                {table.getState().pagination.pageIndex + 1} of{' '}
-                                {table.getPageCount()}
-                            </strong>
-                        </span>
-                    </CCol>
-                    <CCol>
-                        <span style={{ lineHeight: 2 }}>
-                            <select
-                                value={table.getState().pagination.pageSize}
-                                onChange={e => {
-                                    table.setPageSize(Number(e.target.value))
-                                }}
-                            >
-                                {[10, 20, 30, 40, 50].map(pageSize => (
-                                    <option key={pageSize} value={pageSize}>
-                                        Show {pageSize}
-                                    </option>
-                                ))}
-                            </select>
-                        </span>
-                    </CCol>
-                    <CCol>
-                        {<IconButton
-                            icon={faAngleRight}
-                            text="Next"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                            style={{ float: 'right' }}
-                        />}
-                    </CCol>
-                </CRow>
-            </CContainer>
-        </>
+            <CRow>
+                <CCol>
+                    {<IconButton
+                        icon={faAngleLeft}
+                        text="Previous"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                    />}
+                </CCol>
+                <CCol>
+                    <span style={{ lineHeight: 2 }}>
+                        Page
+                        <strong>
+                            {table.getState().pagination.pageIndex + 1} of{' '}
+                            {table.getPageCount()}
+                        </strong>
+                    </span>
+                </CCol>
+                <CCol>
+                    <span style={{ lineHeight: 2 }}>
+                        <select
+                            value={table.getState().pagination.pageSize}
+                            onChange={e => {
+                                table.setPageSize(Number(e.target.value))
+                            }}
+                        >
+                            {[10, 20, 30, 40, 50].map(pageSize => (
+                                <option key={pageSize} value={pageSize}>
+                                    Show {pageSize}
+                                </option>
+                            ))}
+                        </select>
+                    </span>
+                </CCol>
+                <CCol>
+                    {<IconButton
+                        icon={faAngleRight}
+                        text="Next"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                        style={{ float: 'right' }}
+                    />}
+                </CCol>
+            </CRow>
+        </BaseContainer>
     )
 }
 
