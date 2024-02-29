@@ -14,6 +14,7 @@ import * as filterTools from './lost-sia/src/filterTools'
 import * as annoConversion from './lost-sia/src/utils/annoConversion'
 import * as annoActions from './lost-sia/src/types/canvasActions'
 import Sia from './lost-sia/src/Sia'
+import { useNavigate } from 'react-router-dom'
 
 const {
     siaLayoutUpdate,
@@ -41,6 +42,7 @@ const {
 } = actions
 
 const SiaWrapper = (props) => {
+    const navigate = useNavigate()
     const [image, setImage] = useState({ id: undefined, data: undefined })
     const [backendImage, setBackendImage] = useState({ id: undefined, data: undefined })
     const [canvasImgLoaded, setCanvasImgLoaded] = useState(0)
@@ -219,7 +221,7 @@ const SiaWrapper = (props) => {
                 if (localTaskFinished) {
                     props.siaSetTaskFinished()
                     props.siaSendFinishToBackend().then(() => {
-                        props.history.push('dashboard')
+                        navigate('/annotation')
                     })
                 }
             }
