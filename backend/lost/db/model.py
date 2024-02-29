@@ -1033,12 +1033,12 @@ class AnnoTask(Base):
             "progress": self.progress,
             "dtype": self.dtype,
             "pipe_element_id": self.pipe_element_id,
-            "dataset_id": self.dataset_id,
-            "datastore_id": self.datastore_id,
-            "created_at": self.timestamp,
+            "datasetId": self.dataset_id,
+            "datastoreId": self.datastore_id,
+            "createdAt": self.timestamp,
             "name": self.name,
             "description": f'Progress: {annotask_progress}%',
-            "is_annotask": True
+            "isAnnotask": True
         }
 
 
@@ -1860,13 +1860,18 @@ class Dataset(Base):
         if hasattr(self, 'children') and self.children != None:
             for child in self.children:
                 children_json.append(child.to_dict())
+        
+        is_reviewable = False  
+        if hasattr(self, 'is_reviewable'):
+            is_reviewable = self.is_reviewable
 
         return {
             'idx': self.idx,
             'name': self.name,
             'description': self.description,
-            'datastore_id': self.datastore_id,
-            'parent_id': self.parent_id,
-            'created_at': self.created_at,
-            'children': children_json
+            'datastoreId': self.datastore_id,
+            'parentId': self.parent_id,
+            'createdAt': self.created_at,
+            'children': children_json,
+            'isReviewable': is_reviewable
         }

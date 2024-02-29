@@ -36,7 +36,7 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
     const renderRowIcon = (row) => {
 
         // show file icon for annotasks
-        if (row.original.is_annotask) {
+        if (row.original.isAnnotask) {
             // also use icon to indent child row (margin)
             return <FontAwesomeIcon size="xl" icon={faFile} style={{ marginLeft: row.depth * 25 }} />
         }
@@ -63,7 +63,7 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
         columnHelper.accessor('description', {
             header: 'Description'
         }),
-        // columnHelper.accessor('datastore_id', {
+        // columnHelper.accessor('datastoreId', {
         //     header: () => 'Datastore',
         //     cell: info => {
         //         const datastoreID = info.renderValue()
@@ -75,7 +75,7 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
         //         return ""
         //     }
         // }),
-        columnHelper.accessor('created_at', {
+        columnHelper.accessor('createdAt', {
             header: () => 'Created at',
         }),
         columnHelper.display({
@@ -86,16 +86,19 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                 // reviewing metadatasets is impossible
                 if (props.row.original.isMetaDataset) return ""
 
+                // disable the review button on datasets without children
+                const isDisabled = !(props.row.original.isAnnotask || props.row.original.isReviewable)
+
                 return <IconButton
                     icon={faEye}
                     color="primary"
                     isOutline={false}
                     onClick={() => {
                         const rowData = props.row.original
-                        const isAnnotask = rowData.is_annotask === true
+                        const isAnnotask = rowData.isAnnotask === true
                         openReview(rowData.idx, isAnnotask)
                     }}
-                    disabled={false}
+                    disabled={isDisabled}
                 // text="Review"
                 />
             }
@@ -108,7 +111,7 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
 
                 // only show edit icon for annotasks
                 // @TODO add support for exporting datasets
-                if (!rowData.is_annotask) return ""
+                if (!rowData.isAnnotask) return ""
 
                 return <IconButton
                     icon={faDownload}
@@ -116,7 +119,7 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                     isOutline={false}
                     onClick={() => {
                         const datasetID = rowData.idx
-                        const isAnnotask = rowData.is_annotask === true
+                        const isAnnotask = rowData.isAnnotask === true
                         onExportButtonClicked(datasetID, isAnnotask)
                     }}
                     disabled={false}
@@ -131,7 +134,7 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                 const rowData = props.row.original
 
                 // only show edit icon for datasets
-                if (rowData.is_annotask || rowData.isMetaDataset) return ""
+                if (rowData.isAnnotask || rowData.isMetaDataset) return ""
 
                 return (
                     <IconButton

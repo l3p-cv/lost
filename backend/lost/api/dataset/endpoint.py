@@ -92,9 +92,9 @@ class Datasets(Resource):
             'idx': "-1",
             'name': "Annotasks without a Dataset",
             'description': "Meta dataset that contains all annotation tasks that are not assigned to a dataset",
-            'datastore_id': None,
-            'parent_id': None,
-            'created_at': '(meta dataset)',
+            'datastoreId': None,
+            'parentId': None,
+            'createdAt': '(meta dataset)',
             'children': annotasks_without_dataset_json
         }
         datasets_json.append(meta_ds)
@@ -106,6 +106,8 @@ class Datasets(Resource):
         ''' recursive helper method to find all children of a dataset
         '''
         
+        dataset.is_reviewable = False
+        
         children = dataset.dataset_children
         
         if(len(children) == 0):
@@ -115,11 +117,14 @@ class Datasets(Resource):
         for child in children:
             # redo request for children of children
             subchildren.append(self.__build_dataset_children_tree(child))
+            if child.is_reviewable:
+                dataset.is_reviewable = True
             
         # add annotask children (annotasks can't have a child)
         annotasks = dataset.annotask_children
         if annotasks is not None:
             for annotask in annotasks:
+                dataset.is_reviewable = True
                 subchildren.append(annotask)
         
         dataset.children = subchildren
