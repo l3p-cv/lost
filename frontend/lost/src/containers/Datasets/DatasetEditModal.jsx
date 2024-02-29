@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { CCol, CModal, CModalBody, CModalHeader, CFormInput, CRow } from '@coreui/react'
 import IconButton from '../../components/IconButton'
-import { faSave } from '@fortawesome/free-solid-svg-icons'
+import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Dropdown } from 'semantic-ui-react'
 import * as datasetApi from '../../actions/dataset/dataset_api'
 import { NotificationManager } from 'react-notifications'
+import Swal from 'sweetalert2'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
@@ -12,6 +13,7 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
 
     const { mutate: createDatasetApi, data: createResponse } = datasetApi.useCreateDataset()
     const { mutate: updateDatasetApi, data: updateResponse } = datasetApi.useUpdateDataset()
+    const { mutate: deleteDataset, data: deleteDatasetResponse } = datasetApi.useDeleteDataset()
 
     const [idx, setIdx] = useState(-1)
     const [name, setName] = useState("")
@@ -78,60 +80,48 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
 
     }, [editedDatasetObj])
 
-    useEffect(() => {
-        // dont show a notification on initialisation
-        if (createResponse === undefined) return
+    const showApiResponse = (apiResponse, msgSuccessVerb, msgErrorVerb, onSuccessCallback) => {
+        if (apiResponse === undefined) return
 
-        const [isSuccessful, response] = createResponse
+        const [isSuccessful, response] = apiResponse
 
         // make sure the type is a boolean
         if (isSuccessful === true) {
             NotificationManager.success(
                 "",
-                "Dataset created successfully",
+                `Dataset ${msgSuccessVerb} successfully`,
                 NOTIFICATION_TIMEOUT_MS,
             )
 
             // close the modal
             setIsVisible(false)
 
+            if (onSuccessCallback) onSuccessCallback(response)
+        } else {
+            console.info(response)
+            const errorMessage = response.data
+            NotificationManager.error(
+                errorMessage,
+                `Error ${msgErrorVerb} dataset`,
+                NOTIFICATION_TIMEOUT_MS,
+            )
+        }
+    }
+
+    useEffect(() => {
+        showApiResponse(updateResponse, "created", "creating", (response) => {
             const datasetId = response.datasetId
             if (onDatasetCreated) onDatasetCreated(datasetId)
-        } else {
-            const errorMessage = response.data
-            NotificationManager.error(
-                errorMessage,
-                "Error creating dataset",
-                NOTIFICATION_TIMEOUT_MS,
-            )
-        }
-    }, [createResponse, setIsVisible])
+        })
+    }, [createResponse])
 
     useEffect(() => {
-        // dont show a notification on initialisation
-        if (updateResponse === undefined) return
+        showApiResponse(updateResponse, "updated", "updating")
+    }, [updateResponse])
 
-        const [isSuccessful, response] = updateResponse
-
-        // make sure the type is a boolean
-        if (isSuccessful === true) {
-            NotificationManager.success(
-                "",
-                "Dataset updated successfully",
-                NOTIFICATION_TIMEOUT_MS,
-            )
-
-            // close the modal
-            setIsVisible(false)
-        } else {
-            const errorMessage = response.data
-            NotificationManager.error(
-                errorMessage,
-                "Error updating dataset",
-                NOTIFICATION_TIMEOUT_MS,
-            )
-        }
-    }, [updateResponse, setIsVisible])
+    useEffect(() => {
+        showApiResponse(deleteDatasetResponse, "deleted", "deleting")
+    }, [deleteDatasetResponse])
 
     const updateDataset = () => {
         const dataset = {
@@ -156,11 +146,37 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
         createDatasetApi(dataset)
     }
 
+    const showDeleteDatasetConfirmationMessage = () => {
+        Swal.fire({
+            title: `Do you really want to delete dataset ${name}?`,
+            text: 'All children datasets and annotation tasks will be orphaned.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: 'primary',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteDataset(idx)
+            } else {
 
+            }
+        })
+    }
+
+    const renderDeleteDatasetButton = () => <IconButton
+        isOutline={false}
+        color="danger"
+        icon={faTrash}
+        text="Delete Dataset"
+        onClick={() => showDeleteDatasetConfirmationMessage()}
+        style={{ marginTop: '15px' }}
+    />
 
     return (
         <CModal
             visible={isVisible}
+            backdrop="static"
             size="xl"
             onClose={() => { setIsVisible(false) }}
         >
@@ -226,11 +242,13 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
                 <CRow>
                     <CCol sm="2">&nbsp;</CCol>
                     <CCol sm="6">
+                        {(idx !== -1 ? renderDeleteDatasetButton() : "")}
+
                         <IconButton
                             isOutline={false}
                             color="primary"
                             icon={faSave}
-                            text="Add Dataset"
+                            text={`${(idx === -1 ? "Add" : "Update")} Dataset`}
                             onClick={() => (idx === -1 ? createDataset() : updateDataset())}
                             style={{ marginTop: '15px', float: 'right' }}
                         />

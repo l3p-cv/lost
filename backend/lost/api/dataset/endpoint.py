@@ -236,9 +236,34 @@ class Datasets(Resource):
         
         # no children left to check - parent is not a child
         return True
-            
-            
-            
+    
+@namespace.route('/<int:dataset_id>')
+@api.doc(security='apikey')
+class DatasetReview(Resource):
+    @api.doc(description="Get data for the next dataset review annotation")
+    @api.response(200, 'success')
+    @jwt_required
+    def delete(self, dataset_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        dataset_to_delete = dbm.get_dataset(dataset_id)
+        
+        # orphan all child datasets and annotasks
+        for child_dataset in dataset_to_delete.dataset_children:
+            child_dataset.parent_id = None
+
+        for child_annotask in dataset_to_delete.annotask_children:
+            child_annotask.dataset_id = None
+        
+        dbm.session.delete(dataset_to_delete)  
+        
+        # save all changes
+        dbm.session.commit()
 
 @namespace.route('/flat/')
 @namespace.route('/flat')

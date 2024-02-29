@@ -47,3 +47,11 @@ export const useUpdateDataset = () => {
             .catch((error) => [false, error.response])
     )
 }
+
+export const useDeleteDataset = () => {
+    return useMutation((datasetId) =>
+        axios.delete(`${API_URL}/datasets/${datasetId}`)
+            .then((res) => [true, res.data])
+            .catch((error) => [false, error.response])
+    )
+}
