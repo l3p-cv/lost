@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import actions from '../../actions'
-import { Input, InputGroup, InputGroupAddon } from 'reactstrap'
 import IconButton from '../../components/IconButton'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch, useSelector } from 'react-redux'
 import SelectFileButton from '../../components/SelectFileButton'
+import { CCol, CFormInput, CInputGroup, CRow } from '@coreui/react'
 
 // Source: https://stackoverflow.com/a/1293163/9310154
 function csvToArray(strData, strDelimiter = ",") {
@@ -197,52 +197,57 @@ const CreateLabelTree = ({ visLevel }) => {
 
     return (
         <>
-            <InputGroup style={{ marginBottom: '10px', marginTop: '10px' }}>
-                <Input
-                    type="text"
-                    placeholder="name"
-                    value={createLabelName}
-                    onChange={handleCreateLabelName}
-                ></Input>
-                <Input
-                    type="text"
-                    placeholder="description"
-                    value={createLabelDescription}
-                    onChange={handleCreateLabelDescription}
-                ></Input>
-                {/* <InputGroupAddon addonType="append"> */}
-                <IconButton
-                    color="primary"
-                    onClick={handleCreateSave}
-                    disabled={createLabelName === "" || createLabelDescription === ""}
-                    icon={faPlus}
-                    text="Add"
-                />
-                {/* </InputGroupAddon> */}
-                {/* <InputGroupAddon addonType="append"> */}
-                <SelectFileButton
-                    accept='.csv'
-                    onSelect={(file) => {
-                        const reader = new FileReader();
-                        reader.onload = function (event) {
-                            const text = event.target.result
-                            const arr = csvToArray(text)
-                            // delete header
-                            header.current = arr.shift()
-                            // add Id to the start of the array because pandas.df export
-                            header.current.unshift("id")
-                            const first = arr.shift()
-                            const parsed = parseElement(first, header.current)
-                            // The Id from the tree is needed. The remaining Labels were added afterwards in useEffect hook. 
-                            dispatch(actions.createLabelTree(parsed, visLevel))
-                            labelsToAdd.current = arr
-                        };
-                        reader.readAsText(file);
-                    }}
-                    text="Import"
-                />
-                {/* </InputGroupAddon> */}
-            </InputGroup>
+            <CRow>
+                <CCol>
+                    <CInputGroup style={{ marginBottom: '10px', marginTop: '10px' }}>
+                        <CFormInput
+                            type="text"
+                            placeholder="Tree name"
+                            value={createLabelName}
+                            onChange={handleCreateLabelName}
+                        />
+                        <CFormInput
+                            type="text"
+                            placeholder="Description"
+                            value={createLabelDescription}
+                            onChange={handleCreateLabelDescription}
+                        />
+                        <IconButton
+                            isOutline={false}
+                            color="primary"
+                            onClick={handleCreateSave}
+                            disabled={createLabelName === "" || createLabelDescription === ""}
+                            icon={faPlus}
+                            text="Add Label Tree"
+                        />
+                    </CInputGroup>
+                </CCol>
+            </CRow>
+            <CRow>
+                <CCol>
+                    <SelectFileButton
+                        accept='.csv'
+                        onSelect={(file) => {
+                            const reader = new FileReader();
+                            reader.onload = function (event) {
+                                const text = event.target.result
+                                const arr = csvToArray(text)
+                                // delete header
+                                header.current = arr.shift()
+                                // add Id to the start of the array because pandas.df export
+                                header.current.unshift("id")
+                                const first = arr.shift()
+                                const parsed = parseElement(first, header.current)
+                                // The Id from the tree is needed. The remaining Labels were added afterwards in useEffect hook. 
+                                dispatch(actions.createLabelTree(parsed, visLevel))
+                                labelsToAdd.current = arr
+                            };
+                            reader.readAsText(file);
+                        }}
+                        text="Import Label Tree"
+                    />
+                </CCol>
+            </CRow>
             <NotificationContainer />
         </>
     )
