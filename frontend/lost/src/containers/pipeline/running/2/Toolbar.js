@@ -109,7 +109,6 @@ class Toolbar extends Component {
     render() {
         return (
             <div className="pipeline-running-toolbar">
-                <GrayLine />
                 <LogModal
                     isDownloadable={true}
                     isOpen={this.state.isLogFileModalOpen}

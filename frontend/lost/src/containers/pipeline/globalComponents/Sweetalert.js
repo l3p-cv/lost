@@ -7,7 +7,7 @@ const Toast = Swal.mixin({
 })
 
 
-export const alertLoading =  () => {
+export const alertLoading = () => {
     Toast.fire({
         title: 'Loading...'
     })
@@ -19,7 +19,7 @@ export const alertLoading =  () => {
     // })
 }
 
-export const alertClose = () =>{
+export const alertClose = () => {
     Swal.close()
 }
 
@@ -43,14 +43,14 @@ export const alertError = (error) => {
     })
 }
 
- export  const  alertDeletePipeline=  (id) => {
+export const alertDeletePipeline = (id) => {
     return Swal.fire({
-        title: 'Are you sure?',
+        title: 'Do you really want to delete the Pipeline?',
         text: "You won't be able to revert this!",
-        type: 'warning',
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: 'primary',
         confirmButtonText: 'Yes, delete it!'
-      })
+    })
 }

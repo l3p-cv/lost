@@ -10,6 +10,7 @@ import ShowStartPipeline from './2/ShowStartPipeline'
 import StartPipelineForm from './3/StartPipelineForm'
 import StartRunPipeline from './4/StartPipeline'
 import BaseContainer from '../../../components/BaseContainer'
+import { CCol, CContainer, CRow } from '@coreui/react'
 const { selectTab } = actions
 
 const StartPipeline = ({ stepperData, selectTab }) => {
@@ -31,13 +32,24 @@ const StartPipeline = ({ stepperData, selectTab }) => {
     }
 
     return (
-        <BaseContainer className='pipeline-start-container'>
-            <Stepper
-                stepperData={stepperData}
-                changeCurrentStep={changeCurrentStep}
-            />
-            {renderContent()}
-        </BaseContainer>
+        <CContainer>
+            <CRow>
+                <CCol>
+                    <Stepper
+                        stepperData={stepperData}
+                        changeCurrentStep={changeCurrentStep}
+                    />
+                </CCol>
+            </CRow>
+
+            <CRow>
+                <CCol>
+                    <BaseContainer className='pipeline-start-container'>
+                        {renderContent()}
+                    </BaseContainer>
+                </CCol>
+            </CRow>
+        </CContainer>
     )
 }
 

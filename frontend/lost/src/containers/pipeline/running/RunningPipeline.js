@@ -8,6 +8,7 @@ import SelectPipeline from './1/SelectPipeline'
 import ShowRunningPipeline from './2/ShowRunningPipeline'
 import actions from '../../../actions/pipeline/pipelineRunning'
 import BaseContainer from '../../../components/BaseContainer'
+import { CCol, CContainer, CRow } from '@coreui/react'
 
 const { selectTab } = actions
 
@@ -27,13 +28,21 @@ const RunningPipeline = ({ pipelineRunning, selectTab }) => {
   }
 
   return (
-    <BaseContainer className='pipeline-running-container'>
-      <Stepper
-        stepperData={pipelineRunning}
-        changeCurrentStep={changeCurrentStep}
-      />
-      {renderContent()}
-    </BaseContainer>
+    <CContainer style={{ marginTop: 15 }}>
+      <CRow>
+        <CCol>
+          <Stepper
+            stepperData={pipelineRunning}
+            changeCurrentStep={changeCurrentStep}
+          />
+        </CCol>
+      </CRow>
+      <CRow>
+        <BaseContainer>
+          {renderContent()}
+        </BaseContainer>
+      </CRow>
+    </CContainer>
   )
 }
 
