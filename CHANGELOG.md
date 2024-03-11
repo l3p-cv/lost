@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added an InfoBox (AnnoStats) that shows the number of annotation per label in an image
     - This box allows also to hide annotations of a specific label
     - See #86, #160 and #161
+  - Added Support for react 17 and 18 for the lost-sia npm package
 - MIA:
   - Show labels as tags
   - Allow to zoom into images in an extra modal
