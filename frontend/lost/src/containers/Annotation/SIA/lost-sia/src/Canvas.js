@@ -181,7 +181,7 @@ class Canvas extends Component {
             performedImageInit: false,
             prevLabel: [],
             imageBlob: undefined,
-            isJunk: false,
+            isJunk: props.isJunk,
             imgBarVisible: false,
             annoToolBarVisible: false,
             possibleLabels: undefined,
