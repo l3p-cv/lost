@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Icon, Menu, Button, Card } from 'semantic-ui-react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { Button, Card } from 'semantic-ui-react'
+import { faArrowLeft, faArrowRight, faBan, faCheck, faMaximize, faQuestion, faSave, faSearch, faTag, faTrash, faVectorSquare } from '@fortawesome/free-solid-svg-icons'
+import { faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import SIASettingButton from './SIASettingButton'
 import SIAFilterButton from './SIAFilterButton'
 import Prompt from './Prompt'
+import './Toolbar.css'
 
 import * as TOOLS from './types/tools'
 import * as siaIcons from './utils/siaIcons'
 import * as tbe from './types/toolbarEvents'
+import { CSidebar, CSidebarNav } from '@coreui/react'
+import ToolbarItem from './ToolbarItem'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const ToolBar = (props) => {
     const [position, setPosition] = useState({
@@ -111,46 +115,38 @@ const ToolBar = (props) => {
         let btns = []
         if (props.canvasConfig.tools.point) {
             btns.push(
-                <Menu.Item name='dot circle' key={TOOLS.POINT}
+                <ToolbarItem
                     active={props.active.selectedTool === TOOLS.POINT}
                     onClick={(e) => onClick(e, TOOLS.POINT)}
-                    style={toolbarItemStyle}
-                >
-                    {siaIcons.pointIcon()}
-                </Menu.Item>
+                    siaIcon={siaIcons.pointIcon()}
+                />
             )
         }
         if (props.canvasConfig.tools.line) {
             btns.push(
-                <Menu.Item name='paint brush' key={TOOLS.LINE}
+                <ToolbarItem
                     active={props.active.selectedTool === TOOLS.LINE}
                     onClick={(e) => onClick(e, TOOLS.LINE)}
-                    style={toolbarItemStyle}
-                >
-                    {siaIcons.lineIcon()}
-                </Menu.Item>
+                    siaIcon={siaIcons.lineIcon()}
+                />
             )
         }
         if (props.canvasConfig.tools.bbox) {
             btns.push(
-                <Menu.Item name='square outline' key={TOOLS.BBOX}
+                <ToolbarItem
                     active={props.active.selectedTool === TOOLS.BBOX}
                     onClick={(e) => onClick(e, TOOLS.BBOX)}
-                    style={toolbarItemStyle}
-                >
-                    {siaIcons.bBoxIcon()}
-                </Menu.Item>
+                    faIcon={faVectorSquare}
+                />
             )
         }
         if (props.canvasConfig.tools.polygon) {
             btns.push(
-                <Menu.Item name='pencil alternate' key={TOOLS.POLYGON}
+                <ToolbarItem
                     active={props.active.selectedTool === TOOLS.POLYGON}
                     onClick={(e) => onClick(e, TOOLS.POLYGON)}
-                    style={toolbarItemStyle}
-                >
-                    {siaIcons.polygonIcon()}
-                </Menu.Item>
+                    siaIcon={siaIcons.polygonIcon()}
+                />
             )
         }
         return btns
@@ -160,16 +156,17 @@ const ToolBar = (props) => {
         return (
             <Prompt active={showFinishPrompt}
                 header={<div>
-                    <Icon name='paper plane outline'></Icon>
+                    <FontAwesomeIcon icon={faPaperPlane} />&nbsp;
                     Do you wish to FINISH this SIA Task?
                 </div>}
                 content={<div>
                     <Button basic color="green" inverted onClick={() => setFinished()}>
-                        <Icon name='check'></Icon>
+                        <FontAwesomeIcon icon={faCheck} /> &nbsp;
                         Yes
                     </Button>
                     <Button basic color="red" inverted onClick={() => toggleFinishPrompt()}>
-                        <Icon name='ban'></Icon> No
+                        <FontAwesomeIcon icon={faBan} /> &nbsp;
+                        No
                     </Button>
                 </div>}
             />
@@ -185,35 +182,28 @@ const ToolBar = (props) => {
         if (props.imageMeta) {
             if (props.imageMeta.isLast) {
                 btns.push(
-                    <Menu.Item name='paper plane outline' key='finish'
-                        active={false}
-                        onClick={() => toggleFinishPrompt()}
-                        style={toolbarItemStyle}
-                    >
-                        <Icon name='paper plane outline' />
+                    <>
+                        <ToolbarItem
+                            onClick={() => toggleFinishPrompt()}
+                            faIcon={faPaperPlane}
+                        />
                         {renderFinishPrompt()}
-                    </Menu.Item>
+                    </>
                 )
             } else {
                 btns.push(
-                    <Menu.Item name='arrow right' key='next'
-                        active={false}
+                    <ToolbarItem
                         onClick={() => getNextImg()}
-                        style={toolbarItemStyle}
-                    >
-                        <Icon name='arrow right' />
-                    </Menu.Item>
+                        faIcon={faArrowRight}
+                    />
                 )
             }
             btns.push(
-                <Menu.Item name='arrow left' key='prev'
-                    active={false}
-                    onClick={() => getPrevImg()}
+                <ToolbarItem
                     disabled={props.imageMeta.isFirst}
-                    style={toolbarItemStyle}
-                >
-                    <Icon name='arrow left' />
-                </Menu.Item>
+                    onClick={() => getPrevImg()}
+                    faIcon={faArrowLeft}
+                />
             )
         }
         return btns
@@ -221,49 +211,49 @@ const ToolBar = (props) => {
 
     const renderJunkButton = () => {
         if (!props.enabled.junk) return null
+
+        console.info("J2", props.active.isJunk)
+
         return (
-            <Menu.Item name='ban' key='junk'
+            <ToolbarItem
                 active={props.active.isJunk}
                 onClick={() => toggleJunk()}
-                style={toolbarItemStyle}
-            >
-                <Icon name='ban' />
-            </Menu.Item>
+                faIcon={faBan}
+            />
         )
     }
 
     const renderDeleteAllAnnosButton = () => {
         if (!props.enabled.deleteAll) return null
         return (
-            <Menu.Item name='trash alternate outline' key='deleteAllAnnos'
+            <ToolbarItem
                 onClick={() => handleOnDeleteAllAnnos()}
-                style={toolbarItemStyle}
-            >
-                <Icon name='trash alternate outline' />
-            </Menu.Item>
+                faIcon={faTrash}
+            />
         )
     }
 
     const renderSaveButton = () => {
         if (!props.enabled.save) return null
         return (
-            <Menu.Item name='save' key='save' onClick={() => handleSave()} style={toolbarItemStyle}>
-                <Icon name='save' />
-            </Menu.Item>
+            <ToolbarItem
+                onClick={() => handleSave()}
+                faIcon={faSave}
+            />
         )
     }
 
     const renderHelpButton = () => {
         if (!props.enabled.help) return null
         return (
-            <Menu.Item name='help' key='help'
-                active
-                onClick={() => toggleHelp()}
-                style={toolbarItemStyle}
-            >
-                <Icon name='help' />
+            <>
+                <ToolbarItem
+                    onClick={() => toggleHelp()}
+                    faIcon={faQuestion}
+                />
                 <Prompt
                     active={showHelp}
+                    onClick={() => toggleHelp()}
                     content={
                         <div>
                             <Card.Group>
@@ -326,51 +316,43 @@ const ToolBar = (props) => {
                             </Card.Group>
                         </div>}
                 />
-            </Menu.Item>
+            </>
         )
     }
 
     const renderImgLabelInput = () => {
         if (!props.enabled.imgLabel) return null
         if (props.canvasConfig.img.actions.label) {
-            return <Menu.Item name='img label input'
-                // active={this.props.imgLabelInput.show} 
+            return <ToolbarItem
+                // active={this.props.imgLabelInput.show}
                 onClick={() => toggleImgLabelInput()}
-                style={toolbarItemStyle}
-            >
-                {siaIcons.textIcon()}
-            </Menu.Item>
+                faIcon={faTag}
+            />
         }
     }
 
     const renderImageSearch = () => {
         if (!props.enabled.imgSearch) return null
 
-        return <Menu.Item
-            onClick={() => {
-                if (props.onImgageSearchClicked) return props.onImgageSearchClicked()
-            }}
-            style={toolbarItemStyle}
-        >
-            <FontAwesomeIcon icon={faSearch} />
-        </Menu.Item>
+        return <ToolbarItem faIcon={faSearch} onClick={() => {
+            if (props.onImgageSearchClicked) return props.onImgageSearchClicked()
+        }} />
     }
 
     const renderFullscreenBtn = () => {
         if (!props.enabled.fullscreen) return null
         return (
-            <Menu.Item name='expand arrows alternate'
+            <ToolbarItem
                 active={props.active.fullscreen}
                 onClick={() => toggleFullscreen()}
-                style={toolbarItemStyle}
-            >
-                <Icon name='expand arrows alternate' />
-            </Menu.Item>
+                faIcon={faMaximize}
+            />
         )
     }
 
     const renderSettingBtn = () => {
         if (!props.enabled.settings) return null
+
         return <SIASettingButton
             enabled={props.enabled.settings}
             uiConfig={props.uiConfig}
@@ -397,20 +379,22 @@ const ToolBar = (props) => {
         <div
             ref={toolBarGroup}
             style={{ position: 'fixed', top: position.top, left: position.left }}>
-            <Menu icon inverted vertical>
-                {renderSettingBtn()}
-                {renderFilterBtn()}
-                {renderSaveButton()}
-                {renderImgLabelInput()}
-                {renderImageSearch()}
-                {renderNavigation()}
-                {renderToolButtons()}
-                {renderJunkButton()}
-                {renderDeleteAllAnnosButton()}
-                {renderFullscreenBtn()}
-                {renderHelpButton()}
-            </Menu>
-        </div>
+            <CSidebar narrow className="sia-toolbar">
+                <CSidebarNav>
+                    {renderSettingBtn()}
+                    {renderFilterBtn()}
+                    {renderSaveButton()}
+                    {renderImgLabelInput()}
+                    {renderImageSearch()}
+                    {renderNavigation()}
+                    {renderToolButtons()}
+                    {renderJunkButton()}
+                    {renderDeleteAllAnnosButton()}
+                    {renderFullscreenBtn()}
+                    {renderHelpButton()}
+                </CSidebarNav>
+            </CSidebar>
+        </div >
     )
 }
 

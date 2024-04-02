@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { Popup, Icon, Menu, Divider, Checkbox } from 'semantic-ui-react'
 import * as filterTools from './filterTools'
 import * as tbe from './types/toolbarEvents'
+import { faFilter } from '@fortawesome/free-solid-svg-icons'
+import { CPopover } from '@coreui/react'
+import ToolbarItem from './ToolbarItem'
 class SIAFilterButton extends Component {
 
     constructor(props) {
@@ -163,17 +166,11 @@ class SIAFilterButton extends Component {
             {this.renderClahe()}
         </div>
         return (
-            <Popup trigger={
-                <Menu.Item name='filter' active={this.state.active} style={this.props.toolbarItemStyle}>
-                    <Icon name='filter' color={this.state.color} />
-                </Menu.Item>
-            }
-                content={popupContent}
-                position={"right center"}
-                pinned
-                on="click"
-                style={{ zIndex: 7000 }}
-            />
+            <CPopover content={popupContent} placement='right'>
+                <span>
+                    <ToolbarItem faIcon={faFilter} />
+                </span>
+            </CPopover>
         )
     }
 }

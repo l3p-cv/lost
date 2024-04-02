@@ -1,0 +1,13 @@
+.sia-toolbar {
+    border-radius: 0 5px 5px 0;
+    background: #1b1c1d;
+    width: 55px;
+    cursor: pointer;
+    padding-bottom: 0;
+}
+
+.sia-toolbar-item {
+    padding: 13px 0px;
+    display: flex;
+    justify-content: center;
+}
