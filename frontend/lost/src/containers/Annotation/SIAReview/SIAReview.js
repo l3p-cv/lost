@@ -98,6 +98,7 @@ const SIAReview = (props) => {
         if (props.annos) {
             requestImageFromBackend()
             props.siaImgIsJunk(props.annos.image.isJunk)
+            setIsJunk(props.annos.image.isJunk)
         }
 
     }, [props.annos])

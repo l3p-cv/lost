@@ -241,7 +241,9 @@ class Canvas extends Component {
                 this.setState({
                     isJunk: this.props.isJunk
                 })
-                if (this.state.imageLoaded) {
+
+                // do not save junk changes when image is currently changing (comparing junk state of previous and next image)
+                if (this.state.imageLoaded && !this.props.isImageChanging) {
                     this.handleAnnoSaveEvent(canvasActions.IMG_JUNK_UPDATE, undefined,
                         { isJunk: this.props.isJunk })
                 }

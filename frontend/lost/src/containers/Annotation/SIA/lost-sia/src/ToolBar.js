@@ -212,8 +212,6 @@ const ToolBar = (props) => {
     const renderJunkButton = () => {
         if (!props.enabled.junk) return null
 
-        console.info("J2", props.active.isJunk)
-
         return (
             <ToolbarItem
                 active={props.active.isJunk}

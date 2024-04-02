@@ -455,6 +455,7 @@ const Sia = (props) => {
                 blocked={props.blockCanvas}
                 defaultLabel={props.defaultLabel}
                 preventScrolling={props.preventScrolling}
+                isImageChanging={props.isImageChanging}
             />
             <ToolBar
                 onToolBarEvent={

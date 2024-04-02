@@ -637,6 +637,7 @@ const SiaWrapper = (props) => {
                 // nextAnnoId={nextAnnoId}
                 annoSaveResponse={annoSaveResponse}
                 annos={annos.annotations}
+                isImageChanging={blockNextImageTrigger}
                 imageMeta={annos.image}
                 imageBlob={image.data}
                 possibleLabels={props.possibleLabels}
