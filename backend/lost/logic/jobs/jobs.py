@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from zipfile import ZipFile
 from io import BytesIO
 
-from lostconfig import LOSTConfig
+from lost.logic.file_man import FileMan
 from lost.logic.file_access import UserFileAccess
 from lost.pyapi import pipe_elements
 from lost.logic.db_access import UserDbAccess
@@ -303,3 +303,33 @@ def delete_ds_export(export_id, user_id):
     export_path = ufa.get_export_ds_path(export_id)
     ufa.rm(export_path, True)
     dbm.close_session()
+
+
+def export_dataset_parquet(user_id, path, fs_id, dataset_id):
+    try:
+        my_logger = get_graylog_logger('export_dataset_parquet')
+        dbm = access.DBMan(config.LOSTConfig())
+        dba = UserDbAccess(dbm, user_id)
+        fs_db = dbm.get_fs(fs_id=fs_id)
+        fm = FileMan(fs_db=fs_db)
+        
+        store_dir = os.path.join(f'/{path}')
+        fm.mkdirs(store_dir)
+        store_path = os.path.join(store_dir, f'{dataset_id}.parquet') 
+        dataset = dbm.get_dataset(dataset_id)
+        df_list = []
+        if dataset is not None:
+            child_datasets = dbm.get_child_datasets_by_parent_ds_id(dataset.idx)
+            for cd in child_datasets:
+                anno_tasks = dbm.get_anno_tasks_by_dataset_id(cd.idx)
+                for at in anno_tasks:
+                    pe = dba.get_alien(at.pipe_element_id)
+                    alien = pipe_elements.AnnoTask(pe, dbm)
+                    df = alien.inp.to_df()
+                    df = df[df['img_state'] == 4]
+                    df_list.append(df)           
+        
+        ds = lds.LOSTDataset(df_list, fm.fs)
+        ds.to_parquet(store_path)
+    except:
+        my_logger.error(traceback.format_exc())

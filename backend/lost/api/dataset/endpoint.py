@@ -2,12 +2,11 @@ from flask import jsonify, request
 from flask_restx import Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.datastructures import ImmutableMultiDict
-import json
-
 from lost.api.api import api
 from lost.api.sia.api_definition import annotations, image
 from lost.db import access, roles
-from lost.logic import sia
+from lost.logic.jobs.jobs import export_dataset_parquet
+from lost.logic import dask_session
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.api.dataset.form_validation import create_validation_error_message, CreateDatasetForm, DatasetReviewForm, UpdateDatasetForm
 from lost.db.model import Dataset
@@ -510,3 +509,18 @@ class DatasetReviewImageSearch(Resource):
             })
         
         return found_images
+@namespace.route('/export_ds_parquet/<int:fs_id>/<path:path>/<int:dataset_id>')
+@api.doc(security='apikey')
+class DatasetParquetExport(Resource):
+    @api.doc(description="Export dataset as parquet to a given file system")
+    @jwt_required
+    def get(self, fs_id, path, dataset_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        client = dask_session.get_client(user)
+        client.submit(export_dataset_parquet, identity, path, fs_id, dataset_id)
+        return "success", 200

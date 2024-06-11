@@ -60,6 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Export lost pipelines to zip file
 - Extendend Logging:
   - Added option for using graylog as central logging platform (Linux support only !)
+- Export Dataset parquet endpoint
 ### Changed
 - Use fsspec for filesystem abstraction
   * SIA: Do not send any image urls to frontend

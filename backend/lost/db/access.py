@@ -1295,3 +1295,10 @@ class DBMan(object):
             AND a.idx = i.anno_task_id \
             AND i.img_path LIKE '%{search_str}%';"
         return self.session.execute(text(sql))
+
+    def get_child_datasets_by_parent_ds_id(self, dataset_id):
+        return self.session.query(model.Dataset).filter(model.Dataset.parent_id == dataset_id).all()
+    
+    def get_anno_tasks_by_dataset_id(self, dataset_id):
+        return self.session.query(model.AnnoTask).filter(model.AnnoTask.dataset_id == dataset_id).all()
+        
