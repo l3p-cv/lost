@@ -509,18 +509,21 @@ class DatasetReviewImageSearch(Resource):
             })
         
         return found_images
-@namespace.route('/export_ds_parquet/<int:fs_id>/<path:path>/<int:dataset_id>')
+@namespace.route('/export_ds_parquet/<int:dataset_id>')
 @api.doc(security='apikey')
 class DatasetParquetExport(Resource):
     @api.doc(description="Export dataset as parquet to a given file system")
     @jwt_required
-    def get(self, fs_id, path, dataset_id):
+    def post(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        data = request.json
+        path = data['store_path']
+        fs_id = int(data['fs_id'])
         client = dask_session.get_client(user)
         client.submit(export_dataset_parquet, identity, path, fs_id, dataset_id)
         return "success", 200

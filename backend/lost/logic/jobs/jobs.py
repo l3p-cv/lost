@@ -343,19 +343,6 @@ def export_dataset_parquet(user_id, path, fs_id, dataset_id):
                 df_list.append(df)           
         else:
             my_logger.warning(f'Dataset not found ds_id: {dataset_id}!')
-
-        # dataset = dbm.get_dataset(dataset_id)
-        # df_list = []
-        # if dataset is not None:
-        #     child_datasets = dbm.get_child_datasets_by_parent_ds_id(dataset.idx)
-        #     for cd in child_datasets:
-        #         anno_tasks = dbm.get_anno_tasks_by_dataset_id(cd.idx)
-        #         for at in anno_tasks:
-        #             pe = dba.get_alien(at.pipe_element_id)
-        #             alien = pipe_elements.AnnoTask(pe, dbm)
-        #             df = alien.inp.to_df()
-        #             df = df[df['img_state'] == 4]
-        #             df_list.append(df)           
         
         ds = lds.LOSTDataset(df_list, fm.fs)
         ds.to_parquet(store_path)
