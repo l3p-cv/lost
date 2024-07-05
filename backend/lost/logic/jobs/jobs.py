@@ -304,32 +304,61 @@ def delete_ds_export(export_id, user_id):
     ufa.rm(export_path, True)
     dbm.close_session()
 
+def get_all_annotasks_for_ds(dbm:access.DBMan, ds_id):
+    res_list = list()
+    child_datasets = dbm.get_child_datasets_by_parent_ds_id(ds_id)
+    for cd in child_datasets:
+        res_list += get_all_annotasks_for_ds(dbm, cd.idx)
+    anno_tasks = dbm.get_anno_tasks_by_dataset_id(ds_id)
+    for at in anno_tasks:
+        res_list.append(at.pipe_element_id)
+        # pe = dba.get_alien(at.pipe_element_id)
+        # alien = pipe_elements.AnnoTask(pe, dbm)
+        # res_list.append(alien)
+    return res_list
 
 def export_dataset_parquet(user_id, path, fs_id, dataset_id):
     try:
         my_logger = get_graylog_logger('export_dataset_parquet')
+        my_logger.info(f'Start dataset export for ds: {dataset_id}, on fs: {fs_id} to path: {path}')
         dbm = access.DBMan(config.LOSTConfig())
         dba = UserDbAccess(dbm, user_id)
         fs_db = dbm.get_fs(fs_id=fs_id)
         fm = FileMan(fs_db=fs_db)
-        
-        store_dir = os.path.join(f'/{path}')
-        fm.mkdirs(store_dir)
-        store_path = os.path.join(store_dir, f'{dataset_id}.parquet') 
+        store_dir = os.path.split(path)[0]
+        fm.mkdirs(store_dir, exist_ok=True)
+        # store_path = os.path.join(store_dir, f'{dataset_id}.parquet') 
+        store_path = path
         dataset = dbm.get_dataset(dataset_id)
-        df_list = []
         if dataset is not None:
-            child_datasets = dbm.get_child_datasets_by_parent_ds_id(dataset.idx)
-            for cd in child_datasets:
-                anno_tasks = dbm.get_anno_tasks_by_dataset_id(cd.idx)
-                for at in anno_tasks:
-                    pe = dba.get_alien(at.pipe_element_id)
-                    alien = pipe_elements.AnnoTask(pe, dbm)
-                    df = alien.inp.to_df()
-                    df = df[df['img_state'] == 4]
-                    df_list.append(df)           
+            pe_id_list = get_all_annotasks_for_ds(dbm, dataset_id)
+
+            df_list = []
+            for pe_id in pe_id_list:
+                pe = dba.get_alien(pe_id)
+                alien = pipe_elements.AnnoTask(pe, dbm)
+                my_logger.info(f'Start export of annotask: **{alien.name}** with id: {alien.idx}')
+                df = alien.inp.to_df()
+                df = df[df['img_state'] == 4]
+                df_list.append(df)           
+        else:
+            my_logger.warning(f'Dataset not found ds_id: {dataset_id}!')
+
+        # dataset = dbm.get_dataset(dataset_id)
+        # df_list = []
+        # if dataset is not None:
+        #     child_datasets = dbm.get_child_datasets_by_parent_ds_id(dataset.idx)
+        #     for cd in child_datasets:
+        #         anno_tasks = dbm.get_anno_tasks_by_dataset_id(cd.idx)
+        #         for at in anno_tasks:
+        #             pe = dba.get_alien(at.pipe_element_id)
+        #             alien = pipe_elements.AnnoTask(pe, dbm)
+        #             df = alien.inp.to_df()
+        #             df = df[df['img_state'] == 4]
+        #             df_list.append(df)           
         
         ds = lds.LOSTDataset(df_list, fm.fs)
         ds.to_parquet(store_path)
+        my_logger.info(f'Export to {path} was successfull!')
     except:
         my_logger.error(traceback.format_exc())
