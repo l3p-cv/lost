@@ -526,4 +526,5 @@ class DatasetParquetExport(Resource):
         fs_id = int(data['fs_id'])
         client = dask_session.get_client(user)
         client.submit(export_dataset_parquet, identity, path, fs_id, dataset_id)
+        dask_session.close_client(user, client)
         return "success", 200

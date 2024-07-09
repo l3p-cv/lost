@@ -19,6 +19,13 @@ def get_client(user):
         )
     return client
     
+def close_client(user, client):
+    if config.worker_management == 'dynamic':
+        print('TO DO')
+    else:
+        client.close()
+    return client
+
 def _read_fs_img(fs, img_path):
     fm = FileMan(fs_db=fs)
     try:

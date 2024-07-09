@@ -351,6 +351,7 @@ class GenerateExport(Resource):
                                     dExport.idx, dExport.name, splits, 
                                     export_type, include_images, 
                                     annotated_images_only)
+                dask_session.close_client(user, client)
                 dbm.close_session()
                 return "Success", 200
     

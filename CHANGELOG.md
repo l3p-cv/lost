@@ -91,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Filter Bug -> Do not copy annotations from previous image when filter is active!
 - Mia anno_based feature + Mia request again
 - EditPipeline: Fixed leaking user information to unprivileged users
+- close dask client in webservice endpoints to prevent memory leaks
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 
