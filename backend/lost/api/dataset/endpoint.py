@@ -524,7 +524,11 @@ class DatasetParquetExport(Resource):
         data = request.json
         path = data['store_path']
         fs_id = int(data['fs_id'])
+        annotated_only = True
+        if 'annotated_only' in data:
+            annotated_only = data['annotated_only']
         client = dask_session.get_client(user)
-        client.submit(export_dataset_parquet, identity, path, fs_id, dataset_id)
+        client.submit(export_dataset_parquet, identity, path, fs_id, dataset_id, annotated_only, 
+                      workers=LOST_CONFIG.worker_name)
         dask_session.close_client(user, client)
         return "success", 200

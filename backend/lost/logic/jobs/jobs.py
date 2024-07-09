@@ -317,7 +317,7 @@ def get_all_annotasks_for_ds(dbm:access.DBMan, ds_id):
         # res_list.append(alien)
     return res_list
 
-def export_dataset_parquet(user_id, path, fs_id, dataset_id):
+def export_dataset_parquet(user_id, path, fs_id, dataset_id, annotated_only):
     try:
         my_logger = get_graylog_logger('export_dataset_parquet')
         my_logger.info(f'Start dataset export for ds: {dataset_id}, on fs: {fs_id} to path: {path}')
@@ -339,7 +339,8 @@ def export_dataset_parquet(user_id, path, fs_id, dataset_id):
                 alien = pipe_elements.AnnoTask(pe, dbm)
                 my_logger.info(f'Start export of annotask: **{alien.name}** with id: {alien.idx}')
                 df = alien.inp.to_df()
-                df = df[df['img_state'] == 4]
+                if annotated_only:
+                    df = df[df['img_state'] == 4]
                 df_list.append(df)           
         else:
             my_logger.warning(f'Dataset not found ds_id: {dataset_id}!')

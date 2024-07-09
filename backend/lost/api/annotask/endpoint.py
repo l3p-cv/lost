@@ -350,7 +350,8 @@ class GenerateExport(Resource):
                 client.submit(export_ds, anno_task.pipe_element_id, identity, 
                                     dExport.idx, dExport.name, splits, 
                                     export_type, include_images, 
-                                    annotated_images_only)
+                                    annotated_images_only,
+                                    workers=LOST_CONFIG.worker_name)
                 dask_session.close_client(user, client)
                 dbm.close_session()
                 return "Success", 200
