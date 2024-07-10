@@ -491,6 +491,10 @@ class ScriptOutput(Output):
             # else:
             #     img_sim_class = 1
             img_sim_class = calc_sim_class(df,'img')
+            if 'img_is_junk' in df:
+                is_junk = df['img_is_junk'].values[0]
+            else:
+                is_junk = None
             # rel_img_path = fm.make_path_relative(img_path)
             anno_task_id = pe.anno_task.idx
             img_anno = model.ImageAnno(anno_task_id=anno_task_id,
@@ -498,6 +502,7 @@ class ScriptOutput(Output):
                                     state=state.Anno.UNLOCKED,
                                     result_id=self._result_map[pe.idx],
                                     iteration=self._script._pipe_element.iteration,
+                                    is_junk=is_junk,
                                     # frame_n=df['img_frame_n'].values[0],
                                     sim_class=img_sim_class,
                                     fs_id=fs.lost_fs.idx)
