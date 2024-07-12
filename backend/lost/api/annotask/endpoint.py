@@ -9,6 +9,7 @@ from lost.api.api import api
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.logic.file_man import AppFileMan
 from lost.logic.file_access import UserFileAccess
+from lost.logic.db_access import UserDbAccess
 from lost.db import access, roles, model, dtype
 from lost.api.annotask.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
@@ -303,61 +304,63 @@ class GenerateExport(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity() 
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
+        udb = UserDbAccess(dbm, user)
+        anno_task = dbm.get_anno_task(annotask_id)
+        # raise Exception(f'may_access_pe: {udb.may_access_pe(anno_task.pipe_element)}')
+        if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            anno_task = dbm.get_anno_task(annotask_id)
-            pipe_manager_id = anno_task.pipe_element.pipe.manager_id
-            if pipe_manager_id == user.idx:
-                data = json.loads(request.data)
-                
-                export_config = data['export_config']
-                export_name = export_config['exportName']
-                export_type = export_config['exportType'] # LOST_Dataset, PascalVOC, YOLO, MS_Coco, CSV
-                include_images = export_config['includeImages']
-                annotated_images_only = export_config['annotatedOnly']
-                random_splits_active = export_config['randomSplits']['active']
-                splits=None
-                if random_splits_active:
-                    splits = export_config['randomSplits']
-                for r in dbm.count_all_image_annos(anno_task_id=anno_task.idx)[0]:
-                    img_count = r
-                for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
-                    annotated_img_count = img_count - r
-                
-                # check if amount of images to export is bigger than given limit in config
-                if include_images:
-                    if annotated_images_only:
-                        if annotated_img_count > LOST_CONFIG.img_export_limit:
-                            include_images = False
-                    if img_count > LOST_CONFIG.img_export_limit:
+            # anno_task = dbm.get_anno_task(annotask_id)
+            # pipe_manager_id = anno_task.pipe_element.pipe.manager_id
+            # if pipe_manager_id == user.idx:
+            data = json.loads(request.data)
+            
+            export_config = data['export_config']
+            export_name = export_config['exportName']
+            export_type = export_config['exportType'] # LOST_Dataset, PascalVOC, YOLO, MS_Coco, CSV
+            include_images = export_config['includeImages']
+            annotated_images_only = export_config['annotatedOnly']
+            random_splits_active = export_config['randomSplits']['active']
+            splits=None
+            if random_splits_active:
+                splits = export_config['randomSplits']
+            for r in dbm.count_all_image_annos(anno_task_id=anno_task.idx)[0]:
+                img_count = r
+            for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
+                annotated_img_count = img_count - r
+            
+            # check if amount of images to export is bigger than given limit in config
+            if include_images:
+                if annotated_images_only:
+                    if annotated_img_count > LOST_CONFIG.img_export_limit:
                         include_images = False
+                if img_count > LOST_CONFIG.img_export_limit:
+                    include_images = False
 
-                dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
-                                                name=export_name, 
-                                                progress=1, 
-                                                anno_task_progress=anno_task.progress,
-                                                img_count=annotated_img_count,
-                                                )
-                dbm.save_obj(dExport)
-                client = dask_session.get_client(user)
-                # flask.current_app.logger.info(f'pe_id: {anno_task.pipe_element_id}, identity: {identity}, export_id: {dExport.idx}, export_name: {dExport.name}, splits: {splits}, export_type: {export_type}, include_images: {include_images}, annotated_images_only: {annotated_images_only}')
-                # export_ds(anno_task.pipe_element_id, identity, 
-                #     dExport.idx, dExport.name, splits, 
-                #     export_type, include_images, 
-                #     annotated_images_only)
-                client.submit(export_ds, anno_task.pipe_element_id, identity, 
-                                    dExport.idx, dExport.name, splits, 
-                                    export_type, include_images, 
-                                    annotated_images_only,
-                                    workers=LOST_CONFIG.worker_name)
-                dask_session.close_client(user, client)
-                dbm.close_session()
-                return "Success", 200
-    
+            dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
+                                            name=export_name, 
+                                            progress=1, 
+                                            anno_task_progress=anno_task.progress,
+                                            img_count=annotated_img_count,
+                                            )
+            dbm.save_obj(dExport)
+            client = dask_session.get_client(user)
+            # flask.current_app.logger.info(f'pe_id: {anno_task.pipe_element_id}, identity: {identity}, export_id: {dExport.idx}, export_name: {dExport.name}, splits: {splits}, export_type: {export_type}, include_images: {include_images}, annotated_images_only: {annotated_images_only}')
+            # export_ds(anno_task.pipe_element_id, identity, 
+            #     dExport.idx, dExport.name, splits, 
+            #     export_type, include_images, 
+            #     annotated_images_only)
+            client.submit(export_ds, anno_task.pipe_element_id, identity, 
+                                dExport.idx, dExport.name, splits, 
+                                export_type, include_images, 
+                                annotated_images_only,
+                                workers=LOST_CONFIG.worker_name)
+            dask_session.close_client(user, client)
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "Success", 200
+            # dbm.close_session()
+            # return "You are not authorized.", 401
 
 @namespace.route('/anno_task_exports/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
@@ -368,33 +371,32 @@ class DataExports(Resource):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATOR):
+        udb = UserDbAccess(dbm, user)
+        anno_task = dbm.get_anno_task(annotask_id)
+        if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            anno_task = dbm.get_anno_task(annotask_id)
-            pipe_manager_id = anno_task.pipe_element.pipe.manager_id
-            if pipe_manager_id == user.idx:
-                d_exports = dbm.get_anno_task_export(anno_task_id=anno_task.idx)
-                ret_json = []
-                for export in d_exports:
-                    export_json = dict()
-                    export_json['id'] = export.idx
-                    export_json['name'] = export.name
-                    export_json['timestamp'] = export.timestamp.strftime(settings.STRF_TIME)
-                    file_size = 0
-                    file_type = None
-                    if export.file_size:
-                        file_size = int(export.file_size)
-                    if export.file_path:
-                        file_type = export.file_path.split('.')[-1] 
-                    export_json['fileSize'] = file_size
-                    export_json['progress'] = export.progress
-                    export_json['annotaskProgress'] = export.anno_task_progress
-                    export_json['imgCount'] = export.img_count
-                    export_json['filePath'] = export.file_path
-                    export_json['fileType'] = file_type
-                    ret_json.append(export_json)
+            d_exports = dbm.get_anno_task_export(anno_task_id=anno_task.idx)
+            ret_json = []
+            for export in d_exports:
+                export_json = dict()
+                export_json['id'] = export.idx
+                export_json['name'] = export.name
+                export_json['timestamp'] = export.timestamp.strftime(settings.STRF_TIME)
+                file_size = 0
+                file_type = None
+                if export.file_size:
+                    file_size = int(export.file_size)
+                if export.file_path:
+                    file_type = export.file_path.split('.')[-1] 
+                export_json['fileSize'] = file_size
+                export_json['progress'] = export.progress
+                export_json['annotaskProgress'] = export.anno_task_progress
+                export_json['imgCount'] = export.img_count
+                export_json['filePath'] = export.file_path
+                export_json['fileType'] = file_type
+                ret_json.append(export_json)
             dbm.close_session()
             return ret_json, 200
 @namespace.route('/download_export/<int:anno_task_export_id>')
@@ -405,31 +407,34 @@ class DataExportDownload(Resource):
     def get(self, anno_task_export_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
+
         user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
+        udb = UserDbAccess(dbm, user)
+        # anno_task = dbm.get_anno_task(annotask_id)
+        anno_task_export = dbm.get_anno_task_export(anno_task_export_id=anno_task_export_id)
+        anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
+        if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You are not authorized.", 401
         else:
             fs_db = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, fs_db)
-            anno_task_export = dbm.get_anno_task_export(anno_task_export_id=anno_task_export_id)
-            anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
-            pipe_manager_id = anno_task.pipe_element.pipe.manager_id
-            if pipe_manager_id == user.idx:
-                export_name = os.path.basename(anno_task_export.file_path)
-            # src = fm.get_pipe_project_path(content['namespace'])
-                my_file = ufa.load_file(anno_task_export.file_path)
-                # f = BytesIO()
-                # # f = open('/home/lost/app/test.zip', 'wb')
-                
-                # f.seek(0)
-                # resp = make_response(f.read())
-                resp = make_response(my_file)
-                resp.headers["Content-Disposition"] = f"attachment; filename={export_name}"
-                resp.headers["Content-Type"] = "blob"
-                dbm.close_session()
-                return resp
-            return 500
+            # pipe_manager_id = anno_task.pipe_element.pipe.manager_id
+            # if pipe_manager_id == user.idx:
+            export_name = os.path.basename(anno_task_export.file_path)
+        # src = fm.get_pipe_project_path(content['namespace'])
+            my_file = ufa.load_file(anno_task_export.file_path)
+            # f = BytesIO()
+            # # f = open('/home/lost/app/test.zip', 'wb')
+            
+            # f.seek(0)
+            # resp = make_response(f.read())
+            resp = make_response(my_file)
+            resp.headers["Content-Disposition"] = f"attachment; filename={export_name}"
+            resp.headers["Content-Type"] = "blob"
+            dbm.close_session()
+            return resp
+            # return 500
 
 @namespace.route('/delete_export/<int:anno_task_export_id>')
 @namespace.param('anno_task_export_id', 'The id of the annotation task.')

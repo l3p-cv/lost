@@ -81,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SIA:
   - Save changed and created annotations instantly to backend
 ### Fixed
+- Data Export Webservices: Fixed Permissions
 - PipeEngine bug: Created wrong pipe graph, when first element in pe list was 
   not first element in pipeline graph
 - Fixed raw sql in access to be compatible with postgresql
