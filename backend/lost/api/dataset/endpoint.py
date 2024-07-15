@@ -5,7 +5,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from lost.api.api import api
 from lost.api.sia.api_definition import annotations, image
 from lost.db import access, roles
-from lost.logic.jobs.jobs import export_dataset_parquet, get_all_annotasks_for_ds
+from lost.logic.jobs.jobs import export_dataset_parquet, get_all_annotask_ids_for_ds
 from lost.logic import dask_session
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.api.dataset.form_validation import create_validation_error_message, CreateDatasetForm, DatasetReviewForm, UpdateDatasetForm
@@ -496,8 +496,7 @@ class DatasetReviewImageSearch(Resource):
         data = request.json
         search_str = data['filter']
 
-        # db_result = dbm.get_search_images_in_dataset(dataset_id, search_str)
-        anno_task_ids = get_all_annotasks_for_ds(dbm, dataset_id)
+        anno_task_ids = get_all_annotask_ids_for_ds(dbm, dataset_id)
         db_result = dbm.get_search_images_in_annotask_list(anno_task_ids, search_str)
         
         found_images = []

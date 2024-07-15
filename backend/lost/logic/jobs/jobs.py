@@ -304,14 +304,27 @@ def delete_ds_export(export_id, user_id):
     ufa.rm(export_path, True)
     dbm.close_session()
 
-def get_all_annotasks_for_ds(dbm:access.DBMan, ds_id):
+def get_all_annotask_pe_ids_for_dataset(dbm:access.DBMan, ds_id):
     res_list = list()
     child_datasets = dbm.get_child_datasets_by_parent_ds_id(ds_id)
     for cd in child_datasets:
-        res_list += get_all_annotasks_for_ds(dbm, cd.idx)
+        res_list += get_all_annotask_pe_ids_for_dataset(dbm, cd.idx)
     anno_tasks = dbm.get_anno_tasks_by_dataset_id(ds_id)
     for at in anno_tasks:
         res_list.append(at.pipe_element_id)
+        # pe = dba.get_alien(at.pipe_element_id)
+        # alien = pipe_elements.AnnoTask(pe, dbm)
+        # res_list.append(alien)
+    return res_list
+
+def get_all_annotask_ids_for_ds(dbm:access.DBMan, ds_id):
+    res_list = list()
+    child_datasets = dbm.get_child_datasets_by_parent_ds_id(ds_id)
+    for cd in child_datasets:
+        res_list += get_all_annotask_ids_for_ds(dbm, cd.idx)
+    anno_tasks = dbm.get_anno_tasks_by_dataset_id(ds_id)
+    for at in anno_tasks:
+        res_list.append(at.idx)
         # pe = dba.get_alien(at.pipe_element_id)
         # alien = pipe_elements.AnnoTask(pe, dbm)
         # res_list.append(alien)
@@ -331,7 +344,7 @@ def export_dataset_parquet(user_id, path, fs_id, dataset_id, annotated_only):
         store_path = path
         dataset = dbm.get_dataset(dataset_id)
         if dataset is not None:
-            pe_id_list = get_all_annotasks_for_ds(dbm, dataset_id)
+            pe_id_list = get_all_annotask_pe_ids_for_dataset(dbm, dataset_id)
 
             df_list = []
             for pe_id in pe_id_list:
