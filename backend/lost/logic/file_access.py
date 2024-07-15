@@ -51,6 +51,8 @@ class UserFileAccess(object):
         user = self.user
         if anno_task.pipe_element.pipe.manager_id == user.idx:
             return self.fm.load_img(db_img.img_path)
+        elif user.has_role(roles.ADMINISTRATOR):
+            return self.fm.load_img(db_img.img_path)
         elif anno_task.group_id in [g.group_id for g in user.groups]:
             return self.fm.load_img(db_img.img_path)
         else:
