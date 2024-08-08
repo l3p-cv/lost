@@ -348,13 +348,16 @@ def export_dataset_parquet(user_id, path, fs_id, dataset_id, annotated_only):
 
             df_list = []
             for pe_id in pe_id_list:
-                pe = dba.get_alien(pe_id)
-                alien = pipe_elements.AnnoTask(pe, dbm)
-                my_logger.info(f'Start export of annotask: **{alien.name}** with id: {alien.idx}')
-                df = alien.inp.to_df()
-                if annotated_only:
-                    df = df[df['img_state'] == 4]
-                df_list.append(df)           
+                try:
+                    pe = dba.get_alien(pe_id)
+                    alien = pipe_elements.AnnoTask(pe, dbm)
+                    my_logger.info(f'Start export of annotask: **{alien.name}** with id: {alien.idx}')
+                    df = alien.inp.to_df()
+                    if annotated_only:
+                        df = df[df['img_state'] == 4]
+                    df_list.append(df)           
+                except:
+                    my_logger.warning(traceback.format_exc())
         else:
             my_logger.warning(f'Dataset not found ds_id: {dataset_id}!')
         
