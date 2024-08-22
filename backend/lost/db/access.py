@@ -1317,6 +1317,7 @@ class DBMan(object):
           .filter(model.Pipe.state != state.Pipe.PAUSED)
           .filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
             (model.AnnoTask.group_id.in_(group_ids)))
+            .order_by(model.AnnoTask.timestamp.desc())
             .limit(page_size)
             .offset(page * page_size)
         )
