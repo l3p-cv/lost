@@ -18,7 +18,7 @@ const AnnotatorDashboard = () => {
     const workingOnAnnoTask = useSelector((state) => state.annoTask.workingOnAnnoTask)
 
     useEffect(() => {
-        dispatch(getAnnoTasks())
+        // dispatch(getAnnoTasks())
         dispatch(getWorkingOnAnnoTask())
 
         // const intervalAction = () => dispatch(getAnnoTasks())
@@ -41,7 +41,7 @@ const AnnotatorDashboard = () => {
         if (workingOnAnnoTask !== null) {
             return (
                 <CRow>
-                    <CCol className='mt-3'>
+                    <CCol className="mt-3">
                         <CCard>
                             <CCardHeader>
                                 <h4>Working on</h4>
@@ -74,8 +74,7 @@ const AnnotatorDashboard = () => {
         <CContainer>
             {renderWorkingOn()}
             <CRow>
-                <CCol className='mt-3'>
-
+                <CCol className="mt-3">
                     <CCard>
                         <CCardHeader>
                             <h4>My Annotation Tasks</h4>
