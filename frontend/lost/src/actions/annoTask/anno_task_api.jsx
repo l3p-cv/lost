@@ -13,12 +13,10 @@ export const useUpdateConfig = () => {
 }
 
 export const useGetStorageSettings = (annoTaskId) => {
-    return useQuery(
-        ['annoDataStorageSettings'],
-        () =>
-            axios
-                .get(`${API_URL}/annotask/get_storage_settings/${annoTaskId}`)
-                .then((res) => res.data)
+    return useQuery(['annoDataStorageSettings'], () =>
+        axios
+            .get(`${API_URL}/annotask/get_storage_settings/${annoTaskId}`)
+            .then((res) => res.data),
     )
 }
 
@@ -62,15 +60,21 @@ export const useDeleteExport = () => {
 }
 
 export const useAnnotask = () => {
-    return useMutation(
-        (annoTaskId) => axios.get(`${API_URL}/annotask/id/${annoTaskId}`).then((res) => res.data)
+    return useMutation((annoTaskId) =>
+        axios.get(`${API_URL}/annotask/id/${annoTaskId}`).then((res) => res.data),
     )
 }
 
 export const useChooseAnnotask = () => {
-    return useMutation(
-        (annoTaskId) => axios.post(`${API_URL}/annotask?id=${annoTaskId}`).then((res) => res.data)
+    return useMutation((annoTaskId) =>
+        axios.post(`${API_URL}/annotask?id=${annoTaskId}`).then((res) => res.data),
     )
 }
 
-
+export const useAnnotaskListFiltered = () => {
+    return useMutation((datatableInfo) =>
+        axios
+            .post(`${API_URL}/annotask/annotask_list_filter`, datatableInfo)
+            .then((res) => res.data),
+    )
+}

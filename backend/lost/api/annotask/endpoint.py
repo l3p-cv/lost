@@ -463,3 +463,34 @@ class DeleteExport(Resource):
     
             dbm.close_session()
             return "You are not authorized.", 401
+        
+    
+@namespace.route('/annotask_list_filter')
+@api.doc(description='Anno List get method.') 
+class AnnoTaskList(Resource):
+    @jwt_required
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+           dbm.close_session()
+           return make_response("You are not authorized.", 401)
+        else:
+            data = request.data
+            data = json.loads(data)
+            
+            group_ids = [g.group.idx for g in user.groups]
+            anno_tasks = dbm.get_annotasks_filtered(group_ids=group_ids, page_size=data['pageSize'], page=data['page'], sorted=data['sorted'])
+            total_pages = dbm.get_annotasks_total_pages(group_ids=group_ids, page_size=data['pageSize'])
+            
+            at_json = []
+            
+            for at in anno_tasks:
+                at_json.append(annotask_service.get_at_info(dbm, at, user_id=user.idx))
+            dbm.close_session()
+            plist = {
+                'pages': total_pages,
+                'rows': at_json
+                }
+            return plist

@@ -80,6 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed dot column name style to underscore style
 - SIA:
   - Save changed and created annotations instantly to backend
+- AnnoTask List:
+  - Use pagination
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on

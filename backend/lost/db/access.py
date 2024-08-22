@@ -1303,3 +1303,41 @@ class DBMan(object):
     def get_anno_tasks_by_dataset_id(self, dataset_id):
         return self.session.query(model.AnnoTask).filter(model.AnnoTask.dataset_id == dataset_id).all()
         
+    def get_annotasks_filtered(
+        self,
+        group_ids,
+        page_size,
+        page,
+        sorted
+    ):
+        query = (
+        self.session.query(model.AnnoTask)
+          .join(model.PipeElement, model.AnnoTask.pipe_element_id == model.PipeElement.idx)
+          .join(model.Pipe, model.Pipe.idx == model.PipeElement.pipe_id)
+          .filter(model.Pipe.state != state.Pipe.PAUSED)
+          .filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
+            (model.AnnoTask.group_id.in_(group_ids)))
+            .limit(page_size)
+            .offset(page * page_size)
+        )
+        return query.all()
+    
+    def get_annotasks_total_pages(
+        self,
+        group_ids,
+        page_size
+    ):
+        count = (
+            self.session.query(model.AnnoTask)
+            .join(model.PipeElement, model.AnnoTask.pipe_element_id == model.PipeElement.idx)
+            .join(model.Pipe, model.Pipe.idx == model.PipeElement.pipe_id)
+            .filter(model.Pipe.state != state.Pipe.PAUSED)
+            .filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
+            (model.AnnoTask.group_id.in_(group_ids)))
+            .count()
+        )
+
+        pages = count // page_size
+        if count % page_size:
+            pages += 1
+        return pages

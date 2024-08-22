@@ -97,7 +97,7 @@ def set_finished(dbm, anno_task_id):
 def get_current_annotask(dbm, user):
         if len(user.choosen_anno_tasks) > 0:
             anno_task = user.choosen_anno_tasks[0].anno_task
-            return __get_at_info(dbm, anno_task, user.idx, True)
+            return get_at_info(dbm, anno_task, user.idx, True)
         return None
 
 def get_available_annotasks(dbm, group_ids, user_id):
@@ -116,10 +116,10 @@ def get_available_annotasks(dbm, group_ids, user_id):
         if annotask.pipe_element.pipe.state == state.Pipe.PAUSED:
             pass
         else:
-            available_annotasks.append(__get_at_info(dbm, annotask, user_id))
+            available_annotasks.append(get_at_info(dbm, annotask, user_id))
     return available_annotasks
 
-def __get_at_info(dbm, annotask, user_id, amount_per_label=False):
+def get_at_info(dbm, annotask, user_id, amount_per_label=False):
     if annotask.pipe_element_id is None:
         raise Exception("No PipeElement for AnnoTask")
     pipeelement = dbm.get_pipe_element(pipe_e_id=annotask.pipe_element_id)
@@ -237,4 +237,4 @@ def __get_amount_per_label(dbm, pipeelement, finished, anno_type):
 
 def get_annotask_statistics(dbm, annotask_id):
     anno_task = dbm.get_anno_task(anno_task_id=annotask_id)
-    return __get_at_info(dbm, anno_task, None, True)
+    return get_at_info(dbm, anno_task, None, True)
