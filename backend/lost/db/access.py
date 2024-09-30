@@ -2,7 +2,7 @@ import sqlalchemy
 from sqlalchemy import exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from sqlalchemy.sql import text
 from lost.db import model, state, dtype
 import os
@@ -1308,13 +1308,27 @@ class DBMan(object):
         group_ids,
         page_size,
         page,
-        sorted
+        sorted,
+        filterOptions
     ):
+        filter_conditions = []
+        name = filterOptions['filteredName']
+        if name != '':
+            filter_conditions.append(
+            model.AnnoTask.name.like(f"%{name}%")
+        )
+        task_states = filterOptions['filteredStates']
+        if len(task_states) > 0:
+            filter_conditions.append(
+                model.AnnoTask.state.in_(task_states)
+            )
+            
         query = (
         self.session.query(model.AnnoTask)
           .join(model.PipeElement, model.AnnoTask.pipe_element_id == model.PipeElement.idx)
           .join(model.Pipe, model.Pipe.idx == model.PipeElement.pipe_id)
           .filter(model.Pipe.state != state.Pipe.PAUSED)
+          .filter(and_(*filter_conditions))
           .filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
             (model.AnnoTask.group_id.in_(group_ids)))
             .order_by(model.AnnoTask.timestamp.desc())
@@ -1326,13 +1340,27 @@ class DBMan(object):
     def get_annotasks_total_pages(
         self,
         group_ids,
-        page_size
-    ):
+        page_size,
+        filterOptions
+    ): 
+        filter_conditions = []
+        name = filterOptions['filteredName']
+        if name != '':
+            filter_conditions.append(
+            model.AnnoTask.name.like(f"%{name}%")
+        )
+        task_states = filterOptions['filteredStates']
+        if len(task_states) > 0:
+            filter_conditions.append(
+                model.AnnoTask.state.in_(task_states)
+            )
+        
         count = (
             self.session.query(model.AnnoTask)
             .join(model.PipeElement, model.AnnoTask.pipe_element_id == model.PipeElement.idx)
             .join(model.Pipe, model.Pipe.idx == model.PipeElement.pipe_id)
             .filter(model.Pipe.state != state.Pipe.PAUSED)
+            .filter(and_(*filter_conditions))
             .filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
             (model.AnnoTask.group_id.in_(group_ids)))
             .count()

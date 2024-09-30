@@ -1,18 +1,22 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Progress, Card, CardHeader, CardBody, Row, Col } from 'reactstrap'
-import { CRow } from '@coreui/react'
+import { CRow, CCol, CFormInput, CButtonToolbar } from '@coreui/react'
 import { getColor } from './utils'
 import AmountPerLabel from './AmountPerLabel'
 import IconButton from '../../../components/IconButton'
 import Modal from 'react-modal'
+import { useTranslation } from 'react-i18next'
 import { createColumnHelper } from '@tanstack/react-table'
 import 'react-table/react-table.css'
+import { faChartBar, faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FaFilter, FaTrashAlt } from 'react-icons/fa'
 
+import DropdownInput from '../../../components/DropdownInput'
+import SingleInputDateRangePicker from '../../../components/SingleInputDateRangePicker'
 import DataTable from '../../../components/NewDataTable'
 import actions from '../../../actions'
 import * as atActions from '../../../actions/annoTask/anno_task_api'
-import { faChartBar, faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -34,6 +38,7 @@ const customStyles = {
 }
 
 const MyAnnoTasks = ({ callBack, annoTasks }) => {
+    const { t } = useTranslation()
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [aTData, setATData] = useState([])
     const [page, setPage] = useState(0)
@@ -45,6 +50,11 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
     const specificAnnoTaskStatistic = useSelector(
         (state) => state.annoTask.annoTaskStatistic,
     )
+    const [resetFilters, setResetFilters] = useState(false)
+    const [beginFilterDate, setBeginFilterDate] = useState()
+    const [endFilterDate, setEndFilterDate] = useState()
+    const [filteredStates, setFilteredStates] = useState([])
+    const [filteredName, setFilteredName] = useState('')
 
     const openModal = useCallback(() => setModalIsOpen(true), [])
     const closeModal = useCallback(() => setModalIsOpen(false), [])
@@ -65,6 +75,12 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         mutate,
     } = atActions.useAnnotaskListFiltered()
 
+    const {
+        data: filterLabels,
+        isLoading: filterLabelsLoading,
+        refetch: fetchFilterLabels,
+    } = atActions.useFilterLabels()
+
     const handleStatisticsClick = useCallback(
         (annoTask) => {
             dispatch(getAnnoTaskStatistic(annoTask.id))
@@ -72,6 +88,9 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         },
         [dispatch, openModal],
     )
+    useEffect(() => {
+        fetchFilterLabels()
+    }, [])
 
     const refetch = () => {
         mutate({
@@ -79,12 +98,18 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
             page: datatableInfo.page,
             annoTaskListRandKey,
             sorted: datatableInfo.sorted,
-            filterOptions: {},
+            filterOptions: {
+                beginFilterDate,
+                endFilterDate,
+                filteredStates,
+                filteredName,
+            },
         })
     }
     useEffect(() => {
         if (annoTaskListRandKey) {
             refetch()
+            fetchFilterLabels()
         }
     }, [annoTaskListRandKey])
 
@@ -106,6 +131,23 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
             setATData(annoTaskListData.rows)
         }
     }, [annoTaskListData])
+
+    const handleStateUpdate = (label) => {
+        setFilteredStates(label)
+    }
+
+    const applyFilter = () => {
+        setAnnoTaskListRandKey(Date.now().toString())
+    }
+
+    useEffect(() => {
+        setResetFilters(false)
+    }, [resetFilters])
+
+    const resetFilter = () => {
+        setResetFilters(true)
+        setFilteredName('')
+    }
 
     const renderStatistic = () => {
         if (specificAnnoTaskStatistic) {
@@ -326,163 +368,90 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         return columns
     }
 
+    const stateAnnoTask = [
+        { id: 2, label: 'In progress' },
+        { id: 3, label: 'Finished' },
+    ]
+
+    const renderFilter = () => {
+        return (
+            <>
+                {filterLabels && (
+                    <>
+                        <CCol>
+                            <CButtonToolbar
+                                // className="justify-left"
+                                style={{
+                                    marginBottom: 10,
+                                    marginTop: 10,
+                                }}
+                            >
+                                <DropdownInput
+                                    onLabelUpdate={(label) => handleStateUpdate(label)}
+                                    placeholder={'State'}
+                                    options={stateAnnoTask}
+                                    reset={resetFilters}
+                                />
+                                <CFormInput
+                                    type="search"
+                                    style={{ width: 200, marginLeft: 20 }}
+                                    value={filteredName}
+                                    onChange={(e) => {
+                                        setFilteredName(e.target.value)
+                                    }}
+                                    relatedId={[1]}
+                                    placeholder="Name"
+                                />
+                                <IconButton
+                                    onClick={() => resetFilter()}
+                                    color="danger"
+                                    isOutline={false}
+                                    style={{ marginLeft: 20 }}
+                                    text="Reset filter"
+                                    icon={<FaTrashAlt />}
+                                />
+                                <IconButton
+                                    onClick={() => applyFilter()}
+                                    color="primary"
+                                    isOutline={false}
+                                    style={{ marginLeft: 20 }}
+                                    text="Apply filter"
+                                    icon={<FaFilter />}
+                                />
+                            </CButtonToolbar>
+                            <CButtonToolbar
+                                className=" justify-content-between "
+                                style={{
+                                    marginBottom: 10,
+                                    marginTop: 10,
+                                }}
+                            >
+                                {/* <CCol className="d-flex">
+                                    <div style={{ margin: 'auto', marginLeft: 0 }}>
+                                        <SingleInputDateRangePicker
+                                            style={{ marginLeft: 5 }}
+                                            beginDate={beginFilterDate}
+                                            endDate={endFilterDate}
+                                            setBeginDate={setBeginFilterDate}
+                                            setEndDate={setEndFilterDate}
+                                            disabled={false}
+                                            showPopUp={false}
+                                        />
+                                    </div>
+                                </CCol> */}
+                                <CCol className="justify-content-end d-flex"></CCol>
+                            </CButtonToolbar>
+                        </CCol>
+                    </>
+                )}
+            </>
+        )
+    }
+
     return (
         <>
             {renderStatisticModal()}
-            {/* <ReactTable
-                columns={[
-                    {
-                        Header: 'Name',
-                        accessor: 'name',
-                        width: 250,
-                        Cell: (row) => (
-                            <>
-                                <div>{row.original.name}</div>
-                                <div className="small text-muted">
-                                    ID: {row.original.id}
-                                </div>
-                            </>
-                        ),
-                    },
-                    {
-                        Header: 'Pipeline',
-                        accessor: 'pipelineName',
-                        Cell: (row) => (
-                            <>
-                                <div>{row.original.pipelineName}</div>
-                                <div className="small text-muted">
-                                    Created by: {row.original.pipelineCreator}
-                                </div>
-                            </>
-                        ),
-                    },
-                    {
-                        Header: 'Group / User',
-                        accessor: 'group',
-                        Cell: (row) => <div>{row.original.group}</div>,
-                    },
-                    {
-                        Header: 'Progress',
-                        accessor: 'progress',
-                        width: 300,
-                        Cell: (row) => {
-                            const progress = Math.floor(
-                                (row.original.finished / row.original.size) * 100,
-                            )
-                            return (
-                                <>
-                                    <div className="clearfix">
-                                        <div className="float-left">
-                                            <strong>{progress}%</strong>
-                                        </div>
-                                        <div className="float-right">
-                                            <small className="text-muted">
-                                                Started at:{' '}
-                                                {new Date(
-                                                    row.original.createdAt,
-                                                ).toLocaleString()}
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <Progress
-                                        className="progress-xs"
-                                        color={getColor(progress)}
-                                        value={progress}
-                                    />
-                                    <div className="small text-muted">
-                                        {row.original.finished}/{row.original.size}
-                                    </div>
-                                </>
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Annotation Type',
-                        accessor: 'type',
-                        Cell: (row) => <strong>{row.original.type}</strong>,
-                    },
-                    {
-                        Header: 'Activity',
-                        accessor: 'lastActivity',
-                        Cell: (row) => (
-                            <>
-                                {row.original.lastActivity ? (
-                                    <>
-                                        <strong>
-                                            {new Date(
-                                                row.original.lastActivity,
-                                            ).toLocaleString()}
-                                        </strong>
-                                        <div className="small text-muted">
-                                            by {row.original.lastAnnotator}
-                                        </div>
-                                    </>
-                                ) : (
-                                    ''
-                                )}
-                            </>
-                        ),
-                    },
-                    {
-                        Header: 'Statistic',
-                        accessor: 'statistic',
-                        Cell: (row) => {
-                            const progress = Math.floor(
-                                (row.original.finished / row.original.size) * 100,
-                            )
-                            return (
-                                <IconButton
-                                    onClick={() => handleStatisticsClick(row.original)}
-                                    color="primary"
-                                    disabled={progress > 0 ? false : true}
-                                    text="Statistic"
-                                    icon={faChartBar}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Annotate',
-                        accessor: 'annotate',
-                        Cell: (row) => {
-                            const progress = Math.floor(
-                                (row.original.finished / row.original.size) * 100,
-                            )
-                            return (
-                                <>
-                                    {row.original.status === 'inProgress' ? (
-                                        <IconButton
-                                            onClick={() => handleRowClick(row.original)}
-                                            color="primary"
-                                            isOutline={false}
-                                            text="Annotate"
-                                            icon={faPencil}
-                                        />
-                                    ) : (
-                                        <IconButton
-                                            onClick={() => handleRowClick(row.original)}
-                                            color="primary"
-                                            isOutline={false}
-                                            disabled
-                                            text="Finished"
-                                            icon={faCheck}
-                                        />
-                                    )}
-                                </>
-                            )
-                        },
-                    },
-                ]}
-                defaultSorted={[
-                    {
-                        id: 'lastActivity',
-                        desc: false,
-                    },
-                ]}
-                data={annoTasks}
-                defaultPageSize={10}
-                className="-striped -highlight"
-            /> */}
+            <CCol sm="12">{filterLabels && renderFilter()}</CCol>
             <DataTable
                 className="mt-3"
                 data={aTData}

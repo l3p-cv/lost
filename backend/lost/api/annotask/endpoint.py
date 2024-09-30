@@ -481,8 +481,8 @@ class AnnoTaskList(Resource):
             data = json.loads(data)
             
             group_ids = [g.group.idx for g in user.groups]
-            anno_tasks = dbm.get_annotasks_filtered(group_ids=group_ids, page_size=data['pageSize'], page=data['page'], sorted=data['sorted'])
-            total_pages = dbm.get_annotasks_total_pages(group_ids=group_ids, page_size=data['pageSize'])
+            anno_tasks = dbm.get_annotasks_filtered(group_ids=group_ids, page_size=data['pageSize'], page=data['page'], sorted=data['sorted'], filterOptions=data['filterOptions'])
+            total_pages = dbm.get_annotasks_total_pages(group_ids=group_ids, page_size=data['pageSize'], filterOptions=data['filterOptions'])
             
             at_json = []
             
@@ -494,3 +494,21 @@ class AnnoTaskList(Resource):
                 'rows': at_json
                 }
             return plist
+        
+@namespace.route('/getFilterLabels')
+@api.doc(description='Get possible filter labels for annotation lists')
+class GetLabels(Resource):
+    @jwt_required
+    def get(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return make_response("You are not authorized.", 401)
+        else:
+            res = dict()
+            res['states'] = [0, 1]
+            dbm.close_session()
+            return res
+        

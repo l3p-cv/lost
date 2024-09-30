@@ -78,3 +78,14 @@ export const useAnnotaskListFiltered = () => {
             .then((res) => res.data),
     )
 }
+
+export const useFilterLabels = () => {
+    return useQuery(
+        ['useFilterLabels'],
+        () => axios.get(`${API_URL}/annotask/getFilterLabels`).then((res) => res.data),
+        {
+            refetchOnWindowFocus: false,
+            enabled: false,
+        },
+    )
+}
