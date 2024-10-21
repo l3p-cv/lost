@@ -82,6 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Save changed and created annotations instantly to backend
 - AnnoTask List:
   - Use pagination
+- MIA:
+  - Allow to zoom images up to 1920px height
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on
