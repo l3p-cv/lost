@@ -7,24 +7,25 @@ import { connect } from 'react-redux'
 import * as pipelineApi from '../../../../actions/pipeline/pipeline_api'
 
 const StartPipeline = ({ step0Data, step1Data, step2Data }) => {
-    const { data: postPipelineResponse, mutate: postPipeline } = pipelineApi.useCreateAndStartPipeline()
+    const { data: postPipelineResponse, mutate: postPipeline } =
+        pipelineApi.useCreateAndStartPipeline()
 
     useEffect(() => {
         if (postPipelineResponse === undefined) return
 
         alertClose()
 
-        if (postPipelineResponse.status === 200 && postPipelineResponse.data === "success") {
+        if (
+            postPipelineResponse.status === 200 &&
+            postPipelineResponse.data === 'success'
+        ) {
             if (typeof window !== 'undefined') {
                 window.location.href = `${window.location.origin}/pipelines`
             }
         } else {
-            alertError(
-                `(${postPipelineResponse.status}) ${postPipelineResponse.data}`,
-            )
+            alertError(`(${postPipelineResponse.status}) ${postPipelineResponse.data}`)
         }
     }, [postPipelineResponse])
-
 
     const startPipe = () => {
         const json = {

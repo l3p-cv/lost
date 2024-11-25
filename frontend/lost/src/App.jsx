@@ -12,11 +12,22 @@ import { flatObj } from './utils'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import jwtDecode from 'jwt-decode'
 import { API_URL } from './lost_settings'
-
 const queryClient = new QueryClient()
 
 // Containers
-
+const IS_DEV = true
+const VITE_BACKEND_PORT = 80
+let apiUrl = ''
+let socketUrl = ''
+if (IS_DEV) {
+    apiUrl = `${window.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}/api`
+    socketUrl = `${window.location.origin.replace(/:\d+?$/, '')}:${VITE_BACKEND_PORT}`
+} else {
+    apiUrl = `${window.location.origin}/api`
+    socketUrl = `${window.location.origin}`
+}
+window.API_URL = apiUrl
+window.SOCKET_URL = socketUrl
 const resources = {
     en: {
         translation: flatObj(enTranslation),
@@ -81,11 +92,7 @@ function App() {
                 <Suspense fallback={<div>Loading</div>}>
                     <BrowserRouter>
                         <Routes>
-                            <Route
-                                path="/login"
-                                name="Login Page"
-                                element={<Login />}
-                            />
+                            <Route path="/login" name="Login Page" element={<Login />} />
                             <Route
                                 path="/logout"
                                 name="Logout Page"

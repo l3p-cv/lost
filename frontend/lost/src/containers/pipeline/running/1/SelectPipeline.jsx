@@ -8,7 +8,7 @@ import { faEye } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../../../components/IconButton'
 import HelpButton from '../../../../components/HelpButton'
 import { Progress } from 'reactstrap'
-import { getColor } from '../../../../containers/Annotation/AnnoTask/utils'
+import { getColor } from '../../../Annotation/AnnoTask/utils'
 const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
 class SelectPipeline extends Component {

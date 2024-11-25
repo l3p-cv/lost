@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import Graph from 'react-graph-vis'
+// import Graph from 'react-graph-vis'
 import { useSelector, useDispatch } from 'react-redux'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import HelpButton from '../../../../../../../../components/HelpButton'
 import { CRow } from '@coreui/react'
 import { Label } from 'semantic-ui-react'
+import { Card, CardBody } from 'reactstrap'
 
 const options = {
     height: '600px',
@@ -56,7 +57,6 @@ const options = {
 }
 
 const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
-
     const dispatch = useDispatch()
     const { updateLabels } = actions
     const stateElement = useSelector((element) => element)
@@ -122,9 +122,9 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
      * @returns {Array<int>} children of node
      */
     const findDirectChildren = (branch, selectedNodeID) => {
-
         // if the current node is the searched node, return all children ids
-        if (branch.idx === selectedNodeID) return branch.children.map((childNode) => childNode.idx)
+        if (branch.idx === selectedNodeID)
+            return branch.children.map((childNode) => childNode.idx)
 
         // since we cant return from inside the forEach function
         let children = []
@@ -162,7 +162,7 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                 id: parent,
 
                 // @TODO not used, but required for backend
-                maxLabels: "3"
+                maxLabels: '3',
             })
         })
 
@@ -172,7 +172,6 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
     // updated the selected nodes when the user has clicked onto a node
     // the children of the clicked node will be toggled (but not children of children)
     const handleNodeClick = (clickedNodeID) => {
-
         const nodeChildren = findDirectChildren(selectedTree, clickedNodeID)
 
         // copy without reference to make useState work
@@ -248,15 +247,14 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                 obj.children.forEach((child) => {
                     result = {
                         ...result,
-                        ...getAvailableLabelsFlat(child)
+                        ...getAvailableLabelsFlat(child),
                     }
                 })
 
                 Object.values(obj.children).forEach((v, i) => {
                     result[v.idx] = v
                 })
-            }
-            else result[obj.idx] = obj
+            } else result[obj.idx] = obj
         })
 
         return result
@@ -272,11 +270,9 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
 
         setSelectedTree(_tree)
 
-
         // create a flat list of all labels inside tree
         const _availableLabels = getAvailableLabelsFlat(_tree)
         setAvailableLabels(_availableLabels)
-
     }, [selectedLabelTreeIndex, availableLabelTrees])
 
     useEffect(() => {
@@ -310,29 +306,29 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         // update redux action
         const selectedParentData = getParentsOfSelectedLabels()
         dispatch(updateLabels(peN, selectedParentData))
-
     }, [selectedNodeIDs, graphNet])
 
     const buildLabelInfo = () => {
-
         let html = []
-        selectedNodeIDs.forEach((nodeID) => html.push(
-            <Label
-                as="a"
-                tag
-                key={nodeID}
-                style={{
-                    marginTop: 5,
-                    marginLeft: 30,
-                    opacity: 1,
-                    cursor: 'default',
-                    color: 'white',
-                    background: availableLabels[nodeID].color
-                }}
-            >
-                {availableLabels[nodeID].name}
-            </Label>
-        ))
+        selectedNodeIDs.forEach((nodeID) =>
+            html.push(
+                <Label
+                    as="a"
+                    tag
+                    key={nodeID}
+                    style={{
+                        marginTop: 5,
+                        marginLeft: 30,
+                        opacity: 1,
+                        cursor: 'default',
+                        color: 'white',
+                        background: availableLabels[nodeID].color,
+                    }}
+                >
+                    {availableLabels[nodeID].name}
+                </Label>,
+            ),
+        )
 
         if (html.length === 0) html = '(No labels selected)'
 
@@ -345,34 +341,35 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
     }
 
     if (graphData.nodes.length === 0) return 'Loading...'
-
+    console.log('REACT GRAPH VIS HAS TO BE REPLACED')
     return (
-        // <Card className="annotask-modal-card">
-        //     <CardBody>
-        <>
-            <CRow className="justify-content-center">
-                <HelpButton
-                    id={'choose-label'}
-                    text={`Click on the parent label to make all child labels available in the AnnotationTask. 
+        <Card className="annotask-modal-card">
+            <CardBody>
+                <>
+                    <CRow className="justify-content-center">
+                        <HelpButton
+                            id={'choose-label'}
+                            text={`Click on the parent label to make all child labels available in the AnnotationTask. 
                     Multiple parent labels can also be selected. 
                     Labels that are active for the AnnotationTask are visualized with a strong border in this view.`}
-                />
-            </CRow>
-            <Graph
+                        />
+                    </CRow>
+
+                    {/*TODO: REPLACE REACT GRAPH VIS*/}
+                    {/* <Graph
                 ref={graphRef}
                 graph={graphData}
                 options={options}
                 events={events}
                 getNetwork={network => {
-                    // access vis.js graph network api
+                    access vis.js graph network api
                     setGraphNet(network)
                 }}
-            />
-            {buildLabelInfo()}
-
-        </>
-        //     </CardBody>
-        // </Card>
+            /> */}
+                    {buildLabelInfo()}
+                </>
+            </CardBody>
+        </Card>
     )
 }
 

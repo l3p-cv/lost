@@ -8,8 +8,8 @@ import { noAnnos } from './siaDummyData'
 
 /**
  * SIA element that handles annotations within an image
- * 
- * @param {object} annos -  A json object containing all annotation 
+ *
+ * @param {object} annos -  A json object containing all annotation
  *      information for an image
  *      {
  *              bBoxes: [{
@@ -25,16 +25,16 @@ import { noAnnos } from './siaDummyData'
  *      }
  * @param {object} annoSaveResponse - Backend response when updating an annotation in backend
  *                  {
- *                      tempId: int or str, // temporal frontend Id 
+ *                      tempId: int or str, // temporal frontend Id
  *                      dbId: int, // Id from backend
  *                      newStatus: str // new Status for the annotation
  *                  }
- * @param {object} possibleLabels - Possible labels that can be assigned to 
+ * @param {object} possibleLabels - Possible labels that can be assigned to
  *      an annotation.
- *      [{   
- *          id: int, 
- *          description: str, 
- *          label: str, (name of the label) 
+ *      [{
+ *          id: int,
+ *          description: str,
+ *          label: str, (name of the label)
  *          color: str (color is optional)
  *      }, ...]
  * @param {blob} imageBlob - The actual image blob that will be displayed
@@ -59,7 +59,7 @@ import { noAnnos } from './siaDummyData'
  *          "img": image blob
  *      }
  * @param {bool} isJunk - Indicates wether the current image is junk or not
- * @param {object} uiConfig - User interface configs 
+ * @param {object} uiConfig - User interface configs
  *      {
  *          nodesRadius: int, strokeWidth: int,
  *          layoutOffset: {left:int, top:int, right:int, bottom:int}, -> Offset of the canvas inside the container
@@ -70,7 +70,7 @@ import { noAnnos } from './siaDummyData'
  *      }
  * @param {int} layoutUpdate - A counter that triggers a layout update
  *      everytime it is incremented.
- * @param {string} selectedTool - The tool that is selected to draw an 
+ * @param {string} selectedTool - The tool that is selected to draw an
  *      annotation. Possible choices are: 'bBox', 'point', 'line', 'polygon'
  * @param {object} canvasConfig - Configuration for this canvas
  *  {
@@ -112,9 +112,9 @@ import { noAnnos } from './siaDummyData'
  *                  "clipLimit": int,
  *                  "active": bool
  *              },
- *          } 
- * @param {bool | object} toolbarEnabled Defines which toolbar buttons are 
- *      displayed or if toolbar is shown at all. 
+ *          }
+ * @param {bool | object} toolbarEnabled Defines which toolbar buttons are
+ *      displayed or if toolbar is shown at all.
  *          false | {
  *              imgLabel: bool,
  *              nextPrev: bool,
@@ -126,16 +126,16 @@ import { noAnnos } from './siaDummyData'
  *              filter: bool | {rotate: bool, clahe:bool},
  *              help: bool
  *          }
- * @event onAnnoSaveEvent - Callback with update information for a single 
+ * @event onAnnoSaveEvent - Callback with update information for a single
  *          annotation or the current image that can be used for backend updates
  *          args: {
- *                      action: the action that was performed in frontend, 
- *                      anno: anno information, 
+ *                      action: the action that was performed in frontend,
+ *                      anno: anno information,
  *                      img: image information
  *              }
  * @event onNotification - Callback for Notification messages
  *      args: {title: str, message: str, type: str}
- * @event onCanvasKeyDown - Fires for keyDown on canvas 
+ * @event onCanvasKeyDown - Fires for keyDown on canvas
  * @event onAnnoEvent - Fires when an anno performed an action
  *      args: {anno: annoObject, newAnnos: list of annoObjects, pAction: str}
  * @event onGetAnnoExample - Fires when anno example is requested by canvas
@@ -145,17 +145,17 @@ import { noAnnos } from './siaDummyData'
  *      }
  * @event onCanvasEvent - Fires on canvas event
  *      args: {action: action, data: dataObject}
- *      action -> CANVAS_SVG_UPDATE 
+ *      action -> CANVAS_SVG_UPDATE
  *          data: {width: int, height: int, scale: float, translateX: float,
  *          translateY:float}
  *      action -> CANVAS_UI_CONFIG_UPDATE
- *      action -> CANVAS_LABEL_INPUT_CLOSE 
+ *      action -> CANVAS_LABEL_INPUT_CLOSE
  *      action -> CANVAS_IMG_LOADED
  *      action -> CANVAS_IMGBAR_CLOSE
  * @event onToolBarEvent - Fires on Toolbar event
  *      args: {e: event, data: data object}
- * 
- *      e -> DELETE_ALL_ANNOS 
+ *
+ *      e -> DELETE_ALL_ANNOS
  *      e -> TOOL_SELECTED
  *          data: 'bbox', 'point', 'line', 'polygon'
  *      e -> GET_NEXT_IMAGE
@@ -178,7 +178,7 @@ import { noAnnos } from './siaDummyData'
  *                  "angle": 90 | -90 | 180,
  *                  "active": bool
  *              }
- *          } 
+ *          }
  *      e -> SHOW_ANNO_DETAILS
  *          data: null
  *      e -> SHOW_LABEL_INFO
@@ -196,38 +196,35 @@ import { noAnnos } from './siaDummyData'
  *              getAnnos(annos,removeFrontendIds)
  */
 const Sia = (props) => {
-
     const [fullscreenCSS, setFullscreenCSS] = useState('')
     const [fullscreen, setFullscreen] = useState()
     const [annos, setAnnos] = useState(noAnnos)
     const [layoutUpdate, setLayoutUpdate] = useState(0)
     const [svg, setSvg] = useState()
     const [externalConfigUpdate, setExternalConfigUpdate] = useState(false)
-    const [uiConfig, setUiConfig] = useState(
-        {
-            "nodeRadius": 4,
-            "strokeWidth": 4,
-            "annoDetails": {
-                "visible": false
-            },
-            "labelInfo": {
-                "visible": false
-            },
-            "annoStats": {
-                "visible": false
-            },
-            "layoutOffset": {
-                "left": 20,
-                "top": 0,
-                "bottom": 5,
-                "right": 5
-            },
-            "imgBarVisible": true,
-            "imgLabelInputVisible": false,
-            "centerCanvasInContainer": true,
-            "maxCanvas": true
-        }
-    )
+    const [uiConfig, setUiConfig] = useState({
+        nodeRadius: 4,
+        strokeWidth: 4,
+        annoDetails: {
+            visible: false,
+        },
+        labelInfo: {
+            visible: false,
+        },
+        annoStats: {
+            visible: false,
+        },
+        layoutOffset: {
+            left: 20,
+            top: 0,
+            bottom: 5,
+            right: 5,
+        },
+        imgBarVisible: true,
+        imgLabelInputVisible: false,
+        centerCanvasInContainer: true,
+        maxCanvas: true,
+    })
     const containerRef = useRef()
 
     useEffect(() => {
@@ -244,7 +241,6 @@ const Sia = (props) => {
             setAnnos(props.annos)
         } else {
             setAnnos({ ...noAnnos })
-
         }
     }, [props.annos])
 
@@ -290,21 +286,18 @@ const Sia = (props) => {
         if (props.onAnnoEvent) {
             props.onAnnoEvent(anno, annos, action)
         }
-
     }
 
     const handleNotification = (msg) => {
         if (props.onNotification) {
             props.onNotification(msg)
         }
-
     }
 
     const handleCanvasKeyDown = (e) => {
         if (props.onCanvasKeyDown) {
             props.onCanvasKeyDown(e)
         }
-
     }
 
     const handleCanvasEvent = (e, data) => {
@@ -344,7 +337,7 @@ const Sia = (props) => {
                     ...uiConfig.layoutOffset,
                     left: 50,
                     top: 5,
-                }
+                },
             })
             doLayoutUpdate()
         } else {
@@ -355,11 +348,10 @@ const Sia = (props) => {
                     ...uiConfig.layoutOffset,
                     left: 20,
                     top: 0,
-                }
+                },
             })
             doLayoutUpdate()
         }
-
     }
 
     const toggleFullscreen = () => {
@@ -420,25 +412,17 @@ const Sia = (props) => {
         <div className={fullscreenCSS} ref={containerRef}>
             <Canvas
                 container={containerRef}
-
-                onAnnoEvent={
-                    (anno, annos, action) => handleAnnoEvent(anno, annos, action)
+                onAnnoEvent={(anno, annos, action) =>
+                    handleAnnoEvent(anno, annos, action)
                 }
-                onNotification={
-                    (messageObj) => handleNotification(messageObj)
-                }
-                onKeyDown={
-                    e => handleCanvasKeyDown(e)
-                }
-                onCanvasEvent={
-                    (action, data) => handleCanvasEvent(action, data)
-                }
-                onGetAnnoExample={
-                    (exampleArgs) => props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
+                onNotification={(messageObj) => handleNotification(messageObj)}
+                onKeyDown={(e) => handleCanvasKeyDown(e)}
+                onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                onGetAnnoExample={(exampleArgs) =>
+                    props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
                 onAnnoSaveEvent={(saveData) => handleAnnoSaveEvent(saveData)}
-
                 annoSaveResponse={props.annoSaveResponse}
                 canvasConfig={props.canvasConfig}
                 uiConfig={uiConfig}
@@ -458,16 +442,14 @@ const Sia = (props) => {
                 isImageChanging={props.isImageChanging}
             />
             <ToolBar
-                onToolBarEvent={
-                    (e, data) => handleToolBarEvent(e, data)
-                }
+                onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
                 imageMeta={props.imageMeta}
                 layoutUpdate={layoutUpdate}
                 svg={svg}
                 active={{
                     isJunk: props.isJunk,
                     selectedTool: props.selectedTool,
-                    fullscreen: props.fullscreenMode
+                    fullscreen: props.fullscreenMode,
                 }}
                 enabled={props.toolbarEnabled}
                 canvasConfig={props.canvasConfig}
@@ -479,7 +461,6 @@ const Sia = (props) => {
             />
         </div>
     )
-
 }
 
 export default Sia

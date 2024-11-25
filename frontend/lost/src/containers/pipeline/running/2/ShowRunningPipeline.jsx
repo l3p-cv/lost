@@ -10,7 +10,7 @@ import { connect } from 'react-redux'
 import actions from '../../../../actions/pipeline/pipelineRunning'
 
 import TitleBox from './TitleBox'
-import LoopNode from './nodes/LoopNode';
+import LoopNode from './nodes/LoopNode'
 import VisualOutputNode from './nodes/VisualOutputNode'
 import ToolBar from './Toolbar'
 
@@ -22,26 +22,28 @@ class ShowRunningPipeline extends Component {
         this.graphMountPoint = React.createRef()
         this.nodesOnClick = this.nodesOnClick.bind(this)
         this.state = {
-            pollingEnabled: false
+            pollingEnabled: false,
         }
     }
 
     componentDidUpdate() {
         if (this.props.data && !this.state.pollingEnabled) {
             this.setState({
-                pollingEnabled: true
+                pollingEnabled: true,
             })
-            this.timer = setInterval(() => this.props.getPipeline(this.props.data.id), 2000)
+            this.timer = setInterval(
+                () => this.props.getPipeline(this.props.data.id),
+                2000,
+            )
         }
     }
 
     componentWillUnmount() {
         this.setState({
-            pollingEnabled: false
+            pollingEnabled: false,
         })
         clearInterval(this.timer)
     }
-
 
     nodesOnClick(id) {
         this.props.toggleModal(id)
@@ -50,40 +52,20 @@ class ShowRunningPipeline extends Component {
     renderNodes() {
         return this.props.data.elements.map((el) => {
             if ('datasource' in el) {
-                return <DatasourceNode
-                    key={el.id}
-                    {...el}
-                />
+                return <DatasourceNode key={el.id} {...el} />
             } else if ('script' in el) {
-                return <ScriptNode
-                    key={el.id}
-                    {...el}
-                />
+                return <ScriptNode key={el.id} {...el} />
             } else if ('annoTask' in el) {
-                return <AnnoTaskNode
-                    key={el.id}
-                    {...el}
-                />
+                return <AnnoTaskNode key={el.id} {...el} />
             } else if ('dataExport' in el) {
-                return <DataExportNode
-                    key={el.id}
-                    {...el}
-                />
+                return <DataExportNode key={el.id} {...el} />
             } else if ('loop' in el) {
-                return <LoopNode
-                    key={el.id}
-                    {...el}
-                />
+                return <LoopNode key={el.id} {...el} />
             } else if ('visualOutput' in el) {
-                return <VisualOutputNode
-                    key={el.id}
-                    {...el}
-                />
+                return <VisualOutputNode key={el.id} {...el} />
             }
             return undefined
-        }
-        )
-
+        })
     }
 
     renderGraph() {
@@ -101,30 +83,25 @@ class ShowRunningPipeline extends Component {
                         {this.renderNodes()}
                     </Graph>
                 </div>
-
             )
         }
     }
 
     renderModal() {
         if (this.props.data) {
-            const modalData = this.props.data.elements.filter(el => el.peN === this.props.step.modalClickedId)[0]
+            const modalData = this.props.data.elements.filter(
+                (el) => el.peN === this.props.step.modalClickedId,
+            )[0]
             if (modalData) {
-                return (
-                    <Modal
-                        data={modalData}
-                    />
-                )
+                return <Modal data={modalData} />
             }
         }
     }
 
     render() {
         return (
-            <div className='pipeline-running-2' ref={this.graphMountPoint}>
-                <ToolBar
-                    data={this.props.data}
-                />
+            <div className="pipeline-running-2" ref={this.graphMountPoint}>
+                <ToolBar data={this.props.data} />
                 {this.renderGraph()}
                 {this.renderModal()}
             </div>
@@ -135,11 +112,8 @@ class ShowRunningPipeline extends Component {
 const mapStateToProps = (state) => {
     return {
         step: state.pipelineRunning.steps[1],
-        data: state.pipelineRunning.step1Data
+        data: state.pipelineRunning.step1Data,
     }
 }
 
-export default connect(
-    mapStateToProps,
-    { toggleModal, getPipeline }
-)(ShowRunningPipeline)
+export default connect(mapStateToProps, { toggleModal, getPipeline })(ShowRunningPipeline)

@@ -1,13 +1,13 @@
 import axios from 'axios'
-import { API_URL } from '../../../../src/lost_settings'
+import { API_URL } from '../../../lost_settings'
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
-import actions from '../../../../src/actions'
+import actions from '../../../actions'
 import '../SIA/lost-sia/src/SIA.scss'
 import * as tbe from '../SIA/lost-sia/src/types/toolbarEvents'
 import * as canvasActions from '../SIA/lost-sia/src/types/canvasActions'
 import { useNavigate } from 'react-router-dom'
-import { NotificationManager, NotificationContainer, } from 'react-notifications'
+import { NotificationManager, NotificationContainer } from 'react-notifications'
 import * as Notification from '../../../components/Notification'
 import 'react-notifications/lib/notifications.css'
 import * as notificationType from '../SIA/lost-sia/src/types/notificationType'
@@ -72,7 +72,6 @@ const SIAReview = (props) => {
                 handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
             }
         }
-
     }, [nextPrev])
     useEffect(() => {
         window.addEventListener('resize', props.siaLayoutUpdate)
@@ -100,7 +99,6 @@ const SIAReview = (props) => {
             props.siaImgIsJunk(props.annos.image.isJunk)
             setIsJunk(props.annos.image.isJunk)
         }
-
     }, [props.annos])
 
     const requestImageFromBackend = () => {
@@ -338,7 +336,6 @@ const SIAReview = (props) => {
             default:
                 break
         }
-
     }
 
     const saveRequestModal = () => {
@@ -352,8 +349,10 @@ const SIAReview = (props) => {
                 },
             },
             option2: {
-                text: 'Don\'t Save',
-                callback: () => { handleNextPrevImage(nextPrev.imgId, nextPrev.cmd) },
+                text: "Don't Save",
+                callback: () => {
+                    handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
+                },
             },
         })
     }
@@ -361,63 +360,65 @@ const SIAReview = (props) => {
     const renderSia = () => {
         if (!props.annos) return 'No Review Data!'
         if (!props.filterOptions) return 'No Review Data!'
-        return <div>
-            <Sia
-                onAnnoEvent={(anno, annos, action) =>
-                    handleAnnoPerformedAction(anno, annos, action)
-                }
-                onNotification={(messageObj) => handleNotification(messageObj)}
-                onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
-                onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
-                // onGetAnnoExample={(exampleArgs) =>
-                //     props.onGetAnnoExample
-                //         ? props.onGetAnnoExample(exampleArgs)
-                //         : {}
-                // }
-                onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                canvasConfig={
-                    CANVAS_CONFIG
-                    // {
-                    // ...props.canvasConfig,
-                    // annos: { ...props.canvasConfig.annos, maxAnnos: null },
-                    // autoSaveInterval: 60,
-                    // allowedToMarkExample: state.allowedToMark,
+        return (
+            <div>
+                <Sia
+                    onAnnoEvent={(anno, annos, action) =>
+                        handleAnnoPerformedAction(anno, annos, action)
+                    }
+                    onNotification={(messageObj) => handleNotification(messageObj)}
+                    onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
+                    onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                    // onGetAnnoExample={(exampleArgs) =>
+                    //     props.onGetAnnoExample
+                    //         ? props.onGetAnnoExample(exampleArgs)
+                    //         : {}
                     // }
-                }
-                uiConfig={{
-                    ...props.uiConfig,
-                    imgBarVisible: true,
-                    imgLabelInputVisible: imgLabelInputVisible,
-                    centerCanvasInContainer: true,
-                    maxCanvas: true,
-                }}
-                // nextAnnoId={state.nextAnnoId}
-                annos={props.annos.annotations}
-                imageMeta={props.annos.image}
-                imageBlob={imgBlob}
-                possibleLabels={props.filterOptions.possible_labels}
-                // exampleImg={props.exampleImg}
-                layoutUpdate={props.layoutUpdate}
-                selectedTool={selectedTool}
-                isJunk={isJunk}
-                // blocked={state.blockCanvas}
-                onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
-                // svg={props.svg}
-                // filter={props.filter}
-                toolbarEnabled={{
-                    save: true,
-                    imgLabel: true,
-                    nextPrev: true,
-                    toolSelection: true,
-                    fullscreen: true,
-                    junk: true,
-                    deleteAll: true,
-                    settings: true,
-                    filter: false,
-                    help: true
-                }}
-            />
-        </div>
+                    onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                    canvasConfig={
+                        CANVAS_CONFIG
+                        // {
+                        // ...props.canvasConfig,
+                        // annos: { ...props.canvasConfig.annos, maxAnnos: null },
+                        // autoSaveInterval: 60,
+                        // allowedToMarkExample: state.allowedToMark,
+                        // }
+                    }
+                    uiConfig={{
+                        ...props.uiConfig,
+                        imgBarVisible: true,
+                        imgLabelInputVisible: imgLabelInputVisible,
+                        centerCanvasInContainer: true,
+                        maxCanvas: true,
+                    }}
+                    // nextAnnoId={state.nextAnnoId}
+                    annos={props.annos.annotations}
+                    imageMeta={props.annos.image}
+                    imageBlob={imgBlob}
+                    possibleLabels={props.filterOptions.possible_labels}
+                    // exampleImg={props.exampleImg}
+                    layoutUpdate={props.layoutUpdate}
+                    selectedTool={selectedTool}
+                    isJunk={isJunk}
+                    // blocked={state.blockCanvas}
+                    onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
+                    // svg={props.svg}
+                    // filter={props.filter}
+                    toolbarEnabled={{
+                        save: true,
+                        imgLabel: true,
+                        nextPrev: true,
+                        toolSelection: true,
+                        fullscreen: true,
+                        junk: true,
+                        deleteAll: true,
+                        settings: true,
+                        filter: false,
+                        help: true,
+                    }}
+                />
+            </div>
+        )
     }
 
     return (
@@ -426,7 +427,6 @@ const SIAReview = (props) => {
             <NotificationContainer />
         </div>
     )
-
 }
 
 function mapStateToProps(state) {

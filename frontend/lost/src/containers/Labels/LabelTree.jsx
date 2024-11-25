@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Graph from 'react-graph-vis'
+// import Graph from 'react-graph-vis'
 import mapTreeToGraph from '../../libs/graph-vis/mapTreeToGraph'
 import EditLabel from './EditLabel'
 
@@ -76,7 +76,7 @@ class LabelTree extends Component {
                 <React.Fragment>
                     {this.renderEditLabel(tree)}
 
-                    <Graph  graph={graph} options={options} events={events} />
+                    {/* <Graph  graph={graph} options={options} events={events} /> */}
                 </React.Fragment>
             )
         } else {

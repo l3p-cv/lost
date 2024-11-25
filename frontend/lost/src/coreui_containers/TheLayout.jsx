@@ -22,13 +22,17 @@ const TheLayout = () => {
     useEffect(() => {
         const token = localStorage.getItem('token')
         if (token) {
-            axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
+            axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem(
+                'token',
+            )}`
             const { roles } = jwtDecode(token).user_claims
             role.current = roles[0]
             if (!guiSetup[role.current]) {
                 throw new Error(`Role ${role.current} not found in Gui Setup`)
             } else {
-                const roles = Object.keys(guiSetup).filter((e) => e !== 'additionalRoutes')
+                const roles = Object.keys(guiSetup).filter(
+                    (e) => e !== 'additionalRoutes',
+                )
                 dispatch(actions.setRoles(roles))
                 const newRoutes1 = guiSetup[role.current].navItems.map((navItem) => ({
                     path: navItem.to,
@@ -64,7 +68,9 @@ const TheLayout = () => {
             const navItemsFiltered = guiSetup[role.current].navItems.map(
                 ({ component, ...navItem }) => {
                     const name =
-                        i18n.language === 'de' && navItem.de_name ? navItem.de_name : navItem.name
+                        i18n.language === 'de' && navItem.de_name
+                            ? navItem.de_name
+                            : navItem.name
                     if (navItem.title) {
                         return {
                             _tag: 'CSidebarNavTitle',
@@ -85,9 +91,17 @@ const TheLayout = () => {
 
     return (
         <div>
-            <TheSidebar navItems={navItems} canShowSidebar={canShowSidebar} setCanShowSidebar={setCanShowSidebar} />
+            <TheSidebar
+                navItems={navItems}
+                canShowSidebar={canShowSidebar}
+                setCanShowSidebar={setCanShowSidebar}
+            />
             <div className="wrapper d-flex flex-column min-vh-100 bg-light">
-                <TheHeader numNavItems={navItems.length} canShowSidebar={canShowSidebar} setCanShowSidebar={setCanShowSidebar} />
+                <TheHeader
+                    numNavItems={navItems.length}
+                    canShowSidebar={canShowSidebar}
+                    setCanShowSidebar={setCanShowSidebar}
+                />
                 <div className="body flex-grow-1 px-3">
                     <TheContent routes={routes} />
                 </div>

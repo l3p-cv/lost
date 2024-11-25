@@ -1,5 +1,5 @@
 import RunningPipelineComponent from './containers/pipeline/running/RunningPipeline'
-import StartPipelineComponent from './containers/pipeline//start/StartPipeline'
+import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import SiaComponent from './containers/Annotation/SingleImageAnnotation'
@@ -11,7 +11,7 @@ import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPag
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import MyProfileComponent from './containers/Profile/Profile'
 
-// import PipelinesComponent from './containers/Pipelines/Pipelines'
+import PipelinesComponent from './containers/Pipelines/Pipelines'
 
 import AdminAreaComponent from './containers/AdminArea/AdminArea'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'

@@ -5,15 +5,7 @@ import actions from '../../actions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTasks, faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import {
-    CCol,
-    CNav,
-    CNavItem,
-    CNavLink,
-    CTabContent,
-    CTabPane,
-    CTabs,
-} from '@coreui/react'
+import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
 import RunningPipeline from '../pipeline/running/RunningPipeline'
@@ -31,19 +23,14 @@ const Pipelines = () => {
     return (
         <BaseContainer>
             <CCol xs="12" md="12" className="mb-4">
-                <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
-                    <CNav variant="tabs">
-                        <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faTasks}
-                                />
-                                {active === 0 && ' Running Pipelines'}
-                            </CNavLink>
-                        </CNavItem>
-                        {/* <CNavItem>
+                <CNav variant="tabs" role="tablist">
+                    <CNavItem>
+                        <CNavLink onClick={setActive(0)}>
+                            <FontAwesomeIcon color="#092F38" size="1x" icon={faTasks} />
+                            {active === 0 && ' Running Pipelines'}
+                        </CNavLink>
+                    </CNavItem>
+                    {/* <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
                                     color="#092F38"
@@ -53,17 +40,13 @@ const Pipelines = () => {
                                 {active === 1 && ' LOST Pipelines'}
                             </CNavLink>
                         </CNavItem> */}
-                        <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faPlus}
-                                />
-                                {active === 1 && ' Start Pipeline'}
-                            </CNavLink>
-                        </CNavItem>
-                        {/* <CNavItem>
+                    <CNavItem>
+                        <CNavLink onClick={setActive(1)}>
+                            <FontAwesomeIcon color="#092F38" size="1x" icon={faPlus} />
+                            {active === 1 && ' Start Pipeline'}
+                        </CNavLink>
+                    </CNavItem>
+                    {/* <CNavItem>
                             <CNavLink>
                                 <FontAwesomeIcon
                                     color="#092F38"
@@ -73,22 +56,21 @@ const Pipelines = () => {
                                 {active === 3 && ' Import / Update'}
                             </CNavLink>
                         </CNavItem> */}
-                    </CNav>
-                    <CTabContent>
-                        <CTabPane style={{ marginTop: 30 }}>
-                            <RunningPipeline></RunningPipeline>
-                        </CTabPane>
-                        {/* <CTabPane style={{ marginTop: 30 }}>
+                </CNav>
+                <CTabContent>
+                    <CTabPane style={{ marginTop: 30 }} visible={active === 0}>
+                        <RunningPipeline></RunningPipeline>
+                    </CTabPane>
+                    {/* <CTabPane style={{ marginTop: 30 }}>
                             <LOSTPipelines></LOSTPipelines>
                         </CTabPane> */}
-                        <CTabPane style={{ marginTop: 30 }}>
-                            <StartPipeline></StartPipeline>
-                        </CTabPane>
-                        {/* <CTabPane style={{ marginTop: 30 }}>
+                    <CTabPane style={{ marginTop: 30 }} visible={active === 1}>
+                        <StartPipeline></StartPipeline>
+                    </CTabPane>
+                    {/* <CTabPane style={{ marginTop: 30 }}>
                             <div>{renderSystemInfo()}</div>
                         </CTabPane> */}
-                    </CTabContent>
-                </CTabs>
+                </CTabContent>
             </CCol>
         </BaseContainer>
     )
