@@ -23,7 +23,7 @@ class EditLabel extends Component {
             createLabeldescription: '',
             createLabelabbreviation: '',
             createLabelextID: '',
-            selectedCreateColor: '',
+            selectedCreateColor: '#ffffff',
             selectedEditColor: '',
             invalidCreateColor: false,
             invalidEditColor: false,
@@ -156,7 +156,7 @@ class EditLabel extends Component {
             createLabeldescription: '',
             createLabelabbreviation: '',
             createLabelextID: '',
-            selectedCreateColor: '',
+            selectedCreateColor: '#ffffff',
         })
     }
     handleChangeComplete(color, event) {
@@ -206,8 +206,7 @@ class EditLabel extends Component {
                             onChange={this.handleEditLabelExtID}
                         ></Input>
                         <Input
-                            type="text"
-                            placeholder="color"
+                            type="color"
                             value={this.state.selectedEditColor}
                             onChange={this.handleEditLabelColor}
                             invalid={this.state.invalidEditColor}
@@ -259,8 +258,8 @@ class EditLabel extends Component {
                             onChange={this.handleCreateLabelExtID}
                         ></Input>
                         <Input
-                            type="text"
-                            placeholder="color"
+                            type="color"
+                            defaultValue={'#ffffff'}
                             value={this.state.selectedCreateColor}
                             onChange={this.handleCreateLabelColor}
                             invalid={this.state.invalidCreateColor}

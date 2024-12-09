@@ -84,6 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Use pagination
 - MIA:
   - Allow to zoom images up to 1920px height
+- Labels
+  - Use React Flow for the display of the Labels because it is more up to date than react-graph-vis which is removed
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on
