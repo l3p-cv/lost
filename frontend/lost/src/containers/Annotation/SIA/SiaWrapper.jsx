@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
-import * as tbe from './lost-sia/src/types/toolbarEvents'
 
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 // import { withRouter } from 'react-router-dom'
 import withRouter from '../../../utils/withRouter'
 import 'react-notifications/lib/notifications.css'
 
-import * as notificationType from './lost-sia/src/types/notificationType'
-import * as transform from './lost-sia/src/utils/transform'
-import * as filterTools from './lost-sia/src/filterTools'
-import * as annoConversion from './lost-sia/src/utils/annoConversion'
-import * as annoActions from './lost-sia/src/types/canvasActions'
-import Sia from './lost-sia/src/Sia'
 import { useNavigate } from 'react-router-dom'
+import {
+    transform,
+    Sia,
+    annoConversion,
+    canvasActions as annoActions,
+    toolbarEvents as tbe,
+    filterTools,
+    notificationType,
+} from 'lost-sia'
+
+// import * as filterTools from './lost-sia/src/filterTools'
+// import * as notificationType from './lost-sia/src/types/notificationType'
 
 const {
     siaLayoutUpdate,
@@ -38,7 +43,7 @@ const {
     siaGetPrevImage,
     siaFilterImage,
     siaApplyFilter,
-    siaUpdateOneThing
+    siaUpdateOneThing,
 } = actions
 
 const SiaWrapper = (props) => {
@@ -528,7 +533,7 @@ const SiaWrapper = (props) => {
         })
 
         let newSize, minCorner, maxCorner
-        [minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
+        ;[minCorner, maxCorner] = transform.getMinMaxPoints(imageCorners)
         newSize = {
             width: maxCorner.x - minCorner.x,
             height: maxCorner.y - minCorner.y,
@@ -620,7 +625,9 @@ const SiaWrapper = (props) => {
                     props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
                 }
                 onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                onAnnoSaveEvent={(action, saveData) => handleAnnoSaveEvent(action, saveData)}
+                onAnnoSaveEvent={(action, saveData) =>
+                    handleAnnoSaveEvent(action, saveData)
+                }
                 canvasConfig={{
                     ...props.canvasConfig,
                     annos: { ...props.canvasConfig.annos, maxAnnos: null },

@@ -3,15 +3,12 @@ import { API_URL } from '../../../lost_settings'
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
-import '../SIA/lost-sia/src/SIA.scss'
-import * as tbe from '../SIA/lost-sia/src/types/toolbarEvents'
-import * as canvasActions from '../SIA/lost-sia/src/types/canvasActions'
 import { useNavigate } from 'react-router-dom'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
 import * as Notification from '../../../components/Notification'
 import 'react-notifications/lib/notifications.css'
-import * as notificationType from '../SIA/lost-sia/src/types/notificationType'
-import Sia from '../SIA/lost-sia/src/Sia'
+
+import { Sia, toolbarEvents as tbe, notificationType, canvasActions } from 'lost-sia'
 
 const {
     siaLayoutUpdate,

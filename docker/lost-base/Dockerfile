@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends wget curl bzip2
     htop libsm6 libxext6 libssl-dev libtool autoconf automake bison flex libglib2.0-0 libxrender1 ffmpeg && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y --no-install-recommends gnupg gnupg2 gnupg1 && rm -rf /var/lib/apt/lists/*
 
-RUN wget --quiet https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh -O ~/mambaforge.sh && \
+RUN wget --quiet https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Mambaforge-24.3.0-0-Linux-x86_64.sh -O ~/mambaforge.sh && \
     /bin/bash ~/mambaforge.sh -b -p /opt/mambaforge && \
     rm ~/mambaforge.sh && \
     /opt/mambaforge/bin/conda clean -tip && \

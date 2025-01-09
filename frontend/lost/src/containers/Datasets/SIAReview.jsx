@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'
-import '../Annotation/SIA/lost-sia/src/SIA.scss'
-import * as tbe from '../Annotation/SIA/lost-sia/src/types/toolbarEvents'
-import * as canvasActions from '../Annotation/SIA/lost-sia/src/types/canvasActions'
-import { NotificationManager, NotificationContainer, } from 'react-notifications'
+// import '../Annotation/SIA/lost-sia/src/SIA.scss'
+// import * as canvasActions from '../Annotation/SIA/lost-sia/src/types/canvasActions'
+import { NotificationManager, NotificationContainer } from 'react-notifications'
 import 'react-notifications/lib/notifications.css'
-import * as notificationType from '../Annotation/SIA/lost-sia/src/types/notificationType'
-import Sia from '../Annotation/SIA/lost-sia/src/Sia'
 import * as reviewApi from '../../actions/dataset/dataset_review_api'
 import SIAImageSearchModal from './SIAImageSearchModal'
+
+import { Sia, toolbarEvents as tbe, notificationType, canvasActions } from 'lost-sia'
 
 const CANVAS_CONFIG = {
     tools: {
@@ -35,15 +34,16 @@ const CANVAS_CONFIG = {
 }
 
 const SIAReview = ({ datasetId = null, annotaskId = null }) => {
+    const isAnnotaskReview = annotaskId !== null
+    const id = isAnnotaskReview ? annotaskId : datasetId
 
-    const isAnnotaskReview = (annotaskId !== null)
-    const id = (isAnnotaskReview ? annotaskId : datasetId)
-
-    const { data: reviewPageData, mutate: loadNextReviewPage } = reviewApi.useReview(isAnnotaskReview)
+    const { data: reviewPageData, mutate: loadNextReviewPage } =
+        reviewApi.useReview(isAnnotaskReview)
     const { data: reviewOptions, mutate: getReviewOptions } = reviewApi.useReviewOptions()
     const { data: reviewImage, mutate: loadReviewImage } = reviewApi.useGetImage()
     const { data: uiConfig } = reviewApi.useGetUIConfig()
-    const { data: updateAnnotationResponse, mutate: updateAnnotation } = reviewApi.useUpdateAnnotation()
+    const { data: updateAnnotationResponse, mutate: updateAnnotation } =
+        reviewApi.useUpdateAnnotation()
 
     const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
     const [isImgSearchModalVisible, setIsImgSearchModalVisible] = useState(false)
@@ -85,7 +85,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
         const data = {
             direction: 'first',
             imageAnnoId: null,
-            iteration: null
+            iteration: null,
         }
 
         loadNextReviewPage([id, data])
@@ -118,12 +118,14 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
     }
 
     const handleNextPrevImage = (imgId, direction) => {
-
         const data = {
             direction: direction,
             imageAnnoId: imgId,
             iteration: null,
-            annotaskIdx: (reviewPageData.current_annotask_idx === undefined ? null : reviewPageData.current_annotask_idx)
+            annotaskIdx:
+                reviewPageData.current_annotask_idx === undefined
+                    ? null
+                    : reviewPageData.current_annotask_idx,
         }
 
         loadNextReviewPage([id, data])
@@ -149,7 +151,6 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 type: notificationType.ERROR,
             })
         }
-
     }, [updateAnnotationResponse])
 
     const handleNotification = (notification) => {
@@ -306,7 +307,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
             direction: 'specificImage',
             annotaskIdx: annotaskId,
             imageAnnoId: imageAnnoId,
-            iteration: null
+            iteration: null,
         }
 
         loadNextReviewPage([id, data])
@@ -316,64 +317,68 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
         if (!reviewPageData) return 'No Review Data!'
         if (!reviewOptions) return 'No Review Data!'
 
-        return <div>
-            <Sia
-                annoTaskId={reviewPageData.current_annotask_idx}
-                annoSaveResponse={annoSaveResponse}
-                onNotification={(messageObj) => handleNotification(messageObj)}
-                onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
-                onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
-                // onGetAnnoExample={(exampleArgs) =>
-                //     props.onGetAnnoExample
-                //         ? props.onGetAnnoExample(exampleArgs)
-                //         : {}
-                // }
-                onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                onAnnoSaveEvent={(saveData) => updateAnnotation([reviewPageData.current_annotask_idx, saveData])}
-                canvasConfig={
-                    CANVAS_CONFIG
-                    // {
-                    // ...props.canvasConfig,
-                    // annos: { ...props.canvasConfig.annos, maxAnnos: null },
-                    // autoSaveInterval: 60,
-                    // allowedToMarkExample: state.allowedToMark,
+        return (
+            <div>
+                <Sia
+                    annoTaskId={reviewPageData.current_annotask_idx}
+                    annoSaveResponse={annoSaveResponse}
+                    onNotification={(messageObj) => handleNotification(messageObj)}
+                    onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
+                    onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                    // onGetAnnoExample={(exampleArgs) =>
+                    //     props.onGetAnnoExample
+                    //         ? props.onGetAnnoExample(exampleArgs)
+                    //         : {}
                     // }
-                }
-                uiConfig={{
-                    ...uiConfig,
-                    imgBarVisible: true,
-                    imgLabelInputVisible: imgLabelInputVisible,
-                    centerCanvasInContainer: true,
-                    maxCanvas: true,
-                }}
-                // nextAnnoId={state.nextAnnoId}
-                annos={reviewPageData.annotations}
-                imageMeta={reviewPageData.image}
-                imageBlob={imgBlob}
-                possibleLabels={reviewOptions.possible_labels}
-                // exampleImg={props.exampleImg}
-                layoutUpdate={layoutUpdateInt}
-                selectedTool={selectedTool}
-                isJunk={isJunk}
-                // blocked={state.blockCanvas}
-                onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
-                onImgageSearchClicked={onImgageSearchClicked}
-                // svg={props.svg}
-                // filter={props.filter}
-                toolbarEnabled={{
-                    imgLabel: true,
-                    imgSearch: true,
-                    nextPrev: true,
-                    toolSelection: true,
-                    fullscreen: true,
-                    junk: true,
-                    deleteAll: true,
-                    settings: true,
-                    filter: false,
-                    help: true
-                }}
-            />
-        </div>
+                    onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                    onAnnoSaveEvent={(saveData) =>
+                        updateAnnotation([reviewPageData.current_annotask_idx, saveData])
+                    }
+                    canvasConfig={
+                        CANVAS_CONFIG
+                        // {
+                        // ...props.canvasConfig,
+                        // annos: { ...props.canvasConfig.annos, maxAnnos: null },
+                        // autoSaveInterval: 60,
+                        // allowedToMarkExample: state.allowedToMark,
+                        // }
+                    }
+                    uiConfig={{
+                        ...uiConfig,
+                        imgBarVisible: true,
+                        imgLabelInputVisible: imgLabelInputVisible,
+                        centerCanvasInContainer: true,
+                        maxCanvas: true,
+                    }}
+                    // nextAnnoId={state.nextAnnoId}
+                    annos={reviewPageData.annotations}
+                    imageMeta={reviewPageData.image}
+                    imageBlob={imgBlob}
+                    possibleLabels={reviewOptions.possible_labels}
+                    // exampleImg={props.exampleImg}
+                    layoutUpdate={layoutUpdateInt}
+                    selectedTool={selectedTool}
+                    isJunk={isJunk}
+                    // blocked={state.blockCanvas}
+                    onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
+                    onImgageSearchClicked={onImgageSearchClicked}
+                    // svg={props.svg}
+                    // filter={props.filter}
+                    toolbarEnabled={{
+                        imgLabel: true,
+                        imgSearch: true,
+                        nextPrev: true,
+                        toolSelection: true,
+                        fullscreen: true,
+                        junk: true,
+                        deleteAll: true,
+                        settings: true,
+                        filter: false,
+                        help: true,
+                    }}
+                />
+            </div>
+        )
     }
 
     return (
@@ -389,7 +394,6 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
             <NotificationContainer />
         </div>
     )
-
 }
 
 export default SIAReview

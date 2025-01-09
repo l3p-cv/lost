@@ -4,6 +4,8 @@
   "private": true,
   "homepage": "/",
   "dependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
     "@coreui/chartjs": "^3.1.2",
     "@coreui/coreui": "^4.3.0",
     "@coreui/icons": "^3.0.1",
@@ -23,11 +25,13 @@
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
+    "@vitejs/plugin-react": "^4.3.3",
     "ajv": "8",
     "axios": "^1.5.0",
+    "babel-loader": "^9.2.1",
     "chonky": "^2.3.2",
     "chonky-icon-fontawesome": "^2.3.2",
-    "@vitejs/plugin-react": "^4.3.3",
+    "esbuild-plugin-polyfill-node": "^0.3.0",
     "file-saver": "^2.0.5",
     "i18next": "^23.4.6",
     "i18next-browser-languagedetector": "^7.1.0",
@@ -35,7 +39,7 @@
     "jwt-decode": "^3.1.2",
     "l3p-frontend": "^3.3.2",
     "lodash": "^4.17.21",
-    "esbuild-plugin-polyfill-node": "^0.3.0",
+    "lost-sia": "2.0.0-alpha9",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -75,10 +79,11 @@
   "scripts": {
     "dev": "vite",
     "start": "vite --open --host --port 3000",
-    "build": "react-scripts build",
+    "build": "vite build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "semantic-ui-css-patch"
+    "postinstall": "semantic-ui-css-patch",
+    "preview":"vite preview"
   },
   "eslintConfig": {
     "extends": [
