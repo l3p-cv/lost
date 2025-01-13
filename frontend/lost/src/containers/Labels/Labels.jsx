@@ -4,14 +4,13 @@ import actions from '../../actions'
 import { createColumnHelper } from '@tanstack/react-table'
 
 import CreateLabelTree from './CreateLabelTree'
-import LabelsPage from './LabelsPage'
 import { useTranslation } from 'react-i18next'
 import { FaEdit, FaFileExport } from 'react-icons/fa'
 import { CBadge } from '@coreui/react'
 import HelpButton from '../../components/HelpButton'
 import IconButton from '../../components/IconButton'
-import BaseModal from '../../components/Datatable'
 import LabelTreeTable from './LabelTreeTable'
+import BaseContainer from '../../components/BaseContainer'
 
 let amountOfLabels = 0
 
@@ -133,11 +132,11 @@ const Labels = ({ visLevel }) => {
         return columns
     }
     return (
-        <>
+        <BaseContainer className="mt-3">
             <CreateLabelTree visLevel={visLevel} />
 
             <LabelTreeTable labelTrees={labelTrees} visLevel={visLevel} />
-        </>
+        </BaseContainer>
     )
 }
 

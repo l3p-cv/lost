@@ -212,7 +212,7 @@ const CreateLabelTree = ({ visLevel }) => {
                 </CCol>
             </CRow>
             <CRow>
-                <CCol>
+                <CCol className="justify-content-end d-flex">
                     <SelectFileButton
                         accept=".csv"
                         onSelect={(file) => {
@@ -233,6 +233,7 @@ const CreateLabelTree = ({ visLevel }) => {
                             reader.readAsText(file)
                         }}
                         text="Import Label Tree"
+                        className="mb-3"
                     />
                 </CCol>
             </CRow>
