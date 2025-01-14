@@ -14,6 +14,8 @@ const BaseModal = ({
     footer,
     size = 'xl',
     onClosed = () => {},
+    className,
+    style,
 }) => {
     const renderTitle = () => {
         if (title) {
@@ -51,7 +53,15 @@ const BaseModal = ({
         )
     }
     return (
-        <Modal key={key} size={size} isOpen={isOpen} onClosed={onClosed} toggle={toggle}>
+        <Modal
+            key={key}
+            size={size}
+            isOpen={isOpen}
+            onClosed={onClosed}
+            toggle={toggle}
+            className={className}
+            style={style}
+        >
             {renderTitle()}
             {renderBody()}
             {renderFooter()}
@@ -68,6 +78,7 @@ BaseModal.propTypes = {
     title: PropTypes.string,
     children: PropTypes.element.isRequired,
     footer: PropTypes.element,
+    className: PropTypes.string,
 }
 
 BaseModal.defaultProps = {
@@ -77,6 +88,7 @@ BaseModal.defaultProps = {
     toggle: undefined,
     title: undefined,
     footer: undefined,
+    className: undefined,
 }
 
 export default BaseModal

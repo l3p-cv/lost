@@ -108,7 +108,7 @@ const LabelsPage = ({
     }
 
     useEffect(() => {
-        setRerender(!rerender)
+        setRerender((r) => !r)
     }, [labelTree, highlightedNodeIds]) // Re-render when highlightedNodeIds change
 
     const renderEditLabel = () => {
@@ -138,6 +138,7 @@ const LabelsPage = ({
                         selectLabel(parseInt(node.id, 10))
                         onNodeClick(node.id)
                     }}
+                    minZoom={0.1}
                     fitView
                     nodes={initialNodes}
                     edges={initialEdges}

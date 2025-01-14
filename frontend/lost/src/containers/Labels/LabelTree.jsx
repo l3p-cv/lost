@@ -71,14 +71,14 @@ class LabelTree extends Component {
         const tree = this.props.labelTree
         if (tree) {
             return (
-                <React.Fragment>
+                <>
                     {this.renderEditLabel(tree)}
                     <LabelsPage
                         labelTree={this.props.labelTree}
                         visLevel={this.props.visLevel}
                     ></LabelsPage>
                     {/* <Graph  graph={graph} options={options} events={events} /> */}
-                </React.Fragment>
+                </>
             )
         } else {
             return <div>No Tree selected.</div>
