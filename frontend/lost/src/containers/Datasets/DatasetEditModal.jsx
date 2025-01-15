@@ -9,16 +9,25 @@ import Swal from 'sweetalert2'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
-const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatasetList, datastoreList, onDatasetCreated }) => {
-
-    const { mutate: createDatasetApi, data: createResponse } = datasetApi.useCreateDataset()
-    const { mutate: updateDatasetApi, data: updateResponse } = datasetApi.useUpdateDataset()
-    const { mutate: deleteDataset, data: deleteDatasetResponse } = datasetApi.useDeleteDataset()
+const DatasetEditModal = ({
+    isVisible,
+    setIsVisible,
+    editedDatasetObj,
+    flatDatasetList,
+    datastoreList,
+    onDatasetCreated,
+}) => {
+    const { mutate: createDatasetApi, data: createResponse } =
+        datasetApi.useCreateDataset()
+    const { mutate: updateDatasetApi, data: updateResponse } =
+        datasetApi.useUpdateDataset()
+    const { mutate: deleteDataset, data: deleteDatasetResponse } =
+        datasetApi.useDeleteDataset()
 
     const [idx, setIdx] = useState(-1)
-    const [name, setName] = useState("")
-    const [description, setDescription] = useState("")
-    const [parentDatasetId, setParentDatasetId] = useState("-1")
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
+    const [parentDatasetId, setParentDatasetId] = useState('-1')
     const [parentDatasetOptions, setParentDatasetOptions] = useState([])
     // const [datastoreId, setDatastoreId] = useState("0")
     // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
@@ -42,17 +51,19 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
 
     const convertDatasetListToDropdownOptions = (datasetList) => {
         // default entry in case dataset shouldn't have a parent
-        const options = [{
-            key: "-1",
-            value: "-1",
-            text: "No parent Dataset"
-        }]
+        const options = [
+            {
+                key: '-1',
+                value: '-1',
+                text: 'No parent Dataset',
+            },
+        ]
 
         Object.keys(datasetList).forEach((datasetId) => {
             options.push({
                 key: datasetId,
                 value: datasetId,
-                text: datasetList[datasetId]
+                text: datasetList[datasetId],
             })
         })
         setParentDatasetOptions(options)
@@ -72,15 +83,20 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
         setDescription(editedDatasetObj.description)
 
         // handle datasets with no parent
-        const parentId = (editedDatasetObj.parent_id === null ? -1 : editedDatasetObj.parent_id)
+        const parentId =
+            editedDatasetObj.parent_id === null ? -1 : editedDatasetObj.parent_id
 
         // convert int to string to be recognized by semantic UIs Dropdown
-        setParentDatasetId("" + parentId)
+        setParentDatasetId('' + parentId)
         // setDatastoreId("" + editedDatasetObj.datastore_id)
-
     }, [editedDatasetObj])
 
-    const showApiResponse = (apiResponse, msgSuccessVerb, msgErrorVerb, onSuccessCallback) => {
+    const showApiResponse = (
+        apiResponse,
+        msgSuccessVerb,
+        msgErrorVerb,
+        onSuccessCallback,
+    ) => {
         if (apiResponse === undefined) return
 
         const [isSuccessful, response] = apiResponse
@@ -88,7 +104,7 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
         // make sure the type is a boolean
         if (isSuccessful === true) {
             NotificationManager.success(
-                "",
+                '',
                 `Dataset ${msgSuccessVerb} successfully`,
                 NOTIFICATION_TIMEOUT_MS,
             )
@@ -108,15 +124,17 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
     }
 
     useEffect(() => {
-        showApiResponse(createResponse, "created", "creating", (response) => { onDatasetCreated(response.datasetId) })
+        showApiResponse(createResponse, 'created', 'creating', (response) => {
+            onDatasetCreated(response.datasetId)
+        })
     }, [createResponse])
 
     useEffect(() => {
-        showApiResponse(updateResponse, "updated", "updating")
+        showApiResponse(updateResponse, 'updated', 'updating')
     }, [updateResponse])
 
     useEffect(() => {
-        showApiResponse(deleteDatasetResponse, "deleted", "deleting")
+        showApiResponse(deleteDatasetResponse, 'deleted', 'deleting')
     }, [deleteDatasetResponse])
 
     const updateDataset = () => {
@@ -150,33 +168,36 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: 'primary',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
                 deleteDataset(idx)
             } else {
-
             }
         })
     }
 
-    const renderDeleteDatasetButton = () => <IconButton
-        isOutline={false}
-        color="danger"
-        icon={faTrash}
-        text="Delete Dataset"
-        onClick={() => showDeleteDatasetConfirmationMessage()}
-        style={{ marginTop: '15px' }}
-    />
+    const renderDeleteDatasetButton = () => (
+        <IconButton
+            isOutline={false}
+            color="danger"
+            icon={faTrash}
+            text="Delete Dataset"
+            onClick={() => showDeleteDatasetConfirmationMessage()}
+            style={{ marginTop: '15px' }}
+        />
+    )
 
     return (
         <CModal
             visible={isVisible}
             backdrop="static"
             size="xl"
-            onClose={() => { setIsVisible(false) }}
+            onClose={() => {
+                setIsVisible(false)
+            }}
         >
-            <CModalHeader>{idx === -1 ? "Add" : "Edit"} Dataset</CModalHeader>
+            <CModalHeader>{idx === -1 ? 'Add' : 'Edit'} Dataset</CModalHeader>
             <CModalBody>
                 <CRow>
                     <CCol sm="2">Name</CCol>
@@ -204,7 +225,7 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
                     <CCol sm="2">Parent Dataset</CCol>
                     <CCol sm="6">
                         <Dropdown
-                            placeholder='Select Parent Dataset'
+                            placeholder="Select Parent Dataset"
                             fluid
                             search
                             selection
@@ -238,20 +259,22 @@ const DatasetEditModal = ({ isVisible, setIsVisible, editedDatasetObj, flatDatas
                 <CRow>
                     <CCol sm="2">&nbsp;</CCol>
                     <CCol sm="6">
-                        {(idx !== -1 ? renderDeleteDatasetButton() : "")}
+                        {idx !== -1 ? renderDeleteDatasetButton() : ''}
 
                         <IconButton
                             isOutline={false}
                             color="primary"
                             icon={faSave}
-                            text={`${(idx === -1 ? "Add" : "Update")} Dataset`}
-                            onClick={() => (idx === -1 ? createDataset() : updateDataset())}
+                            text={`${idx === -1 ? 'Add' : 'Update'} Dataset`}
+                            onClick={() =>
+                                idx === -1 ? createDataset() : updateDataset()
+                            }
                             style={{ marginTop: '15px', float: 'right' }}
                         />
                     </CCol>
                 </CRow>
             </CModalBody>
-        </CModal >
+        </CModal>
     )
 }
 

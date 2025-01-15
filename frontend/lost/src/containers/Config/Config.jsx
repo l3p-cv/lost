@@ -78,9 +78,9 @@ const Config = () => {
                 toggle={() => setIsListModalOpen(false)}
             >
                 <div>
-                    <div style={{display: 'flex', justifyContent: 'center'}} >
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <IconButton
-                            style={{marginBottom: 20}}
+                            style={{ marginBottom: 20 }}
                             left={<FaPlusCircle />}
                             onClick={() => {
                                 let newItem = ''
@@ -100,7 +100,13 @@ const Config = () => {
                         />
                     </div>
                     {modalData.values.map((el, i) => (
-                        <div style={{display: 'flex', justifyContent: 'center', marginTop: 3}} >
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                marginTop: 3,
+                            }}
+                        >
                             <Input
                                 style={{
                                     width: 150,
@@ -122,7 +128,14 @@ const Config = () => {
                                 }}
                                 value={el}
                             />
-                            <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', marginLeft: 2}}>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center',
+                                    marginLeft: 2,
+                                }}
+                            >
                                 <IconButton
                                     onClick={() => {
                                         setModalData({
@@ -133,7 +146,7 @@ const Config = () => {
                                         })
                                     }}
                                     color="danger"
-                                    style={{padding: 1}}
+                                    style={{ padding: 1 }}
                                     left={<FaTimes />}
                                 />
                             </div>
@@ -141,9 +154,9 @@ const Config = () => {
                     ))}
                 </div>
             </BaseModal>
-            <div style={{display: 'flex', justifyContent: 'center', marginBottom: 10}} >
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
                 <h2>Configuration</h2>
-                <FaCogs style={{marginLeft: 15}}  size={36} />
+                <FaCogs style={{ marginLeft: 15 }} size={36} />
             </div>
             <SimpleTable
                 elements={data.map((el) => {
@@ -209,9 +222,9 @@ const Config = () => {
                     }
                 })}
             />
-            <div style={{display: 'flex', justifyContent: 'center', marginBottom: 8}}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
                 <IconButton
-                    style={{marginTop: 30}}
+                    style={{ marginTop: 30 }}
                     onClick={() => saveConfig(data)}
                     right="Save"
                     left={<FaSave />}

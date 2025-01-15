@@ -4,7 +4,6 @@ import { CChart } from '@coreui/react-chartjs'
 import Loading from './Loading'
 
 const LineChartWidget = ({ title, value, chartData }) => {
-
     const lineChartOptions = {
         plugins: {
             legend: {
@@ -69,27 +68,26 @@ const LineChartWidget = ({ title, value, chartData }) => {
                 <CChart
                     type="line"
                     className="mt-3"
-                    style={{ height: '70px' }
-                    }
+                    style={{ height: '70px' }}
                     data={{
                         labels: chartData,
                         datasets: [
                             {
-                                label: "chart",
+                                label: 'chart',
                                 data: chartData,
-                                borderColor: "#fff",
-                                pointBackgroundColor: "#fff",
-                                pointBorderColor: "#fff"
-                            }
-                        ]
+                                borderColor: '#fff',
+                                pointBackgroundColor: '#fff',
+                                pointBorderColor: '#fff',
+                            },
+                        ],
                     }}
                     options={lineChartOptions}
                     label="Annotations"
                     labels="days"
                 />
             }
-        ></CWidgetStatsA >
+        ></CWidgetStatsA>
     )
 }
 
-export default LineChartWidget;
+export default LineChartWidget

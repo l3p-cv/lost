@@ -13,38 +13,70 @@
     "statistic": {
         "secondsPerAnno": 6.78,
         "amountPerLabel": [
-            {"label": "cow",
-            "amount": 2},
-            {"label": "horse",
-            "amount": 8},
-            {"label": "cat",
-            "amount": 21},
-            {"label": "fish",
-            "amount": 14},
-            {"label": "cow",
-            "amount": 2},
-            {"label": "tiger",
-            "amount": 8},
-            {"label": "people",
-            "amount": 149},
-            {"label": "motorbike",
-            "amount": 14},
-            {"label": "goat",
-            "amount": 2},
-            {"label": "boat",
-            "amount": 8},
-            {"label": "aeroplane",
-            "amount": 21},
-            {"label": "bicycle",
-            "amount": 14},
-            {"label": "monitor",
-            "amount": 7},
-            {"label": "car",
-            "amount": 2},
-            {"label": "sofa",
-            "amount": 20},
-            {"label": "chair",
-            "amount": 35}
+            {
+                "label": "cow",
+                "amount": 2
+            },
+            {
+                "label": "horse",
+                "amount": 8
+            },
+            {
+                "label": "cat",
+                "amount": 21
+            },
+            {
+                "label": "fish",
+                "amount": 14
+            },
+            {
+                "label": "cow",
+                "amount": 2
+            },
+            {
+                "label": "tiger",
+                "amount": 8
+            },
+            {
+                "label": "people",
+                "amount": 149
+            },
+            {
+                "label": "motorbike",
+                "amount": 14
+            },
+            {
+                "label": "goat",
+                "amount": 2
+            },
+            {
+                "label": "boat",
+                "amount": 8
+            },
+            {
+                "label": "aeroplane",
+                "amount": 21
+            },
+            {
+                "label": "bicycle",
+                "amount": 14
+            },
+            {
+                "label": "monitor",
+                "amount": 7
+            },
+            {
+                "label": "car",
+                "amount": 2
+            },
+            {
+                "label": "sofa",
+                "amount": 20
+            },
+            {
+                "label": "chair",
+                "amount": 35
+            }
         ]
     }
 }

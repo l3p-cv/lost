@@ -17,7 +17,7 @@ import { useMutation } from 'react-query'
 // }
 
 export const useGetImg = () => {
-    return useMutation((args) => 
-        axios.post(API_URL + `/data/getImage`, args).then(res => res.data),
+    return useMutation((args) =>
+        axios.post(API_URL + `/data/getImage`, args).then((res) => res.data),
     )
 }

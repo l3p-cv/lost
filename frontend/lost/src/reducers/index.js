@@ -26,9 +26,8 @@ const appReducer = combineReducers({
     pipelineRunning,
     pipelineStart,
     siaReview,
-    lost
+    lost,
 })
-
 
 const rootReducer = (state, action) => {
     if (action.type === 'logout') {
@@ -38,4 +37,4 @@ const rootReducer = (state, action) => {
     return appReducer(state, action)
 }
 
-  export default rootReducer
+export default rootReducer

@@ -188,10 +188,16 @@ const PersonalStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Annotations</h3>}
+                        icon={<h3 className="text-white">Annotations</h3>}
                         values={[
-                            { title: 'Today', value: '' + personalStatistics.annos.today },
-                            { title: 'All time', value: '' + personalStatistics.annos.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + personalStatistics.annos.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + personalStatistics.annos.allTime,
+                            },
                         ]}
                     />
                 </CCol>
@@ -210,10 +216,16 @@ const PersonalStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Annotasks</h3>}
+                        icon={<h3 className="text-white">Annotasks</h3>}
                         values={[
-                            { title: 'Today', value: '' + personalStatistics.annotasks.today },
-                            { title: 'All time', value: '' + personalStatistics.annotasks.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + personalStatistics.annotasks.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + personalStatistics.annotasks.allTime,
+                            },
                         ]}
                     />
                 </CCol>
@@ -232,10 +244,16 @@ const PersonalStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Time per Annotation</h3>}
+                        icon={<h3 className="text-white">Time per Annotation</h3>}
                         values={[
-                            { title: 'Today', value: '' + personalStatistics.annotime.today },
-                            { title: 'All time', value: '' + personalStatistics.annotime.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + personalStatistics.annotime.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + personalStatistics.annotime.allTime,
+                            },
                         ]}
                     />
                 </CCol>
@@ -253,10 +271,16 @@ const PersonalStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Processed images</h3>}
+                        icon={<h3 className="text-white">Processed images</h3>}
                         values={[
-                            { title: 'Today', value: '' + personalStatistics.processedImages.today },
-                            { title: 'All time', value: '' + personalStatistics.processedImages.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + personalStatistics.processedImages.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + personalStatistics.processedImages.allTime,
+                            },
                         ]}
                     />
                 </CCol>
@@ -270,20 +294,36 @@ const PersonalStatistics = () => {
                 </CCol>
                 <CCol sm="7" className="d-none d-md-block"></CCol>
             </CRow>
-            <CRow className='mb-5'>
-                <CCol sm="6" lg="6" xl="3" className='mb-3'>
-                    <LineChartWidget title="Annotations / Day" value={'Ø ' + personalStatistics.annos.avg} chartData={personalStatistics.annos.history.week}></LineChartWidget>
+            <CRow className="mb-5">
+                <CCol sm="6" lg="6" xl="3" className="mb-3">
+                    <LineChartWidget
+                        title="Annotations / Day"
+                        value={'Ø ' + personalStatistics.annos.avg}
+                        chartData={personalStatistics.annos.history.week}
+                    ></LineChartWidget>
                 </CCol>
-                <CCol sm="6" lg="6" xl="3" className='mb-3'>
-                    <LineChartWidget title="Annotasks / Day" value={'Ø ' + personalStatistics.annotasks.avg} chartData={personalStatistics.annotasks.history.week}></LineChartWidget>
+                <CCol sm="6" lg="6" xl="3" className="mb-3">
+                    <LineChartWidget
+                        title="Annotasks / Day"
+                        value={'Ø ' + personalStatistics.annotasks.avg}
+                        chartData={personalStatistics.annotasks.history.week}
+                    ></LineChartWidget>
                 </CCol>
-                <CCol sm="6" lg="6" xl="3" className='mb-3'>
-                    <LineChartWidget title="Time per Annotation / Day" value={'Ø ' + personalStatistics.annotime.avg} chartData={personalStatistics.annotime.history.week}></LineChartWidget>
+                <CCol sm="6" lg="6" xl="3" className="mb-3">
+                    <LineChartWidget
+                        title="Time per Annotation / Day"
+                        value={'Ø ' + personalStatistics.annotime.avg}
+                        chartData={personalStatistics.annotime.history.week}
+                    ></LineChartWidget>
                 </CCol>
-                <CCol sm="6" lg="6" xl="3" className='mb-3'>
-                    <LineChartWidget title="Processed Images / Day" value={'Ø ' + personalStatistics.processedImages.avg} chartData={personalStatistics.processedImages.history.week}></LineChartWidget>
+                <CCol sm="6" lg="6" xl="3" className="mb-3">
+                    <LineChartWidget
+                        title="Processed Images / Day"
+                        value={'Ø ' + personalStatistics.processedImages.avg}
+                        chartData={personalStatistics.processedImages.history.week}
+                    ></LineChartWidget>
                 </CCol>
-            </CRow >
+            </CRow>
 
             <CRow>
                 <CCol sm="5">

@@ -73,7 +73,7 @@ const Cluster = () => {
                                         finishMia(
                                             navigate('/dashboard'),
                                             dispatchWorkingAnnoTasks,
-                                        )
+                                        ),
                                     )
                                 }
                             >

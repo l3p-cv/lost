@@ -1,19 +1,19 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {Button} from 'reactstrap'
+import { Button } from 'reactstrap'
 
 const IconButton = (props) => {
-    return(
+    return (
         <Button
             outline
             disabled={props.disabled}
             onClick={props.onClick}
-            color= {props.color}
-            size= {props.size}
+            color={props.color}
+            size={props.size}
         >
             <FontAwesomeIcon icon={props.icon} />
-            <span style={{marginLeft: 5}}>{props.text}</span>
+            <span style={{ marginLeft: 5 }}>{props.text}</span>
         </Button>
     )
 }
@@ -24,7 +24,7 @@ IconButton.propTypes = {
     color: PropTypes.string,
     onClick: PropTypes.func.isRequired,
     icon: PropTypes.object.isRequired,
-    text: PropTypes.string.isRequired
+    text: PropTypes.string.isRequired,
 }
 
 export default IconButton

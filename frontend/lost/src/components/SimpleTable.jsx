@@ -6,14 +6,36 @@ const SimpleTable = ({ elements, className, showLines }) => {
             <div
                 // eslint-disable-next-line react/no-array-index-key
                 key={i}
-                style={{ display: 'flex',flexDirection: 'row', borderBottom: i !== elements.length - 1 ? '2px solid gray': undefined, textAlign: 'center'}}
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    borderBottom:
+                        i !== elements.length - 1 ? '2px solid gray' : undefined,
+                    textAlign: 'center',
+                }}
             >
                 <div
-                    style={{width: '50%', borderRight: '2px solid gray', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                    style={{
+                        width: '50%',
+                        borderRight: '2px solid gray',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
                 >
                     {el.left}
                 </div>
-                <div style={{width: '50%', padding:10 , display: 'flex', alignItems: 'center', justifyContent: 'center'}} >{el.right}</div>
+                <div
+                    style={{
+                        width: '50%',
+                        padding: 10,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    {el.right}
+                </div>
             </div>
         )
     })

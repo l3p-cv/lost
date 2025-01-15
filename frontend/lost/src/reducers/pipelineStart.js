@@ -370,9 +370,9 @@ export default (state = INITITAL_STATE, action) => {
                                         storage: {
                                             ...el.storage,
                                             datasetId: action.payload.datasetId,
-                                        }
-                                    }
-                                }
+                                        },
+                                    },
+                                },
                             }
                         }
                         return el
@@ -408,7 +408,7 @@ export default (state = INITITAL_STATE, action) => {
                 },
             }
 
-            console.info("VERTAB", test2)
+            console.info('VERTAB', test2)
 
             return test2
         case 'PIPELINE_START_ANNO_TASK_NAME_INPUT':
@@ -628,8 +628,8 @@ export default (state = INITITAL_STATE, action) => {
                                 id: el.peN,
                                 verified: el.script.arguments
                                     ? Object.keys(el.script.arguments).filter(
-                                        (el2) => !el.script.arguments[el2].value,
-                                    ).length === 0
+                                          (el2) => !el.script.arguments[el2].value,
+                                      ).length === 0
                                     : true,
                                 type: 'script',
                                 title: 'Script',

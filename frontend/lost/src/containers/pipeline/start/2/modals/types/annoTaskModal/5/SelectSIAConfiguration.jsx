@@ -282,11 +282,14 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                                                 className={'mx-1'}
                                                 variant={'3d'}
                                                 color={'primary'}
-                                                checked={configuration.annos.actions.label}
+                                                checked={
+                                                    configuration.annos.actions.label
+                                                }
                                                 onChange={(e) =>
                                                     changeValue(
                                                         'action-label',
-                                                        !configuration.annos.actions.label,
+                                                        !configuration.annos.actions
+                                                            .label,
                                                     )
                                                 }
                                             />
@@ -337,7 +340,7 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                                 </CCol>
                             </CRow>
                         </CCol>
-                    </CRow >
+                    </CRow>
                     <hr />
                     <CRow style={{ margin: '5px' }}>
                         <CCol sm="12" style={{ marginTop: '5px' }}>

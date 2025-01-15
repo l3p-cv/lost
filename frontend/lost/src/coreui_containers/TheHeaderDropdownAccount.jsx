@@ -10,7 +10,11 @@ const TheHeaderDropdown = () => {
     const navigate = useNavigate()
 
     return (
-        <CDropdown variant="nav-item" className="c-header-nav-items mx-2" direction="center">
+        <CDropdown
+            variant="nav-item"
+            className="c-header-nav-items mx-2"
+            direction="center"
+        >
             {/* <CDropdownToggle className="c-header-nav-link" caret={false} style={{ background: 'white', border: '0px' }}> */}
             <CDropdownToggle className="c-header-nav-link" caret={false} variant="ghost">
                 <div>

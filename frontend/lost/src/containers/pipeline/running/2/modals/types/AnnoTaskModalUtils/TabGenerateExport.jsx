@@ -115,7 +115,8 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                     />
                                 </CCol>
                                 <CCol>
-                                    <h4>Annotated only
+                                    <h4>
+                                        Annotated only
                                         <HelpButton
                                             id="anno-only"
                                             text={
@@ -237,10 +238,9 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                             </CDropdownItem>
                                         </CDropdownMenu>
                                     </CDropdown>
-
                                 </CCol>
                                 <CCol>
-                                    <h4 className='mb-3'>
+                                    <h4 className="mb-3">
                                         Export Type
                                         <HelpButton
                                             id="export-type"
@@ -249,7 +249,6 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                     </h4>
                                 </CCol>
                             </CRow>
-
 
                             {/* <CRow>
                                 <CCol sm="12">
@@ -287,11 +286,14 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                                     setNewExport({
                                                         ...newExport,
                                                         randomSplits: {
-                                                            train: newExport.randomSplits.train,
-                                                            test: newExport.randomSplits.test,
-                                                            val: newExport.randomSplits.val,
-                                                            active: !newExport.randomSplits
-                                                                .active,
+                                                            train: newExport.randomSplits
+                                                                .train,
+                                                            test: newExport.randomSplits
+                                                                .test,
+                                                            val: newExport.randomSplits
+                                                                .val,
+                                                            active: !newExport
+                                                                .randomSplits.active,
                                                         },
                                                     })
                                                 }
@@ -311,15 +313,16 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                             </b>
                                         </CCol>
                                     </CRow>
-
                                 </CCol>
 
                                 {newExport.randomSplits.active ? (
                                     <>
-                                        <div style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}>
+                                        <div
+                                            style={{
+                                                marginLeft: '5px',
+                                                marginTop: '10px',
+                                            }}
+                                        >
                                             <CRow>
                                                 <CCol md="6">
                                                     <CFormInput
@@ -327,7 +330,9 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                                         min={0.0}
                                                         step={0.01}
                                                         max={1.0}
-                                                        value={newExport.randomSplits.train}
+                                                        value={
+                                                            newExport.randomSplits.train
+                                                        }
                                                         onChange={(e) =>
                                                             validateSplit(
                                                                 'train',
@@ -347,19 +352,22 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                                 </CCol>
                                             </CRow>
                                         </div>
-                                        <div style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}>
+                                        <div
+                                            style={{
+                                                marginLeft: '5px',
+                                                marginTop: '10px',
+                                            }}
+                                        >
                                             <CRow>
-
                                                 <CCol md="6">
                                                     <CFormInput
                                                         type="number"
                                                         min={0.0}
                                                         step={0.01}
                                                         max={1.0}
-                                                        value={newExport.randomSplits.test}
+                                                        value={
+                                                            newExport.randomSplits.test
+                                                        }
                                                         onChange={(e) =>
                                                             validateSplit(
                                                                 'test',
@@ -379,10 +387,12 @@ const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive 
                                                 </CCol>
                                             </CRow>
                                         </div>
-                                        <div style={{
-                                            marginLeft: '5px',
-                                            marginTop: '10px',
-                                        }}>
+                                        <div
+                                            style={{
+                                                marginLeft: '5px',
+                                                marginTop: '10px',
+                                            }}
+                                        >
                                             <CRow>
                                                 <CCol md="6">
                                                     <CFormInput

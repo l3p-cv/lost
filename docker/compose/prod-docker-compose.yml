@@ -1,41 +1,41 @@
-version: '2'
+version: "2"
 services:
-    lost:
-      image: l3pcv/lost:${LOST_VERSION}
-      container_name: lost
-      command: bash /entrypoint.sh
-      env_file:
-        - .env
-      volumes:
-        - ${LOST_APP}:/home/lost/app
-        - ${LOST_DATA}:/home/lost/data
-      restart: always
-      ports:
-        - "${LOST_FRONTEND_PORT}:8080"
-      environment:
-        PYTHONPATH: "/code/src/backend"
-        ENV_NAME: "lost"
-        WORKER_NAME: "lost-0"
-        PY3_INIT: "source /opt/conda/bin/activate lost"
-      links:
-        - db-lost
-        - rabbitmqlost
+  lost:
+    image: l3pcv/lost:${LOST_VERSION}
+    container_name: lost
+    command: bash /entrypoint.sh
+    env_file:
+      - .env
+    volumes:
+      - ${LOST_APP}:/home/lost/app
+      - ${LOST_DATA}:/home/lost/data
+    restart: always
+    ports:
+      - "${LOST_FRONTEND_PORT}:8080"
+    environment:
+      PYTHONPATH: "/code/src/backend"
+      ENV_NAME: "lost"
+      WORKER_NAME: "lost-0"
+      PY3_INIT: "source /opt/conda/bin/activate lost"
+    links:
+      - db-lost
+      - rabbitmqlost
 
-    db-lost:
-      image: mysql:5.7
-      container_name: db-lost
-      volumes:
-        - ${LOST_APP}/mysql:/var/lib/mysql
-      restart: always
-      environment:
-        MYSQL_DATABASE: ${LOST_DB_NAME}
-        MYSQL_USER: ${LOST_DB_USER}
-        MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
-        MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
+  db-lost:
+    image: mysql:5.7
+    container_name: db-lost
+    volumes:
+      - ${LOST_APP}/mysql:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${LOST_DB_NAME}
+      MYSQL_USER: ${LOST_DB_USER}
+      MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
 
-    rabbitmqlost:
-      image: rabbitmq:3-management
-      container_name: rabbitmqlost
-      restart: always
-      volumes:
-        - ${LOST_DATA}/rabbitmq:/var/lib/rabbitmq
+  rabbitmqlost:
+    image: rabbitmq:3-management
+    container_name: rabbitmqlost
+    restart: always
+    volumes:
+      - ${LOST_DATA}/rabbitmq:/var/lib/rabbitmq

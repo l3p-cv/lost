@@ -115,7 +115,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                     },
                     option2: {
                         text: 'No',
-                        callback: () => { },
+                        callback: () => {},
                     },
                 })
             } else {
@@ -150,7 +150,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                     },
                     option2: {
                         text: 'No',
-                        callback: () => { },
+                        callback: () => {},
                     },
                 })
             } else {
@@ -273,29 +273,33 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                                                 />
                                             </CCol>
                                             <CCol md={6}>
-                                                <span style={{ verticalAlign: 'middle' }}><b>Git Url</b></span>
+                                                <span style={{ verticalAlign: 'middle' }}>
+                                                    <b>Git Url</b>
+                                                </span>
                                                 <HelpButton
                                                     id="url"
                                                     text={`Enter a git url to a public git repository that 
                                                 contains the LOST pipeline project. `}
                                                 />
                                             </CCol>
-
                                         </CRow>
-                                        <CRow className='mt-3'>
-
+                                        <CRow className="mt-3">
                                             <CCol md={6}>
                                                 <CFormInput
                                                     type="text"
                                                     placeholder="main"
                                                     value={gitBranch}
                                                     onChange={(e) =>
-                                                        setGitBranch(e.currentTarget.value)
+                                                        setGitBranch(
+                                                            e.currentTarget.value,
+                                                        )
                                                     }
                                                 />
                                             </CCol>
                                             <CCol md={6}>
-                                                <span style={{ verticalAlign: 'middle' }}><b>Git Branch</b></span>
+                                                <span style={{ verticalAlign: 'middle' }}>
+                                                    <b>Git Branch</b>
+                                                </span>
 
                                                 <HelpButton
                                                     id="branch"
@@ -305,7 +309,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                                             </CCol>
                                         </CRow>
 
-                                        <CRow className='mt-3'>
+                                        <CRow className="mt-3">
                                             <CCol>
                                                 <IconButton
                                                     color="primary"

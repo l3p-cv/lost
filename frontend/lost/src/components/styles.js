@@ -17,9 +17,8 @@ const DANGER_COLOR_CODE = '#dc3545'
 const PRIMARY_COLOR_CODE = '#007bff'
 const SECONDARY_COLOR_CODE = '#6c757d'
 
-
 export const bsColorSelector = (className) => {
-    switch (className){
+    switch (className) {
         case 'success':
             return SUCCESS_COLOR_CODE
         case 'warning':
@@ -36,4 +35,3 @@ export const bsColorSelector = (className) => {
             return DANGER_COLOR_CODE
     }
 }
-
