@@ -1,4 +1,4 @@
-ARG base_image=l3pcv/lost-base:latest
+ARG base_image=l3pcv/lost-base:3.14-depupdate0
 FROM $base_image
 
 ARG LOST_VERSION

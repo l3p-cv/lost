@@ -6,7 +6,7 @@ import userActions from '../../actions/user'
 import { useDispatch, useSelector } from 'react-redux'
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
-import { Input, InputGroupAddon, InputGroup } from 'reactstrap'
+import { Input, InputGroup } from 'reactstrap'
 import * as Notification from '../../components/Notification'
 import * as REQUEST_STATUS from '../../types/requestStatus'
 export const Groups = () => {

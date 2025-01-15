@@ -51,6 +51,11 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                 title={'Edit label tree'}
                 toggle={() => setIsEditModalOpen(false)}
                 onClosed={() => {}}
+                size="xl"
+                style={{
+                    maxWidth: '90%', // Adjust the width here (percentage or pixels)
+                    width: '90%', // Optional: Specify exact width
+                }}
             >
                 <LabelTree
                     labelTree={getLabelTreeById(selectedTreeId)}

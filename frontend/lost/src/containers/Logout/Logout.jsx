@@ -4,7 +4,7 @@ import { Button, Card, CardBody, CardGroup, Container, Row } from 'reactstrap'
 import { useNavigate } from 'react-router-dom'
 import actions from '../../actions'
 import lostLogoColor from '../../assets/img/brand/lost_logo.png'
-import backgroundImage from '../../assets/img/background.svg'
+import backgroundImage from '/assets/background.svg'
 
 const Logout = () => {
     const dispatch = useDispatch()

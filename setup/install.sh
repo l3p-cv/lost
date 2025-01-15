@@ -57,7 +57,8 @@ echo
 echo 🛠️  building frontend
 npm run build
 mkdir -p $LOST_BASE_DIR/src/frontend/lost
-cp -r $LOST_BASE_DIR/build/frontend/lost/build $LOST_BASE_DIR/src/frontend/lost/
+rm -rf $LOST_BASE_DIR/src/frontend/lost/build
+cp -r $LOST_BASE_DIR/build/frontend/lost/dist $LOST_BASE_DIR/src/frontend/lost/build
 cd $LOST_REPO_LOCATION_DIR
 
 echo

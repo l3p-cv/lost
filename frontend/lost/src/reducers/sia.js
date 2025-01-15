@@ -1,7 +1,6 @@
 import TYPES from '../types/index'
 
-// import {uiConfig} from '../containers/SIA/lost-sia/src/utils/uiConfig'
-import { uiConfig } from '../containers/Annotation/SIA/lost-sia/src/utils/uiConfig'
+import { uiConfig } from 'lost-sia'
 
 const INITIAL_STATE = {
     annos: {},

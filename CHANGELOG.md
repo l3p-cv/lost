@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - unreleased
+
+### Changed
+
+- Install lost-sia as external package instead of using internal version
+- Label Trees are now rendered using React Flow
+- vite is now used instead of react-scripts for building
+
+### Removed
+
+- lost-sia was moved to a own repository
+
+### Fixed
+
+- Fix build scripts for the production version so they work again
+
 ## [2.0.0] - unreleased
 ### Added
 - Install script for installations without docker
@@ -84,6 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Use pagination
 - MIA:
   - Allow to zoom images up to 1920px height
+- Labels
+  - Use React Flow for the display of the Labels because it is more up to date than react-graph-vis which is removed
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on

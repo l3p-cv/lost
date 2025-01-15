@@ -1,12 +1,23 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react'
-// import '../Annotation/SIA/lost-sia/src/SIA.scss'
-// import * as canvasActions from '../Annotation/SIA/lost-sia/src/types/canvasActions'
+import axios from 'axios'
+import { API_URL } from '../../../lost_settings'
+import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
+import actions from '../../../actions'
+import { useNavigate } from 'react-router-dom'
 import { NotificationManager, NotificationContainer } from 'react-notifications'
+import * as Notification from '../../../components/Notification'
 import 'react-notifications/lib/notifications.css'
-import * as reviewApi from '../../actions/dataset/dataset_review_api'
-import SIAImageSearchModal from './SIAImageSearchModal'
 
 import { Sia, toolbarEvents as tbe, notificationType, canvasActions } from 'lost-sia'
+
+const {
+    siaLayoutUpdate,
+    getSiaImage,
+    siaImgIsJunk,
+    getSiaReviewAnnos,
+    getSiaReviewOptions,
+    siaReviewResetAnnos,
+} = actions
 
 const CANVAS_CONFIG = {
     tools: {
@@ -33,125 +44,112 @@ const CANVAS_CONFIG = {
     },
 }
 
-const SIAReview = ({ datasetId = null, annotaskId = null }) => {
-    const isAnnotaskReview = annotaskId !== null
-    const id = isAnnotaskReview ? annotaskId : datasetId
-
-    const { data: reviewPageData, mutate: loadNextReviewPage } =
-        reviewApi.useReview(isAnnotaskReview)
-    const { data: reviewOptions, mutate: getReviewOptions } = reviewApi.useReviewOptions()
-    const { data: reviewImage, mutate: loadReviewImage } = reviewApi.useGetImage()
-    const { data: uiConfig } = reviewApi.useGetUIConfig()
-    const { data: updateAnnotationResponse, mutate: updateAnnotation } =
-        reviewApi.useUpdateAnnotation()
-
+const SIAReview = (props) => {
     const [imgLabelInputVisible, setImgLabelInputVisible] = useState(false)
-    const [isImgSearchModalVisible, setIsImgSearchModalVisible] = useState(false)
-    const [annoSaveResponse, setAnnoSaveResponse] = useState(false)
+    const [annos, setAnnos] = useState()
+    const [annosChanged, setAnnosChanged] = useState(false)
     const [nextPrev, setNextPrev] = useState()
+    const [imageMeta, setImageMeta] = useState()
     const [imgBlob, setImgBlob] = useState()
     const [canvas, setCanvas] = useState()
     const [isJunk, setIsJunk] = useState(false)
     const [selectedTool, setSelectedTool] = useState()
-    const [updateSize, setUpdateSize] = useState()
-    const [layoutUpdateInt, setLayoutUpdateInt] = useState(0)
+    const navigate = useNavigate()
 
     const handleToolSelected = (tool) => {
         setSelectedTool(tool)
+        // setState({ tool: tool })
     }
 
     useEffect(() => {
-        setLayoutUpdateInt(layoutUpdateInt + 1)
-    }, [updateSize])
-
-    useEffect(() => {
-        if (nextPrev === undefined) return
-
-        handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
-    }, [nextPrev])
-
-    useLayoutEffect(() => {
-        const windowSizeUpdate = () => {
-            setUpdateSize([window.innerWidth, window.innerHeight])
+        if (nextPrev) {
+            if (annosChanged) {
+                saveRequestModal()
+            } else {
+                handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
+            }
         }
-
-        window.addEventListener('resize', windowSizeUpdate)
-        windowSizeUpdate()
-
-        return () => window.removeEventListener('resize', windowSizeUpdate)
-    }, [])
-
+    }, [nextPrev])
     useEffect(() => {
+        window.addEventListener('resize', props.siaLayoutUpdate)
+        // document.body.style.overflow = "hidden"
+
+        const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
+        //direction: 'next', 'previous', 'first'
         const data = {
             direction: 'first',
-            imageAnnoId: null,
+            image_anno_id: null,
             iteration: null,
+            pe_id: pipeElementId,
         }
-
-        loadNextReviewPage([id, data])
+        props.getSiaReviewOptions(pipeElementId)
+        props.getSiaReviewAnnos(data)
+        // props.getSiaConfig()
+        return () => {
+            window.removeEventListener('resize', props.siaLayoutUpdate)
+        }
     }, [])
 
     useEffect(() => {
-        if (!reviewPageData) return
+        if (props.annos) {
+            requestImageFromBackend()
+            props.siaImgIsJunk(props.annos.image.isJunk)
+            setIsJunk(props.annos.image.isJunk)
+        }
+    }, [props.annos])
 
-        getReviewOptions(reviewPageData.current_annotask_idx)
-        requestImageFromBackend(reviewPageData.image.id)
-
-        // check if image is junk
-        const { isJunk } = reviewPageData.image
-        setIsJunk(isJunk)
-    }, [reviewPageData])
-
-    useEffect(() => {
-        if (reviewImage === undefined) return
-
-        setImgBlob(reviewImage)
-    }, [reviewImage])
-
-    const requestImageFromBackend = (imageId) => {
+    const requestImageFromBackend = () => {
         if (canvas) {
             canvas.resetZoom()
             canvas.unloadImage()
         }
-
-        loadReviewImage(imageId)
+        props.getSiaImage(props.annos.image.id).then((response) => {
+            setImgBlob(response.data)
+        })
     }
 
     const handleNextPrevImage = (imgId, direction) => {
+        const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
         const data = {
             direction: direction,
-            imageAnnoId: imgId,
+            image_anno_id: imgId,
             iteration: null,
-            annotaskIdx:
-                reviewPageData.current_annotask_idx === undefined
-                    ? null
-                    : reviewPageData.current_annotask_idx,
+            pe_id: pipeElementId,
         }
-
-        loadNextReviewPage([id, data])
-
+        // props.getSiaReviewOptions(props.pipeElementId)
+        props.getSiaReviewOptions(pipeElementId)
+        props.getSiaReviewAnnos(data)
         setNextPrev(undefined)
+        setAnnosChanged(false)
     }
 
-    useEffect(() => {
-        // dont show a notification on initialisation
-        if (updateAnnotationResponse === undefined) return
-
-        const [isSuccessful, response] = updateAnnotationResponse
-
-        // make sure the type is a boolean
-        if (isSuccessful === true) {
-            console.log('handleAnnoSaveResponse ', response)
-            setAnnoSaveResponse(response)
-        } else {
-            console.warn(response)
+    const handleSaveAnnos = async () => {
+        try {
+            const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
+            const newAnnos = canvas.getAnnos()
+            // const camName = history.location.pathname.split('/').slice(-1)[0]
+            const response = await axios.post(
+                API_URL + '/sia/reviewupdate/' + pipeElementId,
+                newAnnos,
+            )
+            console.log('REQUEST: siaReviewUpdate ', response)
+            // props.siaUpdateAnnos(newAnnos).then(
+            handleNotification({
+                title: 'Saved',
+                message: 'Annotations have been saved!',
+                type: notificationType.INFO,
+            })
+            // )
+            setAnnosChanged(false)
+        } catch (e) {
+            console.error(e)
             handleNotification({
                 title: 'Could not save!!!',
                 message: 'Server Error',
                 type: notificationType.ERROR,
             })
         }
-    }, [updateAnnotationResponse])
+    }
 
     const handleNotification = (notification) => {
         const notifyTimeOut = 5000
@@ -193,12 +191,13 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
 
     const handleCanvasKeyDown = (e) => {
         console.log('Canvas keyDown: ', e.key)
-        if (!reviewPageData || !reviewPageData.image) return
-
+        if (!props.annos) return
+        if (!props.annos.image) return
         switch (e.key) {
             case 'ArrowLeft':
-                if (!reviewPageData.image.isFirst) {
-                    setNextPrev({ imgId: reviewPageData.image.id, cmd: 'previous' })
+                if (!props.annos.image.isFirst) {
+                    setNextPrev({ imgId: props.annos.image.id, cmd: 'previous' })
+                    // handleNextPrevImage(props.annos.image.id, 'previous')
                 } else {
                     handleNotification({
                         title: 'No previous image',
@@ -208,8 +207,9 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 }
                 break
             case 'ArrowRight':
-                if (!reviewPageData.image.isLast) {
-                    setNextPrev({ imgId: reviewPageData.image.id, cmd: 'next' })
+                if (!props.annos.image.isLast) {
+                    setNextPrev({ imgId: props.annos.image.id, cmd: 'next' })
+                    // handleNextPrevImage(props.annos.image.id, 'next')
                 } else {
                     handleNotification({
                         title: 'No next image',
@@ -218,14 +218,34 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                     })
                 }
                 break
-            case 'j':
-            case 'J':
-                setIsJunk(!isJunk)
-                break
             default:
                 break
         }
     }
+
+    // const handleIterationChange = (iteration) => {
+    //     setState({ iteration: iteration })
+    //     console.log('iteration', iteration)
+    //     const data = {
+    //         direction: 'first',
+    //         image_anno_id: null,
+    //         iteration: iteration,
+    //         pe_id: props.pipeElementId,
+    //     }
+    //     props.siaReviewResetAnnos()
+    //     props.getSiaReviewAnnos(data)
+    // }
+
+    // const renderFilter = () => {
+    //     if (!props.filterOptions) return null
+    //     return (
+    //         <FilterInfoBox
+    //             visible={true}
+    //             options={props.filterOptions}
+    //             onIterationChange={(iter) => handleIterationChange(iter)}
+    //         />
+    //     )
+    // }
 
     const handleGetFunction = (canvas) => {
         setCanvas(canvas)
@@ -233,6 +253,9 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
 
     const handleToolBarEvent = (e, data) => {
         switch (e) {
+            case tbe.SAVE:
+                handleSaveAnnos()
+                break
             case tbe.DELETE_ALL_ANNOS:
                 canvas.deleteAllAnnos()
                 break
@@ -240,10 +263,10 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 handleToolSelected(data)
                 break
             case tbe.GET_NEXT_IMAGE:
-                setNextPrev({ imgId: reviewPageData.image.id, cmd: 'next' })
+                handleNextPrevImage(props.annos.image.id, 'next')
                 break
             case tbe.GET_PREV_IMAGE:
-                setNextPrev({ imgId: reviewPageData.image.id, cmd: 'previous' })
+                handleNextPrevImage(props.annos.image.id, 'previous')
                 break
             case tbe.TASK_FINISHED:
                 break
@@ -258,10 +281,10 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
 
             case tbe.SHOW_ANNO_DETAILS:
                 // props.siaSetUIConfig({
-                //     ...uiConfig,
+                //     ...props.uiConfig,
                 //     annoDetails: {
-                //         ...uiConfig.annoDetails,
-                //         visible: !uiConfig.annoDetails.visible,
+                //         ...props.uiConfig.annoDetails,
+                //         visible: !props.uiConfig.annoDetails.visible,
                 //     },
                 // })
                 break
@@ -297,31 +320,49 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 break
         }
     }
-
-    const onImgageSearchClicked = () => {
-        setIsImgSearchModalVisible(true)
+    const handleAnnoPerformedAction = (anno, annos, action) => {
+        switch (action) {
+            case canvasActions.ANNO_CREATED:
+            case canvasActions.ANNO_CREATED_FINAL_NODE:
+            case canvasActions.ANNO_DELETED:
+            case canvasActions.ANNO_MOVED:
+            case canvasActions.ANNO_LABEL_UPDATE:
+            case canvasActions.ANNO_COMMENT_UPDATE:
+                setAnnosChanged(true)
+                break
+            default:
+                break
+        }
     }
 
-    const switchSIAImage = (annotaskId, imageAnnoId) => {
-        const data = {
-            direction: 'specificImage',
-            annotaskIdx: annotaskId,
-            imageAnnoId: imageAnnoId,
-            iteration: null,
-        }
-
-        loadNextReviewPage([id, data])
+    const saveRequestModal = () => {
+        Notification.showDecision({
+            title: 'Annotation have been changed! Do you want to save these changes?',
+            option1: {
+                text: 'Save Changes',
+                callback: () => {
+                    handleSaveAnnos()
+                    handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
+                },
+            },
+            option2: {
+                text: "Don't Save",
+                callback: () => {
+                    handleNextPrevImage(nextPrev.imgId, nextPrev.cmd)
+                },
+            },
+        })
     }
 
     const renderSia = () => {
-        if (!reviewPageData) return 'No Review Data!'
-        if (!reviewOptions) return 'No Review Data!'
-
+        if (!props.annos) return 'No Review Data!'
+        if (!props.filterOptions) return 'No Review Data!'
         return (
             <div>
                 <Sia
-                    annoTaskId={reviewPageData.current_annotask_idx}
-                    annoSaveResponse={annoSaveResponse}
+                    onAnnoEvent={(anno, annos, action) =>
+                        handleAnnoPerformedAction(anno, annos, action)
+                    }
                     onNotification={(messageObj) => handleNotification(messageObj)}
                     onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
                     onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
@@ -331,9 +372,6 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                     //         : {}
                     // }
                     onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                    onAnnoSaveEvent={(saveData) =>
-                        updateAnnotation([reviewPageData.current_annotask_idx, saveData])
-                    }
                     canvasConfig={
                         CANVAS_CONFIG
                         // {
@@ -344,29 +382,28 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                         // }
                     }
                     uiConfig={{
-                        ...uiConfig,
+                        ...props.uiConfig,
                         imgBarVisible: true,
                         imgLabelInputVisible: imgLabelInputVisible,
                         centerCanvasInContainer: true,
                         maxCanvas: true,
                     }}
                     // nextAnnoId={state.nextAnnoId}
-                    annos={reviewPageData.annotations}
-                    imageMeta={reviewPageData.image}
+                    annos={props.annos.annotations}
+                    imageMeta={props.annos.image}
                     imageBlob={imgBlob}
-                    possibleLabels={reviewOptions.possible_labels}
+                    possibleLabels={props.filterOptions.possible_labels}
                     // exampleImg={props.exampleImg}
-                    layoutUpdate={layoutUpdateInt}
+                    layoutUpdate={props.layoutUpdate}
                     selectedTool={selectedTool}
                     isJunk={isJunk}
                     // blocked={state.blockCanvas}
                     onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
-                    onImgageSearchClicked={onImgageSearchClicked}
                     // svg={props.svg}
                     // filter={props.filter}
                     toolbarEnabled={{
+                        save: true,
                         imgLabel: true,
-                        imgSearch: true,
                         nextPrev: true,
                         toolSelection: true,
                         fullscreen: true,
@@ -383,17 +420,32 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
 
     return (
         <div>
-            <SIAImageSearchModal
-                isAnnotaskReview={isAnnotaskReview}
-                id={id}
-                isVisible={isImgSearchModalVisible}
-                setIsVisible={setIsImgSearchModalVisible}
-                onChooseImage={switchSIAImage}
-            />
             {renderSia()}
             <NotificationContainer />
         </div>
     )
 }
 
-export default SIAReview
+function mapStateToProps(state) {
+    return {
+        uiConfig: state.sia.uiConfig,
+        layoutUpdate: state.sia.layoutUpdate,
+        // isJunk: state.sia.isJunk,
+        annos: state.siaReview.annos,
+        filterOptions: state.siaReview.options,
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        siaLayoutUpdate,
+        getSiaImage,
+        getSiaReviewAnnos,
+        getSiaReviewOptions,
+        siaImgIsJunk,
+        siaReviewResetAnnos,
+    },
+    null,
+    {},
+)(SIAReview)

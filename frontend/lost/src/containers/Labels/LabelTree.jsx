@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
-import Graph from 'react-graph-vis'
-import mapTreeToGraph from '../../libs/graph-vis/mapTreeToGraph'
 import EditLabel from './EditLabel'
+import LabelsPage from './LabelsPage'
 
 const options = {
     autoResize: true,
@@ -71,13 +70,15 @@ class LabelTree extends Component {
         }
         const tree = this.props.labelTree
         if (tree) {
-            const graph = mapTreeToGraph(tree)
             return (
-                <React.Fragment>
+                <>
                     {this.renderEditLabel(tree)}
-
-                    <Graph  graph={graph} options={options} events={events} />
-                </React.Fragment>
+                    <LabelsPage
+                        labelTree={this.props.labelTree}
+                        visLevel={this.props.visLevel}
+                    ></LabelsPage>
+                    {/* <Graph  graph={graph} options={options} events={events} /> */}
+                </>
             )
         } else {
             return <div>No Tree selected.</div>
