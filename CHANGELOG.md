@@ -4,21 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0] - unreleased
-
-### Changed
-
-- Install lost-sia as external package instead of using internal version
-- Label Trees are now rendered using React Flow
-- vite is now used instead of react-scripts for building
-
-### Removed
-
-- lost-sia was moved to a own repository
-
-### Fixed
-
-- Fix build scripts for the production version so they work again
+## [unreleased] -
+### Added
+- Your stuff
 
 ## [2.0.0] - unreleased
 ### Added
@@ -102,6 +90,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow to zoom images up to 1920px height
 - Labels
   - Use React Flow for the display of the Labels because it is more up to date than react-graph-vis which is removed
+- Install lost-sia as external package instead of using internal version
+- Label Trees are now rendered using React Flow
+- vite is now used instead of react-scripts for building
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on
@@ -117,12 +108,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - EditPipeline: Fixed leaking user information to unprivileged users
 - close dask client in webservice endpoints to prevent memory leaks
 - request_lds_annos -> Also take care of img_is_junk info when requesting annos again
+- Fix build scripts for the production version so they work again
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 
   - request_bbox_annos since it is a special case of request_annos
   - request_image_anno since it is a special case of request_annos
   - add_anno since it has not been used until now
+- lost-sia was moved to a own repository
 
 ## [1.5.0] - unreleased
 ### Added
