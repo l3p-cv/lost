@@ -13,7 +13,8 @@ import actions from '../../../../../actions/pipeline/pipelineRunning'
 import actionsAll from '../../../../../actions'
 
 const { toggleModal } = actions
-const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } = actionsAll
+const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
+    actionsAll
 
 const BaseModal = (props) => {
     const toggleModal = () => {
@@ -48,11 +49,7 @@ const BaseModal = (props) => {
 
     const renderModals = () => {
         return (
-            <Modal
-                size="lg"
-                isOpen={props.step.modalOpened}
-                toggle={toggleModal}
-            >
+            <Modal size="lg" isOpen={props.step.modalOpened} toggle={toggleModal}>
                 {selectModal()}
                 <ModalFooter>
                     <IconButton

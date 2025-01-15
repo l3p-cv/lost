@@ -10,12 +10,26 @@ import {
 } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { CRow, CTable, CTableBody, CTableHead, CCol } from '@coreui/react'
-import { faAngleLeft, faAngleRight, faCaretDown, faCaretRight, faDownload, faEye, faFile, faPen } from '@fortawesome/free-solid-svg-icons'
+import {
+    faAngleLeft,
+    faAngleRight,
+    faCaretDown,
+    faCaretRight,
+    faDownload,
+    faEye,
+    faFile,
+    faPen,
+} from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../../components/IconButton'
 import { useNavigate } from 'react-router-dom'
 import BaseContainer from '../../components/BaseContainer'
 
-const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditButtonClicked }) => {
+const DatasetTable = ({
+    datasetList,
+    datastores,
+    onExportButtonClicked,
+    onEditButtonClicked,
+}) => {
     const navigate = useNavigate()
 
     const [tableData, setTableData] = React.useState(() => [...datasetList])
@@ -30,27 +44,46 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
 
     const openReview = async (index, isAnnotask) => {
         // move to annotation review or dataset review (depending on clicked item)
-        const reviewType = (isAnnotask ? 'annotasks' : 'datasets')
+        const reviewType = isAnnotask ? 'annotasks' : 'datasets'
         navigate(`/${reviewType}/${index}/review`)
     }
 
     const renderRowIcon = (row) => {
-
         // show file icon for annotasks
         if (row.original.isAnnotask) {
             // also use icon to indent child row (margin)
-            return <FontAwesomeIcon size="xl" icon={faFile} style={{ marginLeft: row.depth * 25 }} />
+            return (
+                <FontAwesomeIcon
+                    size="xl"
+                    icon={faFile}
+                    style={{ marginLeft: row.depth * 25 }}
+                />
+            )
         }
 
         // dataset that can be opened
         if (row.getCanExpand()) {
             // also use icon to indent child row (margin)
-            return <FontAwesomeIcon size="2xl" icon={row.getIsExpanded() ? faCaretDown : faCaretRight} onClick={() => row.toggleExpanded()} style={{ marginLeft: row.depth * 25 }} />
+            return (
+                <FontAwesomeIcon
+                    size="2xl"
+                    icon={row.getIsExpanded() ? faCaretDown : faCaretRight}
+                    onClick={() => row.toggleExpanded()}
+                    style={{ marginLeft: row.depth * 25 }}
+                />
+            )
         }
 
         // dataset that cannot be openened (it has no annotasks assigned)
         // also use icon to indent child row (margin)
-        return <FontAwesomeIcon size="2xl" icon={faCaretRight} color="grey" style={{ marginLeft: row.depth * 25 }} />
+        return (
+            <FontAwesomeIcon
+                size="2xl"
+                icon={faCaretRight}
+                color="grey"
+                style={{ marginLeft: row.depth * 25 }}
+            />
+        )
     }
 
     const columns = [
@@ -59,10 +92,10 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
             cell: ({ row }) => renderRowIcon(row),
         }),
         columnHelper.accessor('name', {
-            header: 'Name'
+            header: 'Name',
         }),
         columnHelper.accessor('description', {
-            header: 'Description'
+            header: 'Description',
         }),
         // columnHelper.accessor('datastoreId', {
         //     header: () => 'Datastore',
@@ -82,60 +115,65 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
         columnHelper.display({
             id: 'review',
             header: () => 'Review',
-            cell: props => {
-
+            cell: (props) => {
                 // reviewing metadatasets is impossible
-                if (props.row.original.isMetaDataset) return ""
+                if (props.row.original.isMetaDataset) return ''
 
                 // disable the review button on datasets without children
-                const isDisabled = !(props.row.original.isAnnotask || props.row.original.isReviewable)
+                const isDisabled = !(
+                    props.row.original.isAnnotask || props.row.original.isReviewable
+                )
 
-                return <IconButton
-                    icon={faEye}
-                    color="primary"
-                    isOutline={false}
-                    onClick={() => {
-                        const rowData = props.row.original
-                        const isAnnotask = rowData.isAnnotask === true
-                        openReview(rowData.idx, isAnnotask)
-                    }}
-                    disabled={isDisabled}
-                // text="Review"
-                />
-            }
+                return (
+                    <IconButton
+                        icon={faEye}
+                        color="primary"
+                        isOutline={false}
+                        onClick={() => {
+                            const rowData = props.row.original
+                            const isAnnotask = rowData.isAnnotask === true
+                            openReview(rowData.idx, isAnnotask)
+                        }}
+                        disabled={isDisabled}
+                        // text="Review"
+                    />
+                )
+            },
         }),
         columnHelper.display({
             id: 'showExport',
             header: () => 'Export',
-            cell: props => {
+            cell: (props) => {
                 const rowData = props.row.original
 
                 // only show edit icon for annotasks
                 // @TODO add support for exporting datasets
-                if (!rowData.isAnnotask) return ""
+                if (!rowData.isAnnotask) return ''
 
-                return <IconButton
-                    icon={faDownload}
-                    color="primary"
-                    isOutline={false}
-                    onClick={() => {
-                        const datasetID = rowData.idx
-                        const isAnnotask = rowData.isAnnotask === true
-                        onExportButtonClicked(datasetID, isAnnotask)
-                    }}
-                    disabled={false}
-                // text="Export"
-                />
-            }
+                return (
+                    <IconButton
+                        icon={faDownload}
+                        color="primary"
+                        isOutline={false}
+                        onClick={() => {
+                            const datasetID = rowData.idx
+                            const isAnnotask = rowData.isAnnotask === true
+                            onExportButtonClicked(datasetID, isAnnotask)
+                        }}
+                        disabled={false}
+                        // text="Export"
+                    />
+                )
+            },
         }),
         columnHelper.display({
             id: 'showEdit',
             header: () => 'Edit',
-            cell: props => {
+            cell: (props) => {
                 const rowData = props.row.original
 
                 // only show edit icon for datasets
-                if (rowData.isAnnotask || rowData.isMetaDataset) return ""
+                if (rowData.isAnnotask || rowData.isMetaDataset) return ''
 
                 return (
                     <IconButton
@@ -146,11 +184,11 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                             onEditButtonClicked(props.row.original)
                         }}
                         disabled={false}
-                    // text="Edit"
+                        // text="Edit"
                     />
                 )
-            }
-        })
+            },
+        }),
     ]
 
     const [expanded, setExpanded] = React.useState({})
@@ -162,39 +200,42 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
             expanded,
         },
         onExpandedChange: setExpanded,
-        getSubRows: row => row.children,
+        getSubRows: (row) => row.children,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getExpandedRowModel: getExpandedRowModel()
+        getExpandedRowModel: getExpandedRowModel(),
     })
 
     return (
         <BaseContainer>
             <CTable striped>
                 <CTableHead>
-                    {table.getHeaderGroups().map(headerGroup => (
+                    {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
+                            {headerGroup.headers.map((header) => (
                                 <th key={header.id}>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
+                                              header.column.columnDef.header,
+                                              header.getContext(),
+                                          )}
                                 </th>
                             ))}
                         </tr>
                     ))}
                 </CTableHead>
                 <CTableBody>
-                    {table.getRowModel().rows.map(row => (
+                    {table.getRowModel().rows.map((row) => (
                         <Fragment key={row.id}>
                             <tr key={row.id}>
-                                {row.getVisibleCells().map(cell => (
+                                {row.getVisibleCells().map((cell) => (
                                     <td key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext(),
+                                        )}
                                     </td>
                                 ))}
                             </tr>
@@ -205,12 +246,14 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
 
             <CRow>
                 <CCol>
-                    {<IconButton
-                        icon={faAngleLeft}
-                        text="Previous"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    />}
+                    {
+                        <IconButton
+                            icon={faAngleLeft}
+                            text="Previous"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        />
+                    }
                 </CCol>
                 <CCol>
                     <span style={{ lineHeight: 2 }}>
@@ -225,11 +268,11 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                     <span style={{ lineHeight: 2 }}>
                         <select
                             value={table.getState().pagination.pageSize}
-                            onChange={e => {
+                            onChange={(e) => {
                                 table.setPageSize(Number(e.target.value))
                             }}
                         >
-                            {[10, 20, 30, 40, 50].map(pageSize => (
+                            {[10, 20, 30, 40, 50].map((pageSize) => (
                                 <option key={pageSize} value={pageSize}>
                                     Show {pageSize}
                                 </option>
@@ -238,13 +281,15 @@ const DatasetTable = ({ datasetList, datastores, onExportButtonClicked, onEditBu
                     </span>
                 </CCol>
                 <CCol>
-                    {<IconButton
-                        icon={faAngleRight}
-                        text="Next"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                        style={{ float: 'right' }}
-                    />}
+                    {
+                        <IconButton
+                            icon={faAngleRight}
+                            text="Next"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                            style={{ float: 'right' }}
+                        />
+                    }
                 </CCol>
             </CRow>
         </BaseContainer>

@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 import { Collapse, Button } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faAngleUp,
-    faAngleDown,
-    faInfo,
-} from '@fortawesome/free-solid-svg-icons'
+import { faAngleUp, faAngleDown, faInfo } from '@fortawesome/free-solid-svg-icons'
 
 class CollapseCustom extends Component {
     constructor(props) {

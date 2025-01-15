@@ -4,7 +4,7 @@ import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 const LoopNode = (props) => {
     return (
-        <div className='graph-node'>
+        <div className="graph-node">
             <VerificationTitle
                 verified={props.verified}
                 title={props.title}
@@ -14,13 +14,16 @@ const LoopNode = (props) => {
                 data={[
                     {
                         key: 'Max Iterations',
-                        value: typeof props.exportData.loop.maxIteration === 'number' && (props.exportData.loop.maxIteration > -1)?props.exportData.loop.maxIteration: 'Infinity'
-                    }
+                        value:
+                            typeof props.exportData.loop.maxIteration === 'number' &&
+                            props.exportData.loop.maxIteration > -1
+                                ? props.exportData.loop.maxIteration
+                                : 'Infinity',
+                    },
                 ]}
             />
-            <div className='graph-node-footer'></div>
+            <div className="graph-node-footer"></div>
         </div>
-
     )
 }
 

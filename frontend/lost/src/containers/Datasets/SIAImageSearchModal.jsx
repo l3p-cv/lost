@@ -1,19 +1,54 @@
-import { CContainer, CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow, CTable, CTableBody, CTableHead } from "@coreui/react"
-import { createColumnHelper, flexRender, getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table"
-import { Fragment, useEffect, useState } from "react"
-import IconButton from "../../components/IconButton"
-import { faAngleLeft, faAngleRight, faArrowRight, faSearch } from "@fortawesome/free-solid-svg-icons"
+import {
+    CContainer,
+    CCol,
+    CFormInput,
+    CModal,
+    CModalBody,
+    CModalHeader,
+    CRow,
+    CTable,
+    CTableBody,
+    CTableHead,
+} from '@coreui/react'
+import {
+    createColumnHelper,
+    flexRender,
+    getCoreRowModel,
+    getExpandedRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    useReactTable,
+} from '@tanstack/react-table'
+import { Fragment, useEffect, useState } from 'react'
+import IconButton from '../../components/IconButton'
+import {
+    faAngleLeft,
+    faAngleRight,
+    faArrowRight,
+    faSearch,
+} from '@fortawesome/free-solid-svg-icons'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 
-const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, onChooseImage }) => {
-
-    const { data: searchResults, mutate: doSearch } = datasetReviewApi.useImageSearch(isAnnotaskReview)
-    const [enteredSearch, setEnteredSearch] = useState("")
+const SIAImageSearchModal = ({
+    isAnnotaskReview,
+    id,
+    isVisible,
+    setIsVisible,
+    onChooseImage,
+}) => {
+    const { data: searchResults, mutate: doSearch } =
+        datasetReviewApi.useImageSearch(isAnnotaskReview)
+    const [enteredSearch, setEnteredSearch] = useState('')
     const [isFirstSearch, setIsFirstSearch] = useState(true)
     const [tableData, setTableData] = useState(() => [])
 
     useEffect(() => {
-        if (searchResults === undefined || searchResults.length === 0 || searchResults.status !== 200) return
+        if (
+            searchResults === undefined ||
+            searchResults.length === 0 ||
+            searchResults.status !== 200
+        )
+            return
         setTableData(searchResults.data)
     }, [searchResults])
 
@@ -21,55 +56,57 @@ const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, on
 
     const columns = [
         columnHelper.accessor('imageId', {
-            header: 'Image ID'
+            header: 'Image ID',
         }),
         columnHelper.accessor('imageName', {
-            header: 'Image name'
+            header: 'Image name',
         }),
         columnHelper.accessor('annotationId', {
-            header: 'AnnoTask ID'
+            header: 'AnnoTask ID',
         }),
         columnHelper.accessor('annotationName', {
-            header: 'AnnoTask Name'
+            header: 'AnnoTask Name',
         }),
         columnHelper.display({
             id: 'chooseImage',
             header: () => 'Choose Image',
-            cell: props => (<IconButton
-                icon={faArrowRight}
-                color="primary"
-                isOutline={false}
-                onClick={() => {
-                    setIsVisible(false)
-                    const rowData = props.row.original
-                    onChooseImage(rowData.annotationId, rowData.imageId)
-                }}
-                disabled={false}
-            />)
-        })
+            cell: (props) => (
+                <IconButton
+                    icon={faArrowRight}
+                    color="primary"
+                    isOutline={false}
+                    onClick={() => {
+                        setIsVisible(false)
+                        const rowData = props.row.original
+                        onChooseImage(rowData.annotationId, rowData.imageId)
+                    }}
+                    disabled={false}
+                />
+            ),
+        }),
     ]
 
     const table = useReactTable({
         data: tableData,
         columns,
-        getSubRows: row => row.children,
+        getSubRows: (row) => row.children,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getExpandedRowModel: getExpandedRowModel()
+        getExpandedRowModel: getExpandedRowModel(),
     })
 
     const renderFoundAnnotations = () => {
-
         if (tableData.length === 0) {
-
             // don't show the "no images found" when the user did not do a search before
             if (isFirstSearch) return null
 
-            return <CRow>
-                <CCol sm="2">Results:</CCol>
-                <CCol md="6">No images found</CCol>
-            </CRow>
+            return (
+                <CRow>
+                    <CCol sm="2">Results:</CCol>
+                    <CCol md="6">No images found</CCol>
+                </CRow>
+            )
         }
 
         return (
@@ -77,31 +114,41 @@ const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, on
                 <CCol sm="2">Results:</CCol>
                 <CCol md="8">
                     <div style={{ marginTop: '25px' }}></div>
-                    <CContainer style={{ background: 'white', padding: 15, borderRadius: 10, border: '1px solid #cce2ff' }}>
+                    <CContainer
+                        style={{
+                            background: 'white',
+                            padding: 15,
+                            borderRadius: 10,
+                            border: '1px solid #cce2ff',
+                        }}
+                    >
                         <CTable>
                             <CTableHead>
-                                {table.getHeaderGroups().map(headerGroup => (
+                                {table.getHeaderGroups().map((headerGroup) => (
                                     <tr key={headerGroup.id}>
-                                        {headerGroup.headers.map(header => (
+                                        {headerGroup.headers.map((header) => (
                                             <th key={header.id}>
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
+                                                          header.column.columnDef.header,
+                                                          header.getContext(),
+                                                      )}
                                             </th>
                                         ))}
                                     </tr>
                                 ))}
                             </CTableHead>
                             <CTableBody>
-                                {table.getRowModel().rows.map(row => (
+                                {table.getRowModel().rows.map((row) => (
                                     <Fragment key={row.id}>
                                         <tr key={row.id}>
-                                            {row.getVisibleCells().map(cell => (
+                                            {row.getVisibleCells().map((cell) => (
                                                 <td key={cell.id}>
-                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext(),
+                                                    )}
                                                 </td>
                                             ))}
                                         </tr>
@@ -111,12 +158,14 @@ const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, on
                         </CTable>
                         <CRow>
                             <CCol>
-                                {<IconButton
-                                    icon={faAngleLeft}
-                                    text="Previous"
-                                    onClick={() => table.previousPage()}
-                                    disabled={!table.getCanPreviousPage()}
-                                />}
+                                {
+                                    <IconButton
+                                        icon={faAngleLeft}
+                                        text="Previous"
+                                        onClick={() => table.previousPage()}
+                                        disabled={!table.getCanPreviousPage()}
+                                    />
+                                }
                             </CCol>
                             <CCol>
                                 <span style={{ lineHeight: 2 }}>
@@ -131,11 +180,11 @@ const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, on
                                 <span style={{ lineHeight: 2 }}>
                                     <select
                                         value={table.getState().pagination.pageSize}
-                                        onChange={e => {
+                                        onChange={(e) => {
                                             table.setPageSize(Number(e.target.value))
                                         }}
                                     >
-                                        {[10, 20, 30, 40, 50].map(pageSize => (
+                                        {[10, 20, 30, 40, 50].map((pageSize) => (
                                             <option key={pageSize} value={pageSize}>
                                                 Show {pageSize}
                                             </option>
@@ -144,13 +193,15 @@ const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, on
                                 </span>
                             </CCol>
                             <CCol>
-                                {<IconButton
-                                    icon={faAngleRight}
-                                    text="Next"
-                                    onClick={() => table.nextPage()}
-                                    disabled={!table.getCanNextPage()}
-                                    style={{ float: 'right' }}
-                                />}
+                                {
+                                    <IconButton
+                                        icon={faAngleRight}
+                                        text="Next"
+                                        onClick={() => table.nextPage()}
+                                        disabled={!table.getCanNextPage()}
+                                        style={{ float: 'right' }}
+                                    />
+                                }
                             </CCol>
                         </CRow>
                     </CContainer>
@@ -163,7 +214,9 @@ const SIAImageSearchModal = ({ isAnnotaskReview, id, isVisible, setIsVisible, on
         <CModal
             visible={isVisible}
             size="xl"
-            onClose={() => { setIsVisible(false) }}
+            onClose={() => {
+                setIsVisible(false)
+            }}
         >
             <CModalHeader>Search Annotation</CModalHeader>
             <CModalBody>

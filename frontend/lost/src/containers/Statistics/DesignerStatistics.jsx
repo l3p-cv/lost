@@ -131,7 +131,7 @@ const DesignerStatistics = () => {
     return (
         <CContainer style={{ marginTop: 15 }}>
             <CRow>
-                <CCol sm="5" className='mb-3'>
+                <CCol sm="5" className="mb-3">
                     <h3 id="traffic" className="card-title mb-0">
                         Designer statistics
                     </h3>
@@ -155,10 +155,16 @@ const DesignerStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Annotations</h3>}
+                        icon={<h3 className="text-white">Annotations</h3>}
                         values={[
-                            { title: 'Today', value: '' + designerStatistics.annos.today },
-                            { title: 'All time', value: '' + designerStatistics.annos.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + designerStatistics.annos.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + designerStatistics.annos.allTime,
+                            },
                         ]}
                     />
                 </CCol>
@@ -176,10 +182,16 @@ const DesignerStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Annotasks</h3>}
+                        icon={<h3 className="text-white">Annotasks</h3>}
                         values={[
-                            { title: 'Today', value: '' + designerStatistics.annotasks.today },
-                            { title: 'All time', value: '' + designerStatistics.annotasks.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + designerStatistics.annotasks.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + designerStatistics.annotasks.allTime,
+                            },
                         ]}
                     />
                 </CCol>
@@ -197,10 +209,16 @@ const DesignerStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Time per Annotation</h3>}
+                        icon={<h3 className="text-white">Time per Annotation</h3>}
                         values={[
-                            { title: 'Today', value: '' + designerStatistics.annotime.today },
-                            { title: 'All time', value: '' + designerStatistics.annotime.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + designerStatistics.annotime.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + designerStatistics.annotime.allTime,
+                            },
                         ]}
                     />
                 </CCol>
@@ -218,10 +236,16 @@ const DesignerStatistics = () => {
                     <CWidgetStatsD
                         className="mb-4"
                         color="primary"
-                        icon={<h3 className='text-white'>Processed images</h3>}
+                        icon={<h3 className="text-white">Processed images</h3>}
                         values={[
-                            { title: 'Today', value: '' + designerStatistics.processedImages.today },
-                            { title: 'All time', value: '' + designerStatistics.processedImages.allTime },
+                            {
+                                title: 'Today',
+                                value: '' + designerStatistics.processedImages.today,
+                            },
+                            {
+                                title: 'All time',
+                                value: '' + designerStatistics.processedImages.allTime,
+                            },
                         ]}
                     />
                 </CCol>

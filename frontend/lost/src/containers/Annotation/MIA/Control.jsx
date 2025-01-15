@@ -81,7 +81,7 @@ class Control extends Component {
             this.props.maxAmount,
         )
         this.props.setMiaSelectedLabel(undefined)
-        this.setState({ value: '', newProposedLbl:true })
+        this.setState({ value: '', newProposedLbl: true })
     }
 
     handleZoomIn() {
@@ -120,16 +120,16 @@ class Control extends Component {
         console.log('proposedLabel on every update', this.props.proposedLabel)
         if (this.props.proposedLabel) {
             console.log('selectedLabel', this.props.selectedLabel)
-            if (this.state.newProposedLbl){
+            if (this.state.newProposedLbl) {
                 if (prevProps.images !== this.props.images) {
-                // if (prevProps.proposedLabel !== this.props.proposedLabel) {
+                    // if (prevProps.proposedLabel !== this.props.proposedLabel) {
                     console.log('proposedLabel', this.props.proposedLabel)
                     this.handleAddLabel(
                         this.props.labels.find(
                             (value) => value.id === this.props.proposedLabel,
                         ),
                     )
-                    this.setState({newProposedLbl: false})
+                    this.setState({ newProposedLbl: false })
                 }
             }
         }

@@ -5,10 +5,9 @@ import {
     dispatchRequestError,
     dispatchRequestSuccess,
     dispatchRequestLoading,
-    dispatchRequestReset
+    dispatchRequestReset,
 } from '../dispatchHelper'
-axios.defaults.headers.common.Authorization =
-    'Bearer ' + localStorage.getItem('token')
+axios.defaults.headers.common.Authorization = 'Bearer ' + localStorage.getItem('token')
 
 export const getGroups = () => async (dispatch) => {
     try {
@@ -31,9 +30,7 @@ export const createGroup = (payload) => async (dispatch) => {
         dispatchRequestError(
             dispatch,
             REQUEST_STATUS_TYPE,
-            error.message.includes('409')
-                ? 'Groupname is already taken'
-                : error.message
+            error.message.includes('409') ? 'Groupname is already taken' : error.message,
         )
     }
 }

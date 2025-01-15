@@ -5,16 +5,16 @@ import ArgumentsTable from '../../../../globalComponents/modals/ScriptArgumentsT
 
 import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
 
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 import actions from '../../../../../../actions/pipeline/pipelineStartModals/script'
 
-const {updateArguments} = actions
+const { updateArguments } = actions
 class ScriptModal extends Component {
     constructor() {
         super()
         this.argumentTableOnInput = this.argumentTableOnInput.bind(this)
     }
-    argumentTableOnInput(e){
+    argumentTableOnInput(e) {
         let arg = this.props.exportData.script.arguments
         const key = e.target.getAttribute('data-ref')
         const value = e.target.value
@@ -28,12 +28,12 @@ class ScriptModal extends Component {
                     data={[
                         {
                             key: 'Script Name',
-                            value: this.props.exportData.script.name
+                            value: this.props.exportData.script.name,
                         },
                         {
                             key: 'Description',
-                            value: this.props.exportData.script.description
-                        }
+                            value: this.props.exportData.script.description,
+                        },
                     ]}
                 />
                 <ArgumentsTable
@@ -41,20 +41,18 @@ class ScriptModal extends Component {
                     data={this.props.exportData.script.arguments}
                 />
                 <CollapseCard>
-                <Table
-                    data={[
-                        {
-                            key: 'Path',
-                            value: this.props.exportData.script.path
-                        }
-                    ]}
-                />
+                    <Table
+                        data={[
+                            {
+                                key: 'Path',
+                                value: this.props.exportData.script.path,
+                            },
+                        ]}
+                    />
                 </CollapseCard>
-
-
             </>
         )
     }
 }
 
-export default connect(null,{updateArguments})(ScriptModal)
+export default connect(null, { updateArguments })(ScriptModal)

@@ -34,7 +34,8 @@ export const useDatastoreKeys = () => {
 
 export const useCreateDataset = () => {
     return useMutation((data) =>
-        axios.post(`${API_URL}/datasets`, data)
+        axios
+            .post(`${API_URL}/datasets`, data)
             .then((res) => [true, res.data])
             .catch((error) => [false, error.response]),
     )
@@ -42,16 +43,18 @@ export const useCreateDataset = () => {
 
 export const useUpdateDataset = () => {
     return useMutation((data) =>
-        axios.patch(`${API_URL}/datasets`, data)
+        axios
+            .patch(`${API_URL}/datasets`, data)
             .then((res) => [true, res.data])
-            .catch((error) => [false, error.response])
+            .catch((error) => [false, error.response]),
     )
 }
 
 export const useDeleteDataset = () => {
     return useMutation((datasetId) =>
-        axios.delete(`${API_URL}/datasets/${datasetId}`)
+        axios
+            .delete(`${API_URL}/datasets/${datasetId}`)
             .then((res) => [true, res.data])
-            .catch((error) => [false, error.response])
+            .catch((error) => [false, error.response]),
     )
 }

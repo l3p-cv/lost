@@ -6,23 +6,21 @@ const TheContent = ({ routes }) => (
     <main className="c-main">
         <CContainer fluid>
             <Routes>
-                {
-                    routes.map(
-                        (route) =>
-                            route.component && (
-                                <Route
-                                    key={route.path}
-                                    path={route.path}
-                                    name={route.name}
-                                    element={
-                                        // <CFade>
-                                        <route.component />
-                                        // </CFade>
-                                    }
-                                />
-                            ),
-                    )
-                }
+                {routes.map(
+                    (route) =>
+                        route.component && (
+                            <Route
+                                key={route.path}
+                                path={route.path}
+                                name={route.name}
+                                element={
+                                    // <CFade>
+                                    <route.component />
+                                    // </CFade>
+                                }
+                            />
+                        ),
+                )}
             </Routes>
         </CContainer>
     </main>

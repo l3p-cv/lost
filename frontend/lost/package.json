@@ -39,7 +39,7 @@
     "jwt-decode": "^3.1.2",
     "l3p-frontend": "^3.3.2",
     "lodash": "^4.17.21",
-    "lost-sia": "2.0.0-alpha9",
+    "lost-sia": "2.0.0-alpha17",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -74,6 +74,7 @@
     "sweetalert2": "^11.7.27",
     "validator": "^13.11.0",
     "vite": "^5.4.11",
+    "vite-plugin-commonjs": "^0.10.4",
     "web-vitals": "^3.4.0"
   },
   "scripts": {
@@ -83,7 +84,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "postinstall": "semantic-ui-css-patch",
-    "preview":"vite preview"
+    "preview": "vite preview"
   },
   "eslintConfig": {
     "extends": [

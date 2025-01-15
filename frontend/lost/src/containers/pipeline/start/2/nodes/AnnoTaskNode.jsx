@@ -4,7 +4,7 @@ import VerificationTitle from './VerificationTitle'
 import NodeBody from './NodeBody'
 const AnnoTaskNode = (props) => {
     return (
-        <div className='graph-node'>
+        <div className="graph-node">
             <VerificationTitle
                 verified={props.verified}
                 title={props.title}
@@ -14,23 +14,21 @@ const AnnoTaskNode = (props) => {
                 data={[
                     {
                         key: 'Name',
-                        value: props.exportData.annoTask.name
+                        value: props.exportData.annoTask.name,
                     },
                     {
                         key: 'Type',
-                        value: props.exportData.annoTask.type
+                        value: props.exportData.annoTask.type,
                     },
                     {
                         key: 'Assignee',
-                        value: props.exportData.annoTask.assignee
-
-                    }
+                        value: props.exportData.annoTask.assignee,
+                    },
                 ]}
             />
-            <div className='graph-node-footer'></div>
+            <div className="graph-node-footer"></div>
         </div>
     )
 }
-
 
 export default AnnoTaskNode

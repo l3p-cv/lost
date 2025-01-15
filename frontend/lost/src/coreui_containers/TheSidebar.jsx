@@ -23,25 +23,33 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
     // }
     if (navItems) {
         const navbarItemsDom = []
-        let itemKey = 0;
+        let itemKey = 0
         navItems.forEach((item) => {
             let newItem = ''
             switch (item._tag) {
-                case "CSidebarNavTitle":
-                    newItem = (<CNavTitle key={itemKey++}>{item._children[0]}</CNavTitle>)
-                    break;
-                case "CSidebarNavItem":
+                case 'CSidebarNavTitle':
+                    newItem = <CNavTitle key={itemKey++}>{item._children[0]}</CNavTitle>
+                    break
+                case 'CSidebarNavItem':
                     newItem = (
                         <CNavItem key={itemKey++}>
                             <NavLink key={itemKey++} to={item.to}>
                                 <CNavLink key={itemKey++}>
-                                    <span style={{ width: '20px', marginLeft: '5px', marginRight: '25px' }}>{item.icon}</span>
+                                    <span
+                                        style={{
+                                            width: '20px',
+                                            marginLeft: '5px',
+                                            marginRight: '25px',
+                                        }}
+                                    >
+                                        {item.icon}
+                                    </span>
                                     {item.name}
                                 </CNavLink>
                             </NavLink>
-                        </CNavItem >
+                        </CNavItem>
                     )
-                    break;
+                    break
                 default:
                     newItem = (
                         <CNavItem key={itemKey++} href="#">
@@ -69,9 +77,7 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                         className="img-avatar"
                     />
                 </CSidebarBrand>
-                <CSidebarNav>
-                    {navbarItemsDom}
-                </CSidebarNav>
+                <CSidebarNav>{navbarItemsDom}</CSidebarNav>
                 <CSidebarToggler
                     className="d-none d-lg-flex"
                     onClick={() => setisUnfoldable(!isUnfoldable)}

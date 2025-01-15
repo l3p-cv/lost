@@ -6,20 +6,18 @@ import NodeBody from './NodeBody'
 
 const DataExportNode = (props) => {
     return (
-        <div className='graph-node'>
-
+        <div className="graph-node">
             <VerificationTitle
                 verified={props.verified}
                 title={props.title}
                 icon={faCloudDownloadAlt}
             />
-            <NodeBody
-            >
-                <span><FontAwesomeIcon icon={faCloudDownloadAlt} size='3x' /></span>
-
+            <NodeBody>
+                <span>
+                    <FontAwesomeIcon icon={faCloudDownloadAlt} size="3x" />
+                </span>
             </NodeBody>
-            <div className='graph-node-footer'></div>
-
+            <div className="graph-node-footer"></div>
         </div>
     )
 }

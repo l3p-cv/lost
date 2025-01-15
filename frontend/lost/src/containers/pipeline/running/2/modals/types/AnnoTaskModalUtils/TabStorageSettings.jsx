@@ -13,11 +13,12 @@ const NOTIFICATION_TIMEOUT_MS = 5000
 
 // const TabStorageSettings = ({ datastoreList }) => {
 const TabStorageSettings = ({ annotaskId }) => {
-
-    const { data: flatDatasetList, refetch: reloadFlatDatasetList } = datasetApi.useFlatDatasets()
-    const { data: storageSettings, refetch: getStorageSettings } = annoTaskApi.useGetStorageSettings(annotaskId)
-    const { data: updateStorageSettingsResponse, mutate: updateStorageSettings } = annoTaskApi.useUpdateStorageSettings()
-
+    const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
+        datasetApi.useFlatDatasets()
+    const { data: storageSettings, refetch: getStorageSettings } =
+        annoTaskApi.useGetStorageSettings(annotaskId)
+    const { data: updateStorageSettingsResponse, mutate: updateStorageSettings } =
+        annoTaskApi.useUpdateStorageSettings()
 
     // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
     const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
@@ -25,7 +26,6 @@ const TabStorageSettings = ({ annotaskId }) => {
     // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
     const [selectedDatasetID, setSelectedDatasetID] = useState()
     const [isCreateDatasetModalOpen, setIsCreateDatasetModalOpen] = useState(false)
-
 
     // convert the datasource list (id: name) to a list compatible to the Dropdown options
     // const converDatasourcesToDropdownOptions = (datastores) => {
@@ -41,17 +41,19 @@ const TabStorageSettings = ({ annotaskId }) => {
     // }
 
     const convertDatasetToDropdownOptions = (datasets) => {
-        const options = [{
-            key: "-1",
-            value: "-1",
-            text: "No Dataset"
-        }]
+        const options = [
+            {
+                key: '-1',
+                value: '-1',
+                text: 'No Dataset',
+            },
+        ]
 
         Object.keys(datasets).forEach((datasetId) => {
             options.push({
                 key: datasetId,
                 value: datasetId,
-                text: datasets[datasetId]
+                text: datasets[datasetId],
             })
         })
         setDatasetDropdownOptions(options)
@@ -64,8 +66,7 @@ const TabStorageSettings = ({ annotaskId }) => {
     useEffect(() => {
         if (storageSettings === undefined || storageSettings === null) return
 
-
-        let datasetId = "-1"
+        let datasetId = '-1'
         if (storageSettings.datasetId !== null) datasetId = `${storageSettings.datasetId}`
 
         setSelectedDatasetID(datasetId)
@@ -76,17 +77,16 @@ const TabStorageSettings = ({ annotaskId }) => {
     // }, [datastoreList])
 
     useEffect(() => {
-        convertDatasetToDropdownOptions(flatDatasetList);
+        convertDatasetToDropdownOptions(flatDatasetList)
     }, [flatDatasetList])
 
     useEffect(() => {
-
         if (updateStorageSettingsResponse === undefined) return
 
         if (updateStorageSettingsResponse.status === 200) {
             NotificationManager.success(
-                "",
-                "Dataset changed successfully",
+                '',
+                'Dataset changed successfully',
                 NOTIFICATION_TIMEOUT_MS,
             )
         }
@@ -95,7 +95,7 @@ const TabStorageSettings = ({ annotaskId }) => {
     const updateSelectedDatasetID = (datasetId) => {
         const data = {
             annotaskId,
-            datasetId: datasetId
+            datasetId: datasetId,
         }
 
         updateStorageSettings(data)
@@ -142,7 +142,7 @@ const TabStorageSettings = ({ annotaskId }) => {
                                 <CRow>
                                     <CCol>
                                         <Dropdown
-                                            placeholder='Select Dataset'
+                                            placeholder="Select Dataset"
                                             fluid
                                             search
                                             selection
@@ -162,7 +162,9 @@ const TabStorageSettings = ({ annotaskId }) => {
                                             color="primary"
                                             icon={faBoxesPacking}
                                             text="Create new dataset"
-                                            onClick={() => { setIsCreateDatasetModalOpen(true) }}
+                                            onClick={() => {
+                                                setIsCreateDatasetModalOpen(true)
+                                            }}
                                             className="mt-2"
                                         />
                                     </CCol>

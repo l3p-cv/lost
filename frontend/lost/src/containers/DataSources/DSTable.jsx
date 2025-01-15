@@ -62,7 +62,7 @@ export const DSTable = ({ visLevel }) => {
         }
     }, [deleteStatus])
 
-    useEffect(() => { }, [possibleFsTypes])
+    useEffect(() => {}, [possibleFsTypes])
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
     const [selectedDs, setSelectedDs] = useState()
@@ -120,7 +120,7 @@ export const DSTable = ({ visLevel }) => {
             },
             option2: {
                 text: 'NO!',
-                callback: () => { },
+                callback: () => {},
             },
         })
     }
@@ -136,7 +136,7 @@ export const DSTable = ({ visLevel }) => {
             },
             option2: {
                 text: 'Cancel',
-                callback: () => { },
+                callback: () => {},
             },
         })
     }
@@ -199,7 +199,6 @@ export const DSTable = ({ visLevel }) => {
 
             <CRow>
                 <CCol sm="auto">
-
                     <IconButton
                         isOutline={false}
                         color="primary"
@@ -268,7 +267,7 @@ export const DSTable = ({ visLevel }) => {
                                                 onClick={() => onEditDs(row)}
                                                 disabled={checkEditable(row)}
                                                 text="Edit"
-                                            // isOutline={false}
+                                                // isOutline={false}
                                             />
                                         )
                                     },
@@ -283,7 +282,7 @@ export const DSTable = ({ visLevel }) => {
                                                 color="primary"
                                                 onClick={() => onOpenFileBrowser(row)}
                                                 text="Browse"
-                                            // isOutline={false}
+                                                // isOutline={false}
                                             />
                                         )
                                     },

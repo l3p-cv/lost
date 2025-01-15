@@ -37,7 +37,8 @@
         "lastAnnotator": "jochen",
         "finished": 300,
         "size": 450
-    }, {
+    },
+    {
         "name": "TestTask",
         "id": 4,
         "pipelineName": "FirstTestPipe",

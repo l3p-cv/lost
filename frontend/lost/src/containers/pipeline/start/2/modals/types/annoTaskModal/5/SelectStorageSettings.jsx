@@ -14,15 +14,15 @@ const { setStorageSettings } = actions
 
 // const SelectStorageSettings = ({ datasetList, datastoreList }) => {
 const SelectStorageSettings = ({ peN, setStorageSettings }) => {
-
-    const { data: flatDatasetList, refetch: reloadFlatDatasetList } = datasetApi.useFlatDatasets()
+    const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
+        datasetApi.useFlatDatasets()
 
     const [isCreateDatasetModalOpen, setIsCreateDatasetModalOpen] = useState(false)
     // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
     const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
 
     // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
-    const [selectedDatasetID, setSelectedDatasetID] = useState("-1")
+    const [selectedDatasetID, setSelectedDatasetID] = useState('-1')
 
     useEffect(() => {
         setStorageSettings(selectedDatasetID, peN)
@@ -46,24 +46,26 @@ const SelectStorageSettings = ({ peN, setStorageSettings }) => {
     // }, [datastoreList])
 
     const convertDatasetToDropdownOptions = (datasets) => {
-        const options = [{
-            key: "-1",
-            value: "-1",
-            text: "No Dataset"
-        }]
+        const options = [
+            {
+                key: '-1',
+                value: '-1',
+                text: 'No Dataset',
+            },
+        ]
 
         Object.keys(datasets).forEach((datasetId) => {
             options.push({
                 key: datasetId,
                 value: datasetId,
-                text: datasets[datasetId]
+                text: datasets[datasetId],
             })
         })
         setDatasetDropdownOptions(options)
     }
 
     useEffect(() => {
-        convertDatasetToDropdownOptions(flatDatasetList);
+        convertDatasetToDropdownOptions(flatDatasetList)
     }, [flatDatasetList])
 
     return (
@@ -105,7 +107,7 @@ const SelectStorageSettings = ({ peN, setStorageSettings }) => {
                             <CRow>
                                 <CCol>
                                     <Dropdown
-                                        placeholder='Select Dataset'
+                                        placeholder="Select Dataset"
                                         fluid
                                         search
                                         selection
@@ -125,7 +127,9 @@ const SelectStorageSettings = ({ peN, setStorageSettings }) => {
                                         color="primary"
                                         icon={faBoxesPacking}
                                         text="Create new dataset"
-                                        onClick={() => { setIsCreateDatasetModalOpen(true) }}
+                                        onClick={() => {
+                                            setIsCreateDatasetModalOpen(true)
+                                        }}
                                         className="mt-2"
                                     />
                                 </CCol>

@@ -93,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Install lost-sia as external package instead of using internal version
 - Label Trees are now rendered using React Flow
 - vite is now used instead of react-scripts for building
+- Apply code reformatting using .prettierrc on all files
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on

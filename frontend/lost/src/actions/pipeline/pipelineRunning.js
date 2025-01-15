@@ -76,7 +76,7 @@ const playPipeline = (id) => async (dispatch) => {
     dispatch({ type: TYPES.PIPELINE_RUNNING_PLAY, payload: response.data })
 }
 
-const regeneratePipeline = (id) => async (dispatch) => { }
+const regeneratePipeline = (id) => async (dispatch) => {}
 
 const getLog = async (id) => {
     let response = {}
@@ -116,20 +116,25 @@ const updateArguments = (elementId, updatedArguments) => async (dispatch) => {
 
 // helper to convert a string into the browser file download dialog
 const downloadFile = (filename, text) => {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
+    const element = document.createElement('a')
+    element.setAttribute(
+        'href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(text),
+    )
+    element.setAttribute('download', filename)
 
-    element.style.display = 'none';
-    document.body.appendChild(element);
+    element.style.display = 'none'
+    document.body.appendChild(element)
 
-    element.click();
+    element.click()
 
-    document.body.removeChild(element);
+    document.body.removeChild(element)
 }
 
 const downloadLogfile = (id) => async (dispatch) => {
-    const response = await axios.get(`${API_URL}/data/logs/${id}?nocache=${Math.random()}`)
+    const response = await axios.get(
+        `${API_URL}/data/logs/${id}?nocache=${Math.random()}`,
+    )
     downloadFile(`p-${id}.log`, response.data)
 }
 

@@ -46,8 +46,11 @@ const MIAImage = (props) => {
                         dispatch(
                             actions.miaToggleActive({
                                 image: {
-                                    ...props.image, is_active: false,
-                                    imgActions: props.image.imgActions ? [...props.image.imgActions, 'miaClick'] : ['miaClick']
+                                    ...props.image,
+                                    is_active: false,
+                                    imgActions: props.image.imgActions
+                                        ? [...props.image.imgActions, 'miaClick']
+                                        : ['miaClick'],
                                 },
                             }),
                         )
@@ -55,8 +58,11 @@ const MIAImage = (props) => {
                         dispatch(
                             actions.miaToggleActive({
                                 image: {
-                                    ...props.image, is_active: true,
-                                    imgActions: props.image.imgActions ? [...props.image.imgActions, 'miaClick'] : ['miaClick']
+                                    ...props.image,
+                                    is_active: true,
+                                    imgActions: props.image.imgActions
+                                        ? [...props.image.imgActions, 'miaClick']
+                                        : ['miaClick'],
                                 },
                             }),
                         )

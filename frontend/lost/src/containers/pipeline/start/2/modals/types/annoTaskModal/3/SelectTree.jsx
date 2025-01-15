@@ -9,7 +9,13 @@ import ReactTable from 'react-table'
 
 const { selectLabelTree } = actions
 
-const SelectTree = ({ peN, availableLabelTrees, selectLabelTree, verifyTab, selectTab }) => {
+const SelectTree = ({
+    peN,
+    availableLabelTrees,
+    selectLabelTree,
+    verifyTab,
+    selectTab,
+}) => {
     const selectRow = (row) => {
         selectLabelTree(peN, row.idx)
         verifyTab(peN, 2, true)

@@ -3,13 +3,12 @@ import Swal from 'sweetalert2'
 const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
-    showConfirmButton: false
+    showConfirmButton: false,
 })
-
 
 export const alertLoading = () => {
     Toast.fire({
-        title: 'Loading...'
+        title: 'Loading...',
     })
     // Swal.fire({
     //     title: 'Loading...',
@@ -29,7 +28,7 @@ export const alertSuccess = (title) => {
         type: 'success',
         title: title,
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
     })
 }
 
@@ -39,7 +38,7 @@ export const alertError = (error) => {
         type: 'error',
         title: error,
         showConfirmButton: false,
-        timer: 4000
+        timer: 4000,
     })
 }
 
@@ -51,6 +50,6 @@ export const alertDeletePipeline = (id) => {
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: 'primary',
-        confirmButtonText: 'Yes, delete it!'
+        confirmButtonText: 'Yes, delete it!',
     })
 }

@@ -2,10 +2,10 @@ import TYPES from '../types/index'
 const INITIAL_STATE = {
     users: [],
     updateUserStatus: {
-        status: undefined
+        status: undefined,
     },
     deleteUserStatus: {
-        status: undefined
+        status: undefined,
     },
     updateOwnUserStatus: {
         status: undefined,
@@ -21,48 +21,48 @@ const INITIAL_STATE = {
         last_name: '',
         roles: [],
         groups: [],
-        version: 'unknown'
-    }
+        version: 'unknown',
+    },
 }
 
 export default function (state = INITIAL_STATE, action) {
-    switch(action.type) {
-    case TYPES.UPDATE_USER_STATUS:
-        return{
-            ...state,
-            updateUserStatus: action.payload
-        }
-    case TYPES.DELETE_USER_STATUS:
-        return{
-            ...state,
-            deleteUserStatus: action.payload
-        }
-    case TYPES.GET_USERS:
-        return {
-            ...state,
-            users: action.payload.users
-        }
-    case TYPES.SET_OWN_USER:
-        return {
-            ...state,
-            ownUser: action.payload
-        }        
-    case TYPES.UPDATE_OWN_USER_STATUS:
-        return {
-            ...state,
-            updateOwnUserStatus: action.payload
-        }
-    case TYPES.UPDATE_OWN_USER_SUCCESS:
-        return {
-            ...state,
-            updateOwnMessage: 'success'
-        }
-    case TYPES.UPDATE_OWN_USER_FAILED:
-        return {
-            ...state,
-            updateOwnMessage: action.payload
-        }
-    default:
-        return state
+    switch (action.type) {
+        case TYPES.UPDATE_USER_STATUS:
+            return {
+                ...state,
+                updateUserStatus: action.payload,
+            }
+        case TYPES.DELETE_USER_STATUS:
+            return {
+                ...state,
+                deleteUserStatus: action.payload,
+            }
+        case TYPES.GET_USERS:
+            return {
+                ...state,
+                users: action.payload.users,
+            }
+        case TYPES.SET_OWN_USER:
+            return {
+                ...state,
+                ownUser: action.payload,
+            }
+        case TYPES.UPDATE_OWN_USER_STATUS:
+            return {
+                ...state,
+                updateOwnUserStatus: action.payload,
+            }
+        case TYPES.UPDATE_OWN_USER_SUCCESS:
+            return {
+                ...state,
+                updateOwnMessage: 'success',
+            }
+        case TYPES.UPDATE_OWN_USER_FAILED:
+            return {
+                ...state,
+                updateOwnMessage: action.payload,
+            }
+        default:
+            return state
     }
 }

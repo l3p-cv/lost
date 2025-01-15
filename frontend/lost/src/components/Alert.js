@@ -1,15 +1,15 @@
 import Swal from 'sweetalert2'
 
-export const alertLoading =  () => {
+export const alertLoading = () => {
     Swal.fire({
         title: 'Loading...',
         onBeforeOpen: () => {
             Swal.showLoading()
-        }
+        },
     })
 }
 
-export const alertClose = () =>{
+export const alertClose = () => {
     Swal.close()
 }
 
@@ -19,7 +19,7 @@ export const alertSuccess = (title) => {
         type: 'success',
         title: title,
         showConfirmButton: false,
-        timer: 1500
+        timer: 1500,
     })
 }
 
@@ -29,11 +29,11 @@ export const error = (error) => {
         type: 'error',
         title: error,
         showConfirmButton: false,
-        timer: 4000
+        timer: 4000,
     })
 }
 
- export  const  alertDelete=  () => {
+export const alertDelete = () => {
     return Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to revert this!",
@@ -41,6 +41,6 @@ export const error = (error) => {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      })
+        confirmButtonText: 'Yes, delete it!',
+    })
 }

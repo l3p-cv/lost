@@ -89,7 +89,6 @@ const setStorageSettings = (datasetId, elementId) => {
     }
 }
 
-
 export default {
     nameOnInput,
     instructionsOnInput,

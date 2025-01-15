@@ -113,8 +113,7 @@ const EditDSModal = ({
                 setFs({
                     ...fs,
                     fsType: type,
-                    connection:
-                        `{
+                    connection: `{
                             "connection_string": "DefaultEndpointsProtocol=https;AccountName=myAccountName;AccountKey=myAccountKey;EndpointSuffix=core.windows.net", 
                             "use_listings_cache": False
                         }`,
@@ -167,10 +166,14 @@ const EditDSModal = ({
     const renderDsTypeButtons = () => {
         return (
             <>
-                <CRow alignHorizontal="center" className='mb-2'>
+                <CRow alignHorizontal="center" className="mb-2">
                     <b>Load Preset</b>
                 </CRow>
-                <CRow alignHorizontal="center" className="justify-content-center mb-3" style={{ marginTop: 8, marginBottom: 20 }}>
+                <CRow
+                    alignHorizontal="center"
+                    className="justify-content-center mb-3"
+                    style={{ marginTop: 8, marginBottom: 20 }}
+                >
                     {roles.find((el) => el.name === 'Administrator') ? (
                         <CCol md={2}>
                             <IconButton

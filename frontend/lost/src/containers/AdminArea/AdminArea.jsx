@@ -14,14 +14,7 @@ import {
     faTasks,
 } from '@fortawesome/free-solid-svg-icons'
 
-import {
-    CCol,
-    CNav,
-    CNavItem,
-    CNavLink,
-    CTabContent,
-    CTabPane,
-} from '@coreui/react'
+import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
 import WorkersTable from '../Workers/WorkersTable'
@@ -149,20 +142,45 @@ const AdminArea = () => {
                         </CNavItem> */}
                         {renderJupyterLabNav()}
                     </CNav>
-                    <CTabContent className='w-100'>
-                        <CTabPane role="tabpanel" aria-labelledby="users-tab-pane" visible={active === 0} style={{ marginTop: 30 }}>
+                    <CTabContent className="w-100">
+                        <CTabPane
+                            role="tabpanel"
+                            aria-labelledby="users-tab-pane"
+                            visible={active === 0}
+                            style={{ marginTop: 30 }}
+                        >
                             <UsersAndGroups></UsersAndGroups>
                         </CTabPane>
-                        <CTabPane role="tabpanel" aria-labelledby="pipelineprojects-tab-pane" visible={active === 1} style={{ marginTop: 30 }}>
+                        <CTabPane
+                            role="tabpanel"
+                            aria-labelledby="pipelineprojects-tab-pane"
+                            visible={active === 1}
+                            style={{ marginTop: 30 }}
+                        >
                             <PipelineProjects visLevel="global"></PipelineProjects>
                         </CTabPane>
-                        <CTabPane role="tabpanel" aria-labelledby="datasources-tab-pane" visible={active === 2} style={{ marginTop: 30 }}>
+                        <CTabPane
+                            role="tabpanel"
+                            aria-labelledby="datasources-tab-pane"
+                            visible={active === 2}
+                            style={{ marginTop: 30 }}
+                        >
                             <DSTable visLevel="global"></DSTable>
                         </CTabPane>
-                        <CTabPane role="tabpanel" aria-labelledby="labels-tab-pane" visible={active === 3} style={{ marginTop: 30 }}>
+                        <CTabPane
+                            role="tabpanel"
+                            aria-labelledby="labels-tab-pane"
+                            visible={active === 3}
+                            style={{ marginTop: 30 }}
+                        >
                             <Labels visLevel="global"></Labels>
                         </CTabPane>
-                        <CTabPane role="tabpanel" aria-labelledby="workers-tab-pane" visible={active === 4} style={{ marginTop: 30 }}>
+                        <CTabPane
+                            role="tabpanel"
+                            aria-labelledby="workers-tab-pane"
+                            visible={active === 4}
+                            style={{ marginTop: 30 }}
+                        >
                             <WorkersTable></WorkersTable>
                         </CTabPane>
                         {/* <CTabPane style={{ marginTop: 30 }}>
