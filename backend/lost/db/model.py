@@ -1035,10 +1035,10 @@ class AnnoTask(Base):
             "pipe_element_id": self.pipe_element_id,
             "datasetId": self.dataset_id,
             "datastoreId": self.datastore_id,
-            "createdAt": self.timestamp,
+            "created_at": self.timestamp,
             "name": self.name,
             "description": f'Progress: {annotask_progress}%',
-            "isAnnotask": True
+            "is_annotask": True
         }
 
 

@@ -11,22 +11,24 @@ from lost.logic.file_man import AppFileMan
 from lost.logic.file_access import UserFileAccess
 from lost.logic.db_access import UserDbAccess
 from lost.db import access, roles, model, dtype
-from lost.api.annotask.parsers import annotask_parser
+from lost.api.annotask.parsers import annotask_parser, update_group_parser, annotask_config_parser,storage_parser,generate_export_parser
 from lost.logic import anno_task as annotask_service
 from lost.logic.jobs.jobs import force_anno_release, export_ds, delete_ds_export
 from lost.logic.report import Report
 from lost.logic import dask_session
+from lost.api.annotask.api_definition import anno_task_list, anno_task, storage_settings
 import json
 import os
-from io import BytesIO
 
 namespace = api.namespace('annotask', description='AnnoTask API.')
 
-
 @namespace.route('')
+@api.response(401, 'Unauthorized. User does not have the required role.')
+
 @api.doc(security='apikey')
 class Available(Resource):
-    #@api.marshal_with(anno_task_list)
+    @api.doc(description="Retrieve a list of available annotation tasks for the authenticated user.")
+    @api.marshal_with(anno_task_list)
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -39,13 +41,11 @@ class Available(Resource):
             group_ids = [g.group.idx for g in user.groups]
             annotask_list = annotask_service.get_available_annotasks(dbm, group_ids, identity)
             dbm.close_session()
-            import json
-            #with open('/code/backend/lost/api/annotask/test/annoTasks.json') as f:
-            #    data = json.load(f)
-            #return data
-            return annotask_list
+            return {'anno_tasks':annotask_list}
 
     @api.expect(annotask_parser)
+    @api.doc(description='Select an annotation task.')
+    @api.response(200, 'Task selected successfully.')
     @jwt_required 
     def post(self):
         args = annotask_parser.parse_args(request)
@@ -56,14 +56,14 @@ class Available(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            annotask_service.choose_annotask(dbm, args.get('id') ,user.idx)
+            annotask_service.choose_annotask(dbm, args.id ,user.idx)
             dbm.close_session()
             return "success"
-
 @namespace.route('/working')
-@api.doc(security='apikey')
+@api.response(401, 'Unauthorized. User does not have the required role.')
+@api.doc(security='apikey',description='Get currently active Annotask')
 class Working(Resource):
-    #@api.marshal_with(anno_task)
+    @api.marshal_with(anno_task)
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -74,18 +74,21 @@ class Working(Resource):
             return "You are not authorized.", 401
         else:
             working_task = annotask_service.get_current_annotask(dbm, user)
-            dbm.close_session()
-            import json
-            #with open('/code/backend/lost/api/annotask/test/workingOnAnnoTask.json') as f:
-            #    data = json.load(f)
-            #return data
+            dbm.close_session()            
             return working_task
-        
-@namespace.route('/id/<int:annotask_id>')
+
+import logging   
+
+@namespace.route('/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
+@api.param('statistics', 'are statistics supposed to be returned too')
+@api.param('config', 'is the config supposed to be returned too')
 @api.doc(security='apikey')
 class AnnotaskById(Resource):
     @jwt_required 
+    @api.marshal_with(anno_task)
+    @api.doc(security='apikey',description='Get details for Annotask with the given id')
+
     def get(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -94,8 +97,11 @@ class AnnotaskById(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
+            statistics = request.args.get('statistics')
+            config = request.args.get('config')
+            logging.info(type(statistics))
             annotask = dbm.get_anno_task(anno_task_id=annotask_id)
-            
+            annotask_dict = annotask_service.get_at_info(dbm,annotask,identity,statistics=='true')
             # add image count
             for r in dbm.count_all_image_annos(anno_task_id=annotask.idx)[0]:
                 img_count = r
@@ -126,67 +132,27 @@ class AnnotaskById(Resource):
                 label_leaves.append(leaf_json)
             
             # collect annotask info
-            anno_task_json = {
-                'id': annotask.idx,
-                'name': annotask.name,
-                'type': annotask_type,
-                'userName': annotask_user_name,
-                'progress': annotask.progress,
-                'progress': annotask.progress,
-                'imgCount': img_count,
-                'annotatedImgCount': annotated_img_count,
-                'instructions': annotask.instructions,
-                'labelLeaves': label_leaves
-            }
+                
+                annotask_dict['type']= annotask_type
+                annotask_dict['user_name']= annotask_user_name                
+                annotask_dict['img_count']= img_count
+                annotask_dict['annotated_img_count']= annotated_img_count            
+                annotask_dict['label_leaves']= label_leaves
             
             # add annotask configuration only if available
-            if annotask.configuration:
-                anno_task_json['configuration'] = json.loads(annotask.configuration)
+            if annotask.configuration and config == 'true':
+                annotask_dict['configuration'] = json.loads(annotask.configuration)
             
-            return anno_task_json
+            return annotask_dict
 
 
-@namespace.route('/statistic/<int:annotask_id>')
+
+@namespace.route('/<int:annotask_id>/force_release')
 @namespace.param('annotask_id', 'The id of the annotation task.')
-@api.doc(security='apikey')
-class Statistic(Resource):
-    @jwt_required 
-    def get(self, annotask_id):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATOR):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            annotask_statistics = annotask_service.get_annotask_statistics(dbm, annotask_id)
-            dbm.close_session()
-            return annotask_statistics
-
-@namespace.route('/report')
-@api.doc(security='apikey')
-class ReportService(Resource):
-    @jwt_required 
-    def post(self):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            data = json.loads(request.data)
-            report = Report(dbm, data)
-            report_data = report.get_report()
-            dbm.close_session()
-            return report_data
-
-@namespace.route('/force_release/<int:annotask_id>')
-@namespace.param('annotask_id', 'The id of the annotation task.')
-@api.doc(security='apikey')
+@api.doc(security='apikey',description='Forces the release of the Annotations that are currently lock by users')
 class ForceRelease(Resource):
     @jwt_required 
-    def get(self, annotask_id):
+    def post(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -198,13 +164,19 @@ class ForceRelease(Resource):
             dbm.close_session()
             return "Success", 200
 
-@namespace.route('/change_user/<int:annotask_id>/<int:group_id>')
+
+@namespace.route('/<int:annotask_id>/group')
 @namespace.param('annotask_id', 'The id of the annotation task.')
-@namespace.param('group_id', 'The id of the annotation task should belong to.')
 @api.doc(security='apikey')
 class ChangeUser(Resource):
     @jwt_required 
-    def get(self, annotask_id, group_id):
+    @api.expect(update_group_parser)
+    @api.doc(security='apikey',description='Update the group or user the annotation is assigned to')
+
+    def patch(self, annotask_id):
+
+        args = update_group_parser.parse_args(request)
+
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -215,7 +187,7 @@ class ChangeUser(Resource):
             anno_task = dbm.get_anno_task(annotask_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
             if pipe_manager_id == user.idx:
-                anno_task.group_id = group_id
+                anno_task.group_id = args.group_id
                 dbm.save_obj(anno_task)
                 dbm.close_session()
                 return "Success", 200
@@ -223,12 +195,16 @@ class ChangeUser(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
 
-@namespace.route('/update_config/<int:annotask_id>')
+@namespace.route('/<int:annotask_id>/config')
 @namespace.param('annotask_id', 'The id of the annotation task.')
+@api.expect(annotask_config_parser)
+
 @api.doc(security='apikey')
+
 class UpdateAnnoTaskConfig(Resource):
+    @api.doc(security='apikey',description='Update the config of the annotask')
     @jwt_required 
-    def post(self, annotask_id):
+    def put(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity() 
         user = dbm.get_user_by_id(identity)
@@ -236,11 +212,11 @@ class UpdateAnnoTaskConfig(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
+            args = annotask_config_parser.parse_args(request)
             anno_task = dbm.get_anno_task(annotask_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
             if pipe_manager_id == user.idx:
-                data = json.loads(request.data)
-                anno_task.configuration = json.dumps(data['configuration'])
+                anno_task.configuration = json.dumps(args.configuration)
                 dbm.save_obj(anno_task)
                 dbm.close_session()
                 return "Success", 200
@@ -248,10 +224,12 @@ class UpdateAnnoTaskConfig(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
 
-@namespace.route('/get_storage_settings/<int:annotask_id>')
+@namespace.route('/<int:annotask_id>/storage_settings')
 @namespace.param('annotask_id', 'The id of the annotation task.')
 @api.doc(security='apikey')
 class GetAnnoTaskStorageSettings(Resource):
+    @api.marshal_with(storage_settings)
+    @api.doc(security='apikey',description='Get the storage settings of the annotask')
     @jwt_required
     def get(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -264,15 +242,13 @@ class GetAnnoTaskStorageSettings(Resource):
         anno_task = dbm.get_anno_task(annotask_id)
         
         return {
-            'datasetId': anno_task.dataset_id
+            'dataset_id': anno_task.dataset_id
         }
-        
-@namespace.route('/update_storage_settings/<int:annotask_id>')
-@namespace.param('annotask_id', 'The id of the annotation task.')
-@api.doc(security='apikey')
-class UpdateAnnoTaskStorageSettings(Resource):
+    
     @jwt_required
-    def post(self, annotask_id):
+    @api.doc(security='apikey',description='Update the storage settings of the annotask')
+    @api.expect(storage_parser)
+    def patch(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity() 
         user = dbm.get_user_by_id(identity)
@@ -282,10 +258,11 @@ class UpdateAnnoTaskStorageSettings(Resource):
         
         anno_task = dbm.get_anno_task(annotask_id)
         data = json.loads(request.data)
+        args = annotask_config_parser.parse_args(request)
         
         # save dataset if given
         if 'datasetId' in data:
-            dataset_id = data['datasetId']
+            dataset_id = args.dataset_id
             anno_task.dataset_id = dataset_id
             
             # -1 = no dataset given (remove ds id in case there was one before)
@@ -295,10 +272,12 @@ class UpdateAnnoTaskStorageSettings(Resource):
             dbm.save_obj(anno_task)
         
 
-@namespace.route('/generate_export/<int:annotask_id>')
+@namespace.route('/<int:annotask_id>/export')
 @namespace.param('annotask_id', 'The id of the annotation task.')
 @api.doc(security='apikey')
 class GenerateExport(Resource):
+    @api.expect(generate_export_parser)
+    @api.doc(security='apikey',description='Generates an export for the annotask')
     @jwt_required 
     def post(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -311,20 +290,14 @@ class GenerateExport(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
         else:
-            # anno_task = dbm.get_anno_task(annotask_id)
-            # pipe_manager_id = anno_task.pipe_element.pipe.manager_id
-            # if pipe_manager_id == user.idx:
-            data = json.loads(request.data)
+
+            args = generate_export_parser.parse_args(request)
             
-            export_config = data['export_config']
-            export_name = export_config['exportName']
-            export_type = export_config['exportType'] # LOST_Dataset, PascalVOC, YOLO, MS_Coco, CSV
-            include_images = export_config['includeImages']
-            annotated_images_only = export_config['annotatedOnly']
-            random_splits_active = export_config['randomSplits']['active']
+            include_images = args.include_images
+            random_splits_active = args.random_splits['active']
             splits=None
             if random_splits_active:
-                splits = export_config['randomSplits']
+                splits = args.random_splits
             for r in dbm.count_all_image_annos(anno_task_id=anno_task.idx)[0]:
                 img_count = r
             for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
@@ -332,35 +305,30 @@ class GenerateExport(Resource):
             
             # check if amount of images to export is bigger than given limit in config
             if include_images:
-                if annotated_images_only:
+                if args.annotated_only:
                     if annotated_img_count > LOST_CONFIG.img_export_limit:
                         include_images = False
                 if img_count > LOST_CONFIG.img_export_limit:
                     include_images = False
 
             dExport = model.AnnoTaskExport(timestamp=datetime.now(), anno_task_id=anno_task.idx, 
-                                            name=export_name, 
+                                            name=args.export_name, 
                                             progress=1, 
                                             anno_task_progress=anno_task.progress,
                                             img_count=annotated_img_count,
                                             )
             dbm.save_obj(dExport)
             client = dask_session.get_client(user)
-            # flask.current_app.logger.info(f'pe_id: {anno_task.pipe_element_id}, identity: {identity}, export_id: {dExport.idx}, export_name: {dExport.name}, splits: {splits}, export_type: {export_type}, include_images: {include_images}, annotated_images_only: {annotated_images_only}')
-            # export_ds(anno_task.pipe_element_id, identity, 
-            #     dExport.idx, dExport.name, splits, 
-            #     export_type, include_images, 
-            #     annotated_images_only)
+          
             client.submit(export_ds, anno_task.pipe_element_id, identity, 
                                 dExport.idx, dExport.name, splits, 
-                                export_type, include_images, 
-                                annotated_images_only,
+                                args.export_type, include_images, 
+                                args.annotated_only,
                                 workers=LOST_CONFIG.worker_name)
             dask_session.close_client(user, client)
             dbm.close_session()
             return "Success", 200
-            # dbm.close_session()
-            # return "You are not authorized.", 401
+
 
 @namespace.route('/anno_task_exports/<int:annotask_id>')
 @namespace.param('annotask_id', 'The id of the annotation task.')
@@ -512,3 +480,21 @@ class GetLabels(Resource):
             dbm.close_session()
             return res
         
+
+@namespace.route('/report')
+@api.doc(security='apikey')
+class ReportService(Resource):
+    @jwt_required 
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            data = json.loads(request.data)
+            report = Report(dbm, data)
+            report_data = report.get_report()
+            dbm.close_session()
+            return report_data

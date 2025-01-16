@@ -5,7 +5,7 @@ import { useMutation, useQuery } from 'react-query'
 export const useUpdateConfig = () => {
     return useMutation((data) =>
         axios
-            .post(`${API_URL}/annotask/update_config/${data.annotaskId}`, {
+            .put(`${API_URL}/annotask/${data.annotaskId}/config`, {
                 configuration: data.configuration,
             })
             .then((res) => res.data),
@@ -15,7 +15,7 @@ export const useUpdateConfig = () => {
 export const useGetStorageSettings = (annoTaskId) => {
     return useQuery(['annoDataStorageSettings'], () =>
         axios
-            .get(`${API_URL}/annotask/get_storage_settings/${annoTaskId}`)
+            .get(`${API_URL}/annotask/${annoTaskId}/storage_settings`)
             .then((res) => res.data),
     )
 }
@@ -23,7 +23,7 @@ export const useGetStorageSettings = (annoTaskId) => {
 export const useUpdateStorageSettings = () => {
     return useMutation((data) =>
         axios
-            .post(`${API_URL}/annotask/update_storage_settings/${data.annotaskId}`, data)
+            .patch(`${API_URL}/annotask/${data.annoTaskId}/storage_settings`, data)
             .then((res) => res),
     )
 }
@@ -31,9 +31,7 @@ export const useUpdateStorageSettings = () => {
 export const useGenerateExport = () => {
     return useMutation((data) =>
         axios
-            .post(`${API_URL}/annotask/generate_export/${data.annotaskId}`, {
-                export_config: data.exportConfig,
-            })
+            .post(`${API_URL}/annotask/${data.annotaskId}/export`, data.exportConfig)
             .then((res) => res.data),
     )
 }
@@ -61,7 +59,9 @@ export const useDeleteExport = () => {
 
 export const useAnnotask = () => {
     return useMutation((annoTaskId) =>
-        axios.get(`${API_URL}/annotask/id/${annoTaskId}`).then((res) => res.data),
+        axios
+            .get(`${API_URL}/annotask/${annoTaskId}?config=true`)
+            .then((res) => res.data),
     )
 }
 
