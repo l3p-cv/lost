@@ -9,6 +9,7 @@ import IconButton from '../../../../../../../components/IconButton'
 import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
 import { getColor } from '../../../../../../../containers/Annotation/AnnoTask/utils'
 import * as Notification from '../../../../../../../components/Notification'
+import axios from 'axios'
 
 const TabAvailableExports = (props) => {
     const {
@@ -17,47 +18,32 @@ const TabAvailableExports = (props) => {
         status: deleteExportStatus,
     } = annoTaskApi.useDeleteExport()
 
+    function stringToBlob(byteString, mimeType) {
+        // Remove the leading "b'" and trailing "'"
+        const cleanString = byteString.slice(2, -1)
+
+        // Decode the escaped characters (e.g., \x15 -> binary)
+        const byteCharacters = cleanString.replace(/\\x([0-9A-Fa-f]{2})/g, (_, hex) =>
+            String.fromCharCode(parseInt(hex, 16)),
+        )
+
+        // Convert to Uint8Array
+        const byteArray = new Uint8Array(
+            byteCharacters.split('').map((char) => char.charCodeAt(0)),
+        )
+
+        // Create a Blob
+        return new Blob([byteArray], { type: mimeType })
+    }
+
     const downloadFile = (dataExportId, dataExportType, dataExportName) => {
-        const isFirefox = typeof InstallTrigger !== 'undefined'
-        if (isFirefox) {
-            fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
-                method: 'get',
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                }),
+        axios
+            .get(`${API_URL}/annotasks/exports/${dataExportId}`)
+            .then((res) => {
+                return stringToBlob(res.data.export, 'application/octet-stream')
             })
-                .then((res) => res.blob())
-                .then((blob) => saveAs(blob, `${dataExportName}.${dataExportType}`))
-        } else {
-            return fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                }),
-            })
-                .then((res) => {
-                    const fileStream = createWriteStream(
-                        `${dataExportName}.${dataExportType}`,
-                    )
-                    const writer = fileStream.getWriter()
-                    if (res.body.pipeTo) {
-                        writer.releaseLock()
-                        return res.body.pipeTo(fileStream)
-                    }
 
-                    const reader = res.body.getReader()
-                    const pump = () =>
-                        reader
-                            .read()
-                            .then(({ value, done }) =>
-                                done ? writer.close() : writer.write(value).then(pump),
-                            )
-
-                    return pump()
-                })
-                .catch((e) => {
-                    Notification.showError('Failed to download annotation export.')
-                })
-        }
+            .then((blob) => saveAs(blob, `${dataExportName}.${dataExportType}`))
     }
 
     const handleAnnotaskExportDelete = (annoTaskExportId) => {

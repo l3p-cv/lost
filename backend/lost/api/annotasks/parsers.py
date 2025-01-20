@@ -69,3 +69,50 @@ generate_export_parser.add_argument('randomSplits',
                                dest='random_splits')
 
 
+get_annotasks_parser = reqparse.RequestParser()
+get_annotasks_parser.add_argument(
+    'pageSize',
+    type=int, 
+    help='Page Size',
+    location='args',
+    dest='page_size'
+)
+get_annotasks_parser.add_argument(
+    'page',
+    type=int, 
+    help='Loaded Page',
+    location='args',
+    dest='page'
+)
+get_annotasks_parser.add_argument(
+    'filteredName',
+    type=str, 
+    help='Name to filter for',
+    location='args',
+    dest='filtered_name'
+)
+get_annotasks_parser.add_argument(
+    'filteredStates',
+    type=str, 
+    help='List of filtered States seperated by ","',
+    location='args',
+    dest='filtered_states'
+)
+
+patch_annotation_parser = reqparse.RequestParser()
+patch_annotation_parser.add_argument(
+    'action',
+    required=True,
+    type=str, 
+    help='Anno Action',
+)
+patch_annotation_parser.add_argument(
+    'anno',
+    type=dict, 
+    help='Annotation Data',
+)
+patch_annotation_parser.add_argument(
+    'img',
+    type=dict, 
+    help='Image Data',
+)

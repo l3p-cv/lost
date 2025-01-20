@@ -20,7 +20,7 @@ export const useReview = (isAnnotaskReview) => {
 export const useReviewOptions = () => {
     return useMutation((annotaskId) => {
         return axios
-            .get(`${API_URL}/sia/reviewoptionsAnnotask/${annotaskId}`)
+            .get(`${API_URL}/annotasks/${annotaskId}/review/options`)
             .then((res) => res.data)
     })
 }
@@ -49,7 +49,7 @@ export const useUpdateAnnotation = () => {
         const [annotaskId, annotationData] = requestData
 
         return axios
-            .post(`${API_URL}/annotasks/${annotaskId}/updateAnnotation`, annotationData)
+            .patch(`${API_URL}/annotasks/${annotaskId}/annotation`, annotationData)
             .then((res) => [true, res.data])
             .catch((error) => [false, error])
     })
@@ -65,7 +65,7 @@ export const useGetUIConfig = () => {
 }
 
 export const useImageSearch = (isAnnotaskReview) => {
-    const reviewType = isAnnotaskReview ? 'annotasks' : 'datasets'
+    const reviewType = isAnnotaskReview ? 'annotask' : 'datasets'
 
     return useMutation((requestData) => {
         // annotaskId task or datasetId (depends on review mode)
@@ -73,6 +73,9 @@ export const useImageSearch = (isAnnotaskReview) => {
         const payload = {
             filter: query,
         }
-        return axios.post(`${API_URL}/${reviewType}/${id}/review/searchImage`, payload)
+        return axios.get(
+            `${API_URL}/${reviewType}/${id}/review/images?filter=${query}`,
+            payload,
+        )
     })
 }

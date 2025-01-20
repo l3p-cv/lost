@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
-from lost.api.annotask.parsers import annotask_parser
+from lost.api.annotasks.parsers import annotask_parser
 from lost.logic import anno_task as annotask_service
 from lost.logic.file_man import AppFileMan, FileMan
 from lost.logic import dask_session

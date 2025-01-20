@@ -354,7 +354,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                     annos={reviewPageData.annotations}
                     imageMeta={reviewPageData.image}
                     imageBlob={imgBlob}
-                    possibleLabels={reviewOptions.possible_labels}
+                    possibleLabels={reviewOptions.possibleLabels}
                     // exampleImg={props.exampleImg}
                     layoutUpdate={layoutUpdateInt}
                     selectedTool={selectedTool}
