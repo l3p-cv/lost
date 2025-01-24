@@ -28,6 +28,7 @@ import {
     FaBox,
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
+import { PipelineDemo } from './containers/pipeline/pipeline-demo/PipelineDemo'
 
 const iconProps = {
     size: 20,
@@ -152,8 +153,21 @@ const MyProfile = {
     component: MyProfileComponent,
 }
 
+const PipelineDemoPage = {
+    path: '/pipeline_demo',
+    component: PipelineDemo,
+}
+
 const guiSetup = {
-    additionalRoutes: [Sia, Mia, MyProfile, SiaReview, AnnotaskReview, DatasetsReview],
+    additionalRoutes: [
+        Sia,
+        Mia,
+        MyProfile,
+        SiaReview,
+        AnnotaskReview,
+        DatasetsReview,
+        PipelineDemoPage,
+    ],
     Administrator: {
         redirect: '/dashboard',
         navItems: [

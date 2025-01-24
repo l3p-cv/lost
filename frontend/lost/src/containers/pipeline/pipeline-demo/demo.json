@@ -1,0 +1,603 @@
+{
+    "id": 12,
+    "description": "Request single image annotations for all images of a requested triton inference model in a loop.",
+    "author": "Daniel Gacon",
+    "namespace": "triton_semi",
+    "name": "triton_semi.tiny_yolo_triton_sia_loop",
+    "availableLabelTrees": [
+        {
+            "idx": 1,
+            "name": "VOC2012",
+            "abbreviation": null,
+            "description": "Labels of PascalVOC 2012 dataset",
+            "timestamp": null,
+            "external_id": null,
+            "is_deleted": null,
+            "parent_leaf_id": null,
+            "is_root": true,
+            "group_id": null,
+            "color": null,
+            "children": [
+                {
+                    "idx": 2,
+                    "name": "Aeroplane",
+                    "abbreviation": null,
+                    "description": "Includes gliders but not hang gliders or helicopters",
+                    "timestamp": null,
+                    "external_id": "6",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#46aed7",
+                    "children": []
+                },
+                {
+                    "idx": 3,
+                    "name": "Bicycle",
+                    "abbreviation": null,
+                    "description": "Includes tricycles, unicycles",
+                    "timestamp": null,
+                    "external_id": "2",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#e28f81",
+                    "children": []
+                },
+                {
+                    "idx": 4,
+                    "name": "Bird",
+                    "abbreviation": null,
+                    "description": "All birds",
+                    "timestamp": null,
+                    "external_id": "13",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#50b897",
+                    "children": []
+                },
+                {
+                    "idx": 5,
+                    "name": "Boat",
+                    "abbreviation": null,
+                    "description": "Ships, rowing boats, pedaloes but not jet skis",
+                    "timestamp": null,
+                    "external_id": "19",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#88712f",
+                    "children": []
+                },
+                {
+                    "idx": 6,
+                    "name": "Bottle",
+                    "abbreviation": null,
+                    "description": "Plastic, glass or feeding bottles",
+                    "timestamp": null,
+                    "external_id": "8",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#9cb067",
+                    "children": []
+                },
+                {
+                    "idx": 7,
+                    "name": "Bus",
+                    "abbreviation": null,
+                    "description": "Includes minibus but not trams",
+                    "timestamp": null,
+                    "external_id": "3",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#a4527d",
+                    "children": []
+                },
+                {
+                    "idx": 8,
+                    "name": "Car",
+                    "abbreviation": null,
+                    "description": "Includes cars, vans, large family cars for 6-8 people etc.\nExcludes go-carts, tractors, emergency vehicles, lorries/trucks etc.\nDo not label where only the vehicle interior is shown.\nInclude toys that look just like real cars, but not 'cartoony' toys.",
+                    "timestamp": null,
+                    "external_id": "1",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#a55046",
+                    "children": []
+                },
+                {
+                    "idx": 9,
+                    "name": "Cat",
+                    "abbreviation": null,
+                    "description": "Domestic cats (not lions etc.)",
+                    "timestamp": null,
+                    "external_id": "14",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#6e90da",
+                    "children": []
+                },
+                {
+                    "idx": 10,
+                    "name": "Chair",
+                    "abbreviation": null,
+                    "description": "Includes armchairs, deckchairs but not stools or benches.\nExcludes seats in buses, cars etc.\nExcludes wheelchairs.",
+                    "timestamp": null,
+                    "external_id": "7",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#487b3b",
+                    "children": []
+                },
+                {
+                    "idx": 11,
+                    "name": "Cow",
+                    "abbreviation": null,
+                    "description": "All cows",
+                    "timestamp": null,
+                    "external_id": "15",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#6360a7",
+                    "children": []
+                },
+                {
+                    "idx": 12,
+                    "name": "Dining table",
+                    "abbreviation": null,
+                    "description": "Only tables for eating at.\nNot coffee tables, desks, side tables or picnic benches",
+                    "timestamp": null,
+                    "external_id": "9",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#cd8fd3",
+                    "children": []
+                },
+                {
+                    "idx": 13,
+                    "name": "Dog",
+                    "abbreviation": null,
+                    "description": "Domestic dogs (not wolves etc.)",
+                    "timestamp": null,
+                    "external_id": "16",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#d5a442",
+                    "children": []
+                },
+                {
+                    "idx": 14,
+                    "name": "Horse",
+                    "abbreviation": null,
+                    "description": "Includes ponies, donkeys, mules etc.",
+                    "timestamp": null,
+                    "external_id": "17",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#cf7635",
+                    "children": []
+                },
+                {
+                    "idx": 15,
+                    "name": "Motorbike",
+                    "abbreviation": null,
+                    "description": "Includes mopeds, scooters, sidecars",
+                    "timestamp": null,
+                    "external_id": "4",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#da4971",
+                    "children": []
+                },
+                {
+                    "idx": 16,
+                    "name": "Person",
+                    "abbreviation": null,
+                    "description": "Includes babies, faces (i.e. truncated people)",
+                    "timestamp": null,
+                    "external_id": "0",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#a4b137",
+                    "children": []
+                },
+                {
+                    "idx": 17,
+                    "name": "Potted plant",
+                    "abbreviation": null,
+                    "description": "Indoor plants excluding flowers in vases, or outdoor plants clearly in a pot. ",
+                    "timestamp": null,
+                    "external_id": "10",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#d44da4",
+                    "children": []
+                },
+                {
+                    "idx": 18,
+                    "name": "Sheep",
+                    "abbreviation": null,
+                    "description": "Sheep, not goats",
+                    "timestamp": null,
+                    "external_id": "18",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#aa54be",
+                    "children": []
+                },
+                {
+                    "idx": 19,
+                    "name": "Sofa",
+                    "abbreviation": null,
+                    "description": "Excludes sofas made up as sofa-beds",
+                    "timestamp": null,
+                    "external_id": "12",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#5ab74d",
+                    "children": []
+                },
+                {
+                    "idx": 20,
+                    "name": "Train",
+                    "abbreviation": null,
+                    "description": "Includes train carriages, excludes trams",
+                    "timestamp": null,
+                    "external_id": "5",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#7166d9",
+                    "children": []
+                },
+                {
+                    "idx": 21,
+                    "name": "TV/monitor",
+                    "abbreviation": null,
+                    "description": "Standalone screens (not laptops), not advertising displays",
+                    "timestamp": null,
+                    "external_id": "11",
+                    "is_deleted": null,
+                    "parent_leaf_id": 1,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#d14734",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "idx": 22,
+            "name": "dummy tree",
+            "abbreviation": null,
+            "description": "A dummy LabelTree",
+            "timestamp": null,
+            "external_id": null,
+            "is_deleted": null,
+            "parent_leaf_id": null,
+            "is_root": true,
+            "group_id": null,
+            "color": null,
+            "children": [
+                {
+                    "idx": 23,
+                    "name": "mammals",
+                    "abbreviation": null,
+                    "description": "Some mammals",
+                    "timestamp": null,
+                    "external_id": null,
+                    "is_deleted": null,
+                    "parent_leaf_id": 22,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#46aed7",
+                    "children": [
+                        {
+                            "idx": 24,
+                            "name": "human",
+                            "abbreviation": null,
+                            "description": "A human",
+                            "timestamp": null,
+                            "external_id": null,
+                            "is_deleted": null,
+                            "parent_leaf_id": 23,
+                            "is_root": null,
+                            "group_id": null,
+                            "color": "#a4527d",
+                            "children": []
+                        },
+                        {
+                            "idx": 25,
+                            "name": "cat",
+                            "abbreviation": null,
+                            "description": "A cat",
+                            "timestamp": null,
+                            "external_id": null,
+                            "is_deleted": null,
+                            "parent_leaf_id": 23,
+                            "is_root": null,
+                            "group_id": null,
+                            "color": "#a55046",
+                            "children": []
+                        },
+                        {
+                            "idx": 26,
+                            "name": "cow",
+                            "abbreviation": null,
+                            "description": "A cow",
+                            "timestamp": null,
+                            "external_id": null,
+                            "is_deleted": null,
+                            "parent_leaf_id": 23,
+                            "is_root": null,
+                            "group_id": null,
+                            "color": "#6e90da",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "idx": 27,
+                    "name": "plant",
+                    "abbreviation": null,
+                    "description": "Some plants",
+                    "timestamp": null,
+                    "external_id": null,
+                    "is_deleted": null,
+                    "parent_leaf_id": 22,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#e28f81",
+                    "children": [
+                        {
+                            "idx": 28,
+                            "name": "trees",
+                            "abbreviation": null,
+                            "description": "Some trees",
+                            "timestamp": null,
+                            "external_id": null,
+                            "is_deleted": null,
+                            "parent_leaf_id": 27,
+                            "is_root": null,
+                            "group_id": null,
+                            "color": "#88712f",
+                            "children": [
+                                {
+                                    "idx": 29,
+                                    "name": "beech",
+                                    "abbreviation": null,
+                                    "description": "A beech ",
+                                    "timestamp": null,
+                                    "external_id": null,
+                                    "is_deleted": null,
+                                    "parent_leaf_id": 28,
+                                    "is_root": null,
+                                    "group_id": null,
+                                    "color": "#9cb067",
+                                    "children": []
+                                },
+                                {
+                                    "idx": 30,
+                                    "name": "oak",
+                                    "abbreviation": null,
+                                    "description": "An oak",
+                                    "timestamp": null,
+                                    "external_id": null,
+                                    "is_deleted": null,
+                                    "parent_leaf_id": 28,
+                                    "is_root": null,
+                                    "group_id": null,
+                                    "color": "#487b3b",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "idx": 31,
+                    "name": "birds",
+                    "abbreviation": null,
+                    "description": "Some birds",
+                    "timestamp": null,
+                    "external_id": null,
+                    "is_deleted": null,
+                    "parent_leaf_id": 22,
+                    "is_root": null,
+                    "group_id": null,
+                    "color": "#50b897",
+                    "children": [
+                        {
+                            "idx": 32,
+                            "name": "eagle",
+                            "abbreviation": null,
+                            "description": "An eagle",
+                            "timestamp": null,
+                            "external_id": null,
+                            "is_deleted": null,
+                            "parent_leaf_id": 31,
+                            "is_root": null,
+                            "group_id": null,
+                            "color": "#6360a7",
+                            "children": []
+                        },
+                        {
+                            "idx": 33,
+                            "name": "blackbird",
+                            "abbreviation": null,
+                            "description": "A blackbird",
+                            "timestamp": null,
+                            "external_id": null,
+                            "is_deleted": null,
+                            "parent_leaf_id": 31,
+                            "is_root": null,
+                            "group_id": null,
+                            "color": "#cd8fd3",
+                            "children": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "availableGroups": [
+        {
+            "id": 1,
+            "name": "admin",
+            "groupName": "admin (user)",
+            "isUserDefault": true
+        }
+    ],
+    "elements": [
+        {
+            "peN": 0,
+            "peOut": [1],
+            "datasource": {
+                "name": "image path",
+                "type": "rawFile",
+                "fileTree": {},
+                "filesystems": [
+                    {
+                        "name": "default",
+                        "id": 1,
+                        "rootPath": "/home/lost/data",
+                        "permission": "rw",
+                        "fsType": "file"
+                    },
+                    {
+                        "name": "admin",
+                        "id": 2,
+                        "rootPath": "/home/lost/data/1",
+                        "permission": "rw",
+                        "fsType": "file"
+                    }
+                ]
+            }
+        },
+        {
+            "peN": 1,
+            "peOut": [2],
+            "script": {
+                "path": "tiny_yolo_triton_sia_loop.py",
+                "description": "Model from triton server requested bounding boxes with labels.",
+                "name": "triton_semi.tiny_yolo_triton_sia_loop.py",
+                "arguments": {
+                    "valid_imgtypes": {
+                        "value": "['.jpg', '.jpeg', '.png', '.bmp']",
+                        "help": "Img types where annotations will be requested for!"
+                    },
+                    "model_name": {
+                        "value": "tiny_yolo_v4_marvel",
+                        "help": "name of the model that will be used"
+                    },
+                    "url": {
+                        "value": "192.168.1.23",
+                        "help": "url of the triton inference server (example: IP of device)"
+                    },
+                    "port": {
+                        "value": "8000",
+                        "help": "used port for request (example: 8000 for http"
+                    },
+                    "img_batch": {
+                        "value": "15",
+                        "help": "batch size of the images to annotate per loop"
+                    }
+                },
+                "id": 10,
+                "envs": "[\"lost\"]"
+            }
+        },
+        {
+            "peN": 2,
+            "peOut": [5],
+            "annoTask": {
+                "name": "Single Image Annotation Task",
+                "type": "sia",
+                "instructions": "Please check and draw bounding boxes for all objects in image.",
+                "configuration": {
+                    "tools": {
+                        "point": false,
+                        "line": false,
+                        "polygon": false,
+                        "bbox": true,
+                        "junk": false
+                    },
+                    "annos": {
+                        "multilabels": false,
+                        "actions": {
+                            "draw": true,
+                            "label": true,
+                            "edit": true
+                        },
+                        "minArea": 250
+                    },
+                    "img": {
+                        "multilabels": false,
+                        "actions": {
+                            "label": true
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "peN": 4,
+            "peOut": null,
+            "loop": {
+                "maxIteration": null,
+                "peJumpId": 1
+            }
+        },
+        {
+            "peN": 5,
+            "peOut": [4, 6],
+            "script": {
+                "path": "export_label_dict.py",
+                "description": "Export the label dict as json file and the anno data as parquet.",
+                "name": "triton_semi.export_label_dict.py",
+                "arguments": null,
+                "id": 11,
+                "envs": "[\"lost\"]"
+            }
+        },
+        {
+            "peN": 6,
+            "peOut": null,
+            "dataExport": {}
+        }
+    ]
+}
