@@ -137,19 +137,19 @@ const URLS = {
 }
 
 // START
-export function requestTemplates(token: String) {
+export function requestTemplates(token) {
     return http.get({
         url: URLS.GET_TEMPLATES,
         token,
     })
 }
-export function requestTemplate(id: Number, token: String) {
+export function requestTemplate(id, token) {
     return http.get({
         url: URLS.GET_TEMPLATE(id),
         token,
     })
 }
-export function startPipe(data: any, token: String) {
+export function startPipe(data, token) {
     return http.post({
         url: URLS.POST_START_PIPELINE,
         data,
@@ -169,7 +169,7 @@ export function requestPipelines() {
         token,
     })
 }
-export function requestPipeline(id: Number, token: String) {
+export function requestPipeline(id, token) {
     if (DEV) {
         return Promise.resolve(DUMMY_DATA.requestPipeline[0])
     }
@@ -178,28 +178,28 @@ export function requestPipeline(id: Number, token: String) {
         token,
     })
 }
-export function deletePipe(id: Number, token: String) {
+export function deletePipe(id, token) {
     return http.del({
         url: URLS.DELETE_PIPELINE(id),
         token,
     })
 }
 
-export function pausePipe(id: Number, token: String) {
+export function pausePipe(id, token) {
     return http.post({
         url: URLS.POST_PAUSE_PIPELINE(id),
         token,
     })
 }
 
-export function playPipe(id: Number, token: String) {
+export function playPipe(id, token) {
     return http.post({
         url: URLS.POST_PLAY_PIPELINE(id),
         token,
     })
 }
 
-export function requestDataExport(path: String, token: String) {
+export function requestDataExport(path, token) {
     return http.get({
         url: URLS.GET_DATA_EXPORT(path),
         token,
@@ -207,7 +207,7 @@ export function requestDataExport(path: String, token: String) {
     })
 }
 
-export function requestPipeLogfile(path: String, token: String) {
+export function requestPipeLogfile(path, token) {
     return http.get({
         url: URLS.GET_PIPE_LOG(path),
         token,
