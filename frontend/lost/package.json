@@ -72,15 +72,17 @@
         "@testing-library/jest-dom": "^6.1.2",
         "@testing-library/react": "^14.0.0",
         "@testing-library/user-event": "^14.4.3",
-        "@vitejs/plugin-react": "^4.3.3",
         "@types/react": "^18.3.18",
         "@types/react-dom": "^18.3.5",
+        "@vitejs/plugin-react": "^4.3.3",
         "esbuild-plugin-polyfill-node": "^0.3.0",
         "eslint": "^9.17.0",
+        "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-react": "^7.37.2",
         "eslint-plugin-react-hooks": "^5.1.0",
         "eslint-plugin-react-refresh": "^0.4.16",
         "globals": "^15.14.0",
+        "prettier": "^3.4.2",
         "sass": "^1.81.0",
         "vite": "^5.4.11",
         "vite-plugin-commonjs": "^0.10.4"
@@ -90,7 +92,8 @@
         "start": "vite --open --host --port 3000",
         "build": "vite build",
         "postinstall": "semantic-ui-css-patch",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "format": "prettier --write src/"
     },
     "browserslist": {
         "production": [
