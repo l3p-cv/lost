@@ -31,6 +31,6 @@ export async function saveFs(fs) {
 }
 
 export async function getFullFs(fs) {
-    const res = await axios.post(API_URL + '/fb/fullfs', {id: fs.id})
+    const res = await axios.post(API_URL + '/fb/fullfs', { id: fs.id })
     return res.data
 }
