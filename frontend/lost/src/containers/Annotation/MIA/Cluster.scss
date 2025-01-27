@@ -2,22 +2,26 @@ $image-border-width: 10px;
 $image-margin: 14px;
 
 @keyframes zoom {
-    0%  { transform: scale(1); }
-    100%  { transform: scale(2.2); }
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(2.2);
+    }
 }
 
-#nothing-available{
+#nothing-available {
     grid-area: multiimage;
     justify-self: start;
     width: 100%;
 }
-#mia-images{
+#mia-images {
     grid-area: multiimage;
     margin: 2em 0;
 }
 
-.mia-image{
-    cursor:pointer;
+.mia-image {
+    cursor: pointer;
     margin-bottom: $image-margin;
     margin-right: $image-margin;
     max-width: 1920px;

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import ReactFlow from 'reactflow'
+import { ReactFlow } from '@xyflow/react'
 
-import 'reactflow/dist/style.css'
+import '@xyflow/react/dist/style.css'
 import EditLabel from './EditLabel'
 
 const LabelsPage = ({
