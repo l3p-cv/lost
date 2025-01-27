@@ -1,141 +1,140 @@
-import React, { Component } from 'react'
-import DatasourceModal from './types/DatasourceModal'
-import ScriptModal from './types/ScriptModal'
-import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
-import LoopModal from './types/LoopModal'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import actions from '../../../../../actions/pipeline/pipelineStart'
 import IconButton from '../../../../../components/IconButton'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
+import DatasourceModal from './types/DatasourceModal'
+import LoopModal from './types/LoopModal'
+import ScriptModal from './types/ScriptModal'
 
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
-import { connect } from 'react-redux'
 const { toggleModal, verifyNode, verifyTab } = actions
 
-class BaseModal extends Component {
-    constructor() {
-        super()
-        this.verifyNode = this.verifyNode.bind(this)
-        this.toggleModal = this.toggleModal.bind(this)
-    }
+const BaseModal = () => {
+    const dispatch = useDispatch()
 
-    selectModal() {
-        switch (this.modalData.type) {
-            case 'datasource':
-                return <DatasourceModal {...this.modalData} />
-            case 'script':
-                return <ScriptModal {...this.modalData} />
-            case 'annoTask':
-                return (
-                    <AnnoTaskModal
-                        {...this.modalData}
-                        availableLabelTrees={this.props.data.availableLabelTrees}
-                        availableGroups={this.props.data.availableGroups}
-                    />
-                )
-            case 'loop':
-                return <LoopModal {...this.modalData} />
-            default:
-                break
-        }
-    }
+    const step = useSelector((state) => state.pipelineStart.stepper.steps[1])
+    const data = useSelector((state) => state.pipelineStart.step1Data)
 
-    verifyNode() {
+    const modalData = useMemo(() => {
+        return (
+            data &&
+            step.modalOpened &&
+            data.elements.find((el) => el.peN === step.modalClickedId)
+        )
+    }, [data, step.modalOpened, step.modalClickedId])
+
+    const handleToggleModal = useCallback(() => {
+        dispatch(toggleModal(step.modalClickedId))
+    }, [dispatch, step.modalClickedId])
+
+    const handleVerifyNode = useCallback(() => {
+        if (!modalData) return
+
         let verified = false
-        switch (this.modalData.type) {
-            case 'datasource':
-                const { datasource } = this.modalData.exportData
-                if (datasource.selectedPath) {
-                    verified = true
-                } else {
-                    verified = false
-                }
+
+        switch (modalData.type) {
+            case 'datasource': {
+                const { datasource } = modalData.exportData
+                verified = !!datasource.selectedPath
                 break
-            case 'script':
-                const { script } = this.modalData.exportData
+            }
+            case 'script': {
+                const { script } = modalData.exportData
                 verified = script.arguments
-                    ? Object.keys(script.arguments).filter(
-                          (el) => !script.arguments[el].value,
-                      ).length === 0
+                    ? Object.keys(script.arguments).every(
+                          (key) => !!script.arguments[key].value,
+                      )
                     : true
                 break
-            case 'annoTask':
-                const { annoTask } = this.modalData.exportData
-                if (
+            }
+            case 'annoTask': {
+                const { annoTask } = modalData.exportData
+                verified = !!(
                     annoTask.name &&
                     annoTask.instructions &&
                     annoTask.assignee &&
                     annoTask.labelLeaves.length > 0 &&
                     annoTask.workerId &&
                     annoTask.selectedLabelTree
-                ) {
-                    verified = true
-                } else {
-                    verified = false
-                }
+                )
                 break
-            case 'loop':
+            }
+            case 'loop': {
                 verified = true
                 break
+            }
             default:
                 break
         }
 
-        this.props.verifyNode(this.modalData.peN, verified)
+        dispatch(verifyNode(modalData.peN, verified))
 
         const allNodesVerified =
-            this.props.data.elements.filter((el) => {
-                // because store is not yet updated check current Node validation
-                if (el.peN === this.modalData.peN) {
+            data.elements.filter((el) => {
+                if (el.peN === modalData.peN) {
                     return !verified
                 }
                 return !el.verified
             }).length === 0
 
-        this.props.verifyTab(1, allNodesVerified)
-    }
+        dispatch(verifyTab(1, allNodesVerified))
+    }, [dispatch, modalData, data])
 
-    toggleModal() {
-        this.props.toggleModal(this.props.step.modalClickedId)
-    }
-    render() {
-        if (this.props.data && this.props.step.modalOpened) {
-            this.modalData = this.props.data.elements.filter(
-                (el) => el.peN === this.props.step.modalClickedId,
-            )[0]
+    useEffect(() => {
+        if (!step.modalOpened) return
+
+        return () => {
+            handleVerifyNode()
         }
-        return (
-            <Modal
-                onClosed={this.verifyNode}
-                size="lg"
-                isOpen={this.props.step.modalOpened}
-                toggle={this.toggleModal}
-            >
-                {this.props.data && this.props.step.modalOpened && (
-                    <>
-                        <ModalHeader>{this.modalData.title}</ModalHeader>
-                        <ModalBody>{this.selectModal()}</ModalBody>
-                    </>
-                )}
+    }, [step.modalOpened, handleVerifyNode])
 
-                <ModalFooter>
-                    <IconButton
-                        color="secondary"
-                        isOutline={false}
-                        icon={faCheck}
-                        text="Okay"
-                        onClick={this.toggleModal}
+    const renderModalContent = useMemo(() => {
+        if (!modalData) return null
+
+        switch (modalData.type) {
+            case 'datasource':
+                return <DatasourceModal {...modalData} />
+            case 'script':
+                return <ScriptModal {...modalData} />
+            case 'annoTask':
+                return (
+                    <AnnoTaskModal
+                        {...modalData}
+                        availableLabelTrees={data.availableLabelTrees}
+                        availableGroups={data.availableGroups}
                     />
-                </ModalFooter>
-            </Modal>
-        )
-    }
+                )
+            case 'loop':
+                return <LoopModal {...modalData} />
+            default:
+                return null
+        }
+    }, [modalData, data])
+
+    if (!data || !step.modalOpened) return null
+
+    return (
+        <Modal
+            onClosed={handleVerifyNode}
+            size="lg"
+            isOpen={step.modalOpened}
+            toggle={handleToggleModal}
+        >
+            <ModalHeader>{modalData?.title}</ModalHeader>
+            <ModalBody>{renderModalContent}</ModalBody>
+            <ModalFooter>
+                <IconButton
+                    color="secondary"
+                    isOutline={false}
+                    icon={faCheck}
+                    text="Okay"
+                    onClick={handleToggleModal}
+                />
+            </ModalFooter>
+        </Modal>
+    )
 }
 
-const mapStateToProps = (state) => {
-    return {
-        step: state.pipelineStart.stepper.steps[1],
-        data: state.pipelineStart.step1Data,
-    }
-}
-
-export default connect(mapStateToProps, { toggleModal, verifyNode, verifyTab })(BaseModal)
+export default BaseModal

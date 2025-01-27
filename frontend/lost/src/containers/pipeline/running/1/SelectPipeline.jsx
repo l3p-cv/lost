@@ -1,123 +1,82 @@
-import React, { Component } from 'react'
-import actions from '../../../../actions/pipeline/pipelineRunning'
-
+import { faEye } from '@fortawesome/free-solid-svg-icons'
+import { useCallback, useState } from 'react'
 import { connect } from 'react-redux'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
-import { faEye } from '@fortawesome/free-solid-svg-icons'
-import IconButton from '../../../../components/IconButton'
-import HelpButton from '../../../../components/HelpButton'
 import { Progress } from 'reactstrap'
+import { usePipelines } from '../../../../actions/pipeline/pipeline_api'
+import actions from '../../../../actions/pipeline/pipelineRunning'
+import HelpButton from '../../../../components/HelpButton'
+import IconButton from '../../../../components/IconButton'
 import { getColor } from '../../../Annotation/AnnoTask/utils'
-const { getPipelines, getPipeline, verifyTab, selectTab, reset } = actions
 
-class SelectPipeline extends Component {
-    constructor() {
-        super()
-        this.selectRow = this.selectRow.bind(this)
-        this.state = {
-            pollingEnabled: false,
+const { getPipeline, verifyTab, selectTab, reset } = actions
+
+const SelectPipeline = ({ getPipeline, verifyTab, selectTab, reset }) => {
+    const [isPolling, setIsPolling] = useState(true)
+    const { data, isError } = usePipelines(isPolling)
+
+    // Callback to handle row selection
+    const selectRow = useCallback(
+        (id) => {
+            setIsPolling(false)
+            verifyTab(0, true)
+            selectTab(1)
+            reset()
+            getPipeline(id)
+        },
+        [verifyTab, selectTab, reset, getPipeline],
+    )
+
+    const renderDatatable = () => {
+        if (isError) {
+            return <div className="pipeline-error-message">Error loading data</div>
         }
-    }
-    async componentDidMount() {
-        const showAlert = true
-        await this.props.getPipelines(showAlert)
-    }
-
-    componentDidUpdate() {
-        if (this.props.data && !this.state.pollingEnabled) {
-            this.setState({
-                pollingEnabled: true,
-            })
-            this.timer = setInterval(() => this.props.getPipelines(), 2000)
-        }
-    }
-
-    componentWillUnmount() {
-        this.setState({
-            pollingEnabled: false,
-        })
-        clearInterval(this.timer)
-    }
-
-    selectRow(id) {
-        this.props.verifyTab(0, true)
-        this.props.selectTab(1)
-        this.props.reset()
-        this.props.getPipeline(id)
-    }
-
-    renderDatatable() {
-        if (this.props.data) {
-            if (this.props.data.error) {
-                return (
-                    <div className="pipeline-error-message">{this.props.data.error}</div>
-                )
+        if (data) {
+            if (data.error) {
+                return <div className="pipeline-error-message">{data.error}</div>
             }
-            const data = this.props.data.response.pipes.map((el) => ({
-                ...el,
-            }))
+            const tableData = data.pipes
             return (
                 <ReactTable
                     columns={[
                         {
                             Header: 'Name',
                             accessor: 'name',
-                            Cell: (row) => {
-                                return <b>{row.original.name}</b>
-                            },
+                            Cell: ({ original }) => <b>{original.name}</b>,
                         },
                         {
                             Header: 'Description',
                             accessor: 'description',
-                            Cell: (row) => {
-                                return (
-                                    <HelpButton
-                                        id={row.original.id}
-                                        text={row.original.description}
-                                    />
-                                )
-                            },
+                            Cell: ({ original }) => (
+                                <HelpButton
+                                    id={original.id}
+                                    text={original.description}
+                                />
+                            ),
                         },
                         {
                             Header: 'Template Name',
                             accessor: 'templateName',
-                            Cell: (row) => {
-                                return (
-                                    <>
-                                        {' '}
-                                        <b>
-                                            {row.original.templateName.split('.')[1]}
-                                        </b>{' '}
-                                        <div className="small text-muted">
-                                            {`${row.original.templateName.split('.')[0]}`}
-                                        </div>
-                                    </>
-                                )
-                            },
+                            Cell: ({ original }) => (
+                                <>
+                                    <b>{original.templateName.split('.')[1]}</b>
+                                    <div className="small text-muted">
+                                        {original.templateName.split('.')[0]}
+                                    </div>
+                                </>
+                            ),
                         },
-                        // {
-                        //     Header: 'Author',
-                        //     accessor: 'creatorName',
-                        // },
                         {
                             Header: 'Progress',
                             accessor: 'progress',
-                            Cell: (row) => {
-                                const progress = parseInt(row.value)
-                                if (row.value === 'ERROR') {
-                                    return (
-                                        <div>
-                                            <font color="red">ERROR</font>
-                                        </div>
-                                    )
+                            Cell: ({ value }) => {
+                                const progress = parseInt(value)
+                                if (value === 'ERROR') {
+                                    return <div>ERROR</div>
                                 }
-                                if (row.value === 'PAUSED') {
-                                    return (
-                                        <div>
-                                            <font color="orange">PAUSED</font>
-                                        </div>
-                                    )
+                                if (value === 'PAUSED') {
+                                    return <div>PAUSED</div>
                                 }
                                 return (
                                     <Progress
@@ -125,54 +84,40 @@ class SelectPipeline extends Component {
                                         color={getColor(progress)}
                                         value={progress}
                                     />
-                                    // <Progress
-                                    //     className="progress-xs rt-progress"
-                                    //     color="warning"
-                                    //     value={progress}
-                                    // />
                                 )
                             },
                         },
                         {
                             Header: 'Started on',
                             accessor: 'date',
-                            Cell: (row) => {
-                                return new Date(row.original.date).toLocaleString()
-                            },
+                            Cell: ({ original }) =>
+                                new Date(original.date).toLocaleString(),
                             sortMethod: (date1, date2) => {
-                                if (new Date(date1) > new Date(date2)) {
-                                    return -1
-                                }
-                                return 1
+                                return new Date(date1) > new Date(date2) ? -1 : 1
                             },
                         },
                         {
                             Header: 'Start',
-                            Cell: (row) => {
-                                return (
-                                    <IconButton
-                                        color="primary"
-                                        size="m"
-                                        isOutline={false}
-                                        onClick={() => this.selectRow(row.original.id)}
-                                        icon={faEye}
-                                        text="Open"
-                                    />
-                                )
-                            },
                             accessor: 'id',
+                            Cell: ({ original }) => (
+                                <IconButton
+                                    color="primary"
+                                    size="m"
+                                    isOutline={false}
+                                    onClick={() => selectRow(original.id)}
+                                    icon={faEye}
+                                    text="Open"
+                                />
+                            ),
                         },
                     ]}
-                    // getTrProps={(state, rowInfo) => ({
-                    //     onClick: () => this.selectRow(rowInfo.original.id),
-                    // })}
                     defaultSorted={[
                         {
                             id: 'date',
                             desc: false,
                         },
                     ]}
-                    data={data}
+                    data={tableData}
                     defaultPageSize={10}
                     className="-striped -highlight"
                 />
@@ -180,17 +125,14 @@ class SelectPipeline extends Component {
         }
     }
 
-    render() {
-        return <div className="pipeline-running-1">{this.renderDatatable()}</div>
-    }
+    return <div className="pipeline-running-1">{renderDatatable()}</div>
 }
 
-const mapStateToProps = (state) => {
-    return { data: state.pipelineRunning.step0Data }
-}
+const mapStateToProps = (state) => ({
+    data: state.pipelineRunning.step0Data,
+})
 
 export default connect(mapStateToProps, {
-    getPipelines,
     getPipeline,
     verifyTab,
     selectTab,
