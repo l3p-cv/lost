@@ -20,6 +20,8 @@ import json
 import os
 from io import BytesIO
 import traceback
+from lost.logic.file_access import UserFileAccess
+from lost.pyapi import pe_base
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
 import flask
@@ -432,3 +434,74 @@ class ProjectList(Resource):
         re = filter_by_pipe_project(re)
         dbm.close_session()
         return re
+
+
+@namespace.route('/logs/<int:pe_id>')
+#@namespace.param('path', 'Path to logfile')
+@api.doc(security='apikey')
+class Logs(Resource):
+    @jwt_required 
+    def get(self, pe_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            user_fs = dbm.get_user_default_fs(user.idx)
+            ufa = UserFileAccess(dbm, user, user_fs)           
+            resp = make_response(ufa.get_pipe_log_file(pe_id))
+            resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
+            resp.headers["Content-Type"] = "text/csv"
+            return resp
+        
+
+
+@namespace.route('/annoexport_parquet/<peid>')
+@api.doc(security='apikey')
+class AnnoExportParquet(Resource):
+    @jwt_required 
+    def get(self, peid):
+         dbm = access.DBMan(LOST_CONFIG)
+         identity = get_jwt_identity()
+         user = dbm.get_user_by_id(identity)
+         if not user.has_role(roles.DESIGNER):
+             dbm.close_session()
+             return "You are not authorized.", 401
+         else:
+             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+             pe = pe_base.Element(pe_db, dbm)
+             df = pe.inp.to_df()
+             # raise Exception('GO ON HERE !!!')
+             f = BytesIO()
+             df.to_parquet(f)
+             f.seek(0)
+             resp = make_response(f.read())
+             resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
+             resp.headers["Content-Type"] = "blob"
+             return resp
+
+@namespace.route('/annoexport_csv/<peid>')
+@api.doc(security='apikey')
+class AnnoExportCSV(Resource):
+    @jwt_required 
+    def get(self, peid):
+         dbm = access.DBMan(LOST_CONFIG)
+         identity = get_jwt_identity()
+         user = dbm.get_user_by_id(identity)
+         if not user.has_role(roles.DESIGNER):
+             dbm.close_session()
+             return "You are not authorized.", 401
+         else:
+             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+             pe = pe_base.Element(pe_db, dbm)
+             df = pe.inp.to_df()
+             # raise Exception('GO ON HERE !!!')
+             f = BytesIO()
+             df.to_csv(f)
+             f.seek(0)
+             resp = make_response(f.read())
+             resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
+             resp.headers["Content-Type"] = "blob"
+             return resp

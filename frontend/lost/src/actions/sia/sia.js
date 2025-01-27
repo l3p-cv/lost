@@ -59,13 +59,9 @@ export const siaAllowedToMarkExample = () => async (dispatch) => {
         console.error(e)
     }
 }
-
 export const getSiaImage = (imgId) => async (dispatch) => {
     try {
-        const response = await axios.post(API_URL + '/data/getImage', {
-            type: 'imageBased',
-            id: imgId,
-        })
+        const response = await axios.get(API_URL + `/data/image/${imgId}?type=imageBased`)
         // const response = await axios.post(API_URL + '/sia/getimage', {imgId:imgId})
         // console.log('REQUEST: sia/getimage response: ', response)
         return response

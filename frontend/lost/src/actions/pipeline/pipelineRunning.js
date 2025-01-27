@@ -81,7 +81,7 @@ const regeneratePipeline = (id) => async (dispatch) => {}
 const getLog = async (id) => {
     let response = {}
     try {
-        response = await axios.get(`${API_URL}/data/logs/${id}`)
+        response = await axios.get(`${API_URL}/pipeline/logs/${id}`)
     } catch (err) {
         console.warn(err)
         response.data = 'ERROR'

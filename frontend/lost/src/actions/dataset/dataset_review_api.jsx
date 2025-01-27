@@ -32,7 +32,11 @@ export const useGetImage = () => {
             id: imageId,
         }
 
-        return axios.post(`${API_URL}/data/getImage`, data).then((res) => res.data)
+        return axios
+            .get(
+                `${API_URL}/data/image/${data['id']}?addContext=${data['addContext']}&drawAnno=${data['drawAnno']}&type=${data['type']}`,
+            )
+            .then((res) => res.data)
     })
 }
 

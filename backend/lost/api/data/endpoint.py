@@ -1,42 +1,33 @@
-from typing import BinaryIO
-from sqlalchemy import engine
-from sqlalchemy.sql.schema import DEFAULT_NAMING_CONVENTION
 from flask_restx import Resource, fields
-from flask import request, send_from_directory, make_response
+from flask import request,  make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, FLASK_DEBUG
 from lost.db import access, roles
-from lost.api.annotasks.parsers import annotask_parser
-from lost.logic import anno_task as annotask_service
-from lost.logic.file_man import AppFileMan, FileMan
+from lost.logic.file_man import FileMan
 from lost.logic import dask_session
-from lost.pyapi.utils import anno_helper
 from lost.logic.file_access import UserFileAccess
 import json
-import os
-from lost.pyapi import pe_base
-from io import BytesIO
 import lost_ds as lds
-import numpy as np
 import cv2
 import base64 
-import random
+from lost.api.data.parsers import get_image_parser
+import logging
 namespace = api.namespace('data', description='Data API.')
 
-@namespace.route('/<string:path>')
-@api.doc(security='apikey')
-class Data(Resource): 
-    @jwt_required 
-    def get(self, path):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATOR):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            raise Exception('data/ -> Not Implemented!')
+# @namespace.route('/<string:path>')
+# @api.doc(security='apikey')
+# class Data(Resource): 
+#     @jwt_required 
+#     def get(self, path):
+#         dbm = access.DBMan(LOST_CONFIG)
+#         identity = get_jwt_identity()
+#         user = dbm.get_user_by_id(identity)
+#         if not user.has_role(roles.ANNOTATOR):
+#             dbm.close_session()
+#             return "You are not authorized.", 401
+#         else:
+#             raise Exception('data/ -> Not Implemented!')
             # return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data'), path)
 
 # @namespace.route('/logs/<path:path>')
@@ -61,30 +52,12 @@ class Data(Resource):
 
 #             # return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data/logs'), path)
 
-@namespace.route('/logs/<int:pe_id>')
-#@namespace.param('path', 'Path to logfile')
-@api.doc(security='apikey')
-class Logs(Resource):
-    @jwt_required 
-    def get(self, pe_id):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ANNOTATOR):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            user_fs = dbm.get_user_default_fs(user.idx)
-            ufa = UserFileAccess(dbm, user, user_fs)           
-            resp = make_response(ufa.get_pipe_log_file(pe_id))
-            resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
-            resp.headers["Content-Type"] = "text/csv"
-            return resp
 
-@namespace.route('/dataexport/<deid>')
-#@namespace.param('path', 'Path to logfile')
+@namespace.route('/export/<deid>')
+@namespace.param('deid', 'Data Export ID')
 @api.doc(security='apikey')
 class DataExport(Resource):
+    @api.doc(security='apikey',description="Get the data export for the given export id as Blob ")
     @jwt_required 
     def get(self, deid):
         dbm = access.DBMan(LOST_CONFIG)
@@ -104,73 +77,6 @@ class DataExport(Resource):
                 resp.headers["Content-Type"] = "blob"
             return resp
 
-@namespace.route('/annoexport_parquet/<peid>')
-@api.doc(security='apikey')
-class AnnoExportParquet(Resource):
-    @jwt_required 
-    def get(self, peid):
-         dbm = access.DBMan(LOST_CONFIG)
-         identity = get_jwt_identity()
-         user = dbm.get_user_by_id(identity)
-         if not user.has_role(roles.DESIGNER):
-             dbm.close_session()
-             return "You are not authorized.", 401
-         else:
-             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
-             pe = pe_base.Element(pe_db, dbm)
-             df = pe.inp.to_df()
-             # raise Exception('GO ON HERE !!!')
-             f = BytesIO()
-             df.to_parquet(f)
-             f.seek(0)
-             resp = make_response(f.read())
-             resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
-             resp.headers["Content-Type"] = "blob"
-             return resp
-
-@namespace.route('/annoexport_csv/<peid>')
-@api.doc(security='apikey')
-class AnnoExportCSV(Resource):
-    @jwt_required 
-    def get(self, peid):
-         dbm = access.DBMan(LOST_CONFIG)
-         identity = get_jwt_identity()
-         user = dbm.get_user_by_id(identity)
-         if not user.has_role(roles.DESIGNER):
-             dbm.close_session()
-             return "You are not authorized.", 401
-         else:
-             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
-             pe = pe_base.Element(pe_db, dbm)
-             df = pe.inp.to_df()
-             # raise Exception('GO ON HERE !!!')
-             f = BytesIO()
-             df.to_csv(f)
-             f.seek(0)
-             resp = make_response(f.read())
-             resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
-             resp.headers["Content-Type"] = "blob"
-             return resp
-@namespace.route('/workerlogs/<int:worker_id>')
-@api.doc(security='apikey')
-class Logs(Resource): 
-    @jwt_required 
-    def get(self, worker_id):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.ADMINISTRATOR):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            raise Exception('data/workerlogs/ -> Not Implemented!')
-            # fm = AppFileMan(LOST_CONFIG)
-            # ufa = UserFileAccess(dbm, user, user_fs)           
-            # resp = make_response(ufa.get_pipe_log_file(pe_id))
-            # resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
-            # resp.headers["Content-Type"] = "text/csv"
-            # return resp
-
 
 def load_img(db_img, ufa, user):
     if LOST_CONFIG.worker_management != 'dynamic':
@@ -185,12 +91,16 @@ def load_img(db_img, ufa, user):
         img = dask_session.ds_man.read_fs_img(user, db_img.fs, db_img.img_path)
     return img
 
-@namespace.route('/getImage')
+@namespace.route('/image/<int:image_id>')
 @api.doc(security='apikey')
 class GetImage(Resource):
-
+    @api.doc(security='apikey',description="Get the ")
+    @api.param('image_id', 'ID of the Image to get')
+    @api.param('type', 'Size of the Pages for pagination')
+    @api.param('drawAnno', 'Which page to return when using pagination')
+    @api.param('addContext', 'Name Filter')
     @jwt_required 
-    def post(self):
+    def get(self,image_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -200,14 +110,23 @@ class GetImage(Resource):
 
         else:
             #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
-            data = json.loads(request.data)
+            logging.info("TEST")
+            args = get_image_parser.parse_args(request)
+            draw_anno = False
+            context = 0.0
+            if args.context:
+                context = args.context
+            if args.draw_anno:
+                draw_anno = args.draw_anno
+
+
             # TODO: get db_img via db access
-            if data['type'] == 'imageBased':
-                db_img = dbm.get_image_anno(data['id'])
+            if args.type == 'imageBased':
+                db_img = dbm.get_image_anno(image_id)
                 ufa = UserFileAccess(dbm, user, db_img.fs)
                 img = load_img(db_img, ufa, user)
-            elif data['type'] == 'annoBased':
-                db_anno = dbm.get_two_d_anno(two_d_anno_id=data['id'])
+            elif args.type == 'annoBased':
+                db_anno = dbm.get_two_d_anno(two_d_anno_id=image_id)
                 db_img = dbm.get_image_anno(db_anno.img_anno_id)
                 ufa = UserFileAccess(dbm, user, db_img.fs)
                 # image = fm.load_img(db_img.img_path)
@@ -216,16 +135,8 @@ class GetImage(Resource):
                 img_w = image.shape[1]
                 
                 # get annotation_task config
-                draw_anno = False
-                context = 0.0
-                try:
-                    draw_anno = data['drawAnno']
-                except:
-                    pass
-                try:
-                    context = float(data['addContext'])
-                except:
-                    pass
+                
+                
                 
                 df = db_img.to_df()
                 df = df[df['anno_uid'] == db_anno.idx]
@@ -259,13 +170,13 @@ class GetImage(Resource):
 
                     img = img[y_min:y_max, x_min:x_max]
             else:
-                raise Exception('Unknown mia image type')
+                return "Unknown mia image type",422
             _, data = cv2.imencode('.jpg', img)
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()
             return u'data:img/jpg;base64,'+data64.decode('utf-8')
         
-@namespace.route('/datastoresKey')
+@namespace.route('/storeKeys')
 @api.doc(security='apikey')
 @api.response(200, 'success', api.model('DatastoreKeys', {
     "1": fields.String(description="Name of datastore", example="Default Datastore")

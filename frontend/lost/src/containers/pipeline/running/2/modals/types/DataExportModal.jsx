@@ -24,7 +24,7 @@ class DataExportModal extends Component {
         // axios.post(API_URL+'/data/dataexport', {'de_id':de_id}).then( resp => {
         //   saveAs(resp.data, fileName)
         // })
-        fetch(`${API_URL}/data/dataexport/${de_id}`, {
+        fetch(`${API_URL}/data/export/${de_id}`, {
             method: 'get',
             headers: new Headers({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
