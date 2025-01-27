@@ -110,6 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - close dask client in webservice endpoints to prevent memory leaks
 - request_lds_annos -> Also take care of img_is_junk info when requesting annos again
 - Fix build scripts for the production version so they work again
+- Labels Page Edit function was not working because of rerender loop this is fixed now
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 
