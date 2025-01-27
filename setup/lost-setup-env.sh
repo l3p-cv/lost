@@ -13,7 +13,7 @@ export LOST_NGINX_SITES_DIR=/etc/nginx/sites-enabled
 export LOST_UWSGI_PORT=4242
 
 # directory to mamba (programs access the bin folder)
-export LOST_MAMBA_BASE_DIR=/opt/mambaforge
+export LOST_MAMBA_BASE_DIR=/opt/miniforge
 
 # add additional mamba packages that should be installed during installation (can be left empty)
 export LOST_MAMBA_ADDITIONAL_PACKAGES=

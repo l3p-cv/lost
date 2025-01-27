@@ -20,4 +20,3 @@ ADD /docker/lost/pytest.sh /
 
 RUN echo "__version__='${LOST_VERSION}'" > /code/src/backend/lost/__init__.py
 RUN echo "export PATH=$PATH:/code/src/backend/lost/cli" >> ~/.bashrc
-RUN echo "conda activate lost" >> ~/.bashrc
