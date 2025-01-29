@@ -622,22 +622,3 @@ class AnnotaskReview(Resource):
 
 
 
-
-#TODO: Move to Pipeline endpoint
-@namespace.route('/report')
-@api.doc(security='apikey',description='STILL NEEDS TO BE REFACTORED WILL BE MOVED TO PIPELINE')
-class ReportService(Resource):
-    @jwt_required 
-    def post(self):
-        dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
-        user = dbm.get_user_by_id(identity)
-        if not user.has_role(roles.DESIGNER):
-            dbm.close_session()
-            return "You are not authorized.", 401
-        else:
-            data = json.loads(request.data)
-            report = Report(dbm, data)
-            report_data = report.get_report()
-            dbm.close_session()
-            return report_data

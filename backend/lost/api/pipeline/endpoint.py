@@ -436,12 +436,12 @@ class ProjectList(Resource):
         return re
 
 
-@namespace.route('/logs/<int:pe_id>')
-#@namespace.param('path', 'Path to logfile')
+@namespace.route('/element/<int:pipeline_element_id>/logs')
+@namespace.param('pipeline_element_id', 'Pipeline Element ID to get Logs for')
 @api.doc(security='apikey')
 class Logs(Resource):
     @jwt_required 
-    def get(self, pe_id):
+    def get(self, pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -451,57 +451,76 @@ class Logs(Resource):
         else:
             user_fs = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, user_fs)           
-            resp = make_response(ufa.get_pipe_log_file(pe_id))
+            resp = make_response(ufa.get_pipe_log_file(pipeline_element_id))
             resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
             resp.headers["Content-Type"] = "text/csv"
             return resp
         
+# TODO: UNUSED ENDPOINTS CHECK IF THEY ARE NEEDED IF NOT COMPLETELY REMOVE THEM
+# 
+# @namespace.route('/annoexport_parquet/<peid>')
+# @api.doc(security='apikey')
+# class AnnoExportParquet(Resource):
+#     @jwt_required 
+#     def get(self, peid):
+#          dbm = access.DBMan(LOST_CONFIG)
+#          identity = get_jwt_identity()
+#          user = dbm.get_user_by_id(identity)
+#          if not user.has_role(roles.DESIGNER):
+#              dbm.close_session()
+#              return "You are not authorized.", 401
+#          else:
+#              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+#              pe = pe_base.Element(pe_db, dbm)
+#              df = pe.inp.to_df()
+#              # raise Exception('GO ON HERE !!!')
+#              f = BytesIO()
+#              df.to_parquet(f)
+#              f.seek(0)
+#              resp = make_response(f.read())
+#              resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
+#              resp.headers["Content-Type"] = "blob"
+#              return resp
+
+# @namespace.route('/annoexport_csv/<peid>')
+# @api.doc(security='apikey')
+# class AnnoExportCSV(Resource):
+#     @jwt_required 
+#     def get(self, peid):
+#          dbm = access.DBMan(LOST_CONFIG)
+#          identity = get_jwt_identity()
+#          user = dbm.get_user_by_id(identity)
+#          if not user.has_role(roles.DESIGNER):
+#              dbm.close_session()
+#              return "You are not authorized.", 401
+#          else:
+#              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+#              pe = pe_base.Element(pe_db, dbm)
+#              df = pe.inp.to_df()
+#              # raise Exception('GO ON HERE !!!')
+#              f = BytesIO()
+#              df.to_csv(f)
+#              f.seek(0)
+#              resp = make_response(f.read())
+#              resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
+#              resp.headers["Content-Type"] = "blob"
+#              return resp
 
 
-@namespace.route('/annoexport_parquet/<peid>')
-@api.doc(security='apikey')
-class AnnoExportParquet(Resource):
-    @jwt_required 
-    def get(self, peid):
-         dbm = access.DBMan(LOST_CONFIG)
-         identity = get_jwt_identity()
-         user = dbm.get_user_by_id(identity)
-         if not user.has_role(roles.DESIGNER):
-             dbm.close_session()
-             return "You are not authorized.", 401
-         else:
-             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
-             pe = pe_base.Element(pe_db, dbm)
-             df = pe.inp.to_df()
-             # raise Exception('GO ON HERE !!!')
-             f = BytesIO()
-             df.to_parquet(f)
-             f.seek(0)
-             resp = make_response(f.read())
-             resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
-             resp.headers["Content-Type"] = "blob"
-             return resp
-
-@namespace.route('/annoexport_csv/<peid>')
-@api.doc(security='apikey')
-class AnnoExportCSV(Resource):
-    @jwt_required 
-    def get(self, peid):
-         dbm = access.DBMan(LOST_CONFIG)
-         identity = get_jwt_identity()
-         user = dbm.get_user_by_id(identity)
-         if not user.has_role(roles.DESIGNER):
-             dbm.close_session()
-             return "You are not authorized.", 401
-         else:
-             pe_db = dbm.get_pipe_element(pipe_e_id=peid)
-             pe = pe_base.Element(pe_db, dbm)
-             df = pe.inp.to_df()
-             # raise Exception('GO ON HERE !!!')
-             f = BytesIO()
-             df.to_csv(f)
-             f.seek(0)
-             resp = make_response(f.read())
-             resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
-             resp.headers["Content-Type"] = "blob"
-             return resp
+# @namespace.route('/report')
+# @api.doc(security='apikey',description='STILL NEEDS TO BE REFACTORED WILL BE MOVED TO PIPELINE')
+# class ReportService(Resource):
+#     @jwt_required 
+#     def post(self):
+#         dbm = access.DBMan(LOST_CONFIG)
+#         identity = get_jwt_identity()
+#         user = dbm.get_user_by_id(identity)
+#         if not user.has_role(roles.DESIGNER):
+#             dbm.close_session()
+#             return "You are not authorized.", 401
+#         else:
+#             data = json.loads(request.data)
+#             report = Report(dbm, data)
+#             report_data = report.get_report()
+#             dbm.close_session()
+#             return report_data
