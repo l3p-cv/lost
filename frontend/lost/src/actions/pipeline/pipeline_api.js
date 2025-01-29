@@ -21,3 +21,16 @@ export const usePipelines = (isPolling = true) => {
         refetchInterval: isPolling ? 2000 : false, // Poll every 2 seconds if isPolling is true
     })
 }
+
+const fetchTemplates = async (visLevel) => {
+    const response = await axios.get(`${API_URL}/pipeline/template/${visLevel}`)
+    return response.data
+}
+
+export const useTemplates = (visLevel) => {
+    return useQuery({
+        queryKey: ['templates', visLevel],
+        queryFn: () => fetchTemplates(visLevel),
+        refetchOnWindowFocus: false,
+    })
+}
