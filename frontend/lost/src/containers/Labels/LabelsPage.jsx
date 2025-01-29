@@ -1,13 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
 import { ReactFlow } from '@xyflow/react'
+import { useEffect, useRef, useState } from 'react'
 
 import '@xyflow/react/dist/style.css'
 import EditLabel from './EditLabel'
 
 const LabelsPage = ({
     labelTree,
-    triggerRefetch,
-    onNoNodes = () => {},
     visLevel,
     showEdit = true,
     onNodeClick = (nodeId) => {},
