@@ -9,7 +9,6 @@ from lost.db.vis_level import VisLevel
 from lost.settings import LOST_CONFIG
 from lost.logic.label import LabelTree
 from io import BytesIO
-import flask 
 
 namespace = api.namespace('label', description='Label API.')
 
@@ -156,7 +155,7 @@ class Label(Resource):
             dbm.close_session()
             return "success"
 
-@namespace.route('/export/<int:label_leaf_id>')
+@namespace.route('/<int:label_leaf_id>/export')
 @api.doc(security='apikey')
 class ExportLabelTree(Resource):
     @jwt_required 
