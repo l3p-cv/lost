@@ -1,34 +1,32 @@
-import RunningPipelineComponent from './containers/pipeline/running/RunningPipeline'
-import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
-import LabelsComponent from './containers/Labels/LabelDashboard'
+import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
-import SiaComponent from './containers/Annotation/SingleImageAnnotation'
-import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
+import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
+import SiaComponent from './containers/Annotation/SingleImageAnnotation'
+import DataSourcesComponent from './containers/DataSources/DataSources'
 import DatasetsComponent from './containers/Datasets/Datasets'
 import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
-import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
-import DataSourcesComponent from './containers/DataSources/DataSources'
+import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
-
-import PipelinesComponent from './containers/Pipelines/Pipelines'
+import RunningPipelineComponent from './containers/pipeline/running/RunningPipeline'
+import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
 
 import AdminAreaComponent from './containers/AdminArea/AdminArea'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
 
 import {
-    FaTachometerAlt,
-    FaPlay,
-    FaTag,
-    FaPaintBrush,
-    FaDatabase,
-    FaTools,
-    FaTasks,
-    FaChartLine,
     FaBox,
+    FaChartLine,
+    FaDatabase,
+    FaPaintBrush,
+    FaPlay,
+    FaTachometerAlt,
+    FaTag,
+    FaTasks,
+    FaTools,
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
-import { PipelineDemo } from './containers/pipeline/pipeline-demo/PipelineDemo'
+import { PipelineDemoWrapper } from './containers/pipeline/pipeline-demo/PipelineDemoWrapper'
 
 const iconProps = {
     size: 20,
@@ -155,7 +153,7 @@ const MyProfile = {
 
 const PipelineDemoPage = {
     path: '/pipeline_demo',
-    component: PipelineDemo,
+    component: PipelineDemoWrapper,
 }
 
 const guiSetup = {
