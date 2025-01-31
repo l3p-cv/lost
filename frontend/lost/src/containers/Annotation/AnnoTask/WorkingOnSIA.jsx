@@ -1,14 +1,14 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Progress } from 'reactstrap'
-import { getColor } from './utils'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import { Alert, Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Modal from 'react-modal'
+import { connect } from 'react-redux'
+import { Alert, Button, Card, CardBody, CardHeader, Col, Progress, Row } from 'reactstrap'
 import actions from '../../../actions'
 import IconButton from '../../../components/IconButton'
+import { getColor } from './utils'
 
 const { refreshToken, siaLayoutUpdate } = actions
+
 const customStyles = {
     content: {
         top: '50%',
@@ -24,153 +24,128 @@ const customStyles = {
     },
 }
 
-class WorkingOnSIA extends Component {
-    constructor() {
-        super()
+const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
+    const [modalIsOpen, setModalIsOpen] = useState(true)
+    const [height, setHeight] = useState(undefined)
+    const myRef = useRef(null)
 
-        this.state = {
-            modalIsOpen: true,
-            height: undefined,
-        }
+    const openModal = useCallback(() => {
+        setModalIsOpen(true)
+    }, [])
 
-        this.openModal = this.openModal.bind(this)
-        this.afterOpenModal = this.afterOpenModal.bind(this)
-        this.closeModal = this.closeModal.bind(this)
-        this.myref = React.createRef()
-    }
+    const closeModal = useCallback(() => {
+        setModalIsOpen(false)
+    }, [])
 
-    componentDidUpdate() {
-        if (this.myref) {
-            if (this.myref.current) {
-                const checkHeight = this.myref.current.getBoundingClientRect().height
-                if (checkHeight !== this.state.height) {
-                    this.props.siaLayoutUpdate()
-                    this.setState({ height: checkHeight })
-                }
+    useEffect(() => {
+        if (myRef.current) {
+            const checkHeight = myRef.current.getBoundingClientRect().height
+            if (checkHeight !== height) {
+                siaLayoutUpdate()
+                setHeight(checkHeight)
             }
         }
-    }
-    openModal() {
-        this.setState({ modalIsOpen: true })
+    }, [height, siaLayoutUpdate])
+
+    if (!annoTask) {
+        return <div>Loading...</div>
     }
 
-    afterOpenModal() {
-        // references are now sync'd and can be accessed.
-        //this.subtitle.style.color = '#f00';
-    }
+    const progress = Math.floor((annoTask.finished / annoTask.size) * 100)
 
-    closeModal() {
-        this.setState({ modalIsOpen: false })
-    }
-
-    render() {
-        if (this.props.annoTask !== null) {
-            let progress = Math.floor(
-                (this.props.annoTask.finished / this.props.annoTask.size) * 100,
-            )
-            return (
-                <div ref={this.myref}>
-                    <Row>
-                        <Col xs="2" md="2" xl="2">
-                            <div className="callout callout-danger">
-                                <small className="text-muted">Working on</small>
-                                <br />
-                                <strong>{this.props.annoTask.name}</strong>
-                            </div>
-                        </Col>
-                        <Col xs="2" md="2" xl="2">
-                            <div className="callout callout-info">
-                                <small className="text-muted">Pipeline</small>
-                                <br />
-                                <strong>{this.props.annoTask.pipelineName}</strong>
-                            </div>
-                        </Col>
-                        <Col xs="2" md="2" xl="2">
-                            <div className="callout callout-warning">
-                                <small className="text-muted">Annotations</small>
-                                <br />
-                                <strong className="h4">
-                                    {this.props.annoTask.finished}/
-                                    {this.props.annoTask.size}
-                                </strong>
-                            </div>
-                        </Col>
-                        <Col xs="2" md="2" xl="2">
-                            <div className="callout callout-success">
-                                <small className="text-muted">Seconds/Annotation</small>
-                                <br />
-                                <strong className="h4">
-                                    &#8709; {this.props.annoTask.statistic.secondsPerAnno}
-                                </strong>
-                            </div>
-                        </Col>
-                        <Col xs="2" md="2" xl="2">
-                            <Button
-                                color="primary"
-                                style={{ marginTop: '25px' }}
-                                onClick={this.openModal}
-                            >
-                                <i className="fa fa-question-circle"></i> Show
-                                Instructions
-                            </Button>
-                        </Col>
-                    </Row>
-                    <div className="clearfix">
-                        <div className="float-left">
-                            <strong>{progress}%</strong>
-                        </div>
-                        <div className="float-right">
-                            <small className="text-muted">
-                                Started at:{' '}
-                                {new Date(this.props.annoTask.createdAt).toLocaleString()}
-                            </small>
-                        </div>
+    return (
+        <div ref={myRef}>
+            <Row>
+                <Col xs="2" md="2" xl="2">
+                    <div className="callout callout-danger">
+                        <small className="text-muted">Working on</small>
+                        <br />
+                        <strong>{annoTask.name}</strong>
                     </div>
-                    <Progress
-                        className="progress-xs"
-                        color={getColor(progress)}
-                        value={progress}
-                    />
-                    <br />
-                    <Modal
-                        isOpen={this.state.modalIsOpen}
-                        onAfterOpen={this.afterOpenModal}
-                        onRequestClose={this.closeModal}
-                        style={customStyles}
-                        ariaHideApp={false}
-                        contentLabel="Instructions"
+                </Col>
+                <Col xs="2" md="2" xl="2">
+                    <div className="callout callout-info">
+                        <small className="text-muted">Pipeline</small>
+                        <br />
+                        <strong>{annoTask.pipelineName}</strong>
+                    </div>
+                </Col>
+                <Col xs="2" md="2" xl="2">
+                    <div className="callout callout-warning">
+                        <small className="text-muted">Annotations</small>
+                        <br />
+                        <strong className="h4">
+                            {annoTask.finished}/{annoTask.size}
+                        </strong>
+                    </div>
+                </Col>
+                <Col xs="2" md="2" xl="2">
+                    <div className="callout callout-success">
+                        <small className="text-muted">Seconds/Annotation</small>
+                        <br />
+                        <strong className="h4">
+                            &#8709; {annoTask.statistic.secondsPerAnno}
+                        </strong>
+                    </div>
+                </Col>
+                <Col xs="2" md="2" xl="2">
+                    <Button
+                        color="primary"
+                        style={{ marginTop: '25px' }}
+                        onClick={openModal}
                     >
-                        <Card>
-                            <CardHeader>
-                                <i className="fa fa-question-circle"></i> Instructions
-                            </CardHeader>
-                            <CardBody>
-                                <Alert color="info">
-                                    <div
-                                        dangerouslySetInnerHTML={{
-                                            __html: this.props.annoTask.instructions,
-                                        }}
-                                    />
-                                </Alert>
-                                <IconButton
-                                    isOutline={false}
-                                    color="secondary"
-                                    icon={faTimes}
-                                    text="Close"
-                                    onClick={this.closeModal}
-                                ></IconButton>
-                            </CardBody>
-                        </Card>
-                    </Modal>
+                        <i className="fa fa-question-circle"></i> Show Instructions
+                    </Button>
+                </Col>
+            </Row>
+            <div className="clearfix">
+                <div className="float-left">
+                    <strong>{progress}%</strong>
                 </div>
-            )
-        } else
-            return (
-                <React.Fragment>
-                    <div>Loading...</div>
-                </React.Fragment>
-            )
-    }
+                <div className="float-right">
+                    <small className="text-muted">
+                        Started at: {new Date(annoTask.createdAt).toLocaleString()}
+                    </small>
+                </div>
+            </div>
+            <Progress
+                className="progress-xs"
+                color={getColor(progress)}
+                value={progress}
+            />
+            <br />
+            <Modal
+                isOpen={modalIsOpen}
+                onAfterOpen={() => {}}
+                onRequestClose={closeModal}
+                style={customStyles}
+                ariaHideApp={false}
+                contentLabel="Instructions"
+            >
+                <Card>
+                    <CardHeader>
+                        <i className="fa fa-question-circle"></i> Instructions
+                    </CardHeader>
+                    <CardBody>
+                        <Alert color="info">
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: annoTask.instructions,
+                                }}
+                            />
+                        </Alert>
+                        <IconButton
+                            isOutline={false}
+                            color="secondary"
+                            icon={faTimes}
+                            text="Close"
+                            onClick={closeModal}
+                        ></IconButton>
+                    </CardBody>
+                </Card>
+            </Modal>
+        </div>
+    )
 }
 
 export default connect(null, { refreshToken, siaLayoutUpdate })(WorkingOnSIA)

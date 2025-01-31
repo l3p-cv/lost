@@ -10,9 +10,6 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
 import DataSourcesComponent from './containers/DataSources/DataSources'
 import MyProfileComponent from './containers/Profile/Profile'
-
-import PipelinesComponent from './containers/Pipelines/Pipelines'
-
 import AdminAreaComponent from './containers/AdminArea/AdminArea'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
 
