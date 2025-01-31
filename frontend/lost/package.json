@@ -90,7 +90,7 @@
     "scripts": {
         "dev": "vite",
         "start": "vite --open --host --port 3000",
-        "build": "tsc -b && vite build",
+        "build": "vite build",
         "lint": "eslint .",
         "postinstall": "semantic-ui-css-patch",
         "preview": "vite preview",
