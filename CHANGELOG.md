@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Your stuff
 
+### Changed
+- Replaced `react-notifications` with `sweetalert2` everywhere for consistency
+ 
 ## [2.0.0] - unreleased
 ### Added
 - Install script for installations without docker
