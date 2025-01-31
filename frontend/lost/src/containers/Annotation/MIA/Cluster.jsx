@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import MIAImage from './NewMIAImage'
 import actions from '../../../actions'
+import MIAImage from './NewMIAImage'
 
-import './Cluster.scss'
 import { Alert, Button } from 'reactstrap'
+import './Cluster.scss'
 
 const { getMiaAnnos, getWorkingOnAnnoTask, getMiaLabel, finishMia } = actions
 
-// class Cluster extends Component {
 const Cluster = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -21,20 +20,6 @@ const Cluster = () => {
     useEffect(() => {
         getMiaAnnos(maxAmount)
     }, [])
-
-    // componentWillReceiveProps(props) {
-    //     if (props.workingOnAnnoTask) {
-    //         const { size, finished } = workingOnAnnoTask
-    //         if (size - finished > 0) {
-    //             if (props.images.length === 0) {
-    //                 dispatch(getMiaAnnos(this.props.maxAmount))
-    //                 dispatch(getMiaLabel())
-    //             }
-    //         }
-    //     } else {
-    //         dispatch(getWorkingOnAnnoTask())
-    //     }
-    // }
 
     useEffect(() => {
         if (workingOnAnnoTask) {
