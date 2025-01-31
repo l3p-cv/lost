@@ -1,8 +1,7 @@
 $height-padding: 3px;
 $width-padding: 7px;
 
-
-#mia-tags{
+#mia-tags {
     user-select: none;
     grid-area: labelarea;
     margin: 1em 0;
@@ -10,11 +9,11 @@ $width-padding: 7px;
 .mia-tag {
     cursor: default;
     display: inline-block;
-    border: 2px solid #FC6A6C;
+    border: 2px solid #fc6a6c;
     border-radius: 4px;
     margin-right: 6px;
     margin-left: 10px;
-    &:last-child{
+    &:last-child {
         margin-right: unset;
     }
     div {
@@ -42,20 +41,20 @@ $width-padding: 7px;
     box-sizing: border-box;
     width: 100%;
     border: 1px solid #cccccc;
-  }
-  
-  .item {
+}
+
+.item {
     padding: 2px 6px;
     cursor: default;
-  }
-  
-  .item-highlighted {
+}
+
+.item-highlighted {
     color: white;
     background-color: #4095bf;
-  }
-  
-  .item-header {
+}
+
+.item-header {
     background-color: #eeeeee;
     color: #454545;
     font-weight: bold;
-  }
+}

@@ -1,58 +1,52 @@
 // @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
 
-
 $borderWidth: 1px;
 $borderRadius: 8px;
 
-
-
-.graph-node{
+.graph-node {
     border: $borderWidth solid #092f3873;
-    border-radius: $borderRadius ;
+    border-radius: $borderRadius;
     cursor: pointer;
-    .graph-node-title{
+    .graph-node-title {
         color: white;
         font-size: large;
         text-align: center;
-        background-color: #10515f; 
+        background-color: #10515f;
         border-top-left-radius: $borderRadius - $borderWidth;
         border-top-right-radius: $borderRadius - $borderWidth;
         padding: 5px;
-        .graph-node-title-icon{
+        .graph-node-title-icon {
             padding-left: 5px;
             padding-right: 10px;
         }
-        .graph-node-title-text{
+        .graph-node-title-text {
             padding-right: 10px;
             font-family: 'Lato';
         }
     }
-    
-    .graph-node-body{
+
+    .graph-node-body {
         text-align: center;
         // font-family: 'Lato';
         font-weight: 300;
         background-color: snow;
         padding: 13px;
-        .graph-node-body-row{
+        .graph-node-body-row {
             text-align: center;
             padding-bottom: 10px;
             // .graph-node-body-left-text{
             //     font-weight: 8000;
             // }
         }
-
     }
-    
-    .graph-node-footer{
+
+    .graph-node-footer {
         color: white;
         font-size: small;
         text-align: center;
         border-bottom-left-radius: $borderRadius - $borderWidth;
         border-bottom-right-radius: $borderRadius - $borderWidth;
         padding: 5px;
-
-    
     }
 }
 
@@ -60,24 +54,24 @@ $borderRadius: 8px;
 // .progress{
 //     margin-bottom: 10px;
 // }
-.bg-primary{
-    background-color: #10515f !important
+.bg-primary {
+    background-color: #10515f !important;
 }
 
-.bg-blue{
-    background-color: #092F38 !important
+.bg-blue {
+    background-color: #092f38 !important;
 }
-.bg-green{
-    background-color: #2EB85C !important
+.bg-green {
+    background-color: #2eb85c !important;
 }
-.bg-orange{
-    background-color: #F9B115 !important
-}
-
-.bg-red{
-    background-color: #E55353 !important
+.bg-orange {
+    background-color: #f9b115 !important;
 }
 
-.arguments-lable{
-    color: #E55353 
+.bg-red {
+    background-color: #e55353 !important;
+}
+
+.arguments-lable {
+    color: #e55353;
 }
