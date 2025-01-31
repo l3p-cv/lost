@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
 import { CCol, CContainer, CRow } from '@coreui/react'
+import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
+import { useEffect, useState } from 'react'
+import { connect } from 'react-redux'
 import { Dropdown } from 'semantic-ui-react'
-import { NotificationContainer } from 'react-notifications'
-import HelpButton from '../../../../../../../../components/HelpButton'
 import * as datasetApi from '../../../../../../../../actions/dataset/dataset_api'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
-import DatasetEditModal from '../../../../../../../Datasets/DatasetEditModal'
+import HelpButton from '../../../../../../../../components/HelpButton'
 import IconButton from '../../../../../../../../components/IconButton'
-import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
+import DatasetEditModal from '../../../../../../../Datasets/DatasetEditModal'
 
 const { setStorageSettings } = actions
 
@@ -138,7 +137,6 @@ const SelectStorageSettings = ({ peN, setStorageSettings }) => {
                     </CRow>
                 </CCol>
             </CRow>
-            <NotificationContainer />
             <DatasetEditModal
                 isVisible={isCreateDatasetModalOpen}
                 setIsVisible={setIsCreateDatasetModalOpen}

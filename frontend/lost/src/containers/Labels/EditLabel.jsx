@@ -1,11 +1,10 @@
 import { faCheck, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import { NotificationContainer, NotificationManager } from 'react-notifications'
-import 'react-notifications/lib/notifications.css'
 import { connect } from 'react-redux'
 import { Alert, Input, InputGroup } from 'reactstrap'
 import actions from '../../actions'
 import IconButton from '../../components/IconButton'
+import { showError, showSuccess } from '../../components/Notification'
 
 const { updateLabel, deleteLabel, createLabel, cleanLabelMessages } = actions
 
@@ -41,19 +40,19 @@ const EditLabel = ({
 
     useEffect(() => {
         if (updateLabelMessage === 'success') {
-            NotificationManager.success(`Label ${editLabel.name} updated.`)
+            showSuccess(`Label ${editLabel.name} updated.`)
         } else if (updateLabelMessage) {
-            NotificationManager.error(updateLabelMessage)
+            showError(updateLabelMessage)
         }
         if (createLabelMessage === 'success') {
-            NotificationManager.success('Label created.')
+            showSuccess('Label created.')
         } else if (createLabelMessage) {
-            NotificationManager.error(createLabelMessage)
+            showError(createLabelMessage)
         }
         if (deleteLabelMessage === 'success') {
-            NotificationManager.success(`Label ${editLabel.name} deleted.`)
+            showSuccess(`Label ${editLabel.name} deleted.`)
         } else if (deleteLabelMessage) {
-            NotificationManager.error(deleteLabelMessage)
+            showError(deleteLabelMessage)
         }
         cleanLabelMessages()
     }, [
@@ -208,7 +207,6 @@ const EditLabel = ({
                     disabled={invalidCreateColor}
                 />
             </InputGroup>
-            <NotificationContainer />
         </>
     ) : (
         <Alert className="alert-info">

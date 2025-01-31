@@ -12,6 +12,7 @@ const TimerToast = Swal.mixin({
     timerProgressBar: true,
     position: 'top-end',
     showConfirmButton: false,
+    showCloseButton: true,
 })
 
 export const showLoading = () => {
@@ -20,10 +21,11 @@ export const showLoading = () => {
     })
 }
 
-export const showSuccess = (text) => {
+export const showSuccess = (text, timer = 3000) => {
     TimerToast.fire({
         icon: 'success',
         title: text,
+        timer: timer,
     })
 }
 
@@ -31,6 +33,20 @@ export const showError = (text, timer = 3000) => {
     TimerToast.fire({
         icon: 'error',
         timer: timer,
+        title: text,
+    })
+}
+
+export const showWarning = (text) => {
+    TimerToast.fire({
+        icon: 'warning',
+        title: text,
+    })
+}
+
+export const showInfo = (text) => {
+    TimerToast.fire({
+        icon: 'info',
         title: text,
     })
 }
