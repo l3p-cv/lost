@@ -6,7 +6,9 @@ export const getSiaAnnos =
     (imageId, type = 'next') =>
     async (dispatch) => {
         try {
-            const response = await axios.get(API_URL + '/sia/' + type + '/' + imageId)
+            const response = await axios.get(
+                API_URL + `/sia?direction=${type}&lastImgId=${imageId}`,
+            )
             dispatch({ type: TYPES.GET_SIA_ANNOS, payload: response.data })
             // console.log('REQUEST: getSiaAnnos: ', response)
         } catch (e) {
@@ -19,7 +21,7 @@ export const siaUpdateAnnos =
     async (dispatch) => {
         const sendData = { ...data, isAutoSave }
         try {
-            const response = await axios.post(API_URL + '/sia/update', sendData)
+            const response = await axios.put(API_URL + '/sia', sendData)
             // console.log('REQUEST: siaUpdateAnnos: wrongLoad ', response)
             return response
         } catch (e) {
@@ -31,7 +33,7 @@ export const siaUpdateAnnos =
 export const siaUpdateOneThing = (data) => async (dispatch) => {
     const sendData = { ...data }
     try {
-        const response = await axios.post(API_URL + '/sia/updateOneThing', sendData)
+        const response = await axios.patch(API_URL + '/sia', sendData)
         // console.log('REQUEST: siaUpdateAnnos: wrongLoad ', response)
         return response
     } catch (e) {
@@ -99,7 +101,7 @@ export const siaApplyFilter = (filter) => {
  */
 export const siaSendFinishToBackend = () => async (dispatch) => {
     try {
-        const response = await axios.get(API_URL + '/sia/finish')
+        const response = await axios.post(API_URL + '/sia/finish')
         return response
     } catch (e) {
         console.error(e)

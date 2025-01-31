@@ -56,7 +56,7 @@ class Label(Resource):
 @api.doc(security='apikey')
 class Update(Resource):
     @jwt_required 
-    def post(self):
+    def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)

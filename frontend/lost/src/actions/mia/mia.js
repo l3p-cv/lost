@@ -84,7 +84,7 @@ export const setMiaSelectedLabel = (label) => (dispatch) => {
 export const updateMia =
     (data, getMiaAnnos, getWorkingAnnoTask, maxAmount) => async (dispatch) => {
         try {
-            await axios.post(API_URL + '/mia/update', data)
+            await axios.patch(API_URL + '/mia', data)
             getMiaAnnos(maxAmount)
             getWorkingAnnoTask()
         } catch (e) {

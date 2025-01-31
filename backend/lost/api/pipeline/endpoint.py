@@ -19,6 +19,7 @@ import os
 from io import BytesIO
 import traceback
 from lost.logic.file_access import UserFileAccess
+from lost.logic import sia
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
 
@@ -452,6 +453,66 @@ class Logs(Resource):
             resp.headers["Content-Type"] = "text/csv"
             return resp
         
+
+
+@namespace.route('/element/<int:pipeline_element_id>/review')
+@api.doc(security='apikey')
+class Review(Resource):
+    @jwt_required 
+    #TODO: NEEDS TO BE TRANSFORMED TO GET METHOD
+    def post(self,pipeline_element_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            data = json.loads(request.data)
+            re = sia.review(dbm, data, user.idx, DATA_URL)
+            dbm.close_session()
+            return re
+    
+    @jwt_required 
+    def put(self, pipeline_element_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            data = json.loads(request.data)
+            re = sia.review_update(dbm, data, user.idx, pipeline_element_id)
+            dbm.close_session()
+            return re
+
+
+
+@namespace.route('/element/<int:pipeline_element_id>/review/options')
+@namespace.param('pe_id', 'The id of reviewed pipe element.')
+@api.doc(security='apikey')
+class ReviewOptions(Resource):
+    @jwt_required 
+    def get(self, pe_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            re = sia.reviewoptions(dbm, pe_id, user.idx)
+            dbm.close_session()
+            return re
+
+
+
+
+
 # TODO: UNUSED ENDPOINTS CHECK IF THEY ARE NEEDED IF NOT COMPLETELY REMOVE THEM
 # 
 # @namespace.route('/annoexport_parquet/<peid>')
