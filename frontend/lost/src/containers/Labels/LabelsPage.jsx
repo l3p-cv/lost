@@ -1,21 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react'
 import { ReactFlow } from '@xyflow/react'
+import { useEffect, useRef, useState } from 'react'
 
 import '@xyflow/react/dist/style.css'
 import EditLabel from './EditLabel'
 
 const LabelsPage = ({
     labelTree,
-    triggerRefetch,
-    onNoNodes = () => {},
     visLevel,
     showEdit = true,
     onNodeClick = (nodeId) => {},
-    highlightedNodeIds = [], // New prop for highlighted node IDs
+    highlightedNodeIds, // New prop for highlighted node IDs
 }) => {
     const [selectedLabel, setSelectedLabel] = useState(null)
     const [rerender, setRerender] = useState(false)
     const divRef = useRef(null)
+    const [highlightedNodeIdsState, setHighlightedNodeIdsState] =
+        useState(highlightedNodeIds)
     const getContrastColor = (hexColor) => {
         hexColor = hexColor.replace('#', '')
 
@@ -48,8 +48,10 @@ const LabelsPage = ({
             }
 
             // Determine if the node should be highlighted
-            const isHighlighted = highlightedNodeIds.includes(node.idx)
-
+            let isHighlighted = false
+            if (highlightedNodeIdsState) {
+                isHighlighted = highlightedNodeIdsState.includes(node.idx)
+            }
             // Calculate the position
             const nodeX = xOffset
             const nodeY = depth * verticalSpacing
@@ -104,12 +106,21 @@ const LabelsPage = ({
     }
 
     const selectLabel = (id) => {
-        if (id) setSelectedLabel(findNodeById(labelTree, id))
+        if (id) {
+            setSelectedLabel(findNodeById(labelTree, id))
+            if (showEdit) {
+                setHighlightedNodeIdsState([id])
+            }
+        }
     }
 
     useEffect(() => {
+        setHighlightedNodeIdsState(highlightedNodeIds)
+    }, [highlightedNodeIds])
+
+    useEffect(() => {
         setRerender((r) => !r)
-    }, [labelTree, highlightedNodeIds]) // Re-render when highlightedNodeIds change
+    }, [labelTree, highlightedNodeIdsState]) // Re-render when highlightedNodeIds change
 
     const renderEditLabel = () => {
         if (selectedLabel === null) selectLabel(labelTree.idx)

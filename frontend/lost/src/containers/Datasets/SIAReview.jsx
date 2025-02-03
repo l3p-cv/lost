@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 // import '../Annotation/SIA/lost-sia/src/SIA.scss'
 // import * as canvasActions from '../Annotation/SIA/lost-sia/src/types/canvasActions'
-import { NotificationManager, NotificationContainer } from 'react-notifications'
-import 'react-notifications/lib/notifications.css'
 import * as reviewApi from '../../actions/dataset/dataset_review_api'
 import SIAImageSearchModal from './SIAImageSearchModal'
 
-import { Sia, toolbarEvents as tbe, notificationType, canvasActions } from 'lost-sia'
+import { canvasActions, notificationType, Sia, toolbarEvents as tbe } from 'lost-sia'
+import {
+    showError,
+    showInfo,
+    showSuccess,
+    showWarning,
+} from '../../components/Notification'
 
 const CANVAS_CONFIG = {
     tools: {
@@ -154,36 +158,19 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
     }, [updateAnnotationResponse])
 
     const handleNotification = (notification) => {
-        const notifyTimeOut = 5000
         if (notification) {
             switch (notification.type) {
                 case notificationType.WARNING:
-                    NotificationManager.warning(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    showWarning(notification.message)
                     break
                 case notificationType.INFO:
-                    NotificationManager.info(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    showInfo(notification.message)
                     break
                 case notificationType.ERROR:
-                    NotificationManager.error(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    showError(notification.message)
                     break
                 case notificationType.SUCCESS:
-                    NotificationManager.success(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    showSuccess(notification.message)
                     break
                 default:
                     break
@@ -391,7 +378,6 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 onChooseImage={switchSIAImage}
             />
             {renderSia()}
-            <NotificationContainer />
         </div>
     )
 }

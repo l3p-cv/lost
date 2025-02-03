@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Your stuff
 
+### Changed
+- Replaced `react-notifications` with `sweetalert2` everywhere for consistency
+ 
 ## [2.0.0] - unreleased
 ### Added
 - Install script for installations without docker
@@ -117,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - request_lds_annos -> Also take care of img_is_junk info when requesting annos again
 - Fix build scripts for the production version so they work again
 - Fix CSS for Sia and size of Containers so the UI looks correct
+- Labels Page Edit function was not working because of rerender loop this is fixed now
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 

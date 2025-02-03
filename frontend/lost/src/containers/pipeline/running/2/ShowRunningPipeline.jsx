@@ -1,56 +1,37 @@
-import React, { Component } from 'react'
-
-import Modal from './modals'
+import { useEffect, useRef, useState } from 'react'
 import Graph from 'react-directed-graph'
-import DatasourceNode from './nodes/DatasourceNode'
-import ScriptNode from './nodes/ScriptNode'
-import AnnoTaskNode from './nodes/AnnoTaskNode'
-import DataExportNode from './nodes/DataExportNode'
 import { connect } from 'react-redux'
 import actions from '../../../../actions/pipeline/pipelineRunning'
-
-import TitleBox from './TitleBox'
+import Modal from './modals'
+import AnnoTaskNode from './nodes/AnnoTaskNode'
+import DataExportNode from './nodes/DataExportNode'
+import DatasourceNode from './nodes/DatasourceNode'
 import LoopNode from './nodes/LoopNode'
+import ScriptNode from './nodes/ScriptNode'
 import VisualOutputNode from './nodes/VisualOutputNode'
+import TitleBox from './TitleBox'
 import ToolBar from './Toolbar'
 
 const { toggleModal, getPipeline } = actions
 
-class ShowRunningPipeline extends Component {
-    constructor() {
-        super()
-        this.graphMountPoint = React.createRef()
-        this.nodesOnClick = this.nodesOnClick.bind(this)
-        this.state = {
-            pollingEnabled: false,
+const ShowRunningPipeline = ({ data, step, toggleModal, getPipeline }) => {
+    const graphMountPoint = useRef(null)
+    const [pollingEnabled, setPollingEnabled] = useState(false)
+
+    useEffect(() => {
+        if (data && !pollingEnabled) {
+            setPollingEnabled(true)
+            const timer = setInterval(() => getPipeline(data.id), 2000)
+            return () => clearInterval(timer)
         }
+    }, [data, pollingEnabled, getPipeline])
+
+    const nodesOnClick = (id) => {
+        toggleModal(id)
     }
 
-    componentDidUpdate() {
-        if (this.props.data && !this.state.pollingEnabled) {
-            this.setState({
-                pollingEnabled: true,
-            })
-            this.timer = setInterval(
-                () => this.props.getPipeline(this.props.data.id),
-                2000,
-            )
-        }
-    }
-
-    componentWillUnmount() {
-        this.setState({
-            pollingEnabled: false,
-        })
-        clearInterval(this.timer)
-    }
-
-    nodesOnClick(id) {
-        this.props.toggleModal(id)
-    }
-
-    renderNodes() {
-        return this.props.data.elements.map((el) => {
+    const renderNodes = () => {
+        return data.elements.map((el) => {
             if ('datasource' in el) {
                 return <DatasourceNode key={el.id} {...el} />
             } else if ('script' in el) {
@@ -68,52 +49,46 @@ class ShowRunningPipeline extends Component {
         })
     }
 
-    renderGraph() {
-        if (this.props.data) {
+    const renderGraph = () => {
+        if (data) {
             return (
                 <div>
                     <Graph
                         enableZooming={true}
                         centerGraph={true}
-                        svgStyle={this.props.step.svgStyle}
-                        ref={this.graph}
-                        nodesOnClick={this.nodesOnClick}
-                        titleBox={<TitleBox {...this.props.data} />}
+                        svgStyle={step.svgStyle}
+                        ref={graphMountPoint}
+                        nodesOnClick={nodesOnClick}
+                        titleBox={<TitleBox {...data} />}
                     >
-                        {this.renderNodes()}
+                        {renderNodes()}
                     </Graph>
                 </div>
             )
         }
     }
 
-    renderModal() {
-        if (this.props.data) {
-            const modalData = this.props.data.elements.filter(
-                (el) => el.peN === this.props.step.modalClickedId,
-            )[0]
+    const renderModal = () => {
+        if (data) {
+            const modalData = data.elements.find((el) => el.peN === step.modalClickedId)
             if (modalData) {
                 return <Modal data={modalData} />
             }
         }
     }
 
-    render() {
-        return (
-            <div className="pipeline-running-2" ref={this.graphMountPoint}>
-                <ToolBar data={this.props.data} />
-                {this.renderGraph()}
-                {this.renderModal()}
-            </div>
-        )
-    }
+    return (
+        <div className="pipeline-running-2" ref={graphMountPoint}>
+            <ToolBar data={data} />
+            {renderGraph()}
+            {renderModal()}
+        </div>
+    )
 }
 
-const mapStateToProps = (state) => {
-    return {
-        step: state.pipelineRunning.steps[1],
-        data: state.pipelineRunning.step1Data,
-    }
-}
+const mapStateToProps = (state) => ({
+    step: state.pipelineRunning.steps[1],
+    data: state.pipelineRunning.step1Data,
+})
 
 export default connect(mapStateToProps, { toggleModal, getPipeline })(ShowRunningPipeline)

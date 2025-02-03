@@ -1,6 +1,7 @@
 {
     "name": "lost",
     "version": "0.1.0",
+    "type": "module",
     "private": true,
     "homepage": "/",
     "dependencies": {
@@ -22,7 +23,6 @@
         "@semantic-ui-react/css-patch": "^1.1.3",
         "@tanstack/react-table": "^8.10.3",
         "@xyflow/react": "^12.4.2",
-        "ajv": "8",
         "axios": "^1.5.0",
         "chonky": "^2.3.2",
         "chonky-icon-fontawesome": "^2.3.2",
@@ -48,11 +48,9 @@
         "react-i18next": "^13.2.1",
         "react-icons": "^4.10.1",
         "react-modal": "^3.16.1",
-        "react-notifications": "^1.7.4",
         "react-query": "^3.39.3",
         "react-redux": "^8.1.2",
         "react-router-dom": "^6.15.0",
-        "react-scripts": "5.0.1",
         "react-stepper-wizard": "^1.2.1",
         "react-table": "^6.11.5",
         "react-use": "^17.4.0",
@@ -84,13 +82,16 @@
         "globals": "^15.14.0",
         "prettier": "^3.4.2",
         "sass": "^1.81.0",
+        "typescript": "^5.7.3",
+        "typescript-eslint": "^8.22.0",
         "vite": "^5.4.11",
         "vite-plugin-commonjs": "^0.10.4"
     },
     "scripts": {
         "dev": "vite",
         "start": "vite --open --host --port 3000",
-        "build": "vite build",
+        "build": "tsc -b && vite build",
+        "lint": "eslint .",
         "postinstall": "semantic-ui-css-patch",
         "preview": "vite preview",
         "format": "prettier --write src/"

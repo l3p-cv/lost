@@ -1,14 +1,12 @@
 import axios from 'axios'
-import { API_URL } from '../../../lost_settings'
-import React, { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-import actions from '../../../actions'
 import { useNavigate } from 'react-router-dom'
-import { NotificationManager, NotificationContainer } from 'react-notifications'
+import actions from '../../../actions'
 import * as Notification from '../../../components/Notification'
-import 'react-notifications/lib/notifications.css'
+import { API_URL } from '../../../lost_settings'
 
-import { Sia, toolbarEvents as tbe, notificationType, canvasActions } from 'lost-sia'
+import { canvasActions, notificationType, Sia, toolbarEvents as tbe } from 'lost-sia'
 
 const {
     siaLayoutUpdate,
@@ -152,36 +150,19 @@ const SIAReview = (props) => {
     }
 
     const handleNotification = (notification) => {
-        const notifyTimeOut = 5000
         if (notification) {
             switch (notification.type) {
                 case notificationType.WARNING:
-                    NotificationManager.warning(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    Notification.showWarning(notification.message)
                     break
                 case notificationType.INFO:
-                    NotificationManager.info(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    Notification.showInfo(notification.message)
                     break
                 case notificationType.ERROR:
-                    NotificationManager.error(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    Notification.showError(notification.message)
                     break
                 case notificationType.SUCCESS:
-                    NotificationManager.success(
-                        notification.message,
-                        notification.title,
-                        notifyTimeOut,
-                    )
+                    Notification.showSuccess(notification.message)
                     break
                 default:
                     break
@@ -418,12 +399,7 @@ const SIAReview = (props) => {
         )
     }
 
-    return (
-        <div>
-            {renderSia()}
-            <NotificationContainer />
-        </div>
-    )
+    return <div>{renderSia()}</div>
 }
 
 function mapStateToProps(state) {
