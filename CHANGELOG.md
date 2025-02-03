@@ -94,6 +94,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Label Trees are now rendered using React Flow
 - vite is now used instead of react-scripts for building
 - Apply code reformatting using .prettierrc on all files
+- Change lots of api endpoints so they are more RESTful mainly:
+  - Annotasks,Mia,Sia
+  - Moved some endpoints from sia to pipeline
+  - Added Doc Strings to all apis
+  - Used correct html Methods for the varios api calls
+  - datasets and file access was not changed at all
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on
