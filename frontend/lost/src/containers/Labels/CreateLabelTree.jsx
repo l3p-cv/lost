@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { CCol, CFormInput, CInputGroup, CRow } from '@coreui/react'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import actions from '../../actions'
 import IconButton from '../../components/IconButton'
-import { NotificationManager, NotificationContainer } from 'react-notifications'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { useDispatch, useSelector } from 'react-redux'
+import { showError, showSuccess } from '../../components/Notification'
 import SelectFileButton from '../../components/SelectFileButton'
-import { CCol, CFormInput, CInputGroup, CRow } from '@coreui/react'
 
 // Source: https://stackoverflow.com/a/1293163/9310154
 function csvToArray(strData, strDelimiter = ',') {
@@ -14,7 +14,7 @@ function csvToArray(strData, strDelimiter = ',') {
     strDelimiter = strDelimiter || ','
 
     // Create a regular expression to parse the CSV values.
-    var objPattern = new RegExp(
+    const objPattern = new RegExp(
         // Delimiters.
         '(\\' +
             strDelimiter +
@@ -30,17 +30,17 @@ function csvToArray(strData, strDelimiter = ',') {
 
     // Create an array to hold our data. Give the array
     // a default empty first row.
-    var arrData = [[]]
+    const arrData = [[]]
 
     // Create an array to hold our individual pattern
     // matching groups.
-    var arrMatches = null
+    let arrMatches = null
 
     // Keep looping over the regular expression matches
     // until we can no longer find a match.
     while ((arrMatches = objPattern.exec(strData))) {
         // Get the delimiter that was found.
-        var strMatchedDelimiter = arrMatches[1]
+        const strMatchedDelimiter = arrMatches[1]
 
         // Check to see if the given delimiter has a length
         // (is not the start of string) and if it matches
@@ -127,9 +127,9 @@ const CreateLabelTree = ({ visLevel }) => {
     useEffect(() => {
         if (enableNotify.current) {
             if (createMessage === 'success') {
-                NotificationManager.success(`LabelTree created.`)
+                showSuccess(`LabelTree created.`)
             } else if (createMessage !== '') {
-                NotificationManager.error(createMessage)
+                showError(createMessage)
             }
             dispatch(actions.cleanLabelMessages())
         }
@@ -237,7 +237,6 @@ const CreateLabelTree = ({ visLevel }) => {
                     />
                 </CCol>
             </CRow>
-            <NotificationContainer />
         </>
     )
 }
