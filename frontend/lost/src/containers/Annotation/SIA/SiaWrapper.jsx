@@ -1,22 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import actions from '../../../actions'
 
-import { NotificationManager, NotificationContainer } from 'react-notifications'
 // import { withRouter } from 'react-router-dom'
 import withRouter from '../../../utils/withRouter'
-import 'react-notifications/lib/notifications.css'
 
-import { useNavigate } from 'react-router-dom'
 import {
-    transform,
     Sia,
-    annoConversion,
     canvasActions as annoActions,
-    toolbarEvents as tbe,
+    annoConversion,
     filterTools,
     notificationType,
+    toolbarEvents as tbe,
+    transform,
 } from 'lost-sia'
+import { useNavigate } from 'react-router-dom'
+import {
+    showError,
+    showInfo,
+    showSuccess,
+    showWarning,
+} from '../../../components/Notification'
 
 // import * as filterTools from './lost-sia/src/filterTools'
 // import * as notificationType from './lost-sia/src/types/notificationType'
@@ -234,35 +238,18 @@ const SiaWrapper = (props) => {
     }
 
     const handleNotification = (messageObj) => {
-        const notifyTimeOut = 5000
         switch (messageObj.type) {
             case notificationType.WARNING:
-                NotificationManager.warning(
-                    messageObj.message,
-                    messageObj.title,
-                    notifyTimeOut,
-                )
+                showWarning(messageObj.message)
                 break
             case notificationType.INFO:
-                NotificationManager.info(
-                    messageObj.message,
-                    messageObj.title,
-                    notifyTimeOut,
-                )
+                showInfo(messageObj.message)
                 break
             case notificationType.ERROR:
-                NotificationManager.error(
-                    messageObj.message,
-                    messageObj.title,
-                    notifyTimeOut,
-                )
+                showError(messageObj.message)
                 break
             case notificationType.SUCCESS:
-                NotificationManager.success(
-                    messageObj.message,
-                    messageObj.title,
-                    notifyTimeOut,
-                )
+                showSuccess(messageObj.message)
                 break
             default:
                 break
@@ -507,7 +494,7 @@ const SiaWrapper = (props) => {
             x: 0,
             y: 0,
         })
-        let pivotPoint = { x: svg.width / 2.0, y: svg.height / 2.0 }
+        const pivotPoint = { x: svg.width / 2.0, y: svg.height / 2.0 }
         sAnnos = sAnnos.map((el) => {
             return {
                 ...el,
@@ -522,7 +509,7 @@ const SiaWrapper = (props) => {
         ]
         imageCorners = transform.rotateAnnotation(imageCorners, pivotPoint, angle)
 
-        let transPoint = transform.getMostLeftPoint(
+        const transPoint = transform.getMostLeftPoint(
             transform.getTopPoint(imageCorners),
         )[0]
         sAnnos = sAnnos.map((el) => {
@@ -538,7 +525,7 @@ const SiaWrapper = (props) => {
             width: maxCorner.x - minCorner.x,
             height: maxCorner.y - minCorner.y,
         }
-        let bAnnosNew = {
+        const bAnnosNew = {
             ...bAnnos,
             annotations: annoConversion.canvasToBackendAnnos(sAnnos, newSize),
         }
@@ -669,7 +656,6 @@ const SiaWrapper = (props) => {
                     help: true,
                 }}
             />
-            <NotificationContainer />
         </div>
     )
 }

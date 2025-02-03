@@ -27,6 +27,7 @@
       "noImplicitAny": false
   
     },
-    "include": ["src"]
+    "include": ["src"],
+    "exclude": ["src/**/*.js", "src/**/*.jsx"]
   }
   
