@@ -14,6 +14,7 @@ import json
 import base64
 import cv2
 from lost.logic.file_man import FileMan
+from lost.api.label.api_definition import label_trees
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -23,6 +24,7 @@ namespace = api.namespace('sia', description='SIA Annotation API.')
 @api.param('lastImgId', 'ID of the last image')
 
 class First(Resource):
+    @api.doc(security='apikey',description='Get SIA information')
     @api.marshal_with(sia_anno)
     @jwt_required 
     def get(self):
@@ -52,6 +54,7 @@ class First(Resource):
             dbm.close_session()            
             return 'error', 400
         
+    @api.doc(security='apikey',description='Update whole SIA Annotation')
     @jwt_required 
     def put(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -75,7 +78,7 @@ class First(Resource):
                 flask.current_app.logger.error('{}'.format(msg))
                 dbm.close_session()
                 return 'error updating sia anno', 500
-            
+    @api.doc(security='apikey',description='Update partial SIA Annotation')            
     @jwt_required 
     def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -100,13 +103,15 @@ class First(Resource):
                 raise
             return re
 
-
-@namespace.route('/filter')
+@namespace.route('/image/<int:image_id>')
 @api.doc(security='apikey')
 class Filter(Resource):
-    # @api.expect(sia_update)
+    @api.doc(security='apikey',description='Get SIA Image with applied filter for clahew or rotation')            
+
+    @api.param('angle', 'Angle to rotate leave clear for no rotation, valid angles are 0,90,180,-90')
+    @api.param('clipLimit', 'Clip limit for clahe filter leave clear for no clahe')
     @jwt_required 
-    def post(self):
+    def get(self,image_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -115,52 +120,53 @@ class Filter(Resource):
             return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
 
         else:
-            data = json.loads(request.data)
-            img = dbm.get_image_anno(data['imageId'])
+
+            angle = request.args.get('angle')
+            clipLimit = request.args.get('clipLimit')
+
+            if angle is not None:
+                angle = int(angle)
+
+            if clipLimit is not None:
+                clipLimit = int(clipLimit)
+
+
+            img = dbm.get_image_anno(image_id)
             flask.current_app.logger.info('img.img_path: {}'.format(img.img_path))
             flask.current_app.logger.info('img.fs.name: {}'.format(img.fs.name))
             # fs_db = dbm.get_fs(img.fs_id)
             fs = FileMan(fs_db=img.fs)
             #img = PIL.Image.open('/home/lost/data/media/10_voc2012/2007_008547.jpg')
             # img = PIL.Image.open(img_path)
-            if data['clahe']['active'] :
+            if clipLimit is not None :
                 img = fs.load_img(img.img_path, color_type='gray')
             else:
                 img = fs.load_img(img.img_path, color_type='color')
                 
-            flask.current_app.logger.info('Triggered filter. Received data: {}'.format(data))
 
-            # img_io = BytesIO()
-            # img.save(img_io, 'PNG')
-            # img_io.seek(0)
-            # return send_file(img_io, mimetype='image/png')
-            if data['rotate']['active']:
-                if data['rotate']['angle'] == 90:
+
+            if angle is not None:
+                if angle == 90:
                     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-                elif data['rotate']['angle'] == -90:
+                elif angle == -90:
                     img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                elif data['rotate']['angle'] == 180:
+                elif angle == 180:
                     img = cv2.rotate(img, cv2.ROTATE_180)
-            if data['clahe']['active']:
-                clahe = cv2.createCLAHE(data['clahe']['clipLimit'])
+            if clipLimit is not None:
+                clahe = cv2.createCLAHE(clipLimit)
                 img = clahe.apply(img)
-                # img = img.rotate(data['rotate']['angle'], expand=True)
-            # img = ImageOps.autocontrast(img)
 
-            # data = BytesIO()
-            # img.save(data, "PNG")
             _, data = cv2.imencode('.jpg', img)
             data64 = base64.b64encode(data.tobytes())
             dbm.close_session()
             return u'data:img/jpg;base64,'+data64.decode('utf-8')
-            # re = sia.update(dbm, data, user.idx)
-            # dbm.close_session()
-            # return 'success'
+ 
 
 
 @namespace.route('/allowedExampler')
 @api.doc(security='apikey')
 class AllowedExampler(Resource):
+    @api.doc(security='apikey',description='Provides the info if the currently logged in user is allowed to mark images as exsamples')            
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -178,6 +184,7 @@ class AllowedExampler(Resource):
 @api.doc(security='apikey')
 class NextAnnoId(Resource):
     # @api.expect(sia_update)
+    @api.doc(security='apikey',description='Get the ID of the next annotation')            
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -197,6 +204,7 @@ class NextAnnoId(Resource):
 @api.doc(security='apikey')
 class Finish(Resource):
     @jwt_required 
+    @api.doc(security='apikey',description='Finish the current sia task')            
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -214,7 +222,8 @@ class Finish(Resource):
 @namespace.route('/label')
 @api.doc(security='apikey')
 class Label(Resource):
-    #@api.marshal_with(label_trees)
+    @api.marshal_with(label_trees)
+    @api.doc(security='apikey',description='Get label trees for the sia task')            
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -226,11 +235,12 @@ class Label(Resource):
         else:
             re = sia.get_label_trees(dbm, identity)
             dbm.close_session()
-            return re
+            return {'labelTrees':re['labels']}
 
 @namespace.route('/configuration')
 @api.doc(security='apikey')
 class Configuration(Resource):
+    @api.doc(security='apikey',description='Get conmfig for the current SIA Task')            
     @api.marshal_with(sia_config)
     @jwt_required 
     def get(self):

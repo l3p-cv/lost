@@ -27,6 +27,7 @@ class WorkerList(Resource):
             return wlist 
 
 @namespace.route('/workerlogs/<int:worker_id>')
+@api.doc(description='Workerlogs get method NOT IMPLEMENTED.')
 @api.doc(security='apikey')
 class Logs(Resource): 
     @jwt_required 

@@ -94,7 +94,7 @@ def load_img(db_img, ufa, user):
 @namespace.route('/image/<int:image_id>')
 @api.doc(security='apikey')
 class GetImage(Resource):
-    @api.doc(security='apikey',description="Get the ")
+    @api.doc(security='apikey',description="Get the image with the given ID as BLOB")
     @api.param('image_id', 'ID of the Image to get')
     @api.param('type', 'Size of the Pages for pagination')
     @api.param('drawAnno', 'Which page to return when using pagination')
@@ -179,9 +179,11 @@ class GetImage(Resource):
 @namespace.route('/storeKeys')
 @api.doc(security='apikey')
 @api.response(200, 'success', api.model('DatastoreKeys', {
-    "1": fields.String(description="Name of datastore", example="Default Datastore")
+    "1": fields.String(description="Name of the datastore", example="Default Datastore")
 }))
 class GetDatastoresByKey(Resource):
+    @api.doc(security='apikey',description='Get the Datastores with their names')
+
     @jwt_required
     def get(self):
         return {    

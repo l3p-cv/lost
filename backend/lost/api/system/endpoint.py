@@ -12,12 +12,14 @@ import logging
 from pygelf import GelfUdpHandler
 import json
 import flask
-
+from lost.api.system.api_definiton import config
 namespace = api.namespace('system', description='System information and control.')
 
 @namespace.route('/version')
 @api.doc(security='apikey')
 class Version(Resource):
+    @api.doc(description='Version of LOST')         
+
     def get(self):
         try:
             return lost.__version__
@@ -27,6 +29,9 @@ class Version(Resource):
 @namespace.route('/settings')
 @api.doc(security='apikey')
 class Version(Resource):
+    @api.doc(description='LOST settings')         
+    @api.marshal_with(config)   
+
     def get(self):
         return {
             'autoLogoutTime': LOST_CONFIG.session_timeout*60,
@@ -36,6 +41,7 @@ class Version(Resource):
 @namespace.route('/jupyter')
 @api.doc(security='apikey')
 class JupyterLabUrl(Resource):
+    @api.doc(security='apikey',description='Get jupyter lab url if jupyter lab is activated')         
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -55,7 +61,7 @@ if LOST_CONFIG.use_graylog:
     handler = GelfUdpHandler(host='graylog', port=12201, include_extra_fields=True)
     logger.addHandler(handler)
 @namespace.route('/logs/frontend')
-@api.doc(security='apikey')
+@api.doc(security='apikey',description='Get add frontend errors to logging')
 class FrontendLogs(Resource):
     def post(self):
         data = json.loads(request.data)

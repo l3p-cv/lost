@@ -81,7 +81,13 @@ export const getSiaImage = (imgId) => async (dispatch) => {
 
 export const siaFilterImage = (data) => async (dispatch) => {
     try {
-        const response = await axios.post(API_URL + '/sia/filter', data)
+        const angle = data['rotate']['active'] ? `angle=${data['rotate']['angle']}&` : ''
+        const clahe = data['clahe']['active']
+            ? `clipLimit=${data['clahe']['clipLimit']}`
+            : ''
+        const response = await axios.get(
+            API_URL + '/sia/image/' + data['imageId'] + '?' + angle + clahe,
+        )
         // console.log('REQUEST: sia/filter response: ', response)
         return response
     } catch (e) {
@@ -111,7 +117,7 @@ export const siaSendFinishToBackend = () => async (dispatch) => {
 export const getSiaLabels = () => async (dispatch) => {
     try {
         const response = await axios.get(API_URL + '/sia/label')
-        dispatch({ type: TYPES.GET_SIA_LABELS, payload: response.data.labels })
+        dispatch({ type: TYPES.GET_SIA_LABELS, payload: response.data.labelTrees })
     } catch (e) {
         console.log(e)
     }

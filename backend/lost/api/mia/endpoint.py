@@ -21,6 +21,7 @@ namespace = api.namespace('mia', description='MIA Annotation API.')
 @namespace.route('/next/<int:max_amount>')
 @api.doc(security='apikey')
 class Next(Resource):
+    @api.doc(security='apikey',description='Get next MIA anno')
     #@api.marshal_with(mia_anno)
     @jwt_required 
     def get(self, max_amount):
@@ -38,6 +39,7 @@ class Next(Resource):
 @namespace.route('/label')
 @api.doc(security='apikey')
 class Label(Resource):
+    @api.doc(security='apikey',description='Get possible MIA Labels')
     #@api.marshal_with(label_trees)
     @jwt_required 
     def get(self):
@@ -55,6 +57,7 @@ class Label(Resource):
 @namespace.route('/update')
 @api.doc(security='apikey')
 class Update(Resource):
+    @api.doc(security='apikey',description='Update MIA Task')
     @jwt_required 
     def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -73,6 +76,7 @@ class Update(Resource):
 @namespace.route('/finish')
 @api.doc(security='apikey')
 class Finish(Resource):
+    @api.doc(security='apikey',description='Finish MIA Task')
     @jwt_required 
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -90,6 +94,7 @@ class Finish(Resource):
 @namespace.route('/special')
 @api.doc(security='apikey')
 class Special(Resource):
+    @api.doc(security='apikey',description='Get special MIA Images')
     @jwt_required 
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)

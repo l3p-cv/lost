@@ -28,6 +28,7 @@ namespace = api.namespace('pipeline', description='Pipeline API.')
 @namespace.route('/template/<string:visibility>')
 @api.doc(security='apikey')
 class TemplateList(Resource):
+    @api.doc(security='apikey',description='Get list of pipeline Templates for given visibility')
     @api.marshal_with(templates)
     @jwt_required
     def get(self, visibility):
@@ -64,6 +65,7 @@ class TemplateList(Resource):
 @namespace.param('template_id', 'The id of the template.')
 @api.doc(security='apikey')
 class Template(Resource):
+    @api.doc(security='apikey',description='Get pipeline template for given template ID')
     @api.marshal_with(template, skip_none=True)
     @jwt_required
     def get(self, template_id):
@@ -85,6 +87,7 @@ class Template(Resource):
 class PipelineList(Resource):
     # marshal caused problems json string was fine, api returned { pipelines: null }.
     # @api.marshal_with(pipelines) 
+    @api.doc(security='apikey',description='Get all pipelines')
     @jwt_required
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -110,6 +113,7 @@ class PipelineList(Resource):
 @api.doc(security='apikey')
 class Pipeline(Resource):
     # @api.marshal_with(pipeline)
+    @api.doc(security='apikey',description='Get pipeline with given ID')
     @jwt_required
     def get(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -122,6 +126,7 @@ class Pipeline(Resource):
             re = pipeline_service.get_running_pipe(dbm, identity, pipeline_id, DATA_URL)
             dbm.close_session()
             return re
+    @api.doc(security='apikey',description='Delete Pipeline with given ID')
     @jwt_required
     def delete(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -458,7 +463,11 @@ class Logs(Resource):
 @namespace.route('/element/<int:pipeline_element_id>/review')
 @api.doc(security='apikey')
 class Review(Resource):
-    @jwt_required 
+    @jwt_required
+    @api.doc(security='apikey')
+    @api.param('direction', 'One of "next","prev" or "first"')
+    @api.param('lastImgId', 'ID of the last image')
+
     #TODO: NEEDS TO BE TRANSFORMED TO GET METHOD
     def post(self,pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -492,11 +501,11 @@ class Review(Resource):
 
 
 @namespace.route('/element/<int:pipeline_element_id>/review/options')
-@namespace.param('pe_id', 'The id of reviewed pipe element.')
+@namespace.param('pipeline_element_id', 'The id of reviewed pipe element.')
 @api.doc(security='apikey')
 class ReviewOptions(Resource):
     @jwt_required 
-    def get(self, pe_id):
+    def get(self, pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -505,7 +514,7 @@ class ReviewOptions(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
 
         else:
-            re = sia.reviewoptions(dbm, pe_id, user.idx)
+            re = sia.reviewoptions(dbm, pipeline_element_id, user.idx)
             dbm.close_session()
             return re
 

@@ -72,7 +72,7 @@ class Available(Resource):
                     'pages':total_pages}
 
     @api.expect(annotask_parser)
-    @api.doc(description='Select an annotation task.')
+    @api.doc(description='Select an annotation task for the authenticated user.')
     @api.response(200, 'Task selected successfully.')
     @jwt_required 
     def post(self):
@@ -504,6 +504,8 @@ class DatasetReviewImageSearch(Resource):
 @api.expect(patch_annotation_parser)
 @api.doc(security='apikey')
 class UpdateOneThing(Resource):
+    @api.doc(security='apikey',description='Update Image Annotime Junk status or Image Label for the Annotask')
+
     @jwt_required 
     def patch(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -534,6 +536,8 @@ class UpdateOneThing(Resource):
 @api.doc(security='apikey')
 
 class ReviewOptions(Resource):
+    @api.doc(security='apikey',description='Get the Review Options for the Annotask')
+
     @api.marshal_with(review_options)
     @jwt_required 
     def get(self, annotask_id):
