@@ -14,8 +14,9 @@ RUN wget --quiet https://github.com/conda-forge/miniforge/releases/download/24.1
     rm ~/miniforge.sh && \
     /opt/miniforge/bin/conda clean -tip && \
     ln -s /opt/miniforge/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/miniforge/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate lost" >> ~/.bashrc
+    echo ". /opt/miniforge/etc/profile.d/conda.sh" >> ~/.bashrc
+RUN /opt/miniforge/bin/mamba init
+RUN echo "mamba activate lost" >> ~/.bashrc
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs && rm -rf /var/lib/apt/lists/*
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
@@ -25,6 +26,6 @@ COPY --from=oven/bun:debian /usr/local/bin/bun /usr/local/bin/bun
 ADD /docker/lost-base/environment.yml .
 
 RUN /bin/bash -c "source /opt/miniforge/bin/activate && mamba env create -f environment.yml && mamba clean -ay"
-RUN /bin/bash -c "source /opt/miniforge/bin/activate lost && pip install --no-cache-dir lost_ds shapely scikit-learn tqdm" 
+# RUN /bin/bash -c "source /opt/miniforge/bin/activate lost && pip install --no-cache-dir lost_ds shapely scikit-learn tqdm" 
 # Change to CLI
 WORKDIR /code/src/backend/lost/cli
