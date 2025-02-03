@@ -110,6 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - close dask client in webservice endpoints to prevent memory leaks
 - request_lds_annos -> Also take care of img_is_junk info when requesting annos again
 - Fix build scripts for the production version so they work again
+- Fix CSS for Sia and size of Containers so the UI looks correct
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 
