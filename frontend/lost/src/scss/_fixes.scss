@@ -14,3 +14,40 @@ button {
         margin-top: 0 !important;
     }
 }
+h1,h2,h3,h4,h5{
+    font-family:Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+    line-height:1.28571429em;
+    margin:calc(2rem - .14285714em) 0 1rem;
+    font-weight:700;
+    padding:0}
+h1{min-height:1rem;font-size:2rem}
+h2{font-size:1.71428571rem}
+h3{font-size:1.28571429rem}
+h4{font-size:1.07142857rem}
+h5{font-size:1rem}
+
+body{
+    line-height: 1.4285em;
+    font-size: 14px;
+}
+
+// TODO: Add Style fixes for sia to sia package so it is always displayed correctly fully independent of used CSS / SCSS Packages
+div.sia-toolbar{
+    line-height: 1.5;
+    text-align: left;
+    background-color: white;
+    background-color: black;
+    padding-bottom: 0;
+    width: auto;
+    min-width: 55px;
+}
+
+div.sia-toolbar-icon{
+    height: 1em;
+    font-family: Icons;
+    font-style: normal;
+    font-weight: 400;
+    text-decoration: inherit;
+    text-align: center;
+    line-height: 1;
+}

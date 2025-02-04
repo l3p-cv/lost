@@ -1,34 +1,34 @@
 import subprocess
 import shutil
 from flask import request, make_response
-from flask_restx import Resource, Mask
+from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime
 from lost.api.api import api
 from lost.logic.file_man import AppFileMan
-from lost.api.pipeline.api_definition import templates, template, pipelines, pipeline
+from lost.api.pipeline.api_definition import templates, template
 from lost.api.pipeline import tasks
-from lost.api.label.api_definition import label_trees
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic.pipeline import service as pipeline_service
 from lost.logic.pipeline import template_import
 from lost.logic import template as template_service
 from lost.db.vis_level import VisLevel
-from lost.utils.dump import dump
 import json 
 import os
 from io import BytesIO
 import traceback
+from lost.logic.file_access import UserFileAccess
+from lost.logic import sia
 
 namespace = api.namespace('pipeline', description='Pipeline API.')
-import flask
 
 
 
 @namespace.route('/template/<string:visibility>')
 @api.doc(security='apikey')
 class TemplateList(Resource):
+    @api.doc(security='apikey',description='Get list of pipeline Templates for given visibility')
     @api.marshal_with(templates)
     @jwt_required
     def get(self, visibility):
@@ -65,6 +65,7 @@ class TemplateList(Resource):
 @namespace.param('template_id', 'The id of the template.')
 @api.doc(security='apikey')
 class Template(Resource):
+    @api.doc(security='apikey',description='Get pipeline template for given template ID')
     @api.marshal_with(template, skip_none=True)
     @jwt_required
     def get(self, template_id):
@@ -86,6 +87,7 @@ class Template(Resource):
 class PipelineList(Resource):
     # marshal caused problems json string was fine, api returned { pipelines: null }.
     # @api.marshal_with(pipelines) 
+    @api.doc(security='apikey',description='Get all pipelines')
     @jwt_required
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -111,6 +113,7 @@ class PipelineList(Resource):
 @api.doc(security='apikey')
 class Pipeline(Resource):
     # @api.marshal_with(pipeline)
+    @api.doc(security='apikey',description='Get pipeline with given ID')
     @jwt_required
     def get(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -123,6 +126,7 @@ class Pipeline(Resource):
             re = pipeline_service.get_running_pipe(dbm, identity, pipeline_id, DATA_URL)
             dbm.close_session()
             return re
+    @api.doc(security='apikey',description='Delete Pipeline with given ID')
     @jwt_required
     def delete(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -432,3 +436,157 @@ class ProjectList(Resource):
         re = filter_by_pipe_project(re)
         dbm.close_session()
         return re
+
+
+@namespace.route('/element/<int:pipeline_element_id>/logs')
+@namespace.param('pipeline_element_id', 'Pipeline Element ID to get Logs for')
+@api.doc(security='apikey')
+class Logs(Resource):
+    @jwt_required 
+    def get(self, pipeline_element_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.ANNOTATOR):
+            dbm.close_session()
+            return "You are not authorized.", 401
+        else:
+            user_fs = dbm.get_user_default_fs(user.idx)
+            ufa = UserFileAccess(dbm, user, user_fs)           
+            resp = make_response(ufa.get_pipe_log_file(pipeline_element_id))
+            resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
+            resp.headers["Content-Type"] = "text/csv"
+            return resp
+        
+
+
+@namespace.route('/element/<int:pipeline_element_id>/review')
+@api.doc(security='apikey')
+class Review(Resource):
+    @jwt_required
+    @api.doc(security='apikey')
+    @api.param('direction', 'One of "next","prev" or "first"')
+    @api.param('lastImgId', 'ID of the last image')
+
+    #TODO: NEEDS TO BE TRANSFORMED TO GET METHOD
+    def post(self,pipeline_element_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            data = json.loads(request.data)
+            re = sia.review(dbm, data, user.idx, DATA_URL)
+            dbm.close_session()
+            return re
+    
+    @jwt_required 
+    def put(self, pipeline_element_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            data = json.loads(request.data)
+            re = sia.review_update(dbm, data, user.idx, pipeline_element_id)
+            dbm.close_session()
+            return re
+
+
+
+@namespace.route('/element/<int:pipeline_element_id>/review/options')
+@namespace.param('pipeline_element_id', 'The id of reviewed pipe element.')
+@api.doc(security='apikey')
+class ReviewOptions(Resource):
+    @jwt_required 
+    def get(self, pipeline_element_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        else:
+            re = sia.reviewoptions(dbm, pipeline_element_id, user.idx)
+            dbm.close_session()
+            return re
+
+
+
+
+
+# TODO: UNUSED ENDPOINTS CHECK IF THEY ARE NEEDED IF NOT COMPLETELY REMOVE THEM
+# 
+# @namespace.route('/annoexport_parquet/<peid>')
+# @api.doc(security='apikey')
+# class AnnoExportParquet(Resource):
+#     @jwt_required 
+#     def get(self, peid):
+#          dbm = access.DBMan(LOST_CONFIG)
+#          identity = get_jwt_identity()
+#          user = dbm.get_user_by_id(identity)
+#          if not user.has_role(roles.DESIGNER):
+#              dbm.close_session()
+#              return "You are not authorized.", 401
+#          else:
+#              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+#              pe = pe_base.Element(pe_db, dbm)
+#              df = pe.inp.to_df()
+#              # raise Exception('GO ON HERE !!!')
+#              f = BytesIO()
+#              df.to_parquet(f)
+#              f.seek(0)
+#              resp = make_response(f.read())
+#              resp.headers["Content-Disposition"] = "attachment; filename=annos.parquet"
+#              resp.headers["Content-Type"] = "blob"
+#              return resp
+
+# @namespace.route('/annoexport_csv/<peid>')
+# @api.doc(security='apikey')
+# class AnnoExportCSV(Resource):
+#     @jwt_required 
+#     def get(self, peid):
+#          dbm = access.DBMan(LOST_CONFIG)
+#          identity = get_jwt_identity()
+#          user = dbm.get_user_by_id(identity)
+#          if not user.has_role(roles.DESIGNER):
+#              dbm.close_session()
+#              return "You are not authorized.", 401
+#          else:
+#              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
+#              pe = pe_base.Element(pe_db, dbm)
+#              df = pe.inp.to_df()
+#              # raise Exception('GO ON HERE !!!')
+#              f = BytesIO()
+#              df.to_csv(f)
+#              f.seek(0)
+#              resp = make_response(f.read())
+#              resp.headers["Content-Disposition"] = "attachment; filename=annos.csv"
+#              resp.headers["Content-Type"] = "blob"
+#              return resp
+
+
+# @namespace.route('/report')
+# @api.doc(security='apikey',description='STILL NEEDS TO BE REFACTORED WILL BE MOVED TO PIPELINE')
+# class ReportService(Resource):
+#     @jwt_required 
+#     def post(self):
+#         dbm = access.DBMan(LOST_CONFIG)
+#         identity = get_jwt_identity()
+#         user = dbm.get_user_by_id(identity)
+#         if not user.has_role(roles.DESIGNER):
+#             dbm.close_session()
+#             return "You are not authorized.", 401
+#         else:
+#             data = json.loads(request.data)
+#             report = Report(dbm, data)
+#             report_data = report.get_report()
+#             dbm.close_session()
+#             return report_data

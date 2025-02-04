@@ -4,7 +4,9 @@ import { API_URL } from '../../lost_settings'
 
 export const getSiaReviewOptions = (pipeElementId) => async (dispatch) => {
     try {
-        const response = await axios.get(API_URL + '/sia/reviewoptions/' + pipeElementId)
+        const response = await axios.get(
+            API_URL + `/pipeline/element/${pipeElementId}/review/options`,
+        )
         dispatch({ type: TYPES.SIA_REVIEW_SET_OPTIONS, payload: response.data })
         // console.log('REQUEST: getSiaReviewOptions: wrongLoad ', response)
     } catch (e) {
@@ -14,7 +16,10 @@ export const getSiaReviewOptions = (pipeElementId) => async (dispatch) => {
 
 export const getSiaReviewAnnos = (data) => async (dispatch) => {
     try {
-        const response = await axios.post(API_URL + '/sia/review', data)
+        const response = await axios.post(
+            API_URL + `/pipeline/element/${data['pe_id']}/review`,
+            data,
+        )
         // console.log('REQUEST: siaReviewAnnos: wrongLoad ', response)
         dispatch({ type: TYPES.SIA_REVIEW_SET_ANNOS, payload: response.data })
     } catch (e) {

@@ -1,11 +1,10 @@
 import sqlalchemy
-from sqlalchemy import exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import text
 from lost.db import model, state, dtype
-import os
+
 
 def convert_connection_str(lostconfig):
     '''Convert connection string from config format to sqlalchemy format.
@@ -1302,23 +1301,23 @@ class DBMan(object):
     
     def get_anno_tasks_by_dataset_id(self, dataset_id):
         return self.session.query(model.AnnoTask).filter(model.AnnoTask.dataset_id == dataset_id).all()
-        
+    
     def get_annotasks_filtered(
         self,
         group_ids,
         page_size,
         page,
-        sorted,
-        filterOptions
+        filtered_states,
+        filtered_name
     ):
         filter_conditions = []
-        name = filterOptions['filteredName']
-        if name != '':
+        name = filtered_name
+        if name :
             filter_conditions.append(
             model.AnnoTask.name.like(f"%{name}%")
         )
-        task_states = filterOptions['filteredStates']
-        if len(task_states) > 0:
+        task_states = filtered_states
+        if task_states:
             filter_conditions.append(
                 model.AnnoTask.state.in_(task_states)
             )
@@ -1341,16 +1340,17 @@ class DBMan(object):
         self,
         group_ids,
         page_size,
-        filterOptions
+        filtered_states,
+        filtered_name
     ): 
         filter_conditions = []
-        name = filterOptions['filteredName']
-        if name != '':
+        name = filtered_name
+        if name :
             filter_conditions.append(
             model.AnnoTask.name.like(f"%{name}%")
         )
-        task_states = filterOptions['filteredStates']
-        if len(task_states) > 0:
+        task_states = filtered_states
+        if task_states:
             filter_conditions.append(
                 model.AnnoTask.state.in_(task_states)
             )

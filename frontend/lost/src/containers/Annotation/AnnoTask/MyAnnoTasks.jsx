@@ -128,7 +128,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
     useEffect(() => {
         if (annoTaskListData) {
             setPages(annoTaskListData.pages)
-            setATData(annoTaskListData.rows)
+            setATData(annoTaskListData.annoTasks)
         }
     }, [annoTaskListData])
 

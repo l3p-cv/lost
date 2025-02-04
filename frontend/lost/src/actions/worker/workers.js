@@ -35,7 +35,7 @@ export const getWorkerLogFile = async (id) => {
 export const downloadWorkerLogfile = (id) => async (dispatch) => {
     const token = localStorage.getItem('token')
     const response = await http.get({
-        url: `${API_URL}/data/workerlogs/${id}`,
+        url: `${API_URL}/worker/workerlogs/${id}`,
         token,
         type: 'image',
     })

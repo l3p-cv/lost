@@ -25,7 +25,10 @@ export const getSpecialMiaAnnos = (miaIds, getWorkingAnnoTask) => async (dispatc
 
 export const getMiaImage = (img) => async (dispatch) => {
     try {
-        const response = await axios.post(API_URL + '/data/getImage', img)
+        const response = await axios.get(
+            `${API_URL}/data/image/${img['id']}?addContext=${img['addContext']}&drawAnno=${img['drawAnno']}&type=${img['type']}`,
+            img,
+        )
         return response
     } catch (e) {
         console.error(e)
@@ -81,7 +84,7 @@ export const setMiaSelectedLabel = (label) => (dispatch) => {
 export const updateMia =
     (data, getMiaAnnos, getWorkingAnnoTask, maxAmount) => async (dispatch) => {
         try {
-            await axios.post(API_URL + '/mia/update', data)
+            await axios.patch(API_URL + '/mia', data)
             getMiaAnnos(maxAmount)
             getWorkingAnnoTask()
         } catch (e) {

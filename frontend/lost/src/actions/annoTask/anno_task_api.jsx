@@ -5,7 +5,7 @@ import { useMutation, useQuery } from 'react-query'
 export const useUpdateConfig = () => {
     return useMutation((data) =>
         axios
-            .post(`${API_URL}/annotask/update_config/${data.annotaskId}`, {
+            .put(`${API_URL}/annotasks/${data.annotaskId}/config`, {
                 configuration: data.configuration,
             })
             .then((res) => res.data),
@@ -15,7 +15,7 @@ export const useUpdateConfig = () => {
 export const useGetStorageSettings = (annoTaskId) => {
     return useQuery(['annoDataStorageSettings'], () =>
         axios
-            .get(`${API_URL}/annotask/get_storage_settings/${annoTaskId}`)
+            .get(`${API_URL}/annotasks/${annoTaskId}/storage_settings`)
             .then((res) => res.data),
     )
 }
@@ -23,7 +23,7 @@ export const useGetStorageSettings = (annoTaskId) => {
 export const useUpdateStorageSettings = () => {
     return useMutation((data) =>
         axios
-            .post(`${API_URL}/annotask/update_storage_settings/${data.annotaskId}`, data)
+            .patch(`${API_URL}/annotasks/${data.annoTaskId}/storage_settings`, data)
             .then((res) => res),
     )
 }
@@ -31,9 +31,7 @@ export const useUpdateStorageSettings = () => {
 export const useGenerateExport = () => {
     return useMutation((data) =>
         axios
-            .post(`${API_URL}/annotask/generate_export/${data.annotaskId}`, {
-                export_config: data.exportConfig,
-            })
+            .post(`${API_URL}/annotasks/${data.annotaskId}/exports`, data.exportConfig)
             .then((res) => res.data),
     )
 }
@@ -43,8 +41,8 @@ export const useGetDataexports = (annoTaskId) => {
         ['annoDataExports'],
         () =>
             axios
-                .get(`${API_URL}/annotask/anno_task_exports/${annoTaskId}`)
-                .then((res) => res.data),
+                .get(`${API_URL}/annotasks/${annoTaskId}/exports`)
+                .then((res) => res.data.annoTasksExports),
         {
             initialData: null,
         },
@@ -54,27 +52,40 @@ export const useGetDataexports = (annoTaskId) => {
 export const useDeleteExport = () => {
     return useMutation((annoTaskExportId) =>
         axios
-            .post(`${API_URL}/annotask/delete_export/${annoTaskExportId}`, {})
+            .delete(`${API_URL}/annotasks/exports/${annoTaskExportId}`)
             .then((res) => res.data),
     )
 }
 
 export const useAnnotask = () => {
     return useMutation((annoTaskId) =>
-        axios.get(`${API_URL}/annotask/id/${annoTaskId}`).then((res) => res.data),
+        axios
+            .get(`${API_URL}/annotasks/${annoTaskId}?config=true`)
+            .then((res) => res.data),
     )
 }
 
 export const useChooseAnnotask = () => {
     return useMutation((annoTaskId) =>
-        axios.post(`${API_URL}/annotask?id=${annoTaskId}`).then((res) => res.data),
+        axios.post(`${API_URL}/annotasks?id=${annoTaskId}`).then((res) => res.data),
     )
 }
+
+// export const useAnnotaskListFiltered = () => {
+//     return useMutation((datatableInfo) =>
+//         axios
+//             .post(`${API_URL}/annotask/annotask_list_filter`, datatableInfo)
+//             .then((res) => res.data),
+//     )
+// }
 
 export const useAnnotaskListFiltered = () => {
     return useMutation((datatableInfo) =>
         axios
-            .post(`${API_URL}/annotask/annotask_list_filter`, datatableInfo)
+            .get(
+                `${API_URL}/annotasks?page=${datatableInfo.page}&pageSize=${datatableInfo.pageSize}&filteredName=${datatableInfo.filterOptions.filteredName}&filteredStates=${datatableInfo.filterOptions.filteredStates}`,
+                datatableInfo,
+            )
             .then((res) => res.data),
     )
 }
@@ -82,7 +93,7 @@ export const useAnnotaskListFiltered = () => {
 export const useFilterLabels = () => {
     return useQuery(
         ['useFilterLabels'],
-        () => axios.get(`${API_URL}/annotask/getFilterLabels`).then((res) => res.data),
+        () => axios.get(`${API_URL}/annotasks/filterLabels`).then((res) => res.data),
         {
             refetchOnWindowFocus: false,
             enabled: false,

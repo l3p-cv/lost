@@ -126,8 +126,8 @@ const SIAReview = (props) => {
             const pipeElementId = window.location.pathname.split('/').slice(-1)[0]
             const newAnnos = canvas.getAnnos()
             // const camName = history.location.pathname.split('/').slice(-1)[0]
-            const response = await axios.post(
-                API_URL + '/sia/reviewupdate/' + pipeElementId,
+            const response = await axios.put(
+                API_URL + `/pipeline/element/${pipeElementId}/review`,
                 newAnnos,
             )
             console.log('REQUEST: siaReviewUpdate ', response)
