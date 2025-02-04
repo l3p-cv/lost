@@ -51,11 +51,11 @@ echo 🛠️  installing frontend dependencies
 mkdir -p $LOST_BASE_DIR/build
 cp -r $LOST_REPO_LOCATION_DIR/frontend $LOST_BASE_DIR/build
 cd $LOST_BASE_DIR/build/frontend/lost
-npm install --unsafe-perm=true --allow-root --legacy-peer-deps
+bun install
 
 echo
 echo 🛠️  building frontend
-npm run build
+bun run build
 mkdir -p $LOST_BASE_DIR/src/frontend/lost
 rm -rf $LOST_BASE_DIR/src/frontend/lost/build
 cp -r $LOST_BASE_DIR/build/frontend/lost/dist $LOST_BASE_DIR/src/frontend/lost/build
