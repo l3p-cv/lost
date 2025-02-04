@@ -5,7 +5,7 @@ from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost import db
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, sia_update
+from lost.api.sia.api_definition import sia_anno, sia_config, sia_update,labels
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -222,7 +222,7 @@ class Finish(Resource):
 @namespace.route('/label')
 @api.doc(security='apikey')
 class Label(Resource):
-    @api.marshal_with(label_trees)
+    @api.marshal_with(labels)
     @api.doc(security='apikey',description='Get label trees for the sia task')            
     @jwt_required 
     def get(self):
@@ -235,7 +235,7 @@ class Label(Resource):
         else:
             re = sia.get_label_trees(dbm, identity)
             dbm.close_session()
-            return {'labelTrees':re['labels']}
+            return re
 
 @namespace.route('/configuration')
 @api.doc(security='apikey')

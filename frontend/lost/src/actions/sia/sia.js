@@ -117,7 +117,7 @@ export const siaSendFinishToBackend = () => async (dispatch) => {
 export const getSiaLabels = () => async (dispatch) => {
     try {
         const response = await axios.get(API_URL + '/sia/label')
-        dispatch({ type: TYPES.GET_SIA_LABELS, payload: response.data.labelTrees })
+        dispatch({ type: TYPES.GET_SIA_LABELS, payload: response.data.labels })
     } catch (e) {
         console.log(e)
     }
