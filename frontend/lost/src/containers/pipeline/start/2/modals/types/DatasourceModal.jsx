@@ -1,8 +1,7 @@
-import React, { Component } from 'react'
+import { useCallback, useState } from 'react'
 import LostFileBrowser from '../../../../../../components/FileBrowser/LostFileBrowser'
-import Table from '../../../../globalComponents/modals/Table'
 
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
+import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
 import { Divider, Icon, Label } from 'semantic-ui-react'
 import actions from '../../../../../../actions/pipeline/pipelineStartModals/datasource'
 
@@ -10,166 +9,108 @@ import { connect } from 'react-redux'
 const { selectDropdown, pipeStartUpdateDS } = actions
 
 const DEFAULT_TEXT_PATH = 'No path selected!'
-class DatasourceModal extends Component {
-    constructor(props) {
-        super(props)
 
-        this.toggle = this.toggle.bind(this)
-        this.selectItem = this.selectItem.bind(this)
-        let selectedFs = undefined
-        let selectedPath = DEFAULT_TEXT_PATH
-        let selectedPathColor = 'red'
-        let initPath = undefined
-        if (props.exportData.datasource.fs_id) {
-            selectedFs = props.datasource.filesystems.find((el) => {
-                if (el.id === props.exportData.datasource.fs_id) {
-                    return el
+const DatasourceModal = ({ exportData, datasource, selectDropdown, peN }) => {
+    const [dsDropdownOpen, setDsDropdownOpen] = useState(false)
+
+    const [selectedFs, setSelectedFs] = useState(() => {
+        if (exportData.datasource.fs_id) {
+            return datasource.filesystems.find(
+                (el) => el.id === exportData.datasource.fs_id,
+            )
+        }
+        return undefined
+    })
+
+    const [selectedPath, setSelectedPath] = useState(() => {
+        if (
+            exportData.datasource.selectedPath &&
+            exportData.datasource.selectedPath !== DEFAULT_TEXT_PATH
+        ) {
+            return exportData.datasource.selectedPath
+        }
+        return DEFAULT_TEXT_PATH
+    })
+
+    const [selectedPathColor, setSelectedPathColor] = useState(() => {
+        return exportData.datasource.selectedPath !== DEFAULT_TEXT_PATH ? 'green' : 'red'
+    })
+
+    const [initPath] = useState(() => {
+        if (
+            exportData.datasource.selectedPath &&
+            exportData.datasource.selectedPath !== DEFAULT_TEXT_PATH
+        ) {
+            return exportData.datasource.selectedPath
+        }
+        return undefined
+    })
+
+    const toggleDs = useCallback(() => {
+        setDsDropdownOpen((prevState) => !prevState)
+    }, [])
+
+    const selectItem = useCallback(
+        (path) => {
+            if (path !== selectedPath) {
+                const color = path !== DEFAULT_TEXT_PATH ? 'green' : 'red'
+                setSelectedPath(path)
+                setSelectedPathColor(color)
+                if (selectedFs) {
+                    selectDropdown(peN, path, selectedFs.id)
                 }
-                return undefined
-            })
-            selectedPath = props.exportData.datasource.selectedPath
-            if (selectedPath !== DEFAULT_TEXT_PATH) {
-                initPath = selectedPath
-                selectedPathColor = 'green'
             }
-        }
-        this.state = {
-            dropdownOpen: false,
-            dsDropdownOpen: false,
-            selectedFs: selectedFs,
-            selectedPath: selectedPath,
-            selectedPathColor: selectedPathColor,
-            initPath: initPath,
-        }
-    }
+        },
+        [selectedPath, selectedFs, selectDropdown, peN],
+    )
 
-    toggle() {
-        this.setState((prevState) => ({
-            dropdownOpen: !prevState.dropdownOpen,
-        }))
-    }
+    const selectDS = useCallback((fs) => {
+        setSelectedFs({ ...fs })
+    }, [])
 
-    toggleDs() {
-        this.setState({
-            dsDropdownOpen: !this.state.dsDropdownOpen,
-        })
-    }
-
-    selectItem(path) {
-        if (path !== this.state.selectedPath) {
-            let color = 'red'
-            if (path !== DEFAULT_TEXT_PATH) color = 'green'
-            this.setState({
-                selectedPath: path,
-                selectedPathColor: color,
-            })
-            this.props.selectDropdown(this.props.peN, path, this.state.selectedFs.id)
-        }
-    }
-
-    selectDS(fs) {
-        this.setState({ selectedFs: { ...fs } })
-    }
-    folderDropDown() {
-        const rawFilePath = this.props.exportData.datasource.rawFilePath
-        return (
-            <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                <DropdownToggle caret>
-                    {rawFilePath ? rawFilePath : 'Select Item...'}
-                </DropdownToggle>
-                <DropdownMenu>
-                    {this.props.datasource.fileTree.children.map((el) => {
-                        return (
-                            <DropdownItem onClick={this.selectItem} key={el.name}>
-                                {el.name}
-                            </DropdownItem>
-                        )
-                    })}
-                </DropdownMenu>
-            </Dropdown>
-        )
-    }
-
-    datasourceDropDown() {
-        // const rawFilePath = this.props.exportData.datasource.rawFilePath
-        // if (!this.state.dsDropdownOpen) return null
+    const datasourceDropDown = () => {
         return (
             <div>
-                <Dropdown
-                    isOpen={this.state.dsDropdownOpen}
-                    toggle={(e) => {
-                        this.toggleDs()
-                    }}
-                >
+                <Dropdown isOpen={dsDropdownOpen} toggle={toggleDs}>
                     <DropdownToggle caret>
                         <Icon name="database" />
-                        {this.state.selectedFs
-                            ? this.state.selectedFs.name
-                            : 'Select Datasource ...'}
-                        {/* {'Select Item ...'} */}
+                        {selectedFs ? selectedFs.name : 'Select Datasource ...'}
                     </DropdownToggle>
                     <DropdownMenu>
-                        {this.props.datasource.filesystems.map((el) => {
-                            return (
-                                <>
-                                    {el.name !== 'default' ? (
-                                        <DropdownItem
-                                            onClick={(e) => {
-                                                this.selectDS(el)
-                                            }}
-                                            key={el.name}
-                                        >
-                                            {el.name}
-                                        </DropdownItem>
-                                    ) : (
-                                        ''
-                                    )}
-                                </>
-                            )
-                        })}
+                        {datasource.filesystems.map(
+                            (el) =>
+                                el.name !== 'default' && (
+                                    <DropdownItem
+                                        onClick={() => selectDS(el)}
+                                        key={el.name}
+                                    >
+                                        {el.name}
+                                    </DropdownItem>
+                                ),
+                        )}
                     </DropdownMenu>
                 </Dropdown>
             </div>
         )
     }
 
-    render() {
-        return (
+    return (
+        <div>
+            <div>{datasourceDropDown()}</div>
+            <Divider horizontal>File Browser</Divider>
             <div>
-                <div>{this.datasourceDropDown()}</div>
-                <Divider horizontal>File Browser</Divider>
-                <div>
-                    <LostFileBrowser
-                        fs={this.state.selectedFs}
-                        onPathSelected={(path) => this.selectItem(path)}
-                        initPath={this.state.initPath}
-                    />
-                </div>
-                <Divider horizontal>Selected Datasource</Divider>
-                <Label color={this.state.selectedPathColor}>
-                    <Icon name="folder open" /> {this.state.selectedPath}
-                </Label>
-
-                {/* <FullFileBrowser files={files}/> */}
-                {/* <Table
-        data= {
-          [
-            {
-              key: 'Select Datasource',
-              value: this.datasourceDropDown()
-
-            },
-            {
-              key: 'Select Folder',
-              value: this.folderDropDown()
-
-            }
-        ]
-      }
-      /> */}
+                <LostFileBrowser
+                    fs={selectedFs}
+                    onPathSelected={(path) => selectItem(path)}
+                    initPath={initPath}
+                />
             </div>
-        )
-    }
+            <Divider horizontal>Selected Datasource</Divider>
+            <Label color={selectedPathColor}>
+                <Icon name="folder open" /> {selectedPath}
+            </Label>
+        </div>
+    )
 }
 
 export default connect(null, { selectDropdown, pipeStartUpdateDS })(DatasourceModal)

@@ -1,16 +1,17 @@
-import React, { Component } from 'react'
-import DatasourceModal from './types/DatasourceModal'
-import ScriptModal from './types/ScriptModal'
-import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
-import LoopModal from './types/LoopModal'
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { Component } from 'react'
 import actions from '../../../../../actions/pipeline/pipelineStart'
 import IconButton from '../../../../../components/IconButton'
-import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import AnnoTaskModal from './types/annoTaskModal/AnnoTaskModal'
+import DatasourceModal from './types/DatasourceModal'
+import LoopModal from './types/LoopModal'
+import ScriptModal from './types/ScriptModal'
 
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
 import { connect } from 'react-redux'
+import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 const { toggleModal, verifyNode, verifyTab } = actions
 
+// todo: update to functional style: a bit tricky
 class BaseModal extends Component {
     constructor() {
         super()

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { CCol, CModal, CModalBody, CModalHeader, CFormInput, CRow } from '@coreui/react'
-import IconButton from '../../components/IconButton'
+import { CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow } from '@coreui/react'
 import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { useEffect, useState } from 'react'
 import { Dropdown } from 'semantic-ui-react'
-import * as datasetApi from '../../actions/dataset/dataset_api'
-import { NotificationManager } from 'react-notifications'
 import Swal from 'sweetalert2'
+import * as datasetApi from '../../actions/dataset/dataset_api'
+import IconButton from '../../components/IconButton'
+import { showError, showSuccess } from '../../components/Notification'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
@@ -103,11 +103,7 @@ const DatasetEditModal = ({
 
         // make sure the type is a boolean
         if (isSuccessful === true) {
-            NotificationManager.success(
-                '',
-                `Dataset ${msgSuccessVerb} successfully`,
-                NOTIFICATION_TIMEOUT_MS,
-            )
+            showSuccess(`Dataset ${msgSuccessVerb} successfully`, NOTIFICATION_TIMEOUT_MS)
 
             // close the modal
             setIsVisible(false)
@@ -115,9 +111,8 @@ const DatasetEditModal = ({
             if (onSuccessCallback) onSuccessCallback(response)
         } else {
             const errorMessage = response.data
-            NotificationManager.error(
-                errorMessage,
-                `Error ${msgErrorVerb} dataset`,
+            showError(
+                `${errorMessage}: Error ${msgErrorVerb} dataset`,
                 NOTIFICATION_TIMEOUT_MS,
             )
         }

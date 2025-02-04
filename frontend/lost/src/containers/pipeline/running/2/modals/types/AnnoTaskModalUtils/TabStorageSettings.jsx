@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react'
 import { CCol, CContainer, CRow } from '@coreui/react'
-import HelpButton from '../../../../../../../components/HelpButton'
-import { Dropdown } from 'semantic-ui-react'
-import * as datasetApi from '../../../../../../../actions/dataset/dataset_api'
-import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
-import { NotificationContainer, NotificationManager } from 'react-notifications'
-import IconButton from '../../../../../../../components/IconButton'
 import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
+import { useEffect, useState } from 'react'
+import { Dropdown } from 'semantic-ui-react'
+import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
+import * as datasetApi from '../../../../../../../actions/dataset/dataset_api'
+import HelpButton from '../../../../../../../components/HelpButton'
+import IconButton from '../../../../../../../components/IconButton'
+import { showSuccess } from '../../../../../../../components/Notification'
 import DatasetEditModal from '../../../../../../Datasets/DatasetEditModal'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
@@ -84,11 +84,7 @@ const TabStorageSettings = ({ annotaskId }) => {
         if (updateStorageSettingsResponse === undefined) return
 
         if (updateStorageSettingsResponse.status === 200) {
-            NotificationManager.success(
-                '',
-                'Dataset changed successfully',
-                NOTIFICATION_TIMEOUT_MS,
-            )
+            showSuccess('Dataset changed successfully', NOTIFICATION_TIMEOUT_MS)
         }
     }, [updateStorageSettingsResponse])
 
@@ -174,7 +170,6 @@ const TabStorageSettings = ({ annotaskId }) => {
                     </CCol>
                 </CRow>
             </CContainer>
-            <NotificationContainer />
             <DatasetEditModal
                 isVisible={isCreateDatasetModalOpen}
                 setIsVisible={setIsCreateDatasetModalOpen}

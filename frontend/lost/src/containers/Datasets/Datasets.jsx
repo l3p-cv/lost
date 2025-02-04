@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
 import { CCol, CContainer, CRow } from '@coreui/react'
-import IconButton from '../../components/IconButton'
 import { faFolderPlus } from '@fortawesome/free-solid-svg-icons'
-import DatasetTable from './DatasetTable'
-import DatasetExportModal from './DatasetExportModal'
-import * as datasetApi from '../../actions/dataset/dataset_api'
+import { useEffect, useState } from 'react'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
+import * as datasetApi from '../../actions/dataset/dataset_api'
+import IconButton from '../../components/IconButton'
 import DatasetEditModal from './DatasetEditModal'
-import { NotificationContainer } from 'react-notifications'
+import DatasetExportModal from './DatasetExportModal'
+import DatasetTable from './DatasetTable'
 
 const Datasets = () => {
     const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
@@ -152,7 +151,6 @@ const Datasets = () => {
                     </CCol>
                 </CRow>
             </CContainer>
-            <NotificationContainer />
         </>
     )
 }
