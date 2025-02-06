@@ -1,11 +1,10 @@
-import React from 'react'
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
-import VerificationTitle from './VerificationTitle'
-import NodeBody from './NodeBody'
+import NodeBody from '../../../globalComponents/node-structure/NodeBody'
+import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 const AnnoTaskNode = (props) => {
     return (
         <div className="graph-node">
-            <VerificationTitle
+            <NodeHeader
                 verified={props.verified}
                 title={props.title}
                 icon={faPencilAlt}

@@ -1,0 +1,12 @@
+.react-flow {
+    --xy-handle-background-color-default: #ffffff;
+    --xy-handle-border-color-default: #aaaaaa;
+}
+
+.react-flow__handle {
+    background-color: var(--xy-handle-background-color-default);
+}
+
+.react-flow__node.selectable.selected {
+    z-index: 0;
+}

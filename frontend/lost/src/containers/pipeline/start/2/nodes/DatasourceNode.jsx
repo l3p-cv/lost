@@ -1,15 +1,10 @@
-import React from 'react'
 import { faHdd } from '@fortawesome/free-solid-svg-icons'
-import VerificationTitle from './VerificationTitle'
-import NodeBody from './NodeBody'
+import NodeBody from '../../../globalComponents/node-structure/NodeBody'
+import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 const DatasourceNode = (props) => {
     return (
         <div className="graph-node">
-            <VerificationTitle
-                verified={props.verified}
-                title={props.title}
-                icon={faHdd}
-            />
+            <NodeHeader verified={props.verified} title={props.title} icon={faHdd} />
             <NodeBody
                 data={[
                     {

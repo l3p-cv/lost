@@ -1,3 +1,4 @@
+import AdminAreaComponent from './containers/AdminArea/AdminArea'
 import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
@@ -8,11 +9,9 @@ import DatasetsComponent from './containers/Datasets/Datasets'
 import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
-import RunningPipelineComponent from './containers/pipeline/running/RunningPipeline'
-import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
-
-import AdminAreaComponent from './containers/AdminArea/AdminArea'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
+import RunningPipelinesComponent from './containers/pipeline/running/RunningPipeline'
+import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
 
 import {
     FaBox,
@@ -27,6 +26,8 @@ import {
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
 import { PipelineDemoWrapper } from './containers/pipeline/pipeline-demo/PipelineDemoWrapper'
+import { PipelineView } from './containers/pipeline/running/PipelineView'
+import { RunningPipelines } from './containers/pipeline/running/RunningPipelines'
 
 const iconProps = {
     size: 20,
@@ -125,11 +126,24 @@ const Mia = {
     component: MiaComponent,
 }
 
-const RunningPipelines = {
+const RunningPipelinesPage = {
     name: 'Pipelines',
     to: '/pipelines',
-    component: RunningPipelineComponent,
+    component: RunningPipelines,
     icon: <FaTasks {...iconProps} />,
+}
+
+const OldRunningPipelinesPage = {
+    name: 'Pipelines(Old)',
+    to: '/pipelines-old',
+    component: RunningPipelinesComponent,
+    icon: <FaTasks {...iconProps} />,
+}
+
+const PipelinePage = {
+    path: '/pipeline/:pipelineId',
+    // exact: true,
+    component: PipelineView,
 }
 
 const StartPipelines = {
@@ -165,13 +179,15 @@ const guiSetup = {
         AnnotaskReview,
         DatasetsReview,
         PipelineDemoPage,
+        PipelinePage,
     ],
     Administrator: {
         redirect: '/dashboard',
         navItems: [
             DesignerDashboard,
             TitleProject,
-            RunningPipelines,
+            RunningPipelinesPage,
+            OldRunningPipelinesPage,
             StartPipelines,
             Labels,
             Datasets,
@@ -188,7 +204,8 @@ const guiSetup = {
         navItems: [
             DesignerDashboard,
             TitleProject,
-            RunningPipelines,
+            RunningPipelinesPage,
+            OldRunningPipelinesPage,
             StartPipelines,
             Labels,
             Datasets,

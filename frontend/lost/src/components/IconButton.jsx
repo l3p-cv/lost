@@ -1,13 +1,12 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button } from 'reactstrap'
 import { faArrowLeft, faArrowRight, faSync } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import PropTypes from 'prop-types'
+import { Button } from 'reactstrap'
 
 const IconButton = ({
     isBack,
-    loadingSize,
-    isLoading,
+    loadingSize = '2x',
+    isLoading = false,
     isForward,
     margin,
     icon,
@@ -15,10 +14,10 @@ const IconButton = ({
     size,
     isTextLeft,
     style,
-    type,
+    type = 'button',
     disabled,
     onClick,
-    className,
+    className = '',
     color = 'primary',
     isOutline = true,
 }) => {

@@ -1,6 +1,16 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 
-function renderTable(data) {
+interface DataItem {
+    key: string
+    value: string
+}
+
+interface NodeBodyProps {
+    data: DataItem[]
+    children?: ReactNode
+}
+
+const renderTable = (data: DataItem[]) => {
     if (data) {
         return data.map((el) => {
             return (
@@ -17,7 +27,7 @@ function renderTable(data) {
     }
 }
 
-const NodeBody = (props) => {
+const NodeBody: React.FC<NodeBodyProps> = (props) => {
     return (
         <div className="graph-node-body">
             {renderTable(props.data)}

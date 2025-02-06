@@ -1,13 +1,12 @@
-import React from 'react'
 import { faCloudDownloadAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import VerificationTitle from './VerificationTitle'
-import NodeBody from './NodeBody'
+import NodeBody from '../../../globalComponents/node-structure/NodeBody'
+import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 
 const DataExportNode = (props) => {
     return (
         <div className="graph-node">
-            <VerificationTitle
+            <NodeHeader
                 verified={props.verified}
                 title={props.title}
                 icon={faCloudDownloadAlt}

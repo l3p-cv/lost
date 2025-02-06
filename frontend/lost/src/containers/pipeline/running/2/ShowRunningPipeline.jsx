@@ -1,7 +1,9 @@
+import { CContainer } from '@coreui/react'
 import { useEffect, useRef, useState } from 'react'
 import Graph from 'react-directed-graph'
 import { connect } from 'react-redux'
 import actions from '../../../../actions/pipeline/pipelineRunning'
+import BaseContainer from '../../../../components/BaseContainer'
 import Modal from './modals'
 import AnnoTaskNode from './nodes/AnnoTaskNode'
 import DataExportNode from './nodes/DataExportNode'
@@ -25,6 +27,12 @@ const ShowRunningPipeline = ({ data, step, toggleModal, getPipeline }) => {
             return () => clearInterval(timer)
         }
     }, [data, pollingEnabled, getPipeline])
+
+    useEffect(() => {
+        if (data) {
+            console.log(data)
+        }
+    }, [data])
 
     const nodesOnClick = (id) => {
         toggleModal(id)
@@ -78,11 +86,15 @@ const ShowRunningPipeline = ({ data, step, toggleModal, getPipeline }) => {
     }
 
     return (
-        <div className="pipeline-running-2" ref={graphMountPoint}>
-            <ToolBar data={data} />
-            {renderGraph()}
-            {renderModal()}
-        </div>
+        <CContainer style={{ marginTop: '15px' }}>
+            <BaseContainer>
+                <div className="pipeline-running-2" ref={graphMountPoint}>
+                    <ToolBar data={data} />
+                    {renderGraph()}
+                    {renderModal()}
+                </div>
+            </BaseContainer>
+        </CContainer>
     )
 }
 

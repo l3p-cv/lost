@@ -1,8 +1,7 @@
-import React from 'react'
-import { Progress } from 'reactstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRocket } from '@fortawesome/free-solid-svg-icons'
-import NodeFooter from './NodeFooter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Progress } from 'reactstrap'
+import NodeFooter from '../../../globalComponents/node-structure/NodeFooter'
 
 const ScriptNode = (props) => {
     return (

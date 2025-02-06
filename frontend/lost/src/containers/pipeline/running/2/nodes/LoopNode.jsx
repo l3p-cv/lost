@@ -1,7 +1,6 @@
-import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSync } from '@fortawesome/free-solid-svg-icons'
-import NodeFooter from './NodeFooter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import NodeFooter from '../../../globalComponents/node-structure/NodeFooter'
 
 const LoopNode = (props) => {
     return (

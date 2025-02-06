@@ -1,15 +1,10 @@
-import React from 'react'
 import { faSync } from '@fortawesome/free-solid-svg-icons'
-import VerificationTitle from './VerificationTitle'
-import NodeBody from './NodeBody'
+import NodeBody from '../../../globalComponents/node-structure/NodeBody'
+import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 const LoopNode = (props) => {
     return (
         <div className="graph-node">
-            <VerificationTitle
-                verified={props.verified}
-                title={props.title}
-                icon={faSync}
-            />
+            <NodeHeader verified={props.verified} title={props.title} icon={faSync} />
             <NodeBody
                 data={[
                     {
