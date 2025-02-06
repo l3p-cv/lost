@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useMutation } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 
 import { uiConfig, SIA_INITIAL_UI_CONFIG } from 'lost-sia'
@@ -69,10 +69,22 @@ export const useImageSearch = (isAnnotaskReview) => {
 
     return useMutation((requestData) => {
         // annotaskId task or datasetId (depends on review mode)
-        const [id, query] = requestData
+        const [id, query, selectedFilterLabels] = requestData
         const payload = {
             filter: query,
+            labels: selectedFilterLabels,
         }
         return axios.post(`${API_URL}/${reviewType}/${id}/review/searchImage`, payload)
     })
+}
+
+export const useGetPossibleLabels = (datasetId) => {
+    return useQuery(
+        ['useGetPossibleLabels'],
+        () => axios.get(`${API_URL}/datasets/${datasetId}/review/possibleLabels`).then((res) => res.data),
+        {
+            refetchOnWindowFocus: false,
+            enabled: true,
+        },
+    )
 }
