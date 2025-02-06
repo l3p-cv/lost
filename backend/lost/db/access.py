@@ -1370,3 +1370,24 @@ class DBMan(object):
         if count % page_size:
             pages += 1
         return pages
+
+    def get_all_annotask_labels(self, anno_task_ids: list[int]):
+        anno_task_list = ",".join([str(x) for x in anno_task_ids])
+        sql = f"SELECT DISTINCT idx, name, color FROM label_leaf WHERE parent_leaf_id IN ( \
+            SELECT DISTINCT label_leaf_id FROM `required_label_leaf` WHERE anno_task_id in ({anno_task_list}) \
+        );"
+        return self.session.execute(text(sql))
+    
+    def get_all_images_with_labels(self, image_ids: list[int], label_ids: list[int]):
+        """returns all images of a given image id list that have at least one of the given labels
+        """
+        image_id_list = ",".join([str(x) for x in image_ids])
+        label_id_list = ",".join([str(x) for x in label_ids])
+        sql = f"SELECT DISTINCT t.img_anno_id FROM label l \
+            LEFT JOIN two_d_anno t ON l.two_d_anno_id = t.idx \
+            WHERE l.label_leaf_id IN ({label_id_list}) \
+            AND ( \
+                t.img_anno_id IN ({image_id_list}) \
+                OR l.img_anno_id IN ({image_id_list}) \
+            );"
+        return self.session.execute(text(sql))

@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.datastructures import ImmutableMultiDict
 from lost.api.api import api
 from lost.api.sia.api_definition import annotations, image
+from lost.api.label.api_definition import label_leaf
 from lost.db import access, roles
 from lost.logic.jobs.jobs import (
     export_dataset_parquet,
@@ -639,9 +640,14 @@ class DatasetReviewImageSearch(Resource):
             anno_task_ids, search_str
         )
 
-        found_images = []
+        found_image_ids: list[int] = []
+        found_images: list[dict[str, any]] = []
 
         for entry in db_result:
+            # prepare list of image ids for label filter (we can't iterate multiple times through db_result)
+            found_image_ids.append(entry.idx)
+            
+            # prepare list for response
             found_images.append(
                 {
                     "imageId": entry.idx,
@@ -651,7 +657,68 @@ class DatasetReviewImageSearch(Resource):
                 }
             )
 
+        # filter for images annotated with specific labels if labels are in the request
+        if "labels" in data:
+            search_labels = data["labels"]
+
+            # no labels -> no images
+            if len(search_labels) == 0:
+                return []
+
+            # found_image_ids = [entry.idx for entry in db_result]
+            img_with_label_db_result = dbm.get_all_images_with_labels(
+                found_image_ids, search_labels
+            )
+            img_ids_with_label = [
+                entry.img_anno_id for entry in img_with_label_db_result
+            ]
+
+            # filter original response list: only select images that have one of the searched labels
+            found_img_with_label = [
+                img
+                for img in found_images
+                if img["imageId"] in img_ids_with_label
+            ]
+
+            # replace list with label filtered list
+            found_images = found_img_with_label
+
         return found_images
+
+
+@namespace.route("/<int:dataset_id>/review/possibleLabels")
+@api.doc(security="apikey")
+class DatasetReviewImageSearch(Resource):
+    @api.doc(description="Get all possible labels for a dataset")
+    @api.response(200, "success", [])
+    @jwt_required
+    def get(self, dataset_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return (
+                "You need to be {} in order to perform this request.".format(
+                    roles.DESIGNER
+                ),
+                401,
+            )
+
+        anno_task_ids = get_all_annotask_ids_for_ds(dbm, dataset_id)
+        db_result = dbm.get_all_annotask_labels(anno_task_ids)
+
+        labels = []
+        for entry in db_result:
+            labels.append(
+                {
+                    "id": entry.idx,
+                    "name": entry.name,
+                    "color": entry.color,
+                }
+            )
+
+        return labels
 
 
 @namespace.route("/export_ds_parquet/<int:dataset_id>")

@@ -27,6 +27,7 @@ import {
     faArrowRight,
     faSearch,
 } from '@fortawesome/free-solid-svg-icons'
+import { Label } from 'semantic-ui-react'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 
 const SIAImageSearchModal = ({
@@ -36,11 +37,33 @@ const SIAImageSearchModal = ({
     setIsVisible,
     onChooseImage,
 }) => {
+    const { data: possibleImageLabels,
+        refetch: reloadPossibleImageLabels
+    } = datasetReviewApi.useGetPossibleLabels(id)
     const { data: searchResults, mutate: doSearch } =
         datasetReviewApi.useImageSearch(isAnnotaskReview)
     const [enteredSearch, setEnteredSearch] = useState('')
     const [isFirstSearch, setIsFirstSearch] = useState(true)
     const [tableData, setTableData] = useState(() => [])
+    const [selectedFilterLabels, setSelectedFilterLabels] = useState(() => [])
+
+    useEffect(()=>{
+        reloadPossibleImageLabels()
+    }, [])
+
+    useEffect(()=>{
+        console.log(selectedFilterLabels);
+        
+    }, [selectedFilterLabels])
+
+    useEffect(()=> {
+        if(possibleImageLabels === undefined) return
+
+        // activate all labels by default
+        const allLabelIds = []
+        possibleImageLabels.forEach((label) => allLabelIds.push(label.id))
+        setSelectedFilterLabels(allLabelIds)
+    }, [possibleImageLabels])
 
     useEffect(() => {
         if (
@@ -95,6 +118,64 @@ const SIAImageSearchModal = ({
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
     })
+
+    const getContrastColor = (hexColor) => {
+        hexColor = hexColor.replace('#', '')
+
+        const r = parseInt(hexColor.substring(0, 2), 16)
+        const g = parseInt(hexColor.substring(2, 4), 16)
+        const b = parseInt(hexColor.substring(4, 6), 16)
+
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+
+        return luminance > 0.5 ? '#000000' : '#ffffff'
+    }
+
+    const toggleSelectLabel = (labelId) => {
+        // copy list
+        const _selectedFilterLabels = selectedFilterLabels.slice()
+
+        if (_selectedFilterLabels.includes(labelId)) {
+            // remove item from list
+            const index = _selectedFilterLabels.indexOf(labelId);
+            if (index > -1) _selectedFilterLabels.splice(index, 1);
+        } else {
+            _selectedFilterLabels.push(labelId)
+        }
+
+        setSelectedFilterLabels(_selectedFilterLabels)
+    }
+
+    const renderPossibleLabels = () => {
+        if (possibleImageLabels === undefined) return ''
+        let html = []
+        possibleImageLabels.forEach((label) => {
+
+            const labelColor = selectedFilterLabels.includes(label.id) ? label.color : '#95a5a6'
+
+            html.push(
+                <Label
+                    as="div"
+                    tag
+                    key={label.id}
+                    style={{
+                        marginTop: 5,
+                        marginLeft: 30,
+                        opacity: 1,
+                        cursor: 'pointer',
+                        color: getContrastColor(labelColor),
+                        background: labelColor,
+                        userSelect: 'none',
+                    }}
+                    onClick={() => toggleSelectLabel(label.id)}
+                >
+                    {label.name}
+                </Label>,
+            )
+        })
+
+        return html
+    }
 
     const renderFoundAnnotations = () => {
         if (tableData.length === 0) {
@@ -228,6 +309,18 @@ const SIAImageSearchModal = ({
                             value={enteredSearch}
                             onChange={(e) => setEnteredSearch(e.target.value)}
                         />
+                    </CCol>
+                </CRow>
+                <div>&nbsp;</div>
+                <CRow>
+                    <CCol sm="2">Filter Labels:</CCol>
+                    <CCol sm="6">
+                        {renderPossibleLabels()}
+                    </CCol>
+                </CRow>
+                <CRow>
+                    <CCol sm="2">&nbsp;</CCol>
+                    <CCol sm="6">
                         <IconButton
                             isOutline={false}
                             color="primary"
@@ -235,7 +328,7 @@ const SIAImageSearchModal = ({
                             text="Search"
                             onClick={() => {
                                 setIsFirstSearch(false)
-                                doSearch([id, enteredSearch])
+                                doSearch([id, enteredSearch, selectedFilterLabels])
                             }}
                             style={{ marginTop: '15px' }}
                         ></IconButton>
