@@ -27,6 +27,11 @@ import {
     faArrowRight,
     faSearch,
 } from '@fortawesome/free-solid-svg-icons'
+
+import {
+    faSquare,
+    faSquareCheck,
+} from '@fortawesome/free-regular-svg-icons'
 import { Label } from 'semantic-ui-react'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 
@@ -316,6 +321,31 @@ const SIAImageSearchModal = ({
                     <CCol sm="2">Filter Labels:</CCol>
                     <CCol sm="6">
                         {renderPossibleLabels()}
+                    </CCol>
+                    <CCol sm="2">
+                        <IconButton
+                            isOutline={true}
+                            color="primary"
+                            icon={faSquareCheck}
+                            text="Select all"
+                            onClick={() => {
+                                const allLabelIds = []
+                                possibleImageLabels.forEach((label) => allLabelIds.push(label.id))
+                                setSelectedFilterLabels(allLabelIds)
+                            }}
+                            style={{ marginTop: '15px' }}
+                        ></IconButton>
+                        &nbsp;
+                        <IconButton
+                            isOutline={true}
+                            color="primary"
+                            icon={faSquare}
+                            text="Deselect all"
+                            onClick={() => {
+                                setSelectedFilterLabels([])
+                            }}
+                            style={{ marginTop: '15px' }}
+                        ></IconButton>
                     </CCol>
                 </CRow>
                 <CRow>
