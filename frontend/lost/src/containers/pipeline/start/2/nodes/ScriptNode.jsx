@@ -1,7 +1,6 @@
-import React from 'react'
 import { faRocket } from '@fortawesome/free-solid-svg-icons'
-import VerificationTitle from './VerificationTitle'
-import NodeBody from './NodeBody'
+import NodeBody from '../../../globalComponents/node-structure/NodeBody'
+import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 
 function renderArgumentsLabel(props) {
     if (props.exportData.script.arguments) {
@@ -18,8 +17,8 @@ function renderArgumentsLabel(props) {
 const ScriptNode = (props) => {
     return (
         <div className="graph-node">
-            <VerificationTitle
-                verified={props.verified}
+            <NodeHeader
+                bgColorClass={props.verified ? 'bg-green' : 'bg-orange'}
                 title={props.title}
                 icon={faRocket}
             />

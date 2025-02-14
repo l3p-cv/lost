@@ -1,13 +1,13 @@
-import { API_URL } from '../../lost_settings'
 import axios from 'axios'
-import TYPES from '../../types/index'
 import { http } from 'l3p-frontend'
+import { API_URL } from '../../lost_settings'
+import TYPES from '../../types/index'
+import REQUEST_STATUS from '../../types/requestStatus'
 import {
+    dispatchRequestError,
     dispatchRequestLoading,
     dispatchRequestReset,
-    dispatchRequestError,
 } from '../dispatchHelper'
-import REQUEST_STATUS from '../../types/requestStatus'
 
 const verifyTab = (tabId, verified) => {
     return {
@@ -60,7 +60,7 @@ const deletePipeline = (id) => async (dispatch) => {
     const response = await axios.delete(`${API_URL}/pipeline/${id}`)
     if (response.data === 'success') {
         if (typeof window !== 'undefined') {
-            window.location.href = `${window.location.origin}`
+            window.location.href = `${window.location.origin}/pipelines`
         }
     }
     dispatch({ type: TYPES.PIPELINE_RUNNING_DELETE, payload: response.data })

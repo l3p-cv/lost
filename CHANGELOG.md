@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Replaced `react-notifications` with `sweetalert2` everywhere for consistency
+- Update 'Running Pipeline' workflow to use `reactflow`
  
 ## [2.0.0] - unreleased
 ### Added

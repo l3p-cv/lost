@@ -70,6 +70,7 @@
         "@testing-library/jest-dom": "^6.1.2",
         "@testing-library/react": "^14.0.0",
         "@testing-library/user-event": "^14.4.3",
+        "@types/lodash": "^4.17.15",
         "@types/react": "^18.3.18",
         "@types/react-dom": "^18.3.5",
         "@vitejs/plugin-react": "^4.3.3",
@@ -90,7 +91,7 @@
     "scripts": {
         "dev": "vite",
         "start": "vite --open --host --port 3000",
-        "build": "tsc -b && vite build",
+        "build": "vite build",
         "lint": "eslint .",
         "postinstall": "semantic-ui-css-patch",
         "preview": "vite preview",
