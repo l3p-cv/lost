@@ -1,30 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { ModalHeader, ModalBody, Progress } from 'reactstrap'
-import Table from '../../../../globalComponents/modals/Table'
-import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
-import ArgumentsTable from '../../../../globalComponents/modals/ScriptArgumentsTable'
-import pipelineActions from '../../../../../../actions/pipeline/pipelineRunning'
-import { useDispatch, useSelector } from 'react-redux'
-import IconButton from '../../../../../../components/IconButton'
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
-import * as Notification from '../../../../../../components/Notification'
+import { useState } from 'react'
+import { ModalBody, ModalHeader, Progress } from 'reactstrap'
+import { useUpdatePipelineArguments } from '../../../../../actions/pipeline/pipeline_api'
+import IconButton from '../../../../../components/IconButton'
+import CollapseCard from '../../../globalComponents/modals/CollapseCard'
+import ArgumentsTable from '../../../globalComponents/modals/ScriptArgumentsTable'
+import Table from '../../../globalComponents/modals/Table'
 
-export default (props) => {
-    const dispatch = useDispatch()
-    const updateArgumentsRequestStatus = useSelector(
-        (state) => state.pipelineRunning.step1Data.updateArgumentsRequestStatus,
-    )
+const ScriptModal = (props) => {
     const [scriptArguments, setScriptArguments] = useState(props.script.arguments)
     const progress = props.script.progress
-    useEffect(() => {
-        const notifcationText = 'Updated Arguments.'
-        Notification.handling(
-            updateArgumentsRequestStatus,
-            props.state === 'pending'
-                ? notifcationText
-                : `${notifcationText} Effect only in next Iteration`,
-        )
-    }, [updateArgumentsRequestStatus])
+
+    const { mutate: updatePipelineArguments } = useUpdatePipelineArguments()
 
     const argumentsOnInput = (e) => {
         const key = e.target.getAttribute('data-ref')
@@ -37,9 +24,7 @@ export default (props) => {
             },
         })
     }
-    const updateArguments = async () => {
-        dispatch(pipelineActions.updateArguments(props.id, scriptArguments))
-    }
+
     return (
         <>
             <ModalHeader>Script</ModalHeader>
@@ -95,10 +80,17 @@ export default (props) => {
                         isOutline={false}
                         icon={faCloudUploadAlt}
                         text="Update Arguments"
-                        onClick={updateArguments}
+                        onClick={() =>
+                            updatePipelineArguments({
+                                elementId: props.id,
+                                updatedArguments: scriptArguments,
+                            })
+                        }
                     />
                 </CollapseCard>
             </ModalBody>
         </>
     )
 }
+
+export default ScriptModal

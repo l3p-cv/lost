@@ -2,12 +2,12 @@ import { CCol, CContainer, CRow } from '@coreui/react'
 import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import { Dropdown } from 'semantic-ui-react'
-import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
-import * as datasetApi from '../../../../../../../actions/dataset/dataset_api'
-import HelpButton from '../../../../../../../components/HelpButton'
-import IconButton from '../../../../../../../components/IconButton'
-import { showSuccess } from '../../../../../../../components/Notification'
-import DatasetEditModal from '../../../../../../Datasets/DatasetEditModal'
+import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
+import HelpButton from '../../../../../../components/HelpButton'
+import IconButton from '../../../../../../components/IconButton'
+import { showSuccess } from '../../../../../../components/Notification'
+import DatasetEditModal from '../../../../../Datasets/DatasetEditModal'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 

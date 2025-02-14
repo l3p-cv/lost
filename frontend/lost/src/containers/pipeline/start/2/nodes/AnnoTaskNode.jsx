@@ -5,7 +5,7 @@ const AnnoTaskNode = (props) => {
     return (
         <div className="graph-node">
             <NodeHeader
-                verified={props.verified}
+                bgColorClass={props.verified ? 'bg-green' : 'bg-orange'}
                 title={props.title}
                 icon={faPencilAlt}
             />

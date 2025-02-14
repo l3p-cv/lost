@@ -1,10 +1,10 @@
 import { ReactFlowProvider } from '@xyflow/react'
-import { PipelineDemo } from './PipelineDemo'
+import { LivePipeline } from '../running/LivePipeline'
 
 export const PipelineDemoWrapper = () => {
     return (
         <ReactFlowProvider>
-            <PipelineDemo />
+            <LivePipeline />
         </ReactFlowProvider>
     )
 }

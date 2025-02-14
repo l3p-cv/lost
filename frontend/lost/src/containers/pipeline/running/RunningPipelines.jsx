@@ -1,34 +1,25 @@
+import { CContainer } from '@coreui/react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
-import { useCallback, useState } from 'react'
-import { connect } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import { Progress } from 'reactstrap'
-import { usePipelines } from '../../../../actions/pipeline/pipeline_api'
-import actions from '../../../../actions/pipeline/pipelineRunning'
-import HelpButton from '../../../../components/HelpButton'
-import IconButton from '../../../../components/IconButton'
-import { getColor } from '../../../Annotation/AnnoTask/utils'
+import { usePipelines } from '../../../actions/pipeline/pipeline_api'
+import BaseContainer from '../../../components/BaseContainer'
+import { CenteredSpinner } from '../../../components/CenteredSpinner'
+import HelpButton from '../../../components/HelpButton'
+import IconButton from '../../../components/IconButton'
+import { getColor } from '../../Annotation/AnnoTask/utils'
 
-const { getPipeline, verifyTab, selectTab, reset } = actions
-
-const SelectPipeline = ({ getPipeline, verifyTab, selectTab, reset }) => {
-    const [isPolling, setIsPolling] = useState(true)
-    const { data, isError } = usePipelines(isPolling)
-
-    // Callback to handle row selection
-    const selectRow = useCallback(
-        (id) => {
-            setIsPolling(false)
-            verifyTab(0, true)
-            selectTab(1)
-            reset()
-            getPipeline(id)
-        },
-        [verifyTab, selectTab, reset, getPipeline],
-    )
+export const RunningPipelines = () => {
+    const navigate = useNavigate()
+    const { data, isError, isLoading } = usePipelines()
 
     const renderDatatable = () => {
+        if (isLoading) {
+            return <CenteredSpinner />
+        }
+
         if (isError) {
             return <div className="pipeline-error-message">Error loading data</div>
         }
@@ -104,7 +95,7 @@ const SelectPipeline = ({ getPipeline, verifyTab, selectTab, reset }) => {
                                     color="primary"
                                     size="m"
                                     isOutline={false}
-                                    onClick={() => selectRow(original.id)}
+                                    onClick={() => navigate(`/pipeline/${original.id}`)}
                                     icon={faEye}
                                     text="Open"
                                 />
@@ -125,16 +116,14 @@ const SelectPipeline = ({ getPipeline, verifyTab, selectTab, reset }) => {
         }
     }
 
-    return <div className="pipeline-running-1">{renderDatatable()}</div>
+    return (
+        <CContainer style={{ marginTop: '15px' }}>
+            <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
+                Pipelines
+            </h3>
+            <BaseContainer>
+                <div className="pipeline-running-1">{renderDatatable()}</div>
+            </BaseContainer>
+        </CContainer>
+    )
 }
-
-const mapStateToProps = (state) => ({
-    data: state.pipelineRunning.step0Data,
-})
-
-export default connect(mapStateToProps, {
-    getPipeline,
-    verifyTab,
-    selectTab,
-    reset,
-})(SelectPipeline)

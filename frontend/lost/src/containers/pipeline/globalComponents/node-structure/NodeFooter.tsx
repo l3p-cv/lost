@@ -1,13 +1,13 @@
 import React from 'react'
 
 interface NodeFooterProps {
-    footer: string
+    footer?: string
 }
 
-const NodeFooter: React.FC<NodeFooterProps> = (props) => {
+const NodeFooter: React.FC<NodeFooterProps> = ({ footer }) => {
     let className = ''
 
-    switch (props.footer) {
+    switch (footer) {
         case 'in_progress':
             className = 'bg-orange'
             break
@@ -26,7 +26,7 @@ const NodeFooter: React.FC<NodeFooterProps> = (props) => {
 
     return (
         <div className={`${className} graph-node-footer`}>
-            {props.footer.replace('_', ' ')}
+            {footer?.replace('_', ' ')}
         </div>
     )
 }

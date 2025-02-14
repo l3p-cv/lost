@@ -4,7 +4,11 @@ import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 const DatasourceNode = (props) => {
     return (
         <div className="graph-node">
-            <NodeHeader verified={props.verified} title={props.title} icon={faHdd} />
+            <NodeHeader
+                bgColorClass={props.verified ? 'bg-green' : 'bg-orange'}
+                title={props.title}
+                icon={faHdd}
+            />
             <NodeBody
                 data={[
                     {

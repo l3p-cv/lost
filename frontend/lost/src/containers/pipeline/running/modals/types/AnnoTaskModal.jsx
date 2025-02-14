@@ -1,11 +1,10 @@
-import React from 'react'
-import { ModalHeader, ModalBody } from 'reactstrap'
-import { faEye, faCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faEye, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import Table from '../../../../globalComponents/modals/Table'
-import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
-import * as Notification from '../../../../../../components/Notification'
-import IconButton from '../../../../../../components/IconButton'
+import { ModalBody, ModalHeader } from 'reactstrap'
+import IconButton from '../../../../../components/IconButton'
+import * as Notification from '../../../../../components/Notification'
+import CollapseCard from '../../../globalComponents/modals/CollapseCard'
+import Table from '../../../globalComponents/modals/Table'
 import AnnoTaskTabs from './AnnoTaskModalUtils/AnnoTaskTabs'
 
 // function download(filename, text) {

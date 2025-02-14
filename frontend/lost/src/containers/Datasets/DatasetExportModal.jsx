@@ -1,6 +1,5 @@
-import React from 'react'
-import AnnoTaskTabs from '../pipeline/running/2/modals/types/AnnoTaskModalUtils/AnnoTaskTabs'
 import { CModal, CModalBody, CModalHeader } from '@coreui/react'
+import AnnoTaskTabs from '../pipeline/running/modals/types/AnnoTaskModalUtils/AnnoTaskTabs'
 
 const DatasetExportModal = ({
     isVisible,

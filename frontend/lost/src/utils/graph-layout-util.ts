@@ -1,22 +1,26 @@
 import Dagre from '@dagrejs/dagre'
 import { Edge, Node } from '@xyflow/react'
 
-export const getLayoutedElements = (
+const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}))
+
+export const getLayoutedElements = async (
     nodes: Node[],
     edges: Edge[],
     options: { direction: string },
 ) => {
-    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}))
     g.setGraph({ rankdir: options.direction })
 
-    edges.forEach((edge) => g.setEdge(edge.source, edge.target))
-    nodes.forEach((node) =>
+    for (const edge of edges) {
+        g.setEdge(edge.source, edge.target)
+    }
+
+    for (const node of nodes) {
         g.setNode(node.id, {
             ...node,
             width: node.measured?.width ?? 0,
             height: node.measured?.height ?? 0,
-        }),
-    )
+        })
+    }
 
     Dagre.layout(g)
 

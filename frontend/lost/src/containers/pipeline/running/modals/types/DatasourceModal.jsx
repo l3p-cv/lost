@@ -1,8 +1,8 @@
-import React from 'react'
-import { ModalHeader, ModalBody } from 'reactstrap'
-import Table from '../../../../globalComponents/modals/Table'
-import CollapseCard from '../../../../globalComponents/modals/CollapseCard'
-export default (props) => {
+import { ModalBody, ModalHeader } from 'reactstrap'
+import CollapseCard from '../../../globalComponents/modals/CollapseCard'
+import Table from '../../../globalComponents/modals/Table'
+
+const DatasourceModal = (props) => {
     return (
         <>
             <ModalHeader>Datasource</ModalHeader>
@@ -37,3 +37,5 @@ export default (props) => {
         </>
     )
 }
+
+export default DatasourceModal

@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
+    CBadge,
+    CCol,
+    CContainer,
     CDropdown,
     CDropdownItem,
-    CDropdownToggle,
     CDropdownMenu,
-    CRow,
-    CCol,
-    CFormSwitch,
+    CDropdownToggle,
     CFormInput,
-    CBadge,
-    CContainer,
+    CFormSwitch,
+    CRow,
 } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
-import HelpButton from '../../../../../../../components/HelpButton'
-import IconButton from '../../../../../../../components/IconButton'
-import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
-import * as Notification from '../../../../../../../components/Notification'
+import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import HelpButton from '../../../../../../components/HelpButton'
+import IconButton from '../../../../../../components/IconButton'
+import * as Notification from '../../../../../../components/Notification'
 
 const TabGenerateExport = ({ annotaskId, imgCount, annotatedImgCount, setActive }) => {
     const {

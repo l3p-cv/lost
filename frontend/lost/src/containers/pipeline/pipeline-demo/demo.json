@@ -1,37 +1,27 @@
 {
     "elements": [
         {
-            "peN": 0,
-            "peOut": [1],
+            "id": 4,
+            "peN": 4,
+            "peOut": [5],
+            "state": "finished",
             "datasource": {
-                "name": "image path",
-                "type": "rawFile",
-                "fileTree": {},
-                "filesystems": [
-                    {
-                        "name": "default",
-                        "id": 1,
-                        "rootPath": "/home/lost/data",
-                        "permission": "rw",
-                        "fsType": "file"
-                    },
-                    {
-                        "name": "admin",
-                        "id": 2,
-                        "rootPath": "/home/lost/data/1",
-                        "permission": "rw",
-                        "fsType": "file"
-                    }
-                ]
+                "id": 2,
+                "rawFilePath": "/home/lost/data/1/media"
             }
         },
         {
-            "peN": 1,
-            "peOut": [2],
+            "id": 5,
+            "peN": 5,
+            "peOut": [6],
+            "state": "finished",
             "script": {
-                "path": "tiny_yolo_triton_sia_loop.py",
-                "description": "Model from triton server requested bounding boxes with labels.",
+                "id": 10,
+                "isDebug": false,
+                "debugSession": null,
                 "name": "triton_semi.tiny_yolo_triton_sia_loop.py",
+                "description": "Model from triton server requested bounding boxes with labels.",
+                "path": "pipes/lost_semi_auto_pipes/triton_semi/tiny_yolo_triton_sia_loop.py",
                 "arguments": {
                     "valid_imgtypes": {
                         "value": "['.jpg', '.jpeg', '.png', '.bmp']",
@@ -54,16 +44,26 @@
                         "help": "batch size of the images to annotate per loop"
                     }
                 },
-                "id": 10,
-                "envs": "[\"lost\"]"
+                "envs": "[\"lost\"]",
+                "progress": 100,
+                "errorMsg": null,
+                "warningMsg": null,
+                "logMsg": null
             }
         },
         {
-            "peN": 2,
-            "peOut": [5],
+            "id": 6,
+            "peN": 6,
+            "peOut": [8],
+            "state": "finished",
             "annoTask": {
+                "id": 2,
                 "name": "Single Image Annotation Task",
                 "type": "sia",
+                "userName": "admin",
+                "progress": 100,
+                "imgCount": 0,
+                "annotatedImgCount": 0,
                 "instructions": "Please check and draw bounding boxes for all objects in image.",
                 "configuration": {
                     "tools": {
@@ -88,33 +88,55 @@
                             "label": true
                         }
                     }
-                }
+                },
+                "labelLeaves": [
+                    {
+                        "id": 1,
+                        "name": "VOC2012",
+                        "color": null
+                    }
+                ]
             }
         },
         {
-            "peN": 4,
-            "peOut": null,
+            "id": 7,
+            "peN": 7,
+            "peOut": [],
+            "state": "pending",
             "loop": {
+                "id": 1,
                 "maxIteration": null,
-                "peJumpId": 1
+                "iteration": 0,
+                "isBreakLoop": true,
+                "peJumpId": 5
             }
         },
         {
-            "peN": 5,
-            "peOut": [4, 6],
+            "id": 8,
+            "peN": 8,
+            "peOut": [7, 9],
+            "state": "script_error",
             "script": {
-                "path": "export_label_dict.py",
-                "description": "Export the label dict as json file and the anno data as parquet.",
-                "name": "triton_semi.export_label_dict.py",
-                "arguments": null,
                 "id": 11,
-                "envs": "[\"lost\"]"
+                "isDebug": false,
+                "debugSession": null,
+                "name": "triton_semi.export_label_dict.py",
+                "description": "Export the label dict as json file and the anno data as parquet.",
+                "path": "pipes/lost_semi_auto_pipes/triton_semi/export_label_dict.py",
+                "arguments": null,
+                "envs": "[\"lost\"]",
+                "progress": null,
+                "errorMsg": "2025-01-22 15:24:31.631424\nTraceback (most recent call last):\n  File \"/code/src/backend/lost/pyapi/script.py\", line 91, in _run\n    self.main()\n  File \"/home/lost/app/pipes/lost_semi_auto_pipes/triton_semi/export_label_dict.py\", line 24, in main\n    df = self.inp.to_df()\n  File \"/code/src/backend/lost/pyapi/inout.py\", line 162, in to_df\n    return pd.concat(df_list)\n  File \"/opt/mambaforge/envs/lost/lib/python3.10/site-packages/pandas/core/reshape/concat.py\", line 372, in concat\n    op = _Concatenator(\n  File \"/opt/mambaforge/envs/lost/lib/python3.10/site-packages/pandas/core/reshape/concat.py\", line 429, in __init__\n    raise ValueError(\"No objects to concatenate\")\nValueError: No objects to concatenate\n\nPipeElementID = 8",
+                "warningMsg": null,
+                "logMsg": null
             }
         },
         {
-            "peN": 6,
-            "peOut": null,
-            "dataExport": {}
+            "id": 9,
+            "peN": 9,
+            "peOut": [],
+            "state": "pending",
+            "dataExport": []
         }
     ]
 }

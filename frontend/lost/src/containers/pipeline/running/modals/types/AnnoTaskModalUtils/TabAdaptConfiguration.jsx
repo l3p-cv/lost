@@ -1,7 +1,6 @@
-import React from 'react'
-import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
-import SelectSIAConfiguration from '../../../../../start/2/modals/types/annoTaskModal/5/SelectSIAConfiguration'
-import SelectMIAConfiguration from '../../../../../start/2/modals/types/annoTaskModal/5/SelectMIAConfiguration'
+import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
+import SelectMIAConfiguration from '../../../../start/2/modals/types/annoTaskModal/5/SelectMIAConfiguration'
+import SelectSIAConfiguration from '../../../../start/2/modals/types/annoTaskModal/5/SelectSIAConfiguration'
 
 const TabAdaptConfiguration = ({ id, type, configuration }) => {
     const { data: annoTaskConfigUpdateDate, mutate: updateAnnoTaskConfig } =

@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react'
-import { useInterval } from 'react-use'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-    faWandMagicSparkles,
-    faUsers,
-    faTags,
-    faGears,
-    faDownload,
     faBox,
+    faDownload,
+    faGears,
+    faTags,
+    faUsers,
+    faWandMagicSparkles,
 } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useEffect, useState } from 'react'
+import { useInterval } from 'react-use'
 
 import { CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
 
-import TabUser from './TabUser'
-import TabGenerateExport from './TabGenerateExport'
-import TabAvailableExports from './TabAvailableExports'
-import TabShowLabels from './TabShowLabel'
+import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 import TabAdaptConfiguration from './TabAdaptConfiguration'
-import * as annoTaskApi from '../../../../../../../actions/annoTask/anno_task_api'
+import TabAvailableExports from './TabAvailableExports'
+import TabGenerateExport from './TabGenerateExport'
+import TabShowLabels from './TabShowLabel'
 import TabStorageSettings from './TabStorageSettings'
+import TabUser from './TabUser'
 
 const AnnoTaskTabs = ({
     annotask,

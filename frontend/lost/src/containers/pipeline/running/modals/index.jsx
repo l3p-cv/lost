@@ -1,28 +1,20 @@
-import React from 'react'
-import DatasourceModal from './types/DatasourceModal'
-import ScriptModal from './types/ScriptModal'
-import AnnoTaskModal from './types/AnnoTaskModal'
-import LoopModal from './types/LoopModal'
-import VisualOutputModal from './types/VisualOutputModal'
-import DataExportModal from './types/DataExportModal'
-import { Modal, ModalFooter } from 'reactstrap'
-import IconButton from '../../../../../components/IconButton'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { connect } from 'react-redux'
-import actions from '../../../../../actions/pipeline/pipelineRunning'
-import actionsAll from '../../../../../actions'
+import { Modal, ModalFooter } from 'reactstrap'
+import actionsAll from '../../../../actions'
+import IconButton from '../../../../components/IconButton'
+import AnnoTaskModal from './types/AnnoTaskModal'
+import DataExportModal from './types/DataExportModal'
+import DatasourceModal from './types/DatasourceModal'
+import LoopModal from './types/LoopModal'
+import ScriptModal from './types/ScriptModal'
 
-const { toggleModal } = actions
 const { siaReviewSetElement, chooseAnnoTask, forceAnnotationRelease, changeUser } =
     actionsAll
 
 const BaseModal = (props) => {
-    const toggleModal = () => {
-        props.toggleModal(props.step.modalClickedId)
-    }
-
     const selectModal = () => {
-        if (props.data && props.step.modalOpened) {
+        if (props.data && props.modalOpened) {
             if ('datasource' in props.data) {
                 return <DatasourceModal {...props.data} />
             } else if ('script' in props.data) {
@@ -41,15 +33,13 @@ const BaseModal = (props) => {
                 return <DataExportModal {...props.data} />
             } else if ('loop' in props.data) {
                 return <LoopModal {...props.data} />
-            } else if ('visualOutput' in props.data) {
-                return <VisualOutputModal {...props.data} />
             }
         }
     }
 
     const renderModals = () => {
         return (
-            <Modal size="lg" isOpen={props.step.modalOpened} toggle={toggleModal}>
+            <Modal size="lg" isOpen={props.modalOpened} toggle={props.toggleModal}>
                 {selectModal()}
                 <ModalFooter>
                     <IconButton
@@ -57,7 +47,7 @@ const BaseModal = (props) => {
                         isOutline={false}
                         icon={faTimes}
                         text="Close"
-                        onClick={toggleModal}
+                        onClick={props.toggleModal}
                     />
                 </ModalFooter>
             </Modal>
@@ -67,14 +57,7 @@ const BaseModal = (props) => {
     return <div>{renderModals()}</div>
 }
 
-const mapStateToProps = (state) => {
-    return {
-        step: state.pipelineRunning.steps[1],
-    }
-}
-
-export default connect(mapStateToProps, {
-    toggleModal,
+export default connect(null, {
     siaReviewSetElement,
     chooseAnnoTask,
     forceAnnotationRelease,

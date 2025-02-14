@@ -17,7 +17,11 @@ function renderArgumentsLabel(props) {
 const ScriptNode = (props) => {
     return (
         <div className="graph-node">
-            <NodeHeader verified={props.verified} title={props.title} icon={faRocket} />
+            <NodeHeader
+                bgColorClass={props.verified ? 'bg-green' : 'bg-orange'}
+                title={props.title}
+                icon={faRocket}
+            />
             <NodeBody
                 data={[
                     {

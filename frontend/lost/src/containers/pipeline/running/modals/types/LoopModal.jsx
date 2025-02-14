@@ -1,8 +1,7 @@
-import React from 'react'
-import { ModalHeader, ModalBody } from 'reactstrap'
-import Table from '../../../../globalComponents/modals/Table'
+import { ModalBody, ModalHeader } from 'reactstrap'
+import Table from '../../../globalComponents/modals/Table'
 
-export default (props) => {
+const LoopModal = (props) => {
     return (
         <>
             <ModalHeader>Loop Modal</ModalHeader>
@@ -47,3 +46,5 @@ export default (props) => {
         </>
     )
 }
+
+export default LoopModal

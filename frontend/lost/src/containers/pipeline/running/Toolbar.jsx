@@ -20,17 +20,17 @@ import {
     ModalFooter,
     ModalHeader,
 } from 'reactstrap'
-import actions from '../../../../actions/pipeline/pipelineRunning'
-import startActions from '../../../../actions/pipeline/pipelineStart'
-import HelpButton from '../../../../components/HelpButton'
-import IconButton from '../../../../components/IconButton'
-import LogModal from '../../../../components/LogModal'
-import GrayLine from '../../globalComponents/GrayLine'
+import actions from '../../../actions/pipeline/pipelineRunning'
+import startActions from '../../../actions/pipeline/pipelineStart'
+import HelpButton from '../../../components/HelpButton'
+import IconButton from '../../../components/IconButton'
+import LogModal from '../../../components/LogModal'
+import GrayLine from '../globalComponents/GrayLine'
 import {
     alertClose,
     alertDeletePipeline,
     alertLoading,
-} from '../../globalComponents/Sweetalert'
+} from '../globalComponents/Sweetalert'
 import ToolbarTooltip from './ToolbarTooltip'
 
 const { pausePipeline, playPipeline, deletePipeline, downloadLogfile } = actions

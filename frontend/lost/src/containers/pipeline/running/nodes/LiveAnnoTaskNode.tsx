@@ -19,7 +19,7 @@ export const LiveAnnoTaskNode = (props: NodeProps<LiveAnnoTaskNode>) => {
         <>
             <Handle type="target" position={Position.Top} />
             <div className="graph-node">
-                <NodeHeader title={'Anno Task'} icon={faPencilAlt} />
+                <NodeHeader title={'Annotation Task'} icon={faPencilAlt} />
                 <NodeBody
                     data={[
                         {
@@ -28,7 +28,9 @@ export const LiveAnnoTaskNode = (props: NodeProps<LiveAnnoTaskNode>) => {
                         },
                     ]}
                 >
-                    <Progress value={props.data.progress}>{props.data.progress}</Progress>
+                    <Progress value={props.data.progress}>
+                        {props.data.progress}%
+                    </Progress>
                 </NodeBody>
                 <NodeFooter footer={props.data.state}></NodeFooter>
             </div>

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import actions from '../../../../../../../actions'
-import Datatable from '../../../../../../../components/Datatable'
-import * as userApi from '../../../../../../../actions/user/user_api'
-import { alertSuccess } from '../../../../../globalComponents/Sweetalert'
-import IconButton from '../../../../../../../components/IconButton'
+import actions from '../../../../../../actions'
+import * as userApi from '../../../../../../actions/user/user_api'
+import Datatable from '../../../../../../components/Datatable'
+import IconButton from '../../../../../../components/IconButton'
+import { alertSuccess } from '../../../../globalComponents/Sweetalert'
 
 const TabUser = ({ annotaskId, annotaskUser, changeUser }) => {
     const { data: users } = userApi.useAnnotaskUser()

@@ -10,7 +10,6 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
-import RunningPipelinesComponent from './containers/pipeline/running/RunningPipeline'
 import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
 
 import {
@@ -25,7 +24,6 @@ import {
     FaTools,
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
-import { PipelineDemoWrapper } from './containers/pipeline/pipeline-demo/PipelineDemoWrapper'
 import { PipelineView } from './containers/pipeline/running/PipelineView'
 import { RunningPipelines } from './containers/pipeline/running/RunningPipelines'
 
@@ -133,13 +131,6 @@ const RunningPipelinesPage = {
     icon: <FaTasks {...iconProps} />,
 }
 
-const OldRunningPipelinesPage = {
-    name: 'Pipelines(Old)',
-    to: '/pipelines-old',
-    component: RunningPipelinesComponent,
-    icon: <FaTasks {...iconProps} />,
-}
-
 const PipelinePage = {
     path: '/pipeline/:pipelineId',
     // exact: true,
@@ -165,11 +156,6 @@ const MyProfile = {
     component: MyProfileComponent,
 }
 
-const PipelineDemoPage = {
-    path: '/pipeline_demo',
-    component: PipelineDemoWrapper,
-}
-
 const guiSetup = {
     additionalRoutes: [
         Sia,
@@ -178,7 +164,6 @@ const guiSetup = {
         SiaReview,
         AnnotaskReview,
         DatasetsReview,
-        PipelineDemoPage,
         PipelinePage,
     ],
     Administrator: {
@@ -187,7 +172,6 @@ const guiSetup = {
             DesignerDashboard,
             TitleProject,
             RunningPipelinesPage,
-            OldRunningPipelinesPage,
             StartPipelines,
             Labels,
             Datasets,
@@ -205,7 +189,6 @@ const guiSetup = {
             DesignerDashboard,
             TitleProject,
             RunningPipelinesPage,
-            OldRunningPipelinesPage,
             StartPipelines,
             Labels,
             Datasets,

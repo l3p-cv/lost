@@ -5,7 +5,11 @@ import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 const VisualOutputNode = (props) => {
     return (
         <div className="graph-node">
-            <NodeHeader verified={props.verified} title={props.title} icon={faChartBar} />
+            <NodeHeader
+                bgColorClass={props.verified ? 'bg-green' : 'bg-orange'}
+                title={props.title}
+                icon={faChartBar}
+            />
             <NodeBody>
                 <span>
                     <FontAwesomeIcon icon={faChartBar} size="3x" />

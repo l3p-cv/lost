@@ -4,8 +4,8 @@ import { connect } from 'react-redux'
 import { ModalBody, ModalHeader } from 'reactstrap'
 
 import ReactTable from 'react-table'
-import IconButton from '../../../../../../components/IconButton'
-import { API_URL } from '../../../../../../lost_settings'
+import IconButton from '../../../../../components/IconButton'
+import { API_URL } from '../../../../../lost_settings'
 
 const DataExportModal = ({ dataExport }) => {
     const downloadFile = (de_id, fileName) => {
