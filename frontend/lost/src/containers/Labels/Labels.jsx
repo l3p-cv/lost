@@ -33,7 +33,7 @@ const Labels = ({ visLevel }) => {
     }
 
     const handleLabelTreeExport = (labelLeafId) => {
-        fetch(`${window.API_URL}/label/export/${labelLeafId}`, {
+        fetch(`${window.API_URL}/label/${labelLeafId}/export`, {
             method: 'get',
             headers: new Headers({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,

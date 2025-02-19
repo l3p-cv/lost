@@ -13,6 +13,8 @@ from sqlalchemy.sql import func
 from lost.db import dtype
 import json
 import os
+from lost import settings
+
 import pandas as pd
 
 # Set conventions for foreign key name generation
@@ -1035,10 +1037,10 @@ class AnnoTask(Base):
             "pipe_element_id": self.pipe_element_id,
             "datasetId": self.dataset_id,
             "datastoreId": self.datastore_id,
-            "createdAt": self.timestamp,
+            "created_at": self.timestamp,
             "name": self.name,
             "description": f'Progress: {annotask_progress}%',
-            "isAnnotask": True
+            "is_annotask": True
         }
 
 
@@ -1471,6 +1473,24 @@ class AnnoTaskExport(Base):
         self.progress = progress
         self.img_count = img_count
 
+    def to_dict(self):
+            '''Transform this object to a dict.
+
+            Returns:
+                dict:
+            '''
+            return {
+                'idx': self.idx,
+                'file_path': self.file_path,
+                'file_size': int(self.file_size) if self.file_size else 0,
+                'fs_id': self.fs_id,
+                'timestamp': self.timestamp.strftime(settings.STRF_TIME),
+                'name': self.name,
+                'anno_task_id': self.anno_task_id,
+                'progress': self.progress,
+                'anno_task_progress': self.anno_task_progress,
+                'img_count': self.img_count,
+            }
 
 class Loop(Base):
     '''Defines a Loop element in a pipeline.
