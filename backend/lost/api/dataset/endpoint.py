@@ -611,29 +611,29 @@ class DatasetReview(Resource):
 
         return json_response
 
-
-@namespace.route("/<int:dataset_id>/review/searchImage")
-@api.doc(security="apikey")
+@namespace.route('/<int:dataset_id>/review/images')
+@api.doc(security='apikey')
 class DatasetReviewImageSearch(Resource):
     @api.doc(description="Get data for the next dataset review annotation")
-    @api.expect(datasetImageSearchRequestModel)
-    @api.response(200, "success", [datasetModel])
+    @api.param('filter', 'String to search for')
+    @api.param('labels', 'String to search for')
+
+    # @api.expect(datasetImageSearchRequestModel)
+    @api.response(200, 'success', [datasetModel])
     @jwt_required
-    def post(self, dataset_id):
+    def get(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return (
-                "You need to be {} in order to perform this request.".format(
-                    roles.DESIGNER
-                ),
-                401,
-            )
-
-        data = request.json
-        search_str = data["filter"]
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        
+        # data = request.json
+        # search_str = data['filter']
+        search_str = request.args.get('filter')
+        labels = request.args.get('labels')
+        
 
         anno_task_ids = get_all_annotask_ids_for_ds(dbm, dataset_id)
         db_result = dbm.get_search_images_in_annotask_list(
@@ -657,9 +657,10 @@ class DatasetReviewImageSearch(Resource):
                 }
             )
 
+
         # filter for images annotated with specific labels if labels are in the request
-        if "labels" in data:
-            search_labels = data["labels"]
+        if labels is not None:
+            search_labels = list(map(int, labels.split(',')))
 
             # no labels -> no images
             if len(search_labels) == 0:

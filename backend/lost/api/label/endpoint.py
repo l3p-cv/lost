@@ -9,13 +9,13 @@ from lost.db.vis_level import VisLevel
 from lost.settings import LOST_CONFIG
 from lost.logic.label import LabelTree
 from io import BytesIO
-import flask 
 
 namespace = api.namespace('label', description='Label API.')
 
 @namespace.route('/tree/<string:visibility>') 
 @api.doc(security='apikey')
 class LabelTrees(Resource):
+    @api.doc(security='apikey',description='Get all Label trees falling into the given visibility level')
     #@api.marshal_with()
     @jwt_required 
     def get(self, visibility):
@@ -63,6 +63,7 @@ class LabelTrees(Resource):
 @namespace.route('/<string:visibility>')
 @api.doc(security='apikey')
 class LabelEditNew(Resource):
+    @api.doc(security='apikey',description='Update Label')
     @api.expect(update_label_parser)
     @jwt_required 
     def patch(self, visibility):
@@ -84,6 +85,7 @@ class LabelEditNew(Resource):
             dbm.close_session()
             return 'success'
 
+    @api.doc(security='apikey',description='Add new Label')
     @api.expect(create_label_parser)
     @jwt_required 
     def post(self, visibility):
@@ -127,6 +129,7 @@ class LabelEditNew(Resource):
 @namespace.param('label_leaf_id', 'The group identifier')
 @api.doc(security='apikey')
 class Label(Resource):
+    @api.doc(security='apikey',description='Get Label Leaf with given ID')
     @api.marshal_with(label_leaf)
     @jwt_required 
     def get(self,label_leaf_id):
@@ -140,7 +143,8 @@ class Label(Resource):
             re = dbm.get_label_leaf(label_leaf_id)
             dbm.close_session()
             return re
-
+        
+    @api.doc(security='apikey',description='Delete Label with given ID')
     @jwt_required 
     def delete(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -156,9 +160,10 @@ class Label(Resource):
             dbm.close_session()
             return "success"
 
-@namespace.route('/export/<int:label_leaf_id>')
+@namespace.route('/<int:label_leaf_id>/export')
 @api.doc(security='apikey')
 class ExportLabelTree(Resource):
+    @api.doc(security='apikey',description='Get Export of a label Tree with the given label leaf as root, exported as CSV transmitted as BLOB')
     @jwt_required 
     def get(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)

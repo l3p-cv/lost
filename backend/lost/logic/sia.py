@@ -116,6 +116,7 @@ def get_label_trees(db_man, user_id, at=None):
                 label_leaf_json = dict()
                 label_leaf_json['id'] = label_leaf.idx
                 label_leaf_json['label'] = label_leaf.name
+                label_leaf_json['name'] = label_leaf.name
                 label_leaf_json['nameAndClass'] = label_leaf.name + " (" + rll.label_leaf.name + ")"
                 label_leaf_json['description'] = label_leaf.description
                 if label_leaf.color and label_leaf.color != '':

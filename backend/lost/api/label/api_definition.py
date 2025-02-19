@@ -11,7 +11,8 @@ label_leaf = api.model('Label Leaf',{
     'leaf_id': fields.String(description='An external leaf id for this label.'),
     'group': fields.Nested(group, description='The group  this label belongs to.'),
     'is_root': fields.Boolean(description='Weather this label is the first label in a tree.'),
-    'color': fields.String(description='Color in Hex-Format of that label leaf.')
+    'color': fields.String(description='Color in Hex-Format of that label leaf.'),
+    'label':fields.String(description='Label Name of the Label.')
 })
 
 label_tree = api.model('Label Tree', {

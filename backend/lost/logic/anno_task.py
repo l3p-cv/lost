@@ -127,19 +127,20 @@ def get_at_info(dbm, annotask, user_id, amount_per_label=False):
     at = dict()
     at['name'] = annotask.name
     at['id'] = annotask.idx
-    at['pipelineName'] = pipeline.name
-    at['pipelineCreator'] = pipeline.manager.user_name
+    at['progress'] = annotask.progress
+    at['pipeline_name'] = pipeline.name
+    at['pipeline_creator'] = pipeline.manager.user_name
     at['group'] = annotask.group.name
     at['instructions'] = annotask.instructions
-    at['createdAt'] = None
+    at['created_at'] = None
     if annotask.timestamp:
-        at['createdAt'] = annotask.timestamp.strftime(settings.STRF_TIME)
-    at['lastActivity'] = None
+        at['created_at'] = annotask.timestamp.strftime(settings.STRF_TIME)
+    at['last_activity'] = None
     if annotask.last_activity:
-        at['lastActivity'] = annotask.last_activity.strftime(settings.STRF_TIME)
-    at['lastAnnotator'] = "N/A"
+        at['last_activity'] = annotask.last_activity.strftime(settings.STRF_TIME)
+    at['last_annotator'] = "N/A"
     if annotask.last_annotator:
-        at['lastAnnotator'] = annotask.last_annotator.user_name
+        at['last_annotator'] = annotask.last_annotator.user_name
     at['type'] = None
     at['finished'] = None
     at['size'] = None
@@ -153,8 +154,8 @@ def get_at_info(dbm, annotask, user_id, amount_per_label=False):
     elif annotask.state == state.AnnoTask.PAUSED:
         at['status'] = 'paused'
     at['statistic'] = dict()
-    at['statistic']['amountPerLabel'] = []
-    at['statistic']['secondsPerAnno'] = None
+    at['statistic']['amount_per_label'] = []
+    at['statistic']['seconds_per_anno'] = None
     if annotask.dtype == dtype.AnnoTask.MIA:
         at['type'] = 'MIA'
         config = json.loads(annotask.configuration)
@@ -164,16 +165,16 @@ def get_at_info(dbm, annotask, user_id, amount_per_label=False):
             at['finished'] = finished
             at['size'] = available
             if amount_per_label:
-                at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'imageBased')
-                at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'imageBased')
+                at['statistic']['amount_per_label'] = __get_amount_per_label(dbm, pipeelement, finished, 'imageBased')
+                at['statistic']['seconds_per_anno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'imageBased')
         elif config['type'] == 'annoBased':
             remaining, available = __get_two_d_anno_counts(dbm, annotask.idx, pipeelement.iteration)
             finished = available-remaining
             at['finished'] = finished
             at['size'] = available
             if amount_per_label:
-                at['statistic']['amountPerLabel'] = __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
-                at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
+                at['statistic']['amount_per_label'] = __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
+                at['statistic']['seconds_per_anno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
     else:
         at['type'] = 'SIA'
         remaining, available = __get_image_anno_counts(dbm, annotask.idx, pipeelement.iteration)
@@ -181,8 +182,8 @@ def get_at_info(dbm, annotask, user_id, amount_per_label=False):
         at['finished'] = finished
         at['size'] = available
         if amount_per_label:
-            at['statistic']['amountPerLabel'] =  __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
-            at['statistic']['secondsPerAnno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
+            at['statistic']['amount_per_label'] =  __get_amount_per_label(dbm, pipeelement, finished, 'annoBased')
+            at['statistic']['seconds_per_anno'] = __get_seconds_per_anno(dbm, pipeelement, user_id, 'annoBased')
     
     return at
 

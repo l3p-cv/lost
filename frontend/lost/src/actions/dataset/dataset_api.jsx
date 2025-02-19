@@ -25,7 +25,7 @@ export const useFlatDatasets = () => {
 export const useDatastoreKeys = () => {
     return useQuery(
         ['datastoresKey'],
-        () => axios.get(`${API_URL}/data/datastoresKey`).then((res) => res.data),
+        () => axios.get(`${API_URL}/data/storeKeys`).then((res) => res.data),
         {
             initialData: [],
         },
