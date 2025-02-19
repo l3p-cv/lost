@@ -23,7 +23,7 @@ export const useGetStorageSettings = (annoTaskId) => {
 export const useUpdateStorageSettings = () => {
     return useMutation((data) =>
         axios
-            .patch(`${API_URL}/annotasks/${data.annoTaskId}/storage_settings`, data)
+            .patch(`${API_URL}/annotasks/${data.annotaskId}/storage_settings`, data)
             .then((res) => res),
     )
 }

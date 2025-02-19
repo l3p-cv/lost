@@ -289,7 +289,7 @@ class GetAnnoTaskStorageSettings(Resource):
         
         anno_task = dbm.get_anno_task(annotask_id)
         data = json.loads(request.data)
-        args = annotask_config_parser.parse_args(request)
+        args = storage_parser.parse_args(request)
         
         # save dataset if given
         if 'datasetId' in data:
