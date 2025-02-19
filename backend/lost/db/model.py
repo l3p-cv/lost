@@ -1040,7 +1040,7 @@ class AnnoTask(Base):
             "created_at": self.timestamp,
             "name": self.name,
             "description": f'Progress: {annotask_progress}%',
-            "is_annotask": True
+            "isAnnotask": True
         }
 
 
