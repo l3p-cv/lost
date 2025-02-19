@@ -478,11 +478,13 @@ class DatasetReview(Resource):
         return json_response
 
 
-@namespace.route('/<int:dataset_id>/review/searchImage')
+@namespace.route('/<int:dataset_id>/review/images')
 @api.doc(security='apikey')
 class DatasetReviewImageSearch(Resource):
     @api.doc(description="Get data for the next dataset review annotation")
-    @api.expect(datasetImageSearchRequestModel)
+    @api.param('filter', 'String to search for')
+
+    # @api.expect(datasetImageSearchRequestModel)
     @api.response(200, 'success', [datasetModel])
     @jwt_required
     def post(self, dataset_id):
@@ -493,8 +495,9 @@ class DatasetReviewImageSearch(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         
-        data = request.json
-        search_str = data['filter']
+        # data = request.json
+        # search_str = data['filter']
+        search_str = request.args.get('filter')
 
         anno_task_ids = get_all_annotask_ids_for_ds(dbm, dataset_id)
         db_result = dbm.get_search_images_in_annotask_list(anno_task_ids, search_str)

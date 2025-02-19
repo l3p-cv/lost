@@ -167,3 +167,16 @@ sia_update = api.model('SIA Update',{
     'isJunk': fields.Boolean(description='Indicates wether the image was marked as Junk by the annotator.', required=True),
     'isAutoSave': fields.Boolean(description='Indicates wether this update is an auto save request', required=True)
 })
+
+label_leaf = api.model('Label Leaf',{
+    'id': fields.Integer(readOnly=True, description='The identifier of the label leaf.'),
+    'name': fields.String(description='The name of the label leaf.'),
+    'description': fields.String(description='The description of the label leaf.'),
+    'label': fields.String(description='Name if the Label'),
+    'nameAndClass': fields.String(description='Combination of name and class'),
+    'color': fields.String(description='Color in Hex-Format of that label leaf.')
+})
+
+labels = api.model('Labels', {
+    'labels': fields.List(fields.Nested(label_leaf)) 
+})

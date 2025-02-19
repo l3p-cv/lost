@@ -99,6 +99,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - bun is now used instead of npm
 - switched from mambaforge to miniforge
 - Apply code reformatting using .prettierrc on all files
+- Change lots of api endpoints so they are more RESTful mainly:
+  - Annotasks,Mia,Sia
+  - Moved some endpoints from sia to pipeline
+  - Added Doc Strings to all apis
+  - Used correct html Methods for the varios api calls
+  - datasets and file access was not changed at all
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on
@@ -115,6 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - close dask client in webservice endpoints to prevent memory leaks
 - request_lds_annos -> Also take care of img_is_junk info when requesting annos again
 - Fix build scripts for the production version so they work again
+- Fix CSS for Sia and size of Containers so the UI looks correct
 - Labels Page Edit function was not working because of rerender loop this is fixed now
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 

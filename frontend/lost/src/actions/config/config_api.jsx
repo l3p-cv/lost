@@ -14,6 +14,6 @@ export const useConfig = () => {
 
 export const useSaveConfig = () => {
     return useMutation((data) =>
-        axios.post(`${API_URL}/config`, data).then((res) => res.data),
+        axios.patch(`${API_URL}/config`, data).then((res) => res.data),
     )
 }

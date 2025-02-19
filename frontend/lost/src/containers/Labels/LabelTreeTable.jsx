@@ -34,7 +34,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
         return amountOfLabels
     }
     function handleLabelTreeExport(label_leaf_id) {
-        fetch(`${API_URL}/label/export/${label_leaf_id}`, {
+        fetch(`${API_URL}/label/${label_leaf_id}/export`, {
             method: 'get',
             headers: new Headers({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
