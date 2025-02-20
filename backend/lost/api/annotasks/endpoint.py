@@ -381,7 +381,7 @@ class Exports(Resource):
                 export_json = export.to_dict()  
                 if export.file_path:
                     file_type = export.file_path.split('.')[-1]                
-                export_json['file_type'] = file_type
+                    export_json['file_type'] = file_type
                 ret_json.append(export_json)
             dbm.close_session()
             return {'anno_task_exports':ret_json}, 200
