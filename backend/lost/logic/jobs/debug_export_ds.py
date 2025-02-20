@@ -1,9 +1,9 @@
 from lost.logic.jobs.jobs import export_ds
 
 def main(include_images=False, annotated_images_only=False):
-    pe_id = 3162
-    user_id = 9
-    export_id = 246
+    pe_id = 7524
+    user_id = 1
+    export_id = 533
     export_type = "LOST_Dataset"
     splits = None
     export_name = 'LOST_Annotation'

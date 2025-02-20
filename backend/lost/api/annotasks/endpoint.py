@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from flask_restx import Resource
 from flask import request, make_response
@@ -391,7 +392,7 @@ class Exports(Resource):
 @api.doc(security='apikey')
 
 class DataExportDownload(Resource):
-    @api.marshal_with(anno_task_export_download)
+    # @api.marshal_with(anno_task_export_download)
     @api.doc(security='apikey',description='Get the export with the given id in binary format')
     @jwt_required 
     def get(self, anno_task_export_id):
@@ -410,9 +411,14 @@ class DataExportDownload(Resource):
             ufa = UserFileAccess(dbm, user, fs_db)
 
             my_file = ufa.load_file(anno_task_export.file_path)
-
+            export_name = os.path.basename(anno_task_export.file_path)
+            resp = make_response(my_file)
+            resp.headers["Content-Disposition"] = f"attachment; filename={export_name}"
+            resp.headers["Content-Type"] = "blob"
             dbm.close_session()
-            return {'export':my_file}, 200
+            return resp
+            # dbm.close_session()
+            # return {'export':my_file}, 200
             # return 500
 
     @api.doc(security='apikey',description='Delete the export with the given id')

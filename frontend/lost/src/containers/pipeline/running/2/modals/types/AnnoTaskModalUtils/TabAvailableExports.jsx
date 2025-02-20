@@ -18,33 +18,19 @@ const TabAvailableExports = (props) => {
         status: deleteExportStatus,
     } = annoTaskApi.useDeleteExport()
 
-    function stringToBlob(byteString, mimeType) {
-        // Remove the leading "b'" and trailing "'"
-        const cleanString = byteString.slice(2, -1)
-
-        // Decode the escaped characters (e.g., \x15 -> binary)
-        const byteCharacters = cleanString.replace(/\\x([0-9A-Fa-f]{2})/g, (_, hex) =>
-            String.fromCharCode(parseInt(hex, 16)),
-        )
-
-        // Convert to Uint8Array
-        const byteArray = new Uint8Array(
-            byteCharacters.split('').map((char) => char.charCodeAt(0)),
-        )
-
-        // Create a Blob
-        return new Blob([byteArray], { type: mimeType })
-    }
-
     const downloadFile = (dataExportId, dataExportType, dataExportName) => {
         axios
-            .get(`${API_URL}/annotasks/exports/${dataExportId}`)
-            .then((res) => {
-                return stringToBlob(res.data.export, 'application/octet-stream')
+            .get(`${API_URL}/annotasks/exports/${dataExportId}`, {
+                responseType: 'blob' // will make sure, that response is interpreted as blob
             })
-
-            .then((blob) => saveAs(blob, `${dataExportName}.${dataExportType}`))
-    }
+            .then((res) => {
+                const blob = new Blob([res.data], { type: 'application/octet-stream' });
+                saveAs(blob, `${dataExportName}.${dataExportType}`);
+            })
+            .catch((error) => {
+                console.error('Download fehlgeschlagen:', error);
+            });
+    };
 
     const handleAnnotaskExportDelete = (annoTaskExportId) => {
         Notification.showDecision({
