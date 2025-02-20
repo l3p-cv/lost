@@ -7,11 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] -
 ### Added
 - Your stuff
-
-### Changed
-- Replaced `react-notifications` with `sweetalert2` everywhere for consistency
  
-## [2.0.0] - unreleased
+## [2.0.0] - 2025-02-20
 ### Added
 - Install script for installations without docker
 - JupyterLab Integration for Administrators
@@ -78,6 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * Do not send any image urls to frontend
     * If a mia task is annoBased, crop annos on the fly (do not store anno crops in filesystem)
   * fileMan: Use fsspec instead of os for filesystm operations
+- Replaced `react-notifications` with `sweetalert2` everywhere for consistency
 - SiaReview: 
   * Trigger notification if annotations have been changed but not saved when navigation to another image
 - Updated frontend to Core-UI-3
