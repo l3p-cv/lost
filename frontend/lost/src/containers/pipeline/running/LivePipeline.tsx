@@ -59,7 +59,9 @@ export const LivePipeline: React.FC<LivePipelineProps> = ({
     useAutoLayout(defaultLayoutOptions)
 
     useEffect(() => {
-        fitView()
+        fitView({
+            maxZoom: 1.0,
+        })
     }, [nodes, fitView])
 
     return (
