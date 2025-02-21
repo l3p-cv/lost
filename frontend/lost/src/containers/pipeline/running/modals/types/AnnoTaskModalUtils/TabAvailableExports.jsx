@@ -1,9 +1,8 @@
 import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
 import { saveAs } from 'file-saver'
 import { useEffect } from 'react'
 import ReactTable from 'react-table'
-import { Progress } from 'reactstrap'
-import { createWriteStream } from 'streamsaver'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 import IconButton from '../../../../../../components/IconButton'
 import * as Notification from '../../../../../../components/Notification'
@@ -18,46 +17,17 @@ const TabAvailableExports = (props) => {
     } = annoTaskApi.useDeleteExport()
 
     const downloadFile = (dataExportId, dataExportType, dataExportName) => {
-        const isFirefox = typeof InstallTrigger !== 'undefined'
-        if (isFirefox) {
-            fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
-                method: 'get',
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                }),
+        axios
+            .get(`${API_URL}/annotasks/exports/${dataExportId}`, {
+                responseType: 'blob', // will make sure, that response is interpreted as blob
             })
-                .then((res) => res.blob())
-                .then((blob) => saveAs(blob, `${dataExportName}.${dataExportType}`))
-        } else {
-            return fetch(`${API_URL}/annotask/download_export/${dataExportId}`, {
-                headers: new Headers({
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
-                }),
+            .then((res) => {
+                const blob = new Blob([res.data], { type: 'application/octet-stream' })
+                saveAs(blob, `${dataExportName}.${dataExportType}`)
             })
-                .then((res) => {
-                    const fileStream = createWriteStream(
-                        `${dataExportName}.${dataExportType}`,
-                    )
-                    const writer = fileStream.getWriter()
-                    if (res.body.pipeTo) {
-                        writer.releaseLock()
-                        return res.body.pipeTo(fileStream)
-                    }
-
-                    const reader = res.body.getReader()
-                    const pump = () =>
-                        reader
-                            .read()
-                            .then(({ value, done }) =>
-                                done ? writer.close() : writer.write(value).then(pump),
-                            )
-
-                    return pump()
-                })
-                .catch((e) => {
-                    Notification.showError('Failed to download annotation export.')
-                })
-        }
+            .catch((error) => {
+                console.error('Download fehlgeschlagen:', error)
+            })
     }
 
     const handleAnnotaskExportDelete = (annoTaskExportId) => {

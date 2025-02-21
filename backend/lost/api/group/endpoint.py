@@ -12,6 +12,8 @@ namespace = api.namespace('group', description='Groups in System.')
 @namespace.route('')
 @api.doc(security='apikey')
 class GroupList(Resource):
+    @api.doc(security='apikey',description='Get a list of all groups')
+
     @api.marshal_with(group_list)
     @jwt_required 
     def get(self):
@@ -26,6 +28,7 @@ class GroupList(Resource):
             dbm.close_session()
             return glist
 
+    @api.doc(security='apikey',description='Add a new group')
     @api.expect(group_parser)
     @jwt_required 
     def post(self):
@@ -47,6 +50,7 @@ class GroupList(Resource):
 @namespace.param('id', 'The group identifier')
 @api.doc(security='apikey')
 class Group(Resource):
+    @api.doc(security='apikey',description='Get Group with a given ID')
     @api.marshal_with(group)
     @jwt_required 
     def get(self, id):
@@ -58,7 +62,8 @@ class Group(Resource):
             return group
         else:
             return "Group with ID '{}' not found.".format(id)
-
+        
+    @api.doc(security='apikey',description='Delete Group with given ID')
     @jwt_required 
     def delete(self, id):
         dbm = access.DBMan(LOST_CONFIG)

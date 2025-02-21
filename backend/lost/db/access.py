@@ -1,11 +1,10 @@
 import sqlalchemy
-from sqlalchemy import exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import text
 from lost.db import model, state, dtype
-import os
+
 
 def convert_connection_str(lostconfig):
     '''Convert connection string from config format to sqlalchemy format.
@@ -1302,23 +1301,23 @@ class DBMan(object):
     
     def get_anno_tasks_by_dataset_id(self, dataset_id):
         return self.session.query(model.AnnoTask).filter(model.AnnoTask.dataset_id == dataset_id).all()
-        
+    
     def get_annotasks_filtered(
         self,
         group_ids,
         page_size,
         page,
-        sorted,
-        filterOptions
+        filtered_states,
+        filtered_name
     ):
         filter_conditions = []
-        name = filterOptions['filteredName']
-        if name != '':
+        name = filtered_name
+        if name :
             filter_conditions.append(
             model.AnnoTask.name.like(f"%{name}%")
         )
-        task_states = filterOptions['filteredStates']
-        if len(task_states) > 0:
+        task_states = filtered_states
+        if task_states:
             filter_conditions.append(
                 model.AnnoTask.state.in_(task_states)
             )
@@ -1341,16 +1340,17 @@ class DBMan(object):
         self,
         group_ids,
         page_size,
-        filterOptions
+        filtered_states,
+        filtered_name
     ): 
         filter_conditions = []
-        name = filterOptions['filteredName']
-        if name != '':
+        name = filtered_name
+        if name :
             filter_conditions.append(
             model.AnnoTask.name.like(f"%{name}%")
         )
-        task_states = filterOptions['filteredStates']
-        if len(task_states) > 0:
+        task_states = filtered_states
+        if task_states:
             filter_conditions.append(
                 model.AnnoTask.state.in_(task_states)
             )
@@ -1370,3 +1370,24 @@ class DBMan(object):
         if count % page_size:
             pages += 1
         return pages
+
+    def get_all_annotask_labels(self, anno_task_ids: list[int]):
+        anno_task_list = ",".join([str(x) for x in anno_task_ids])
+        sql = f"SELECT DISTINCT idx, name, color FROM label_leaf WHERE parent_leaf_id IN ( \
+            SELECT DISTINCT label_leaf_id FROM `required_label_leaf` WHERE anno_task_id in ({anno_task_list}) \
+        );"
+        return self.session.execute(text(sql))
+    
+    def get_all_images_with_labels(self, image_ids: list[int], label_ids: list[int]):
+        """returns all images of a given image id list that have at least one of the given labels
+        """
+        image_id_list = ",".join([str(x) for x in image_ids])
+        label_id_list = ",".join([str(x) for x in label_ids])
+        sql = f"SELECT DISTINCT t.img_anno_id FROM label l \
+            LEFT JOIN two_d_anno t ON l.two_d_anno_id = t.idx \
+            WHERE l.label_leaf_id IN ({label_id_list}) \
+            AND ( \
+                t.img_anno_id IN ({image_id_list}) \
+                OR l.img_anno_id IN ({image_id_list}) \
+            );"
+        return self.session.execute(text(sql))

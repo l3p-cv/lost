@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced `react-notifications` with `sweetalert2` everywhere for consistency
 - Update 'Running Pipeline' workflow to use `reactflow`
  
-## [2.0.0] - unreleased
+## [2.0.0] - 2025-02-20
 ### Added
 - Install script for installations without docker
 - JupyterLab Integration for Administrators
@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added an InfoBox (AnnoStats) that shows the number of annotation per label in an image
     - This box allows also to hide annotations of a specific label
     - See #86, #160 and #161
+  - Review
+    - Added image search by image name
+    - Added option to include/exclude images with specific labels
 - MIA:
   - Show labels as tags
   - Allow to zoom into images in an extra modal
@@ -76,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     * Do not send any image urls to frontend
     * If a mia task is annoBased, crop annos on the fly (do not store anno crops in filesystem)
   * fileMan: Use fsspec instead of os for filesystm operations
+- Replaced `react-notifications` with `sweetalert2` everywhere for consistency
 - SiaReview: 
   * Trigger notification if annotations have been changed but not saved when navigation to another image
 - Updated frontend to Core-UI-3
@@ -97,7 +101,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Install lost-sia as external package instead of using internal version
 - Label Trees are now rendered using React Flow
 - vite is now used instead of react-scripts for building
+- bun is now used instead of npm
+- switched from mambaforge to miniforge
 - Apply code reformatting using .prettierrc on all files
+- Change lots of api endpoints so they are more RESTful mainly:
+  - Annotasks,Mia,Sia
+  - Moved some endpoints from sia to pipeline
+  - Added Doc Strings to all apis
+  - Used correct html Methods for the varios api calls
+  - datasets and file access was not changed at all
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on
@@ -114,6 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - close dask client in webservice endpoints to prevent memory leaks
 - request_lds_annos -> Also take care of img_is_junk info when requesting annos again
 - Fix build scripts for the production version so they work again
+- Fix CSS for Sia and size of Containers so the UI looks correct
 - Labels Page Edit function was not working because of rerender loop this is fixed now
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 

@@ -1,6 +1,6 @@
 #!/bin/bash
- /bin/bash -c "source /opt/mambaforge/bin/activate lost"
-source /opt/mambaforge/bin/activate lost
+/bin/bash -c "source /opt/miniforge/bin/activate lost"
+source /opt/miniforge/bin/activate lost
 
 # init env vars 
 export LOST_HOME="/home/lost"
@@ -41,17 +41,8 @@ cron_jobs="python3 /code/src/backend/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &
 
 # start jupyter-lab instance if configured
-if [ ${LOST_JUPYTER_LAB_ACTIVE} = "True" ]; then
-  if [ -z "${LOST_JUPYTER_LAB_ROOT_PATH}" ]; then
-    export LOST_JUPYTER_LAB_ROOT_PATH='/code/src'
-  fi
-  if [ -z "${LOST_JUPYTER_LAB_TOKEN}" ]; then
-    export LOST_JUPYTER_LAB_TOKEN='lostdevelopment'
-  fi
-  if [ -z "${LOST_JUPYTER_LAB_PORT}" ]; then
-    export LOST_JUPYTER_LAB_PORT=8888
-  fi
-  jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=$LOST_JUPYTER_LAB_TOKEN --ServerApp.notebook_dir=$LOST_JUPYTER_LAB_ROOT_PATH"
+if [ -n "${LOST_JUPYTER_LAB_ACTIVE}" ] && [ ${LOST_JUPYTER_LAB_ACTIVE} = "True" ]; then
+  jupyter="jupyter-lab --allow-root --ip='0.0.0.0' --ServerApp.token=${LOST_JUPYTER_LAB_TOKEN:-'lostdevelopment'} --ServerApp.notebook_dir=${LOST_JUPYTER_LAB_ROOT_PATH:-'/code/src'}"
   eval $jupyter &
 fi
 

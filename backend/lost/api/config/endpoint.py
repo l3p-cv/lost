@@ -63,9 +63,8 @@ if not key in db_key_list:
 
 
 @namespace.route('')
-@api.doc(description='Get all config entrys ')
-@api.doc(security='apikey')
 class ConfigList(Resource):
+    @api.doc(security='apikey',description='Get all config entries ')
     @api.marshal_with(config)
     @jwt_required
     def get(self):
@@ -78,9 +77,11 @@ class ConfigList(Resource):
         else:
             project_config = ProjectConfigMan(dbm)
             return project_config.get_all()
-
+        
+    @api.doc(security='apikey',description='Update all passed config entries ')
     @jwt_required
-    def post(self):
+    def patch(self):
+
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)

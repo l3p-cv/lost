@@ -9,7 +9,7 @@ import { API_URL } from '../../../../../lost_settings'
 
 const DataExportModal = ({ dataExport }) => {
     const downloadFile = (de_id, fileName) => {
-        fetch(`${API_URL}/data/dataexport/${de_id}`, {
+        fetch(`${API_URL}/data/export/${de_id}`, {
             method: 'GET',
             headers: new Headers({
                 Authorization: `Bearer ${localStorage.getItem('token')}`,
