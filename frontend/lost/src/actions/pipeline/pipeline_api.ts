@@ -1,13 +1,22 @@
 import { useMutation, useQuery } from 'react-query'
+import { useNavigate } from 'react-router-dom'
 import { showError, showSuccess } from '../../components/Notification'
 import { httpClient } from '../http-client'
 import { PipelineResponse } from './model/pipeline-response'
 import { parseLiveElementsToReactFlow } from './pipeline-util'
 
 export const useCreateAndStartPipeline = () => {
+    const navigate = useNavigate()
     return useMutation({
         mutationFn: (pipelineData) => {
             return httpClient.post('/pipeline/start', pipelineData)
+        },
+        onError: () => {
+            showError('An error occurred when creating and starting the pipeline')
+        },
+        onSuccess: () => {
+            showSuccess('Pipeline created and started successfully')
+            navigate('/pipelines')
         },
     })
 }
