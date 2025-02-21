@@ -5,11 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] -
-### Added
-- Your stuff
-
 ### Changed
-- Replaced `react-notifications` with `sweetalert2` everywhere for consistency
 - Update 'Running Pipeline' workflow to use `reactflow`
  
 ## [2.0.0] - 2025-02-20
@@ -110,6 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added Doc Strings to all apis
   - Used correct html Methods for the varios api calls
   - datasets and file access was not changed at all
+- Replaced `react-notifications` with `sweetalert2` everywhere for consistency
 ### Fixed
 - Data Export Webservices: Fixed Permissions
 - Load img in dataset review: Admins are always allowed to review dataset from now on
