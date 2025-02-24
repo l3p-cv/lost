@@ -1,13 +1,12 @@
-import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChartBar } from '@fortawesome/free-solid-svg-icons'
-import VerificationTitle from './VerificationTitle'
-import NodeBody from './NodeBody'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import NodeBody from '../../../globalComponents/node-structure/NodeBody'
+import NodeHeader from '../../../globalComponents/node-structure/NodeHeader'
 const VisualOutputNode = (props) => {
     return (
         <div className="graph-node">
-            <VerificationTitle
-                verified={props.verified}
+            <NodeHeader
+                bgColorClass={props.verified ? 'bg-green' : 'bg-orange'}
                 title={props.title}
                 icon={faChartBar}
             />

@@ -1,31 +1,12 @@
-import React, { useEffect } from 'react'
 import { faPlayCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button } from 'reactstrap'
-import { alertLoading, alertClose, alertError } from '../../globalComponents/Sweetalert'
 import { connect } from 'react-redux'
+import { Button } from 'reactstrap'
 import * as pipelineApi from '../../../../actions/pipeline/pipeline_api'
+import { alertLoading } from '../../globalComponents/Sweetalert'
 
 const StartPipeline = ({ step0Data, step1Data, step2Data }) => {
-    const { data: postPipelineResponse, mutate: postPipeline } =
-        pipelineApi.useCreateAndStartPipeline()
-
-    useEffect(() => {
-        if (postPipelineResponse === undefined) return
-
-        alertClose()
-
-        if (
-            postPipelineResponse.status === 200 &&
-            postPipelineResponse.data === 'success'
-        ) {
-            if (typeof window !== 'undefined') {
-                window.location.href = `${window.location.origin}/pipelines`
-            }
-        } else {
-            alertError(`(${postPipelineResponse.status}) ${postPipelineResponse.data}`)
-        }
-    }, [postPipelineResponse])
+    const { mutate: postPipeline } = pipelineApi.useCreateAndStartPipeline()
 
     const startPipe = () => {
         const json = {

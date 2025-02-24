@@ -1,30 +1,31 @@
-import RunningPipelineComponent from './containers/pipeline/running/RunningPipeline'
-import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
-import LabelsComponent from './containers/Labels/LabelDashboard'
+import AdminAreaComponent from './containers/AdminArea/AdminArea'
+import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
 import AnnotationTableComponent from './containers/Annotation/AnnotationTable'
-import SiaComponent from './containers/Annotation/SingleImageAnnotation'
-import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
 import MiaComponent from './containers/Annotation/MultiImageAnnotation'
+import SiaReviewComponent from './containers/Annotation/SIAReviewAnnotation'
+import SiaComponent from './containers/Annotation/SingleImageAnnotation'
+import DataSourcesComponent from './containers/DataSources/DataSources'
 import DatasetsComponent from './containers/Datasets/Datasets'
 import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
-import AnnotasksReviewComponent from './containers/Annotation/AnnoTask/ReviewPage'
-import DataSourcesComponent from './containers/DataSources/DataSources'
+import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
-import AdminAreaComponent from './containers/AdminArea/AdminArea'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
+import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
 
 import {
-    FaTachometerAlt,
-    FaPlay,
-    FaTag,
-    FaPaintBrush,
-    FaDatabase,
-    FaTools,
-    FaTasks,
-    FaChartLine,
     FaBox,
+    FaChartLine,
+    FaDatabase,
+    FaPaintBrush,
+    FaPlay,
+    FaTachometerAlt,
+    FaTag,
+    FaTasks,
+    FaTools,
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
+import { PipelineView } from './containers/pipeline/running/PipelineView'
+import { RunningPipelines } from './containers/pipeline/running/RunningPipelines'
 
 const iconProps = {
     size: 20,
@@ -123,11 +124,17 @@ const Mia = {
     component: MiaComponent,
 }
 
-const RunningPipelines = {
+const RunningPipelinesPage = {
     name: 'Pipelines',
     to: '/pipelines',
-    component: RunningPipelineComponent,
+    component: RunningPipelines,
     icon: <FaTasks {...iconProps} />,
+}
+
+const PipelinePage = {
+    path: '/pipeline/:pipelineId',
+    // exact: true,
+    component: PipelineView,
 }
 
 const StartPipelines = {
@@ -150,13 +157,21 @@ const MyProfile = {
 }
 
 const guiSetup = {
-    additionalRoutes: [Sia, Mia, MyProfile, SiaReview, AnnotaskReview, DatasetsReview],
+    additionalRoutes: [
+        Sia,
+        Mia,
+        MyProfile,
+        SiaReview,
+        AnnotaskReview,
+        DatasetsReview,
+        PipelinePage,
+    ],
     Administrator: {
         redirect: '/dashboard',
         navItems: [
             DesignerDashboard,
             TitleProject,
-            RunningPipelines,
+            RunningPipelinesPage,
             StartPipelines,
             Labels,
             Datasets,
@@ -173,7 +188,7 @@ const guiSetup = {
         navItems: [
             DesignerDashboard,
             TitleProject,
-            RunningPipelines,
+            RunningPipelinesPage,
             StartPipelines,
             Labels,
             Datasets,
