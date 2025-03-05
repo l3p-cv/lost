@@ -82,13 +82,8 @@ const SIAImageSearchModal = ({
     }, [possibleImageLabels])
 
     useEffect(() => {
-        if (
-            searchResults === undefined ||
-            searchResults.length === 0 ||
-            searchResults.status !== 200
-        )
-            return
-        setTableData(searchResults.data)
+        if(searchResults === undefined) return
+        setTableData(searchResults)
     }, [searchResults])
 
     const columnHelper = createColumnHelper()

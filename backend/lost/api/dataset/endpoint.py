@@ -684,7 +684,7 @@ class DatasetReviewImageSearch(Resource):
             # replace list with label filtered list
             found_images = found_img_with_label
 
-        return found_images
+        return {'images':found_images}
 
 
 @namespace.route("/<int:dataset_id>/review/possibleLabels")
