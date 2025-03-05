@@ -60,6 +60,15 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
     const [updateSize, setUpdateSize] = useState()
     const [layoutUpdateInt, setLayoutUpdateInt] = useState(0)
 
+    // filter single annotasks labels by retrieving them from annotask options
+    // stays empty when reviewing datasets
+    const [possibleAnnotaskLabels, setPossibleAnnotaskLabels] = useState([])
+
+    useEffect(()=>{
+        if(!isAnnotaskReview || reviewOptions === undefined) return
+        setPossibleAnnotaskLabels(reviewOptions.possibleLabels)
+    }, [reviewOptions])
+
     const handleToolSelected = (tool) => {
         setSelectedTool(tool)
     }
@@ -376,6 +385,7 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
                 isVisible={isImgSearchModalVisible}
                 setIsVisible={setIsImgSearchModalVisible}
                 onChooseImage={switchSIAImage}
+                possibleAnnotaskLabels={possibleAnnotaskLabels}
             />
             {renderSia()}
         </div>

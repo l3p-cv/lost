@@ -93,7 +93,7 @@ export const useGetPossibleLabels = (datasetId) => {
                 .then((res) => res.data),
         {
             refetchOnWindowFocus: false,
-            enabled: true,
+            enabled: false,
         },
     )
 }
