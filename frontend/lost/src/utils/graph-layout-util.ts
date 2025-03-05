@@ -1,13 +1,13 @@
 import Dagre from '@dagrejs/dagre'
 import { Edge, Node } from '@xyflow/react'
 
-const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}))
-
 export const getLayoutedElements = async (
     nodes: Node[],
     edges: Edge[],
     options: { direction: string },
 ) => {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}))
+
     g.setGraph({ rankdir: options.direction })
 
     for (const edge of edges) {

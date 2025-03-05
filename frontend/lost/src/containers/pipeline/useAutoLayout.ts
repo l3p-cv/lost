@@ -1,4 +1,5 @@
 import { Edge, Node, useNodesInitialized, useReactFlow, useStore } from '@xyflow/react'
+import { isEqual } from 'lodash'
 import { useEffect } from 'react'
 import { getLayoutedElements } from '../../utils/graph-layout-util'
 
@@ -76,6 +77,8 @@ function compareNodes(xs: Array<Node>, ys: Array<Node>) {
         ) {
             return false
         }
+
+        if (!isEqual(x.data, y.data)) return false
     }
 
     return true

@@ -2,6 +2,8 @@ import {
     Background,
     BackgroundVariant,
     Controls,
+    Edge,
+    Node,
     Panel,
     ReactFlow,
     useEdgesState,
@@ -13,34 +15,34 @@ import { useEffect } from 'react'
 import '../globalComponents/node.scss'
 import { LayoutOptions, useAutoLayout } from '../useAutoLayout'
 import '../xy-theme.css'
-import { LiveAnnoTaskNode } from './nodes/LiveAnnoTaskNode'
-import { LiveDataExportNode } from './nodes/LiveDataExportNode'
-import { LiveDatasourceNode } from './nodes/LiveDatasourceNode'
-import { LiveLoopNode } from './nodes/LiveLoopNode'
-import { LiveScriptNode } from './nodes/LiveScriptNode'
+import {
+    AnnoTaskNode,
+    DataExportNode,
+    DatasourceNode,
+    LoopNode,
+    ScriptNode,
+} from './nodes'
 
 const nodeTypes = {
-    datasourceNode: LiveDatasourceNode,
-    annoTaskNode: LiveAnnoTaskNode,
-    dataExportNode: LiveDataExportNode,
-    loopNode: LiveLoopNode,
-    scriptNode: LiveScriptNode,
+    datasourceNode: DatasourceNode,
+    annoTaskNode: AnnoTaskNode,
+    dataExportNode: DataExportNode,
+    loopNode: LoopNode,
+    scriptNode: ScriptNode,
 }
 
 const defaultLayoutOptions: LayoutOptions = {
     direction: 'TB',
 }
 
-import { Edge, Node } from '@xyflow/react'
-
-interface LivePipelineProps {
+interface PipelineTemplateProps {
     name: string
     initialNodes: Node[]
     initialEdges: Edge[]
     onNodeClick: (event: React.MouseEvent, node: Node) => void
 }
 
-export const LivePipeline: React.FC<LivePipelineProps> = ({
+export const PipelineTemplate: React.FC<PipelineTemplateProps> = ({
     name,
     initialNodes,
     initialEdges,

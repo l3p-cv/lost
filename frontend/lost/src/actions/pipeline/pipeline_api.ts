@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { showError, showSuccess } from '../../components/Notification'
 import { httpClient } from '../http-client'
 import { PipelineResponse } from './model/pipeline-response'
-import { parseLiveElementsToReactFlow } from './pipeline-util'
+import { PipelineTemplateResponse } from './model/pipeline-template-response'
+import {
+    parseLiveElementsToReactFlow,
+    parseTemplateElementsToReactFlow,
+} from './pipeline-util'
 
 export const useCreateAndStartPipeline = () => {
     const navigate = useNavigate()
@@ -37,6 +41,27 @@ export const useTemplates = (visLevel) => {
         queryKey: ['templates', visLevel],
         queryFn: () => httpClient.get(`/pipeline/template/${visLevel}`),
         refetchOnWindowFocus: false,
+    })
+}
+
+const transformTemplateData = (templateData: PipelineTemplateResponse) => {
+    const { nodes, edges } = parseTemplateElementsToReactFlow(templateData.elements)
+    return {
+        ...templateData,
+        graph: {
+            nodes,
+            edges,
+        },
+    }
+}
+
+export const useTemplate = (id) => {
+    return useQuery({
+        queryKey: ['template', id],
+        queryFn: () =>
+            httpClient.get<PipelineTemplateResponse>(`/pipeline/template/${id}`),
+        refetchOnWindowFocus: false,
+        select: transformTemplateData,
     })
 }
 

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import LostFileBrowser from '../../../../../../components/FileBrowser/LostFileBrowser'
 
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
@@ -11,6 +11,11 @@ const { selectDropdown, pipeStartUpdateDS } = actions
 const DEFAULT_TEXT_PATH = 'No path selected!'
 
 const DatasourceModal = ({ exportData, datasource, selectDropdown, peN }) => {
+    useEffect(() => {
+        console.log('datasource:', datasource)
+        console.log('exportData:', exportData)
+    }, [exportData, datasource])
+
     const [dsDropdownOpen, setDsDropdownOpen] = useState(false)
 
     const [selectedFs, setSelectedFs] = useState(() => {

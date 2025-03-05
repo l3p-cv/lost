@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState } from 'react'
 import { connect } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import {
     Button,
     Form,
@@ -37,6 +38,7 @@ const { pausePipeline, playPipeline, deletePipeline, downloadLogfile } = actions
 const { postPipeline } = startActions
 
 const Toolbar = (props) => {
+    const navigate = useNavigate()
     const [modal, setModal] = useState(false)
     const [isLogFileModalOpen, setIsLogFileModalOpen] = useState(false)
     const [name, setName] = useState(undefined)
@@ -68,9 +70,7 @@ const Toolbar = (props) => {
             alertLoading()
             await props.postPipeline(props.data.startDefinition)
             alertClose()
-            if (typeof window !== 'undefined') {
-                window.location.href = `${window.location.origin}/pipelines`
-            }
+            navigate('/pipelines')
         }
     }
 

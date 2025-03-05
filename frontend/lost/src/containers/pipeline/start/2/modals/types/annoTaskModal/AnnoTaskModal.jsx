@@ -1,13 +1,13 @@
-import React, { useCallback } from 'react'
-import Stepper from 'react-stepper-wizard'
+import { useCallback } from 'react'
 import { connect } from 'react-redux'
+import Stepper from 'react-stepper-wizard'
 import actions from '../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import UserInfo from './1/UserInfo.jsx'
 import SelectUser from './2/SelectUser.jsx'
 import SelectTree from './3/SelectTree'
 import SelectLabel from './4/SelectLabel'
-import SelectSIAConfiguration from './5/SelectSIAConfiguration'
 import SelectMIAConfiguration from './5/SelectMIAConfiguration'
+import SelectSIAConfiguration from './5/SelectSIAConfiguration'
 import SelectStorageSettings from './5/SelectStorageSettings'
 
 const { selectTab, verifyTab } = actions

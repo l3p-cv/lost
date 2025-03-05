@@ -1,18 +1,25 @@
-import React, { useEffect, useState, useMemo } from 'react'
-import { CRow, CCol } from '@coreui/react'
-import IconButton from '../IconButton'
+import { CCol, CRow } from '@coreui/react'
 import { faUpload } from '@fortawesome/free-solid-svg-icons'
-import { setChonkyDefaults, ChonkyActions } from 'chonky'
+import {
+    ChonkyActions,
+    FileBrowser,
+    FileContextMenu,
+    FileList,
+    FileNavbar,
+    FileToolbar,
+    setChonkyDefaults,
+} from 'chonky'
 import { ChonkyIconFA } from 'chonky-icon-fontawesome'
-import { FileBrowser, FileContextMenu, FileList, FileNavbar, FileToolbar } from 'chonky'
+import { useEffect, useMemo, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
+import IconButton from '../IconButton'
 import * as Notification from '../Notification'
 // import axios from 'axios'
 // import {API_URL} from '../../lost_settings'
 import * as fbaccess from '../../access/fb'
 import * as fb_api from '../../actions/fb/fb_api'
 
-const LostFileBrowser = ({ fs, onPathSelected, mode, initPath = undefined }) => {
+const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => {
     const [files, setFiles] = useState([])
     const [folderChain, setFolderChain] = useState([])
     const [size, setSize] = useState(0)
