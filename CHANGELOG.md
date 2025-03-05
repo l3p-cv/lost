@@ -125,6 +125,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix build scripts for the production version so they work again
 - Fix CSS for Sia and size of Containers so the UI looks correct
 - Labels Page Edit function was not working because of rerender loop this is fixed now
+- Fixed page error when reviewing datasets with labels that have no color set
 ### Removed
 - removed lost-cv images. This is now integrated into the lost image 
 - pyAPI: 

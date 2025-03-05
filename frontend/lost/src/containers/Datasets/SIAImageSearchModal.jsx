@@ -153,8 +153,11 @@ const SIAImageSearchModal = ({
 
     const renderPossibleLabels = () => {
         if (possibleImageLabels === undefined) return ''
-        let html = []
+        const html = []
         possibleImageLabels.forEach((label) => {
+
+            // set a default label color in case the label has no color assigned
+            if(label.color === null) label.color = '#50b897'
 
             const labelColor = selectedFilterLabels.includes(label.id) ? label.color : '#95a5a6'
 
