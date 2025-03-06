@@ -1,18 +1,22 @@
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
 import { Handle, Node, NodeProps, Position } from '@xyflow/react'
+import { Configuration } from '../../../../actions/pipeline/model/pipeline-template-response'
 import NodeBody from '../../globalComponents/node-structure/NodeBody'
 import NodeFooter from '../../globalComponents/node-structure/NodeFooter'
 import NodeHeader from '../../globalComponents/node-structure/NodeHeader'
 
-export type AnnoTaskNode = Node<
-    {
-        name: string
-        type: string
-        assignee: string
-        verified: boolean
-    },
-    'annoTask'
->
+export type AnnoTaskNodeData = {
+    name: string
+    type: string
+    assignee: string
+    workerId: number // note: not available initially, populated later when configuring the annotation task
+    verified: boolean
+    instructions: string
+    selectedDatasetId: string
+    configuration: Configuration
+}
+
+export type AnnoTaskNode = Node<AnnoTaskNodeData, 'annoTask'>
 
 export const AnnoTaskNode = (props: NodeProps<AnnoTaskNode>) => {
     return (

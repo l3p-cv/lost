@@ -29,6 +29,10 @@ export const TemplateView = () => {
     }
 
     const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
+        if (node.type === 'dataExport') {
+            return
+        }
+
         const clickedModalData = data?.elements.find(
             (el) => el.peN.toString() === node.id,
         )

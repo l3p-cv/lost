@@ -3,7 +3,7 @@ import {
     AvailableGroup,
     AvailableLabelTree,
 } from '../../../../../actions/pipeline/model/pipeline-template-response'
-import Stepper from './Stepper'
+import { AnnoTaskStepper } from './AnnoTaskStepper'
 
 interface AnnoTaskModalProps {
     toggle: () => void
@@ -25,7 +25,12 @@ export const AnnoTaskModal = ({
             <Modal size="lg" isOpen={isOpen} toggle={toggle}>
                 <ModalHeader>Annotation Task</ModalHeader>
                 <ModalBody>
-                    <Stepper />
+                    <AnnoTaskStepper
+                        nodeId={nodeId}
+                        availableGroups={availableGroups}
+                        availableLabelTrees={availableLabelTrees}
+                        toggleModal={toggle}
+                    />
                 </ModalBody>
             </Modal>
         </>

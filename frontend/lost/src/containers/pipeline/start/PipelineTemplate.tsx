@@ -23,7 +23,7 @@ import {
     ScriptNode,
 } from './nodes'
 
-const nodeTypes = {
+const templateNodeTypes = {
     datasourceNode: DatasourceNode,
     annoTaskNode: AnnoTaskNode,
     dataExportNode: DataExportNode,
@@ -70,7 +70,7 @@ export const PipelineTemplate: React.FC<PipelineTemplateProps> = ({
         <div style={{ height: '90vh', width: '100%' }}>
             <ReactFlow
                 nodes={nodes}
-                nodeTypes={nodeTypes}
+                nodeTypes={templateNodeTypes}
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}

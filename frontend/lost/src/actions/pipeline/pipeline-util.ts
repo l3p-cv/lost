@@ -116,6 +116,9 @@ export const parseTemplateElementsToReactFlow = (elements: PipelineTemplateEleme
                 type: el.annoTask.type,
                 assignee: '',
                 verified: false,
+                instructions: el.annoTask.instructions,
+                selectedDatasetId: '-1',
+                configuration: el.annoTask.configuration,
             }
         } else if (el.loop) {
             type = 'loopNode'
