@@ -5,6 +5,11 @@ import NodeBody from '../../globalComponents/node-structure/NodeBody'
 import NodeFooter from '../../globalComponents/node-structure/NodeFooter'
 import NodeHeader from '../../globalComponents/node-structure/NodeHeader'
 
+interface LabelLeaf {
+    id: number
+    maxLabels: string
+}
+
 export type AnnoTaskNodeData = {
     name: string
     type: string
@@ -14,6 +19,8 @@ export type AnnoTaskNodeData = {
     instructions: string
     selectedDatasetId: string
     configuration: Configuration
+    labelTreeId: number
+    labelLeaves: LabelLeaf[]
 }
 
 export type AnnoTaskNode = Node<AnnoTaskNodeData, 'annoTask'>

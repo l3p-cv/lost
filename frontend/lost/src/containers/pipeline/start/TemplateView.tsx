@@ -29,7 +29,7 @@ export const TemplateView = () => {
     }
 
     const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
-        if (node.type === 'dataExport') {
+        if (node.type === 'dataExportNode') {
             return
         }
 

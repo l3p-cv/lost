@@ -52,6 +52,10 @@ export interface Configuration {
     tools: Tools
     annos: Annos
     img: Img
+    type: string
+    showProposedLabel: boolean
+    addContext: number
+    drawAnno: boolean
 }
 
 export interface Annos {

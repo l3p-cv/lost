@@ -1,10 +1,19 @@
+import { useReactFlow } from '@xyflow/react'
 import { Button, Progress } from 'reactstrap'
 import {
     AvailableGroup,
     AvailableLabelTree,
 } from '../../../../../actions/pipeline/model/pipeline-template-response'
 import { useStep } from '../../../../../hooks/useStep'
-import { AnnoTaskInfo, SelectStorageSettings, SelectTree, SelectUser } from './steps'
+import {
+    AnnoTaskInfo,
+    SelectLabel,
+    SelectMiaConfiguration,
+    SelectSiaConfiguration,
+    SelectStorageSettings,
+    SelectTree,
+    SelectUser,
+} from './steps'
 
 const NUM_STEPS = 6
 const ANNO_TASK_INFO_STEP = 1
@@ -31,6 +40,8 @@ export const AnnoTaskStepper = ({
         currentStep,
         { goToNextStep, goToPrevStep, canGoToNextStep, canGoToPrevStep },
     ] = useStep(NUM_STEPS)
+
+    const { getNode } = useReactFlow()
 
     const isStepComplete = () => {
         // if (currentStep === 1) return formData.name.trim() !== ''
@@ -61,10 +72,24 @@ export const AnnoTaskStepper = ({
                 )
 
             case LABEL_SELECTION_STEP:
-                return null
+                return (
+                    <SelectLabel
+                        nodeId={nodeId}
+                        availableLabelTrees={availableLabelTrees}
+                    />
+                )
 
             case STORAGE_SETTINGS_STEP:
                 return <SelectStorageSettings nodeId={nodeId} />
+
+            case CONFIGURATION_STEP: {
+                const node = getNode(nodeId)
+                if (node?.data.type === 'sia') {
+                    return <SelectSiaConfiguration nodeId={nodeId} />
+                } else if (node?.data.type === 'mia') {
+                    return <SelectMiaConfiguration nodeId={nodeId} />
+                } else break
+            }
             default:
                 return null
         }

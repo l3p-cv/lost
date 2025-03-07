@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { CRow } from '@coreui/react'
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Card, CardBody } from 'reactstrap'
+import { Label } from 'semantic-ui-react'
 import actions from '../../../../../../../../actions/pipeline/pipelineStartModals/annoTask'
 import HelpButton from '../../../../../../../../components/HelpButton'
-import { CRow } from '@coreui/react'
-import { Label } from 'semantic-ui-react'
-import { Card, CardBody } from 'reactstrap'
 import LabelsPage from '../../../../../../../Labels/LabelsPage'
 
 const options = {
@@ -211,7 +211,7 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
                 })
             }
 
-            let nodeObj = {
+            const nodeObj = {
                 id: el.idx,
                 label: String(el.name),
                 color: el.color ? el.color : '#10515F',
@@ -312,6 +312,7 @@ const SelectLabel = ({ availableLabelTrees, peN, verifyTab }) => {
         // update redux action
         const selectedParentData = getParentsOfSelectedLabels()
         dispatch(updateLabels(peN, selectedParentData))
+        console.log('selectedParentData: ', selectedParentData)
     }, [selectedNodeIDs, graphNet])
 
     const getContrastColor = (hexColor) => {

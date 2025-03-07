@@ -1,42 +1,17 @@
 import { CCol, CFormInput, CFormSwitch, CRow } from '@coreui/react'
-import { useEffect, useState } from 'react'
+import { useNodesData, useReactFlow } from '@xyflow/react'
 import HelpButton from '../../../../../../components/HelpButton'
+import { AnnoTaskNodeData } from '../../../nodes'
 
-import { useDispatch, useSelector } from 'react-redux'
-
-const loadElements = (state) => {
-    if (state.pipelineStart) {
-        if (state.pipelineStart.step1Data) {
-            return state.pipelineStart.step1Data.elements
-        }
-    }
-    return undefined
+interface SelectSiaConfigurationProps {
+    nodeId: string
 }
 
-export const SelectSiaConfiguration = ({ ...props }) => {
-    const dispatch = useDispatch()
-    const [configuration, setConfiguration] = useState(undefined)
-    const elements = useSelector((state) => loadElements(state))
+export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) => {
+    const nodeData = useNodesData(nodeId)
+    const { configuration } = nodeData?.data as AnnoTaskNodeData
 
-    useEffect(() => {
-        if (elements) {
-            elements.find((el) => {
-                if (el.peN === props.peN) {
-                    setConfiguration(el.exportData.annoTask.configuration)
-                    return true
-                }
-                return false
-            })
-        }
-    }, [elements])
-
-    useEffect(() => {
-        if (configuration === undefined) {
-            if (props.peN === undefined) {
-                setConfiguration(props.configuration)
-            }
-        }
-    }, [props])
+    const { updateNodeData } = useReactFlow()
 
     const changeValue = (key, value) => {
         const newConfiguration = { ...configuration }
@@ -80,20 +55,13 @@ export const SelectSiaConfiguration = ({ ...props }) => {
             default:
                 break
         }
-        if (props.peN) {
-            dispatch({
-                type: 'PIPELINE_START_ANNO_TASK_UPDATE_CONFIGURATION',
-                payload: { elementId: props.peN, configuration: newConfiguration },
-            })
-        } else {
-            setConfiguration(newConfiguration)
-            props.onUpdate(newConfiguration)
-        }
+        updateNodeData(nodeId, { configuration: newConfiguration })
     }
     return (
         <>
             {configuration ? (
                 <>
+                    <h4 className="mb-3 text-center">SIA Configuration</h4>
                     <CRow style={{ margin: '5px' }}>
                         <CCol sm="6">
                             <h4>Annotation Types</h4>
@@ -104,10 +72,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 checked={configuration.tools.bbox}
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'tool-bbox',
                                                         !configuration.tools.bbox,
@@ -132,10 +99,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 checked={configuration.tools.polygon}
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'tool-polygon',
                                                         !configuration.tools.polygon,
@@ -160,10 +126,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 checked={configuration.tools.point}
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'tool-point',
                                                         !configuration.tools.point,
@@ -188,10 +153,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 checked={configuration.tools.line}
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'tool-line',
                                                         !configuration.tools.line,
@@ -222,10 +186,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 checked={configuration.annos.actions.draw}
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'action-draw',
                                                         !configuration.annos.actions.draw,
@@ -250,10 +213,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 checked={configuration.annos.actions.edit}
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'action-edit',
                                                         !configuration.annos.actions.edit,
@@ -280,12 +242,11 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 checked={
                                                     configuration.annos.actions.label
                                                 }
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'action-label',
                                                         !configuration.annos.actions
@@ -313,11 +274,10 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                             <CFormSwitch
                                                 size="xl"
                                                 className={'mx-1'}
-                                                variant={'3d'}
                                                 color={'primary'}
                                                 defaultChecked
                                                 checked={configuration.annos.multilabels}
-                                                onChange={(e) =>
+                                                onChange={() =>
                                                     changeValue(
                                                         'action-multilabel',
                                                         !configuration.annos.multilabels,
@@ -374,10 +334,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                         <CFormSwitch
                                             size="xl"
                                             className={'mx-1'}
-                                            variant={'3d'}
                                             color={'primary'}
                                             checked={configuration.tools.junk}
-                                            onChange={(e) =>
+                                            onChange={() =>
                                                 changeValue(
                                                     'image-junk',
                                                     !configuration.tools.junk,
@@ -402,10 +361,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                         <CFormSwitch
                                             size="xl"
                                             className={'mx-1'}
-                                            variant={'3d'}
                                             color={'primary'}
                                             checked={configuration.img.actions.label}
-                                            onChange={(e) =>
+                                            onChange={() =>
                                                 changeValue(
                                                     'image-label',
                                                     !configuration.img.actions.label,
@@ -430,10 +388,9 @@ export const SelectSiaConfiguration = ({ ...props }) => {
                                         <CFormSwitch
                                             size="xl"
                                             className={'mx-1'}
-                                            variant={'3d'}
                                             color={'primary'}
                                             checked={configuration.img.multilabels}
-                                            onChange={(e) =>
+                                            onChange={() =>
                                                 changeValue(
                                                     'image-multilabel',
                                                     !configuration.img.multilabels,
