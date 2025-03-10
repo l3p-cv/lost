@@ -1,26 +1,30 @@
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
-import { Handle, Node, NodeProps, Position } from '@xyflow/react'
-import { Configuration } from '../../../../actions/pipeline/model/pipeline-template-response'
+import { Edge, Handle, Node, NodeProps, Position } from '@xyflow/react'
+import {
+    AvailableGroup,
+    AvailableLabelTree,
+    Configuration,
+} from '../../../../actions/pipeline/model/pipeline-template-response'
 import NodeBody from '../../globalComponents/node-structure/NodeBody'
 import NodeFooter from '../../globalComponents/node-structure/NodeFooter'
 import NodeHeader from '../../globalComponents/node-structure/NodeHeader'
 
-interface LabelLeaf {
-    id: number
-    maxLabels: string
-}
-
 export type AnnoTaskNodeData = {
     name: string
     type: string
-    assignee: string
-    workerId: number // note: not available initially, populated later when configuring the annotation task
     verified: boolean
     instructions: string
-    selectedDatasetId: string
+    selectedDataset: {
+        value: string
+        label: string
+    }
     configuration: Configuration
-    labelTreeId: number
-    labelLeaves: LabelLeaf[]
+    selectedLabelTree: AvailableLabelTree
+    labelTreeGraph: {
+        nodes: Node[]
+        edges: Edge[]
+    }
+    selectedUserGroup?: AvailableGroup // todo convert later
 }
 
 export type AnnoTaskNode = Node<AnnoTaskNodeData, 'annoTask'>
@@ -39,7 +43,7 @@ export const AnnoTaskNode = (props: NodeProps<AnnoTaskNode>) => {
                     data={[
                         {
                             key: 'Name',
-                            value: props.data.name,
+                            value: props.data.name || '',
                         },
                         {
                             key: 'Type',
@@ -47,7 +51,11 @@ export const AnnoTaskNode = (props: NodeProps<AnnoTaskNode>) => {
                         },
                         {
                             key: 'Assignee',
-                            value: props.data.assignee,
+                            value:
+                                props.data.selectedUserGroup?.name &&
+                                props.data.selectedUserGroup?.isUserDefault !== undefined
+                                    ? `${props.data.selectedUserGroup.name} (${props.data.selectedUserGroup.isUserDefault ? 'User' : 'Group'})`
+                                    : '',
                         },
                     ]}
                 />

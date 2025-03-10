@@ -3,7 +3,10 @@ import { Handle, Node, NodeProps, Position } from '@xyflow/react'
 export type LabelNode = Node<
     {
         label: string
-        highlighted: boolean
+        selectedAsParent: boolean // selected as parent (required to be sent to the backend)
+        selected: boolean // selected in the annotation task
+        color: string
+        backgroundColor: string
     },
     'label'
 >
@@ -14,8 +17,13 @@ export const LabelNode = (props: NodeProps<LabelNode>) => {
             <Handle type="target" position={Position.Top} />
             <div
                 style={{
-                    border: props.data.highlighted ? '2px solid red' : '1px solid grey',
+                    cursor: 'pointer',
+                    color: props.data.selected ? props.data.color : 'black',
+                    backgroundColor: props.data.selected
+                        ? props.data.backgroundColor
+                        : 'white',
                     padding: '6px',
+                    border: '1px solid gray',
                 }}
             >
                 {props.data.label}

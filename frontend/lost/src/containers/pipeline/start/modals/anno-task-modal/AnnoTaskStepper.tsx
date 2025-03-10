@@ -1,10 +1,13 @@
-import { useReactFlow } from '@xyflow/react'
-import { Button, Progress } from 'reactstrap'
+import { useNodesData } from '@xyflow/react'
+import { isEmpty } from 'lodash'
+import { useState } from 'react'
+import { Button, Progress, Tooltip } from 'reactstrap'
 import {
     AvailableGroup,
     AvailableLabelTree,
 } from '../../../../../actions/pipeline/model/pipeline-template-response'
 import { useStep } from '../../../../../hooks/useStep'
+import { AnnoTaskNodeData } from '../../nodes'
 import {
     AnnoTaskInfo,
     SelectLabel,
@@ -41,13 +44,42 @@ export const AnnoTaskStepper = ({
         { goToNextStep, goToPrevStep, canGoToNextStep, canGoToPrevStep },
     ] = useStep(NUM_STEPS)
 
-    const { getNode } = useReactFlow()
+    const nodeData = useNodesData(nodeId)
+    const annoTaskNodeData = nodeData?.data as AnnoTaskNodeData
+
+    const [tooltipOpen, setTooltipOpen] = useState(false)
+    const toggleTooltip = () => setTooltipOpen((prev) => !prev)
 
     const isStepComplete = () => {
-        // if (currentStep === 1) return formData.name.trim() !== ''
-        // if (currentStep === 2) return formData.email.trim() !== ''
-        // if (currentStep === 3) return formData.password.trim() !== ''
+        if (currentStep === ANNO_TASK_INFO_STEP) {
+            return (
+                !isEmpty(annoTaskNodeData.name.trim()) &&
+                !isEmpty(annoTaskNodeData.instructions.trim())
+            )
+        }
+
+        if (currentStep === USER_SELECTION_STEP) {
+            return !isEmpty(annoTaskNodeData.selectedUserGroup)
+        }
+
+        if (currentStep === LABEL_TREE_SELECTION_STEP) {
+            return !isEmpty(annoTaskNodeData.selectedLabelTree)
+        }
+
+        if (currentStep === LABEL_SELECTION_STEP) {
+            // at least one label selected
+            const parentSelected = annoTaskNodeData.labelTreeGraph.nodes.some(
+                (node) => node.data.selectedAsParent,
+            )
+            return parentSelected
+        }
         return true
+    }
+
+    const handleNextClick = () => {
+        if (isStepComplete()) {
+            goToNextStep()
+        }
     }
 
     const renderStep = () => {
@@ -55,19 +87,12 @@ export const AnnoTaskStepper = ({
             case ANNO_TASK_INFO_STEP:
                 return <AnnoTaskInfo nodeId={nodeId} />
             case USER_SELECTION_STEP:
-                return (
-                    <SelectUser
-                        nodeId={nodeId}
-                        availableGroups={availableGroups}
-                        goToNextStep={goToNextStep}
-                    />
-                )
+                return <SelectUser nodeId={nodeId} availableGroups={availableGroups} />
             case LABEL_TREE_SELECTION_STEP:
                 return (
                     <SelectTree
                         nodeId={nodeId}
                         availableLabelTrees={availableLabelTrees}
-                        goToNextStep={goToNextStep}
                     />
                 )
 
@@ -83,10 +108,9 @@ export const AnnoTaskStepper = ({
                 return <SelectStorageSettings nodeId={nodeId} />
 
             case CONFIGURATION_STEP: {
-                const node = getNode(nodeId)
-                if (node?.data.type === 'sia') {
+                if (annoTaskNodeData.type === 'sia') {
                     return <SelectSiaConfiguration nodeId={nodeId} />
-                } else if (node?.data.type === 'mia') {
+                } else if (annoTaskNodeData.type === 'mia') {
                     return <SelectMiaConfiguration nodeId={nodeId} />
                 } else break
             }
@@ -111,17 +135,27 @@ export const AnnoTaskStepper = ({
                 )}
 
                 <div className="ms-auto">
-                    {canGoToNextStep &&
-                        currentStep !== USER_SELECTION_STEP &&
-                        currentStep !== LABEL_TREE_SELECTION_STEP && (
+                    {canGoToNextStep && (
+                        <>
                             <Button
                                 color="primary"
-                                onClick={goToNextStep}
-                                disabled={!isStepComplete()}
+                                onClick={handleNextClick}
+                                id="nextStepButton"
+                                onMouseEnter={() => setTooltipOpen(true)}
+                                onMouseLeave={() => setTooltipOpen(false)}
                             >
                                 Next
                             </Button>
-                        )}
+                            <Tooltip
+                                isOpen={tooltipOpen && !isStepComplete()}
+                                target="nextStepButton"
+                                toggle={toggleTooltip}
+                                placement="left"
+                            >
+                                Please complete this step before proceeding.
+                            </Tooltip>
+                        </>
+                    )}
 
                     {currentStep === NUM_STEPS && (
                         <Button

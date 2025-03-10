@@ -1,8 +1,9 @@
-import { CCol, CContainer, CRow } from '@coreui/react'
+import { CCol, CRow } from '@coreui/react'
 import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
 import { useNodesData, useReactFlow } from '@xyflow/react'
-import { useEffect, useState } from 'react'
-import { Dropdown } from 'semantic-ui-react'
+import { useState } from 'react'
+import Select from 'react-select'
+import { Form, FormGroup, Label } from 'reactstrap'
 import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
 import HelpButton from '../../../../../../components/HelpButton'
 import IconButton from '../../../../../../components/IconButton'
@@ -13,70 +14,73 @@ interface SelectStorageSettingsProps {
     nodeId: string
 }
 
+const selectFn = (data) => {
+    return [
+        {
+            value: '-1',
+            label: 'No Dataset',
+        },
+        ...Object.keys(data).map((key) => ({
+            value: key,
+            label: data[key],
+        })),
+    ]
+}
+
 export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) => {
     const nodeData = useNodesData(nodeId)
     const annoTaskNodeData = nodeData?.data as AnnoTaskNodeData
 
     const { updateNodeData } = useReactFlow()
 
-    const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
-        datasetApi.useFlatDatasets()
+    const {
+        data: flatDatasetList,
+        refetch: reloadFlatDatasetList,
+        isFetching,
+        isLoading,
+        isError,
+    } = datasetApi.useFlatDatasets(selectFn)
 
     const [isCreateDatasetModalOpen, setIsCreateDatasetModalOpen] = useState(false)
-    const [datasetDropdownOptions, setDatasetDropdownOptions] = useState<object[]>([])
 
-    const convertDatasetToDropdownOptions = (datasets) => {
-        const options = [
-            {
-                key: '-1',
-                value: '-1',
-                text: 'No Dataset',
-            },
-        ]
-
-        Object.keys(datasets).forEach((datasetId) => {
-            options.push({
-                key: datasetId,
-                value: datasetId,
-                text: datasets[datasetId],
-            })
-        })
-        setDatasetDropdownOptions(options)
+    if (isLoading || isFetching) {
+        return <p>Loading...</p>
     }
 
-    useEffect(() => {
-        convertDatasetToDropdownOptions(flatDatasetList)
-    }, [flatDatasetList])
+    if (isError) {
+        return <p>Error when loading datasets.</p>
+    }
 
     return (
-        <>
-            <h4 className="mb-3 text-center">Dataset Selection</h4>
+        flatDatasetList && (
+            <>
+                <h4 className="mb-3 text-center">Dataset Selection</h4>
 
-            <CContainer>
-                <CRow style={{ marginLeft: '5px' }}>
+                <CRow className="justify-content-center">
                     <CCol sm="6">
-                        <CRow xs={{ gutterY: 3 }}>
-                            <CCol sm="12">
-                                <h4>
+                        <Form onSubmit={(e) => e.preventDefault()}>
+                            <FormGroup>
+                                <Label for="dataset" className="text-start">
                                     Dataset
-                                    <HelpButton
-                                        text={`Select the dataset where the annotations are linked to.`}
-                                    />
-                                </h4>
+                                </Label>
+
+                                <HelpButton
+                                    text={`Select the dataset where the annotations are linked to.`}
+                                />
+
                                 <CRow>
                                     <CCol>
-                                        <Dropdown
+                                        <Select
                                             placeholder="Select Dataset"
-                                            fluid
-                                            search
-                                            selection
-                                            multiple={false}
-                                            options={datasetDropdownOptions}
-                                            value={annoTaskNodeData.selectedDatasetId}
-                                            onChange={(_, data) => {
+                                            isSearchable
+                                            options={flatDatasetList}
+                                            defaultValue={
+                                                annoTaskNodeData.selectedDataset ||
+                                                flatDatasetList[0]
+                                            }
+                                            onChange={(selectedOption) => {
                                                 updateNodeData(nodeId, {
-                                                    selectedDatasetId:
-                                                        data.value as string,
+                                                    selectedDataset: selectedOption,
                                                 })
                                             }}
                                         />
@@ -96,8 +100,8 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
                                         />
                                     </CCol>
                                 </CRow>
-                            </CCol>
-                        </CRow>
+                            </FormGroup>
+                        </Form>
                     </CCol>
                 </CRow>
                 <DatasetEditModal
@@ -108,7 +112,7 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
                         reloadFlatDatasetList()
                     }}
                 />
-            </CContainer>
-        </>
+            </>
+        )
     )
 }

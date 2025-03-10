@@ -5,6 +5,7 @@ import { getLayoutedElements } from '../../utils/graph-layout-util'
 
 export type LayoutOptions = {
     direction: string
+    ignoreDataChanges?: boolean
 }
 
 export const useAutoLayout = (options: LayoutOptions) => {
@@ -16,7 +17,7 @@ export const useAutoLayout = (options: LayoutOptions) => {
             nodes: state.nodes,
             edges: state.edges,
         }),
-        compareElements,
+        compareElements(options.ignoreDataChanges ?? false),
     )
 
     useEffect(() => {
@@ -49,11 +50,14 @@ type Elements = {
     edges: Array<Edge>
 }
 
-function compareElements(xs: Elements, ys: Elements) {
-    return compareNodes(xs.nodes, ys.nodes) && compareEdges(xs.edges, ys.edges)
+const compareElements = (ignoreDataChanges: boolean) => (xs: Elements, ys: Elements) => {
+    return (
+        compareNodes(xs.nodes, ys.nodes, ignoreDataChanges) &&
+        compareEdges(xs.edges, ys.edges)
+    )
 }
 
-function compareNodes(xs: Array<Node>, ys: Array<Node>) {
+const compareNodes = (xs: Array<Node>, ys: Array<Node>, ignoreDataChanges: boolean) => {
     // the number of nodes changed, so we already know that the nodes are not equal
     if (xs.length !== ys.length) return false
 
@@ -78,13 +82,14 @@ function compareNodes(xs: Array<Node>, ys: Array<Node>) {
             return false
         }
 
+        if (ignoreDataChanges) return true
         if (!isEqual(x.data, y.data)) return false
     }
 
     return true
 }
 
-function compareEdges(xs: Array<Edge>, ys: Array<Edge>) {
+const compareEdges = (xs: Array<Edge>, ys: Array<Edge>) => {
     // the number of edges changed, so we already know that the edges are not equal
     if (xs.length !== ys.length) return false
 

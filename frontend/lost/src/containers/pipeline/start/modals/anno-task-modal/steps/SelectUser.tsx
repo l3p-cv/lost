@@ -1,95 +1,70 @@
-import { CBadge } from '@coreui/react'
-import { faUser, faUsers } from '@fortawesome/free-solid-svg-icons'
-import { useReactFlow } from '@xyflow/react'
-import ReactTable from 'react-table'
-import { Card, CardBody } from 'reactstrap'
+import { CBadge, CCol, CRow } from '@coreui/react'
+import { useNodesData, useReactFlow } from '@xyflow/react'
+import Select from 'react-select'
+import { Form, FormGroup, Label } from 'reactstrap'
 import { AvailableGroup } from '../../../../../../actions/pipeline/model/pipeline-template-response'
-import IconButton from '../../../../../../components/IconButton'
+import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
 
 interface SelectUserProps {
     nodeId: string
     availableGroups: AvailableGroup[]
-    goToNextStep: () => void
 }
 
-export const SelectUser = ({
-    nodeId,
-    availableGroups,
-    goToNextStep,
-}: SelectUserProps) => {
+export const SelectUser = ({ nodeId, availableGroups }: SelectUserProps) => {
     const { updateNodeData } = useReactFlow()
+    const nodeData = useNodesData(nodeId)
+    const annoTaskNodeData = nodeData?.data as AnnoTaskNodeData
 
-    const selectRow = (row) => {
+    const selectUser = (selectedOption) => {
+        if (!selectedOption) return
+
         updateNodeData(nodeId, {
-            workerId: row.id,
-            assignee: row.groupName,
+            selectedUserGroup: selectedOption,
         } as AnnoTaskNodeData)
-        goToNextStep()
     }
 
-    const renderTable = () => {
-        return (
-            <ReactTable
-                columns={[
-                    {
-                        Header: 'Name',
-                        accessor: 'name',
-                    },
-                    {
-                        Header: 'User/Group',
-                        accessor: 'isUserDefault',
-                        Cell: function customCell(row) {
-                            if (row.original.isUserDefault) {
-                                return (
-                                    <CBadge color="success" shape="pill">
-                                        User
-                                    </CBadge>
-                                )
-                            }
-                            return (
-                                <CBadge color="primary" shape="pill">
-                                    Group
-                                </CBadge>
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Choose',
-                        accessor: 'name',
-                        Cell: (row) => {
-                            return (
-                                <IconButton
-                                    isOutline={false}
-                                    color="primary"
-                                    icon={row.original.isUserDefault ? faUser : faUsers}
-                                    text="Choose"
-                                    onClick={() => selectRow(row.original)}
-                                />
-                            )
-                        },
-                    },
-                ]}
-                defaultSorted={[
-                    {
-                        id: 'name',
-                        desc: true,
-                    },
-                ]}
-                data={availableGroups}
-                defaultPageSize={10}
-                className="-striped -highlight"
-            />
-        )
-    }
+    const formatOptionLabel = (option) => (
+        <div className="d-flex align-items-center">
+            <CBadge
+                color={option.isUserDefault ? 'success' : 'primary'}
+                shape="pill"
+                className="me-2"
+            >
+                {option.isUserDefault ? 'User' : 'Group'}
+            </CBadge>
+            <span>{option.name}</span>
+        </div>
+    )
 
     return (
-        <>
+        <div>
             <h4 className="mb-3 text-center">User Selection</h4>
-
-            <Card className="annotask-modal-card">
-                <CardBody>{renderTable()}</CardBody>
-            </Card>
-        </>
+            <CRow className="justify-content-center">
+                <CCol sm="6">
+                    <Form>
+                        <FormGroup>
+                            <Label for="userSelect" className="text-start">
+                                User or Group
+                            </Label>
+                            <HelpButton
+                                id="anno-user-select"
+                                text="Select a user or group to assign this annotation task."
+                            />
+                            <Select
+                                options={availableGroups}
+                                getOptionLabel={(option) => option.name}
+                                getOptionValue={(option) => option.id.toString()}
+                                formatOptionLabel={formatOptionLabel}
+                                onChange={selectUser}
+                                placeholder="Select a user or group..."
+                                id="userSelect"
+                                defaultValue={annoTaskNodeData.selectedUserGroup}
+                            />
+                        </FormGroup>
+                    </Form>
+                </CCol>
+            </CRow>
+        </div>
     )
 }

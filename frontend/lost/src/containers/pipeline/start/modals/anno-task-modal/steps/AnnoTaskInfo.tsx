@@ -15,48 +15,44 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
     const { updateNodeData } = useReactFlow()
 
     return (
-        <>
+        <div>
             <h4 className="mb-3 text-center">Task Information</h4>
-
-            <CRow>
-                <CCol sm="3"></CCol>
+            <CRow className="justify-content-center">
                 <CCol sm="6">
-                    <Form>
+                    <Form onSubmit={(e) => e.preventDefault()}>
                         <FormGroup>
-                            <Label for="name">Name</Label>
+                            <Label for="name" className="text-start">
+                                Name
+                            </Label>
                             <HelpButton
-                                id={'anno-start-name'}
-                                text={
-                                    'Give your AnnotationTask a name. The name can also be seen by your annotators.'
-                                }
+                                id="anno-start-name"
+                                text="Give your AnnotationTask a name. The name can also be seen by your annotators."
                             />
                             <Input
                                 defaultValue={annoTaskNodeData.name}
-                                onChange={(e) => {
-                                    updateNodeData(nodeId, {
-                                        name: e.target.value,
-                                    })
-                                }}
+                                onChange={(e) =>
+                                    updateNodeData(nodeId, { name: e.target.value })
+                                }
                                 type="text"
                                 name="name"
                                 id="name"
                             />
                         </FormGroup>
                         <FormGroup>
-                            <Label for="instruction">Instructions</Label>
+                            <Label for="instruction" className="text-start">
+                                Instructions
+                            </Label>
                             <HelpButton
-                                id={'anno-start-desc'}
-                                text={
-                                    'Give instructions / hints to your annotators so they know what to do.'
-                                }
+                                id="anno-start-desc"
+                                text="Give instructions / hints to your annotators so they know what to do."
                             />
                             <Input
                                 defaultValue={annoTaskNodeData.instructions}
-                                onChange={(e) => {
+                                onChange={(e) =>
                                     updateNodeData(nodeId, {
                                         instructions: e.target.value,
                                     })
-                                }}
+                                }
                                 type="textarea"
                                 name="instruction"
                                 id="instruction"
@@ -64,8 +60,7 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                         </FormGroup>
                     </Form>
                 </CCol>
-                <CCol sm="3"></CCol>
             </CRow>
-        </>
+        </div>
     )
 }

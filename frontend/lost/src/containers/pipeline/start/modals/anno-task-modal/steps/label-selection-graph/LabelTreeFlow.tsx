@@ -3,6 +3,7 @@ import {
     BackgroundVariant,
     Controls,
     Edge,
+    getOutgoers,
     Node,
     ReactFlow,
     useEdgesState,
@@ -21,20 +22,21 @@ const labelTreeNodeTypes = {
 
 const defaultLayoutOptions: LayoutOptions = {
     direction: 'TB',
+    ignoreDataChanges: true,
 }
 
 interface LabelTreeFlowProps {
     initialNodes: Node[]
     initialEdges: Edge[]
-    onNodeClick: (event: React.MouseEvent, node: Node) => void
+    onLabelSelect: (nodes: Node[], edges: Edge[]) => void
 }
 
 export const LabelTreeFlow: React.FC<LabelTreeFlowProps> = ({
     initialNodes,
     initialEdges,
-    onNodeClick,
+    onLabelSelect,
 }) => {
-    const { fitView, updateNodeData } = useReactFlow()
+    const { fitView } = useReactFlow()
 
     const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[])
@@ -51,8 +53,28 @@ export const LabelTreeFlow: React.FC<LabelTreeFlowProps> = ({
     }, [nodes, fitView])
 
     const handleNodeClick = (event: React.MouseEvent, node: Node) => {
-        onNodeClick(event, node)
-        updateNodeData(node.id, { highlighted: !node.data.highlighted })
+        const children = getOutgoers(node, nodes, edges)
+
+        setNodes((prevNodes) => {
+            const updatedNodes = prevNodes.map((n) => {
+                if (n.id === node.id) {
+                    // update the parent node
+                    return {
+                        ...n,
+                        data: { ...n.data, selectedAsParent: !n.data.selectedAsParent },
+                    }
+                } else if (children.some((child) => child.id === n.id)) {
+                    // update child nodes
+                    return { ...n, data: { ...n.data, selected: !n.data.selected } }
+                }
+                return n
+            })
+
+            // call onLabelSelect with the latest nodes and edges
+            onLabelSelect(updatedNodes, edges)
+
+            return updatedNodes
+        })
     }
 
     return (

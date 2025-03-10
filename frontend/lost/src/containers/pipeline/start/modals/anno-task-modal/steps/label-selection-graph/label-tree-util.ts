@@ -34,9 +34,7 @@ export const convertLabelTreeToReactFlow = (
         position: { x: 0, y: 0 },
         data: {
             label: tree.name,
-            highlighted: false,
-        },
-        style: {
+            selected: false,
             backgroundColor: tree.color || '#fff',
             color: getContrastColor(tree.color || '#fff'),
         },
