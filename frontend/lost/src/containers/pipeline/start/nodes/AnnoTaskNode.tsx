@@ -14,12 +14,12 @@ export type AnnoTaskNodeData = {
     type: string
     verified: boolean
     instructions: string
-    selectedDataset: {
+    selectedDataset?: {
         value: string
         label: string
     }
     configuration: Configuration
-    selectedLabelTree: AvailableLabelTree
+    selectedLabelTree?: AvailableLabelTree
     labelTreeGraph: {
         nodes: Node[]
         edges: Edge[]

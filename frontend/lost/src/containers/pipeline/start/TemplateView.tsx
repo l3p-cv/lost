@@ -11,6 +11,7 @@ import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import { NavRibbon } from './NavRibbon'
 import { PipelineTemplate } from './PipelineTemplate'
 import { NodeConfigModal } from './modals/NodeConfigModal'
+import { SubmitPipelineModal } from './modals/SubmitPipelineModal'
 
 export const TemplateView = () => {
     const navigate = useNavigate()
@@ -19,6 +20,8 @@ export const TemplateView = () => {
     const { data, isLoading, isError } = useTemplate(templateId)
     const [modalData, setModalData] = useState<PipelineTemplateElement | null>(null)
     const [isModalOpen, toggleModal] = useToggle(false)
+
+    const [isSubmitModalOpen, toggleSubmitModal] = useToggle(false)
 
     if (isLoading) {
         return <CenteredSpinner />
@@ -48,7 +51,7 @@ export const TemplateView = () => {
             <CContainer style={{ marginTop: '15px' }}>
                 <NavRibbon
                     onBack={() => navigate('/pipeline-templates')}
-                    onNext={() => {}}
+                    onNext={toggleSubmitModal}
                 ></NavRibbon>
                 <BaseContainer>
                     <CAlert color="secondary" dismissible>
@@ -84,6 +87,10 @@ export const TemplateView = () => {
                                 toggleModal={toggleModal}
                                 availableGroups={data.availableGroups}
                                 availableLabelTrees={data.availableLabelTrees}
+                            />
+                            <SubmitPipelineModal
+                                isOpen={isSubmitModalOpen}
+                                toggle={toggleSubmitModal}
                             />
                         </ReactFlowProvider>
                     </div>

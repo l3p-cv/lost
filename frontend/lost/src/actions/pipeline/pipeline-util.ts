@@ -1,4 +1,9 @@
 import { Edge, MarkerType, Node } from '@xyflow/react'
+import {
+    AnnoTaskNodeData,
+    DatasourceNodeData,
+    ScriptNodeData,
+} from '../../containers/pipeline/start/nodes'
 import { PipelineResponseElement } from './model/pipeline-response'
 import { PipelineTemplateElement } from './model/pipeline-template-response'
 
@@ -101,25 +106,27 @@ export const parseTemplateElementsToReactFlow = (elements: PipelineTemplateEleme
                 type: el.datasource.type,
                 verified: false,
                 selectedPath: '',
-            }
+            } as DatasourceNodeData
         } else if (el.script) {
             type = 'scriptNode'
             data = {
                 name: el.script.name,
                 arguments: el.script.arguments,
                 verified: true,
-            }
+            } as ScriptNodeData
         } else if (el.annoTask) {
             type = 'annoTaskNode'
             data = {
                 name: el.annoTask.name,
                 type: el.annoTask.type,
-                assignee: '',
                 verified: false,
                 instructions: el.annoTask.instructions,
-                selectedDatasetId: '-1',
                 configuration: el.annoTask.configuration,
-            }
+                labelTreeGraph: {
+                    nodes: [],
+                    edges: [],
+                },
+            } as AnnoTaskNodeData
         } else if (el.loop) {
             type = 'loopNode'
             data = {
