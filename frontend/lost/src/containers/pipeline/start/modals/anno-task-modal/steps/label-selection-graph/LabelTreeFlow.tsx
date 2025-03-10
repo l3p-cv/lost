@@ -52,7 +52,7 @@ export const LabelTreeFlow: React.FC<LabelTreeFlowProps> = ({
         fitView()
     }, [nodes, fitView])
 
-    const handleNodeClick = (event: React.MouseEvent, node: Node) => {
+    const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
         const children = getOutgoers(node, nodes, edges)
 
         setNodes((prevNodes) => {
