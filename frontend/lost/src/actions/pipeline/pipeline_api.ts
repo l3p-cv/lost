@@ -2,6 +2,7 @@ import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { showError, showSuccess } from '../../components/Notification'
 import { httpClient } from '../http-client'
+import { StartPipeRequest } from './model/pipeline-request'
 import { PipelineResponse } from './model/pipeline-response'
 import { PipelineTemplateResponse } from './model/pipeline-template-response'
 import {
@@ -12,7 +13,7 @@ import {
 export const useCreateAndStartPipeline = () => {
     const navigate = useNavigate()
     return useMutation({
-        mutationFn: (pipelineData) => {
+        mutationFn: (pipelineData: StartPipeRequest) => {
             return httpClient.post('/pipeline/start', pipelineData)
         },
         onError: () => {

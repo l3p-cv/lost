@@ -59,7 +59,7 @@ export const AnnoTaskModal = ({
     return (
         <>
             <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode}>
-                <ModalHeader>Annotation Task</ModalHeader>
+                <ModalHeader toggle={toggle}>Annotation Task</ModalHeader>
                 <ModalBody>
                     <AnnoTaskStepper
                         nodeId={nodeId}

@@ -11,6 +11,7 @@ import {
     useReactFlow,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import { isEmpty } from 'lodash'
 import { useEffect } from 'react'
 import { LayoutOptions, useAutoLayout } from '../../../../../useAutoLayout'
 import '../../../../../xy-theme.css'
@@ -55,26 +56,31 @@ export const LabelTreeFlow: React.FC<LabelTreeFlowProps> = ({
     const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
         const children = getOutgoers(node, nodes, edges)
 
-        setNodes((prevNodes) => {
-            const updatedNodes = prevNodes.map((n) => {
-                if (n.id === node.id) {
-                    // update the parent node
-                    return {
-                        ...n,
-                        data: { ...n.data, selectedAsParent: !n.data.selectedAsParent },
+        if (!isEmpty(children)) {
+            setNodes((prevNodes) => {
+                const updatedNodes = prevNodes.map((n) => {
+                    if (n.id === node.id) {
+                        // update the parent node
+                        return {
+                            ...n,
+                            data: {
+                                ...n.data,
+                                selectedAsParent: !n.data.selectedAsParent,
+                            },
+                        }
+                    } else if (children.some((child) => child.id === n.id)) {
+                        // update child nodes
+                        return { ...n, data: { ...n.data, selected: !n.data.selected } }
                     }
-                } else if (children.some((child) => child.id === n.id)) {
-                    // update child nodes
-                    return { ...n, data: { ...n.data, selected: !n.data.selected } }
-                }
-                return n
+                    return n
+                })
+
+                // call onLabelSelect with the latest nodes and edges
+                onLabelSelect(updatedNodes, edges)
+
+                return updatedNodes
             })
-
-            // call onLabelSelect with the latest nodes and edges
-            onLabelSelect(updatedNodes, edges)
-
-            return updatedNodes
-        })
+        }
     }
 
     return (

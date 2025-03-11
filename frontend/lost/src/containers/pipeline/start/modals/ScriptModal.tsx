@@ -1,6 +1,6 @@
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { useCallback } from 'react'
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
+import { Modal, ModalBody, ModalHeader } from 'reactstrap'
 import { Script } from '../../../../actions/pipeline/model/pipeline-template-response'
 import CollapseCard from '../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../globalComponents/modals/ScriptArgumentsTable'
@@ -46,7 +46,7 @@ export const ScriptModal = ({ script, nodeId, isOpen, toggle }: ScriptModalProps
     return (
         <>
             <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode}>
-                <ModalHeader>Script</ModalHeader>
+                <ModalHeader toggle={toggle}>Script</ModalHeader>
                 <ModalBody>
                     <Table
                         data={[
@@ -75,7 +75,6 @@ export const ScriptModal = ({ script, nodeId, isOpen, toggle }: ScriptModalProps
                         />
                     </CollapseCard>
                 </ModalBody>
-                <ModalFooter />
             </Modal>
         </>
     )

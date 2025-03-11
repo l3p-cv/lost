@@ -65,7 +65,7 @@ export interface LabelLeaf {
     maxLabels: string
 }
 
-export interface DataExport {}
+export type DataExport = object
 
 export interface Datasource {
     rawFilePath: null
@@ -74,26 +74,18 @@ export interface Datasource {
 }
 
 export interface Loop {
-    maxIteration: null
+    maxIteration: number | null
     peJumpId: number
 }
 
 export interface Script {
-    arguments: Arguments | null
+    arguments: object | null
     description: string
     envs: string
     id: number
     name: string
     path: string
     isDebug: boolean
-}
-
-export interface Arguments {
-    valid_imgtypes: ImgBatch
-    model_name: ImgBatch
-    url: ImgBatch
-    port: ImgBatch
-    img_batch: ImgBatch
 }
 
 export interface ImgBatch {

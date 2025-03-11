@@ -9,7 +9,6 @@ import {
     DropdownToggle,
     Modal,
     ModalBody,
-    ModalFooter,
     ModalHeader,
 } from 'reactstrap'
 import { Divider, Icon, Label } from 'semantic-ui-react'
@@ -136,7 +135,7 @@ export const DatasourceModal = ({
     return (
         <>
             <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode}>
-                <ModalHeader>Datasource</ModalHeader>
+                <ModalHeader toggle={toggle}>Datasource</ModalHeader>
                 <ModalBody>
                     <div>
                         <div>{datasourceDropDown()}</div>
@@ -155,7 +154,6 @@ export const DatasourceModal = ({
                         </Label>
                     </div>
                 </ModalBody>
-                <ModalFooter />
             </Modal>
         </>
     )

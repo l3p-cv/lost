@@ -11,7 +11,7 @@ import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import { NavRibbon } from './NavRibbon'
 import { PipelineTemplate } from './PipelineTemplate'
 import { NodeConfigModal } from './modals/NodeConfigModal'
-import { SubmitPipelineModal } from './modals/SubmitPipelineModal'
+import { PipelineStartModal } from './modals/PipelineStartModal'
 
 export const TemplateView = () => {
     const navigate = useNavigate()
@@ -88,9 +88,10 @@ export const TemplateView = () => {
                                 availableGroups={data.availableGroups}
                                 availableLabelTrees={data.availableLabelTrees}
                             />
-                            <SubmitPipelineModal
+                            <PipelineStartModal
                                 isOpen={isSubmitModalOpen}
                                 toggle={toggleSubmitModal}
+                                templateData={data}
                             />
                         </ReactFlowProvider>
                     </div>

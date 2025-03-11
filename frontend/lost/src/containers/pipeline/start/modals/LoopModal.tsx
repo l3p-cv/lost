@@ -1,6 +1,6 @@
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { useCallback } from 'react'
-import { Input, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
+import { Input, Modal, ModalBody, ModalHeader } from 'reactstrap'
 import Table from '../../globalComponents/modals/Table'
 import { LoopNodeData } from '../nodes'
 
@@ -31,7 +31,7 @@ export const LoopModal = ({ nodeId, isOpen, toggle }: LoopModalProps) => {
     return (
         <>
             <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-                <ModalHeader>Loop</ModalHeader>
+                <ModalHeader toggle={toggle}>Loop</ModalHeader>
                 <ModalBody>
                     <Table
                         data={[
@@ -54,7 +54,6 @@ export const LoopModal = ({ nodeId, isOpen, toggle }: LoopModalProps) => {
                         ]}
                     />
                 </ModalBody>
-                <ModalFooter />
             </Modal>
         </>
     )

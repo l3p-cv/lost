@@ -4,8 +4,12 @@ import {
     DatasourceNodeData,
     ScriptNodeData,
 } from '../../containers/pipeline/start/nodes'
+import { Element } from './model/pipeline-request'
 import { PipelineResponseElement } from './model/pipeline-response'
-import { PipelineTemplateElement } from './model/pipeline-template-response'
+import {
+    PipelineTemplateElement,
+    PipelineTemplateResponse,
+} from './model/pipeline-template-response'
 
 const getReactFlowEdges = (
     elements: PipelineResponseElement[] | PipelineTemplateElement[],
@@ -151,4 +155,76 @@ export const parseTemplateElementsToReactFlow = (elements: PipelineTemplateEleme
     const edges = getReactFlowEdges(elements)
 
     return { nodes, edges }
+}
+
+export const getFormattedPipelineRequestElements = (
+    nodes: Node[],
+    templateData: PipelineTemplateResponse,
+): Element[] => {
+    const result: Element[] = []
+
+    for (const element of templateData.elements) {
+        const node = nodes.find((n) => n.id === element.peN.toString())
+        if (node) {
+            const el: Element = {
+                peN: element.peN,
+            }
+
+            if (element.datasource) {
+                const data = node.data as DatasourceNodeData
+                el.datasource = {
+                    rawFilePath: null,
+                    selectedPath: data.selectedPath,
+                    fs_id: data.fsId,
+                }
+            }
+
+            if (element.script) {
+                const data = node.data as ScriptNodeData
+                el.script = {
+                    arguments: data.arguments,
+                    description: element.script.description,
+                    envs: element.script.envs,
+                    id: element.script.id,
+                    isDebug: false,
+                    name: element.script.name,
+                    path: element.script.path,
+                }
+            }
+
+            if (element.annoTask) {
+                const data = node.data as AnnoTaskNodeData
+                el.annoTask = {
+                    name: data.name,
+                    type: data.type,
+                    instructions: data.instructions,
+                    configuration: data.configuration,
+                    assignee: data.selectedUserGroup!.name,
+                    workerId: data.selectedUserGroup!.id,
+                    labelLeaves: data.labelTreeGraph.nodes
+                        .filter((node) => node.data.selectedAsParent)
+                        .map((node) => ({
+                            id: parseInt(node.id),
+                            maxLabels: '3',
+                        })),
+                    selectedLabelTree: data.selectedLabelTree!.idx,
+                }
+            }
+
+            if (element.loop) {
+                const data = node.data as { maxIteration: number }
+                el.loop = {
+                    maxIteration: data.maxIteration === -1 ? null : data.maxIteration,
+                    peJumpId: element.loop.peJumpId,
+                }
+            }
+
+            if (element.dataExport) {
+                el.dataExport = {}
+            }
+
+            result.push(el)
+        }
+    }
+    return result
 }
