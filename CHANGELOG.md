@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] -
 ### Changed
-- Update 'Running Pipeline' workflow to use `reactflow`
+- Update 'Running Pipeline' & 'Start Pipeline' workflow to use `reactflow`
  
 ## [2.0.0] - 2025-02-20
 ### Added
