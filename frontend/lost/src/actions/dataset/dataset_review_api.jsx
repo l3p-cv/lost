@@ -69,18 +69,17 @@ export const useGetUIConfig = () => {
 }
 
 export const useImageSearch = (isAnnotaskReview) => {
-    const reviewType = isAnnotaskReview ? 'annotask' : 'datasets'
+    const reviewType = isAnnotaskReview ? 'annotasks' : 'datasets'
 
     return useMutation((requestData) => {
         // annotaskId task or datasetId (depends on review mode)
         const [id, query, selectedFilterLabels] = requestData
-        const payload = {
-            filter: query,
-            labels: selectedFilterLabels,
-        }
         return axios.get(
             `${API_URL}/${reviewType}/${id}/review/images?filter=${query}&labels=${selectedFilterLabels}`,
-        )
+        ).then((res) => {
+            if (res.status !== 200 || res.data === undefined) return []
+            return res.data.images
+        })
     })
 }
 
@@ -93,7 +92,7 @@ export const useGetPossibleLabels = (datasetId) => {
                 .then((res) => res.data),
         {
             refetchOnWindowFocus: false,
-            enabled: true,
+            enabled: false,
         },
     )
 }

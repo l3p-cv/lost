@@ -486,20 +486,52 @@ class DatasetReviewImageSearch(Resource):
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         
         search_str = request.args.get('filter')
+        labels = request.args.get('labels')
         if search_str == None:
             search_str=""
 
         db_result = dbm.get_search_images_in_annotask(annotask_id, search_str)
         
-        found_images = []
+        found_image_ids: list[int] = []
+        found_images: list[dict[str, any]] = []
         
         for entry in db_result:
+            # prepare list of image ids for label filter (we can't iterate multiple times through db_result)
+            found_image_ids.append(entry.idx)
+
             found_images.append({
                 'image_id': entry.idx,
                 'image_path': entry.img_path,
                 'annotation_id': entry.anno_task_id,
                 'annotation_name': entry.name
             })
+            
+        # filter for images annotated with specific labels if labels are in the request
+        if labels is not None:
+            search_labels = list(map(int, labels.split(',')))
+            
+            # no labels -> no images
+            if len(search_labels) == 0:
+                return []
+            
+            # found_image_ids = [entry.idx for entry in db_result]
+            img_with_label_db_result = dbm.get_all_images_with_labels(
+                found_image_ids, search_labels
+            )
+            img_ids_with_label = [
+                entry.img_anno_id for entry in img_with_label_db_result
+            ]
+
+            # filter original response list: only select images that have one of the searched labels
+            print(found_images)
+            found_img_with_label = [
+                img
+                for img in found_images
+                if img["image_id"] in img_ids_with_label
+            ]
+
+            # replace list with label filtered list
+            found_images = found_img_with_label
         
         return {'images':found_images}
     

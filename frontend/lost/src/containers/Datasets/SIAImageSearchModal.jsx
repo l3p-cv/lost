@@ -41,9 +41,10 @@ const SIAImageSearchModal = ({
     isVisible,
     setIsVisible,
     onChooseImage,
+    possibleAnnotaskLabels,
 }) => {
-    const { data: possibleImageLabels,
-        refetch: reloadPossibleImageLabels
+    const { data: possibleDatasetLabels,
+        refetch: reloadPossibleDatasetLabels
     } = datasetReviewApi.useGetPossibleLabels(id)
     const { data: searchResults, mutate: doSearch } =
         datasetReviewApi.useImageSearch(isAnnotaskReview)
@@ -51,18 +52,28 @@ const SIAImageSearchModal = ({
     const [isFirstSearch, setIsFirstSearch] = useState(true)
     const [tableData, setTableData] = useState(() => [])
     const [selectedFilterLabels, setSelectedFilterLabels] = useState(() => [])
+    const [possibleImageLabels, setPossibleImageLabels] = useState([])
 
     useEffect(()=>{
-        reloadPossibleImageLabels()
+        // dataset review: get a list of all possible labels from all annotasks in the dataset
+        // labels for single annotation tasks can be retrieved by the annotation options
+        if(!isAnnotaskReview) reloadPossibleDatasetLabels()
     }, [])
 
-    useEffect(()=>{
-        console.log(selectedFilterLabels);
-        
-    }, [selectedFilterLabels])
+    useEffect(() => {
+        // use getPossibleLabels for datasets
+        if(isAnnotaskReview || possibleDatasetLabels === undefined || possibleDatasetLabels.length === 0) return        
+        setPossibleImageLabels(possibleDatasetLabels)
+    }, [possibleDatasetLabels])
+
+    useEffect(() => {
+        // use annotask options -> possible labels for single annotation tasks
+        if(!isAnnotaskReview || possibleAnnotaskLabels === undefined || possibleAnnotaskLabels.length === 0) return
+        setPossibleImageLabels(possibleAnnotaskLabels)
+    }, [possibleAnnotaskLabels])
 
     useEffect(()=> {
-        if(possibleImageLabels === undefined) return
+        if(possibleImageLabels === undefined || possibleImageLabels.length === 0) return
 
         // activate all labels by default
         const allLabelIds = []
@@ -71,13 +82,8 @@ const SIAImageSearchModal = ({
     }, [possibleImageLabels])
 
     useEffect(() => {
-        if (
-            searchResults === undefined ||
-            searchResults.length === 0 ||
-            searchResults.status !== 200
-        )
-            return
-        setTableData(searchResults.data)
+        if(searchResults === undefined) return
+        setTableData(searchResults)
     }, [searchResults])
 
     const columnHelper = createColumnHelper()
@@ -153,8 +159,11 @@ const SIAImageSearchModal = ({
 
     const renderPossibleLabels = () => {
         if (possibleImageLabels === undefined) return ''
-        let html = []
+        const html = []
         possibleImageLabels.forEach((label) => {
+
+            // set a default label color in case the label has no color assigned
+            if(label.color === null) label.color = '#50b897'
 
             const labelColor = selectedFilterLabels.includes(label.id) ? label.color : '#95a5a6'
 
