@@ -10,7 +10,6 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
-import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
 
 import {
     FaBox,
@@ -139,13 +138,6 @@ const PipelinePage = {
     component: PipelineView,
 }
 
-const StartPipelinesOld = {
-    name: 'Start Pipeline (Old)',
-    to: '/startpipeline',
-    component: StartPipelineComponent,
-    icon: <FaPlay {...iconProps} />,
-}
-
 const PipelineTemplatesPage = {
     name: 'Start Pipeline',
     to: '/pipeline-templates',
@@ -188,7 +180,6 @@ const guiSetup = {
             DesignerDashboard,
             TitleProject,
             RunningPipelinesPage,
-            StartPipelinesOld,
             PipelineTemplatesPage,
             Labels,
             Datasets,
@@ -206,7 +197,6 @@ const guiSetup = {
             DesignerDashboard,
             TitleProject,
             RunningPipelinesPage,
-            StartPipelinesOld,
             PipelineTemplatesPage,
             Labels,
             Datasets,
