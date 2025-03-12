@@ -55,7 +55,7 @@ export const PipelineStartModal = ({
     }
 
     return (
-        <Modal isOpen={isOpen} toggle={toggle}>
+        <Modal size="md" isOpen={isOpen} toggle={toggle}>
             <ModalHeader toggle={toggle}>Start Pipeline</ModalHeader>
             {!isPipelineValid && (
                 <ModalBody>
@@ -73,11 +73,16 @@ export const PipelineStartModal = ({
             )}
 
             {isPipelineValid && (
-                <Form onSubmit={(e) => e.preventDefault()}>
+                <Form
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                        handleSubmitPipeline(name, description, nodes, templateData)
+                    }}
+                >
                     <ModalBody>
                         <div>
                             <CRow className="justify-content-center">
-                                <CCol sm="6">
+                                <CCol sm="10">
                                     <FormGroup>
                                         <Label for="name" className="text-start">
                                             Name
@@ -128,14 +133,6 @@ export const PipelineStartModal = ({
                             type="submit"
                             text="Start Pipeline"
                             color="primary"
-                            onClick={() =>
-                                handleSubmitPipeline(
-                                    name,
-                                    description,
-                                    nodes,
-                                    templateData,
-                                )
-                            }
                             isTextLeft={false}
                             style={{ marginBottom: 20 }}
                         />
