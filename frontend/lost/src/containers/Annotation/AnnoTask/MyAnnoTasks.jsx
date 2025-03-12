@@ -1,22 +1,20 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { Progress, Card, CardHeader, CardBody, Row, Col } from 'reactstrap'
-import { CRow, CCol, CFormInput, CButtonToolbar } from '@coreui/react'
-import { getColor } from './utils'
-import AmountPerLabel from './AmountPerLabel'
-import IconButton from '../../../components/IconButton'
-import Modal from 'react-modal'
-import { useTranslation } from 'react-i18next'
-import { createColumnHelper } from '@tanstack/react-table'
-import 'react-table/react-table.css'
+import { CButtonToolbar, CCol, CFormInput, CRow } from '@coreui/react'
 import { faChartBar, faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { createColumnHelper } from '@tanstack/react-table'
+import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaFilter, FaTrashAlt } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
+import 'react-table/react-table.css'
+import { Card, CardBody, CardHeader, Col, Modal, Progress, Row } from 'reactstrap'
+import IconButton from '../../../components/IconButton'
+import AmountPerLabel from './AmountPerLabel'
+import { getColor } from './utils'
 
-import DropdownInput from '../../../components/DropdownInput'
-import SingleInputDateRangePicker from '../../../components/SingleInputDateRangePicker'
-import DataTable from '../../../components/NewDataTable'
 import actions from '../../../actions'
 import * as atActions from '../../../actions/annoTask/anno_task_api'
+import DropdownInput from '../../../components/DropdownInput'
+import DataTable from '../../../components/NewDataTable'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -203,7 +201,6 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         <Modal
             isOpen={modalIsOpen}
             onRequestClose={closeModal}
-            style={customStyles}
             ariaHideApp={false}
             contentLabel="Logfile"
         >

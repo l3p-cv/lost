@@ -37,8 +37,6 @@
         "prop-types": "^15.8.1",
         "react": "^18.2.0",
         "react-autocomplete": "^1.8.1",
-        "react-bootstrap-sweetalert": "^5.2.0",
-        "react-color": "^2.19.3",
         "react-datepicker": "^7.4.0",
         "react-dom": "^18.2.0",
         "react-draggable": "^4.4.5",
