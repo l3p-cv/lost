@@ -1,7 +1,7 @@
 import { CBadge, CCol, CRow } from '@coreui/react'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import Select from 'react-select'
-import { Form, FormGroup, Label } from 'reactstrap'
+import { Label } from 'reactstrap'
 import { AvailableGroup } from '../../../../../../actions/pipeline/model/pipeline-template-response'
 import HelpButton from '../../../../../../components/HelpButton'
 import { AnnoTaskNodeData } from '../../../nodes'
@@ -42,27 +42,23 @@ export const SelectUser = ({ nodeId, availableGroups }: SelectUserProps) => {
             <h4 className="mb-3 text-center">User Selection</h4>
             <CRow className="justify-content-center">
                 <CCol sm="6">
-                    <Form>
-                        <FormGroup>
-                            <Label for="userSelect" className="text-start">
-                                User or Group
-                            </Label>
-                            <HelpButton
-                                id="anno-user-select"
-                                text="Select a user or group to assign this annotation task."
-                            />
-                            <Select
-                                options={availableGroups}
-                                getOptionLabel={(option) => option.name}
-                                getOptionValue={(option) => option.id.toString()}
-                                formatOptionLabel={formatOptionLabel}
-                                onChange={selectUser}
-                                placeholder="Select a user or group..."
-                                id="userSelect"
-                                defaultValue={annoTaskNodeData.selectedUserGroup}
-                            />
-                        </FormGroup>
-                    </Form>
+                    <Label for="userSelect" className="text-start">
+                        User or Group
+                    </Label>
+                    <HelpButton
+                        id="anno-user-select"
+                        text="Select a user or group to assign this annotation task."
+                    />
+                    <Select
+                        options={availableGroups}
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.id.toString()}
+                        formatOptionLabel={formatOptionLabel}
+                        onChange={selectUser}
+                        placeholder="Select a user or group..."
+                        id="userSelect"
+                        defaultValue={annoTaskNodeData.selectedUserGroup}
+                    />
                 </CCol>
             </CRow>
         </div>
