@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request, make_response, jsonify
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
@@ -9,6 +9,8 @@ from lost.db.vis_level import VisLevel
 from lost.settings import LOST_CONFIG
 from lost.logic.label import LabelTree
 from io import BytesIO
+import logging
+import pandas as pd
 
 namespace = api.namespace('label', description='Label API.')
 
@@ -105,8 +107,9 @@ class LabelEditNew(Resource):
                 if args.get('parent_leaf_id'):
                     label.parent_leaf_id = args.get('parent_leaf_id'),
                 dbm.save_obj(label)
+                label_id = label.idx
                 dbm.close_session()
-                return "success"
+                return {"message": "Label added successfully", "labelId": label_id}
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
@@ -118,8 +121,9 @@ class LabelEditNew(Resource):
                 if args.get('parent_leaf_id'):
                     label.parent_leaf_id = args.get('parent_leaf_id'),
                 dbm.save_obj(label)
+                label_id = label.idx
                 dbm.close_session()
-                return "success"
+                return {"message": "Label added successfully", "labelId": label_id}
         dbm.close_session()
         return "You are not authorized.", 401 
 
@@ -183,3 +187,55 @@ class ExportLabelTree(Resource):
             resp.headers["Content-Disposition"] = f"attachment; filename={label_tree.root.name}.csv"
             resp.headers["Content-Type"] = "blob"
             return resp
+
+@namespace.route('/tree/<string:visibility>')
+@api.doc(security='apikey')
+class ImportLabelTree(Resource):
+    @api.doc(security='apikey',description='Import a label Tree with the given label leaf as root, imported from CSV')
+    @jwt_required 
+    def post(self, visibility):
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part"}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+        
+        if not file or not file.filename.endswith('.csv'):
+            return jsonify({"error": "Invalid file format. Please upload a CSV file."}), 400
+
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        default_group = dbm.get_group_by_name(user.user_name)
+        if visibility == VisLevel().ALL:
+            if not user.has_role(roles.DESIGNER):
+                dbm.close_session()
+                return "You are not authorized.", 401
+            else:
+                tree = LabelTree(dbm, logger=logging, group_id=default_group.idx)
+                df = pd.read_csv(file)
+                logging.info(df)
+                root = tree.import_df(df)
+                if not root:
+                    dbm.close_session()
+                    return {"error": "LabelTree already present in database!"}, 400
+                else:
+                    dbm.close_session()
+                    return {"message": "Tree imported successfully"}
+        if visibility == VisLevel().GLOBAL:
+            if not user.has_role(roles.ADMINISTRATOR):
+                dbm.close_session()
+                return "You are not authorized.", 401
+            else:
+                tree = LabelTree(dbm, logger=logging)
+                df = pd.read_csv(file)
+                root = tree.import_df(df)
+                if not root:
+                    dbm.close_session()
+                    return {"error": "LabelTree already present in database!"}, 400
+                else:
+                    dbm.close_session()
+                    return {"message": "Tree imported successfully"}
+        dbm.close_session()
+        return "You are not authorized.", 401 

@@ -1,9 +1,6 @@
 import lost
-import json
 from lost.db import model
-from datetime import datetime
 import pandas as pd
-import numpy as np
 __author__ = "Jonas Jaeger"
 
 
@@ -22,6 +19,7 @@ class LabelTree(object):
     def __init__(self, dbm, root_id=None, root_leaf=None, name=None, logger=None, group_id=None):
         self.dbm = dbm # type: lost.db.access.DBMan
         self.root = None # type: lost.db.model.LabelLeaf
+        self.group_id = group_id
         self.tree = {}
         if logger is None:
             import logging
@@ -194,36 +192,43 @@ class LabelTree(object):
                 The transformed row.
         '''
         try:
-            leaf.abbreviation = row['abbreviation']
+            leaf.abbreviation = row['abbreviation'] if pd.notna(row['abbreviation']) else ""
             self.logger.info('\tabbreviation: {}'.format(leaf.abbreviation))
         except KeyError:
             self.logger.info('\tNo abbreviation provided.')
+
         try:
-            leaf.description = row['description']
+            leaf.description = row['description'] if pd.notna(row['description']) else ""
             self.logger.info('\tdescription: {}'.format(leaf.description))
         except KeyError:
             self.logger.info('\tNo description provided.')
+
         try:
-            leaf.timestamp = row['timestamp']
+            leaf.timestamp = row['timestamp'] if pd.notna(row['timestamp']) else None
             self.logger.info('\ttimestamp: {}'.format(leaf.timestamp))
         except KeyError:
             self.logger.info('\tNo timestamp provided.')
+
         try:
-            if not np.isnan(row['external_id']):
-                leaf.external_id = row['external_id']
-                self.logger.info('\texternal_id: {}'.format(leaf.external_id))
+            leaf.external_id = int(row['external_id']) if pd.notna(row['external_id']) else None
+            self.logger.info('\texternal_id: {}'.format(leaf.external_id))
         except KeyError:
             self.logger.info('\tNo external_id provided.')
+
         try:
-            leaf.is_deleted = row['is_deleted']
+            leaf.is_deleted = bool(row['is_deleted']) if pd.notna(row['is_deleted']) else False
             self.logger.info('\tis_deleted: {}'.format(leaf.is_deleted))
         except KeyError:
             self.logger.info('\tNo is_deleted provided.')
+
         try:
-            leaf.color = row['color']
+            leaf.color = row['color'] if pd.notna(row['color']) else "#ffffff"  # Default white color
             self.logger.info('\tcolor: {}'.format(leaf.color))
         except KeyError:
             self.logger.info('\tNo color provided.')
+
+        leaf.group_id = self.group_id
+
 
     def __create_childs_from_df(self, child_dict, parent, parent_row):
         '''Create child leafs from a df.

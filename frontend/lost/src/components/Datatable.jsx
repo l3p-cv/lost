@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-vars */
-import React from 'react'
+import PropTypes from 'prop-types'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import { Badge } from 'reactstrap'
 import './datatable.css'
-import PropTypes from 'prop-types'
 
 const Datatable = ({
     key,
@@ -13,13 +11,12 @@ const Datatable = ({
     data,
     columns,
     onRowClick,
-    height,
+    height = undefined,
     manual,
     isLoading,
     onFetchData,
     pages,
 }) => {
-    // eslint-disable-next-line no-unused-vars
     const datatableOnRowClick = (state, rowInfo, column, instance) => {
         let color
         if (rowInfo) {

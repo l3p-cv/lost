@@ -1,21 +1,19 @@
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
-import auth from './auth'
-import label from './label'
-import group from './group'
-import user from './user'
 import annoTask from './annoTask'
+import auth from './auth'
+import group from './group'
+import lost from './lost'
 import mia from './mia'
-import sia from './sia'
-import worker from './worker'
 import pipelineRunning from './pipelineRunning'
 import pipelineStart from './pipelineStart'
+import sia from './sia'
 import siaReview from './siaReview'
-import lost from './lost'
+import user from './user'
+import worker from './worker'
 
 const appReducer = combineReducers({
     auth,
-    label,
     group,
     user,
     annoTask,

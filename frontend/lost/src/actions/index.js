@@ -1,19 +1,17 @@
-import auth from './auth'
-import label from './label/index'
-import group from './group/index'
-import user from './user/index'
 import annoTask from './annoTask'
-import mia from './mia'
-import sia from './sia'
-import workers from './worker/index'
-import siaReview from './siaReview'
+import auth from './auth'
+import group from './group/index'
 import lost from './lost'
+import mia from './mia'
 import pipelineRunning from './pipeline/pipelineRunning'
 import pipelineStart from './pipeline/pipelineStart'
+import sia from './sia'
+import siaReview from './siaReview'
+import user from './user/index'
+import workers from './worker/index'
 
 export default {
     ...auth,
-    ...label,
     ...group,
     ...user,
     ...annoTask,

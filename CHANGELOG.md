@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Changed
 - Update 'Start Pipeline' workflow to use `reactflow` and remove redux
+- Update `Labels` UI to make it more interactive & also remove redux
 
 ## [2.1.0] - 2025-03-07
 ### Changed

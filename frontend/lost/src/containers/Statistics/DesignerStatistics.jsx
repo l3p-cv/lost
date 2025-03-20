@@ -1,22 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import actions from '../../actions'
+import { useEffect, useState } from 'react'
 import * as statistics_api from '../../actions/statistics/statistics_api'
 
-import { CRow, CCol, CWidgetStatsD, CContainer } from '@coreui/react'
+import { CCol, CContainer, CRow, CWidgetStatsD } from '@coreui/react'
 
-import AnnosPerHour from './AnnosPerHour'
 import { CChart } from '@coreui/react-chartjs'
 import Loading from '../../components/Loading'
-
-import BaseContainer from '../../components/BaseContainer'
+import AnnosPerHour from './AnnosPerHour'
 
 const DesignerStatistics = () => {
-    const dispatch = useDispatch()
     const { mutate: getDesignerStatistics, data: designerStatistics } =
         statistics_api.useDesignerStatistics()
     useEffect(() => {
-        dispatch(actions.setNavbarVisible(true))
         getDesignerStatistics()
     }, [])
 
@@ -28,28 +22,28 @@ const DesignerStatistics = () => {
         if (designerStatistics === undefined) return
 
         // update data for annotation labels chart
-        let _labels = {
+        const _labels = {
             keys: [],
             values: [],
             colors: [],
         }
 
-        for (var k in designerStatistics.labels) {
+        for (const k in designerStatistics.labels) {
             _labels.keys.push(k)
             _labels.values.push(designerStatistics.labels[k]['value'])
-            let _lblColor = designerStatistics.labels[k]['color']
+            const _lblColor = designerStatistics.labels[k]['color']
             _labels.colors.push(_lblColor ? _lblColor : 'rgb(16, 81, 95,0.8)')
         }
 
         setLabels(_labels)
 
         // update data for annotation types chart
-        let _types = {
+        const _types = {
             keys: [],
             values: [],
         }
 
-        for (var k in designerStatistics.types) {
+        for (const k in designerStatistics.types) {
             _types.keys.push(k)
             _types.values.push(designerStatistics.types[k])
         }

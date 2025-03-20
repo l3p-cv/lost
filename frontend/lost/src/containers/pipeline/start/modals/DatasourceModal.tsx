@@ -3,12 +3,14 @@ import LostFileBrowser from '../../../../components/FileBrowser/LostFileBrowser'
 
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import {
+    Button,
     Dropdown,
     DropdownItem,
     DropdownMenu,
     DropdownToggle,
     Modal,
     ModalBody,
+    ModalFooter,
     ModalHeader,
 } from 'reactstrap'
 import { Divider, Icon, Label } from 'semantic-ui-react'
@@ -154,6 +156,9 @@ export const DatasourceModal = ({
                         </Label>
                     </div>
                 </ModalBody>
+                <ModalFooter>
+                    <Button onClick={toggle}> Done </Button>
+                </ModalFooter>
             </Modal>
         </>
     )

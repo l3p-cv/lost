@@ -18,10 +18,8 @@ export const LabelNode = (props: NodeProps<LabelNode>) => {
             <div
                 style={{
                     cursor: 'pointer',
-                    color: props.data.selected ? props.data.color : 'black',
-                    backgroundColor: props.data.selected
-                        ? props.data.backgroundColor
-                        : 'white',
+                    color: 'black',
+                    backgroundColor: props.data.selected ? '#a7e0ed' : 'white',
                     padding: '6px',
                     border: '1px solid gray',
                 }}

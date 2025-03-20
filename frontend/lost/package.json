@@ -66,6 +66,7 @@
         "@testing-library/jest-dom": "^6.1.2",
         "@testing-library/react": "^14.0.0",
         "@testing-library/user-event": "^14.4.3",
+        "@types/file-saver": "^2.0.7",
         "@types/lodash": "^4.17.15",
         "@types/react": "^18.3.18",
         "@types/react-dom": "^18.3.5",

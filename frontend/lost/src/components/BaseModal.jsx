@@ -1,13 +1,12 @@
-import React from 'react'
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap'
-import PropTypes from 'prop-types'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import PropTypes from 'prop-types'
+import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import IconButton from './IconButton'
 
 const BaseModal = ({
     key,
     isOpen,
-    isShowCancelButton,
+    isShowCancelButton = false,
     toggle,
     title,
     children,
@@ -15,7 +14,8 @@ const BaseModal = ({
     size = 'xl',
     onClosed = () => {},
     className,
-    style,
+    style = undefined,
+    fullscreen = false,
 }) => {
     const renderTitle = () => {
         if (title) {
@@ -35,21 +35,23 @@ const BaseModal = ({
     }
     const renderFooter = () => {
         return (
-            <ModalFooter>
-                {[
-                    footer || null,
-                    isShowCancelButton ? (
-                        <IconButton
-                            key={key}
-                            isOutline={false}
-                            color="secondary"
-                            icon={faTimes}
-                            text="Close"
-                            onClick={toggle}
-                        ></IconButton>
-                    ) : null,
-                ]}
-            </ModalFooter>
+            isShowCancelButton && (
+                <ModalFooter>
+                    {[
+                        footer || null,
+                        isShowCancelButton ? (
+                            <IconButton
+                                key={key}
+                                isOutline={false}
+                                color="secondary"
+                                icon={faTimes}
+                                text="Close"
+                                onClick={toggle}
+                            ></IconButton>
+                        ) : null,
+                    ]}
+                </ModalFooter>
+            )
         )
     }
     return (
@@ -61,6 +63,7 @@ const BaseModal = ({
             toggle={toggle}
             className={className}
             style={style}
+            fullscreen={fullscreen}
         >
             {renderTitle()}
             {renderBody()}
@@ -79,6 +82,7 @@ BaseModal.propTypes = {
     children: PropTypes.element.isRequired,
     footer: PropTypes.element,
     className: PropTypes.string,
+    isShowCancelButton: PropTypes.bool,
 }
 
 BaseModal.defaultProps = {
@@ -89,6 +93,7 @@ BaseModal.defaultProps = {
     title: undefined,
     footer: undefined,
     className: undefined,
+    isShowCancelButton: false,
 }
 
 export default BaseModal

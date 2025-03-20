@@ -1,29 +1,25 @@
-import React, { useState } from 'react'
-import { faEdit, faFileExport, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faEye, faFileExport } from '@fortawesome/free-solid-svg-icons'
+import { useState } from 'react'
 
-import IconButton from '../../components/IconButton'
-import Datatable from '../../components/Datatable'
+import { CAlert, CBadge } from '@coreui/react'
+import { ReactFlowProvider } from '@xyflow/react'
+import { FaInfoCircle } from 'react-icons/fa'
+import { Card, CardBody } from 'reactstrap'
+import { useExportLabelTree } from '../../actions/label/label-api'
 import BaseModal from '../../components/BaseModal'
+import Datatable from '../../components/Datatable'
 import HelpButton from '../../components/HelpButton'
-import LabelTree from './LabelTree'
-import { API_URL } from '../../lost_settings'
-import { saveAs } from 'file-saver'
-import { CBadge } from '@coreui/react'
+import IconButton from '../../components/IconButton'
+import { LabelTreeEditor } from './LabelTreeEditor/LabelTreeEditor'
+import { convertLabelTreeToReactFlow } from './LabelTreeEditor/label-tree-util'
 
-var amountOfLabels = 0
+let amountOfLabels = 0
 
 const LabelTreeTable = ({ labelTrees, visLevel }) => {
+    const { mutate: exportLabelTree } = useExportLabelTree()
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-    const [selectedTreeId, setSelectedTreeId] = useState(null)
-
-    const getLabelTreeById = (id) => {
-        const lT = labelTrees.find((labelTree) => {
-            if (labelTree.idx === id) {
-                return labelTree
-            }
-        })
-        return lT
-    }
+    const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
+    const [readonly, setReadonly] = useState(false)
 
     const getAmountOfLabels = (n) => {
         amountOfLabels += 1
@@ -33,34 +29,43 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
         })
         return amountOfLabels
     }
-    function handleLabelTreeExport(label_leaf_id) {
-        fetch(`${API_URL}/label/${label_leaf_id}/export`, {
-            method: 'get',
-            headers: new Headers({
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
-            }),
-        })
-            .then((res) => res.blob())
-            .then((blob) => saveAs(blob, `${getLabelTreeById(label_leaf_id).name}.csv`))
-    }
+
     return (
         <>
             <BaseModal
                 isOpen={isEditModalOpen}
-                isShowCancelButton
-                title={'Edit label tree'}
+                title={readonly ? 'View Label Tree' : 'Edit Label Tree'}
                 toggle={() => setIsEditModalOpen(false)}
                 onClosed={() => {}}
                 size="xl"
-                style={{
-                    maxWidth: '90%', // Adjust the width here (percentage or pixels)
-                    width: '90%', // Optional: Specify exact width
-                }}
+                fullscreen
+                isShowCancelButton={false}
             >
-                <LabelTree
-                    labelTree={getLabelTreeById(selectedTreeId)}
-                    visLevel={visLevel}
-                ></LabelTree>
+                <ReactFlowProvider>
+                    <Card>
+                        <CardBody>
+                            {!readonly && (
+                                <CAlert color="secondary" dismissible>
+                                    <div className="d-flex align-items-center">
+                                        <FaInfoCircle className="me-2" size={20} />
+                                        <p className="mb-0">
+                                            Right Click on a label to add new child
+                                            labels. Click on a label to edit it. Do not
+                                            forget to click <b>Save</b> after editing each
+                                            label!
+                                        </p>
+                                    </div>
+                                </CAlert>
+                            )}
+                            <LabelTreeEditor
+                                initialNodes={selectedTree.nodes}
+                                initialEdges={selectedTree.edges}
+                                visLevel={visLevel}
+                                readonly={readonly}
+                            />
+                        </CardBody>
+                    </Card>
+                </ReactFlowProvider>
             </BaseModal>
 
             <Datatable
@@ -122,8 +127,30 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                     }
                                     color="primary"
                                     onClick={() => {
+                                        const lT = labelTrees.find((labelTree) => {
+                                            if (labelTree.idx === d.idx) {
+                                                return labelTree
+                                            }
+                                        })
+                                        if (visLevel === 'global') {
+                                            setReadonly(false)
+                                        } else {
+                                            if (lT.group_id) {
+                                                setReadonly(false)
+                                            } else {
+                                                setReadonly(true)
+                                            }
+                                        }
+
+                                        const graph = convertLabelTreeToReactFlow(lT)
+
+                                        setSelectedTree({
+                                            // @ts-expect-error type is not an issue here
+                                            nodes: graph.nodes,
+                                            // @ts-expect-error type is not an issue here
+                                            edges: graph.edges,
+                                        })
                                         setIsEditModalOpen(true)
-                                        setSelectedTreeId(d.idx)
                                     }}
                                 />
                             )
@@ -139,13 +166,12 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                     text="Export"
                                     color="primary"
                                     isOutline={false}
-                                    onClick={() => handleLabelTreeExport(d.idx)}
+                                    onClick={() => exportLabelTree(d.idx)}
                                 />
                             )
                         },
                     },
                 ]}
-                defaultPageSize={10}
             />
         </>
     )

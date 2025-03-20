@@ -21,7 +21,7 @@ export const useAutoLayout = (options: LayoutOptions) => {
     )
 
     useEffect(() => {
-        console.log('here in useAutoLayout')
+        // console.log('here in useAutoLayout')
         if (!nodesInitialized || elements.nodes.length === 0) {
             return
         }
