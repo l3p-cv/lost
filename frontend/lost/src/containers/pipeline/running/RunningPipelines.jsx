@@ -10,6 +10,7 @@ import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
 import { getColor } from '../../Annotation/AnnoTask/utils'
+import '../globalComponents/pipeline.scss'
 
 export const RunningPipelines = () => {
     const navigate = useNavigate()

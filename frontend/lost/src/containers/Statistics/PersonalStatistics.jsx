@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import actions from '../../actions'
+import { useEffect, useState } from 'react'
 import * as statistics_api from '../../actions/statistics/statistics_api'
 
-import { CRow, CCol, CWidgetStatsD, CContainer } from '@coreui/react'
+import { CCol, CContainer, CRow, CWidgetStatsD } from '@coreui/react'
 import { CChart } from '@coreui/react-chartjs'
-import Loading from '../../components/Loading'
 import LineChartWidget from '../../components/LineChartWidget'
+import Loading from '../../components/Loading'
 
 const PersonalStatistics = () => {
-    const dispatch = useDispatch()
     const { mutate: getPersonalStatistics, data: personalStatistics } =
         statistics_api.usePersonalStatistics()
     useEffect(() => {
-        dispatch(actions.setNavbarVisible(true))
         getPersonalStatistics()
     }, [])
 
@@ -25,7 +21,7 @@ const PersonalStatistics = () => {
         if (personalStatistics === undefined) return
 
         // update data for annotation labels chart
-        let _labels = {
+        const _labels = {
             keys: [],
             values: [],
             colors: [],
@@ -34,14 +30,14 @@ const PersonalStatistics = () => {
         for (var k in personalStatistics.labels) {
             _labels.keys.push(k)
             _labels.values.push(personalStatistics.labels[k]['value'])
-            let _lblColor = personalStatistics.labels[k]['color']
+            const _lblColor = personalStatistics.labels[k]['color']
             _labels.colors.push(_lblColor ? _lblColor : 'rgb(16, 81, 95,0.8)')
         }
 
         setLabels(_labels)
 
         // update data for annotation types chart
-        let _types = {
+        const _types = {
             keys: [],
             values: [],
         }

@@ -1,9 +1,9 @@
-import { FaUpload } from 'react-icons/fa'
-import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
+import { useRef } from 'react'
+import { FaUpload } from 'react-icons/fa'
 import IconButton from './IconButton2'
 
-const SelectFileButton = ({ text, className, accept, onSelect, disabled }) => {
+const SelectFileButton = ({ text, className, accept, onSelect, disabled = false }) => {
     const inputRef = useRef()
     const selectVideoFaker = () => {
         inputRef.current.click()

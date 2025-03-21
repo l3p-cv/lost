@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Tooltip } from 'reactstrap'
 import { faInfo } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PropTypes from 'prop-types'
+import { useState } from 'react'
+import { Button, Tooltip } from 'reactstrap'
 
 const HelpButton = ({ text, id, disabled }) => {
     const [isTootipOpen, setIsToolTipOpen] = useState(false)
@@ -24,7 +24,9 @@ const HelpButton = ({ text, id, disabled }) => {
                     onMouseLeave={() => {
                         setIsToolTipOpen(false)
                     }}
+                    onClick={() => {}}
                     color="primary"
+                    type="button"
                 >
                     <FontAwesomeIcon
                         size="sm"

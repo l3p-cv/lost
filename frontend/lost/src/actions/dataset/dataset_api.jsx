@@ -12,12 +12,13 @@ export const useDatasets = () => {
     )
 }
 
-export const useFlatDatasets = () => {
+export const useFlatDatasets = (select) => {
     return useQuery(
         ['datasetsFlat'],
         () => axios.get(`${API_URL}/datasets/flat`).then((res) => res.data),
         {
             initialData: [],
+            select,
         },
     )
 }

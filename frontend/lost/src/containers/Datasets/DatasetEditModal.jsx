@@ -12,9 +12,8 @@ const NOTIFICATION_TIMEOUT_MS = 5000
 const DatasetEditModal = ({
     isVisible,
     setIsVisible,
-    editedDatasetObj,
+    editedDatasetObj = undefined,
     flatDatasetList,
-    datastoreList,
     onDatasetCreated,
 }) => {
     const { mutate: createDatasetApi, data: createResponse } =

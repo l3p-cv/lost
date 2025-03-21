@@ -78,7 +78,11 @@ export const LivePipeline: React.FC<LivePipelineProps> = ({
                 zoomOnDoubleClick={false}
             >
                 <Background color="#fff" variant={BackgroundVariant.Lines} gap={0} />
-                <Controls position="top-right" showInteractive={false} />
+                <Controls
+                    onFitView={() => fitView({ maxZoom: 1.0 })}
+                    position="top-right"
+                    showInteractive={false}
+                />
                 <Panel position="top-left">
                     <p>Name : {name}</p>
                 </Panel>

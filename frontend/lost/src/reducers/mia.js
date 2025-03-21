@@ -36,7 +36,7 @@ export default function (state = INITIAL_STATE, action) {
             const index = state.images.findIndex(function (element) {
                 return element.id === action.payload.id
             })
-            let newImages = state.images.slice()
+            const newImages = state.images.slice()
             newImages[index] = action.payload
             return {
                 ...state,

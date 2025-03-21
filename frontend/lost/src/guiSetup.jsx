@@ -10,7 +10,6 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
-import StartPipelineComponent from './containers/pipeline/start/StartPipeline'
 
 import {
     FaBox,
@@ -26,6 +25,8 @@ import {
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
 import { PipelineView } from './containers/pipeline/running/PipelineView'
 import { RunningPipelines } from './containers/pipeline/running/RunningPipelines'
+import { PipelineTemplatesTable } from './containers/pipeline/start/PipelineTemplatesTable'
+import { TemplateView } from './containers/pipeline/start/TemplateView'
 
 const iconProps = {
     size: 20,
@@ -137,11 +138,17 @@ const PipelinePage = {
     component: PipelineView,
 }
 
-const StartPipelines = {
+const PipelineTemplatesPage = {
     name: 'Start Pipeline',
-    to: '/startpipeline',
-    component: StartPipelineComponent,
+    to: '/pipeline-templates',
+    component: PipelineTemplatesTable,
     icon: <FaPlay {...iconProps} />,
+}
+
+const TemplatePage = {
+    path: '/pipeline-template/:templateId',
+    component: TemplateView,
+    exact: true,
 }
 
 const AdminArea = {
@@ -165,6 +172,7 @@ const guiSetup = {
         AnnotaskReview,
         DatasetsReview,
         PipelinePage,
+        TemplatePage,
     ],
     Administrator: {
         redirect: '/dashboard',
@@ -172,7 +180,7 @@ const guiSetup = {
             DesignerDashboard,
             TitleProject,
             RunningPipelinesPage,
-            StartPipelines,
+            PipelineTemplatesPage,
             Labels,
             Datasets,
             DataSources,
@@ -189,7 +197,7 @@ const guiSetup = {
             DesignerDashboard,
             TitleProject,
             RunningPipelinesPage,
-            StartPipelines,
+            PipelineTemplatesPage,
             Labels,
             Datasets,
             DataSources,

@@ -1,22 +1,23 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import actions from '../../../actions'
+import { Component } from 'react'
 import Autocomplete from 'react-autocomplete'
+import { connect } from 'react-redux'
 import {
-    Col,
-    Row,
-    InputGroup,
     Button,
-    ButtonGroup,
     ButtonDropdown,
-    DropdownToggle,
-    DropdownMenu,
+    ButtonGroup,
+    Col,
     DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    InputGroup,
+    Row,
 } from 'reactstrap'
 import { Icon, Label } from 'semantic-ui-react'
+import actions from '../../../actions'
 
-import './Tag.scss'
+import { FaArrowsAltH, FaSearchMinus, FaSearchPlus } from 'react-icons/fa'
 import UndoRedo from '../../../libs/hist'
+import './Tag.scss'
 
 const {
     refreshToken,
@@ -221,13 +222,13 @@ class Control extends Component {
                 <Col xs="3" sm="3" lg="3">
                     <ButtonGroup className="float-right">
                         <Button className="btn-default" onClick={this.handleReverse}>
-                            <i className="fa fa-arrows-h"></i> Reverse
+                            <FaArrowsAltH /> Reverse
                         </Button>
                         <Button className="btn-default" onClick={this.handleZoomIn}>
-                            <i className="fa fa-search-plus"></i>
+                            <FaSearchPlus />
                         </Button>
                         <Button className="btn-default" onClick={this.handleZoomOut}>
-                            <i className="fa fa-search-minus"></i>
+                            <FaSearchMinus />
                         </Button>
                         <ButtonDropdown
                             isOpen={this.state.dropdownOpen}

@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react'
 import { CFooter } from '@coreui/react'
-import { useInterval } from 'react-use'
-import { useSelector, useDispatch } from 'react-redux'
-import SweetAlert from 'react-bootstrap-sweetalert'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import useInactive from '../hooks/useInactive'
-import * as styles from '../components/styles'
+import { useInterval } from 'react-use'
+import Swal from 'sweetalert2'
 import actions from '../actions'
+import * as styles from '../components/styles'
+import useInactive from '../hooks/useInactive'
 
 const TheFooter = () => {
     const dispatch = useDispatch()
@@ -61,17 +61,15 @@ const TheFooter = () => {
         if (timer === 0) {
             navigate('/logout#timeout')
         } else if (timer < autoLogoutWarnTime) {
-            return (
-                <SweetAlert
-                    // TODO: close Animation does not work
-                    // closeAnim={{ name: 'hideSweetAlert', duration: 1000 }}
-                    showConfirm={false}
-                    warning
-                    title="Autologout in "
-                >
-                    {minutes}:{seconds}
-                </SweetAlert>
-            )
+            return Swal.fire({
+                title: 'You will be logged out soon!',
+                text: `You will be logged out in ${minutes}:${seconds}.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: 'primary',
+                confirmButtonText: 'OK',
+            })
         }
         return null
     }

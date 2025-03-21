@@ -24,10 +24,10 @@ const NodeFooter: React.FC<NodeFooterProps> = ({ footer }) => {
             className = ''
     }
 
-    return (
-        <div className={`${className} graph-node-footer`}>
-            {footer?.replace('_', ' ')}
-        </div>
+    return footer ? (
+        <div className={`${className} graph-node-footer`}>{footer.replace('_', ' ')}</div>
+    ) : (
+        <div className="graph-node-footer"></div>
     )
 }
 

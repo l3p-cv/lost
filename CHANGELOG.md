@@ -6,11 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Changed
-- Your stuff here
+- Update 'Start Pipeline' workflow to use `reactflow` and remove redux
+- Update `Labels` UI to make it more interactive & also remove redux
 
 ## [2.1.0] - 2025-03-07
 ### Changed
-- Update 'Running Pipeline' workflow to use `reactflow`
+- Update 'Running Pipeline' to use `reactflow`
 ### Fixed
 - Fixed page error when reviewing datasets with labels that have no color set
  
