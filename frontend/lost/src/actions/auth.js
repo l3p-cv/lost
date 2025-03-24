@@ -1,13 +1,21 @@
 import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 import { useMutation } from 'react-query'
-import TYPES from '../types/index'
 import { API_URL } from '../lost_settings'
+import TYPES from '../types/index'
+import { httpClient } from './http-client'
 
 const useLogin = () => {
-    return useMutation((credentials) =>
-        axios.post(`${API_URL}/user/login`, credentials).then((res) => res.data),
-    )
+    let username = ''
+    return useMutation({
+        mutationFn: (credentials) => {
+            username = credentials.userName
+            return httpClient.post('/user/login', credentials)
+        },
+        onSuccess: () => {
+            localStorage.setItem('username', username)
+        },
+    })
 }
 
 const refreshToken = async (dispatch) => {

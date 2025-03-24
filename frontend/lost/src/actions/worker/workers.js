@@ -1,7 +1,7 @@
 import axios from 'axios'
-import TYPES from '../../types/index'
-import { API_URL } from '../../lost_settings'
 import { http } from 'l3p-frontend'
+import { API_URL } from '../../lost_settings'
+import TYPES from '../../types/index'
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token')
 
@@ -11,16 +11,6 @@ export const getWorkers = () => async (dispatch) => {
         dispatch({ type: TYPES.GET_WORKERS, payload: response.data })
     } catch (e) {}
 }
-
-// export const getWorkerLogFile = (path) => async dispatch =>{
-
-//     const config = {
-//         url: API_URL +'/data/workerlogs/'+ path,
-//         type: 'image',
-//         token: localStorage.getItem('token')
-//     }
-//     return await http.get(config)
-// }
 
 export const getWorkerLogFile = async (id) => {
     const token = localStorage.getItem('token')

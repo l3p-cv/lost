@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { useDispatch } from 'react-redux'
-import jwtDecode from 'jwt-decode'
-import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import axios from 'axios'
+import jwtDecode from 'jwt-decode'
+import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import actions from '../actions'
+import guiSetup from '../guiSetup'
 import TheContent from './TheContent'
-import TheSidebar from './TheSidebar'
 import TheFooter from './TheFooter'
 import TheHeader from './TheHeader'
-import guiSetup from '../guiSetup'
-import actions from '../actions'
+import TheSidebar from './TheSidebar'
 
 const TheLayout = () => {
     const role = useRef()
@@ -49,7 +49,6 @@ const TheLayout = () => {
                 }
                 const newRoutes = [...newRoutes1, ...newRoutes2]
                 setRoutes(newRoutes)
-                dispatch(actions.setOwnUser())
                 dispatch(actions.getVersion())
 
                 if (window.location.pathname === '/') {

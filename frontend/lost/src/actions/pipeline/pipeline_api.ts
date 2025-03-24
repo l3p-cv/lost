@@ -107,3 +107,72 @@ export const useUpdatePipelineArguments = () => {
         },
     })
 }
+
+export const usePausePipeline = () => {
+    return useMutation({
+        mutationFn: (id: string) => {
+            return httpClient.post(`/pipeline/pause/${id}`)
+        },
+        onError: () => {
+            showError('An error occurred when pausing the pipeline')
+        },
+        onSuccess: () => {
+            showSuccess('Pipeline paused successfully')
+        },
+    })
+}
+
+export const usePlayPipeline = () => {
+    return useMutation({
+        mutationFn: (id: string) => {
+            return httpClient.post(`/pipeline/play/${id}`)
+        },
+        onError: () => {
+            showError('An error occurred when playing the pipeline')
+        },
+        onSuccess: () => {
+            showSuccess('Pipeline played successfully')
+        },
+    })
+}
+
+export const useDeletePipeline = () => {
+    const navigate = useNavigate()
+    return useMutation({
+        mutationFn: (id: string) => {
+            return httpClient.delete(`/pipeline/${id}`)
+        },
+        onError: () => {
+            showError('An error occurred when deleting the pipeline')
+        },
+        onSuccess: () => {
+            showSuccess('Pipeline deleted successfully')
+            navigate('/pipelines')
+        },
+    })
+}
+
+export const getLog = (id) => {
+    return httpClient.get(`/pipeline/element/${id}/logs/`)
+}
+
+const downloadFile = (filename, text) => {
+    const element = document.createElement('a')
+    element.setAttribute(
+        'href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(text),
+    )
+    element.setAttribute('download', filename)
+
+    element.style.display = 'none'
+    document.body.appendChild(element)
+
+    element.click()
+
+    document.body.removeChild(element)
+}
+
+export const downloadPipeLogFile = (id) => async () => {
+    const response = await httpClient.get(`/data/logs/${id}?nocache=${Math.random()}`)
+    downloadFile(`p-${id}.log`, response)
+}

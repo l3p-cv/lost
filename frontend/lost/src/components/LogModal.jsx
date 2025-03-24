@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react'
-import BaseModal from './BaseModal'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useInterval, useWindowSize } from 'react-use'
 import { Input } from 'reactstrap'
 import actions from '../actions'
-import { useDispatch } from 'react-redux'
-import { useWindowSize } from 'react-use'
-import { useInterval } from 'react-use'
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { downloadPipeLogFile, getLog } from '../actions/pipeline/pipeline_api'
+import BaseModal from './BaseModal'
 import IconButton from './IconButton'
 import * as Notification from './Notification'
 const TextArea = (props) => {
@@ -32,13 +32,13 @@ const LogModal = (props) => {
     const [log, setLog] = useState('')
     const [isRedBorder, setIsRedBorder] = useState(false)
     const [firstRequest, setFirstRequest] = useState(true)
-    const getLog = async () => {
+    const getLogWrapper = async () => {
         let logResponse
         setIsRedBorder(true)
         if (props.pipeId || props.wId) {
             switch (props.actionType) {
                 case LogModal.TYPES.PIPELINE:
-                    logResponse = await actions.getLog(props.pipeId)
+                    logResponse = await getLog(props.pipeId)
                     break
                 case LogModal.TYPES.WORKERS:
                     if (firstRequest) {
@@ -70,20 +70,20 @@ const LogModal = (props) => {
     }
     useEffect(() => {
         if ((props.pipeId || props.wId) && props.isOpen) {
-            getLog()
+            getLogWrapper()
         }
     }, [props.pipeId, props.wId])
 
     useInterval(() => {
         if (props.isOpen) {
-            getLog()
+            getLogWrapper()
         }
     }, 2000)
 
     const downloadLogfile = () => {
         switch (props.actionType) {
             case LogModal.TYPES.PIPELINE:
-                dispatch(actions.downloadLogfile(props.pipeId))
+                downloadPipeLogFile(props.pipeId)
                 break
             case LogModal.TYPES.WORKERS:
                 dispatch(actions.downloadWorkerLogfile(props.wId))
@@ -126,6 +126,7 @@ LogModal.propTypes = {
     logPath: PropTypes.string,
     wiLogId: PropTypes.number,
     actionType: PropTypes.string.isRequired,
+    pipeId: PropTypes.number,
 }
 
 export default LogModal

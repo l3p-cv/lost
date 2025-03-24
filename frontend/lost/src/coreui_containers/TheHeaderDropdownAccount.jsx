@@ -1,12 +1,10 @@
-import React from 'react'
 import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 import { FaLock, FaUser } from 'react-icons/fa'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import userPng from '../assets/img/avatars/user.png'
 
 const TheHeaderDropdown = () => {
-    const username = useSelector((state) => state.user.ownUser.user_name)
+    const username = localStorage.getItem('username')
     const navigate = useNavigate()
 
     return (
@@ -15,7 +13,6 @@ const TheHeaderDropdown = () => {
             className="c-header-nav-items mx-2"
             direction="center"
         >
-            {/* <CDropdownToggle className="c-header-nav-link" caret={false} style={{ background: 'white', border: '0px' }}> */}
             <CDropdownToggle className="c-header-nav-link" caret={false} variant="ghost">
                 <div>
                     <span style={{ marginRight: 15 }}>{username}</span>

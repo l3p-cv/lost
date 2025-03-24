@@ -1,28 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import Datatable from '../../components/Datatable'
-import IconButton from '../../components/IconButton'
-import BaseModal from '../../components/BaseModal'
-import { useSelector } from 'react-redux'
 import {
-    faUserPlus,
     faEdit,
-    faTrash,
     faFolderOpen,
     faTimes,
+    faTrash,
+    faUserPlus,
 } from '@fortawesome/free-solid-svg-icons'
-import EditDSModal from './EditDSModal'
-import * as Notification from '../../components/Notification'
+import { useEffect, useState } from 'react'
+import BaseModal from '../../components/BaseModal'
+import Datatable from '../../components/Datatable'
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
+import IconButton from '../../components/IconButton'
+import * as Notification from '../../components/Notification'
+import EditDSModal from './EditDSModal'
 // import { deleteFs } from '../../access/fb'
-import * as fbAPI from '../../actions/fb/fb_api'
 import { CBadge, CCol, CRow } from '@coreui/react'
+import * as fbAPI from '../../actions/fb/fb_api'
 import BaseContainer from '../../components/BaseContainer'
 
 export const DSTable = ({ visLevel }) => {
     const [isNewDS, setIsNewDS] = useState(false)
     // const [fsList, setFSList] = useState([])
     // const [possibleFsTypes, setPossibleFsTypes] = useState([])
-    const userName = useSelector((state) => state.user.ownUser.user_name)
+    const userName = localStorage.getItem('username') || ''
     const defaultDsName = 'default'
     const [browseOpen, setBrowseOpen] = useState(false)
     const [fs, setFs] = useState()
