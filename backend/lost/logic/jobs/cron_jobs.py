@@ -9,10 +9,9 @@ import time
 import threading
 from dask.distributed import Client
 from lost.logic.log import get_file_logger
-from lost.logic.file_man import FileMan, AppFileMan
+from lost.logic.file_man import AppFileMan
 import logging
 from lost.logic.jobs import jobs
-from lost.logic.dask_session import ds_man
 
 def process_pipes(log_name, client):
     lostconfig = config.LOSTConfig()
