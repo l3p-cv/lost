@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Add Api definiton to the patch and put methods for /sia
 - _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
+- Fixed docker-compose to *docker compose* in quick_setup console output
 
 ## [2.2.0] - 2025-03-21 
 ### Changed

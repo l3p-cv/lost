@@ -334,7 +334,7 @@ class QuickSetup(object):
         logging.info('Finished setup! To test LOST run:')
         logging.info('======================================================')
         logging.info('1) Type the command below into your command line:')
-        logging.info('   cd {}; docker-compose up'.format(self.dst_docker_dir))
+        logging.info('   cd {}; docker compose up'.format(self.dst_docker_dir))
         n = 2
         logging.info('{}) Open your browser and navigate to: http://localhost'.format(n))
         logging.info('    Login user:     admin')
