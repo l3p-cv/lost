@@ -438,13 +438,16 @@ class ScriptOutput(Output):
             Annos for images are requested in same order as in the input lost 
             dataset.
         '''
-        if 'anno_format' in lds.df:
-            if len( lds.df[lds.df['anno_format'] != 'rel'] ) > 0:
+        dfo = lds.df.copy()
+        # None can only be assgined to object type columns
+        dfo = dfo.apply(lambda x: x.where(pd.notna(x), None) if x.dtype == object else x.fillna(-1), axis=0)
+        if 'anno_format' in dfo:
+            if len( dfo[dfo['anno_format'] != 'rel'] ) > 0:
                 raise Exception('All anno in LOSTDataset need to be in rel format!')
         else:
             self._script.logger.warning('anno_format column is missing in lds')
-        if 'anno_style' in lds.df:
-            bb_df =  lds.df[lds.df['anno_dtype'] == 'bbox']
+        if 'anno_style' in dfo:
+            bb_df =  dfo[dfo['anno_dtype'] == 'bbox']
             if len(bb_df[bb_df['anno_style'] != 'xcycwh']) > 0:
                 raise Exception('All anno in bboxes need to be in xcycwh anno_style!')
         else:
@@ -479,7 +482,7 @@ class ScriptOutput(Output):
                 self._script.logger.warning(f'Could not calculate sim class: {traceback.format_exc()}')
                 return 1
             
-        for img_path, df in lds.df.groupby(img_path_key, sort=False):
+        for img_path, df in dfo.groupby(img_path_key, sort=False):
             fs = self._get_lds_fm(df, fs_cache, fs)
             # if 'img_sim_class' in df:
             #     if df['img_sim_class'].values[0]:
