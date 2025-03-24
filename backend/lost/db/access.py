@@ -163,7 +163,7 @@ class DBMan(object):
         '''
         return self.session.query(model.Pipe).all()
 
-    def get_pipes_to_process(self):
+    def get_pipes_to_process(self) -> list[model.Pipe]:
         '''Get all :class:`project.Pipe` objects that are not finished.
 
         Returns:
@@ -1391,3 +1391,16 @@ class DBMan(object):
                 OR l.img_anno_id IN ({image_id_list}) \
             );"
         return self.session.execute(text(sql))
+
+    def get_version(self, package=None):
+        '''Get version info
+
+        Args:
+            package (str): Name of the package
+
+        Returns:
+            :class:`model.Version`
+        '''
+        if package:
+            return self.session.query(model.Version).filter(model.Version.package == package).first()
+        return self.session.query(model.Version).all()

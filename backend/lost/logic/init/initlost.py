@@ -17,14 +17,11 @@ from lost.db import model
 from lost.logic.label import LabelTree
 from lost.logic.project_config import ProjectConfigMan
 from lost.logic.file_access import create_user_default_fs
+from lost.db.db_patches.db_patcher import DBPatcher
+from lost.db.db_patches.patches import patch_dict
 
 def main():
     lostconfig = config.LOSTConfig()
-    # project_root = join(lostconfig.project_path, "data")
-    # if not os.path.exists(project_root):
-    #     os.makedirs(project_root)
-    # fman = file_man.FileMan(lostconfig)
-    # fman.create_project_folders()
     # Create Tables
     dbm = access.DBMan(lostconfig)
     dbm.create_database()
@@ -36,7 +33,7 @@ def main():
         import_ootb_pipelines(dbm, user)
         copy_example_images(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
-        # create_project_config(dbm)
+    DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update()
     dbm.close_session()
 
 def create_roles(dbm):

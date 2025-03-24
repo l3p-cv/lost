@@ -17,6 +17,9 @@ from lost import settings
 
 import pandas as pd
 
+DB_VERSION = '0.0.0'
+DB_VERSION_KEY = 'lost_db_version'
+
 # Set conventions for foreign key name generation
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -1895,3 +1898,14 @@ class Dataset(Base):
             'children': children_json,
             'isReviewable': is_reviewable
         }
+
+class Version(Base):
+    __tablename__ = "version"
+    idx = Column(Integer, primary_key=True)
+    package = Column(Text)
+    version = Column(Text)
+
+    def __init__(self, idx=None, package=None, version=None):
+        self.idx = idx
+        self.package = package
+        self.version = version

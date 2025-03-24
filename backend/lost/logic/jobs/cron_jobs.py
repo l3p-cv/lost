@@ -17,8 +17,10 @@ def process_pipes(log_name, client):
     lostconfig = config.LOSTConfig()
     dbm = DBMan(lostconfig)
     pipe_list = dbm.get_pipes_to_process()
+    logger = logging.getLogger(log_name)
     # For each task in this project
     for p in pipe_list:
+        logger.info(f'Process pipe: {p.name} -> state: {p.state} (id: {p.idx})')
         pipe_man = cron.PipeEngine(dbm=dbm, pipe=p, lostconfig=lostconfig, 
             client=client, logger_name=log_name)
         pipe_man.process_pipeline()

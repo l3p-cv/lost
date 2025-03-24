@@ -26,7 +26,7 @@ done
 python3 /code/src/backend/lost/logic/init/initlost.py
 # cd /code/docs/sphinx &&  make html && cd -
 python3 /code/src/backend/lost/logic/init/initworker.py
-python3 /code/src/backend/lost/logic/init/init_patchsystem.py
+# python3 /code/src/backend/lost/logic/init/init_patchsystem.py
 
 
 # start scheduler.

@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
+### Added
+- New db_patcher: enables automatic patching of lost database.
 ### Fixed
 - Add Api definiton to the patch and put methods for /sia
 - _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
