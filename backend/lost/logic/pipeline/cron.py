@@ -1,5 +1,4 @@
 from datetime import datetime, time
-#from py3nvml.py3nvml import *
 import sys
 from lost.db import model, state, dtype
 import json
@@ -18,8 +17,6 @@ import importlib
 import traceback
 import lost.logic.log
 import logging
-# from celery.utils.log import get_task_logger
-# from celery import task
 from lost.db.access import DBMan
 from lostconfig import LOSTConfig
 from lost.logic.pipeline.worker import WorkerMan, CurrentWorker
@@ -49,10 +46,6 @@ class PipeEngine(pipe_model.PipeEngine):
         super().__init__(dbm=dbm, pipe=pipe)
         self.lostconfig = lostconfig #type: lost.logic.config.LOSTConfig
         self.file_man = AppFileMan(self.lostconfig)
-        # self.logger = lost.logic.log.get_file_logger(
-        #     'Executor: {}'.format(self.lostconfig.env_name), 
-        #     self.file_man.get_app_log_path('PipeEngine.log'))
-        # self.logger = get_task_logger(__name__)
         self.logger = logging.getLogger('{}.{}'.format(
             logger_name, self.__class__.__name__)
         )
@@ -68,19 +61,6 @@ class PipeEngine(pipe_model.PipeEngine):
                     .format(anno_task.idx))
                 self.logger.warning("%d: AnnoTask has been finished (ID: %d, Name: %s)"\
                                 %(self.pipe.idx, anno_task.idx, anno_task.name))
-            # if pipe_e.anno_task.dtype == dtype.AnnoTask.MIA:
-            #     if anno_task.progress is None:
-            #         anno_task.progress = 0.0
-            #     if anno_task.progress >= 100.0:
-            #          anno_task.state = state.AnnoTask.FINISHED
-            #          self.dbm.add(anno_task)
-            #          pipe_e.state = state.PipeElement.FINISHED
-            #          self.dbm.add(pipe_e)
-            #          self.dbm.commit()
-            #          print("%d: AnnoTask has been finished (ID: %d, Name: %s)"\
-            #                       %(self.pipe.idx, anno_task.idx, anno_task.name))
-            #     else:
-            #         return
        
         # state = finished will be set in annotation tool
         if anno_task.state == state.AnnoTask.PENDING:
@@ -185,21 +165,12 @@ class PipeEngine(pipe_model.PipeEngine):
                     [f'{x}' for x in traceback.format_tb(fut.traceback())]
                 )
             ))
-        # class User():
-        #     def __init__(self, idx):
-        #         self.idx = idx
-
-        # # client = ds_man.get_dask_client(User(1))
-        # self.logger.info(f'shutdown cluster: {ds_man.shutdown_cluster(User(1))}')
-        # self.logger.info(f'client.restart: {client.restart()}')
 
     def _install_extra_packages(self, client, packages):
         def install(cmd):
             import subprocess
             output = subprocess.check_output(f'{cmd}',stderr=subprocess.STDOUT, shell=True)
             return output
-            # import os
-            # os.system(f'{install_cmd} {packages}')
         pip_cmd, conda_cmd = gen_extra_install_cmd(packages, self.lostconfig)
         if pip_cmd is not None:
             self.logger.info(f'Start install cmd: {pip_cmd}')
@@ -213,24 +184,7 @@ class PipeEngine(pipe_model.PipeEngine):
     def exec_dask_direct(self, client, pipe_e, worker=None):
         scr = pipe_e.script
         self._install_extra_packages(client, scr.extra_packages)
-        # extra_packages = json.loads(scr.extra_packages)
-        # if self.lostconfig.allow_extra_pip:
-        #     self._install_extra_packages(client, 'pip install', extra_packages['pip'])
-        # if self.lostconfig.allow_extra_conda:
-        #     self._install_extra_packages(client, 'conda install', extra_packages['conda'])
         pp_path = self.file_man.get_pipe_project_path(pipe_e.script)
-        # self.logger.info('pp_path: {}'.format(pp_path))
-        # timestamp = datetime.now().strftime("%m%d%Y%H%M%S")
-        # packed_pp_path = self.file_man.get_packed_pipe_path(
-        #     f'{os.path.basename(pp_path)}.zip', timestamp
-        # )
-        # self.logger.info('packed_pp_path: {}'.format(packed_pp_path))
-        # if ppp_man.should_i_update(client, pp_path):
-        #     exec_utils.zipdir(pp_path, packed_pp_path, timestamp)
-        #     self.logger.info(f'Upload file:{client.upload_file(packed_pp_path)}')
-        # import_name = exec_utils.get_import_name_by_script(
-        #     pipe_e.script.name, timestamp)
-        # self.logger.info(f'import_name:{import_name}')
         import_name = ppp_man.prepare_import(
             client, pp_path, pipe_e.script.name, self.logger
         )
@@ -244,7 +198,6 @@ class PipeEngine(pipe_model.PipeEngine):
             env = self.select_env_for_script(pipe_e)
             if env is None:
                 return
-            # celery_exec_script.apply_async(args=[pipe_e.idx], queue=env)
             worker = env
             client = self.client
         else:
@@ -254,9 +207,6 @@ class PipeEngine(pipe_model.PipeEngine):
             ds_man.refresh_user_session(user)
             self.logger.info('Process script with dask client: {}'.format(client))
             self.logger.info('dask_session: {}'.format(ds_man.session))
-            # logger.info('pipe.manager_id: {}'.format(p.manager_id))
-            # logger.info('pipe.name: {}'.format(p.name))
-            # logger.info('pipe.group_id: {}'.format(p.group_id))
             worker = None
             # client.submit(exec_script_in_subprocess, pipe_e.idx)
         if self.lostconfig.script_execution == 'subprocess':
@@ -268,15 +218,8 @@ class PipeEngine(pipe_model.PipeEngine):
     def process_pipe_element(self):
         pipe_e = self.get_next_element()
         while (pipe_e is not None):
-            # if pipe_e is None:
-            #     return
             if pipe_e.dtype == dtype.PipeElement.SCRIPT:
                 if pipe_e.state != state.PipeElement.SCRIPT_ERROR:
-                    # if pipe_e.is_debug_mode:
-                    #     pipe_e.state = state.PipeElement.IN_PROGRESS
-                    #     self.dbm.save_obj(pipe_e)
-                    #     self.make_debug_session(pipe_e)
-                    # else:
                     if pipe_e.state == state.PipeElement.PENDING:
                         self.start_script(pipe_e)
                         pipe = pipe_e.pipe
@@ -312,7 +255,6 @@ class PipeEngine(pipe_model.PipeEngine):
         if self.client is None:
             user = self.dbm.get_user_by_id(self.pipe.manager_id)
             ds_man.refresh_user_session(user)
-            # self.logger.info('Refreshed dask user session for user: {}'.format(user.idx))
 
     def process_pipeline(self):
         try:
@@ -395,12 +337,6 @@ class PipeEngine(pipe_model.PipeEngine):
             if pe_prev is not None:
                 if pe_prev.state != state.PipeElement.FINISHED:
                     return None
-                # if pe_prev.state == state.PipeElement.FINISHED:
-                #     if candidate.state == state.PipeElement.PENDING:
-                #         return candidate
-                #     elif candidate.dtype == dtype.PipeElement.ANNOTATION_TASK and\
-                #         candidate.state == state.PipeElement.IN_PROGRESS:
-                #         return candidate
             else:
                 # if pe_prev is None and candidate.state == PENDING
                 if candidate.state == state.PipeElement.PENDING:
