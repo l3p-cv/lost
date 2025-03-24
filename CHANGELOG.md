@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Add Api definiton to the patch and put methods for /sia
 - _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
+### Changed
+- Removed old unused files
+- Removed redux from users, groups, pipeline toolbar
 
 ## [2.2.0] - 2025-03-21 
 ### Changed
