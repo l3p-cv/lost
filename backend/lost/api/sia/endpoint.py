@@ -56,6 +56,7 @@ class First(Resource):
         
     @api.doc(security='apikey',description='Update whole SIA Annotation')
     @jwt_required 
+    @api.expect(sia_anno)
     def put(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -80,6 +81,8 @@ class First(Resource):
                 return 'error updating sia anno', 500
     @api.doc(security='apikey',description='Update partial SIA Annotation')            
     @jwt_required 
+    @api.expect(sia_anno)
+
     def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
