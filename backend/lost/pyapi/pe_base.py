@@ -2,10 +2,11 @@ from lost.logic.pipeline import pipe_model
 from lost.pyapi import inout
 from lost.pyapi.pipeline import PipeInfo
 from lost.logic import file_man
+from lost.db.access import DBMan
 
 class Element(object):
 
-    def __init__(self, pe, dbm):
+    def __init__(self, pe, dbm:DBMan):
         self._dbm = dbm #type: lost.db.access.DBMan
         self._lostconfig = dbm.lostconfig
         self._pipe_element = pe

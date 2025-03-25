@@ -282,6 +282,8 @@ class PipeEngine(pipe_model.PipeEngine):
             else:
                 raise Exception("Unknown PipeState!")
             p.is_locked = False
+            if p.changed_by_element > p.changed_by_engine:
+                p.changed_by_engine += 1
             self.dbm.save_obj(p)
         except:
             p.is_locked = False

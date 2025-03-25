@@ -7,6 +7,8 @@ from datetime import datetime
 from lost.settings import LOST_CONFIG
 import lostconfig as config
 import shutil
+import traceback
+from sqlalchemy import text
 from lost.db import access
 from lost.logic.pipeline import template_import
 from lost.logic.file_man import AppFileMan
@@ -34,7 +36,20 @@ def main():
         copy_example_images(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
     DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update()
+    release_all_pipe_locks(dbm)
     dbm.close_session()
+
+def release_all_pipe_locks(dbm:access.DBMan):
+    try:
+        sql = """
+                UPDATE pipe 
+                SET is_locked = FALSE;
+            """
+        dbm.session.execute(text(sql))
+        dbm.commit()
+        print(f'Released all locks for pipe processing')
+    except:
+        print(traceback.format_exc())
 
 def create_roles(dbm):
     if not dbm.get_role_by_name(roles.ADMINISTRATOR):

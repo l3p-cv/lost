@@ -8,7 +8,7 @@ class PipeEngine(object):
 
     Each pipline belongs to one Pipe.
     '''
-    def __init__(self, dbm, pipe):
+    def __init__(self, dbm, pipe:model.Pipe):
         self.dbm = dbm
         self.pipe = pipe#dbm.get_task(task_id)
         self.pipe_elements = dbm.get_pipe_elements(pipe.idx)

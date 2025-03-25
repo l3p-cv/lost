@@ -1,5 +1,5 @@
 import json
-from lost.db import model, state, dtype
+from lost.db import model, state, dtype, access
 from datetime import datetime
 from lost.pyapi import pipe_elements
 import pandas as pd
@@ -61,7 +61,7 @@ def __get_two_d_anno_counts(dbm, anno_task_id, iteration):
     return remaining, available
 
 
-def set_finished(dbm, anno_task_id):
+def set_finished(dbm:access.DBMan, anno_task_id):
     anno_task = dbm.get_anno_task(anno_task_id=anno_task_id)
     pipe_e = dbm.get_pipe_element(pipe_e_id=anno_task.pipe_element_id)
 
@@ -79,6 +79,9 @@ def set_finished(dbm, anno_task_id):
             dbm.add(anno_task)
             pipe_e.state = state.PipeElement.FINISHED
             dbm.add(pipe_e)
+            pipe = dbm.get_pipe(pipe_e.pipe_id)
+            pipe.changed_by_element += 1
+            dbm.add(pipe)
             dbm.commit()
             try: 
                 email.send_annotask_finished(dbm, anno_task)

@@ -12,8 +12,10 @@ class DBPatcher(object):
                  patch_map=None, dbm=None) -> None:
         if dbm is None:
             self.dbm = access.DBMan(LOSTConfig())
+            self.local_dbm = True
         else:
             self.dbm = dbm
+            self.local_dbm = False
         self.db_version = db_version
         self.version_key = version_key
         if patch_map is None:
@@ -23,14 +25,17 @@ class DBPatcher(object):
 
     
     def __del__(self):
-        self.dbm.close_session()
+        try:
+            if self.local_dbm:
+                self.dbm.close_session()
+        except:
+            pass
     
     def version_greater(self, current_version, new_version):
         c_v = [int(x) for x in current_version.split('.')]
         n_v = [int(x) for x in new_version.split('.')]
         
         for current, new in zip(c_v, n_v):
-            print(current, new)
             if current < new:
                 return True
             elif current == new:
