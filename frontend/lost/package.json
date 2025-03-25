@@ -30,7 +30,6 @@
         "i18next-browser-languagedetector": "^7.1.0",
         "i18next-http-backend": "^2.2.1",
         "jwt-decode": "^3.1.2",
-        "l3p-frontend": "^3.3.2",
         "lodash": "^4.17.21",
         "lost-sia": "2.0.0-alpha17",
         "process": "^0.11.10",

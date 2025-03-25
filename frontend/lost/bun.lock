@@ -29,7 +29,6 @@
         "i18next-browser-languagedetector": "^7.1.0",
         "i18next-http-backend": "^2.2.1",
         "jwt-decode": "^3.1.2",
-        "l3p-frontend": "^3.3.2",
         "lodash": "^4.17.21",
         "lost-sia": "2.0.0-alpha17",
         "process": "^0.11.10",
@@ -126,8 +125,6 @@
     "@babel/traverse": ["@babel/traverse@7.26.7", "", { "dependencies": { "@babel/code-frame": "^7.26.2", "@babel/generator": "^7.26.5", "@babel/parser": "^7.26.7", "@babel/template": "^7.25.9", "@babel/types": "^7.26.7", "debug": "^4.3.1", "globals": "^11.1.0" } }, "sha512-1x1sgeyRLC3r5fQOM0/xtQKsYjyxmFjaOrLJNtZ81inNjyJHGIolTULPiSc/2qe1/qfpFLisLQYFnnZl7QoedA=="],
 
     "@babel/types": ["@babel/types@7.26.7", "", { "dependencies": { "@babel/helper-string-parser": "^7.25.9", "@babel/helper-validator-identifier": "^7.25.9" } }, "sha512-t8kDRGrKXyp6+tjUh7hw2RLyclsW4TRoRvRHtSyAX9Bb5ldlFh+90YAYY6awRXrlB4G5G2izNeGySpATlFzmOg=="],
-
-    "@cartok/object-assign-deep": ["@cartok/object-assign-deep@0.4.3", "", {}, "sha512-4lfaPMvb6wwTgkZPQGXPkPIBfO1Nus/8NzjB+xOkXaxVBRxZoOp29AOiVgPhbimn15pUxUWQPQwPSp4buCDRYg=="],
 
     "@coreui/chartjs": ["@coreui/chartjs@3.1.2", "", { "dependencies": { "@coreui/coreui": "^4.2.6", "chart.js": "^3.9.1" } }, "sha512-d3MGk3KZNAt29VRKP/XYiGmT56KTqtuOhLEg5HNwb7P7ZmEgOJoHxFHVCVE4I36hfgQCjZZVknsuk2ZTfF/2fw=="],
 
@@ -649,8 +646,6 @@
 
     "dom-helpers": ["dom-helpers@5.2.1", "", { "dependencies": { "@babel/runtime": "^7.8.7", "csstype": "^3.0.2" } }, "sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA=="],
 
-    "dom-node-template": ["dom-node-template@3.0.3", "", {}, "sha512-eY4Z9I+D87dofPA4ph6luyOPFBR2faQbrLgWe9UDDpRU8MvrKn5OtRi7rrvJgo7zeKUggd6ypxz8Glt1tGKnCA=="],
-
     "dom-scroll-into-view": ["dom-scroll-into-view@1.0.1", "", {}, "sha512-1Dmy6uH1vRcm2+Lvggyrlc04cMh+mr+VA+qcgs085hAEZp+v+6NT/xhRjfc6vRc7965sCSDdQcw063VkG+eNmQ=="],
 
     "dunder-proto": ["dunder-proto@1.0.1", "", { "dependencies": { "call-bind-apply-helpers": "^1.0.1", "es-errors": "^1.3.0", "gopd": "^1.2.0" } }, "sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A=="],
@@ -959,13 +954,9 @@
 
     "keyv": ["keyv@4.5.4", "", { "dependencies": { "json-buffer": "3.0.1" } }, "sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw=="],
 
-    "l3p-frontend": ["l3p-frontend@3.3.2", "", { "dependencies": { "dom-node-template": "^3.0.3", "literal-observer": "^0.8.5" } }, "sha512-yN7Shq/Im6EWPft18tRbQhY5IINh+qziiiffyEjxCaNdW7MIkj79Kxn6D0rSzjAO0SkZJs+XrdCWLgFsz7JxMg=="],
-
     "levn": ["levn@0.4.1", "", { "dependencies": { "prelude-ls": "^1.2.1", "type-check": "~0.4.0" } }, "sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ=="],
 
     "lines-and-columns": ["lines-and-columns@1.2.4", "", {}, "sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg=="],
-
-    "literal-observer": ["literal-observer@0.8.5", "", { "dependencies": { "@cartok/object-assign-deep": "^0.4.2" } }, "sha512-wM+Cr5uvkcCsBfRQjor/pfat2jxFHIwewyLYli0jI9psfIh5Bq7iBjnp8vptprH0QlJquiOOIms3cxZJj6UqrQ=="],
 
     "locate-path": ["locate-path@6.0.0", "", { "dependencies": { "p-locate": "^5.0.0" } }, "sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw=="],
 
