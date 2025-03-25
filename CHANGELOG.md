@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Speed up pipeline processing by preventing to process pipes where state has 
   not changed
   - model.Pipe: Added changed_by_engine, changed_by_element col
+  - Immediately process the pipeline when it is created
 ### Added
 - New db_patcher: enables automatic patching of lost database.
 ### Fixed

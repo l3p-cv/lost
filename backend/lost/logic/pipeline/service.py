@@ -6,7 +6,10 @@ from lost.logic.template import combine_arguments
 from lost.logic import file_man
 from lost.utils.dump import dump
 import flask
+from dask.distributed import Client
 from lost import settings
+from lost.logic.pipeline import cron
+import lostconfig as config
 
 __author__ = "Gereon Reus"
 
@@ -14,6 +17,18 @@ __author__ = "Gereon Reus"
 #                                                                 #
 ###################################################################
 
+def process_pipeline(pipe:model.Pipe, dbm: access.DBMan):
+    lostconfig = config.LOSTConfig()
+    try:
+        client = Client('{}:{}'.format(
+            lostconfig.scheduler_ip, lostconfig.scheduler_port)
+        )
+        pipe_man = cron.PipeEngine(dbm=dbm, pipe=pipe, lostconfig=lostconfig, 
+            client=client, logger_name='cron_jobs')
+        pipe_man.process_pipeline()
+        client.close()
+    except:
+        client.close()
 
 def start(db_man, data, manager_id, group_id):
     # data = json.loads(data)
@@ -28,6 +43,7 @@ def start(db_man, data, manager_id, group_id):
     # and certain elements
     patch_pe(db_man, pipe_starter)
     db_man.save_obj(pipe_starter.unlock_pipe())
+    process_pipeline(pipe_starter.pipe, db_man)
     return pipe_starter.pipe.idx
     
 def create_pe_raw_element(db_man, pipe_starter):
