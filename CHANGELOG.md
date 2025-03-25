@@ -6,11 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Changed
+- Your stuff here
+
+## [2.3.0] - 2025-03-25
+### Changed
 - Speed up pipeline processing by preventing to process pipes where state has 
   not changed
   - model.Pipe: Added changed_by_engine, changed_by_element col
 ### Added
-- New db_patcher: enables automatic patching of lost database.
+- New db_patcher: enables automatic patching of lost database
 ### Fixed
 - Add Api definiton to the patch and put methods for /sia
 - _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
