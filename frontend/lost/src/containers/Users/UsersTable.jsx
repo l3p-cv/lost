@@ -60,7 +60,7 @@ export const UsersTable = () => {
 
     const editClick = ({ row }) => {
         setIsNewUser(false)
-        setSelectedUser(users.filter((el) => el.user_name === row.user_name))
+        setSelectedUser(usersData.users.filter((el) => el.user_name === row.user_name))
 
         openUserModal()
     }
@@ -81,7 +81,7 @@ export const UsersTable = () => {
             {isUserEditOpenView && (
                 <EditUserModal
                     isNewUser={isNewUser}
-                    users={users}
+                    users={usersData.users}
                     user={selectedUser}
                     isOpen={isUserEditOpenControl}
                     closeModal={closeModal}
