@@ -1,11 +1,12 @@
 import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 import { FaLock, FaUser } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import userPng from '../assets/img/avatars/user.png'
+import { useLogout } from '../actions/auth'
 
 const TheHeaderDropdown = () => {
     const username = localStorage.getItem('username')
     const navigate = useNavigate()
+    const { mutate: logout } = useLogout()
 
     return (
         <CDropdown
@@ -18,23 +19,31 @@ const TheHeaderDropdown = () => {
                     <span style={{ marginRight: 15 }}>{username}</span>
                     <div className="c-avatar" style={{ display: 'inline' }}>
                         <img
-                            alt=""
+                            alt="user-avatar"
                             className="c-avatar-img"
-                            src={userPng}
+                            src="/assets/user.png"
                             style={{ width: 40, height: 40 }}
                         />
                     </div>
                 </div>
             </CDropdownToggle>
-            <CDropdownMenu className="pt-0" placement="bottom-end">
-                <CDropdownItem disabled tag="div" color="light" className="text-center">
+            <CDropdownMenu className="pt-0">
+                <CDropdownItem disabled color="light" className="text-center">
                     <strong>Account</strong>
                 </CDropdownItem>
                 <CDropdownItem onClick={() => navigate('/my_profile')}>
                     <FaUser style={{ marginRight: 10 }} />
                     My Profile
                 </CDropdownItem>
-                <CDropdownItem onClick={() => navigate('/logout')}>
+                <CDropdownItem
+                    onClick={() => {
+                        logout(undefined, {
+                            onSuccess: () => {
+                                navigate('/logout')
+                            },
+                        })
+                    }}
+                >
                     <FaLock style={{ marginRight: 10 }} />
                     Logout
                 </CDropdownItem>

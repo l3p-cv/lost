@@ -42,7 +42,6 @@
         "react-dropzone": "^14.2.3",
         "react-i18next": "^13.2.1",
         "react-icons": "^4.10.1",
-        "react-modal": "^3.16.1",
         "react-query": "^3.39.3",
         "react-redux": "^8.1.2",
         "react-router-dom": "^6.15.0",
@@ -1162,10 +1161,6 @@
     "react-is": ["react-is@16.13.1", "", {}, "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="],
 
     "react-jss": ["react-jss@10.10.0", "", { "dependencies": { "@babel/runtime": "^7.3.1", "@emotion/is-prop-valid": "^0.7.3", "css-jss": "10.10.0", "hoist-non-react-statics": "^3.2.0", "is-in-browser": "^1.1.3", "jss": "10.10.0", "jss-preset-default": "10.10.0", "prop-types": "^15.6.0", "shallow-equal": "^1.2.0", "theming": "^3.3.0", "tiny-warning": "^1.0.2" }, "peerDependencies": { "react": ">=16.8.6" } }, "sha512-WLiq84UYWqNBF6579/uprcIUnM1TSywYq6AIjKTTTG5ziJl9Uy+pwuvpN3apuyVwflMbD60PraeTKT7uWH9XEQ=="],
-
-    "react-lifecycles-compat": ["react-lifecycles-compat@3.0.4", "", {}, "sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA=="],
-
-    "react-modal": ["react-modal@3.16.3", "", { "dependencies": { "exenv": "^1.2.0", "prop-types": "^15.7.2", "react-lifecycles-compat": "^3.0.0", "warning": "^4.0.3" }, "peerDependencies": { "react": "^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19", "react-dom": "^0.14.0 || ^15.0.0 || ^16 || ^17 || ^18 || ^19" } }, "sha512-yCYRJB5YkeQDQlTt17WGAgFJ7jr2QYcWa1SHqZ3PluDmnKJ/7+tVU+E6uKyZ0nODaeEj+xCpK4LcSnKXLMC0Nw=="],
 
     "react-popper": ["react-popper@2.3.0", "", { "dependencies": { "react-fast-compare": "^3.0.1", "warning": "^4.0.2" }, "peerDependencies": { "@popperjs/core": "^2.0.0", "react": "^16.8.0 || ^17 || ^18", "react-dom": "^16.8.0 || ^17 || ^18" } }, "sha512-e1hj8lL3uM+sgSR4Lxzn5h1GxBlpa4CQz0XLF8kx4MDrDRWY0Ena4c97PUeSX9i5W3UAfDP0z0FXCTQkoXUl3Q=="],
 

@@ -1,23 +1,10 @@
-import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { Button, Card, CardBody, CardGroup, Container, Row } from 'reactstrap'
 import { useNavigate } from 'react-router-dom'
-import actions from '../../actions'
-import lostLogoColor from '../../assets/img/brand/lost_logo.png'
-import backgroundImage from '/assets/background.svg'
+import { Button, Card, CardBody, CardGroup, Container, Row } from 'reactstrap'
 
 const Logout = () => {
-    const dispatch = useDispatch()
     const navigate = useNavigate()
     const isTimeout = window.location.hash.replace('#', '') === 'timeout'
 
-    useEffect(() => {
-        dispatch(actions.logout())
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-    useEffect(() => {
-        document.body.style.backgroundImage = `url(${backgroundImage})`
-    })
     return (
         <div className="app flex-row align-items-center">
             <Container>
@@ -25,7 +12,7 @@ const Logout = () => {
                     style={{ margin: '10% 0% 5% 0%' }}
                     className="justify-content-center"
                 >
-                    <img src={lostLogoColor} alt="" style={{ width: '500px' }} />
+                    <img src="/assets/lost_logo.png" alt="" style={{ width: '500px' }} />
                 </Row>
                 <Row className="justify-content-center">
                     <CardGroup>

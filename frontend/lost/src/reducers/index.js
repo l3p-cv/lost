@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
 import annoTask from './annoTask'
-import auth from './auth'
 import lost from './lost'
 import mia from './mia'
 import sia from './sia'
@@ -9,7 +8,6 @@ import siaReview from './siaReview'
 import worker from './worker'
 
 const appReducer = combineReducers({
-    auth,
     annoTask,
     mia,
     sia,
