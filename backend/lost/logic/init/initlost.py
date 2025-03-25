@@ -26,6 +26,7 @@ def main():
     lostconfig = config.LOSTConfig()
     # Create Tables
     dbm = access.DBMan(lostconfig)
+    perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
     dbm.create_database()
     create_roles(dbm)
     user, group = create_first_user(dbm)
@@ -35,9 +36,40 @@ def main():
         import_ootb_pipelines(dbm, user)
         copy_example_images(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
-    DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update()
+    DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update(perfrom_all_patches)
     release_all_pipe_locks(dbm)
     dbm.close_session()
+
+def check_if_all_patches_should_be_applied(dbm:access.DBMan):
+    '''Check if all db patches should be applied
+    
+    If a database is already present, but no version table is there, we have to 
+    deal with a lost version that prior to db_patcher and we can apply all db
+    patches.
+    '''
+    try:
+        sql = """
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_schema = 'lost' 
+            AND table_name = 'version';
+        """
+        res = dbm.session.execute(text(sql))
+        row = res.fetchone()
+        if row is None:
+            sql = """
+                SELECT 1 
+                FROM information_schema.tables 
+                WHERE table_schema = 'lost' 
+                AND table_name = 'image_anno';
+            """
+            res = dbm.session.execute(text(sql))
+            row = res.fetchone()
+            if row is not None:
+                return True
+        return False
+    except:
+        print(traceback.format_exc())
 
 def release_all_pipe_locks(dbm:access.DBMan):
     try:
