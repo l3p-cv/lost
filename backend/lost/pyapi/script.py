@@ -320,6 +320,7 @@ class Script(pe_base.Element):
             self._pipe_element.state = state.PipeElement.FINISHED
             self._pipe_element.progress = 100.0
             self._pipe.state = state.Pipe.IN_PROGRESS
+            self._pipe.changed_by_element += 1
             self._dbm.add(self._pipe)
             self._dbm.add(self._pipe_element)
             self._dbm.commit()
@@ -329,6 +330,7 @@ class Script(pe_base.Element):
                 self._pipe_element.state = state.PipeElement.FINISHED
                 self._pipe_element.progress = 100.0
                 self._pipe.state = state.Pipe.IN_PROGRESS
+                self._pipe.changed_by_element += 1
                 self._dbm.add(self._pipe)
                 self._dbm.add(self._pipe_element)
             else:

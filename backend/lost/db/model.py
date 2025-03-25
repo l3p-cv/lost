@@ -17,6 +17,9 @@ from lost import settings
 
 import pandas as pd
 
+DB_VERSION = '0.1.0'
+DB_VERSION_KEY = 'lost_db_version'
+
 # Set conventions for foreign key name generation
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -1061,6 +1064,14 @@ class Pipe(Base):
         is_locked (Boolean): Pipe Locked by PipeEngine
         pipe_template (PipeTemplate): Related :class:`PipeTemplate` object
         logfile_path (Text): path to logfile
+        changed_by_engine (int): State of pipeline was changed by pipeline engine (cron)
+        changed_by_element (int): State of pipeline was changed by an pipeline 
+            element, e.g. AnnoTask, Script
+    
+    Note:
+        changed_by_engine and changed_by_element will be used by pipeline engine
+        to check if a pipeline needs to be updated: 
+        If changed_by_engine != changed_by_element -> pipeline engine needs to check
     """
     __tablename__ = "pipe"
     idx = Column(Integer, primary_key=True)
@@ -1080,11 +1091,15 @@ class Pipe(Base):
     pe_list = relationship("PipeElement")
     pipe_template = relationship("PipeTemplate", uselist=False)
     logfile_path = Column(String(4096))
+    changed_by_engine = Column(Integer)
+    changed_by_element = Column(Integer)
 
     def __init__(self, idx=None, name=None, manager_id=None, state=None,
                  pipe_template_id=None, timestamp=None,
                  timestamp_finished=None, description=None,
-                 is_locked=None, group_id=None, is_debug_mode=None, start_definition=None, logfile_path=None):
+                 is_locked=None, group_id=None, is_debug_mode=None, 
+                 start_definition=None, logfile_path=None,
+                 changed_by_engine=0, changed_by_element=1):
         self.idx = idx
         self.name = name
         self.manager_id = manager_id
@@ -1098,6 +1113,8 @@ class Pipe(Base):
         self.is_debug_mode = is_debug_mode
         self.start_definition = start_definition
         self.logfile_path = logfile_path
+        self.changed_by_engine = changed_by_engine 
+        self.changed_by_element = changed_by_element
 
 
 class PipeTemplate(Base):
@@ -1895,3 +1912,14 @@ class Dataset(Base):
             'children': children_json,
             'isReviewable': is_reviewable
         }
+
+class Version(Base):
+    __tablename__ = "version"
+    idx = Column(Integer, primary_key=True)
+    package = Column(Text)
+    version = Column(Text)
+
+    def __init__(self, idx=None, package=None, version=None):
+        self.idx = idx
+        self.package = package
+        self.version = version

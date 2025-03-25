@@ -137,7 +137,7 @@ class DBMan(object):
         return self.session.query(model.AnnoTask).filter((model.AnnoTask.state!=state.AnnoTask.PENDING) &\
         (model.AnnoTask.group_id.in_(group_ids))).order_by(model.AnnoTask.idx.desc()).all()
 
-    def get_pipe(self, pipe_id=None, pipe_template_id=None):
+    def get_pipe(self, pipe_id=None, pipe_template_id=None) -> model.Pipe:
         '''Get a pipe object.
 
         Args:
@@ -163,7 +163,7 @@ class DBMan(object):
         '''
         return self.session.query(model.Pipe).all()
 
-    def get_pipes_to_process(self):
+    def get_pipes_to_process(self) -> list[model.Pipe]:
         '''Get all :class:`project.Pipe` objects that are not finished.
 
         Returns:
@@ -172,7 +172,9 @@ class DBMan(object):
         return self.session.query(model.Pipe)\
             .filter((model.Pipe.state!=state.Pipe.FINISHED) &\
                     (model.Pipe.state!=state.Pipe.DELETED) &\
-                    (model.Pipe.state!=state.Pipe.PAUSED)).all()
+                    (model.Pipe.state!=state.Pipe.PAUSED) &\
+                    (model.Pipe.changed_by_engine != model.Pipe.changed_by_element)
+                    ).all()
 
     def get_pipes(self, group_ids):
         '''Get all :class:`project.Pipe` objects that are not finished.
@@ -260,7 +262,7 @@ class DBMan(object):
             .filter(model.PipeElement.pipe_id==pipe_id).all()
             
 
-    def get_pipe_element(self, pipe_e_id=None, script_id=None):
+    def get_pipe_element(self, pipe_e_id=None, script_id=None) -> model.PipeElement:
         '''Get an PipeElement
 
         Args:
@@ -1391,3 +1393,16 @@ class DBMan(object):
                 OR l.img_anno_id IN ({image_id_list}) \
             );"
         return self.session.execute(text(sql))
+
+    def get_version(self, package=None):
+        '''Get version info
+
+        Args:
+            package (str): Name of the package
+
+        Returns:
+            :class:`model.Version`
+        '''
+        if package:
+            return self.session.query(model.Version).filter(model.Version.package == package).first()
+        return self.session.query(model.Version).all()
