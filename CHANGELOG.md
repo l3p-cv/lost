@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Added
+- Your stuff here
+
+### Added
+## [2.4.0] - 2025-03-26
+### Added
 - Download pipeline start definition file via button in pipeline running view
 ### Changed
 - Removed old unused files
