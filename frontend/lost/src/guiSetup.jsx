@@ -10,6 +10,8 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
+import Instruction from './containers/Instruction/Instruction';
+
 
 import {
     FaBox,
@@ -21,6 +23,7 @@ import {
     FaTag,
     FaTasks,
     FaTools,
+    FaFileAlt,
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
 import { PipelineView } from './containers/pipeline/running/PipelineView'
@@ -70,6 +73,18 @@ const TitleAdmin = {
 const TitleAnnotation = {
     title: true,
     name: 'Annotation',
+}
+
+const InstructionRoute = {
+    name: 'Instruction',
+    to: '/instruction',
+    component: Instruction,
+    icon: <FaFileAlt {...iconProps} />,
+}
+
+const TitleInstruction= {
+    title: true,
+    name: 'Instruction',
 }
 
 const Labels = {
@@ -189,6 +204,8 @@ const guiSetup = {
             Annotation,
             TitleAdmin,
             AdminArea,
+            TitleInstruction,
+            InstructionRoute,
         ],
     },
     Designer: {
