@@ -23,6 +23,7 @@ export interface AnnoTask {
     workerId: number
     labelLeaves: LabelLeaf[]
     selectedLabelTree: number
+    datasetId?: string
 }
 
 export interface Configuration {
