@@ -1,12 +1,10 @@
 import { CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle } from '@coreui/react'
 import { FaLock, FaUser } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { useLogout } from '../actions/auth'
 
 const TheHeaderDropdown = () => {
     const username = localStorage.getItem('username')
     const navigate = useNavigate()
-    const { mutate: logout } = useLogout()
 
     return (
         <CDropdown
@@ -37,11 +35,7 @@ const TheHeaderDropdown = () => {
                 </CDropdownItem>
                 <CDropdownItem
                     onClick={() => {
-                        logout(undefined, {
-                            onSuccess: () => {
-                                navigate('/logout')
-                            },
-                        })
+                        navigate('/logout')
                     }}
                 >
                     <FaLock style={{ marginRight: 10 }} />

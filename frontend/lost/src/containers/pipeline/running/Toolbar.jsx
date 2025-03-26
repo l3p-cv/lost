@@ -1,4 +1,5 @@
 import {
+    faFileDownload,
     faPause,
     faPlay,
     faRedo,
@@ -7,6 +8,7 @@ import {
     faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import saveAs from 'file-saver'
 import { useState } from 'react'
 import {
     Button,
@@ -31,6 +33,12 @@ import LogModal from '../../../components/LogModal'
 import GrayLine from '../globalComponents/GrayLine'
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import ToolbarTooltip from './ToolbarTooltip'
+
+const downloadJSON = (obj, fileName = 'data.json') => {
+    const jsonString = JSON.stringify(obj, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    saveAs(blob, fileName)
+}
 
 const Toolbar = (props) => {
     const [modal, setModal] = useState(false)
@@ -121,6 +129,19 @@ const Toolbar = (props) => {
                     >
                         <FontAwesomeIcon icon={faRedo} size="2x" />
                     </Button>
+                    <Button
+                        className="pipeline-running-toolbar-button"
+                        id="pipeline-button-download-start-definition"
+                        onClick={() => {
+                            downloadJSON(
+                                props.data.startDefinition,
+                                `start_definition_${props.data.id}.json`,
+                            )
+                        }}
+                        color="secondary"
+                    >
+                        <FontAwesomeIcon icon={faFileDownload} size="2x" />
+                    </Button>
                     <GrayLine />
 
                     <ToolbarTooltip
@@ -138,6 +159,10 @@ const Toolbar = (props) => {
                     <ToolbarTooltip
                         target="pipeline-button-regenerate"
                         text="Regenerate"
+                    />
+                    <ToolbarTooltip
+                        target="pipeline-button-download-start-definition"
+                        text="Download Start Definition"
                     />
                     <Modal
                         isOpen={modal}

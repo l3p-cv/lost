@@ -23,6 +23,9 @@ export interface AnnoTask {
     workerId: number
     labelLeaves: LabelLeaf[]
     selectedLabelTree: number
+    storage?: {
+        datasetId: string
+    }
 }
 
 export interface Configuration {

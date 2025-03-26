@@ -5,12 +5,10 @@ import { useNavigate } from 'react-router-dom'
 import { useInterval } from 'react-use'
 import Swal from 'sweetalert2'
 import actions from '../actions'
-import { checkExpireDate, useLogout } from '../actions/auth'
+import { checkExpireDate } from '../actions/auth'
 import useInactive from '../hooks/useInactive'
 
 const TheFooter = () => {
-    const { mutate: logout } = useLogout()
-
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(actions.loadSettings())
@@ -33,11 +31,7 @@ const TheFooter = () => {
 
     const renderAutologoutModal = () => {
         if (timer === 0) {
-            logout(undefined, {
-                onSuccess: () => {
-                    navigate('/logout#timeout')
-                },
-            })
+            navigate('/logout#timeout')
         } else if (timer < autoLogoutWarnTime) {
             return Swal.fire({
                 title: 'You will be logged out soon!',
