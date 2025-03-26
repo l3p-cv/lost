@@ -208,7 +208,9 @@ export const getFormattedPipelineRequestElements = (
                             maxLabels: '3',
                         })),
                     selectedLabelTree: data.selectedLabelTree!.idx,
-                    datasetId: data.selectedDataset!.value,
+                    storage: {
+                        datasetId: data.selectedDataset!.value,
+                    },
                 }
             }
 
