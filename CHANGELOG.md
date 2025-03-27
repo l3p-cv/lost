@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Your stuff here
+### Changed
+- Refactor workers logic to remove redux
+- Refactor lost config to remove redux
+- Remove unused files / clean up code
 
 ### Added
 ## [2.4.0] - 2025-03-26
@@ -29,9 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
 - Fixed docker-compose to *docker compose* in quick_setup console output
 - Release locked pipes on statup
-- Refactor workers logic to remove redux
-- Refactor lost config to remove redux
-- Remove used files / clean up code
 
 
 ## [2.2.0] - 2025-03-21 
