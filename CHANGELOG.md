@@ -5,20 +5,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
-### Changed
-- Speed up pipeline processing by preventing to process pipes where state has 
-  not changed
-  - model.Pipe: Added changed_by_engine, changed_by_element col
-  - Immediately process the pipeline when it is created
 ### Added
-- New db_patcher: enables automatic patching of lost database.
-### Fixed
-- Add Api definiton to the patch and put methods for /sia
-- _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
+- Your stuff here
+
+### Added
+## [2.4.0] - 2025-03-26
+### Added
+- Download pipeline start definition file via button in pipeline running view
 ### Changed
 - Removed old unused files
 - Removed redux from users, groups, pipeline toolbar
 - Refactor auth code to remove redux
+
+## [2.3.0] - 2025-03-25
+### Changed
+- Speed up pipeline processing by preventing to process pipes where state has 
+  not changed
+  - model.Pipe: Added changed_by_engine, changed_by_element col
+### Added
+- New db_patcher: enables automatic patching of lost database
+### Fixed
+- Add Api definiton to the patch and put methods for /sia
+- _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
 - Fixed docker-compose to *docker compose* in quick_setup console output
 - Release locked pipes on statup
 - Refactor workers logic to remove redux

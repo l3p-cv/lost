@@ -43,7 +43,7 @@ def start(db_man, data, manager_id, group_id):
     # and certain elements
     patch_pe(db_man, pipe_starter)
     db_man.save_obj(pipe_starter.unlock_pipe())
-    process_pipeline(pipe_starter.pipe, db_man)
+    # process_pipeline(pipe_starter.pipe, db_man)
     return pipe_starter.pipe.idx
     
 def create_pe_raw_element(db_man, pipe_starter):

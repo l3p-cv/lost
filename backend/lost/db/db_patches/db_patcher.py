@@ -44,14 +44,23 @@ class DBPatcher(object):
                 return False
         return False
         
-    def check_and_update(self):
+    def check_and_update(self, all_patches_on_init=False):
+        '''Check and update database.
+        
+        Args:
+            all_patches_on_init (bool): Idicates wether all patches should be 
+                applied on first db init
+        '''
         print('------------------------ RUN daisy-backend DBPatcher check_and_update ------------------------')
         cv = self.dbm.get_version(self.version_key)
         if cv is None:
             print('Current db version is None')
-            print(f'Will create version key entry: {self.version_key}')
-            self._update_version(self.db_version)
-            return
+            if all_patches_on_init:
+                current_version = '0.0.0'
+            else:
+                print(f'Will create version key entry: {self.version_key}')
+                self._update_version(self.db_version)
+                return
         else:
             current_version = cv.version
             print(f'Current db version is {current_version}')
