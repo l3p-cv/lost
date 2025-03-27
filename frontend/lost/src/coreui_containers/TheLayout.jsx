@@ -2,10 +2,9 @@ import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import actions from '../actions'
 import guiSetup from '../guiSetup'
+import { useLostConfig } from '../hooks/useLostConfig'
 import TheContent from './TheContent'
 import TheFooter from './TheFooter'
 import TheHeader from './TheHeader'
@@ -14,11 +13,13 @@ import TheSidebar from './TheSidebar'
 const TheLayout = () => {
     const role = useRef()
     const navigate = useNavigate()
-    const dispatch = useDispatch()
     const [navItems, setNavItems] = useState([])
     const [routes, setRoutes] = useState([])
     const [canShowSidebar, setCanShowSidebar] = useState(true)
     const { i18n } = useTranslation()
+
+    const { setRoles } = useLostConfig()
+
     useEffect(() => {
         const token = localStorage.getItem('token')
         if (token) {
@@ -33,7 +34,7 @@ const TheLayout = () => {
                 const roles = Object.keys(guiSetup).filter(
                     (e) => e !== 'additionalRoutes',
                 )
-                dispatch(actions.setRoles(roles))
+                setRoles(roles)
                 const newRoutes1 = guiSetup[role.current].navItems.map((navItem) => ({
                     path: navItem.to,
                     name: navItem,
@@ -49,7 +50,6 @@ const TheLayout = () => {
                 }
                 const newRoutes = [...newRoutes1, ...newRoutes2]
                 setRoutes(newRoutes)
-                dispatch(actions.getVersion())
 
                 if (window.location.pathname === '/') {
                     navigate(guiSetup[role.current].redirect)

@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux'
 import { reducer as formReducer } from 'redux-form'
 import annoTask from './annoTask'
-import lost from './lost'
 import mia from './mia'
 import sia from './sia'
 import siaReview from './siaReview'
@@ -12,7 +11,6 @@ const appReducer = combineReducers({
     sia,
     form: formReducer,
     siaReview,
-    lost,
 })
 
 const rootReducer = (state, action) => {

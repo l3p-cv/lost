@@ -1,12 +1,12 @@
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Input, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import validator from 'validator'
 import { useGroups } from '../../actions/group/group-api'
 import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
 import Datatable from '../../components/Datatable'
 import IconButton from '../../components/IconButton'
+import { useLostConfig } from '../../hooks/useLostConfig'
 
 const CenteredCell = ({ children, key }) => {
     return (
@@ -33,7 +33,7 @@ const ExternalUserLabel = ({ text }) => (
 )
 
 const EditUserModal = (props) => {
-    const roles = useSelector((state) => state.lost.roles)
+    const { roles } = useLostConfig()
 
     const userRaw = props.user[0]
 

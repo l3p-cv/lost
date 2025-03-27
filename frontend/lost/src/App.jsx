@@ -1,17 +1,18 @@
-import React, { Suspense } from 'react'
 import axios from 'axios'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { store } from './store'
-import { Provider } from 'react-redux'
-import './scss/style.scss'
-import enTranslation from './assets/locales/en'
-import deTranslation from './assets/locales/de'
 import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
-import { flatObj } from './utils'
-import { QueryClient, QueryClientProvider } from 'react-query'
 import jwtDecode from 'jwt-decode'
+import React, { Suspense } from 'react'
+import { initReactI18next } from 'react-i18next'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { Provider } from 'react-redux'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import deTranslation from './assets/locales/de'
+import enTranslation from './assets/locales/en'
+import { LostConfigProvider } from './contexts/LostConfigContext'
 import { API_URL } from './lost_settings'
+import './scss/style.scss'
+import { store } from './store'
+import { flatObj } from './utils'
 const queryClient = new QueryClient()
 
 // Containers
@@ -89,19 +90,25 @@ function App() {
     return (
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
-                <Suspense fallback={<div>Loading</div>}>
-                    <BrowserRouter>
-                        <Routes>
-                            <Route path="/login" name="Login Page" element={<Login />} />
-                            <Route
-                                path="/logout"
-                                name="Logout Page"
-                                element={<Logout />}
-                            />
-                            <Route path="/*" name="Home" element={<TheLayout />} />
-                        </Routes>
-                    </BrowserRouter>
-                </Suspense>
+                <LostConfigProvider>
+                    <Suspense fallback={<div>Loading</div>}>
+                        <BrowserRouter>
+                            <Routes>
+                                <Route
+                                    path="/login"
+                                    name="Login Page"
+                                    element={<Login />}
+                                />
+                                <Route
+                                    path="/logout"
+                                    name="Logout Page"
+                                    element={<Logout />}
+                                />
+                                <Route path="/*" name="Home" element={<TheLayout />} />
+                            </Routes>
+                        </BrowserRouter>
+                    </Suspense>
+                </LostConfigProvider>
             </QueryClientProvider>
         </Provider>
     )
