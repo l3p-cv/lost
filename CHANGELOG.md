@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed docker-compose to *docker compose* in quick_setup console output
 - Release locked pipes on statup
 - Refactor workers logic to remove redux
+- Refactor lost config to remove redux
+- Remove used files / clean up code
+
 
 ## [2.2.0] - 2025-03-21 
 ### Changed
