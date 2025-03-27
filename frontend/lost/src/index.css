@@ -7,13 +7,6 @@ body {
     background-image: url('/assets/background.svg');
 }
 
-@font-face {
-    font-family: 'IndieFlower';
-    src:
-        local('IndieFlower'),
-        url(./assets/fonts/IndieFlower-Regular.ttf) format('woff');
-}
-
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
