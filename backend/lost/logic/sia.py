@@ -4,6 +4,7 @@ import json
 import os
 import flask
 from lost.db import dtype, state, model
+from lost.db.access import DBMan
 from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
 from lost.logic.file_man import FileMan
@@ -32,7 +33,7 @@ def get_first(db_man, user_id, media_url):
             return sia_serialize.serialize()
     else:
         return "nothing available"
-def get_next(db_man, user_id, img_id, media_url):
+def get_next(db_man:DBMan, user_id, img_id, media_url):
     # ptvsd.wait_for_attach()
     # ptvsd.break_into_debugger()
     """ Get next ImageAnno with all its TwoDAnnos
@@ -79,7 +80,7 @@ def get_next(db_man, user_id, img_id, media_url):
             db_man.save_obj(image_anno)
             return sia_serialize.serialize()
     return "nothing available"
-def get_previous(db_man, user_id, img_id, media_url):
+def get_previous(db_man:DBMan, user_id, img_id, media_url):
     """ Get previous image anno
     :type db_man: lost.db.access.DBMan
     """
