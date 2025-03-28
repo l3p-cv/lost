@@ -12,6 +12,7 @@ import {
     faTags,
     faRobot,
     faTasks,
+    faFileAlt,
 } from '@fortawesome/free-solid-svg-icons'
 
 import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
@@ -23,6 +24,7 @@ import TabJupyterLab from './TabJupyterLab'
 import Labels from '../Labels/Labels'
 import DSTable from '../DataSources/DSTable'
 import PipelineProjects from '../Pipelines/PipelineProjects'
+import Instruction from '../Instruction/Instruction';
 
 const AdminArea = () => {
     const dispatch = useDispatch()
@@ -130,6 +132,16 @@ const AdminArea = () => {
                                 {active === 4 && ' Worker'}
                             </CNavLink>
                         </CNavItem>
+                        <CNavItem>
+                            <CNavLink active={active === 5} onClick={() => setActive(5)}>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faFileAlt}
+                                />
+                                {active === 5 && ' Instructions'}
+                            </CNavLink>
+                        </CNavItem>
                         {/* <CNavItem>
                             <CNavLink active={active=== 5} onClick={() => setActive(5)}>
                                 <FontAwesomeIcon
@@ -182,6 +194,14 @@ const AdminArea = () => {
                             style={{ marginTop: 30 }}
                         >
                             <WorkersTable></WorkersTable>
+                        </CTabPane>
+                        <CTabPane
+                            role="tabpanel"
+                            aria-labelledby="instructions-tab-pane"
+                            visible={active === 5}
+                            style={{ marginTop: 30 }}
+                        >
+                            <Instruction visLevel="global"></Instruction>
                         </CTabPane>
                         {/* <CTabPane style={{ marginTop: 30 }}>
                             <div>

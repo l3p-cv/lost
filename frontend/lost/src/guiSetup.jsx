@@ -10,7 +10,7 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
-import Instruction from './containers/Instruction/Instruction';
+import InstructionDashboard from './containers/Instruction/InstructionsDashboard';
 
 
 import {
@@ -78,7 +78,7 @@ const TitleAnnotation = {
 const InstructionRoute = {
     name: 'Instruction',
     to: '/instruction',
-    component: Instruction,
+    component: InstructionDashboard,
     icon: <FaFileAlt {...iconProps} />,
 }
 
