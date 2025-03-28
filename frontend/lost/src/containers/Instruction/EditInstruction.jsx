@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const mdParser = new MarkdownIt();
 
-const EditInstruction = ({ instructionData, onSave, mode}) => {
+const EditInstruction = ({ instructionData, onSave }) => {
   const [option, setOption] = useState(instructionData?.option || '');
   const [description, setDescription] = useState(instructionData?.description || '');
   const [content, setContent] = useState(instructionData?.instruction || '');
@@ -32,7 +32,7 @@ const EditInstruction = ({ instructionData, onSave, mode}) => {
       alert('Description cannot be empty.');
       return;
     }
-    onSave({ option, description, instruction: content }); // Save description separately
+    onSave({ id: instructionData.id, option, description, instruction: content }); // Save description separately
     navigate('/instruction');
   };
 
@@ -46,18 +46,18 @@ const EditInstruction = ({ instructionData, onSave, mode}) => {
         className="mb-3"
       />
       <CFormInput
-          label="Description"
-          value={description}
-          onChange={(e) => {
-            const wordCount = e.target.value.trim().split(/\s+/).length;
-            if (wordCount <= 20) {
-              setDescription(e.target.value);
-            } else {
-              alert('Description cannot exceed 20 words.');
-            }
-          }}
-          placeholder="Enter description (max 20 words)"
-          className="mb-3"
+        label="Description"
+        value={description}
+        onChange={(e) => {
+          const wordCount = e.target.value.trim().split(/\s+/).length;
+          if (wordCount <= 20) {
+            setDescription(e.target.value);
+          } else {
+            alert('Description cannot exceed 20 words.');
+          }
+        }}
+        placeholder="Enter description (max 20 words)"
+        className="mb-3"
       />
       <MdEditor
         value={content}

@@ -23,6 +23,7 @@ from lost.api.statistics.endpoint import namespace as statistics_namespace
 from lost.api.system.endpoint import namespace as system_namespace
 from lost.api.config.endpoint import namespace as config_namespace
 from lost.api.anno_example.endpoint import namespace as anno_example_namespace
+from lost.api.instructions.endpoint import namespace as instructions_namespace
 from lost.logic import dask_session
 from lost.db import access
 
@@ -89,6 +90,7 @@ api.add_namespace(system_namespace)
 api.add_namespace(statistics_namespace)
 api.add_namespace(config_namespace)
 api.add_namespace(anno_example_namespace)
+api.add_namespace(instructions_namespace)
 app.register_blueprint(blueprint)
 CORS(app)
 

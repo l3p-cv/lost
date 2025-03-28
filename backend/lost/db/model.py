@@ -1735,6 +1735,52 @@ class RequiredLabelLeaf(Base):
         self.label_leaf_id = label_leaf_id
         self.max_labels = max_labels
 
+class Instruction(Base):
+    __tablename__ = 'instruction'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    option = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    instruction = Column(Text, nullable=False)
+    is_deleted = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    parent_instruction_id = Column(Integer, ForeignKey('instruction.id'), nullable=True)
+    group_id = Column(Integer, ForeignKey('group.idx'), nullable=True)
+
+    parent_instruction = relationship('Instruction', remote_side=[id], backref='sub_instructions')
+    group = relationship('Group', backref='instructions', lazy='joined')
+
+    def to_dict(self):
+        '''Transform this object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of this Instruction instance.
+        '''
+        # Create the base dictionary for the Instruction model
+        result = {
+            'id': self.id,
+            'option': self.option,
+            'description': self.description,
+            'instruction': self.instruction,
+            'is_deleted': self.is_deleted,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'parent_instruction_id': self.parent_instruction_id,
+            'group_id': self.group_id,
+        }
+
+        # Manually serialize the group information
+        if self.group:
+            result['group'] = {
+                'idx': self.group.idx,
+                'name': self.group.name,
+                'manager_id': self.group.manager_id,
+                'is_user_default': self.group.is_user_default
+            }
+
+        return result
 
 class Worker(Base):
     '''Represents a container with related worker that executes scripts.

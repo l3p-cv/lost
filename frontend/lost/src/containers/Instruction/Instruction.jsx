@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useGetInstructions, useDeleteInstruction, useAddInstruction, useEditInstruction } from './instruction_api';
 import { CContainer, CRow, CCol, CSpinner } from '@coreui/react';
 import Datatable from '../../components/Datatable';
 import BaseModal from '../../components/BaseModal';
@@ -10,86 +11,51 @@ import * as Notification from '../../components/Notification';
 import { faUserPlus, faPen, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 
 const Instruction = () => {
-  const [data, setData] = useState([]);
   const [editingInstruction, setEditingInstruction] = useState(null);
   const [viewingInstruction, setViewingInstruction] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const { data: instructions, isLoading, error } = useGetInstructions();
+  const deleteInstructionMutation = useDeleteInstruction();
+  const addInstructionMutation = useAddInstruction();
+  const editInstructionMutation = useEditInstruction();
 
-  useEffect(() => {
-    const savedData = localStorage.getItem('instructionsData');
-    if (savedData) {
-      const parsedData = JSON.parse(savedData).filter(
-        item => item.id && item.option && typeof item.instruction === 'string'
-      );
-      setData(parsedData);
-    }
-  }, []);
-
-  const handleEditClick = (instruction) => {
-    setLoading(true);
-    setViewingInstruction(null);
-    setTimeout(() => {
-      setEditingInstruction(instruction);
-      setLoading(false);
-      setModalOpen(true);
-    }, 500);
+  const handleDelete = (id) => {
+    deleteInstructionMutation.mutate(id, {
+      onSuccess: () => {
+        Notification.showSuccess('Instruction deleted successfully');
+      },
+      onError: (error) => {
+        console.error('Delete Error:', error);
+        Notification.showError('Failed to delete instruction');
+      },
+    });
   };
-  
-  const handleViewClick = (instruction) => {
-    setLoading(true);
-    setEditingInstruction(null);
-    setTimeout(() => {
-      setViewingInstruction(instruction);
-      setLoading(false);
-      setModalOpen(true);
-    }, 500);
-  };
-  
 
   const handleAddInstruction = () => {
-    setViewingInstruction(null);
     setEditingInstruction({ id: null, option: '', description: '', instruction: '' });
+    setViewingInstruction(null);  
+    setModalOpen(true);
+  };
+
+  const handleEditClick = (instruction) => {
+    setEditingInstruction(instruction);
+    setViewingInstruction(null);  
+    setModalOpen(true);
+  };
+
+  const handleViewClick = (instruction) => {
+    setViewingInstruction(instruction);
+    setEditingInstruction(null);  
     setModalOpen(true);
   };
 
   const handleSave = (updatedInstruction) => {
-    setData(prevData => {
-      let updatedData;
-      if (editingInstruction.id) {
-        updatedData = prevData.map(item =>
-          item.id === editingInstruction.id
-            ? { ...item, ...updatedInstruction }
-            : item
-        );
-      } else {
-        const newId = prevData.length > 0
-          ? Math.max(...prevData.map(item => item.id)) + 1
-          : 1;
-        updatedData = [...prevData, { id: newId, ...updatedInstruction }];
-      }
-      localStorage.setItem("instructionsData", JSON.stringify(updatedData));
-      return updatedData;
-    });
-
-    setEditingInstruction(null);
+    if (updatedInstruction.id) {
+      editInstructionMutation.mutate(updatedInstruction);
+    } else {
+      addInstructionMutation.mutate(updatedInstruction);
+    }
     setModalOpen(false);
-    Notification.showSuccess("Instruction saved successfully!");
-  };
-
-  const handleDelete = (id) => {
-    Notification.showDecision({
-      title: "Are you sure you want to delete this instruction?",
-      option1: { text: "YES", callback: () => {
-        setData(prevData => {
-          const updatedData = prevData.filter(item => item.id !== id);
-          localStorage.setItem("instructionsData", JSON.stringify(updatedData));
-          Notification.showSuccess("Instruction deleted successfully!");
-          return updatedData;
-        });
-      }},
-      option2: { text: "NO", callback: () => {} }
-    });
   };
 
   const columns = [
@@ -134,51 +100,48 @@ const Instruction = () => {
           <BaseContainer>
             <Datatable
               key="instructionsTable"
-              data={data}
+              data={instructions}
               columns={columns}
               pageSize={10}
-              isLoading={loading}
-              onRowClick={() => {}}
+              isLoading={isLoading}
             />
           </BaseContainer>
         </CCol>
       </CRow>
+
       <BaseModal
         isOpen={modalOpen}
-        title={editingInstruction ? "Edit Instruction" : viewingInstruction ? "View Instruction" : "Add Instruction" }
+        title={viewingInstruction ? 'View Instruction' : editingInstruction ? 'Edit Instruction' : 'Add Instruction'}
         toggle={() => setModalOpen(false)}
         footer={null}
       >
-      {viewingInstruction ? (
-        <ViewInstruction
-          instructionData={viewingInstruction}
-          onClose={() => setModalOpen(false)}
-          onEdit={handleEditClick}
-        />
-      ) : editingInstruction ? (
-        <EditInstruction
-          instructionData={editingInstruction}
-          onSave={handleSave}
-          mode={editingInstruction ? "edit" : "add"}
-        />
-      ) : null}
-    </BaseModal>
+        {viewingInstruction ? (
+          <ViewInstruction
+            instructionData={viewingInstruction}
+            onClose={() => setModalOpen(false)}
+            onEdit={handleEditClick}
+          />
+        ) : editingInstruction ? (
+          <EditInstruction
+            instructionData={editingInstruction}
+            onSave={handleSave}
+          />
+        ) : null}
+      </BaseModal>
 
-
-    {loading && (
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        zIndex: 1050
-      }}>
-        <CSpinner color="primary" size="lg" />
-      </div>
-    )}
-
-
-
+      {isLoading && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1050,
+          }}
+        >
+          <CSpinner color="primary" size="lg" />
+        </div>
+      )}
     </CContainer>
   );
 };
