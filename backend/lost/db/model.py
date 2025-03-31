@@ -15,7 +15,7 @@ from lost import settings
 
 import pandas as pd
 
-DB_VERSION = '0.1.0'
+DB_VERSION = '0.2.0'
 DB_VERSION_KEY = 'lost_db_version'
 
 # Set conventions for foreign key name generation
