@@ -17,11 +17,13 @@ interface WholeDatasetExportModalProps {
     isOpen: boolean
     toggle: () => void
     datasetId: number
+    datasetName: string
 }
 export const WholeDatasetExportModal = ({
     isOpen,
     toggle,
     datasetId,
+    datasetName,
 }: WholeDatasetExportModalProps) => {
     const [annotatedOnly, setAnnotatedOnly] = useState(true)
     const { mutate: startExportDataset } = useExportDataset()
@@ -35,7 +37,7 @@ export const WholeDatasetExportModal = ({
 
     return (
         <Modal isOpen={isOpen} toggle={toggle} size="xl">
-            <ModalHeader toggle={toggle}>Generate Export</ModalHeader>
+            <ModalHeader toggle={toggle}>Exports for dataset: {datasetName}</ModalHeader>
             <ModalBody>
                 <Form>
                     <FormGroup check>

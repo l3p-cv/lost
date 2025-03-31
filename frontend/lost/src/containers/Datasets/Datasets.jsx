@@ -22,6 +22,7 @@ const Datasets = () => {
     const [isExportModalOpen, setIsExportModalOpen] = useState(false)
     const [annotask, setAnnotask] = useState()
     const [datasetId, setDatasetId] = useState()
+    const [datasetName, setDatasetName] = useState()
     const [isWholeDatasetModalOpen, toggleWholeDatasetModal] = useToggle(false)
 
     const [editedDatasetObj, setEditedDatasetObj] = useState()
@@ -68,6 +69,7 @@ const Datasets = () => {
             await loadAnnotask(idx)
         } else {
             setDatasetId(parseInt(idx))
+            setDatasetName(name)
             toggleWholeDatasetModal()
         }
     }
@@ -123,6 +125,7 @@ const Datasets = () => {
                 isOpen={isWholeDatasetModalOpen}
                 toggle={toggleWholeDatasetModal}
                 datasetId={datasetId}
+                datasetName={datasetName}
             />
 
             <CContainer>
