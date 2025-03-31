@@ -547,8 +547,8 @@ class DBMan(object):
         '''
         sql = "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
          FROM image_anno WHERE idx<%d\
-         AND user_id=%d)"\
-         %(iteration, anno_task_id, img_anno_id, user_id)
+         AND user_id=%d AND anno_task_id=%d)"\
+         %(iteration, anno_task_id, img_anno_id, user_id, anno_task_id)
         img_anno = self.session.execute(text(sql)).first()
         if img_anno:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()

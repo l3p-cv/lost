@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Export "whole" dataset consisting of multiple anno tasks
+
+
+## [2.4.2] - 2025-03-28 
 ### Changed
 - Refactor workers logic to remove redux
 - Refactor lost config to remove redux
 - Remove unused files / clean up code
+
+## [2.4.1] - 2025-03-27
+### Fixed
+- SIA jumps to image one instead of previous image
 
 ### Added
 ## [2.4.0] - 2025-03-26
