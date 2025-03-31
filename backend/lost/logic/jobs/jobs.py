@@ -304,6 +304,14 @@ def delete_ds_export(export_id, user_id):
     ufa.rm(export_path, True)
     dbm.close_session()
 
+def delete_whole_ds_export(file_path, user_id):
+    dbm = access.DBMan(config.LOSTConfig())
+    user = dbm.get_user(user_id)
+    fs_db = dbm.get_user_default_fs(user_id)
+    ufa = UserFileAccess(dbm, user, fs_db)
+    ufa.rm(file_path, True)
+    dbm.close_session()
+
 def get_all_annotask_pe_ids_for_dataset(dbm:access.DBMan, ds_id):
     res_list = list()
     child_datasets = dbm.get_child_datasets_by_parent_ds_id(ds_id)
@@ -343,7 +351,10 @@ def export_dataset_parquet(user_id, path, fs_id, dataset_id, annotated_only):
         # store_path = os.path.join(store_dir, f'{dataset_id}.parquet') 
         store_path = path
         dataset = dbm.get_dataset(dataset_id)
+        dataset_export = dbm.create_dataset_export(dataset_id=dataset.idx, file_path=store_path, progress=1)
+
         if dataset is not None:
+
             pe_id_list = get_all_annotask_pe_ids_for_dataset(dbm, dataset_id)
 
             df_list = []
@@ -364,5 +375,8 @@ def export_dataset_parquet(user_id, path, fs_id, dataset_id, annotated_only):
         ds = lds.LOSTDataset(df_list, fm.fs)
         ds.to_parquet(store_path)
         my_logger.info(f'Export to {path} was successfull!')
+        dataset_export.progress = 100
+        dbm.commit()
+
     except:
         my_logger.error(traceback.format_exc())

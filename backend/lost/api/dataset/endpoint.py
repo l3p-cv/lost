@@ -1,12 +1,12 @@
-from flask import jsonify, request
+from flask import jsonify, request, Response
 from flask_restx import Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.datastructures import ImmutableMultiDict
 from lost.api.api import api
 from lost.api.sia.api_definition import annotations, image
-from lost.api.label.api_definition import label_leaf
 from lost.db import access, roles
 from lost.logic.jobs.jobs import (
+    delete_whole_ds_export,
     export_dataset_parquet,
     get_all_annotask_ids_for_ds,
 )
@@ -15,7 +15,6 @@ from lost.settings import LOST_CONFIG, DATA_URL
 from lost.api.dataset.form_validation import (
     create_validation_error_message,
     CreateDatasetForm,
-    DatasetReviewForm,
     UpdateDatasetForm,
 )
 from lost.db.model import Dataset
@@ -24,6 +23,9 @@ from lost.logic.sia import (
     get_image_progress,
     get_total_image_amount,
 )
+from lost.logic.file_access import UserFileAccess
+import os
+from datetime import datetime
 
 namespace = api.namespace("datasets", description="Dataset API")
 
@@ -740,8 +742,21 @@ class DatasetParquetExport(Resource):
                 401,
             )
         data = request.json
-        path = data["store_path"]
-        fs_id = int(data["fs_id"])
+
+        if "store_path" in data:
+            path = data["store_path"]
+        else:
+            fs_db = dbm.get_user_default_fs(user.idx)    
+            ufa = UserFileAccess(dbm, user, fs_db)
+            path = ufa.get_whole_export_ds_path()
+            path = os.path.join(path, f"dataset_export_{datetime.now().strftime('%Y%m%d%H%M%S')}.parquet")
+        
+        if "fs_id" in data:
+            fs_id = int(data["fs_id"])
+        else:
+            fs_id = dbm.get_fs(name=user.user_name).idx
+
+
         annotated_only = True
         if "annotated_only" in data:
             annotated_only = data["annotated_only"]
@@ -756,4 +771,87 @@ class DatasetParquetExport(Resource):
             workers=LOST_CONFIG.worker_name,
         )
         dask_session.close_client(user, client)
+        dbm.close_session()
         return "success", 200
+
+
+@namespace.route("/<int:dataset_id>/ds_exports")
+class DatasetExports(Resource):
+    @api.doc(description="Get all exports of a dataset")
+    @jwt_required
+    def get(self, dataset_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return (
+                "You need to be {} in order to perform this request.".format(
+                    roles.DESIGNER
+                ),
+                401,
+            )
+        exports = dbm.get_all_dataset_exports_by_dataset_id(dataset_id)
+        exports_json = []
+        for export in exports:
+            exports_json.append(
+                {
+                    "id": export.idx,
+                    "datasetId": export.dataset_id, 
+                    "filePath": export.file_path,
+                    "progress": export.progress,
+                }
+            )
+        return jsonify({
+            "exports": exports_json
+        })
+
+
+@namespace.route("/ds_exports/<int:export_id>")
+class DatasetExport(Resource):
+    @api.doc(description="Delete a single export of a dataset")
+    @jwt_required
+    def delete(self, export_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return (
+                "You need to be {} in order to perform this request.".format(
+                    roles.DESIGNER
+                ),
+                401,
+            )
+        export = dbm.get_dataset_export_by_id(export_id)
+        if export is not None:
+            delete_whole_ds_export(export.file_path, user.idx)
+            dbm.delete_dataset_export(export.idx)
+        dbm.close_session()
+        return "success", 200
+
+    @api.doc(description="Download a single export of a dataset")
+    @jwt_required
+    def get(self, export_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return (
+                "You need to be {} in order to perform this request.".format(
+                    roles.DESIGNER
+                ),
+                401,
+            )
+        export = dbm.get_dataset_export_by_id(export_id)
+        fs_db = dbm.get_user_default_fs(user.idx)
+        ufa = UserFileAccess(dbm, user, fs_db)
+
+        my_file = ufa.load_file(export.file_path)
+        export_name = os.path.basename(export.file_path)
+
+        response = Response(my_file, content_type='application/octet-stream')
+        response.headers["Content-Disposition"] = f"attachment; filename={export_name}"
+        dbm.close_session()
+        return response

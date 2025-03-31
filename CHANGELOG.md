@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Added
-- Your stuff here
+- Export "whole" dataset consisting of multiple anno tasks
 ### Changed
 - Refactor workers logic to remove redux
 - Refactor lost config to remove redux

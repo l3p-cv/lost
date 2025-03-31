@@ -1,12 +1,14 @@
 import { CCol, CContainer, CRow } from '@coreui/react'
 import { faFolderPlus } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
+import { useToggle } from 'react-use'
 import * as annotaskApi from '../../actions/annoTask/anno_task_api'
 import * as datasetApi from '../../actions/dataset/dataset_api'
 import IconButton from '../../components/IconButton'
 import DatasetEditModal from './DatasetEditModal'
 import DatasetExportModal from './DatasetExportModal'
 import DatasetTable from './DatasetTable'
+import { WholeDatasetExportModal } from './WholeDatasetExportModal'
 
 const Datasets = () => {
     const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
@@ -19,6 +21,8 @@ const Datasets = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [isExportModalOpen, setIsExportModalOpen] = useState(false)
     const [annotask, setAnnotask] = useState()
+    const [datasetId, setDatasetId] = useState()
+    const [isWholeDatasetModalOpen, toggleWholeDatasetModal] = useToggle(false)
 
     const [editedDatasetObj, setEditedDatasetObj] = useState()
 
@@ -51,10 +55,10 @@ const Datasets = () => {
     //     console.log("Clicked on assign annotask")
     // }
 
-    const openExportModal = async (idx, isAnnotask) => {
+    const openExportModal = async (idx, isAnnotask, name, description) => {
         // set content to selected dataset
         // @TODO
-        console.log('openExportModal', idx, isAnnotask)
+        // console.log('openExportModal', idx, isAnnotask, name, description)
 
         if (isAnnotask) {
             // remove previous content (in case request fails)
@@ -63,10 +67,8 @@ const Datasets = () => {
             // loadAnnotaskData
             await loadAnnotask(idx)
         } else {
-            // loadDatasetData
-            // @TODO implement exporting for datasets
-            console.log('Export for datasets not implemented yet.')
-            return
+            setDatasetId(parseInt(idx))
+            toggleWholeDatasetModal()
         }
     }
 
@@ -75,7 +77,7 @@ const Datasets = () => {
         // dont open modal at beginning
         if (annotaskResponse === undefined) return
 
-        console.log(annotaskResponse)
+        // console.log(annotaskResponse)
 
         setAnnotask(annotaskResponse)
     }, [annotaskResponse])
@@ -85,7 +87,7 @@ const Datasets = () => {
         // dont open modal without data
         if (annotask === undefined) return
 
-        console.log(annotask)
+        // console.log(annotask)
 
         setIsExportModalOpen(true)
     }, [annotask])
@@ -116,6 +118,13 @@ const Datasets = () => {
                 flatDatasetList={flatDatasetList}
                 datastoreList={datastores}
             />
+
+            <WholeDatasetExportModal
+                isOpen={isWholeDatasetModalOpen}
+                toggle={toggleWholeDatasetModal}
+                datasetId={datasetId}
+            />
+
             <CContainer>
                 <CRow>
                     <CCol sm="auto">

@@ -1406,3 +1406,22 @@ class DBMan(object):
         if package:
             return self.session.query(model.Version).filter(model.Version.package == package).first()
         return self.session.query(model.Version).all()
+
+    def create_dataset_export(self, dataset_id: int, file_path: str, progress: int = 0) -> model.DatasetExport:
+        new_entry = model.DatasetExport(dataset_id=dataset_id, file_path=file_path, progress=progress)
+        self.session.add(new_entry)
+        self.session.commit()
+        return new_entry
+        
+    
+    def delete_dataset_export(self, idx: int) -> None:
+        entry = self.session.query(model.DatasetExport).filter_by(idx=idx).first()
+        if entry:
+            self.session.delete(entry)
+            self.session.commit()
+
+    def get_all_dataset_exports_by_dataset_id(self, idx: int) -> list[model.DatasetExport]:
+        return self.session.query(model.DatasetExport).filter_by(dataset_id=idx).order_by(model.DatasetExport.idx.desc()).all()
+
+    def get_dataset_export_by_id(self, idx: int) -> model.DatasetExport:
+        return self.session.query(model.DatasetExport).filter_by(idx=idx).first()
