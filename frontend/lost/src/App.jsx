@@ -8,6 +8,7 @@ import { Provider } from 'react-redux'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import deTranslation from './assets/locales/de'
 import enTranslation from './assets/locales/en'
+import { CenteredSpinner } from './components/CenteredSpinner'
 import { LostConfigProvider } from './contexts/LostConfigContext'
 import { API_URL } from './lost_settings'
 import './scss/style.scss'
@@ -91,7 +92,7 @@ function App() {
         <Provider store={store}>
             <QueryClientProvider client={queryClient}>
                 <LostConfigProvider>
-                    <Suspense fallback={<div>Loading</div>}>
+                    <Suspense fallback={<CenteredSpinner color="white" />}>
                         <BrowserRouter>
                             <Routes>
                                 <Route

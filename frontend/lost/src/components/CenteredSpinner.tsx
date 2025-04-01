@@ -1,6 +1,6 @@
 import { CSpinner } from '@coreui/react'
 
-export const CenteredSpinner = () => {
+export const CenteredSpinner = ({ color = 'primary' }) => {
     return (
         <div
             style={{
@@ -14,7 +14,7 @@ export const CenteredSpinner = () => {
                 left: 0,
             }}
         >
-            <CSpinner color="primary" />
+            <CSpinner color={color} />
         </div>
     )
 }
