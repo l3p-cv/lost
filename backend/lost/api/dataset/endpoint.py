@@ -26,6 +26,7 @@ from lost.logic.sia import (
 from lost.logic.file_access import UserFileAccess
 import os
 from datetime import datetime
+import re
 
 namespace = api.namespace("datasets", description="Dataset API")
 
@@ -743,13 +744,19 @@ class DatasetParquetExport(Resource):
             )
         data = request.json
 
+        dataset = dbm.get_dataset(dataset_id)
+        if dataset is None:
+            dbm.close_session()
+            return f"Dataset with id {dataset_id} not found", 404
+
         if "store_path" in data:
             path = data["store_path"]
         else:
             fs_db = dbm.get_user_default_fs(user.idx)    
             ufa = UserFileAccess(dbm, user, fs_db)
             path = ufa.get_whole_export_ds_path()
-            path = os.path.join(path, f"dataset_export_{datetime.now().strftime('%Y%m%d%H%M%S')}.parquet")
+            file_name = re.sub(r'\W+', '_', dataset.name).lower()
+            path = os.path.join(path, f"{file_name}_{dataset_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.parquet")
         
         if "fs_id" in data:
             fs_id = int(data["fs_id"])

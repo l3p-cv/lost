@@ -119,6 +119,7 @@ const Datasets = () => {
                 editedDatasetObj={editedDatasetObj}
                 flatDatasetList={flatDatasetList}
                 datastoreList={datastores}
+                onDatasetCreated={reloadDatasetList}
             />
 
             <WholeDatasetExportModal

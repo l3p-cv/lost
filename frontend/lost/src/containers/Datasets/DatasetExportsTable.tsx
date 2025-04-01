@@ -9,6 +9,10 @@ import {
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 
+const getFilename = (filePath: string) => {
+    return filePath.split('/').pop() || 'dataset_export'
+}
+
 interface DatasetExportsTableProps {
     datasetId: number
 }
@@ -46,7 +50,7 @@ export const DatasetExportsTable = ({ datasetId }: DatasetExportsTableProps) => 
                         Cell: (row) => {
                             return (
                                 <>
-                                    <b>{row.original.filePath.split('/').pop()}</b>
+                                    <b>{getFilename(row.original.filePath)}</b>
                                 </>
                             )
                         },
@@ -103,7 +107,12 @@ export const DatasetExportsTable = ({ datasetId }: DatasetExportsTableProps) => 
                                     isOutline={false}
                                     disabled={row.original.progress < 100}
                                     icon={faDownload}
-                                    onClick={() => downloadDatasetExport(row.original.id)}
+                                    onClick={() =>
+                                        downloadDatasetExport({
+                                            exportId: row.original.id,
+                                            fileName: getFilename(row.original.filePath),
+                                        })
+                                    }
                                     text={'Download'}
                                 ></IconButton>
                             )

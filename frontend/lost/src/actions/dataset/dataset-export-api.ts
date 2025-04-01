@@ -36,13 +36,19 @@ export const useAvailableDatasetExports = (datasetId: number) => {
                 `datasets/${datasetId}/ds_exports`,
             )
         },
-        refetchInterval: 4000,
+        refetchInterval: 2000,
     })
 }
 
 export const useDownloadDatasetExport = () => {
     return useMutation({
-        mutationFn: async (exportId: number) => {
+        mutationFn: async ({
+            exportId,
+            fileName,
+        }: {
+            exportId: number
+            fileName: string
+        }) => {
             const blobData = await httpClient.get<Blob>(
                 `datasets/ds_exports/${exportId}`,
                 {
@@ -50,10 +56,10 @@ export const useDownloadDatasetExport = () => {
                 },
             )
 
-            return { blob: blobData, exportId }
+            return { blob: blobData, fileName }
         },
-        onSuccess: ({ blob, exportId }) => {
-            saveAs(blob, `dataset_export_${exportId}.parquet`)
+        onSuccess: ({ blob, fileName }) => {
+            saveAs(blob, fileName)
         },
         onError: () => {
             showError('Failed to start download')
