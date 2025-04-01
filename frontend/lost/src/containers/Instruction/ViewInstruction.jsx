@@ -48,10 +48,10 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
               <CButton color="info" size="sm" onClick={toggleFullScreen} className="me-2">
                 <FaExpand />
               </CButton>
-              <CButton color="warning" size="sm" onClick={() => onEdit(instructionData)}>
+              {/* <CButton color="warning" size="sm" onClick={() => onEdit(instructionData)}>
                 <FaEdit className="me-1" />
                 Edit
-              </CButton>
+              </CButton> */}
             </div>
           </CCardHeader>
           <CCardBody className="overflow-auto" style={{ maxHeight: '400px' }}>
@@ -71,10 +71,10 @@ const ViewInstruction = ({ instructionData, onClose, onEdit }) => {
               <CButton color="info" size="sm" onClick={toggleFullScreen}>
                 <FaCompress />
               </CButton>
-              <CButton color="warning" size="sm" onClick={() => onEdit(instructionData)}>
+              {/* <CButton color="warning" size="sm" onClick={() => onEdit(instructionData)}>
                 <FaEdit className="me-1" />
                 Edit
-              </CButton>
+              </CButton> */}
             </div>
             {renderContent()}
           </CModalBody>

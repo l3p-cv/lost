@@ -53,6 +53,10 @@ const Instruction = ({ visLevel }) => {
     const mutation = updatedInstruction.id
       ? editInstructionMutation
       : addInstructionMutation;
+
+      if (visLevel === 'global' && !updatedInstruction.group_id) {
+        updatedInstruction.group_id = 1;
+      }
   
     mutation.mutate(updatedInstruction, {
       onSuccess: () => {
@@ -201,6 +205,8 @@ const Instruction = ({ visLevel }) => {
           <EditInstruction
             instructionData={editingInstruction}
             onSave={handleSave}
+            visLevel={visLevel} 
+            onClose={() => setModalOpen(false)}
           />
         ) : null}
       </BaseModal>

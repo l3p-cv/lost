@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 const mdParser = new MarkdownIt();
 
-const EditInstruction = ({ instructionData, onSave }) => {
+const EditInstruction = ({ instructionData, onSave, visLevel, onClose}) => {
   const [option, setOption] = useState(instructionData?.option || '');
   const [description, setDescription] = useState(instructionData?.description || '');
   const [content, setContent] = useState(instructionData?.instruction || '');
@@ -33,7 +33,11 @@ const EditInstruction = ({ instructionData, onSave }) => {
       return;
     }
     onSave({ id: instructionData.id, option, description, instruction: content }); // Save description separately
-    navigate('/instruction');
+    if (visLevel !== 'global') {
+      navigate('/instruction');  // Redirect for non-admin users
+    } else {
+      onClose();  // Close modal for admins (global level)
+    }
   };
 
   return (
