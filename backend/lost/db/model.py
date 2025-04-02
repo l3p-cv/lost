@@ -1,6 +1,6 @@
 __author__ = 'Jonas Jaeger, Gereon Reus'
 import io
-from flask_user import current_user, UserMixin
+from flask_user import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, BLOB
@@ -8,16 +8,14 @@ from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, 
 from sqlalchemy import ForeignKey
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
-from sqlalchemy import orm
 from sqlalchemy.sql import func
 from lost.db import dtype
 import json
-import os
 from lost import settings
 
 import pandas as pd
 
-DB_VERSION = '0.1.0'
+DB_VERSION = '0.2.0'
 DB_VERSION_KEY = 'lost_db_version'
 
 # Set conventions for foreign key name generation
@@ -1923,3 +1921,11 @@ class Version(Base):
         self.idx = idx
         self.package = package
         self.version = version
+
+class DatasetExport(Base):
+    __tablename__ = 'dataset_export'
+    
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    dataset_id = Column(Integer, ForeignKey('dataset.idx'), nullable=False)
+    file_path = Column(String(255), nullable=False)
+    progress = Column(Integer, nullable=False, default=0)

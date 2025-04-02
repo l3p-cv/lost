@@ -152,27 +152,10 @@ export const useDeletePipeline = () => {
     })
 }
 
-export const getLog = (id) => {
-    return httpClient.get(`/pipeline/element/${id}/logs/`)
-}
-
-const downloadFile = (filename, text) => {
-    const element = document.createElement('a')
-    element.setAttribute(
-        'href',
-        'data:text/plain;charset=utf-8,' + encodeURIComponent(text),
-    )
-    element.setAttribute('download', filename)
-
-    element.style.display = 'none'
-    document.body.appendChild(element)
-
-    element.click()
-
-    document.body.removeChild(element)
-}
-
-export const downloadPipeLogFile = (id) => async () => {
-    const response = await httpClient.get(`/data/logs/${id}?nocache=${Math.random()}`)
-    downloadFile(`p-${id}.log`, response)
+export const usePipelineLogs = (id, isActive = false) => {
+    return useQuery({
+        queryKey: ['pipelineLogs', id],
+        queryFn: () => httpClient.get<string>(`/pipeline/element/${id}/logs`),
+        refetchInterval: isActive ? 4000 : false,
+    })
 }

@@ -1,15 +1,4 @@
-import React, { Fragment, useEffect } from 'react'
-import {
-    createColumnHelper,
-    flexRender,
-    getCoreRowModel,
-    getPaginationRowModel,
-    getExpandedRowModel,
-    getFilteredRowModel,
-    useReactTable,
-} from '@tanstack/react-table'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { CRow, CTable, CTableBody, CTableHead, CCol } from '@coreui/react'
+import { CCol, CRow, CTable, CTableBody, CTableHead } from '@coreui/react'
 import {
     faAngleLeft,
     faAngleRight,
@@ -20,9 +9,20 @@ import {
     faFile,
     faPen,
 } from '@fortawesome/free-solid-svg-icons'
-import IconButton from '../../components/IconButton'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+    createColumnHelper,
+    flexRender,
+    getCoreRowModel,
+    getExpandedRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    useReactTable,
+} from '@tanstack/react-table'
+import React, { Fragment, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BaseContainer from '../../components/BaseContainer'
+import IconButton from '../../components/IconButton'
 
 const DatasetTable = ({
     datasetList,
@@ -146,9 +146,12 @@ const DatasetTable = ({
             cell: (props) => {
                 const rowData = props.row.original
 
-                // only show edit icon for annotasks
-                // @TODO add support for exporting datasets
-                if (!rowData.isAnnotask) return ''
+                if (rowData.idx == '-1') return ''
+
+                // disable the review button on datasets without children
+                const isDisabled = !(
+                    props.row.original.isAnnotask || props.row.original.isReviewable
+                )
 
                 return (
                     <IconButton
@@ -158,10 +161,16 @@ const DatasetTable = ({
                         onClick={() => {
                             const datasetID = rowData.idx
                             const isAnnotask = rowData.isAnnotask === true
-                            onExportButtonClicked(datasetID, isAnnotask)
+                            const name = rowData.name
+                            const description = rowData.description
+                            onExportButtonClicked(
+                                datasetID,
+                                isAnnotask,
+                                name,
+                                description,
+                            )
                         }}
-                        disabled={false}
-                        // text="Export"
+                        disabled={isDisabled}
                     />
                 )
             },

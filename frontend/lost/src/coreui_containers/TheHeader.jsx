@@ -1,25 +1,9 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { CHeader, CHeaderToggler, CHeaderBrand, CHeaderNav } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
 import { cilMenu } from '@coreui/icons'
-// import { useTranslation } from 'react-i18next'
-// routes config
-
-// import TheHeaderDropdownLanguageSelector from './TheHeaderDropdownLanguageSelector'
+import CIcon from '@coreui/icons-react'
+import { CHeader, CHeaderBrand, CHeaderNav, CHeaderToggler } from '@coreui/react'
 import TheHeaderDropdownAccount from './TheHeaderDropdownAccount'
 
-import actions from '../actions'
-
 const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar }) => {
-    const dispatch = useDispatch()
-    // const isNavBarVisible = useSelector((state) => state.lost.isNavBarVisible)
-    // const sidebarShow = useSelector((state) => state.lost.sidebarShow)
-    // const sidebarShow = useSelector((state) => state.lost.isNavBarVisible)
-    // const toggleSidebar = () => {
-    //     dispatch(actions.setNavbarVisible(!isNavBarVisible))
-    // }
-
     const renderSidebarToggler = () => {
         if (numNavItems) {
             if (numNavItems > 1) {
@@ -33,14 +17,11 @@ const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar }) => {
                         </CHeaderToggler>
                     </>
                 )
-            } else {
-                dispatch(actions.setNavbarVisible(false))
             }
         }
         return null
     }
 
-    // const { t } = useTranslation()
     return (
         <CHeader>
             {renderSidebarToggler()}
@@ -49,8 +30,6 @@ const TheHeader = ({ numNavItems, canShowSidebar, setCanShowSidebar }) => {
             </CHeaderBrand>
 
             <CHeaderNav className="px-3">
-                {/* <div>{t('general.selectedLanguage')}</div>
-                <TheHeaderDropdownLanguageSelector /> */}
                 <TheHeaderDropdownAccount />
             </CHeaderNav>
         </CHeader>

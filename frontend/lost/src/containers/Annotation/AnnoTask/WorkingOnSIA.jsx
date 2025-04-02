@@ -19,7 +19,7 @@ import { getColor } from './utils'
 const { siaLayoutUpdate } = actions
 
 const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
-    const [modalIsOpen, setModalIsOpen] = useState(true)
+    const [modalIsOpen, setModalIsOpen] = useState(false) // do not show instructions by default to fix scrolling issue
     const [height, setHeight] = useState(undefined)
     const myRef = useRef(null)
 

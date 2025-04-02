@@ -29,9 +29,9 @@ import {
 } from '../../../actions/pipeline/pipeline_api'
 import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
-import LogModal from '../../../components/LogModal'
 import GrayLine from '../globalComponents/GrayLine'
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
+import { PipelineLogModal } from './PipelineLogModal'
 import ToolbarTooltip from './ToolbarTooltip'
 
 const downloadJSON = (obj, fileName = 'data.json') => {
@@ -79,14 +79,12 @@ const Toolbar = (props) => {
 
     return (
         <div className="pipeline-running-toolbar">
-            <LogModal
-                isDownloadable={true}
+            <PipelineLogModal
                 isOpen={isLogFileModalOpen}
-                wiLogId={props.data ? props.data.id : null}
-                pipeId={props.data ? props.data.id : null}
                 toggle={toggleLogfileModal}
-                actionType={LogModal.TYPES.PIPELINE}
+                pipelineId={props.data?.id}
             />
+
             <Button
                 className="pipeline-running-toolbar-button"
                 id="pipeline-button-delete-pipeline"

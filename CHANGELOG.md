@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Review-Search now looks out for image-labels
 - Review-Search now able to find 
 
+## [2.5.0] - 2025-04-02 
+### Added
+- Export "whole" dataset consisting of multiple anno tasks
+### Fixed
+- SIA scrolling issue
+  
+## [2.4.2] - 2025-03-28 
+### Changed
+- Refactor workers logic to remove redux
+- Refactor lost config to remove redux
+- Remove unused files / clean up code
+
+## [2.4.1] - 2025-03-27
+### Fixed
+- SIA jumps to image one instead of previous image
+
 ### Added
 ## [2.4.0] - 2025-03-26
 ### Added
@@ -32,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - _request_lds: Fixed NaN error when requesting LOSTDatasets again via python api
 - Fixed docker-compose to *docker compose* in quick_setup console output
 - Release locked pipes on statup
+
 
 ## [2.2.0] - 2025-03-21 
 ### Changed
