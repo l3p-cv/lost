@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Your stuff here
+### Fixed
+- Review-Search now looks out for image-labels
+- Review-Search now able to find 
 
 ### Added
 ## [2.4.0] - 2025-03-26

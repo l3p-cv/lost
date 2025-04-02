@@ -660,29 +660,32 @@ class DatasetReviewImageSearch(Resource):
 
         # filter for images annotated with specific labels if labels are in the request
         if labels is not None:
-            search_labels = list(map(int, labels.split(',')))
+            if labels == "":
+                search_labels = []
+            else:
+                search_labels = list(map(int, labels.split(','))) # TODO: error here if empty
 
-            # no labels -> no images
+            # no labels -> all images in task
             if len(search_labels) == 0:
-                return []
+                pass
+            else:
+                # found_image_ids = [entry.idx for entry in db_result]
+                img_with_label_db_result = dbm.get_all_images_with_labels(
+                    found_image_ids, search_labels
+                )
+                img_ids_with_label = [
+                    entry.img_anno_id for entry in img_with_label_db_result
+                ]
 
-            # found_image_ids = [entry.idx for entry in db_result]
-            img_with_label_db_result = dbm.get_all_images_with_labels(
-                found_image_ids, search_labels
-            )
-            img_ids_with_label = [
-                entry.img_anno_id for entry in img_with_label_db_result
-            ]
+                # filter original response list: only select images that have one of the searched labels
+                found_img_with_label = [
+                    img
+                    for img in found_images
+                    if img["imageId"] in img_ids_with_label
+                ]
 
-            # filter original response list: only select images that have one of the searched labels
-            found_img_with_label = [
-                img
-                for img in found_images
-                if img["imageId"] in img_ids_with_label
-            ]
-
-            # replace list with label filtered list
-            found_images = found_img_with_label
+                # replace list with label filtered list
+                found_images = found_img_with_label
 
         return {'images':found_images}
 

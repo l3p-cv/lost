@@ -1385,14 +1385,23 @@ class DBMan(object):
         """
         image_id_list = ",".join([str(x) for x in image_ids])
         label_id_list = ",".join([str(x) for x in label_ids])
-        sql = f"SELECT DISTINCT t.img_anno_id FROM label l \
+        sql_union = f"(SELECT DISTINCT t.img_anno_id FROM label l \
             LEFT JOIN two_d_anno t ON l.two_d_anno_id = t.idx \
             WHERE l.label_leaf_id IN ({label_id_list}) \
             AND ( \
                 t.img_anno_id IN ({image_id_list}) \
                 OR l.img_anno_id IN ({image_id_list}) \
-            );"
-        return self.session.execute(text(sql))
+            )) \
+            UNION \
+            (SELECT DISTINCT l.img_anno_id FROM label l \
+            LEFT JOIN image_anno i ON l.img_anno_id = i.idx \
+            WHERE l.label_leaf_id IN ({label_id_list}) \
+            AND ( \
+                i.idx IN ({image_id_list}) \
+                OR l.img_anno_id IN ({image_id_list}) \
+            ));"  
+
+        return self.session.execute(text(sql_union))
 
     def get_version(self, package=None):
         '''Get version info
