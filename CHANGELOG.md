@@ -6,9 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Added
+- Your stuff here
+
+## [2.5.0] - 2025-04-02 
+### Added
 - Export "whole" dataset consisting of multiple anno tasks
-
-
+### Fixed
+- SIA scrolling issue
+  
 ## [2.4.2] - 2025-03-28 
 ### Changed
 - Refactor workers logic to remove redux
