@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import BaseModal from '../../components/BaseModal'
-import Datatable from '../../components/Datatable'
-import { Input } from 'reactstrap'
-import IconButton from '../../components/IconButton'
 import { faSave, faTimes } from '@fortawesome/free-solid-svg-icons'
-import actions from '../../actions'
+import { useState } from 'react'
+import { Input, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import validator from 'validator'
-import { useDispatch, useSelector } from 'react-redux'
-import * as Notification from '../../components/Notification'
-import * as REQUEST_STATUS from '../../types/requestStatus'
-// import { roles } from '../../lost_settings'
+import { useGroups } from '../../actions/group/group-api'
+import { useCreateUser, useUpdateUser } from '../../actions/user/user_api'
+import Datatable from '../../components/Datatable'
+import IconButton from '../../components/IconButton'
+import { useLostConfig } from '../../hooks/useLostConfig'
 
 const CenteredCell = ({ children, key }) => {
     return (
@@ -36,24 +33,20 @@ const ExternalUserLabel = ({ text }) => (
 )
 
 const EditUserModal = (props) => {
-    const roles = useSelector((state) => state.lost.roles)
-    const dispatch = useDispatch()
+    const { roles } = useLostConfig()
+
     const userRaw = props.user[0]
-    // userModified.roles = userModified.roles.map(el=>el.name)
+
     const [user, setUser] = useState(userRaw)
     const [emailError, setEmailError] = useState(false)
     const [passwordError, setPasswordError] = useState(false)
     const [passwordConfirmError, setPasswordConfirmError] = useState(false)
     const [usernameError, setUsernameError] = useState(false)
     const [focusedField, setFocusedFieled] = useState()
-    const groups = useSelector((state) => state.group.groups)
-    const updateUserStatus = useSelector((state) => state.user.updateUserStatus)
-    useEffect(() => {
-        Notification.networkRequest(updateUserStatus)
-        if (updateUserStatus.status === REQUEST_STATUS.SUCCESS) {
-            props.closeModal()
-        }
-    }, [updateUserStatus])
+
+    const { data: groupsData } = useGroups()
+    const { mutate: createUser } = useCreateUser()
+    const { mutate: updateUser } = useUpdateUser()
 
     const userNameField = () => {
         return (
@@ -162,7 +155,7 @@ const EditUserModal = (props) => {
     }
 
     const groupField = () => {
-        return groups.map((el) => {
+        return groupsData.groups.map((el) => {
             const isActive =
                 user.groups.filter((group) => group.idx === el.idx).length > 0
             return (
@@ -221,9 +214,17 @@ const EditUserModal = (props) => {
             user.roles = user.roles.map((role) => role.name)
             user.groups = user.groups.map((group) => group.name)
             if (props.isNewUser) {
-                dispatch(actions.createUser(user))
+                createUser(user, {
+                    onSuccess: () => {
+                        props.closeModal()
+                    },
+                })
             } else {
-                dispatch(actions.updateUser(user))
+                updateUser(user, {
+                    onSuccess: () => {
+                        props.closeModal()
+                    },
+                })
             }
         }
     }
@@ -233,13 +234,54 @@ const EditUserModal = (props) => {
     }
 
     return (
-        <BaseModal
-            isOpen={props.isOpen}
-            title="Edit User"
-            toggle={props.closeModal}
-            onClosed={props.onClosed}
-            footer={
-                <>
+        groupsData && (
+            <Modal
+                size="xl"
+                isOpen={props.isOpen}
+                toggle={props.closeModal}
+                onClosed={props.onClosed}
+            >
+                <ModalHeader toggle={props.closeModal}>{'Edit User'}</ModalHeader>
+                <ModalBody>
+                    <Datatable
+                        noText={true}
+                        pageSize={1}
+                        data={[user]}
+                        columns={[
+                            {
+                                Header: 'Username',
+                                accessor: 'userName',
+                                Cell: userNameField,
+                            },
+                            {
+                                Header: 'Email',
+                                accessor: 'email',
+                                Cell: emailField,
+                            },
+                            {
+                                Header: 'Password',
+                                accessor: 'password',
+                                Cell: passwordField,
+                            },
+                            {
+                                Header: 'Confirm Password',
+                                accessor: 'confirmPassword',
+                                Cell: confirmPasswordField,
+                            },
+                            {
+                                Header: 'Roles',
+                                accessor: 'roles',
+                                Cell: rolesField,
+                            },
+                            {
+                                Header: 'Groups',
+                                accessor: 'groups',
+                                Cell: groupField,
+                            },
+                        ]}
+                    />
+                </ModalBody>
+                <ModalFooter>
                     <IconButton
                         isOutline={false}
                         icon={faSave}
@@ -254,48 +296,9 @@ const EditUserModal = (props) => {
                         text="Close"
                         onClick={cancel}
                     ></IconButton>
-                </>
-            }
-        >
-            <Datatable
-                noText={true}
-                pageSize={1}
-                showPagination={false}
-                data={[user]}
-                columns={[
-                    {
-                        Header: 'Username',
-                        accessor: 'userName',
-                        Cell: userNameField,
-                    },
-                    {
-                        Header: 'Email',
-                        accessor: 'email',
-                        Cell: emailField,
-                    },
-                    {
-                        Header: 'Password',
-                        accessor: 'password',
-                        Cell: passwordField,
-                    },
-                    {
-                        Header: 'Confirm Password',
-                        accessor: 'confirmPassword',
-                        Cell: confirmPasswordField,
-                    },
-                    {
-                        Header: 'Roles',
-                        accessor: 'roles',
-                        Cell: rolesField,
-                    },
-                    {
-                        Header: 'Groups',
-                        accessor: 'groups',
-                        Cell: groupField,
-                    },
-                ]}
-            />
-        </BaseModal>
+                </ModalFooter>
+            </Modal>
+        )
     )
 }
 

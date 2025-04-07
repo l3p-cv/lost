@@ -1,6 +1,5 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { saveAs } from 'file-saver'
-import { connect } from 'react-redux'
 import { ModalBody, ModalHeader } from 'reactstrap'
 
 import ReactTable from 'react-table'
@@ -70,4 +69,4 @@ const DataExportModal = ({ dataExport }) => {
     )
 }
 
-export default connect(null, {})(DataExportModal)
+export default DataExportModal

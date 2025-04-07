@@ -1,5 +1,3 @@
-import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
 import {
     CNavItem,
     CNavLink,
@@ -9,18 +7,12 @@ import {
     CSidebarNav,
     CSidebarToggler,
 } from '@coreui/react'
-
-// import actions from '../actions'
-import lostLogoPng from '../assets/img/brand/lost_logo.png'
+import React, { useState } from 'react'
+import { NavLink } from 'react-router-dom'
 
 const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
     const [isUnfoldable, setisUnfoldable] = useState(false)
 
-    // remove component key from navItems
-    // const onShowChange = () => {
-    //     console.log("Navbar visibility change event");
-    //     // dispatch(actions.setNavbarVisible(!isNavBarVisible))
-    // }
     if (navItems) {
         const navbarItemsDom = []
         let itemKey = 0
@@ -72,7 +64,7 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                 <CSidebarBrand className="d-md-down-none" to="/dashboard">
                     <img
                         alt=""
-                        src={lostLogoPng}
+                        src="/assets/lost_logo.png"
                         style={{ maxWidth: '60%', maxHeight: '60%' }}
                         className="img-avatar"
                     />

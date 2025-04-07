@@ -32,7 +32,7 @@ export interface LiveAnnoTask {
     progress: number
     imgCount: number
     annotatedImgCount: number
-    instructions: string
+    instructionId: number
     configuration: Configuration
     labelLeaves: LiveLabelLeaf[]
 }
@@ -138,7 +138,7 @@ export interface StartDefinitionElement {
 export interface FluffyAnnoTask {
     name: string
     type: string
-    instructions: string
+    instructionId: number
     configuration: Configuration
     assignee: string
     workerId: number

@@ -395,7 +395,7 @@ class PipeDefChecker():
             return False
         if not self._check_key('name', pe['annoTask'], [str]):
             ret = False
-        if not self._check_key('instructions', pe['annoTask'], [str]):
+        if not self._check_key('instruction_id', pe['annoTask'], [int, type(None)]):
             ret = False
         if not self._check_key('configuration', pe['annoTask'], [dict]):
             ret = False

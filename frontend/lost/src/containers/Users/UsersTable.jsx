@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import Datatable from '../../components/Datatable'
-import { useDispatch, useSelector } from 'react-redux'
-import actions from '../../actions/user'
-import IconButton from '../../components/IconButton'
 import {
-    faUserEdit,
-    faTrash,
-    faUserPlus,
     faCopy,
+    faTrash,
+    faUserEdit,
+    faUserPlus,
 } from '@fortawesome/free-solid-svg-icons'
-import EditUserModal from './EditUserModal'
+import { useEffect, useState } from 'react'
 import { useCopyToClipboard } from 'react-use'
+import { useDeleteUser, useUsers } from '../../actions/user/user_api'
+import Datatable from '../../components/Datatable'
+import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
-import * as REQUEST_STATUS from '../../types/requestStatus'
+import EditUserModal from './EditUserModal'
 
 const EMPTY_USER = [
     {
@@ -24,20 +22,12 @@ const EMPTY_USER = [
     },
 ]
 
-export const Users = () => {
-    let users = useSelector((state) => state.user.users)
+export const UsersTable = () => {
     const [copiedObj, copyToClipboard] = useCopyToClipboard()
-    const deleteUserStatus = useSelector((state) => state.user.deleteUserStatus)
     const [isNewUser, setIsNewUser] = useState(false)
 
-    useEffect(() => {
-        if (deleteUserStatus.status) {
-            Notification.networkRequest(deleteUserStatus)
-            if ((deleteUserStatus.status = REQUEST_STATUS.SUCCESS)) {
-                dispatch(actions.getUsers())
-            }
-        }
-    }, [deleteUserStatus])
+    const { data: usersData, refetch: refetchUsers } = useUsers()
+    const { mutate: deleteUser } = useDeleteUser()
 
     useEffect(() => {
         if (copiedObj.error) {
@@ -57,21 +47,11 @@ export const Users = () => {
     // only close modal when animation finished
     const [isUserEditOpenView, setIsUserEditOpenView] = useState(false)
 
-    const dispatch = useDispatch()
-
-    const getUsers = () => {
-        dispatch(actions.getUsers())
-    }
-
     const createNewUser = () => {
         setIsNewUser(true)
         setSelectedUser(EMPTY_USER)
         openUserModal()
     }
-
-    useEffect(() => {
-        getUsers()
-    }, [])
 
     const openUserModal = () => {
         setIsUserEditOpenControl(true)
@@ -80,28 +60,28 @@ export const Users = () => {
 
     const editClick = ({ row }) => {
         setIsNewUser(false)
-        setSelectedUser(users.filter((el) => el.user_name === row.user_name))
+        setSelectedUser(usersData.users.filter((el) => el.user_name === row.user_name))
 
         openUserModal()
     }
 
     const deleteClick = (row) => {
-        dispatch(actions.deleteUser(row.original.idx))
+        deleteUser(row.original.idx)
     }
 
     const closeModal = () => {
         setIsUserEditOpenControl(false)
-        getUsers()
+        refetchUsers()
     }
     const onClosedModal = () => {
         setIsUserEditOpenView(false)
     }
-    return (
+    return usersData ? (
         <div>
             {isUserEditOpenView && (
                 <EditUserModal
                     isNewUser={isNewUser}
-                    users={users}
+                    users={usersData.users}
                     user={selectedUser}
                     isOpen={isUserEditOpenControl}
                     closeModal={closeModal}
@@ -118,7 +98,7 @@ export const Users = () => {
             />
 
             <Datatable
-                data={users}
+                data={usersData.users}
                 columns={[
                     {
                         Header: 'Username',
@@ -200,7 +180,9 @@ export const Users = () => {
                 ]}
             />
         </div>
+    ) : (
+        <></>
     )
 }
 
-export default Users
+export default UsersTable

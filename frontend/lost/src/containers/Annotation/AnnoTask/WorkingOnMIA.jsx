@@ -1,22 +1,16 @@
 import React, { Component } from 'react'
-import { Progress } from 'reactstrap'
+import {
+    Alert,
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Col,
+    Modal,
+    Progress,
+    Row,
+} from 'reactstrap'
 import { getColor } from './utils'
-import { Alert, Button, Card, CardBody, CardHeader, Col, Row } from 'reactstrap'
-import Modal from 'react-modal'
-
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-    },
-    overlay: {
-        backgroundColor: 'rgba(0,0,0,0.75)',
-    },
-}
 
 class WorkingOnMIA extends Component {
     constructor() {
@@ -46,7 +40,7 @@ class WorkingOnMIA extends Component {
 
     render() {
         if (this.props.annoTask !== null) {
-            let progress = Math.floor(
+            const progress = Math.floor(
                 (this.props.annoTask.finished / this.props.annoTask.size) * 100,
             )
             return (
@@ -117,7 +111,6 @@ class WorkingOnMIA extends Component {
                         isOpen={this.state.modalIsOpen}
                         onAfterOpen={this.afterOpenModal}
                         onRequestClose={this.closeModal}
-                        style={customStyles}
                         ariaHideApp={false}
                         contentLabel="Instructions"
                     >

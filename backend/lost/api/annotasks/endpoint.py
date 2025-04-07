@@ -445,6 +445,40 @@ class DataExportDownload(Resource):
             dbm.close_session()
             return "You are not authorized.", 401
   
+@namespace.route('/<int:annotask_id>/instruction')
+@namespace.param('annotask_id', 'The id of the annotation task.')
+@api.doc(security='apikey')
+class UpdateAnnoTaskInstruction(Resource):
+    @jwt_required
+    @api.doc(security='apikey', description='Update the instruction of the annotask')
+    def patch(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return {"message": "You are not authorized."}, 401
+
+        anno_task = dbm.get_anno_task(annotask_id)
+        
+        data = json.loads(request.data)
+        
+        instruction_id = data.get('instructionId')
+
+        
+        if instruction_id is not None:
+            if str(instruction_id) == '-1':
+                anno_task.instruction_id = None
+            else:
+                anno_task.instruction_id = instruction_id
+            
+            dbm.save_obj(anno_task)
+            dbm.close_session()
+            return {"message": "Instruction successfully updated."}, 200
+            
+        dbm.close_session()
+        return {"message": "Instruction ID is missing."}, 400
 
 
 @namespace.route('/filterLabels')

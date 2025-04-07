@@ -1,44 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Datatable from '../../components/Datatable'
-import actions from '../../actions/group'
-import userActions from '../../actions/user'
 
-import { useDispatch, useSelector } from 'react-redux'
-import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
-import IconButton from '../../components/IconButton'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Input, InputGroup } from 'reactstrap'
+import { useCreateGroup, useDeleteGroup, useGroups } from '../../actions/group/group-api'
+import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
-import * as REQUEST_STATUS from '../../types/requestStatus'
+
 export const Groups = () => {
-    const dispatch = useDispatch()
-    const groups = useSelector((state) => state.group.groups)
     const [newGroup, setNewGroup] = useState('')
-    const addGroupStatus = useSelector((state) => state.group.createGroupStatus)
-    const deleteGroupStatus = useSelector((state) => state.group.deleteGroupStatus)
-
-    useEffect(() => {
-        if (addGroupStatus.status) {
-            Notification.networkRequest(addGroupStatus)
-            if (addGroupStatus.status === REQUEST_STATUS.SUCCESS) {
-                dispatch(actions.getGroups())
-                setNewGroup('')
-            }
-        }
-    }, [addGroupStatus])
-
-    useEffect(() => {
-        if (deleteGroupStatus.status) {
-            Notification.networkRequest(deleteGroupStatus)
-            if (deleteGroupStatus.status === REQUEST_STATUS.SUCCESS) {
-                dispatch(actions.getGroups())
-                dispatch(userActions.getUsers())
-            }
-        }
-    }, [deleteGroupStatus])
-
-    useEffect(() => {
-        dispatch(actions.getGroups())
-    }, [])
+    const { mutate: createGroup } = useCreateGroup()
+    const { mutate: deleteGroup } = useDeleteGroup()
+    const { data: groupsData } = useGroups()
 
     const addGroup = () => {
         if (newGroup.length < 3) {
@@ -46,56 +19,52 @@ export const Groups = () => {
         } else if (newGroup.length > 25) {
             Notification.showError('Maximum 25 character')
         } else {
-            dispatch(
-                actions.createGroup({
-                    group_name: newGroup,
-                }),
-            )
+            createGroup({
+                group_name: newGroup,
+            })
         }
     }
 
-    const deleteGroup = (id) => {
-        dispatch(actions.deleteGroup(id))
-    }
-
     return (
-        <div>
-            <InputGroup style={{ marginBottom: 20 }}>
-                <Input
-                    placeholder="groupname"
-                    value={newGroup}
-                    onChange={(e) => setNewGroup(e.currentTarget.value)}
-                />
-                {/* <InputGroupAddon addonType="append"> */}
-                <IconButton color="primary" icon={faPlus} onClick={addGroup} />
-                {/* </InputGroupAddon> */}
-            </InputGroup>
-            <Datatable
-                showPageSizeOptions={false}
-                data={groups}
-                columns={[
-                    {
-                        Header: 'Group',
-                        accessor: 'name',
-                    },
-                    {
-                        Header: '',
-                        width: 50,
-                        Cell: function customCell(row) {
-                            return (
-                                <IconButton
-                                    icon={faTrash}
-                                    color="danger"
-                                    onClick={() => {
-                                        deleteGroup(row.original.idx)
-                                    }}
-                                />
-                            )
+        groupsData && (
+            <div>
+                <InputGroup style={{ marginBottom: 20 }}>
+                    <Input
+                        placeholder="groupname"
+                        value={newGroup}
+                        onChange={(e) => setNewGroup(e.currentTarget.value)}
+                    />
+                    <IconButton color="primary" icon={faPlus} onClick={addGroup} />
+                </InputGroup>
+                <Datatable
+                    data={groupsData.groups}
+                    columns={[
+                        {
+                            Header: 'Group',
+                            accessor: 'name',
                         },
-                    },
-                ]}
-            />
-        </div>
+                        // Note: commented this out temporarily since it allows you to delete groups assigned to users
+                        // The backend api needs to be fixed before re-enabling this feature
+                        // {
+                        //     Header: '',
+                        //     width: 50,
+                        //     Cell: function customCell(row) {
+                        //         return (
+                        //             <IconButton
+                        //                 disabled
+                        //                 icon={faTrash}
+                        //                 color="danger"
+                        //                 onClick={() => {
+                        //                     deleteGroup(row.original.idx)
+                        //                 }}
+                        //             />
+                        //         )
+                        //     },
+                        // },
+                    ]}
+                />
+            </div>
+        )
     )
 }
 export default Groups

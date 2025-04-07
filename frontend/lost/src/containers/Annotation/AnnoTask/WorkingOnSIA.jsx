@@ -1,31 +1,25 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import Modal from 'react-modal'
 import { connect } from 'react-redux'
-import { Alert, Button, Card, CardBody, CardHeader, Col, Progress, Row } from 'reactstrap'
+import {
+    Alert,
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Col,
+    Modal,
+    Progress,
+    Row,
+} from 'reactstrap'
 import actions from '../../../actions'
 import IconButton from '../../../components/IconButton'
 import { getColor } from './utils'
 
-const { refreshToken, siaLayoutUpdate } = actions
-
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-    },
-    overlay: {
-        backgroundColor: 'rgba(0,0,0,0.75)',
-        zIndex: 10,
-    },
-}
+const { siaLayoutUpdate } = actions
 
 const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
-    const [modalIsOpen, setModalIsOpen] = useState(true)
+    const [modalIsOpen, setModalIsOpen] = useState(false) // do not show instructions by default to fix scrolling issue
     const [height, setHeight] = useState(undefined)
     const myRef = useRef(null)
 
@@ -118,7 +112,6 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                 isOpen={modalIsOpen}
                 onAfterOpen={() => {}}
                 onRequestClose={closeModal}
-                style={customStyles}
                 ariaHideApp={false}
                 contentLabel="Instructions"
             >
@@ -148,4 +141,4 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
     )
 }
 
-export default connect(null, { refreshToken, siaLayoutUpdate })(WorkingOnSIA)
+export default connect(null, { siaLayoutUpdate })(WorkingOnSIA)

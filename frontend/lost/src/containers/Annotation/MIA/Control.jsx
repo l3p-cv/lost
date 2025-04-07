@@ -20,7 +20,6 @@ import UndoRedo from '../../../libs/hist'
 import './Tag.scss'
 
 const {
-    refreshToken,
     miaZoomIn,
     miaZoomOut,
     miaAmount,
@@ -281,7 +280,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-    refreshToken,
     miaZoomIn,
     miaZoomOut,
     miaAmount,

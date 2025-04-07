@@ -94,6 +94,9 @@ class UserFileAccess(object):
     def get_export_ds_path(self, export_id):
         return self.fm.get_export_ds_path(export_id)
 
+    def get_whole_export_ds_path(self):
+        return self.fm.get_whole_export_ds_path()
+
     def _user_default_required(self):
         '''Check if an action will be performed on users default fs
         

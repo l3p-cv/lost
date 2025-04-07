@@ -17,12 +17,15 @@ export interface Element {
 export interface AnnoTask {
     name: string
     type: string
-    instructions: string
+    instructionId: number
     configuration: Configuration
     assignee: string
     workerId: number
     labelLeaves: LabelLeaf[]
     selectedLabelTree: number
+    storage?: {
+        datasetId: string
+    }
 }
 
 export interface Configuration {

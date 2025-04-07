@@ -547,8 +547,8 @@ class DBMan(object):
         '''
         sql = "SELECT * FROM image_anno WHERE iteration=%d AND anno_task_id=%d AND idx=(SELECT max(idx)\
          FROM image_anno WHERE idx<%d\
-         AND user_id=%d)"\
-         %(iteration, anno_task_id, img_anno_id, user_id)
+         AND user_id=%d AND anno_task_id=%d)"\
+         %(iteration, anno_task_id, img_anno_id, user_id, anno_task_id)
         img_anno = self.session.execute(text(sql)).first()
         if img_anno:
             return self.session.query(model.ImageAnno).filter(model.ImageAnno.idx==img_anno.idx).first()
@@ -1385,14 +1385,23 @@ class DBMan(object):
         """
         image_id_list = ",".join([str(x) for x in image_ids])
         label_id_list = ",".join([str(x) for x in label_ids])
-        sql = f"SELECT DISTINCT t.img_anno_id FROM label l \
+        sql_union = f"(SELECT DISTINCT t.img_anno_id FROM label l \
             LEFT JOIN two_d_anno t ON l.two_d_anno_id = t.idx \
             WHERE l.label_leaf_id IN ({label_id_list}) \
             AND ( \
                 t.img_anno_id IN ({image_id_list}) \
                 OR l.img_anno_id IN ({image_id_list}) \
-            );"
-        return self.session.execute(text(sql))
+            )) \
+            UNION \
+            (SELECT DISTINCT l.img_anno_id FROM label l \
+            LEFT JOIN image_anno i ON l.img_anno_id = i.idx \
+            WHERE l.label_leaf_id IN ({label_id_list}) \
+            AND ( \
+                i.idx IN ({image_id_list}) \
+                OR l.img_anno_id IN ({image_id_list}) \
+            ));"  
+
+        return self.session.execute(text(sql_union))
 
     def get_version(self, package=None):
         '''Get version info
@@ -1406,3 +1415,22 @@ class DBMan(object):
         if package:
             return self.session.query(model.Version).filter(model.Version.package == package).first()
         return self.session.query(model.Version).all()
+
+    def create_dataset_export(self, dataset_id: int, file_path: str, progress: int = 0) -> model.DatasetExport:
+        new_entry = model.DatasetExport(dataset_id=dataset_id, file_path=file_path, progress=progress)
+        self.session.add(new_entry)
+        self.session.commit()
+        return new_entry
+        
+    
+    def delete_dataset_export(self, idx: int) -> None:
+        entry = self.session.query(model.DatasetExport).filter_by(idx=idx).first()
+        if entry:
+            self.session.delete(entry)
+            self.session.commit()
+
+    def get_all_dataset_exports_by_dataset_id(self, idx: int) -> list[model.DatasetExport]:
+        return self.session.query(model.DatasetExport).filter_by(dataset_id=idx).order_by(model.DatasetExport.idx.desc()).all()
+
+    def get_dataset_export_by_id(self, idx: int) -> model.DatasetExport:
+        return self.session.query(model.DatasetExport).filter_by(idx=idx).first()

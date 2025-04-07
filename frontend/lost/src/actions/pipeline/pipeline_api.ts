@@ -107,3 +107,55 @@ export const useUpdatePipelineArguments = () => {
         },
     })
 }
+
+export const usePausePipeline = () => {
+    return useMutation({
+        mutationFn: (id: string) => {
+            return httpClient.post(`/pipeline/pause/${id}`)
+        },
+        onError: () => {
+            showError('An error occurred when pausing the pipeline')
+        },
+        onSuccess: () => {
+            showSuccess('Pipeline paused successfully')
+        },
+    })
+}
+
+export const usePlayPipeline = () => {
+    return useMutation({
+        mutationFn: (id: string) => {
+            return httpClient.post(`/pipeline/play/${id}`)
+        },
+        onError: () => {
+            showError('An error occurred when playing the pipeline')
+        },
+        onSuccess: () => {
+            showSuccess('Pipeline played successfully')
+        },
+    })
+}
+
+export const useDeletePipeline = () => {
+    const navigate = useNavigate()
+    return useMutation({
+        mutationFn: (id: string) => {
+            return httpClient.delete(`/pipeline/${id}`)
+        },
+        onError: () => {
+            showError('An error occurred when deleting the pipeline')
+        },
+        onSuccess: () => {
+            showSuccess('Pipeline deleted successfully')
+            navigate('/pipelines')
+        },
+    })
+}
+
+export const usePipelineLogs = (id, isActive = false) => {
+    return useQuery({
+        queryKey: ['pipelineLogs', id],
+        queryFn: () => httpClient.get<string>(`/pipeline/element/${id}/logs`),
+        refetchInterval: isActive ? 4000 : false,
+    })
+}

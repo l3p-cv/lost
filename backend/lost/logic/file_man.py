@@ -4,10 +4,8 @@ from os.path import join
 import os
 from datetime import datetime
 import json
-import shutil
 import traceback
 import zipfile
-import lost
 import fsspec
 import numpy as np
 try:
@@ -194,6 +192,12 @@ class FileMan(object):
     
     def get_export_ds_path(self, export_id):
         my_path = os.path.join(self.root_path, EXPORT_ROOT_PATH, str(export_id))
+        if not self.fs.exists(my_path):
+            self.fs.mkdirs(my_path)
+        return my_path
+
+    def get_whole_export_ds_path(self):
+        my_path = os.path.join(self.root_path, EXPORT_ROOT_PATH, 'whole_dataset')
         if not self.fs.exists(my_path):
             self.fs.mkdirs(my_path)
         return my_path

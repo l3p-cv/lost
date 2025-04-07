@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import { CCol, CRow } from '@coreui/react'
+import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import {
-    Form,
-    FormGroup,
-    Label,
-    Input,
-    FormFeedback,
-    FormText,
-    Button,
-    InputGroup,
-} from 'reactstrap'
-import BaseModal from '../../components/BaseModal'
-import IconButton from '../../components/IconButton'
-import {
-    faSave,
-    faTimes,
     faFile,
     faNetworkWired,
+    faSave,
+    faTimes,
 } from '@fortawesome/free-solid-svg-icons'
-import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
-import { faAws, faMicrosoft } from '@fortawesome/free-brands-svg-icons'
-import * as Notification from '../../components/Notification'
-import { CRow, CCol } from '@coreui/react'
-import { useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import {
+    Button,
+    Form,
+    FormFeedback,
+    FormGroup,
+    FormText,
+    Input,
+    InputGroup,
+    Label,
+} from 'reactstrap'
 import * as fbAPI from '../../actions/fb/fb_api'
+import { useOwnUser } from '../../actions/user/user_api'
+import BaseModal from '../../components/BaseModal'
+import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
+import IconButton from '../../components/IconButton'
+import * as Notification from '../../components/Notification'
 
 const EditDSModal = ({
     isNewDs,
@@ -49,7 +49,7 @@ const EditDSModal = ({
     const [browsePath, setBrowsePath] = useState(fs.rootPath)
     const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
     const { mutate: saveFs, status: saveFsStatus, error: saveFsError } = fbAPI.useSaveFs()
-    const roles = useSelector((state) => state.user.ownUser.roles)
+    const { data: ownUser, isLoading } = useOwnUser()
 
     // async function callGetFullFs(fs) {
     //     const fullFs = await getFullFs(fs)
@@ -174,7 +174,7 @@ const EditDSModal = ({
                     className="justify-content-center mb-3"
                     style={{ marginTop: 8, marginBottom: 20 }}
                 >
-                    {roles.find((el) => el.name === 'Administrator') ? (
+                    {ownUser.roles.find((el) => el.name === 'Administrator') ? (
                         <CCol md={2}>
                             <IconButton
                                 text="File"
@@ -266,116 +266,118 @@ const EditDSModal = ({
     }
 
     return (
-        <div>
-            <BaseModal
-                isOpen={modalOpen ? true : false}
-                title="Edit Datasource"
-                toggle={closeModal}
-                onClosed={onClosed}
-                footer={
-                    <>
-                        <IconButton
-                            isOutline={false}
-                            disabled={fs.name === '' || fs.rootPath === ''}
-                            icon={faSave}
-                            color="primary"
-                            text="Save"
-                            onClick={save}
-                        />
-                        <IconButton
-                            isOutline={false}
-                            color="secondary"
-                            icon={faTimes}
-                            text="Close"
-                            onClick={cancel}
-                        ></IconButton>
-                    </>
-                }
-            >
-                {renderDsTypeButtons()}
-                <Form>
-                    <FormGroup>
-                        <Label for="name">Datasource name</Label>
-                        <Input
-                            id="name"
-                            // valid={false}
-                            // invalid={false}
-                            // defaultValue={''}
-                            placeholder={'DS name'}
-                            onChange={(e) => {
-                                setFs({ ...fs, name: e.target.value })
-                            }}
-                            value={fs.name}
-                        />
-                        <FormFeedback>You will not be able to see this</FormFeedback>
-                        <FormText>Name of the datasource</FormText>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="rootPath">Root path</Label>
-                        <InputGroup>
-                            <Input
-                                id="rootPath"
-                                valid={false}
-                                invalid={false}
-                                // defaultValue={''}
-                                placeholder={'Root path'}
-                                onChange={(e) => {
-                                    setFs({ ...fs, rootPath: e.target.value })
-                                }}
-                                value={fs.rootPath}
-                            />
-                            <Button
+        ownUser && (
+            <div>
+                <BaseModal
+                    isOpen={modalOpen ? true : false}
+                    title="Edit Datasource"
+                    toggle={closeModal}
+                    onClosed={onClosed}
+                    footer={
+                        <>
+                            <IconButton
+                                isOutline={false}
+                                disabled={fs.name === '' || fs.rootPath === ''}
+                                icon={faSave}
                                 color="primary"
-                                onClick={() => {
-                                    setBrowseOpen(true)
+                                text="Save"
+                                onClick={save}
+                            />
+                            <IconButton
+                                isOutline={false}
+                                color="secondary"
+                                icon={faTimes}
+                                text="Close"
+                                onClick={cancel}
+                            ></IconButton>
+                        </>
+                    }
+                >
+                    {renderDsTypeButtons()}
+                    <Form>
+                        <FormGroup>
+                            <Label for="name">Datasource name</Label>
+                            <Input
+                                id="name"
+                                // valid={false}
+                                // invalid={false}
+                                // defaultValue={''}
+                                placeholder={'DS name'}
+                                onChange={(e) => {
+                                    setFs({ ...fs, name: e.target.value })
                                 }}
+                                value={fs.name}
+                            />
+                            <FormFeedback>You will not be able to see this</FormFeedback>
+                            <FormText>Name of the datasource</FormText>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="rootPath">Root path</Label>
+                            <InputGroup>
+                                <Input
+                                    id="rootPath"
+                                    valid={false}
+                                    invalid={false}
+                                    // defaultValue={''}
+                                    placeholder={'Root path'}
+                                    onChange={(e) => {
+                                        setFs({ ...fs, rootPath: e.target.value })
+                                    }}
+                                    value={fs.rootPath}
+                                />
+                                <Button
+                                    color="primary"
+                                    onClick={() => {
+                                        setBrowseOpen(true)
+                                    }}
+                                >
+                                    Test
+                                </Button>
+                            </InputGroup>
+                            <FormFeedback>You will not be able to see this</FormFeedback>
+                            <FormText>Example help text that remains unchanged.</FormText>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="dsType">Datasource type</Label>
+                            <Input
+                                type="select"
+                                name="dsType"
+                                id="dsType"
+                                onChange={(e) => {
+                                    setFs({ ...fs, fsType: e.target.value })
+                                }}
+                                // defaultValue={fs.fsType}
+                                value={fs.fsType}
                             >
-                                Test
-                            </Button>
-                        </InputGroup>
-                        <FormFeedback>You will not be able to see this</FormFeedback>
-                        <FormText>Example help text that remains unchanged.</FormText>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="dsType">Datasource type</Label>
-                        <Input
-                            type="select"
-                            name="dsType"
-                            id="dsType"
-                            onChange={(e) => {
-                                setFs({ ...fs, fsType: e.target.value })
-                            }}
-                            // defaultValue={fs.fsType}
-                            value={fs.fsType}
-                        >
-                            {(() => {
-                                if (!possibleFsTypes) return null
-                                return possibleFsTypes.map((el) => {
-                                    return <option key={el}>{el}</option>
-                                })
-                            })()}
-                        </Input>
-                        <FormFeedback>You will not be able to see this</FormFeedback>
-                        <FormText>Example help text that remains unchanged.</FormText>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="connection">Connection String</Label>
-                        <Input
-                            type="textarea"
-                            name="connection"
-                            id="connection"
-                            onChange={(e) => {
-                                setFs({ ...fs, connection: e.target.value })
-                            }}
-                            // defaultValue={fs.connection}
-                            value={fs.connection}
-                            placeholder={fs.connection}
-                        />
-                    </FormGroup>
-                </Form>
-            </BaseModal>
-            {renderBrowseModal()}
-        </div>
+                                {(() => {
+                                    if (!possibleFsTypes) return null
+                                    return possibleFsTypes.map((el) => {
+                                        return <option key={el}>{el}</option>
+                                    })
+                                })()}
+                            </Input>
+                            <FormFeedback>You will not be able to see this</FormFeedback>
+                            <FormText>Example help text that remains unchanged.</FormText>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="connection">Connection String</Label>
+                            <Input
+                                type="textarea"
+                                name="connection"
+                                id="connection"
+                                onChange={(e) => {
+                                    setFs({ ...fs, connection: e.target.value })
+                                }}
+                                // defaultValue={fs.connection}
+                                value={fs.connection}
+                                placeholder={fs.connection}
+                            />
+                        </FormGroup>
+                    </Form>
+                </BaseModal>
+                {renderBrowseModal()}
+            </div>
+        )
     )
 }
 

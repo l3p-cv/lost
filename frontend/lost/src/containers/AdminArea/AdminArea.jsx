@@ -1,38 +1,34 @@
-import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import actions from '../../actions'
+import { useEffect, useState } from 'react'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-    faCogs,
-    faWandMagicSparkles,
-    faUsers,
     faCubes,
     faDatabase,
-    faTags,
     faRobot,
-    faTasks,
+    faTags,
+    faUsers,
+    faWandMagicSparkles,
     faFileAlt,
 } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
-import WorkersTable from '../Workers/WorkersTable'
-import UsersAndGroups from '../Users/UsersAndGroups'
-import TabJupyterLab from './TabJupyterLab'
-import Labels from '../Labels/Labels'
+import { useLostConfig } from '../../hooks/useLostConfig'
 import DSTable from '../DataSources/DSTable'
+import Labels from '../Labels/Labels'
 import PipelineProjects from '../Pipelines/PipelineProjects'
+import UsersAndGroups from '../Users/UsersAndGroups'
+import WorkersTable from '../Workers/WorkersTable'
+import TabJupyterLab from './TabJupyterLab'
 import Instruction from '../Instruction/Instruction';
 
 const AdminArea = () => {
-    const dispatch = useDispatch()
     const [active, setActive] = useState(0)
-    const jupyterLabUrl = useSelector((state) => state.lost.jupyterLabUrl)
+    const { jupyterLabUrl, refetchJupyterLabUrl } = useLostConfig()
+
     useEffect(() => {
-        dispatch(actions.setNavbarVisible(true))
-        dispatch(actions.getJupyterLabUrl(true))
+        refetchJupyterLabUrl()
     }, [])
 
     const renderJupyterLabNav = () => {
@@ -62,16 +58,6 @@ const AdminArea = () => {
             <CCol xs="12" md="12" className="mb-4">
                 <CNav variant="tabs" role="tablist">
                     <CNav variant="tabs">
-                        {/* <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faInfoCircle}
-                                />
-                                {active === 0 && ' System Information'}
-                            </CNavLink>
-                        </CNavItem> */}
                         <CNavItem>
                             <CNavLink active={active === 0} onClick={() => setActive(0)}>
                                 <FontAwesomeIcon
@@ -112,16 +98,6 @@ const AdminArea = () => {
                                 {active === 3 && ' Global Labels'}
                             </CNavLink>
                         </CNavItem>
-                        {/* <CNavItem>
-                            <CNavLink>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faTasks}
-                                />
-                                {active === 6 && ' Global Pipelines'}
-                            </CNavLink>
-                        </CNavItem> */}
                         <CNavItem>
                             <CNavLink active={active === 4} onClick={() => setActive(4)}>
                                 <FontAwesomeIcon
@@ -142,16 +118,6 @@ const AdminArea = () => {
                                 {active === 5 && ' Instructions'}
                             </CNavLink>
                         </CNavItem>
-                        {/* <CNavItem>
-                            <CNavLink active={active=== 5} onClick={() => setActive(5)}>
-                                <FontAwesomeIcon
-                                    color="#092F38"
-                                    size="1x"
-                                    icon={faCogs}
-                                />
-                                {active === 5 && ' Settings'}
-                            </CNavLink>
-                        </CNavItem> */}
                         {renderJupyterLabNav()}
                     </CNav>
                     <CTabContent className="w-100">
@@ -203,11 +169,6 @@ const AdminArea = () => {
                         >
                             <Instruction visLevel="global"></Instruction>
                         </CTabPane>
-                        {/* <CTabPane style={{ marginTop: 30 }}>
-                            <div>
-                                <ConfigPage />
-                            </div>
-                        </CTabPane> */}
                         {renderJupyterLabTab()}
                     </CTabContent>
                 </CNav>

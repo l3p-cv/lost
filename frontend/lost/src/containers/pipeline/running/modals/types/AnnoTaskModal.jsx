@@ -7,28 +7,9 @@ import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import Table from '../../../globalComponents/modals/Table'
 import AnnoTaskTabs from './AnnoTaskModalUtils/AnnoTaskTabs'
 
-// function download(filename, text) {
-//     var element = document.createElement('a');
-//     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-//     element.setAttribute('download', filename);
-
-//     element.style.display = 'none';
-//     document.body.appendChild(element);
-
-//     element.click();
-
-//     document.body.removeChild(element);
-//   }
-
 function handleSiaRewiewClick(props, callback) {
     props.siaReviewSetElement(props.id)
-    props.chooseAnnoTask(
-        props.annoTask.id,
-        callback,
-        // createHashHistory().push('/sia-review')
-        // () => {}
-    )
-    // history.push('/sia-review')
+    props.chooseAnnoTask(props.annoTask.id, callback)
 }
 
 function annotationReleaseSuccessful() {
@@ -52,10 +33,6 @@ const AnnoTaskModal = (props) => {
                         {
                             key: 'Annotation Task Name',
                             value: props.annoTask.name,
-                        },
-                        {
-                            key: 'Instructions',
-                            value: props.annoTask.instructions,
                         },
                         {
                             key: 'Pipe Element ID',
@@ -91,23 +68,6 @@ const AnnoTaskModal = (props) => {
                     hasShowLabels={true}
                     hasAdaptConfiguration={true}
                 ></AnnoTaskTabs>
-
-                {/* <IconButton
-                    icon={faDownload}
-                    color="primary"
-                    isOutline={false}
-                    style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-                    onClick={(e) => handleInstantAnnoDownload(props.id, 'csv')}
-                    text="CSV - Download"
-                />
-                <IconButton
-                    icon={faDownload}
-                    color="primary"
-                    isOutline={false}
-                    style={{ marginLeft: 10, marginTop: 20, marginBottom: '1rem' }}
-                    onClick={(e) => handleInstantAnnoDownload(props.id, 'parquet')}
-                    text="Parquet - Download"
-                /> */}
                 <hr></hr>
                 <IconButton
                     icon={faEye}

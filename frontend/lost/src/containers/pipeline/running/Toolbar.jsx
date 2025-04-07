@@ -1,4 +1,5 @@
 import {
+    faFileDownload,
     faPause,
     faPlay,
     faRedo,
@@ -7,9 +8,8 @@ import {
     faTrash,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import saveAs from 'file-saver'
 import { useState } from 'react'
-import { connect } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import {
     Button,
     Form,
@@ -21,28 +21,34 @@ import {
     ModalFooter,
     ModalHeader,
 } from 'reactstrap'
-import actions from '../../../actions/pipeline/pipelineRunning'
-import startActions from '../../../actions/pipeline/pipelineStart'
+import {
+    useCreateAndStartPipeline,
+    useDeletePipeline,
+    usePausePipeline,
+    usePlayPipeline,
+} from '../../../actions/pipeline/pipeline_api'
 import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
-import LogModal from '../../../components/LogModal'
 import GrayLine from '../globalComponents/GrayLine'
-import {
-    alertClose,
-    alertDeletePipeline,
-    alertLoading,
-} from '../globalComponents/Sweetalert'
+import { alertDeletePipeline } from '../globalComponents/Sweetalert'
+import { PipelineLogModal } from './PipelineLogModal'
 import ToolbarTooltip from './ToolbarTooltip'
 
-const { pausePipeline, playPipeline, deletePipeline, downloadLogfile } = actions
-const { postPipeline } = startActions
+const downloadJSON = (obj, fileName = 'data.json') => {
+    const jsonString = JSON.stringify(obj, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    saveAs(blob, fileName)
+}
 
 const Toolbar = (props) => {
-    const navigate = useNavigate()
     const [modal, setModal] = useState(false)
     const [isLogFileModalOpen, setIsLogFileModalOpen] = useState(false)
-    const [name, setName] = useState(undefined)
-    const [description, setDescription] = useState(undefined)
+    const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
+    const { mutate: pausePipeline } = usePausePipeline()
+    const { mutate: playPipeline } = usePlayPipeline()
+    const { mutate: deletePipeline } = useDeletePipeline()
+    const { mutate: postPipeline } = useCreateAndStartPipeline()
 
     const toggleModal = () => setModal((prev) => !prev)
     const toggleLogfileModal = () => setIsLogFileModalOpen((prev) => !prev)
@@ -50,16 +56,16 @@ const Toolbar = (props) => {
     const deletePipelineHandler = async () => {
         const response = await alertDeletePipeline()
         if (response.value) {
-            props.deletePipeline(props.data.id)
+            deletePipeline(props.data.id)
         }
     }
 
     const pausePipelineHandler = () => {
-        props.pausePipeline(props.data.id)
+        pausePipeline(props.data.id)
     }
 
     const playPipelineHandler = () => {
-        props.playPipeline(props.data.id)
+        playPipeline(props.data.id)
     }
 
     const regeneratePipelineHandler = async () => {
@@ -67,23 +73,18 @@ const Toolbar = (props) => {
             const obj = props.data.startDefinition
             obj.name = name
             obj.description = description
-            alertLoading()
-            await props.postPipeline(props.data.startDefinition)
-            alertClose()
-            navigate('/pipelines')
+            postPipeline(props.data.startDefinition)
         }
     }
 
     return (
         <div className="pipeline-running-toolbar">
-            <LogModal
-                isDownloadable={true}
+            <PipelineLogModal
                 isOpen={isLogFileModalOpen}
-                wiLogId={props.data ? props.data.id : null}
-                pipeId={props.data ? props.data.id : null}
                 toggle={toggleLogfileModal}
-                actionType={LogModal.TYPES.PIPELINE}
+                pipelineId={props.data?.id}
             />
+
             <Button
                 className="pipeline-running-toolbar-button"
                 id="pipeline-button-delete-pipeline"
@@ -126,6 +127,19 @@ const Toolbar = (props) => {
                     >
                         <FontAwesomeIcon icon={faRedo} size="2x" />
                     </Button>
+                    <Button
+                        className="pipeline-running-toolbar-button"
+                        id="pipeline-button-download-start-definition"
+                        onClick={() => {
+                            downloadJSON(
+                                props.data.startDefinition,
+                                `start_definition_${props.data.id}.json`,
+                            )
+                        }}
+                        color="secondary"
+                    >
+                        <FontAwesomeIcon icon={faFileDownload} size="2x" />
+                    </Button>
                     <GrayLine />
 
                     <ToolbarTooltip
@@ -143,6 +157,10 @@ const Toolbar = (props) => {
                     <ToolbarTooltip
                         target="pipeline-button-regenerate"
                         text="Regenerate"
+                    />
+                    <ToolbarTooltip
+                        target="pipeline-button-download-start-definition"
+                        text="Download Start Definition"
                     />
                     <Modal
                         isOpen={modal}
@@ -208,10 +226,4 @@ const Toolbar = (props) => {
     )
 }
 
-export default connect(null, {
-    pausePipeline,
-    playPipeline,
-    deletePipeline,
-    downloadLogfile,
-    postPipeline,
-})(Toolbar)
+export default Toolbar

@@ -124,7 +124,7 @@ export const parseTemplateElementsToReactFlow = (elements: PipelineTemplateEleme
                 name: el.annoTask.name,
                 type: el.annoTask.type,
                 verified: false,
-                instructions: el.annoTask.instructions,
+                instructionId: el.annoTask.instructionId,
                 configuration: el.annoTask.configuration,
                 labelTreeGraph: {
                     nodes: [],
@@ -197,7 +197,7 @@ export const getFormattedPipelineRequestElements = (
                 el.annoTask = {
                     name: data.name,
                     type: data.type,
-                    instructions: data.instructions,
+                    instructionId: data.instructionId,
                     configuration: data.configuration,
                     assignee: data.selectedUserGroup!.name,
                     workerId: data.selectedUserGroup!.id,
@@ -208,6 +208,12 @@ export const getFormattedPipelineRequestElements = (
                             maxLabels: '3',
                         })),
                     selectedLabelTree: data.selectedLabelTree!.idx,
+                }
+
+                if (data.selectedDataset) {
+                    el.annoTask.storage = {
+                        datasetId: data.selectedDataset.value,
+                    }
                 }
             }
 
