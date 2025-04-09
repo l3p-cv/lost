@@ -46,6 +46,18 @@ export const useUpdateInstruction = () => {
     );
 };
 
+export const useGetCurrentInstruction = (annotaskId) => {
+    return useQuery(
+        ['getCurrentInstruction', annotaskId],
+        () =>
+            axios
+                .get(`${API_URL}/annotasks/${annotaskId}/instruction`) 
+                .then((res) => res.data),
+        {
+            enabled: !!annotaskId,
+        }
+    );
+};
 
 
 export const useGenerateExport = () => {

@@ -449,21 +449,49 @@ class DataExportDownload(Resource):
 @namespace.param('annotask_id', 'The id of the annotation task.')
 @api.doc(security='apikey')
 class UpdateAnnoTaskInstruction(Resource):
+    
+    @jwt_required
+    @api.doc(security='apikey', description='Get the current instruction of the annotask')
+    def get(self, annotask_id):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return {"message": "You are not authorized."}, 401
+
+        anno_task = dbm.get_anno_task(annotask_id)
+
+        if not anno_task:
+            dbm.close_session()
+            return {"message": "Annotation task not found."}, 404
+
+        instruction_id = anno_task.instruction_id
+        
+
+        if instruction_id:
+            dbm.close_session()
+            return {"instruction_id": instruction_id}, 200
+        else:
+            dbm.close_session()
+            return {"instruction_id": None}, 200
+
     @jwt_required
     @api.doc(security='apikey', description='Update the instruction of the annotask')
     def patch(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
-        
+
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return {"message": "You are not authorized."}, 401
 
         anno_task = dbm.get_anno_task(annotask_id)
-        
+
         data = json.loads(request.data)
-        
+
         instruction_id = data.get('instructionId')
 
         
@@ -476,9 +504,12 @@ class UpdateAnnoTaskInstruction(Resource):
             dbm.save_obj(anno_task)
             dbm.close_session()
             return {"message": "Instruction successfully updated."}, 200
+        else:
+            anno_task.instruction_id = None
             
-        dbm.close_session()
-        return {"message": "Instruction ID is missing."}, 400
+            dbm.save_obj(anno_task)
+            dbm.close_session()
+            return {"message": "Instruction successfully updated."}, 200
 
 
 @namespace.route('/filterLabels')

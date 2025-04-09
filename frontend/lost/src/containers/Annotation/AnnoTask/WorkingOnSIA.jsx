@@ -1,35 +1,27 @@
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { connect } from 'react-redux'
 import {
-    Alert,
     Button,
-    Card,
-    CardBody,
-    CardHeader,
     Col,
-    Modal,
     Progress,
     Row,
 } from 'reactstrap'
 import actions from '../../../actions'
-import IconButton from '../../../components/IconButton'
 import { getColor } from './utils'
+import { useGetInstructions } from '../../../containers/Instruction/instruction_api' // Import API hook
+import ViewInstruction from '../../../containers/Instruction/ViewInstruction' // Import ViewInstruction component
+import { showDecision } from '../../../components/Notification' // Import showDecision function
+import { useGetCurrentInstruction } from '../../../actions/annoTask/anno_task_api'
 
 const { siaLayoutUpdate } = actions
 
 const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
-    const [modalIsOpen, setModalIsOpen] = useState(false) // do not show instructions by default to fix scrolling issue
     const [height, setHeight] = useState(undefined)
     const myRef = useRef(null)
 
-    const openModal = useCallback(() => {
-        setModalIsOpen(true)
-    }, [])
-
-    const closeModal = useCallback(() => {
-        setModalIsOpen(false)
-    }, [])
+    const [viewingInstruction, setViewingInstruction] = useState(null) // State to hold the current instruction data
+    const { data: instructions, isLoading, error, refetch: refetchInstructions } = useGetInstructions() // API hook to fetch instructions
+    const { data: currentInstruction } = useGetCurrentInstruction(annoTask?.id) // Fetch current instruction based on annoTask.id
 
     useEffect(() => {
         if (myRef.current) {
@@ -41,14 +33,52 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
         }
     }, [height, siaLayoutUpdate])
 
+    useEffect(() => {
+        if (currentInstruction?.instruction_id) {
+            const instruction = instructions?.find(
+                (inst) => inst.id === currentInstruction.instruction_id
+            )
+            setViewingInstruction(instruction || null)
+        }
+    }, [currentInstruction?.instruction_id, instructions])
+
     if (!annoTask) {
-        return <div>Loading...</div>
+        return <div>Loading...</div> 
     }
 
     const progress = Math.floor((annoTask.finished / annoTask.size) * 100)
 
+    const handleViewInstruction = () => {
+        if (currentInstruction?.instruction_id) {
+            const instruction = instructions?.find(
+                (inst) => inst.id === currentInstruction.instruction_id
+            )
+            setViewingInstruction(instruction || null)
+        } else {
+            setViewingInstruction(null)
+
+            showDecision({
+                title: 'No Instructions Found',
+                icon: 'info',
+                html: 'There are no instructions available for this task.',
+                option1: {
+                    text: 'OK',
+                    callback: () => {
+                        console.log('User acknowledged the absence of instructions.')
+                    },
+                },
+                option2: {
+                    text: 'Dismiss',
+                    callback: () => {
+                        console.log('User dismissed the notification.')
+                    },
+                },
+            })
+        }
+    }
+
     return (
-        <div ref={myRef}>
+        <div ref={myRef} style={{ position: 'relative' }}>
             <Row>
                 <Col xs="2" md="2" xl="2">
                     <div className="callout callout-danger">
@@ -86,9 +116,9 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                     <Button
                         color="primary"
                         style={{ marginTop: '25px' }}
-                        onClick={openModal}
+                        onClick={handleViewInstruction}
                     >
-                        <i className="fa fa-question-circle"></i> Show Instructions
+                        <i className="fa fa-eye"></i> Show Instructions
                     </Button>
                 </Col>
             </Row>
@@ -108,35 +138,44 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
                 value={progress}
             />
             <br />
-            <Modal
-                isOpen={modalIsOpen}
-                onAfterOpen={() => {}}
-                onRequestClose={closeModal}
-                ariaHideApp={false}
-                contentLabel="Instructions"
-            >
-                <Card>
-                    <CardHeader>
-                        <i className="fa fa-question-circle"></i> Instructions
-                    </CardHeader>
-                    <CardBody>
-                        <Alert color="info">
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: annoTask.instructions,
-                                }}
-                            />
-                        </Alert>
-                        <IconButton
-                            isOutline={false}
-                            color="secondary"
-                            icon={faTimes}
-                            text="Close"
-                            onClick={closeModal}
-                        ></IconButton>
-                    </CardBody>
-                </Card>
-            </Modal>
+            {viewingInstruction && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        backdropFilter: 'blur(5px)',
+                        zIndex: 999,
+                    }}
+                />
+            )}
+            {viewingInstruction && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 1000,
+                        backgroundColor: 'white',
+                        padding: '20px',
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                        width: '600px', 
+                        height: '500px', 
+                        overflow: 'auto', 
+                       }}
+                >
+                    <ViewInstruction
+                        instructionData={viewingInstruction}
+                        onClose={() => setViewingInstruction(null)}
+                        onEdit={(instruction) => alert('Edit functionality is not implemented yet')}
+                    />
+                </div>
+            )}
         </div>
     )
 }
