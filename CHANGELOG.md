@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Added
+- Your stuff here
+
+## [2.6.0] - 2025-04-17
+### Added
 - Added col annotask_id to lost anno export file
 ### Fixed
 - Sia is blocking, when clicking on next/ prev, because same image is returned 
