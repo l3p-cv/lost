@@ -20,7 +20,7 @@ const WorkingOnSIA = ({ annoTask, siaLayoutUpdate }) => {
     const myRef = useRef(null)
 
     const [viewingInstruction, setViewingInstruction] = useState(null) // State to hold the current instruction data
-    const { data: instructions, isLoading, error, refetch: refetchInstructions } = useGetInstructions() // API hook to fetch instructions
+    const { data: instructions, isLoading, error, refetch: refetchInstructions } = useGetInstructions('all') // API hook to fetch instructions
     const { data: currentInstruction } = useGetCurrentInstruction(annoTask?.id) // Fetch current instruction based on annoTask.id
 
     useEffect(() => {

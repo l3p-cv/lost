@@ -17,7 +17,7 @@ import ViewInstruction from '../../../containers/Instruction/ViewInstruction'; /
 
 const WorkingOnMIA = ({ annoTask }) => {
     const [viewingInstruction, setViewingInstruction] = useState(null); // State to hold the current instruction data
-    const { data: instructions, isLoading, error } = useGetInstructions(); // API hook to fetch instructions
+    const { data: instructions, isLoading, error } = useGetInstructions('all'); // API hook to fetch instructions
     const { data: currentInstruction } = useGetCurrentInstruction(annoTask?.id); // Fetch current instruction based on annoTask.id
 
     useEffect(() => {

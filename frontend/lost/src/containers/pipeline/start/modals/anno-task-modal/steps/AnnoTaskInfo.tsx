@@ -1,4 +1,4 @@
-import { CCol, CRow } from '@coreui/react';
+import { CCol, CRow, CBadge } from '@coreui/react';
 import { useNodesData, useReactFlow } from '@xyflow/react';
 import { Input, Label } from 'reactstrap';
 import HelpButton from '../../../../../../components/HelpButton';
@@ -16,29 +16,24 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
 
     const { updateNodeData } = useReactFlow();
 
-    const { data: instructions, isLoading, error } = useGetInstructions();
+    const { data: instructions, isLoading, error } = useGetInstructions('all'); 
 
-    const handleInstructionChange = (selectedOption) => {
+    const handleInstructionChange = (selectedOption: any) => {
         if (!selectedOption || selectedOption.value === '-1') {
             updateNodeData(nodeId, { instructionId: null });
             return;
         }
-    
-        const selectedInstructionId = selectedOption.value;
-        updateNodeData(nodeId, { instructionId: selectedInstructionId });
-    }
-    
 
-    const getSelectedInstructionLabel = (instructionId: number) => {
-        return instructions?.find((instruction) => instruction.id === instructionId)?.option;
+        updateNodeData(nodeId, { instructionId: selectedOption.value });
     };
 
     const instructionOptions = [
-        { value: '-1', label: 'No Option' }, // Default "No Option"
+        { value: '-1', label: 'No Option' }, // Default
         ...(instructions
             ? instructions.map((instruction) => ({
                   value: instruction.id,
                   label: instruction.option,
+                  group_id: instruction.group_id,
               }))
             : []),
     ];
@@ -91,6 +86,20 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                           (option) => option.value === annoTaskNodeData.instructionId
                                       )
                             }
+                            formatOptionLabel={(option) => {
+                                if (option.value === '-1') return option.label;
+
+                                const group = option.group_id === null ? 'Global' : 'User';
+
+                                return (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span>{option.label}</span>
+                                        <CBadge color={group === 'Global' ? 'success' : 'primary'}>
+                                            {group}
+                                        </CBadge>
+                                    </div>
+                                );
+                            }}
                         />
                     )}
                 </CCol>

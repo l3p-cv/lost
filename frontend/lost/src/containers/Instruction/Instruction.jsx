@@ -8,22 +8,34 @@ import EditInstruction from './EditInstruction';
 import ViewInstruction from './ViewInstruction';
 import BaseContainer from '../../components/BaseContainer';
 import * as Notification from '../../components/Notification';
+
 import { faUserPlus, faPen, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
+
+const canEdit = (visLevel, instruction) => {
+  if (visLevel === 'global') return true; // Admins can edit all
+  return visLevel === 'all' && instruction.group_id; // Users can edit their own
+};
+
+const canView = (visLevel, instruction) => {
+  return visLevel === 'all' && !instruction.group_id; // Users can view global
+};
+
+const canDelete = (visLevel, instruction) => {
+  return !(visLevel === 'all' && !instruction.group_id); // Users can't delete global
+};
 
 const Instruction = ({ visLevel }) => {
   const [editingInstruction, setEditingInstruction] = useState(null);
   const [viewingInstruction, setViewingInstruction] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: instructions, isLoading, error } = useGetInstructions();
+  const { data: instructions, isLoading, error } = useGetInstructions(visLevel);
   const deleteInstructionMutation = useDeleteInstruction();
   const addInstructionMutation = useAddInstruction();
   const editInstructionMutation = useEditInstruction();
 
   const handleDelete = (id) => {
     deleteInstructionMutation.mutate(id, {
-      onSuccess: () => {
-        Notification.showSuccess('Instruction deleted successfully');
-      },
+      onSuccess: () => Notification.showSuccess('Instruction deleted successfully'),
       onError: (error) => {
         console.error('Delete Error:', error);
         Notification.showError('Failed to delete instruction');
@@ -33,37 +45,36 @@ const Instruction = ({ visLevel }) => {
 
   const handleAddInstruction = () => {
     setEditingInstruction({ id: null, option: '', description: '', instruction: '' });
-    setViewingInstruction(null);  
+    setViewingInstruction(null);
     setModalOpen(true);
   };
 
   const handleEditClick = (instruction) => {
     setEditingInstruction(instruction);
-    setViewingInstruction(null);  
+    setViewingInstruction(null);
     setModalOpen(true);
   };
 
   const handleViewClick = (instruction) => {
     setViewingInstruction(instruction);
-    setEditingInstruction(null);  
+    setEditingInstruction(null);
     setModalOpen(true);
   };
 
   const handleSave = (updatedInstruction) => {
-    const mutation = updatedInstruction.id
-      ? editInstructionMutation
-      : addInstructionMutation;
-
-      if (visLevel === 'global' && !updatedInstruction.group_id) {
-        updatedInstruction.group_id = 1;
-      }
+    const mutation = updatedInstruction.id ? editInstructionMutation : addInstructionMutation;
   
-    mutation.mutate(updatedInstruction, {
+    const payload = {
+      ...updatedInstruction,
+      visibility: visLevel === 'global' ? 'global' : 'user',
+    };
+  
+    mutation.mutate(payload, {
       onSuccess: () => {
-        const successMessage = updatedInstruction.id
+        const message = updatedInstruction.id
           ? 'Instruction updated successfully'
           : 'Instruction added successfully';
-        Notification.showSuccess(successMessage);
+        Notification.showSuccess(message);
         setModalOpen(false);
       },
       onError: (error) => {
@@ -72,12 +83,12 @@ const Instruction = ({ visLevel }) => {
       },
     });
   };
-  
+
   const filteredInstructions = instructions
-  ? visLevel === 'global'
-    ? instructions.filter(instruction => instruction.group_id === 1)
-    : instructions
-  : [];
+    ? visLevel === 'global'
+      ? instructions.filter((i) => !i.group_id)
+      : instructions
+    : [];
 
   const columns = [
     { Header: 'Annotation Option', accessor: 'option' },
@@ -86,20 +97,15 @@ const Instruction = ({ visLevel }) => {
       Header: 'Global',
       id: 'group_id',
       Cell: ({ original }) => (
-        <CBadge color={original.group_id === 1 ? 'success' : 'primary'}>
-          {original.group_id === 1 ? 'Global' : 'User'}
+        <CBadge color={original.group_id ? 'primary' : 'success'}>
+          {original.group_id ? 'User' : 'Global'}
         </CBadge>
       ),
     },
     {
       Header: 'Edit',
       Cell: ({ original }) => {
-        const { group_id } = original;
-  
-        if (
-          (visLevel === 'global' && group_id === 1) || 
-          (visLevel === 'all' && group_id !== 1)
-        ) {
+        if (canEdit(visLevel, original)) {
           return (
             <IconButton
               icon={faPen}
@@ -109,8 +115,8 @@ const Instruction = ({ visLevel }) => {
             />
           );
         }
-  
-        if (visLevel === 'all' && group_id === 1) {
+
+        if (canView(visLevel, original)) {
           return (
             <IconButton
               icon={faEye}
@@ -120,24 +126,20 @@ const Instruction = ({ visLevel }) => {
             />
           );
         }
-  
-        return null; 
+
+        return null;
       },
     },
     {
       Header: 'Delete',
       Cell: ({ original }) => {
-        const isDisabled = visLevel === 'all' && original.group_id === 1;
+        const disabled = !canDelete(visLevel, original);
         return (
           <div>
-            {isDisabled ? (
+            {disabled ? (
               <CTooltip content="Deletion is restricted to admins only." placement="top">
                 <span>
-                  <IconButton
-                    icon={faTrash}
-                    color="secondary"
-                    disabled
-                  />
+                  <IconButton icon={faTrash} color="secondary" disabled />
                 </span>
               </CTooltip>
             ) : (
@@ -170,8 +172,8 @@ const Instruction = ({ visLevel }) => {
       <CRow>
         <CCol>
           <BaseContainer>
-              {/* Empty state handling */}
-              {filteredInstructions.length === 0 && !isLoading && (
+            {/* Empty state handling */}
+            {filteredInstructions.length === 0 && !isLoading && (
               <CRow>
                 <CCol>
                   <p>No instructions available.</p>
@@ -191,7 +193,13 @@ const Instruction = ({ visLevel }) => {
 
       <BaseModal
         isOpen={modalOpen}
-        title={viewingInstruction ? 'View Instruction' : editingInstruction ? 'Edit Instruction' : 'Add Instruction'}
+        title={
+          viewingInstruction
+            ? 'View Instruction'
+            : editingInstruction
+            ? 'Edit Instruction'
+            : 'Add Instruction'
+        }
         toggle={() => setModalOpen(false)}
         footer={null}
       >
@@ -205,7 +213,7 @@ const Instruction = ({ visLevel }) => {
           <EditInstruction
             instructionData={editingInstruction}
             onSave={handleSave}
-            visLevel={visLevel} 
+            visLevel={visLevel}
             onClose={() => setModalOpen(false)}
           />
         ) : null}

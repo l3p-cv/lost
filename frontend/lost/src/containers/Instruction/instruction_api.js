@@ -3,13 +3,13 @@ import axios from 'axios';
 import { API_URL } from '../../lost_settings';
 
 // (GET)
-export const useGetInstructions = () => {
+export const useGetInstructions = (visLevel) => {
   return useQuery(
-    ['instructions'],
+    ['instructions', visLevel],
     () =>
       axios
-        .get(`${API_URL}/instructions/getInstructions`)
-        .then((res) => res.data.instructions),
+        .get(`${API_URL}/instructions/getInstructions/${visLevel}`) // Use visLevel in URL
+        .then((res) => res.data.instructions)
   );
 };
 
@@ -24,7 +24,7 @@ export const useDeleteInstruction = () => {
         .then((res) => res.data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('instructions'); 
+        queryClient.invalidateQueries('instructions');
       },
     }
   );
@@ -41,7 +41,7 @@ export const useAddInstruction = () => {
         .then((res) => res.data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('instructions'); 
+        queryClient.invalidateQueries('instructions');
       },
     }
   );
@@ -58,7 +58,7 @@ export const useEditInstruction = () => {
         .then((res) => res.data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries('instructions');  
+        queryClient.invalidateQueries('instructions');
       },
     }
   );

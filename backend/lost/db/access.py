@@ -624,7 +624,38 @@ class DBMan(object):
             return self.session.query(model.LabelLeaf)\
                 .filter(model.LabelLeaf.is_root == True, \
                         model.LabelLeaf.group_id==None).all()
+        
+    def get_all_instructions(self, group_id=None, global_only=False, add_global=False):
+        '''Get all instructions based on group visibility'''
+        query = self.session.query(model.Instruction).filter(model.Instruction.is_deleted == False)
 
+        if group_id:
+            if add_global:
+                return query.filter(
+                    or_(
+                        model.Instruction.group_id == group_id,
+                        model.Instruction.group_id == None
+                    )
+                ).order_by(
+                    model.Instruction.group_id.asc(), 
+                    model.Instruction.created_at.asc()  
+                ).all()
+            else:
+                return query.filter(model.Instruction.group_id == group_id)\
+                            .order_by(model.Instruction.created_at.asc()).all()
+
+        if global_only:
+            return query.filter(model.Instruction.group_id == None)\
+                        .order_by(model.Instruction.created_at.asc()).all()
+
+        return query.order_by(
+            case(
+                [(model.Instruction.group_id == None, 0)],  
+                else_=1
+            ),
+            model.Instruction.group_id.asc(), 
+            model.Instruction.created_at.asc()
+        ).all()
 
     def get_available_users(self):
         ''' Get all available users

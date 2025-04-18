@@ -217,6 +217,7 @@ const guiSetup = {
             Labels,
             Datasets,
             DataSources,
+            InstructionRoute,
             DesignerStatistics,
             TitleAnnotation,
             Annotation,
