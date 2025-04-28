@@ -5,7 +5,7 @@ blinker==1.4
 cffi
 celery==4.2.1
 click==7.0
-cryptography==3.4.6
+cryptography==39.0.1
 flask==1.0.2
 flask-cors==3.0.6
 flask-jwt-extended==3.13.1
