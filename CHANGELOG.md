@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Column for dataset/annotask-ID to dataset-tab
 - ID-Columns for Users and groups in admin-area
+- Node-ID in label-editor
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 

@@ -93,6 +93,11 @@ const LabelEditorControls = ({
                     }}
                 />
                 <Input
+                    type="text"
+                    value={`ID: ${nodeId}`}
+                    disabled
+                />
+                <Input
                     type="color"
                     value={labelData.color || '#ffffff'}
                     onChange={(e) => {
