@@ -1,8 +1,10 @@
+from typing import Optional
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import text
+from api.inference_model.api_definition import InferenceModelRequest
 from lost.db import model, state, dtype
 
 
@@ -1434,3 +1436,40 @@ class DBMan(object):
 
     def get_dataset_export_by_id(self, idx: int) -> model.DatasetExport:
         return self.session.query(model.DatasetExport).filter_by(idx=idx).first()
+
+    def get_all_inference_models(self) -> list[model.InferenceModel]:
+        return self.session.query(model.InferenceModel).all()
+    
+    def create_inference_model(self, data: InferenceModelRequest) -> model.InferenceModel:
+        new_entry = model.InferenceModel(
+            name=data.name,
+            display_name=data.display_name,
+            server_url=data.server_url,
+            prompts=data.prompts,
+            type=data.type
+        )
+        self.session.add(new_entry)
+        self.session.commit()
+        return new_entry
+    
+    def update_inference_model(self, idx: int, data) -> Optional[model.InferenceModel]:
+        entry = self.session.query(model.InferenceModel).filter_by(idx=idx).first()
+        if not entry:
+            return None
+        entry.name = data.name
+        entry.display_name = data.display_name
+        entry.server_url = data.server_url
+        entry.prompts = data.prompts
+        entry.type = data.type
+        self.session.commit()
+        return entry
+    
+    def delete_inference_model(self, idx: int) -> None:
+        entry = self.session.query(model.InferenceModel).filter_by(idx=idx).first()
+        if entry:
+            self.session.delete(entry)
+            self.session.commit()
+        
+    def get_inference_model_by_id(self, idx: int) -> model.InferenceModel:
+        return self.session.query(model.InferenceModel).filter_by(idx=idx).first()
+    

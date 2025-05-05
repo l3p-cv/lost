@@ -1,7 +1,6 @@
 import threading
-from flask import Flask, Blueprint, g
+from flask import Blueprint, g
 from flask_cors import CORS
-from flask import request
 from flask_jwt_extended import JWTManager
 import logging
 import traceback
@@ -23,6 +22,7 @@ from lost.api.statistics.endpoint import namespace as statistics_namespace
 from lost.api.system.endpoint import namespace as system_namespace
 from lost.api.config.endpoint import namespace as config_namespace
 from lost.api.anno_example.endpoint import namespace as anno_example_namespace
+from lost.api.inference_model.endpoint import namespace as inference_model_namespace
 from lost.logic import dask_session
 from lost.db import access
 
@@ -89,6 +89,7 @@ api.add_namespace(system_namespace)
 api.add_namespace(statistics_namespace)
 api.add_namespace(config_namespace)
 api.add_namespace(anno_example_namespace)
+api.add_namespace(inference_model_namespace)
 app.register_blueprint(blueprint)
 CORS(app)
 
