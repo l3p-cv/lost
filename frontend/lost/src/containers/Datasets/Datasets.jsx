@@ -118,7 +118,7 @@ const Datasets = () => {
                 setIsVisible={setIsEditModalOpen}
                 editedDatasetObj={editedDatasetObj}
                 flatDatasetList={flatDatasetList}
-                datastoreList={datastores}
+                // datastoreList={datastores} // not used as of now
                 onDatasetCreated={reloadDatasetList}
             />
 

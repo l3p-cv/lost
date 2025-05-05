@@ -108,6 +108,13 @@ export const UsersTable = () => {
                         },
                     },
                     {
+                        Header: 'ID',
+                        accessor: 'idx',
+                        Cell: function customCell(row) {
+                            return row.value
+                        },
+                    },
+                    {
                         Header: 'API Token',
                         accessor: 'apiToken',
                         Cell: function customCell(row) {

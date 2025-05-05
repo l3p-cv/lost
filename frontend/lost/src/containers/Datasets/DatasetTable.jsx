@@ -112,6 +112,9 @@ const DatasetTable = ({
         columnHelper.accessor('createdAt', {
             header: () => 'Created at',
         }),
+        columnHelper.accessor('idx', { // TODO: fill with content
+            header: 'ID',
+        }),
         columnHelper.display({
             id: 'review',
             header: () => 'Review',

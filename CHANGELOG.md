@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Added
-- Your stuff here
+- Column for dataset/annotask-ID to dataset-tab
+- ID-Columns for Users and groups in admin-area
+### Changed
+- Commented out unused variable "datastoreList" for datasets
 
 ## [2.6.0] - 2025-04-17
 ### Added
