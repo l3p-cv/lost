@@ -1,10 +1,10 @@
 import { CContainer } from '@coreui/react'
-import { faEye } from '@fortawesome/free-solid-svg-icons'
+import { faEye, faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import { Progress } from 'reactstrap'
-import { usePipelines } from '../../../actions/pipeline/pipeline_api'
+import { usePipelines, usePlayPipeline, usePausePipeline } from '../../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import HelpButton from '../../../components/HelpButton'
@@ -15,6 +15,14 @@ import '../globalComponents/pipeline.scss'
 export const RunningPipelines = () => {
     const navigate = useNavigate()
     const { data, isError, isLoading } = usePipelines()
+    const { mutate: pausePipeline } = usePausePipeline()
+    const { mutate: playPipeline } = usePlayPipeline()
+    const pausePipelineHandler = (data) => {
+        pausePipeline(data.id)
+    }
+    const playPipelineHandler = (data) => {
+        playPipeline(data.id)
+    }
 
     const renderDatatable = () => {
         if (isLoading) {
@@ -108,6 +116,23 @@ export const RunningPipelines = () => {
                                     text="Open"
                                 />
                             ),
+                        },
+                        {
+                            Header: '(Un)Pause',
+                            accessor: 'paused',
+                            Cell: ({ original }) => (
+                                <IconButton
+                                    color="primary"
+                                    size="m"
+                                    isOutline={false}
+                                    onClick={() =>
+                                        original.progress === 'PAUSED'
+                                            ? playPipelineHandler(original)
+                                            : pausePipelineHandler(original)
+                                    }
+                                    icon={original.progress === 'PAUSED' ? faPlay : faPause}
+                                    text={original.progress === 'PAUSED' ? "Play" : "Pause"}
+                                />)
                         },
                     ]}
                     defaultSorted={[
