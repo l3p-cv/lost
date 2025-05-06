@@ -103,16 +103,14 @@ export const UsersTable = () => {
                     {
                         Header: 'Username',
                         accessor: 'user_name',
-                        Cell: function customCell(row) {
-                            return row.value
-                        },
-                    },
-                    {
-                        Header: 'ID',
-                        accessor: 'idx',
-                        Cell: function customCell(row) {
-                            return row.value
-                        },
+                        Cell: ({ original }) => (
+                            <>
+                                <b>{original.user_name}</b>
+                                <div className="small text-muted">
+                                    {`ID: ${original.idx}`}
+                                </div>
+                            </>
+                        ),
                     },
                     {
                         Header: 'API Token',

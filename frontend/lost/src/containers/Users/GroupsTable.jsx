@@ -42,10 +42,14 @@ export const Groups = () => {
                         {
                             Header: 'Group',
                             accessor: 'name',
-                        },
-                        {
-                            Header: 'ID',
-                            accessor: 'idx',
+                            Cell: ({ original }) => (
+                                <>
+                                    <b>{original.name}</b>
+                                    <div className="small text-muted">
+                                        {`ID: ${original.idx}`}
+                                    </div>
+                                </>
+                            ),
                         },
                         // Note: commented this out temporarily since it allows you to delete groups assigned to users
                         // The backend api needs to be fixed before re-enabling this feature

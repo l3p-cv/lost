@@ -217,6 +217,14 @@ export const DSTable = ({ visLevel }) => {
                                 {
                                     Header: 'Name',
                                     accessor: 'name',
+                                    Cell: ({ original }) => (
+                                        <>
+                                            <b>{original.name}</b>
+                                            <div className="small text-muted">
+                                                {`ID: ${original.id}`}
+                                            </div>
+                                        </>
+                                    ),
                                 },
                                 {
                                     Header: 'Type',
