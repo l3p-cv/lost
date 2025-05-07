@@ -230,10 +230,6 @@ export const DSTable = ({ visLevel }) => {
                                     Header: 'Type',
                                     accessor: 'fsType',
                                 },
-                                {
-                                    Header: 'ID',
-                                    accessor: 'id',
-                                },
                                 // {
                                 //     Header: 'Root Path',
                                 //     accessor: 'rootPath',
