@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 - Renamed "Start"-column to "Details" in PipelineTable
+### Fixed
+- IMG-Search: Image-path in review now stays inside of box
 
 ## [2.6.0] - 2025-04-17
 ### Added
