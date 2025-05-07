@@ -104,7 +104,7 @@ export const RunningPipelines = () => {
                             },
                         },
                         {
-                            Header: 'Start',
+                            Header: 'Details',
                             accessor: 'id',
                             Cell: ({ original }) => (
                                 <IconButton
@@ -122,7 +122,7 @@ export const RunningPipelines = () => {
                             accessor: 'paused',
                             Cell: ({ original }) => (
                                 <IconButton
-                                    color="primary"
+                                    color={original.progress === 'PAUSED' ? "success" : "warning"}
                                     size="m"
                                     isOutline={false}
                                     onClick={() =>

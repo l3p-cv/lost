@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Node-ID in label-editor
 - IDs of Filesystems (Datasources) in UI
 - Button in Pipeline-Overview to pause/unpause
+- DatasetTable shows when Annotasks were created
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
+- Renamed "Start"-column to "Details" in PipelineTable
 
 ## [2.6.0] - 2025-04-17
 ### Added

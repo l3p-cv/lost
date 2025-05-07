@@ -93,6 +93,15 @@ const DatasetTable = ({
         }),
         columnHelper.accessor('name', {
             header: 'Name',
+            cell: (props) => {
+                return (
+                <>
+                    {props.row.original.name}
+                    <div className="small text-muted">
+                        {`ID: ${props.row.original.idx}`}
+                    </div>
+                </>)
+            }
         }),
         columnHelper.accessor('description', {
             header: 'Description',
@@ -111,9 +120,11 @@ const DatasetTable = ({
         // }),
         columnHelper.accessor('createdAt', {
             header: () => 'Created at',
-        }),
-        columnHelper.accessor('idx', { // TODO: fill with content
-            header: 'ID',
+            cell: (props) => {
+                if (props.row.original.isMetaDataset) return ''
+                if (props.row.original.isAnnotask) return props.row.original.created_at
+                return props.row.original.createdAt // isDataset
+            }
         }),
         columnHelper.display({
             id: 'review',
