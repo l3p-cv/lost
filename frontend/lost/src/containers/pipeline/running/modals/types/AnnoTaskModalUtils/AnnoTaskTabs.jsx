@@ -28,8 +28,14 @@ const AnnoTaskTabs = ({
     hasChangeUser = true,
     hasShowLabels = true,
     hasAdaptConfiguration = true,
+    active = 0,
+    setActive
 }) => {
-    const [active, setActive] = useState(0)
+    // const [active, setActive] = useState(0) // now given from the parent
+    const [internalActive, internalSetActive] = useState(0);
+    const effectiveActive = setActive ? active : internalActive;
+    const effectiveSetActive = setActive || internalSetActive;
+
     const [dataExports, setDataExports] = useState([])
     const { data: dataExportData, refetch } = annoTaskApi.useGetDataexports(annotask.id)
     useInterval(() => {
@@ -45,23 +51,23 @@ const AnnoTaskTabs = ({
             return (
                 <>
                     <CNavItem>
-                        <CNavLink active={active === 0} onClick={() => setActive(0)}>
+                        <CNavLink active={effectiveActive === 0} onClick={() => effectiveSetActive(0)}>
                             <FontAwesomeIcon
                                 color="#092F38"
                                 size="1x"
                                 icon={faDownload}
                             />
-                            {active === 0 && ' Available Exports'}
+                            {effectiveActive === 0 && ' Available Exports'}
                         </CNavLink>
                     </CNavItem>
                     <CNavItem>
-                        <CNavLink active={active === 1} onClick={() => setActive(1)}>
+                        <CNavLink active={effectiveActive === 1} onClick={() => effectiveSetActive(1)}>
                             <FontAwesomeIcon
                                 color="#092F38"
                                 size="1x"
                                 icon={faWandMagicSparkles}
                             />
-                            {active === 1 && ' Generate Export'}
+                            {effectiveActive === 1 && ' Generate Export'}
                         </CNavLink>
                     </CNavItem>
                 </>
@@ -70,19 +76,19 @@ const AnnoTaskTabs = ({
         return (
             <>
                 <CNavItem>
-                    <CNavLink active={active === 0} onClick={() => setActive(0)}>
+                    <CNavLink active={effectiveActive === 0} onClick={() => effectiveSetActive(0)}>
                         <FontAwesomeIcon
                             color="#092F38"
                             size="1x"
                             icon={faWandMagicSparkles}
                         />
-                        {active === 0 && ' Generate Export'}
+                        {effectiveActive === 0 && ' Generate Export'}
                     </CNavLink>
                 </CNavItem>
                 <CNavItem>
-                    <CNavLink active={active === 1} onClick={() => setActive(1)}>
+                    <CNavLink active={effectiveActive === 1} onClick={() => effectiveSetActive(1)}>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faDownload} />
-                        {active === 1 && ' Available Exports'}
+                        {effectiveActive === 1 && ' Available Exports'}
                     </CNavLink>
                 </CNavItem>
             </>
@@ -93,7 +99,7 @@ const AnnoTaskTabs = ({
             return (
                 <>
                     <CTabPane
-                        visible={active === 0}
+                        visible={effectiveActive === 0}
                         style={{ marginTop: 30, marginLeft: 5 }}
                     >
                         <TabAvailableExports
@@ -102,14 +108,14 @@ const AnnoTaskTabs = ({
                         />
                     </CTabPane>
                     <CTabPane
-                        visible={active === 1}
+                        visible={effectiveActive === 1}
                         style={{ marginTop: 30, marginLeft: 5 }}
                     >
                         <TabGenerateExport
                             annotaskId={annotask.id}
                             imgCount={annotask.imgCount}
                             annotatedImgCount={annotask.annotatedImgCount}
-                            setActive={setActive}
+                            setActive={effectiveSetActive}
                         />
                     </CTabPane>
                 </>
@@ -118,15 +124,15 @@ const AnnoTaskTabs = ({
 
         return (
             <>
-                <CTabPane visible={active === 0} style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={effectiveActive === 0} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabGenerateExport
                         annotaskId={annotask.id}
                         imgCount={annotask.imgCount}
                         annotatedImgCount={annotask.annotatedImgCount}
-                        setActive={setActive}
+                        setActive={effectiveSetActive}
                     />
                 </CTabPane>
-                <CTabPane visible={active === 1} style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={effectiveActive === 1} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabAvailableExports
                         dataExports={dataExports}
                         annotaskId={annotask.id}
@@ -136,7 +142,7 @@ const AnnoTaskTabs = ({
         )
     }
     return (
-        // <CTabs activeTab={active} onActiveTabChange={(idx) => setActive(idx)}>
+        // <CTabs activeTab={active} onActiveTabChange={(idx) => effectiveSetActive(idx)}>
         <CNav variant="tabs" role="tablist" className="w-100">
             <CNav
                 variant="tabs"
@@ -146,33 +152,33 @@ const AnnoTaskTabs = ({
                 {renderGenOrShowExportLinks()}
 
                 <CNavItem>
-                    <CNavLink active={active === 2} onClick={() => setActive(2)}>
+                    <CNavLink active={effectiveActive === 2} onClick={() => effectiveSetActive(2)}>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faBox} />
-                        {active === 2 && ' Storage options'}
+                        {effectiveActive === 2 && ' Storage options'}
                     </CNavLink>
                 </CNavItem>
 
                 {hasChangeUser && (
                     <CNavItem>
-                        <CNavLink active={active === 3} onClick={() => setActive(3)}>
+                        <CNavLink active={effectiveActive === 3} onClick={() => effectiveSetActive(3)}>
                             <FontAwesomeIcon color="#092F38" size="1x" icon={faUsers} />
-                            {active === 3 && ' Adapt Users'}
+                            {effectiveActive === 3 && ' Adapt Users'}
                         </CNavLink>
                     </CNavItem>
                 )}
                 {hasShowLabels && (
                     <CNavItem>
-                        <CNavLink active={active === 4} onClick={() => setActive(4)}>
+                        <CNavLink active={effectiveActive === 4} onClick={() => effectiveSetActive(4)}>
                             <FontAwesomeIcon color="#092F38" size="1x" icon={faTags} />
-                            {active === 4 && ' Show Labels'}
+                            {effectiveActive === 4 && ' Show Labels'}
                         </CNavLink>
                     </CNavItem>
                 )}
                 {hasAdaptConfiguration && (
                     <CNavItem>
-                        <CNavLink active={active === 5} onClick={() => setActive(5)}>
+                        <CNavLink active={effectiveActive === 5} onClick={() => effectiveSetActive(5)}>
                             <FontAwesomeIcon color="#092F38" size="1x" icon={faGears} />
-                            {active === 5 && ' Adapt Configuration'}
+                            {effectiveActive === 5 && ' Adapt Configuration'}
                         </CNavLink>
                     </CNavItem>
                 )}
@@ -180,13 +186,13 @@ const AnnoTaskTabs = ({
             <CTabContent className="w-100" style={{ paddingBottom: '10px' }}>
                 {renderGenOrShowExport()}
 
-                <CTabPane visible={active === 2} style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={effectiveActive === 2} style={{ marginTop: 30, marginLeft: 5 }}>
                     <TabStorageSettings annotaskId={annotask.id} />
                 </CTabPane>
 
                 {hasChangeUser && (
                     <CTabPane
-                        visible={active === 3}
+                        visible={effectiveActive === 3}
                         style={{ marginTop: 30, marginLeft: 5 }}
                     >
                         <TabUser
@@ -199,7 +205,7 @@ const AnnoTaskTabs = ({
 
                 {hasShowLabels && (
                     <CTabPane
-                        visible={active === 4}
+                        visible={effectiveActive === 4}
                         style={{ marginTop: 30, marginLeft: 5 }}
                     >
                         <TabShowLabels labelLeaves={annotask.labelLeaves} />
@@ -208,7 +214,7 @@ const AnnoTaskTabs = ({
 
                 {hasAdaptConfiguration && (
                     <CTabPane
-                        visible={active === 5}
+                        visible={effectiveActive === 5}
                         style={{ marginTop: 30, marginLeft: 5 }}
                     >
                         <TabAdaptConfiguration

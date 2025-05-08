@@ -1,5 +1,6 @@
 import { CModal, CModalBody, CModalHeader } from '@coreui/react'
 import AnnoTaskTabs from '../pipeline/running/modals/types/AnnoTaskModalUtils/AnnoTaskTabs'
+import { useState } from 'react'
 
 const DatasetExportModal = ({
     isVisible,
@@ -10,6 +11,7 @@ const DatasetExportModal = ({
     datastoreList,
     datasetList,
 }) => {
+    const [activeTaskTab, setActiveTaskTab] = useState(0) // remember which Tab is active
     return (
         <CModal visible={isVisible} size="xl" onClose={() => setIsVisible(false)}>
             <CModalHeader>{datasetName} Dataset</CModalHeader>
@@ -22,6 +24,8 @@ const DatasetExportModal = ({
                     hasChangeUser={false}
                     hasShowLabels={false}
                     hasAdaptConfiguration={false}
+                    active={activeTaskTab} // for remembering which tab was opened last
+                    setActive={setActiveTaskTab} // see above comment
                 />
             </CModalBody>
         </CModal>

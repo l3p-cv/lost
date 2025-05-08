@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - IDs of Filesystems (Datasources) in UI
 - Button in Pipeline-Overview to pause/unpause
 - DatasetTable shows when Annotasks were created
+- Menus for Annotask-exports can (if implemented) remember which tab was opened last
+- The above applied for DatasetTable
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 - Renamed "Start"-column to "Details" in PipelineTable
