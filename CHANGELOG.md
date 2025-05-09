@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ID-Columns for Users and groups in admin-area
 - Node-ID in label-editor
 - IDs of Filesystems (Datasources) in UI
-- Button in Pipeline-Overview to pause/unpause
+- Button in Pipeline-Overview to pause/unpause + delete under progress
 - DatasetTable shows when Annotasks were created
 - Menus for Annotask-exports can (if implemented) remember which tab was opened last
 - The above applied for DatasetTable

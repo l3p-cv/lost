@@ -1,27 +1,69 @@
 import { CContainer } from '@coreui/react'
-import { faEye, faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
+import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import { Progress } from 'reactstrap'
-import { usePipelines, usePlayPipeline, usePausePipeline } from '../../../actions/pipeline/pipeline_api'
+import { usePipelines, usePlayPipeline, usePausePipeline, useDeletePipeline } from '../../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
 import { getColor } from '../../Annotation/AnnoTask/utils'
 import '../globalComponents/pipeline.scss'
+import { CButton, CButtonGroup } from '@coreui/react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 
 export const RunningPipelines = () => {
     const navigate = useNavigate()
     const { data, isError, isLoading } = usePipelines()
     const { mutate: pausePipeline } = usePausePipeline()
     const { mutate: playPipeline } = usePlayPipeline()
+    const { mutate: deletePipeline } = useDeletePipeline()
     const pausePipelineHandler = (data) => {
         pausePipeline(data.id)
     }
     const playPipelineHandler = (data) => {
         playPipeline(data.id)
+    }
+
+    const deletePipelineHandler = async (data) => {
+            const response = await alertDeletePipeline()
+            if (response.value) {
+                deletePipeline(data.id)
+            }
+        }
+
+    function UnPauseButton({ original }) {
+        return (
+            <CButton
+                color={original.progress === 'PAUSED' ? "success" : "warning"}
+                // size="m"
+                // isOutline={false}
+                onClick={() =>
+                    original.progress === 'PAUSED'
+                        ? playPipelineHandler(original)
+                        : pausePipelineHandler(original)
+                }
+            // text={original.progress === 'PAUSED' ? "Play" : "Pause"}
+            >
+                <FontAwesomeIcon icon={original.progress === 'PAUSED' ? faPlay : faPause}></FontAwesomeIcon>
+            </CButton>
+        )
+    }
+
+    function DeleteButton({ original }) {
+        return (
+            <CButton
+                color={"danger"}
+                onClick={() =>
+                    deletePipelineHandler(original)
+                }
+            >
+                <FontAwesomeIcon icon={faTrash} />
+            </CButton>
+        )
     }
 
     const renderDatatable = () => {
@@ -46,20 +88,14 @@ export const RunningPipelines = () => {
                             Cell: ({ original }) => (
                                 <>
                                     <b>{original.name}</b>
+                                    <HelpButton
+                                        id={original.id}
+                                        text={original.description}
+                                    />
                                     <div className="small text-muted">
                                         {`ID: ${original.id}`}
                                     </div>
                                 </>
-                            ),
-                        },
-                        {
-                            Header: 'Description',
-                            accessor: 'description',
-                            Cell: ({ original }) => (
-                                <HelpButton
-                                    id={original.id}
-                                    text={original.description}
-                                />
                             ),
                         },
                         {
@@ -77,20 +113,38 @@ export const RunningPipelines = () => {
                         {
                             Header: 'Progress',
                             accessor: 'progress',
-                            Cell: ({ value }) => {
+                            Cell: ({ value, original }) => {
                                 const progress = parseInt(value)
                                 if (value === 'ERROR') {
-                                    return <div>ERROR</div>
+                                    return (<>
+                                        <div>ERROR</div>
+                                        <DeleteButton original={original}/>
+                                    </>
+                                    )
                                 }
                                 if (value === 'PAUSED') {
-                                    return <div>PAUSED</div>
+                                    return (
+                                        <>
+                                            <div>PAUSED</div>
+                                            <CButtonGroup role="group" aria-label="Basic mixed styles example">
+                                                <UnPauseButton original={original} />
+                                                <DeleteButton original={original}/>
+                                            </CButtonGroup>
+                                        </>
+                                    )
                                 }
                                 return (
-                                    <Progress
-                                        className="progress-xs rt-progress"
-                                        color={getColor(progress)}
-                                        value={progress}
-                                    />
+                                    <>
+                                        <Progress
+                                            className="progress-xs rt-progress"
+                                            color={getColor(progress)}
+                                            value={progress}
+                                        />
+                                        <CButtonGroup role="group" aria-label="Basic mixed styles example">
+                                            <UnPauseButton original={original} />
+                                            <DeleteButton original={original}/>
+                                        </CButtonGroup>
+                                    </>
                                 )
                             },
                         },
@@ -117,30 +171,14 @@ export const RunningPipelines = () => {
                                 />
                             ),
                         },
-                        {
-                            Header: '(Un)Pause',
-                            accessor: 'paused',
-                            Cell: ({ original }) => (
-                                <IconButton
-                                    color={original.progress === 'PAUSED' ? "success" : "warning"}
-                                    size="m"
-                                    isOutline={false}
-                                    onClick={() =>
-                                        original.progress === 'PAUSED'
-                                            ? playPipelineHandler(original)
-                                            : pausePipelineHandler(original)
-                                    }
-                                    icon={original.progress === 'PAUSED' ? faPlay : faPause}
-                                    text={original.progress === 'PAUSED' ? "Play" : "Pause"}
-                                />)
-                        },
                     ]}
-                    defaultSorted={[
-                        {
-                            id: 'date',
-                            desc: false,
-                        },
-                    ]}
+                    defaultSorted={
+                        [
+                            {
+                                id: 'date',
+                                desc: false,
+                            },
+                        ]}
                     data={tableData}
                     defaultPageSize={10}
                     className="-striped -highlight"
