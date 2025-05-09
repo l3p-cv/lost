@@ -8,43 +8,32 @@ import EditInstruction from './EditInstruction';
 import ViewInstruction from './ViewInstruction';
 import BaseContainer from '../../components/BaseContainer';
 import * as Notification from '../../components/Notification';
-
+import { useOwnUser } from '../../actions/user/user_api';
 import { faUserPlus, faPen, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
 
-const canEdit = (visLevel, instruction) => {
-  if (visLevel === 'global') return true; // Admins can edit all
-  return visLevel === 'all' && instruction.group_id; // Users can edit their own
-};
-
-const canView = (visLevel, instruction) => {
-  return visLevel === 'all' && !instruction.group_id; // Users can view global
-};
-
-const canDelete = (visLevel, instruction) => {
-  return !(visLevel === 'all' && !instruction.group_id); // Users can't delete global
-};
+const canEdit = (visLevel, instruction) => visLevel === 'global' || (visLevel === 'all' && instruction.group_id);
+const canView = (visLevel, instruction) => visLevel === 'all' && !instruction.group_id;
+const canDelete = (visLevel, instruction) => !(visLevel === 'all' && !instruction.group_id);
 
 const Instruction = ({ visLevel }) => {
   const [editingInstruction, setEditingInstruction] = useState(null);
   const [viewingInstruction, setViewingInstruction] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: instructions, isLoading, error } = useGetInstructions(visLevel);
+  const { data: instructions, isLoading } = useGetInstructions(visLevel);
   const deleteInstructionMutation = useDeleteInstruction();
   const addInstructionMutation = useAddInstruction();
   const editInstructionMutation = useEditInstruction();
+  const { data: ownUser } = useOwnUser();
 
   const handleDelete = (id) => {
     deleteInstructionMutation.mutate(id, {
       onSuccess: () => Notification.showSuccess('Instruction deleted successfully'),
-      onError: (error) => {
-        console.error('Delete Error:', error);
-        Notification.showError('Failed to delete instruction');
-      },
+      onError: () => Notification.showError('Failed to delete instruction'),
     });
   };
 
   const handleAddInstruction = () => {
-    setEditingInstruction({ id: null, option: '', description: '', instruction: '' });
+    setEditingInstruction({ id: null, option: '', description: '', instruction: '', group_id: ownUser?.group_id });
     setViewingInstruction(null);
     setModalOpen(true);
   };
@@ -63,24 +52,17 @@ const Instruction = ({ visLevel }) => {
 
   const handleSave = (updatedInstruction) => {
     const mutation = updatedInstruction.id ? editInstructionMutation : addInstructionMutation;
-  
     const payload = {
       ...updatedInstruction,
       visibility: visLevel === 'global' ? 'global' : 'user',
     };
-  
+
     mutation.mutate(payload, {
       onSuccess: () => {
-        const message = updatedInstruction.id
-          ? 'Instruction updated successfully'
-          : 'Instruction added successfully';
-        Notification.showSuccess(message);
+        Notification.showSuccess(updatedInstruction.id ? 'Instruction updated successfully' : 'Instruction added successfully');
         setModalOpen(false);
       },
-      onError: (error) => {
-        console.error('Save Error:', error);
-        Notification.showError('Failed to save instruction');
-      },
+      onError: () => Notification.showError('Failed to save instruction'),
     });
   };
 
@@ -107,26 +89,14 @@ const Instruction = ({ visLevel }) => {
       Cell: ({ original }) => {
         if (canEdit(visLevel, original)) {
           return (
-            <IconButton
-              icon={faPen}
-              color="warning"
-              text="Edit"
-              onClick={() => handleEditClick(original)}
-            />
+            <IconButton icon={faPen} color="warning" text="Edit" onClick={() => handleEditClick(original)} />
           );
         }
-
         if (canView(visLevel, original)) {
           return (
-            <IconButton
-              icon={faEye}
-              color="primary"
-              text="Show"
-              onClick={() => handleViewClick(original)}
-            />
+            <IconButton icon={faEye} color="primary" text="Show" onClick={() => handleViewClick(original)} />
           );
         }
-
         return null;
       },
     },
@@ -137,17 +107,13 @@ const Instruction = ({ visLevel }) => {
         return (
           <div>
             {disabled ? (
-              <CTooltip content="Deletion is restricted to admins only." placement="top">
+              <CTooltip content="Deletion is restricted to admins only.">
                 <span>
                   <IconButton icon={faTrash} color="secondary" disabled />
                 </span>
               </CTooltip>
             ) : (
-              <IconButton
-                icon={faTrash}
-                color="danger"
-                onClick={() => handleDelete(original.id)}
-              />
+              <IconButton icon={faTrash} color="danger" onClick={() => handleDelete(original.id)} />
             )}
           </div>
         );
@@ -172,13 +138,8 @@ const Instruction = ({ visLevel }) => {
       <CRow>
         <CCol>
           <BaseContainer>
-            {/* Empty state handling */}
             {filteredInstructions.length === 0 && !isLoading && (
-              <CRow>
-                <CCol>
-                  <p>No instructions available.</p>
-                </CCol>
-              </CRow>
+              <p>No instructions available.</p>
             )}
             <Datatable
               key="instructionsTable"
@@ -193,22 +154,12 @@ const Instruction = ({ visLevel }) => {
 
       <BaseModal
         isOpen={modalOpen}
-        title={
-          viewingInstruction
-            ? 'View Instruction'
-            : editingInstruction
-            ? 'Edit Instruction'
-            : 'Add Instruction'
-        }
+        title={viewingInstruction ? 'View Instruction' : editingInstruction ? 'Edit Instruction' : 'Add Instruction'}
         toggle={() => setModalOpen(false)}
         footer={null}
       >
         {viewingInstruction ? (
-          <ViewInstruction
-            instructionData={viewingInstruction}
-            onClose={() => setModalOpen(false)}
-            onEdit={handleEditClick}
-          />
+          <ViewInstruction instructionData={viewingInstruction} onClose={() => setModalOpen(false)} onEdit={handleEditClick} />
         ) : editingInstruction ? (
           <EditInstruction
             instructionData={editingInstruction}
@@ -220,15 +171,7 @@ const Instruction = ({ visLevel }) => {
       </BaseModal>
 
       {isLoading && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1050,
-          }}
-        >
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1050 }}>
           <CSpinner color="primary" size="lg" />
         </div>
       )}
