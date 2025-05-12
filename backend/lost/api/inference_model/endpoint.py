@@ -25,16 +25,17 @@ class InferenceModelList(Resource):
                 name=model.name,
                 display_name=model.display_name,
                 server_url=model.server_url,
-                prompts=model.prompts,
-                type=model.type,
-                last_updated=model.last_updated,
+                task_type=model.task_type,
+                model_type=model.model_type,
+                description=model.description,
+                last_updated=model.last_updated
             )
             for model in models
         ]
 
         return InferenceModelListResponse(models=models)
 
-    @jwt_required
+    # @jwt_required
     @validate(response_by_alias=True, body=InferenceModelRequest)
     def post(self, body: InferenceModelRequest):
         dbm = access.DBMan(LOST_CONFIG)
@@ -53,8 +54,9 @@ class InferenceModelList(Resource):
             name=model.name,
             display_name=model.display_name,
             server_url=model.server_url,
-            prompts=model.prompts,
-            type=model.type,
+            task_type=model.task_type,
+            model_type=model.model_type,
+            description=model.description,
             last_updated=model.last_updated,
         )
         dbm.close_session()
@@ -63,7 +65,7 @@ class InferenceModelList(Resource):
 
 @namespace.route('/<int:idx>')
 class InferenceModelResource(Resource):
-    @jwt_required
+    # @jwt_required
     @validate(response_by_alias=True)
     def get(self, idx):
         dbm = access.DBMan(LOST_CONFIG)
@@ -75,14 +77,15 @@ class InferenceModelResource(Resource):
             name=model.name,
             display_name=model.display_name,
             server_url=model.server_url,
-            prompts=model.prompts,
-            type=model.type,
+            task_type=model.task_type,
+            model_type=model.model_type,
+            description=model.description,
             last_updated=model.last_updated,
         )
         dbm.close_session()
         return model
 
-    @jwt_required
+    # @jwt_required
     @validate(response_by_alias=True, body=InferenceModelRequest)
     def put(self, idx, body: InferenceModelRequest):
         dbm = access.DBMan(LOST_CONFIG)
@@ -103,8 +106,9 @@ class InferenceModelResource(Resource):
             name=model.name,
             display_name=model.display_name,
             server_url=model.server_url,
-            prompts=model.prompts,
-            type=model.type,
+            task_type=model.task_type,
+            model_type=model.model_type,
+            description=model.description,
             last_updated=model.last_updated,
         )
         dbm.close_session()

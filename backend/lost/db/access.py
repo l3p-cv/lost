@@ -1438,15 +1438,16 @@ class DBMan(object):
         return self.session.query(model.DatasetExport).filter_by(idx=idx).first()
 
     def get_all_inference_models(self) -> list[model.InferenceModel]:
-        return self.session.query(model.InferenceModel).all()
+        return self.session.query(model.InferenceModel).order_by(model.InferenceModel.last_updated.desc()).all()
     
     def create_inference_model(self, data: InferenceModelRequest) -> model.InferenceModel:
         new_entry = model.InferenceModel(
             name=data.name,
             display_name=data.display_name,
             server_url=data.server_url,
-            prompts=data.prompts,
-            type=data.type
+            model_type=data.model_type,
+            task_type=data.task_type,
+            description=data.description,
         )
         self.session.add(new_entry)
         self.session.commit()
@@ -1459,8 +1460,9 @@ class DBMan(object):
         entry.name = data.name
         entry.display_name = data.display_name
         entry.server_url = data.server_url
-        entry.prompts = data.prompts
-        entry.type = data.type
+        entry.model_type=data.model_type,
+        entry.task_type=data.task_type,
+        entry.description=data.description,
         self.session.commit()
         return entry
     

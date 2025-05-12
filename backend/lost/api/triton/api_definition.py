@@ -1,0 +1,18 @@
+from pydantic import field_validator
+from api.base import BaseModelWithCamelCase
+from utils.validators import is_valid_grpc_url
+
+
+class TritonModelsQuery(BaseModelWithCamelCase):
+    server_url: str
+
+    @field_validator('server_url', mode='before')
+    @classmethod
+    def validate_server_url(cls, v):
+        if not is_valid_grpc_url(v):
+            raise ValueError(f"Invalid grpc URL format: {v}")
+        return v
+
+
+class TritonModelListResponse(BaseModelWithCamelCase):
+    models: list[str]

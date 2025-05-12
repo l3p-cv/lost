@@ -23,6 +23,7 @@ from lost.api.system.endpoint import namespace as system_namespace
 from lost.api.config.endpoint import namespace as config_namespace
 from lost.api.anno_example.endpoint import namespace as anno_example_namespace
 from lost.api.inference_model.endpoint import namespace as inference_model_namespace
+from lost.api.triton.endpoint import namespace as triton_namespace
 from lost.logic import dask_session
 from lost.db import access
 
@@ -90,6 +91,7 @@ api.add_namespace(statistics_namespace)
 api.add_namespace(config_namespace)
 api.add_namespace(anno_example_namespace)
 api.add_namespace(inference_model_namespace)
+api.add_namespace(triton_namespace)
 app.register_blueprint(blueprint)
 CORS(app)
 

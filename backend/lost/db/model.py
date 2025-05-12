@@ -1938,7 +1938,8 @@ class InferenceModel(Base):
     name = Column(String(255), nullable=False)
     display_name = Column(String(255), unique=True)
     server_url = Column(String(2048), nullable=False)
-    prompts = Column(Boolean, default=False)
-    type = Column(Integer)
+    task_type = Column(Integer)  # renamed from 'type'
+    model_type = Column(String(255), nullable=False)  # newly added
+    description = Column(Text)  # newly added
     last_updated = Column(TIMESTAMP, server_default=func.current_timestamp(),
                           onupdate=func.current_timestamp())

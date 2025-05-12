@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import {
     faCubes,
     faDatabase,
+    faProjectDiagram,
     faRobot,
     faTags,
     faUsers,
@@ -19,6 +20,7 @@ import Labels from '../Labels/Labels'
 import PipelineProjects from '../Pipelines/PipelineProjects'
 import UsersAndGroups from '../Users/UsersAndGroups'
 import WorkersTable from '../Workers/WorkersTable'
+import { TabInferenceModels } from './TabInferenceModels'
 import TabJupyterLab from './TabJupyterLab'
 
 const AdminArea = () => {
@@ -106,6 +108,16 @@ const AdminArea = () => {
                                 {active === 4 && ' Worker'}
                             </CNavLink>
                         </CNavItem>
+                        <CNavItem>
+                            <CNavLink active={active === 5} onClick={() => setActive(5)}>
+                                <FontAwesomeIcon
+                                    color="#092F38"
+                                    size="1x"
+                                    icon={faProjectDiagram}
+                                />
+                                {active === 5 && ' Inference Models'}
+                            </CNavLink>
+                        </CNavItem>
                         {renderJupyterLabNav()}
                     </CNav>
                     <CTabContent className="w-100">
@@ -148,6 +160,14 @@ const AdminArea = () => {
                             style={{ marginTop: 30 }}
                         >
                             <WorkersTable></WorkersTable>
+                        </CTabPane>
+                        <CTabPane
+                            role="tabpanel"
+                            aria-labelledby="inference-models-tab-pane"
+                            visible={active === 5}
+                            style={{ marginTop: 30 }}
+                        >
+                            <TabInferenceModels />
                         </CTabPane>
                         {renderJupyterLabTab()}
                     </CTabContent>
