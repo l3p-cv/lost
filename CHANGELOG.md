@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DatasetTable shows when Annotasks were created
 - Menus for Annotask-exports can (if implemented) remember which tab was opened last
 - The above applied for DatasetTable
+- Renamed column "Description" to "Description / Status" in DatasetTable
+- Merged columns "Description" into col "Tree Name" (LabelTable)
+- Merged columns "Description" into col "Name/Project" (Start Pipeline)
+- Added Headers to each Tab seen in the sidebar, like in Pipelines/"Pipeline Templates" (Labels, Datasets, Datasources, Annotation, Admin Area)
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 - Renamed "Start"-column to "Details" in PipelineTable

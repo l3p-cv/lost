@@ -3,6 +3,7 @@ import BaseContainer from '../../components/BaseContainer'
 import { CenteredSpinner } from '../../components/CenteredSpinner'
 import CreateLabelTree from './CreateLabelTree'
 import LabelTreeTable from './LabelTreeTable'
+import { CContainer } from '@coreui/react'
 
 const Labels = ({ visLevel }) => {
     const { data: labelTrees, isLoading, isError } = useGetLabelTrees(visLevel)
@@ -17,11 +18,16 @@ const Labels = ({ visLevel }) => {
 
     if (labelTrees) {
         return (
-            <BaseContainer className="mt-3">
-                <CreateLabelTree visLevel={visLevel} />
+            <CContainer style={{ marginTop: '15px' }}>
+                <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
+                    Labels
+                </h3>
+                <BaseContainer className="mt-3">
+                    <CreateLabelTree visLevel={visLevel} />
 
-                <LabelTreeTable labelTrees={labelTrees} visLevel={visLevel} />
-            </BaseContainer>
+                    <LabelTreeTable labelTrees={labelTrees} visLevel={visLevel} />
+                </BaseContainer>
+            </CContainer>
         )
     }
 }

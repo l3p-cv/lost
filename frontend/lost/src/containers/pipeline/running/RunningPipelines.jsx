@@ -29,11 +29,11 @@ export const RunningPipelines = () => {
     }
 
     const deletePipelineHandler = async (data) => {
-            const response = await alertDeletePipeline()
-            if (response.value) {
-                deletePipeline(data.id)
-            }
+        const response = await alertDeletePipeline()
+        if (response.value) {
+            deletePipeline(data.id)
         }
+    }
 
     function UnPauseButton({ original }) {
         return (
@@ -99,16 +99,29 @@ export const RunningPipelines = () => {
                             ),
                         },
                         {
-                            Header: 'Template Name',
+                            Header: 'Template',
                             accessor: 'templateName',
                             Cell: ({ original }) => (
                                 <>
                                     <b>{original.templateName.split('.')[1]}</b>
+                                    {/* <HelpButton // TODO: cannot bet done, do to description not in 
+                                        id={original.Template}
+                                        text={original.Template.description}
+                                    /> */}
                                     <div className="small text-muted">
                                         {original.templateName.split('.')[0]}
                                     </div>
                                 </>
                             ),
+                        },
+                        {
+                            Header: 'Started on',
+                            accessor: 'date',
+                            Cell: ({ original }) =>
+                                new Date(original.date).toLocaleString(),
+                            sortMethod: (date1, date2) => {
+                                return new Date(date1) > new Date(date2) ? -1 : 1
+                            },
                         },
                         {
                             Header: 'Progress',
@@ -118,7 +131,7 @@ export const RunningPipelines = () => {
                                 if (value === 'ERROR') {
                                     return (<>
                                         <div>ERROR</div>
-                                        <DeleteButton original={original}/>
+                                        <DeleteButton original={original} />
                                     </>
                                     )
                                 }
@@ -128,7 +141,7 @@ export const RunningPipelines = () => {
                                             <div>PAUSED</div>
                                             <CButtonGroup role="group" aria-label="Basic mixed styles example">
                                                 <UnPauseButton original={original} />
-                                                <DeleteButton original={original}/>
+                                                <DeleteButton original={original} />
                                             </CButtonGroup>
                                         </>
                                     )
@@ -142,19 +155,10 @@ export const RunningPipelines = () => {
                                         />
                                         <CButtonGroup role="group" aria-label="Basic mixed styles example">
                                             <UnPauseButton original={original} />
-                                            <DeleteButton original={original}/>
+                                            <DeleteButton original={original} />
                                         </CButtonGroup>
                                     </>
                                 )
-                            },
-                        },
-                        {
-                            Header: 'Started on',
-                            accessor: 'date',
-                            Cell: ({ original }) =>
-                                new Date(original.date).toLocaleString(),
-                            sortMethod: (date1, date2) => {
-                                return new Date(date1) > new Date(date2) ? -1 : 1
                             },
                         },
                         {

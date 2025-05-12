@@ -32,27 +32,33 @@ export const PipelineTemplatesTable = () => {
                 <Datatable
                     columns={[
                         {
-                            Header: 'Name / Project',
+                            Header: 'Name/Project',
                             accessor: 'name',
                             Cell: (row) => (
                                 <>
-                                    <b>{row.original.name.split('.')[1]}</b>
-                                    <div className="small text-muted">
-                                        {`${row.original.name.split('.')[0]}`}
-                                    </div>
+                                    <>
+                                        <b>{row.original.name.split('.')[1]}</b>
+                                        <HelpButton
+                                            id={row.original.id}
+                                            text={row.original.description}
+                                        />
+                                        <div className="small text-muted">
+                                            {`${row.original.name.split('.')[0]}`}
+                                        </div>
+                                    </>
                                 </>
                             ),
                         },
-                        {
-                            Header: 'Description',
-                            accessor: 'description',
-                            Cell: (row) => (
-                                <HelpButton
-                                    id={row.original.id}
-                                    text={row.original.description}
-                                />
-                            ),
-                        },
+                        // {
+                        //     Header: 'Description',
+                        //     accessor: 'description',
+                        //     Cell: (row) => (
+                        //         <HelpButton
+                        //             id={row.original.id}
+                        //             text={row.original.description}
+                        //         />
+                        //     ),
+                        // },
                         {
                             Header: 'Start',
                             accessor: 'id',

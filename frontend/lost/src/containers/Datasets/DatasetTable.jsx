@@ -23,6 +23,7 @@ import React, { Fragment, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BaseContainer from '../../components/BaseContainer'
 import IconButton from '../../components/IconButton'
+// import HelpButton from '../../components/HelpButton' // TODO: use???
 
 const DatasetTable = ({
     datasetList,
@@ -104,7 +105,7 @@ const DatasetTable = ({
             }
         }),
         columnHelper.accessor('description', {
-            header: 'Description',
+            header: 'Description/Status',
         }),
         // columnHelper.accessor('datastoreId', {
         //     header: () => 'Datastore',

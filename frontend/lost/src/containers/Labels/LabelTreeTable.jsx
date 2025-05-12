@@ -36,7 +36,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                 isOpen={isEditModalOpen}
                 title={readonly ? 'View Label Tree' : 'Edit Label Tree'}
                 toggle={() => setIsEditModalOpen(false)}
-                onClosed={() => {}}
+                onClosed={() => { }}
                 size="xl"
                 fullscreen
                 isShowCancelButton={false}
@@ -74,18 +74,14 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                     {
                         Header: 'Tree Name',
                         accessor: 'name',
-                    },
-                    {
-                        Header: 'Description',
-                        accessor: 'description',
-                        Cell: (row) => {
-                            return (
+                        Cell: ({ original }) => (
+                            <>
+                                <b>{original.name}</b>
                                 <HelpButton
-                                    id={row.original.idx}
-                                    text={row.original.description}
+                                    id={original.idx}
+                                    text={original.description}
                                 />
-                            )
-                        },
+                            </>)
                     },
                     {
                         Header: 'Amount of Labels',
