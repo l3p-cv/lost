@@ -1,4 +1,4 @@
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 import ReactTable from 'react-table'
 import { useToggle } from 'react-use'
@@ -171,7 +171,7 @@ export const TabInferenceModels = () => {
                             return (
                                 <IconButton
                                     color="danger"
-                                    icon={faEdit}
+                                    icon={faTrashAlt}
                                     text={'Delete'}
                                     onClick={() => {
                                         handleInferenceModelDelete(row.original.id)
