@@ -49,16 +49,6 @@ export const PipelineTemplatesTable = () => {
                                 </>
                             ),
                         },
-                        // {
-                        //     Header: 'Description',
-                        //     accessor: 'description',
-                        //     Cell: (row) => (
-                        //         <HelpButton
-                        //             id={row.original.id}
-                        //             text={row.original.description}
-                        //         />
-                        //     ),
-                        // },
                         {
                             Header: 'Start',
                             accessor: 'id',
