@@ -14,6 +14,8 @@ import { useOwnUser } from '../../actions/user/user_api';
 import IconButton from '../../components/IconButton';
 import ImageBrowserModal from '../../components/FileBrowser/ImageBrowserModal';
 import { API_URL } from '../../lost_settings';
+import { getImageMarkdown } from '../../containers/InstructionMedia/media_api';
+
 const mdParser = new MarkdownIt();
 
 const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
@@ -99,10 +101,14 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         const groupId = instructionData.group_id || ownUser?.idx;
         const relativePath = newPath.replace(`${fs.rootPath}/instruction_media/`, '');
         const encodedPath = encodeURIComponent(`${groupId}/instruction_media/${relativePath}`);
-        const imageMarkdown = `![Image](${API_URL}/media/media-file?path=${encodedPath})`;
-
-        setContent(prev => `${prev}\n${imageMarkdown}`);
-        setBrowseOpen(false);
+        try {
+          const markdown = await getImageMarkdown(encodedPath);
+          setContent(prev => `${prev}\n${markdown}`);
+          setBrowseOpen(false);
+        } catch (err) {
+          Notification.showError('Could not insert image markdown.');
+        }
+        
       } catch (error) {
         console.error('Error selecting the file:', error);
         Notification.showError('Error inserting image. Please try again.');
