@@ -106,6 +106,144 @@ export const RunningPipelines = () => {
     };
 
 
+    // // TODO: USE ALL OF THIS
+    // const DatasetTable = ({
+    //     datasetList,
+    //     datastores,
+    //     onExportButtonClicked,
+    //     onEditButtonClicked,
+    // }) => {
+    //     const columnHelper = createColumnHelper()
+    //     const [expanded, setExpanded] = React.useState({})
+    //     const [tableData, setTableData] = React.useState(() => [...datasetList])
+    //     // update the table when the parameter data changes
+    //     useEffect(() => {
+    //         // possibility to change data between HTTP response and table refresh event
+    //         setTableData(datasetList)
+    //     }, [datasetList])
+    //     // TODO: fill with all the column stuff (header and so on...)
+    //     const columns = [
+    //         columnHelper.accessor('name', {
+    //             header: 'Name',
+    //             cell: (props) => {
+    //                 return (
+    //                     <>
+    //                         {props.row.original.name}
+    //                         <div className="small text-muted">
+    //                             {`ID: ${props.row.original.idx}`}
+    //                         </div>
+    //                     </>)
+    //             }
+    //         }),
+    //         columnHelper.accessor('description', {
+    //             header: 'Description/Status',
+    //         }),
+    //     ]
+    //     const table = useReactTable({
+    //         data: tableData,
+    //         columns,
+    //         state: {
+    //             expanded,
+    //         },
+    //         onExpandedChange: setExpanded,
+    //         getSubRows: (row) => row.children,
+    //         getCoreRowModel: getCoreRowModel(),
+    //         getPaginationRowModel: getPaginationRowModel(),
+    //         getFilteredRowModel: getFilteredRowModel(),
+    //         getExpandedRowModel: getExpandedRowModel(),
+    //     })
+    //     ///////////////////////////////////////////////
+    //     return (
+    //         <BaseContainer>
+    //             <CTable striped>
+    //                 <CTableHead>
+    //                     {table.getHeaderGroups().map((headerGroup) => (
+    //                         <tr key={headerGroup.id}>
+    //                             {headerGroup.headers.map((header) => (
+    //                                 <th key={header.id}>
+    //                                     {header.isPlaceholder
+    //                                         ? null
+    //                                         : flexRender(
+    //                                             header.column.columnDef.header,
+    //                                             header.getContext(),
+    //                                         )}
+    //                                 </th>
+    //                             ))}
+    //                         </tr>
+    //                     ))}
+    //                 </CTableHead>
+    //                 <CTableBody>
+    //                     {table.getRowModel().rows.map((row) => (
+    //                         <Fragment key={row.id}>
+    //                             <tr key={row.id}>
+    //                                 {row.getVisibleCells().map((cell) => (
+    //                                     <td key={cell.id}>
+    //                                         {flexRender(
+    //                                             cell.column.columnDef.cell,
+    //                                             cell.getContext(),
+    //                                         )}
+    //                                     </td>
+    //                                 ))}
+    //                             </tr>
+    //                         </Fragment>
+    //                     ))}
+    //                 </CTableBody>
+    //             </CTable>
+
+    //             <CRow>
+    //                 <CCol>
+    //                     {
+    //                         <IconButton
+    //                             icon={faAngleLeft}
+    //                             text="Previous"
+    //                             onClick={() => table.previousPage()}
+    //                             disabled={!table.getCanPreviousPage()}
+    //                         />
+    //                     }
+    //                 </CCol>
+    //                 <CCol>
+    //                     <span style={{ lineHeight: 2 }}>
+    //                         Page
+    //                         <strong>
+    //                             {table.getState().pagination.pageIndex + 1} of{' '}
+    //                             {table.getPageCount()}
+    //                         </strong>
+    //                     </span>
+    //                 </CCol>
+    //                 <CCol>
+    //                     <span style={{ lineHeight: 2 }}>
+    //                         <select
+    //                             value={table.getState().pagination.pageSize}
+    //                             onChange={(e) => {
+    //                                 table.setPageSize(Number(e.target.value))
+    //                             }}
+    //                         >
+    //                             {[10, 20, 30, 40, 50].map((pageSize) => (
+    //                                 <option key={pageSize} value={pageSize}>
+    //                                     Show {pageSize}
+    //                                 </option>
+    //                             ))}
+    //                         </select>
+    //                     </span>
+    //                 </CCol>
+    //                 <CCol>
+    //                     {
+    //                         <IconButton
+    //                             icon={faAngleRight}
+    //                             text="Next"
+    //                             onClick={() => table.nextPage()}
+    //                             disabled={!table.getCanNextPage()}
+    //                             style={{ float: 'right' }}
+    //                         />
+    //                     }
+    //                 </CCol>
+    //             </CRow>
+    //         </BaseContainer>
+    //     )
+    // }
+
+
+    // // TODO: replace this!!!
     const renderDatatable = () => {
         if (isLoading || templateIsLoading) {
             return <CenteredSpinner />
@@ -119,7 +257,7 @@ export const RunningPipelines = () => {
                 return <div className="pipeline-error-message">{data.error}</div>
             }
             const tableData = data.pipes
-            console.log("RENDERING!!!")
+            // console.log("RENDERING!!!")
             return (
                 <ReactTable
                     columns={[

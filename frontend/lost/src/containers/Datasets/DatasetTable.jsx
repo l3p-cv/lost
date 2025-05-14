@@ -1,7 +1,4 @@
-import { CCol, CRow, CTable, CTableBody, CTableHead } from '@coreui/react'
 import {
-    faAngleLeft,
-    faAngleRight,
     faCaretDown,
     faCaretRight,
     faDownload,
@@ -10,20 +7,12 @@ import {
     faPen,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    createColumnHelper,
-    flexRender,
-    getCoreRowModel,
-    getExpandedRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    useReactTable,
-} from '@tanstack/react-table'
+import { createColumnHelper } from '@tanstack/react-table'
 import React, { Fragment, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BaseContainer from '../../components/BaseContainer'
 import IconButton from '../../components/IconButton'
-// import HelpButton from '../../components/HelpButton' // TODO: use???
+import CoreDataTable from '../../components/CoreDataTable'
 
 const DatasetTable = ({
     datasetList,
@@ -96,12 +85,12 @@ const DatasetTable = ({
             header: 'Name',
             cell: (props) => {
                 return (
-                <>
-                    {props.row.original.name}
-                    <div className="small text-muted">
-                        {`ID: ${props.row.original.idx}`}
-                    </div>
-                </>)
+                    <>
+                        {props.row.original.name}
+                        <div className="small text-muted">
+                            {`ID: ${props.row.original.idx}`}
+                        </div>
+                    </>)
             }
         }),
         columnHelper.accessor('description', {
@@ -150,7 +139,7 @@ const DatasetTable = ({
                             openReview(rowData.idx, isAnnotask)
                         }}
                         disabled={isDisabled}
-                        // text="Review"
+                    // text="Review"
                     />
                 )
             },
@@ -208,114 +197,16 @@ const DatasetTable = ({
                             onEditButtonClicked(props.row.original)
                         }}
                         disabled={false}
-                        // text="Edit"
+                    // text="Edit"
                     />
                 )
             },
         }),
     ]
 
-    const [expanded, setExpanded] = React.useState({})
-
-    const table = useReactTable({
-        data: tableData,
-        columns,
-        state: {
-            expanded,
-        },
-        onExpandedChange: setExpanded,
-        getSubRows: (row) => row.children,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getExpandedRowModel: getExpandedRowModel(),
-    })
-
     return (
         <BaseContainer>
-            <CTable striped>
-                <CTableHead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <th key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                              header.column.columnDef.header,
-                                              header.getContext(),
-                                          )}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </CTableHead>
-                <CTableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Fragment key={row.id}>
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id}>
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext(),
-                                        )}
-                                    </td>
-                                ))}
-                            </tr>
-                        </Fragment>
-                    ))}
-                </CTableBody>
-            </CTable>
-
-            <CRow>
-                <CCol>
-                    {
-                        <IconButton
-                            icon={faAngleLeft}
-                            text="Previous"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        />
-                    }
-                </CCol>
-                <CCol>
-                    <span style={{ lineHeight: 2 }}>
-                        Page
-                        <strong>
-                            {table.getState().pagination.pageIndex + 1} of{' '}
-                            {table.getPageCount()}
-                        </strong>
-                    </span>
-                </CCol>
-                <CCol>
-                    <span style={{ lineHeight: 2 }}>
-                        <select
-                            value={table.getState().pagination.pageSize}
-                            onChange={(e) => {
-                                table.setPageSize(Number(e.target.value))
-                            }}
-                        >
-                            {[10, 20, 30, 40, 50].map((pageSize) => (
-                                <option key={pageSize} value={pageSize}>
-                                    Show {pageSize}
-                                </option>
-                            ))}
-                        </select>
-                    </span>
-                </CCol>
-                <CCol>
-                    {
-                        <IconButton
-                            icon={faAngleRight}
-                            text="Next"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                            style={{ float: 'right' }}
-                        />
-                    }
-                </CCol>
-            </CRow>
+            <CoreDataTable tableData={tableData} columns={columns} />
         </BaseContainer>
     )
 }
