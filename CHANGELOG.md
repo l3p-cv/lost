@@ -10,17 +10,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ID-Columns for Users and groups in admin-area
 - Node-ID in label-editor
 - IDs of Filesystems (Datasources) in UI
-- Button in Pipeline-Overview to pause/unpause + delete under progress
+- Button in Pipeline-Overview to pause/unpause + delete next to "open pipeline"-button
 - DatasetTable shows when Annotasks were created
 - Menus for Annotask-exports can (if implemented) remember which tab was opened last
 - The above applied for DatasetTable
-- Renamed column "Description" to "Description / Status" in DatasetTable
+- Renamed column "Description" to "Task Status" in DatasetTable
+- Merged columns "Description" into col "Name" (DatasetTable) (when it comes to DS descriptions)
 - Merged columns "Description" into col "Tree Name" (LabelTable)
 - Merged columns "Description" into col "Name/Project" (Start Pipeline)
 - Added Headers to each Tab seen in the sidebar, like in Pipelines/"Pipeline Templates" (Labels, Datasets, Datasources, Annotation, Admin Area)
+- Description for templates in RunningPipelines
+- New component "CoreDataTAble" based on what DatasetTable used (for reusing this for all tables)
+- Reworked PaginatorBottom completely (see "Changed")
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
-- Renamed "Start"-column to "Details" in PipelineTable
+- Renamed "Start"-column to "Options" in RunningPipelines
+- DatasetTable navigation-bottom made to new component PaginatorBottom
 ### Fixed
 - IMG-Search: Image-path in review now stays inside of box
 

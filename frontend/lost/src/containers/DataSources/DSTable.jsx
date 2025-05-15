@@ -25,7 +25,7 @@ export const DSTable = ({ visLevel }) => {
     const userName = localStorage.getItem('username') || ''
     const defaultDsName = 'default'
     const [browseOpen, setBrowseOpen] = useState(false)
-    const [fs, setFs] = useState()
+    // const [fs, setFs] = useState()
     const { mutate: getFSListNew, data: fsList } = fbAPI.useGetFSList()
     const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
     const { mutate: getPossibleFsTypes, data: possibleFsTypes } =
@@ -204,8 +204,9 @@ export const DSTable = ({ visLevel }) => {
                 return <CBadge color="primary">Global</CBadge>
             },
         }),
-        columnHelper.accessor('delete', {
-            header: 'Delete',
+        columnHelper.display({
+            id: 'delete',
+            header: () => 'Delete',
             cell: (row) => {
                 return (
                     <IconButton
@@ -218,29 +219,31 @@ export const DSTable = ({ visLevel }) => {
                 )
             }
         }),
-        columnHelper.accessor('edit', {
-            header: 'Edit',
-            cell: (row) => {
+        columnHelper.display( {
+            id: 'edit',
+            header: () => 'Edit',
+            cell: (props) => {
                 return (
                     <IconButton
                         icon={faEdit}
                         color="primary"
-                        onClick={() => onEditDs(row)}
-                        disabled={checkEditable(row)}
+                        onClick={() => onEditDs(props.row)}
+                        disabled={checkEditable(props.row)}
                         text="Edit"
                     // isOutline={false}
                     />
                 )
             }
         }),
-        columnHelper.accessor('browse', {
-            header: 'Browse',
-            cell: (row) => {
+        columnHelper.display({
+            id: 'browse',
+            header: () => 'Browse',
+            cell: (props) => {
                 return (
                     <IconButton
                         icon={faFolderOpen}
                         color="primary"
-                        onClick={() => onOpenFileBrowser(row)}
+                        onClick={() => onOpenFileBrowser(props.row.original)}
                         text="Browse"
                     // isOutline={false}
                     />

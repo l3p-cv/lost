@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import BaseContainer from '../../components/BaseContainer'
 import IconButton from '../../components/IconButton'
 import CoreDataTable from '../../components/CoreDataTable'
+import HelpButton from '../../components/HelpButton'
 
 const DatasetTable = ({
     datasetList,
@@ -81,20 +82,41 @@ const DatasetTable = ({
             id: 'expander',
             cell: ({ row }) => renderRowIcon(row),
         }),
-        columnHelper.accessor('name', {
+        columnHelper.display({
+            id: 'name',
             header: 'Name',
             cell: (props) => {
+                if (props.row.original.isMetaDataset) return <b>{props.row.original.name}</b>
+                if (props.row.original.isAnnotask) {
+                    return (
+                        <>
+                            {/* <b>{props.row.original.name}</b> */}
+                            {props.row.original.name}
+                            <div className="small text-muted">
+                                {`ID: ${props.row.original.idx}`}
+                            </div>
+                        </>)
+                }
                 return (
                     <>
-                        {props.row.original.name}
+                        <b>{props.row.original.name}</b>
+                        <HelpButton
+                            id={props.row.original.idx}
+                            text={props.row.original.description}
+                        />
                         <div className="small text-muted">
                             {`ID: ${props.row.original.idx}`}
                         </div>
                     </>)
             }
         }),
-        columnHelper.accessor('description', {
-            header: 'Description/Status',
+        columnHelper.display({
+            id: "annotaskStatus",
+            header: 'Task Status',
+            cell: (props) => {
+                if (props.row.original.isAnnotask) return props.row.original.description
+                return "-"
+            }
         }),
         // columnHelper.accessor('datastoreId', {
         //     header: () => 'Datastore',
