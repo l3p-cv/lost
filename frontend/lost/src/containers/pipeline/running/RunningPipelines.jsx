@@ -18,7 +18,9 @@ import { CButton, CButtonGroup } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { template } from 'lodash'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import CoreDataTable from '../../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
 // import React, { Fragment, useEffect } from 'react'
 // import {
 //     createColumnHelper,
@@ -105,145 +107,7 @@ export const RunningPipelines = () => {
         );
     };
 
-
-    // // TODO: USE ALL OF THIS
-    // const DatasetTable = ({
-    //     datasetList,
-    //     datastores,
-    //     onExportButtonClicked,
-    //     onEditButtonClicked,
-    // }) => {
-    //     const columnHelper = createColumnHelper()
-    //     const [expanded, setExpanded] = React.useState({})
-    //     const [tableData, setTableData] = React.useState(() => [...datasetList])
-    //     // update the table when the parameter data changes
-    //     useEffect(() => {
-    //         // possibility to change data between HTTP response and table refresh event
-    //         setTableData(datasetList)
-    //     }, [datasetList])
-    //     // TODO: fill with all the column stuff (header and so on...)
-    //     const columns = [
-    //         columnHelper.accessor('name', {
-    //             header: 'Name',
-    //             cell: (props) => {
-    //                 return (
-    //                     <>
-    //                         {props.row.original.name}
-    //                         <div className="small text-muted">
-    //                             {`ID: ${props.row.original.idx}`}
-    //                         </div>
-    //                     </>)
-    //             }
-    //         }),
-    //         columnHelper.accessor('description', {
-    //             header: 'Description/Status',
-    //         }),
-    //     ]
-    //     const table = useReactTable({
-    //         data: tableData,
-    //         columns,
-    //         state: {
-    //             expanded,
-    //         },
-    //         onExpandedChange: setExpanded,
-    //         getSubRows: (row) => row.children,
-    //         getCoreRowModel: getCoreRowModel(),
-    //         getPaginationRowModel: getPaginationRowModel(),
-    //         getFilteredRowModel: getFilteredRowModel(),
-    //         getExpandedRowModel: getExpandedRowModel(),
-    //     })
-    //     ///////////////////////////////////////////////
-    //     return (
-    //         <BaseContainer>
-    //             <CTable striped>
-    //                 <CTableHead>
-    //                     {table.getHeaderGroups().map((headerGroup) => (
-    //                         <tr key={headerGroup.id}>
-    //                             {headerGroup.headers.map((header) => (
-    //                                 <th key={header.id}>
-    //                                     {header.isPlaceholder
-    //                                         ? null
-    //                                         : flexRender(
-    //                                             header.column.columnDef.header,
-    //                                             header.getContext(),
-    //                                         )}
-    //                                 </th>
-    //                             ))}
-    //                         </tr>
-    //                     ))}
-    //                 </CTableHead>
-    //                 <CTableBody>
-    //                     {table.getRowModel().rows.map((row) => (
-    //                         <Fragment key={row.id}>
-    //                             <tr key={row.id}>
-    //                                 {row.getVisibleCells().map((cell) => (
-    //                                     <td key={cell.id}>
-    //                                         {flexRender(
-    //                                             cell.column.columnDef.cell,
-    //                                             cell.getContext(),
-    //                                         )}
-    //                                     </td>
-    //                                 ))}
-    //                             </tr>
-    //                         </Fragment>
-    //                     ))}
-    //                 </CTableBody>
-    //             </CTable>
-
-    //             <CRow>
-    //                 <CCol>
-    //                     {
-    //                         <IconButton
-    //                             icon={faAngleLeft}
-    //                             text="Previous"
-    //                             onClick={() => table.previousPage()}
-    //                             disabled={!table.getCanPreviousPage()}
-    //                         />
-    //                     }
-    //                 </CCol>
-    //                 <CCol>
-    //                     <span style={{ lineHeight: 2 }}>
-    //                         Page
-    //                         <strong>
-    //                             {table.getState().pagination.pageIndex + 1} of{' '}
-    //                             {table.getPageCount()}
-    //                         </strong>
-    //                     </span>
-    //                 </CCol>
-    //                 <CCol>
-    //                     <span style={{ lineHeight: 2 }}>
-    //                         <select
-    //                             value={table.getState().pagination.pageSize}
-    //                             onChange={(e) => {
-    //                                 table.setPageSize(Number(e.target.value))
-    //                             }}
-    //                         >
-    //                             {[10, 20, 30, 40, 50].map((pageSize) => (
-    //                                 <option key={pageSize} value={pageSize}>
-    //                                     Show {pageSize}
-    //                                 </option>
-    //                             ))}
-    //                         </select>
-    //                     </span>
-    //                 </CCol>
-    //                 <CCol>
-    //                     {
-    //                         <IconButton
-    //                             icon={faAngleRight}
-    //                             text="Next"
-    //                             onClick={() => table.nextPage()}
-    //                             disabled={!table.getCanNextPage()}
-    //                             style={{ float: 'right' }}
-    //                         />
-    //                     }
-    //                 </CCol>
-    //             </CRow>
-    //         </BaseContainer>
-    //     )
-    // }
-
-
-    // // TODO: replace this!!!
+    const columnHelper = createColumnHelper()
     const renderDatatable = () => {
         if (isLoading || templateIsLoading) {
             return <CenteredSpinner />
@@ -256,102 +120,96 @@ export const RunningPipelines = () => {
             if (data.error || templateData.error) {
                 return <div className="pipeline-error-message">{data.error}</div>
             }
-            const tableData = data.pipes
+            const tableData = useMemo(() => {
+                return [...data.pipes].reverse();
+            }, [data.pipes]);
+            const columns = [
+                columnHelper.accessor('name', {
+                    header: 'Name',
+                    cell: (props) => {
+                        return (
+                            <>
+                                <b>{props.row.original.name}</b>
+                                <HelpButton
+                                    id={props.row.original.id}
+                                    text={props.row.original.description}
+                                />
+                                <div className="small text-muted">
+                                    {`ID: ${props.row.original.id}`}
+                                </div>
+                            </>)
+                    }
+                }),
+                columnHelper.accessor('description', {
+                    header: 'Template',
+                    cell: (props) => {
+                        return (
+                            <>
+                                <b>{props.row.original.templateName.split('.')[1]}</b>
+                                <TemplateDescButton
+                                    templName={props.row.original.templateName}
+                                    templates={templateData.templates}
+                                    pipeID={props.row.original.id}
+                                />
+                                <div className="small text-muted">
+                                    {props.row.original.templateName.split('.')[0]}
+                                </div>
+                            </>
+                        )
+
+                    }
+                }),
+                columnHelper.accessor('progress', {
+                    header: 'Progress',
+                    cell: (props) => {
+                        const progress = parseInt(props.row.original.progress)
+                        if (props.row.original.progress === 'ERROR') {
+                            return (
+                                <div>ERROR</div>
+                            )
+                        }
+                        if (props.row.original.progress === 'PAUSED') {
+                            return (
+                                <div>PAUSED</div>
+                            )
+                        }
+                        return (
+                            <Progress
+                                className="progress-xs rt-progress"
+                                color={getColor(progress)}
+                                value={progress}
+                            />
+                        )
+                    }
+
+                }),
+                columnHelper.accessor('date', {
+                    header: 'Started on',
+                    cell: (props) =>
+                        new Date(props.row.original.date).toLocaleString(),
+                    // sortMethod: (date1, date2) => {
+                    //     return new Date(date1) > new Date(date2) ? -1 : 1
+                    // },
+                }),
+                columnHelper.display({
+                    id: 'options',
+                    header: 'Options',
+                    cell: (props) => {
+                        return (
+                            <>
+                                {/* <CButtonGroup role="group" aria-label="Basic mixed styles example"> */}
+                                <OpenIcon original={props.row.original} />
+                                <UnPauseButton original={props.row.original} />
+                                <DeleteButton original={props.row.original} />
+                                {/* </CButtonGroup> */}
+                            </>
+                        )
+                    }
+                }),
+            ]
             // console.log("RENDERING!!!")
             return (
-                <ReactTable
-                    columns={[
-                        {
-                            Header: 'Name',
-                            accessor: 'name',
-                            Cell: ({ original }) => (
-                                <>
-                                    <b>{original.name}</b>
-                                    <HelpButton
-                                        id={original.id}
-                                        text={original.description}
-                                    />
-                                    <div className="small text-muted">
-                                        {`ID: ${original.id}`}
-                                    </div>
-                                </>
-                            ),
-                        },
-                        {
-                            Header: 'Template',
-                            accessor: 'templateName',
-                            Cell: ({ original }) => (
-                                <>
-                                    <b>{original.templateName.split('.')[1]}</b>
-                                    <TemplateDescButton
-                                        templName={original.templateName}
-                                        templates={templateData.templates}
-                                        pipeID={original.id}
-                                    />
-                                    <div className="small text-muted">
-                                        {original.templateName.split('.')[0]}
-                                    </div>
-                                </>
-                            ),
-                        },
-                        {
-                            Header: 'Progress',
-                            accessor: 'progress',
-                            Cell: ({ value }) => {
-                                const progress = parseInt(value)
-                                if (value === 'ERROR') {
-                                    return (
-                                        <div>ERROR</div>
-                                    )
-                                }
-                                if (value === 'PAUSED') {
-                                    return (
-                                        <div>PAUSED</div>
-                                    )
-                                }
-                                return (
-                                    <Progress
-                                        className="progress-xs rt-progress"
-                                        color={getColor(progress)}
-                                        value={progress}
-                                    />
-                                )
-                            },
-                        },
-                        {
-                            Header: 'Started on',
-                            accessor: 'date',
-                            Cell: ({ original }) =>
-                                new Date(original.date).toLocaleString(),
-                            sortMethod: (date1, date2) => {
-                                return new Date(date1) > new Date(date2) ? -1 : 1
-                            },
-                        },
-                        {
-                            Header: 'Options',
-                            accessor: 'id',
-                            Cell: ({ original }) => (
-                                <>
-                                    {/* <CButtonGroup role="group" aria-label="Basic mixed styles example"> */}
-                                    <OpenIcon original={original} />
-                                    <UnPauseButton original={original} />
-                                    <DeleteButton original={original} />
-                                    {/* </CButtonGroup> */}
-                                </>
-                            ),
-                        },
-                    ]}
-                    defaultSorted={
-                        [
-                            {
-                                id: 'date',
-                                desc: false,
-                            },
-                        ]}
-                    data={tableData}
-                    defaultPageSize={10}
-                    className="-striped -highlight"
-                />
+                <CoreDataTable columns={columns} tableData={tableData} />
             )
         }
     }

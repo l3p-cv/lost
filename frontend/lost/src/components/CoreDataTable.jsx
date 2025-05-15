@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table'
 import React, { Fragment, useEffect } from 'react'
 
-
+// const CoreDataTable = ( {tableData, columns} ) => { // TODO: rewrite as const???
 function CoreDataTable({ tableData, columns }) {
     const [expanded, setExpanded] = React.useState({})
     const table = useReactTable({

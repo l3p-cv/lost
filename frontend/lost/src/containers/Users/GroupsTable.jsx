@@ -1,17 +1,21 @@
 import { useState } from 'react'
-import Datatable from '../../components/Datatable'
+// import Datatable from '../../components/Datatable'
 
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Input, InputGroup } from 'reactstrap'
 import { useCreateGroup, useDeleteGroup, useGroups } from '../../actions/group/group-api'
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
+import { createColumnHelper } from '@tanstack/react-table'
+import CoreDataTable from '../../components/CoreDataTable'
+import BaseContainer from '../../components/BaseContainer'
 
 export const Groups = () => {
     const [newGroup, setNewGroup] = useState('')
     const { mutate: createGroup } = useCreateGroup()
     const { mutate: deleteGroup } = useDeleteGroup()
     const { data: groupsData } = useGroups()
+    const columnHelper = createColumnHelper()
 
     const addGroup = () => {
         if (newGroup.length < 3) {
@@ -25,6 +29,12 @@ export const Groups = () => {
         }
     }
 
+    const columns = [
+        columnHelper.accessor('name', {
+            header: 'Group'
+        })
+    ]
+
     return (
         groupsData && (
             <div>
@@ -36,7 +46,11 @@ export const Groups = () => {
                     />
                     <IconButton color="primary" icon={faPlus} onClick={addGroup} />
                 </InputGroup>
-                <Datatable
+                {/* TODO: make pagination-buttons smaller */}
+                <BaseContainer>
+                    <CoreDataTable columns={columns} tableData={groupsData.groups} />
+                </BaseContainer>
+                {/* <Datatable
                     data={groupsData.groups}
                     columns={[
                         {
@@ -70,7 +84,7 @@ export const Groups = () => {
                         //     },
                         // },
                     ]}
-                />
+                /> */}
             </div>
         )
     )

@@ -7,10 +7,55 @@ import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import Datatable from '../../../components/Datatable'
 import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
+import CoreDataTable from '../../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
 
 export const PipelineTemplatesTable = () => {
     const navigate = useNavigate()
+    function navigate2(val) {
+        console.log("VAL 1: ", val)
+    }
     const { data, isLoading, isError } = useTemplates('all')
+    const columnHelper = createColumnHelper()
+
+    const columns = [
+        columnHelper.accessor('name', {
+            header: 'Name/Project',
+            cell: (props) => {
+                return (
+                    <>
+                        <>
+                            <b>{props.row.original.name.split('.')[1]}</b>
+                            <HelpButton
+                                id={props.row.original.id}
+                                text={props.row.original.description}
+                            />
+                            <div className="small text-muted">
+                                {`${props.row.original.name.split('.')[0]}`}
+                            </div>
+                        </>
+                    </>)
+            }
+        }),
+        columnHelper.display({
+            id: 'start',
+            header: 'Name/Project',
+            cell: (props) => {
+                return (
+                    <IconButton
+                        color="primary"
+                        size="m"
+                        isOutline={false}
+                        onClick={() =>
+                            navigate(`/pipeline-template/${props.row.original.id}`)
+                        }
+                        icon={faPlay}
+                        text="Start"
+                    />
+                )
+            }
+        })
+    ]
 
     const renderDatatable = () => {
         if (isLoading) {
@@ -29,47 +74,7 @@ export const PipelineTemplatesTable = () => {
             const templateData = data.templates
 
             return (
-                <Datatable
-                    columns={[
-                        {
-                            Header: 'Name/Project',
-                            accessor: 'name',
-                            Cell: (row) => (
-                                <>
-                                    <>
-                                        <b>{row.original.name.split('.')[1]}</b>
-                                        <HelpButton
-                                            id={row.original.id}
-                                            text={row.original.description}
-                                        />
-                                        <div className="small text-muted">
-                                            {`${row.original.name.split('.')[0]}`}
-                                        </div>
-                                    </>
-                                </>
-                            ),
-                        },
-                        {
-                            Header: 'Start',
-                            accessor: 'id',
-                            Cell: (row) => (
-                                <IconButton
-                                    color="primary"
-                                    size="m"
-                                    isOutline={false}
-                                    onClick={() =>
-                                        navigate(`/pipeline-template/${row.value}`)
-                                    }
-                                    icon={faPlay}
-                                    text="Start"
-                                />
-                            ),
-                        },
-                    ]}
-                    data={templateData}
-                    defaultPageSize={10}
-                    className="-striped -highlight"
-                />
+                <CoreDataTable columns={columns} tableData={templateData} />
             )
         }
     }
