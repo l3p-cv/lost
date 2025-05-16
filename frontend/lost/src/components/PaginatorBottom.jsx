@@ -1,4 +1,15 @@
-import { CCol, CRow, CForm, CFormInput } from '@coreui/react'
+import {
+    CCol,
+    CRow,
+    CForm,
+    CFormInput,
+    CFormSelect,
+    CDropdown,
+    CDropdownToggle,
+    CDropdownMenu,
+    CDropdownItem,
+    CDropdownDivider
+} from '@coreui/react'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 import IconButton from './IconButton'
 import React, { useState, useEffect } from "react";
@@ -33,8 +44,10 @@ const TablePagination = ({ table, totalPages, targetPage, setTargetPage }) => {
     }
 
     return (
-        <div className="d-flex align-items-center gap-2">
-            <span style={{ marginLeft: "25%" }}>Page</span>
+        <div className="d-flex align-items-center gap-2 my-2">
+            <span style={{ marginLeft: "0%" }}>
+                <b>Page</b>
+            </span>
             <CForm onSubmit={jumpToPage}>
                 <CFormInput
                     id="currentPageShown2"
@@ -47,13 +60,18 @@ const TablePagination = ({ table, totalPages, targetPage, setTargetPage }) => {
                     style={{ width: '60px' }} // Optional inline style
                 />
             </CForm>
-            <span>of {totalPages}</span>
+            <span>
+                <b>of {totalPages}</b>
+            </span>
         </div>
     )
 }
 
 
-const PaginatorBottom = ({ table }) => {
+const PaginatorBottom = ({ table, visible = true }) => {
+
+    if (!visible) return
+
     const [targetPage, setTargetPage] = useState(table.getState().pagination.pageIndex + 1);
     const buttonFontsize = "1rem"
     const buttonWidth = "100%"
@@ -90,21 +108,25 @@ const PaginatorBottom = ({ table }) => {
                     targetPage={targetPage}
                     setTargetPage={setTargetPage} />
             </CCol>
-            <CCol>
-                <span style={{ lineHeight: 2, marginLeft: "25%", marginRight: "25%" }}>
-                    <select
+            <CCol xs="auto" style={{ marginRight: '0%' }}>
+
+                {/* <label htmlFor="pageSize" className="form-label me-2">
+                        Rows per page:
+                    </label> */}
+                <div className="d-flex align-items-center gap-2 justify-content-center my-2">
+                    <CFormSelect
+                        id="pageSize"
                         value={table.getState().pagination.pageSize}
-                        onChange={(e) => {
-                            table.setPageSize(Number(e.target.value))
-                        }}
+                        onChange={(e) => table.setPageSize(Number(e.target.value))}
+                        className="form-select-sm"
                     >
                         {[10, 20, 30, 40, 50].map((pageSize) => (
                             <option key={pageSize} value={pageSize}>
                                 Show {pageSize}
                             </option>
                         ))}
-                    </select>
-                </span>
+                    </CFormSelect>
+                </div>
             </CCol>
             <CCol>
                 {
