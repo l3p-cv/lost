@@ -123,7 +123,6 @@ export const UsersTable = () => {
         columnHelper.accessor('roles', {
             header: 'Roles',
             cell: (props) => {
-                console.log("NEW ROW: ", props.row)
                 return props.row.original.roles.map((el) => (
                     <RenderBadge // TODO: replace with CBadge
                         key={el.idx}
