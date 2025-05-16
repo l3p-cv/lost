@@ -179,7 +179,7 @@ export const DSTable = ({ visLevel }) => {
             cell: (props) => {
                 return (
                     <>
-                        {props.row.original.name}
+                        <b>{props.row.original.name}</b>
                         <div className="small text-muted">
                             {`ID: ${props.row.original.id}`}
                         </div>
