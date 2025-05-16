@@ -107,12 +107,11 @@ export const RunningPipelines = () => {
         );
     };
     const tableData = useMemo(() => {
-        if (data === undefined){
+        if (data === undefined) {
             return []
         }
         return [...data.pipes].reverse();
     }, [data]);
-    const columnHelper = createColumnHelper()
     const renderDatatable = () => {
         if (isLoading || templateIsLoading) {
             return <CenteredSpinner />
@@ -125,93 +124,101 @@ export const RunningPipelines = () => {
             if (data.error || templateData.error) {
                 return <div className="pipeline-error-message">{data.error}</div>
             }
-            const columns = [
-                columnHelper.accessor('name', {
-                    header: 'Name',
-                    cell: (props) => {
-                        return (
-                            <>
-                                <b>{props.row.original.name}</b>
-                                <HelpButton
-                                    id={props.row.original.id}
-                                    text={props.row.original.description}
-                                />
-                                <div className="small text-muted">
-                                    {`ID: ${props.row.original.id}`}
-                                </div>
-                            </>)
-                    }
-                }),
-                columnHelper.accessor('description', {
-                    header: 'Template',
-                    cell: (props) => {
-                        return (
-                            <>
-                                <b>{props.row.original.templateName.split('.')[1]}</b>
-                                <TemplateDescButton
-                                    templName={props.row.original.templateName}
-                                    templates={templateData.templates}
-                                    pipeID={props.row.original.id}
-                                />
-                                <div className="small text-muted">
-                                    {props.row.original.templateName.split('.')[0]}
-                                </div>
-                            </>
-                        )
+            const defineColumns = () => {
+                const columnHelper = createColumnHelper()
 
-                    }
-                }),
-                columnHelper.accessor('progress', {
-                    header: 'Progress',
-                    cell: (props) => {
-                        const progress = parseInt(props.row.original.progress)
-                        if (props.row.original.progress === 'ERROR') {
+                let columns = []
+
+                columns = [
+                    ...columns,
+                    columnHelper.accessor('name', {
+                        header: 'Name',
+                        cell: (props) => {
                             return (
-                                <div>ERROR</div>
+                                <>
+                                    <b>{props.row.original.name}</b>
+                                    <HelpButton
+                                        id={props.row.original.id}
+                                        text={props.row.original.description}
+                                    />
+                                    <div className="small text-muted">
+                                        {`ID: ${props.row.original.id}`}
+                                    </div>
+                                </>)
+                        }
+                    }),
+                    columnHelper.accessor('description', {
+                        header: 'Template',
+                        cell: (props) => {
+                            return (
+                                <>
+                                    <b>{props.row.original.templateName.split('.')[1]}</b>
+                                    <TemplateDescButton
+                                        templName={props.row.original.templateName}
+                                        templates={templateData.templates}
+                                        pipeID={props.row.original.id}
+                                    />
+                                    <div className="small text-muted">
+                                        {props.row.original.templateName.split('.')[0]}
+                                    </div>
+                                </>
+                            )
+
+                        }
+                    }),
+                    columnHelper.accessor('progress', {
+                        header: 'Progress',
+                        cell: (props) => {
+                            const progress = parseInt(props.row.original.progress)
+                            if (props.row.original.progress === 'ERROR') {
+                                return (
+                                    <div>ERROR</div>
+                                )
+                            }
+                            if (props.row.original.progress === 'PAUSED') {
+                                return (
+                                    <div>PAUSED</div>
+                                )
+                            }
+                            return (
+                                <Progress
+                                    className="progress-xs rt-progress"
+                                    color={getColor(progress)}
+                                    value={progress}
+                                />
                             )
                         }
-                        if (props.row.original.progress === 'PAUSED') {
+
+                    }),
+                    columnHelper.accessor('date', {
+                        header: 'Started on',
+                        cell: (props) =>
+                            new Date(props.row.original.date).toLocaleString(),
+                        // sortMethod: (date1, date2) => {
+                        //     return new Date(date1) > new Date(date2) ? -1 : 1
+                        // },
+                    }),
+                    columnHelper.display({
+                        id: 'options',
+                        header: 'Options',
+                        cell: (props) => {
                             return (
-                                <div>PAUSED</div>
+                                <>
+                                    {/* <CButtonGroup role="group" aria-label="Basic mixed styles example"> */}
+                                    <OpenIcon original={props.row.original} />
+                                    <UnPauseButton original={props.row.original} />
+                                    <DeleteButton original={props.row.original} />
+                                    {/* </CButtonGroup> */}
+                                </>
                             )
                         }
-                        return (
-                            <Progress
-                                className="progress-xs rt-progress"
-                                color={getColor(progress)}
-                                value={progress}
-                            />
-                        )
-                    }
-
-                }),
-                columnHelper.accessor('date', {
-                    header: 'Started on',
-                    cell: (props) =>
-                        new Date(props.row.original.date).toLocaleString(),
-                    // sortMethod: (date1, date2) => {
-                    //     return new Date(date1) > new Date(date2) ? -1 : 1
-                    // },
-                }),
-                columnHelper.display({
-                    id: 'options',
-                    header: 'Options',
-                    cell: (props) => {
-                        return (
-                            <>
-                                {/* <CButtonGroup role="group" aria-label="Basic mixed styles example"> */}
-                                <OpenIcon original={props.row.original} />
-                                <UnPauseButton original={props.row.original} />
-                                <DeleteButton original={props.row.original} />
-                                {/* </CButtonGroup> */}
-                            </>
-                        )
-                    }
-                }),
-            ]
+                    }),
+                ]
+                return columns
+            }
             // console.log("RENDERING!!!")
             return (
-                <CoreDataTable columns={columns} tableData={tableData} />
+                <CoreDataTable columns={defineColumns()} tableData={tableData} />
             )
         }
     }

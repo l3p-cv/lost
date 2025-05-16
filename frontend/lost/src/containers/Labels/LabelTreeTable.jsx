@@ -21,105 +21,110 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
     const [readonly, setReadonly] = useState(false)
-    const columnHelper = createColumnHelper()
-    const columns = [
-        columnHelper.accessor('name', {
-            header: 'Tree Name',
-            cell: (props) => {
-                return (
-                    <>
-                        <b>{props.row.original.name}</b>
-                        <HelpButton
-                            id={props.row.original.idx}
-                            text={props.row.original.description}
-                        />
-                        <div className="small text-muted">
-                            {`ID: ${props.row.original.idx}`}
-                        </div>
-                    </>)
-            }
-        }),
-        columnHelper.accessor('d', {
-            header: 'Amount of Labels',
-            cell: (props) => {
-                amountOfLabels = 0
-                return getAmountOfLabels(props.row.original) - 1
-            }
-        }),
-        columnHelper.accessor('group_id', {
-            header: 'Global',
-            cell: (props) => {
-                if (props.row.original.group_id) {
-                    return <CBadge color="success">User</CBadge>
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            ...columns,
+            columnHelper.accessor('name', {
+                header: 'Tree Name',
+                cell: (props) => {
+                    return (
+                        <>
+                            <b>{props.row.original.name}</b>
+                            <HelpButton
+                                id={props.row.original.idx}
+                                text={props.row.original.description}
+                            />
+                            <div className="small text-muted">
+                                {`ID: ${props.row.original.idx}`}
+                            </div>
+                        </>)
                 }
-                return <CBadge color="primary">Global</CBadge>
-            },
-        }),
-        columnHelper.accessor('edit', {
-            header: 'Edit',
-            cell: (props) => {
-                return (
-                    <IconButton
-                        icon={
-                            props.row.original.group_id === null
-                                ? visLevel !== 'global'
-                                    ? faEye
+            }),
+            columnHelper.accessor('d', {
+                header: 'Amount of Labels',
+                cell: (props) => {
+                    amountOfLabels = 0
+                    return getAmountOfLabels(props.row.original) - 1
+                }
+            }),
+            columnHelper.accessor('group_id', {
+                header: 'Global',
+                cell: (props) => {
+                    if (props.row.original.group_id) {
+                        return <CBadge color="success">User</CBadge>
+                    }
+                    return <CBadge color="primary">Global</CBadge>
+                },
+            }),
+            columnHelper.accessor('edit', {
+                header: 'Edit',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={
+                                props.row.original.group_id === null
+                                    ? visLevel !== 'global'
+                                        ? faEye
+                                        : faEdit
                                     : faEdit
-                                : faEdit
-                        }
-                        text={
-                            props.row.original.group_id === null
-                                ? visLevel !== 'global'
-                                    ? 'Show'
+                            }
+                            text={
+                                props.row.original.group_id === null
+                                    ? visLevel !== 'global'
+                                        ? 'Show'
+                                        : 'Edit'
                                     : 'Edit'
-                                : 'Edit'
-                        }
-                        color="primary"
-                        onClick={() => {
-                            const lT = labelTrees.find((labelTree) => {
-                                if (labelTree.idx === props.row.original.idx) {
-                                    return labelTree
-                                }
-                            })
-                            if (visLevel === 'global') {
-                                setReadonly(false)
-                            } else {
-                                if (lT.group_id) {
+                            }
+                            color="primary"
+                            onClick={() => {
+                                const lT = labelTrees.find((labelTree) => {
+                                    if (labelTree.idx === props.row.original.idx) {
+                                        return labelTree
+                                    }
+                                })
+                                if (visLevel === 'global') {
                                     setReadonly(false)
                                 } else {
-                                    setReadonly(true)
+                                    if (lT.group_id) {
+                                        setReadonly(false)
+                                    } else {
+                                        setReadonly(true)
+                                    }
                                 }
-                            }
 
-                            const graph = convertLabelTreeToReactFlow(lT)
+                                const graph = convertLabelTreeToReactFlow(lT)
 
-                            setSelectedTree({
-                                // @ts-expect-error type is not an issue here
-                                nodes: graph.nodes,
-                                // @ts-expect-error type is not an issue here
-                                edges: graph.edges,
-                            })
-                            setIsEditModalOpen(true)
-                        }}
-                    />
-                )
-            },
-        }),
-        columnHelper.accessor('export', {
-            header: 'Export',
-            cell: (props) => {
-                return (
-                    <IconButton
-                        icon={faFileExport}
-                        text="Export"
-                        color="primary"
-                        isOutline={false}
-                        onClick={() => exportLabelTree(props.row.original.idx)}
-                    />
-                )
-            },
-        }),
-    ]
+                                setSelectedTree({
+                                    // @ts-expect-error type is not an issue here
+                                    nodes: graph.nodes,
+                                    // @ts-expect-error type is not an issue here
+                                    edges: graph.edges,
+                                })
+                                setIsEditModalOpen(true)
+                            }}
+                        />
+                    )
+                },
+            }),
+            columnHelper.accessor('export', {
+                header: 'Export',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faFileExport}
+                            text="Export"
+                            color="primary"
+                            isOutline={false}
+                            onClick={() => exportLabelTree(props.row.original.idx)}
+                        />
+                    )
+                },
+            }),
+        ]
+        return columns
+    }
 
     const getAmountOfLabels = (n) => {
         amountOfLabels += 1
@@ -167,7 +172,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                     </Card>
                 </ReactFlowProvider>
             </BaseModal>
-            <CoreDataTable columns={columns} tableData={labelTrees} />
+            <CoreDataTable columns={defineColumns()} tableData={labelTrees} />
         </>
     )
 }

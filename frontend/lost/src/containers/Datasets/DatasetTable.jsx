@@ -77,158 +77,163 @@ const DatasetTable = ({
         )
     }
 
-    const columns = [
-        columnHelper.display({
-            id: 'expander',
-            cell: ({ row }) => renderRowIcon(row),
-        }),
-        columnHelper.display({
-            id: 'name',
-            header: 'Name',
-            cell: (props) => {
-                if (props.row.original.isMetaDataset) return <b>{props.row.original.name}</b>
-                if (props.row.original.isAnnotask) {
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            columnHelper.display({
+                id: 'expander',
+                cell: ({ row }) => renderRowIcon(row),
+            }),
+            columnHelper.display({
+                id: 'name',
+                header: 'Name',
+                cell: (props) => {
+                    if (props.row.original.isMetaDataset) return <b>{props.row.original.name}</b>
+                    if (props.row.original.isAnnotask) {
+                        return (
+                            <>
+                                {/* <b>{props.row.original.name}</b> */}
+                                {props.row.original.name}
+                                <div className="small text-muted">
+                                    {`ID: ${props.row.original.idx}`}
+                                </div>
+                            </>)
+                    }
                     return (
                         <>
-                            {/* <b>{props.row.original.name}</b> */}
-                            {props.row.original.name}
+                            <b>{props.row.original.name}</b>
+                            <HelpButton
+                                id={props.row.original.idx}
+                                text={props.row.original.description}
+                            />
                             <div className="small text-muted">
                                 {`ID: ${props.row.original.idx}`}
                             </div>
                         </>)
                 }
-                return (
-                    <>
-                        <b>{props.row.original.name}</b>
-                        <HelpButton
-                            id={props.row.original.idx}
-                            text={props.row.original.description}
+            }),
+            columnHelper.display({
+                id: "annotaskStatus",
+                header: 'Task Status',
+                cell: (props) => {
+                    if (props.row.original.isAnnotask) return props.row.original.description
+                    return "-"
+                }
+            }),
+            // columnHelper.accessor('datastoreId', {
+            //     header: () => 'Datastore',
+            //     cell: info => {
+            //         const datastoreID = info.renderValue()
+
+            //         if (datastoreID in datastores) {
+            //             return datastores[datastoreID]
+            //         }
+
+            //         return ""
+            //     }
+            // }),
+            columnHelper.accessor('createdAt', {
+                header: () => 'Created at',
+                cell: (props) => {
+                    if (props.row.original.isMetaDataset) return ''
+                    if (props.row.original.isAnnotask) return props.row.original.created_at
+                    return props.row.original.createdAt // isDataset
+                }
+            }),
+            columnHelper.display({
+                id: 'review',
+                header: () => 'Review',
+                cell: (props) => {
+                    // reviewing metadatasets is impossible
+                    if (props.row.original.isMetaDataset) return ''
+
+                    // disable the review button on datasets without children
+                    const isDisabled = !(
+                        props.row.original.isAnnotask || props.row.original.isReviewable
+                    )
+
+                    return (
+                        <IconButton
+                            icon={faEye}
+                            color="primary"
+                            isOutline={false}
+                            onClick={() => {
+                                const rowData = props.row.original
+                                const isAnnotask = rowData.isAnnotask === true
+                                openReview(rowData.idx, isAnnotask)
+                            }}
+                            disabled={isDisabled}
+                        // text="Review"
                         />
-                        <div className="small text-muted">
-                            {`ID: ${props.row.original.idx}`}
-                        </div>
-                    </>)
-            }
-        }),
-        columnHelper.display({
-            id: "annotaskStatus",
-            header: 'Task Status',
-            cell: (props) => {
-                if (props.row.original.isAnnotask) return props.row.original.description
-                return "-"
-            }
-        }),
-        // columnHelper.accessor('datastoreId', {
-        //     header: () => 'Datastore',
-        //     cell: info => {
-        //         const datastoreID = info.renderValue()
+                    )
+                },
+            }),
+            columnHelper.display({
+                id: 'showExport',
+                header: () => 'Export',
+                cell: (props) => {
+                    const rowData = props.row.original
 
-        //         if (datastoreID in datastores) {
-        //             return datastores[datastoreID]
-        //         }
+                    if (rowData.idx == '-1') return ''
 
-        //         return ""
-        //     }
-        // }),
-        columnHelper.accessor('createdAt', {
-            header: () => 'Created at',
-            cell: (props) => {
-                if (props.row.original.isMetaDataset) return ''
-                if (props.row.original.isAnnotask) return props.row.original.created_at
-                return props.row.original.createdAt // isDataset
-            }
-        }),
-        columnHelper.display({
-            id: 'review',
-            header: () => 'Review',
-            cell: (props) => {
-                // reviewing metadatasets is impossible
-                if (props.row.original.isMetaDataset) return ''
+                    // disable the review button on datasets without children
+                    const isDisabled = !(
+                        props.row.original.isAnnotask || props.row.original.isReviewable
+                    )
 
-                // disable the review button on datasets without children
-                const isDisabled = !(
-                    props.row.original.isAnnotask || props.row.original.isReviewable
-                )
+                    return (
+                        <IconButton
+                            icon={faDownload}
+                            color="primary"
+                            isOutline={false}
+                            onClick={() => {
+                                const datasetID = rowData.idx
+                                const isAnnotask = rowData.isAnnotask === true
+                                const name = rowData.name
+                                const description = rowData.description
+                                onExportButtonClicked(
+                                    datasetID,
+                                    isAnnotask,
+                                    name,
+                                    description,
+                                )
+                            }}
+                            disabled={isDisabled}
+                        />
+                    )
+                },
+            }),
+            columnHelper.display({
+                id: 'showEdit',
+                header: () => 'Edit',
+                cell: (props) => {
+                    const rowData = props.row.original
 
-                return (
-                    <IconButton
-                        icon={faEye}
-                        color="primary"
-                        isOutline={false}
-                        onClick={() => {
-                            const rowData = props.row.original
-                            const isAnnotask = rowData.isAnnotask === true
-                            openReview(rowData.idx, isAnnotask)
-                        }}
-                        disabled={isDisabled}
-                    // text="Review"
-                    />
-                )
-            },
-        }),
-        columnHelper.display({
-            id: 'showExport',
-            header: () => 'Export',
-            cell: (props) => {
-                const rowData = props.row.original
+                    // only show edit icon for datasets
+                    if (rowData.isAnnotask || rowData.isMetaDataset) return ''
 
-                if (rowData.idx == '-1') return ''
-
-                // disable the review button on datasets without children
-                const isDisabled = !(
-                    props.row.original.isAnnotask || props.row.original.isReviewable
-                )
-
-                return (
-                    <IconButton
-                        icon={faDownload}
-                        color="primary"
-                        isOutline={false}
-                        onClick={() => {
-                            const datasetID = rowData.idx
-                            const isAnnotask = rowData.isAnnotask === true
-                            const name = rowData.name
-                            const description = rowData.description
-                            onExportButtonClicked(
-                                datasetID,
-                                isAnnotask,
-                                name,
-                                description,
-                            )
-                        }}
-                        disabled={isDisabled}
-                    />
-                )
-            },
-        }),
-        columnHelper.display({
-            id: 'showEdit',
-            header: () => 'Edit',
-            cell: (props) => {
-                const rowData = props.row.original
-
-                // only show edit icon for datasets
-                if (rowData.isAnnotask || rowData.isMetaDataset) return ''
-
-                return (
-                    <IconButton
-                        icon={faPen}
-                        color="primary"
-                        isOutline={false}
-                        onClick={() => {
-                            onEditButtonClicked(props.row.original)
-                        }}
-                        disabled={false}
-                    // text="Edit"
-                    />
-                )
-            },
-        }),
-    ]
+                    return (
+                        <IconButton
+                            icon={faPen}
+                            color="primary"
+                            isOutline={false}
+                            onClick={() => {
+                                onEditButtonClicked(props.row.original)
+                            }}
+                            disabled={false}
+                        // text="Edit"
+                        />
+                    )
+                },
+            }),
+        ]
+        return columns
+    }
 
     return (
         <BaseContainer>
-            <CoreDataTable tableData={tableData} columns={columns} />
+            <CoreDataTable tableData={tableData} columns={defineColumns()} />
         </BaseContainer>
     )
 }

@@ -173,84 +173,89 @@ export const DSTable = ({ visLevel }) => {
     }, [fsList])
 
     const columnHelper = createColumnHelper()
-    const columns = [
-        columnHelper.accessor('name', {
-            header: 'Name',
-            cell: (props) => {
-                return (
-                    <>
-                        <b>{props.row.original.name}</b>
-                        <div className="small text-muted">
-                            {`ID: ${props.row.original.id}`}
-                        </div>
-                    </>)
-            }
-        }),
-        columnHelper.accessor('fsType', {
-            header: 'Type'
-        }),
-        // columnHelper.accessor('rootPath', {
-        //     header: 'Root Path'
-        // }),
-        // columnHelper.accessor('connection', {
-        //     header: 'Connection'
-        // }),
-        columnHelper.accessor('groupId', {
-            header: 'Global',
-            cell: (d) => {
-                if (d.groupId) {
-                    return <CBadge color="success">User</CBadge>
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            columnHelper.accessor('name', {
+                header: 'Name',
+                cell: (props) => {
+                    return (
+                        <>
+                            <b>{props.row.original.name}</b>
+                            <div className="small text-muted">
+                                {`ID: ${props.row.original.id}`}
+                            </div>
+                        </>)
                 }
-                return <CBadge color="primary">Global</CBadge>
-            },
-        }),
-        columnHelper.display({
-            id: 'delete',
-            header: () => 'Delete',
-            cell: (row) => {
-                return (
-                    <IconButton
-                        icon={faTrash}
-                        color="danger"
-                        onClick={() => onDeleteDs(row)}
-                        disabled={checkEditable(row)}
-                        text="Delete"
-                    />
-                )
-            }
-        }),
-        columnHelper.display( {
-            id: 'edit',
-            header: () => 'Edit',
-            cell: (props) => {
-                return (
-                    <IconButton
-                        icon={faEdit}
-                        color="primary"
-                        onClick={() => onEditDs(props.row)}
-                        disabled={checkEditable(props.row)}
-                        text="Edit"
-                    // isOutline={false}
-                    />
-                )
-            }
-        }),
-        columnHelper.display({
-            id: 'browse',
-            header: () => 'Browse',
-            cell: (props) => {
-                return (
-                    <IconButton
-                        icon={faFolderOpen}
-                        color="primary"
-                        onClick={() => onOpenFileBrowser(props.row.original)}
-                        text="Browse"
-                    // isOutline={false}
-                    />
-                )
-            }
-        }),
-    ]
+            }),
+            columnHelper.accessor('fsType', {
+                header: 'Type'
+            }),
+            // columnHelper.accessor('rootPath', {
+            //     header: 'Root Path'
+            // }),
+            // columnHelper.accessor('connection', {
+            //     header: 'Connection'
+            // }),
+            columnHelper.accessor('groupId', {
+                header: 'Global',
+                cell: (d) => {
+                    if (d.groupId) {
+                        return <CBadge color="success">User</CBadge>
+                    }
+                    return <CBadge color="primary">Global</CBadge>
+                },
+            }),
+            columnHelper.display({
+                id: 'delete',
+                header: () => 'Delete',
+                cell: (row) => {
+                    return (
+                        <IconButton
+                            icon={faTrash}
+                            color="danger"
+                            onClick={() => onDeleteDs(row)}
+                            disabled={checkEditable(row)}
+                            text="Delete"
+                        />
+                    )
+                }
+            }),
+            columnHelper.display({
+                id: 'edit',
+                header: () => 'Edit',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faEdit}
+                            color="primary"
+                            onClick={() => onEditDs(props.row)}
+                            disabled={checkEditable(props.row)}
+                            text="Edit"
+                        // isOutline={false}
+                        />
+                    )
+                }
+            }),
+            columnHelper.display({
+                id: 'browse',
+                header: () => 'Browse',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faFolderOpen}
+                            color="primary"
+                            onClick={() => onOpenFileBrowser(props.row.original)}
+                            text="Browse"
+                        // isOutline={false}
+                        />
+                    )
+                }
+            }),
+        ]
+        return columns
+    }
 
     return (
         <>
@@ -298,7 +303,7 @@ export const DSTable = ({ visLevel }) => {
                 </CCol>
             </CRow>
             <BaseContainer>
-                <CoreDataTable columns={columns} tableData={tableData} />
+                <CoreDataTable columns={defineColumns()} tableData={tableData} />
             </BaseContainer>
         </>
     )

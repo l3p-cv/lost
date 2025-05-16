@@ -16,46 +16,51 @@ export const PipelineTemplatesTable = () => {
         console.log("VAL 1: ", val)
     }
     const { data, isLoading, isError } = useTemplates('all')
-    const columnHelper = createColumnHelper()
 
-    const columns = [
-        columnHelper.accessor('name', {
-            header: 'Name/Project',
-            cell: (props) => {
-                return (
-                    <>
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            ...columns,
+            columnHelper.accessor('name', {
+                header: 'Name/Project',
+                cell: (props) => {
+                    return (
                         <>
-                            <b>{props.row.original.name.split('.')[1]}</b>
-                            <HelpButton
-                                id={props.row.original.id}
-                                text={props.row.original.description}
-                            />
-                            <div className="small text-muted">
-                                {`${props.row.original.name.split('.')[0]}`}
-                            </div>
-                        </>
-                    </>)
-            }
-        }),
-        columnHelper.display({
-            id: 'start',
-            header: 'Name/Project',
-            cell: (props) => {
-                return (
-                    <IconButton
-                        color="primary"
-                        size="m"
-                        isOutline={false}
-                        onClick={() =>
-                            navigate(`/pipeline-template/${props.row.original.id}`)
-                        }
-                        icon={faPlay}
-                        text="Start"
-                    />
-                )
-            }
-        })
-    ]
+                            <>
+                                <b>{props.row.original.name.split('.')[1]}</b>
+                                <HelpButton
+                                    id={props.row.original.id}
+                                    text={props.row.original.description}
+                                />
+                                <div className="small text-muted">
+                                    {`${props.row.original.name.split('.')[0]}`}
+                                </div>
+                            </>
+                        </>)
+                }
+            }),
+            columnHelper.display({
+                id: 'start',
+                header: 'Name/Project',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            color="primary"
+                            size="m"
+                            isOutline={false}
+                            onClick={() =>
+                                navigate(`/pipeline-template/${props.row.original.id}`)
+                            }
+                            icon={faPlay}
+                            text="Start"
+                        />
+                    )
+                }
+            })
+        ]
+        return columns
+    }
 
     const renderDatatable = () => {
         if (isLoading) {
@@ -74,7 +79,7 @@ export const PipelineTemplatesTable = () => {
             const templateData = data.templates
 
             return (
-                <CoreDataTable columns={columns} tableData={templateData} />
+                <CoreDataTable columns={defineColumns()} tableData={templateData} />
             )
         }
     }
