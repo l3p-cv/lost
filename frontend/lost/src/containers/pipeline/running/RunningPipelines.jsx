@@ -106,7 +106,12 @@ export const RunningPipelines = () => {
                 text={match.description} />
         );
     };
-
+    const tableData = useMemo(() => {
+        if (data === undefined){
+            return []
+        }
+        return [...data.pipes].reverse();
+    }, [data]);
     const columnHelper = createColumnHelper()
     const renderDatatable = () => {
         if (isLoading || templateIsLoading) {
@@ -120,9 +125,6 @@ export const RunningPipelines = () => {
             if (data.error || templateData.error) {
                 return <div className="pipeline-error-message">{data.error}</div>
             }
-            const tableData = useMemo(() => {
-                return [...data.pipes].reverse();
-            }, [data.pipes]);
             const columns = [
                 columnHelper.accessor('name', {
                     header: 'Name',
