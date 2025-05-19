@@ -1,6 +1,5 @@
 __author__ = 'Jonas Jaeger, Gereon Reus'
 import io
-from flask_user import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, BLOB
@@ -29,11 +28,8 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 Base = declarative_base(metadata=metadata)
 
-# Define the User data-model.
-# NB: Make sure to add flask_user UserMixin !!!
 
-
-class User(Base, UserMixin):
+class User(Base):
     __tablename__ = 'user'
 
     idx = Column(Integer, primary_key=True)
@@ -1255,9 +1251,9 @@ class PipeElement(Base):
     dtype = Column(Integer)
     error_msg = Column(Text)
     error_reported = Column(Boolean)
-    warning_msg = Column(String(4096))
-    log_msg = Column(String(4096))
-    debug_session = Column(String(4096))
+    warning_msg = Column(Text)
+    log_msg = Column(Text)
+    debug_session = Column(Text)
     is_debug_mode = Column(Boolean)
     instance_context = Column(String(4096))
     pe_outs = relationship("PipeElement", secondary="result_link",
@@ -1824,7 +1820,7 @@ class FileSystem(Base):
 class Config(Base):
     __tablename__ = "config"
     idx = Column(Integer, primary_key=True)
-    key = Column(String(1024), unique=True)
+    key = Column(String(500), unique=True)
     default_value = Column(Text)
     value = Column(Text)
     config = Column(Text)
