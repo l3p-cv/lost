@@ -22,10 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Description for templates in RunningPipelines
 - New component "CoreDataTAble" based on what DatasetTable used (for reusing this for all tables)
 - Reworked PaginatorBottom completely (see "Changed")
+- New general Sweetalert for deletions
+- Added argument "color" to SelectFileButton
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 - Renamed "Start"-column to "Options" in RunningPipelines
 - DatasetTable navigation-bottom made to new component PaginatorBottom
+- Buttons now mostly outlined and colored
 ### Fixed
 - IMG-Search: Image-path in review now stays inside of box
 

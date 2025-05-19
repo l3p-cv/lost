@@ -44,9 +44,9 @@ const TablePagination = ({ table, totalPages, targetPage, setTargetPage }) => {
     }
 
     return (
-        <div className="d-flex align-items-center gap-2 my-2">
+        <div className="d-flex align-items-center gap-2 my-2 text-muted small">
             <span style={{ marginLeft: "0%" }}>
-                <b>Page</b>
+                <>Page</>
             </span>
             <CForm onSubmit={jumpToPage}>
                 <CFormInput
@@ -54,14 +54,15 @@ const TablePagination = ({ table, totalPages, targetPage, setTargetPage }) => {
                     type="number"
                     value={targetPage}
                     onInput={handleInput}
-                    min={1}
+                    // min={1}
+                    className="text-center"
                     // max={totalPages}
                     size="sm"
-                    style={{ width: '60px' }} // Optional inline style
+                    style={{ width: '55px' }} // Optional inline style
                 />
             </CForm>
             <span>
-                <b>of {totalPages}</b>
+                <>of {totalPages}</>
             </span>
         </div>
     )

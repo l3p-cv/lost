@@ -42,13 +42,13 @@ export const PipelineTemplatesTable = () => {
             }),
             columnHelper.display({
                 id: 'start',
-                header: 'Name/Project',
+                header: 'Start',
                 cell: (props) => {
                     return (
                         <IconButton
-                            color="primary"
+                            color="success"
                             size="m"
-                            isOutline={false}
+                            isOutline={true}
                             onClick={() =>
                                 navigate(`/pipeline-template/${props.row.original.id}`)
                             }

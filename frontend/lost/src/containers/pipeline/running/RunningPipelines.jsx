@@ -14,7 +14,7 @@ import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
 import { getColor } from '../../Annotation/AnnoTask/utils'
 import '../globalComponents/pipeline.scss'
-import { CButton, CButtonGroup } from '@coreui/react'
+import { CButton, CButtonGroup, CTooltip } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
 import { template } from 'lodash'
@@ -58,43 +58,57 @@ export const RunningPipelines = () => {
 
     function UnPauseButton({ original }) {
         return (
-            <CButton
-                color={original.progress === 'PAUSED' ? "primary" : "primary"}
-                style={{ marginRight: '5px' }}
-                onClick={() =>
-                    original.progress === 'PAUSED'
-                        ? playPipelineHandler(original)
-                        : pausePipelineHandler(original)
-                }
-            // text={original.progress === 'PAUSED' ? "Play" : "Pause"}
-            >
-                <FontAwesomeIcon icon={original.progress === 'PAUSED' ? faPlay : faPause}></FontAwesomeIcon>
-            </CButton>
+            <CTooltip placement="top"
+                content={original.progress === 'PAUSED'
+                    ? "Activate Pipeline"
+                    : "Pause Pipeline"
+                }>
+                <CButton
+                    color={original.progress === 'PAUSED' ? "success" : "warning"}
+                    variant='outline'
+                    style={{ marginRight: '5px' }}
+                    onClick={() =>
+                        original.progress === 'PAUSED'
+                            ? playPipelineHandler(original)
+                            : pausePipelineHandler(original)
+                    }
+                // text={original.progress === 'PAUSED' ? "Play" : "Pause"}
+                >
+                    <FontAwesomeIcon icon={original.progress === 'PAUSED' ? faPlay : faPause} />
+                </CButton>
+            </CTooltip>
         )
     }
 
     function DeleteButton({ original }) {
         return (
-            <CButton
-                color={"primary"}
-                onClick={() =>
-                    deletePipelineHandler(original)
-                }
-            >
-                <FontAwesomeIcon icon={faTrash} />
-            </CButton>
+            <CTooltip content="Delete Pipeline" placement="top">
+                <CButton
+                    color={"danger"}
+                    variant='outline'
+                    onClick={() =>
+                        deletePipelineHandler(original)
+                    }
+                >
+                    <FontAwesomeIcon icon={faTrash} />
+                </CButton>
+            </CTooltip>
         )
     }
 
     function OpenIcon({ original }) {
-        return (<IconButton
-            color="primary"
-            size="m"
-            isOutline={false}
-            style={{ marginRight: '5px' }}
-            onClick={() => navigate(`/pipeline/${original.id}`)}
-            icon={faEye}
-        />)
+        return (
+            <CTooltip content="Inspect Pipeline" placement="top">
+                <CButton
+                    color="info"
+                    variant='outline'
+                    style={{ marginRight: '5px' }}
+                    onClick={() => navigate(`/pipeline/${original.id}`)}
+                >
+                    <FontAwesomeIcon icon={faEye} />
+                </CButton>
+            </CTooltip>
+        )
     }
 
 

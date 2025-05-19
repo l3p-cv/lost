@@ -13,8 +13,11 @@ import * as Notification from '../../components/Notification'
 import EditUserModal from './EditUserModal'
 import { createColumnHelper } from '@tanstack/react-table'
 import CoreDataTable from '../../components/CoreDataTable'
-import { CBadge } from '@coreui/react'
+import { CBadge, CButton, CTooltip } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
+import { FaFontAwesome } from 'react-icons/fa'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { alertDeletion } from '../pipeline/globalComponents/Sweetalert'
 
 const RenderBadge = ({ key, text, color }) => (
     <div>
@@ -72,15 +75,18 @@ export const UsersTable = () => {
         setIsUserEditOpenView(true)
     }
 
-    const editClick = ({ row }) => {
+    const editClick = (row) => {
         setIsNewUser(false)
-        setSelectedUser(usersData.users.filter((el) => el.user_name === row.user_name))
+        setSelectedUser(usersData.users.filter((el) => el.user_name === row.original.user_name))
 
         openUserModal()
     }
 
-    const deleteClick = (row) => {
-        deleteUser(row.original.idx)
+    const deleteClick = async (row) => {
+        const response = await alertDeletion("user")
+        if (response.value) {
+            deleteUser(row.original.idx)
+        }
     }
 
     const closeModal = () => {
@@ -102,23 +108,6 @@ export const UsersTable = () => {
                     </div>
                 </>
             ),
-        }),
-        columnHelper.accessor('apiToken', {
-            header: 'API Token',
-            cell: (props) => {
-                if (props.row.original.apiToken) {
-                    return (
-                        <IconButton
-                            color="primary"
-                            icon={faCopy}
-                            onClick={() => {
-                                copyToClipboard(props.row.original.apiToken)
-                            }}
-                        />
-                    )
-                }
-                return null
-            },
         }),
         columnHelper.accessor('roles', {
             header: 'Roles',
@@ -144,15 +133,43 @@ export const UsersTable = () => {
                 ))
             },
         }),
+        columnHelper.accessor('apiToken', {
+            header: 'API Token',
+            cell: (props) => {
+                const visBool = false
+                if (props.row.original.apiToken) {
+                    return (
+                        <CTooltip content="Copy Token to Clipboard" placement="top">
+                            <CButton
+                                color="info"
+                                variant='outline'
+                                onClick={() => {
+                                    copyToClipboard(props.row.original.apiToken)
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faCopy} />
+                            </CButton>
+                        </CTooltip>
+                    )
+                }
+                return null
+            },
+        }),
         columnHelper.accessor('edit', {
             header: 'Edit',
             cell: (props) => {
+                // console.log("Log 1: ", props.row.original.user_name)
+                const user_row = props.row
                 return (
-                    <IconButton
-                        icon={faUserEdit}
-                        color="warning"
-                        onClick={() => editClick(props.row)}
-                    />
+                    <CTooltip content="Edit User" placement="top">
+                        <CButton
+                            variant='outline'
+                            color="warning"
+                            onClick={() => editClick(user_row)}
+                        >
+                            <FontAwesomeIcon icon={faUserEdit} />
+                        </CButton>
+                    </CTooltip>
                 )
             },
         }),
@@ -160,13 +177,17 @@ export const UsersTable = () => {
             header: 'Delete',
             cell: (props) => {
                 return (
-                    <IconButton
-                        icon={faTrash}
-                        color="danger"
-                        onClick={() => {
-                            deleteClick(props.row)
-                        }}
-                    />
+                    <CTooltip content="Delete User" placement="top">
+                        <CButton
+                            variant='outline'
+                            color="danger"
+                            onClick={() => {
+                                deleteClick(props.row)
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faTrash} />
+                        </CButton>
+                    </CTooltip>
                 )
             },
         }),
@@ -186,7 +207,7 @@ export const UsersTable = () => {
             )}
 
             <IconButton
-                color="primary"
+                color="success"
                 icon={faUserPlus}
                 text="Add User"
                 onClick={createNewUser}

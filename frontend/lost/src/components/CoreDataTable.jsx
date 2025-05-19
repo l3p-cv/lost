@@ -13,7 +13,7 @@ import {
 import React, { Fragment, useEffect } from 'react'
 
 // const CoreDataTable = ( {tableData, columns} ) => { // TODO: rewrite as const???
-function CoreDataTable({ tableData, columns }) {
+function CoreDataTable({ tableData, columns, usePagination=true }) {
     const [expanded, setExpanded] = React.useState({})
     const table = useReactTable({
         data: tableData,
@@ -66,7 +66,7 @@ function CoreDataTable({ tableData, columns }) {
                     ))}
                 </CTableBody>
             </CTable>
-            <PaginatorBottom table={table} />
+            <PaginatorBottom table={table} visible={usePagination} />
             {/* </BaseContainer> */}
         </>
     )

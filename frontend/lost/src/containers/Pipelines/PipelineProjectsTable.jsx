@@ -97,6 +97,23 @@ const PTTable = ({ visLevel }) => {
             },
         }),
         columnHelper.display({
+            header: 'Export',
+            id: "export",
+            cell: (props) => {
+                return (
+                    <IconButton
+                        icon={faFileExport}
+                        text="Export"
+                        color="info"
+                        isOutline={true}
+                        onClick={() =>
+                            handlePipelineProjectExport(props.row.original.pipeProject)
+                        }
+                    />
+                )
+            },
+        }),
+        columnHelper.display({
             header: 'Delete',
             id: "delete",
             cell: (props) => {
@@ -108,23 +125,6 @@ const PTTable = ({ visLevel }) => {
                         disabled={props.row.original.pipelineCount > 0}
                         onClick={() =>
                             handlePipelineProjectDelete(props.row.original.pipeProject)
-                        }
-                    />
-                )
-            },
-        }),
-        columnHelper.display({
-            header: 'Export',
-            id: "export",
-            cell: (props) => {
-                return (
-                    <IconButton
-                        icon={faFileExport}
-                        text="Export"
-                        color="primary"
-                        isOutline={false}
-                        onClick={() =>
-                            handlePipelineProjectExport(props.row.original.pipeProject)
                         }
                     />
                 )

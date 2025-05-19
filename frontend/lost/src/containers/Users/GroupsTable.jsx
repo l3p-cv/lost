@@ -1,7 +1,7 @@
 import { useState } from 'react'
 // import Datatable from '../../components/Datatable'
 
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faL, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Input, InputGroup } from 'reactstrap'
 import { useCreateGroup, useDeleteGroup, useGroups } from '../../actions/group/group-api'
 import IconButton from '../../components/IconButton'
@@ -31,9 +31,24 @@ export const Groups = () => {
 
     const columns = [
         columnHelper.accessor('name', {
-            header: 'Group'
+            header: 'Group',
+            cell: (props) => {
+                return (
+                    <>
+                        <b>{props.row.original.name}</b>
+                        <div className="small text-muted">
+                            {`ID: ${props.row.original.idx}`}
+                        </div>
+                    </>
+                )
+            }
         })
     ]
+
+    let needPages = false
+    if (groupsData) {
+        needPages = (groupsData.groups.length > 10)
+    }
 
     return (
         groupsData && (
@@ -44,11 +59,14 @@ export const Groups = () => {
                         value={newGroup}
                         onChange={(e) => setNewGroup(e.currentTarget.value)}
                     />
-                    <IconButton color="primary" icon={faPlus} onClick={addGroup} />
+                    <IconButton color="success" icon={faPlus} onClick={addGroup} />
                 </InputGroup>
                 {/* TODO: make pagination-buttons smaller */}
                 <BaseContainer>
-                    <CoreDataTable columns={columns} tableData={groupsData.groups} />
+                    <CoreDataTable
+                        columns={columns}
+                        tableData={groupsData.groups}
+                        usePagination={needPages} />
                 </BaseContainer>
                 {/* <Datatable
                     data={groupsData.groups}

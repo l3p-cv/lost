@@ -52,8 +52,8 @@ const CreateLabelTree = ({ visLevel }) => {
                             onChange={handleCreateLabelDescription}
                         />
                         <IconButton
-                            isOutline={false}
-                            color="primary"
+                            isOutline={true}
+                            color="success"
                             onClick={handleCreateSave}
                             disabled={
                                 createLabelName === '' || createLabelDescription === ''
@@ -73,6 +73,7 @@ const CreateLabelTree = ({ visLevel }) => {
                         }}
                         text="Import Label Tree"
                         className="mb-3"
+                        color='success'
                     />
                 </CCol>
             </CRow>

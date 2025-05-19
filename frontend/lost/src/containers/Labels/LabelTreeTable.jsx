@@ -77,7 +77,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                         : 'Edit'
                                     : 'Edit'
                             }
-                            color="primary"
+                            color="warning"
                             onClick={() => {
                                 const lT = labelTrees.find((labelTree) => {
                                     if (labelTree.idx === props.row.original.idx) {
@@ -115,8 +115,8 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                         <IconButton
                             icon={faFileExport}
                             text="Export"
-                            color="primary"
-                            isOutline={false}
+                            color="info"
+                            isOutline={true}
                             onClick={() => exportLabelTree(props.row.original.idx)}
                         />
                     )

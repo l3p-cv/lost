@@ -208,6 +208,37 @@ export const DSTable = ({ visLevel }) => {
                 },
             }),
             columnHelper.display({
+                id: 'browse',
+                header: () => 'Browse',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faFolderOpen}
+                            color="info"
+                            onClick={() => onOpenFileBrowser(props.row.original)}
+                            text="Browse"
+                        // isOutline={false}
+                        />
+                    )
+                }
+            }),
+            columnHelper.display({
+                id: 'edit',
+                header: () => 'Edit',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faEdit}
+                            color="warning"
+                            onClick={() => onEditDs(props.row)}
+                            disabled={checkEditable(props.row)}
+                            text="Edit"
+                        // isOutline={false}
+                        />
+                    )
+                }
+            }),
+            columnHelper.display({
                 id: 'delete',
                 header: () => 'Delete',
                 cell: (row) => {
@@ -221,38 +252,7 @@ export const DSTable = ({ visLevel }) => {
                         />
                     )
                 }
-            }),
-            columnHelper.display({
-                id: 'edit',
-                header: () => 'Edit',
-                cell: (props) => {
-                    return (
-                        <IconButton
-                            icon={faEdit}
-                            color="primary"
-                            onClick={() => onEditDs(props.row)}
-                            disabled={checkEditable(props.row)}
-                            text="Edit"
-                        // isOutline={false}
-                        />
-                    )
-                }
-            }),
-            columnHelper.display({
-                id: 'browse',
-                header: () => 'Browse',
-                cell: (props) => {
-                    return (
-                        <IconButton
-                            icon={faFolderOpen}
-                            color="primary"
-                            onClick={() => onOpenFileBrowser(props.row.original)}
-                            text="Browse"
-                        // isOutline={false}
-                        />
-                    )
-                }
-            }),
+            })
         ]
         return columns
     }
@@ -293,8 +293,8 @@ export const DSTable = ({ visLevel }) => {
             <CRow>
                 <CCol sm="auto">
                     <IconButton
-                        isOutline={false}
-                        color="primary"
+                        isOutline={true}
+                        color="success"
                         icon={faUserPlus}
                         text="Add Datasource"
                         onClick={createNewDS}

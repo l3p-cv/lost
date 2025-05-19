@@ -12,7 +12,9 @@ import React, { Fragment, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BaseContainer from '../../components/BaseContainer'
 import IconButton from '../../components/IconButton'
+import { CTooltip } from '@coreui/react'
 import CoreDataTable from '../../components/CoreDataTable'
+import CoreIconButton from '../../components/CoreIconButton'
 import HelpButton from '../../components/HelpButton'
 
 const DatasetTable = ({
@@ -154,17 +156,17 @@ const DatasetTable = ({
                     )
 
                     return (
-                        <IconButton
+                        <CoreIconButton
                             icon={faEye}
-                            color="primary"
-                            isOutline={false}
+                            color="info"
+                            isOutline={true}
                             onClick={() => {
                                 const rowData = props.row.original
                                 const isAnnotask = rowData.isAnnotask === true
                                 openReview(rowData.idx, isAnnotask)
                             }}
                             disabled={isDisabled}
-                        // text="Review"
+                            toolTip='Review Dataset/Task'
                         />
                     )
                 },
@@ -183,10 +185,10 @@ const DatasetTable = ({
                     )
 
                     return (
-                        <IconButton
+                        <CoreIconButton
                             icon={faDownload}
-                            color="primary"
-                            isOutline={false}
+                            color="info"
+                            isOutline={true}
                             onClick={() => {
                                 const datasetID = rowData.idx
                                 const isAnnotask = rowData.isAnnotask === true
@@ -200,6 +202,7 @@ const DatasetTable = ({
                                 )
                             }}
                             disabled={isDisabled}
+                            toolTip='Export Dataset'
                         />
                     )
                 },
@@ -214,15 +217,15 @@ const DatasetTable = ({
                     if (rowData.isAnnotask || rowData.isMetaDataset) return ''
 
                     return (
-                        <IconButton
+                        <CoreIconButton
                             icon={faPen}
-                            color="primary"
-                            isOutline={false}
+                            color="warning"
+                            isOutline={true}
                             onClick={() => {
                                 onEditButtonClicked(props.row.original)
                             }}
                             disabled={false}
-                        // text="Edit"
+                            toolTip='Edit Dataset'
                         />
                     )
                 },
