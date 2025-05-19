@@ -1,11 +1,9 @@
 import datetime
-from flask_ldap3_login import LDAP3LoginManager, AuthenticationResponseStatus
-from lost.settings import LOST_CONFIG, FLASK_DEBUG
+from lost.settings import LOST_CONFIG
 from flask_jwt_extended import create_access_token, create_refresh_token
-from lost.db.model import User as DBUser, Group, UserRoles, UserGroups
+from lost.db.model import User as DBUser, Group, UserRoles, UserGroups, Role
 from lost.db import roles
-import flask
-import traceback
+import logging
 class LoginManager():
     def __init__(self, dbm, user_name, password):
         self.dbm = dbm
@@ -13,15 +11,15 @@ class LoginManager():
         self.password = password
     
     def login(self):
-        if LOST_CONFIG.ldap_config['LDAP_ACTIVE']:
-            try:
-                access_token, refresh_token = self.__authenticate_ldap()
-            except Exception:
-                flask.current_app.logger.error('LDAP Authentication failed.')
-                flask.current_app.logger.error(traceback.print_exc())
-                access_token, refresh_token = self.__authenticate_flask() 
-        else:
-            access_token, refresh_token = self.__authenticate_flask()
+        # if LOST_CONFIG.ldap_config['LDAP_ACTIVE']:
+        #     try:
+        #         access_token, refresh_token = self.__authenticate_ldap()
+        #     except Exception:
+        #         flask.current_app.logger.error('LDAP Authentication failed.')
+        #         flask.current_app.logger.error(traceback.print_exc())
+        #         access_token, refresh_token = self.__authenticate_flask() 
+        # else:
+        access_token, refresh_token = self.__authenticate_flask()
 
         if access_token and refresh_token:
             return {
@@ -29,42 +27,54 @@ class LoginManager():
                 'refresh_token': refresh_token
             }, 200
         return {'message': 'Invalid credentials'}, 401
-    
-    def __get_token(self, user_id): 
+
+    def __get_token(self, user_id: int, roles: list[Role]):
         expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
         expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
-        access_token = create_access_token(identity=user_id, fresh=True, expires_delta=expires)
+
+        # get all roles of user as str
+        user_role_names: list[str] = []
+        for user_role in roles:
+            user_role_names.append(user_role.role.name)
+
+        # add roles of user to the jwt token
+        additional_claims = {
+            "roles": user_role_names
+        }
+
+        access_token = create_access_token(identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims)
         refresh_token = create_refresh_token(user_id, expires_delta=expires_refresh)
+
         return access_token, refresh_token
 
     def __authenticate_flask(self):
         if self.user_name:
             user = self.dbm.find_user_by_user_name(self.user_name)
         if user and user.check_password(self.password):
-            return self.__get_token(user.idx)
+            return self.__get_token(user.idx, user.roles)
         return None, None
-            
-    def __authenticate_ldap(self):
-        # auth with ldap
-        ldap_manager = LDAP3LoginManager()
-        ldap_manager.init_config(LOST_CONFIG.ldap_config)
 
-        # Check if the credentials are correct
-        response = ldap_manager.authenticate(self.user_name, self.password)
-        if response.status != AuthenticationResponseStatus.success:
-            # no user found in ldap, try it with db user:
-            return self.__authenticate_flask()
-        user_info = response.user_info
-        user = self.dbm.find_user_by_user_name(self.user_name)
-        # user not in db:
-        if not user:
-            user = self.__create_db_user(user_info)
-        else:
-            # user in db -> synch with ldap
-            user = self.__update_db_user(user_info, user)
-        return self.__get_token(user.idx)
+    # def __authenticate_ldap(self):
+    #     # auth with ldap
+    #     ldap_manager = LDAP3LoginManager()
+    #     ldap_manager.init_config(LOST_CONFIG.ldap_config)
+
+    #     # Check if the credentials are correct
+    #     response = ldap_manager.authenticate(self.user_name, self.password)
+    #     if response.status != AuthenticationResponseStatus.success:
+    #         # no user found in ldap, try it with db user:
+    #         return self.__authenticate_flask()
+    #     user_info = response.user_info
+    #     user = self.dbm.find_user_by_user_name(self.user_name)
+    #     # user not in db:
+    #     if not user:
+    #         user = self.__create_db_user(user_info)
+    #     else:
+    #         # user in db -> synch with ldap
+    #         user = self.__update_db_user(user_info, user)
+    #     return self.__get_token(user.idx)
     
-    def __create_db_user(self, user_info): 
+    def __create_db_user(self, user_info):
         user = DBUser(user_name=user_info['uid'], email=user_info['mail'],
                     email_confirmed_at=datetime.datetime.now(), first_name=user_info['givenName'],
                     last_name=user_info['sn'], is_external=True)

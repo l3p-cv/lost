@@ -1,12 +1,11 @@
 import datetime
 
-from numpy.core.numeric import identity
 from flask_restx import Resource
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 from lost.api.api import api
 from lost.api.user.api_definition import user, user_list, user_login
 from lost.api.user.parsers import login_parser, create_user_parser, update_user_parser
-from lost.settings import LOST_CONFIG, FLASK_DEBUG
+from lost.settings import LOST_CONFIG
 from lost.db import access, roles
 from lost.db.model import User as DBUser, Group, UserRoles, UserGroups
 from lost.logic import email 
@@ -22,7 +21,7 @@ namespace = api.namespace('user', description='Users in System.')
 @api.doc(security='apikey')
 class UserList(Resource):
     @api.marshal_with(user_list)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -40,7 +39,7 @@ class UserList(Resource):
             ulist = {'users':users}
             return ulist 
             
-    @jwt_required 
+    @jwt_required()
     @api.expect(create_user_parser)
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -118,7 +117,7 @@ class UserList(Resource):
 @api.doc(security='apikey')
 class UserListAnnoTask(Resource):
     @api.marshal_with(user_list)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -145,7 +144,7 @@ class UserListAnnoTask(Resource):
 @api.doc(security='apikey')
 class User(Resource):
     @api.marshal_with(user)
-    @jwt_required 
+    @jwt_required()
     def get(self, id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -161,7 +160,7 @@ class User(Resource):
         else:
             return "User with ID '{}' not found.".format(id)
 
-    @jwt_required 
+    @jwt_required()
     def delete(self, id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -197,7 +196,7 @@ class User(Resource):
             dbm.close_session()
             return "User with ID '{}' not found.".format(id), 400
     
-    @jwt_required 
+    @jwt_required()
     @api.expect(update_user_parser)
     def patch(self, id):
         args = update_user_parser.parse_args()
@@ -273,7 +272,7 @@ class User(Resource):
 @api.doc(security='apikey')
 class UserSelf(Resource):
     @api.marshal_with(user)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -285,7 +284,7 @@ class UserSelf(Resource):
             return "No user found."
 
     @api.expect(update_user_parser)
-    @jwt_required 
+    @jwt_required()
     def patch(self):
         args = update_user_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
@@ -307,7 +306,7 @@ class UserSelf(Resource):
 @namespace.route('/logout')
 @api.doc(security='apikey')
 class UserLogout(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         identity = get_jwt_identity()
         dbm = access.DBMan(LOST_CONFIG)
@@ -316,23 +315,23 @@ class UserLogout(Resource):
         if LOST_CONFIG.worker_management == 'dynamic':
             dask_session.ds_man.shutdown_cluster(user)
         dbm.close_session()
-        jti = get_raw_jwt()['jti'] 
+        jti = get_jwt()['jti'] 
         blacklist.add(jti)
         return {"msg": "Successfully logged out"}, 200
 
 @namespace.route('/logout2')
 @api.doc(security='apikey')
 class UserLogoutRefresh(Resource):
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def post(self):
-        jti = get_raw_jwt()['jti']
+        jti = get_jwt()['jti']
         blacklist.add(jti)
         return {"msg": "Successfully logged out"}, 200
 
 @namespace.route('/refresh')
 @api.doc(security='apikey')
 class UserTokenRefresh(Resource):
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def post(self):
         dbm = access.DBMan(LOST_CONFIG) 
         identity = get_jwt_identity()

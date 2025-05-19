@@ -19,7 +19,7 @@ namespace = api.namespace('label', description='Label API.')
 class LabelTrees(Resource):
     @api.doc(security='apikey',description='Get all Label trees falling into the given visibility level')
     #@api.marshal_with()
-    @jwt_required 
+    @jwt_required()
     def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -67,7 +67,7 @@ class LabelTrees(Resource):
 class LabelEditNew(Resource):
     @api.doc(security='apikey',description='Update Label')
     @api.expect(update_label_parser)
-    @jwt_required 
+    @jwt_required()
     def patch(self, visibility):
         args = update_label_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
@@ -89,7 +89,7 @@ class LabelEditNew(Resource):
 
     @api.doc(security='apikey',description='Add new Label')
     @api.expect(create_label_parser)
-    @jwt_required 
+    @jwt_required()
     def post(self, visibility):
         args = create_label_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
@@ -135,7 +135,7 @@ class LabelEditNew(Resource):
 class Label(Resource):
     @api.doc(security='apikey',description='Get Label Leaf with given ID')
     @api.marshal_with(label_leaf)
-    @jwt_required 
+    @jwt_required()
     def get(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -149,7 +149,7 @@ class Label(Resource):
             return re
         
     @api.doc(security='apikey',description='Delete Label with given ID')
-    @jwt_required 
+    @jwt_required()
     def delete(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -168,7 +168,7 @@ class Label(Resource):
 @api.doc(security='apikey')
 class ExportLabelTree(Resource):
     @api.doc(security='apikey',description='Get Export of a label Tree with the given label leaf as root, exported as CSV transmitted as BLOB')
-    @jwt_required 
+    @jwt_required()
     def get(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -192,7 +192,7 @@ class ExportLabelTree(Resource):
 @api.doc(security='apikey')
 class ImportLabelTree(Resource):
     @api.doc(security='apikey',description='Import a label Tree with the given label leaf as root, imported from CSV')
-    @jwt_required 
+    @jwt_required()
     def post(self, visibility):
         if 'file' not in request.files:
             return jsonify({"error": "No file part"}), 400
@@ -200,7 +200,7 @@ class ImportLabelTree(Resource):
         file = request.files['file']
         if file.filename == '':
             return jsonify({"error": "No selected file"}), 400
-        
+
         if not file or not file.filename.endswith('.csv'):
             return jsonify({"error": "Invalid file format. Please upload a CSV file."}), 400
 
@@ -238,4 +238,4 @@ class ImportLabelTree(Resource):
                     dbm.close_session()
                     return {"message": "Tree imported successfully"}
         dbm.close_session()
-        return "You are not authorized.", 401 
+        return "You are not authorized.", 401

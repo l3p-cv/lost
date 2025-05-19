@@ -30,7 +30,7 @@ namespace = api.namespace('pipeline', description='Pipeline API.')
 class TemplateList(Resource):
     @api.doc(security='apikey',description='Get list of pipeline Templates for given visibility')
     @api.marshal_with(templates)
-    @jwt_required
+    @jwt_required()
     def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -39,7 +39,7 @@ class TemplateList(Resource):
         if visibility == VisLevel().USER:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx)
                 dbm.close_session()
@@ -47,7 +47,7 @@ class TemplateList(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
             else:
                 re = template_service.get_templates(dbm)
                 dbm.close_session()
@@ -55,7 +55,7 @@ class TemplateList(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
                 dbm.close_session()
@@ -67,14 +67,14 @@ class TemplateList(Resource):
 class Template(Resource):
     @api.doc(security='apikey',description='Get pipeline template for given template ID')
     @api.marshal_with(template, skip_none=True)
-    @jwt_required
+    @jwt_required()
     def get(self, template_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
 
         else:
             re = template_service.get_template(dbm, template_id, user)
@@ -86,17 +86,17 @@ class Template(Resource):
 @api.doc(security='apikey')
 class PipelineList(Resource):
     # marshal caused problems json string was fine, api returned { pipelines: null }.
-    # @api.marshal_with(pipelines) 
+    # @api.marshal_with(pipelines)
     @api.doc(security='apikey',description='Get all pipelines')
-    @jwt_required
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        else: 
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
+        else:
             # for group in user.groups:
             #     print("--- printing group of user.groups ---")
             #     print(group) 
@@ -104,9 +104,9 @@ class PipelineList(Resource):
             re = pipeline_service.get_pipelines(dbm, group_ids)
             dbm.close_session()
             # print("--- PipelineList result ---")
-            # print(re) 
+            # print(re)
             return re
- 
+
 
 @namespace.route('/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
@@ -114,27 +114,27 @@ class PipelineList(Resource):
 class Pipeline(Resource):
     # @api.marshal_with(pipeline)
     @api.doc(security='apikey',description='Get pipeline with given ID')
-    @jwt_required
+    @jwt_required()
     def get(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
         else:
             re = pipeline_service.get_running_pipe(dbm, identity, pipeline_id, DATA_URL)
             dbm.close_session()
             return re
     @api.doc(security='apikey',description='Delete Pipeline with given ID')
-    @jwt_required
+    @jwt_required()
     def delete(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
         else:
             tasks.delete_pipe(pipeline_id)
             dbm.close_session()
@@ -146,14 +146,14 @@ class Pipeline(Resource):
 @api.doc(security='apikey')
 class PipelineStart(Resource):
     # @api.marshal_with(pipeline_start)
-    @jwt_required
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
         else:
             data = request.data
             # quick and dirty here, data was binary but should be dictonary without using json.loads locally.
@@ -175,14 +175,14 @@ class PipelineStart(Resource):
 @namespace.route('/updateArguments')
 @api.doc(security='apikey')
 class PipelineUpdateArguments(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
         else:
             status = pipeline_service.updateArguments(dbm, request.data)
             dbm.close_session()
@@ -192,14 +192,14 @@ class PipelineUpdateArguments(Resource):
 @namespace.param('pipeline_id', 'The id of the pipeline.')
 @api.doc(security='apikey')
 class PipelinePause(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
         else:
             pipeline_service.pause(dbm, pipeline_id)
             dbm.close_session()
@@ -209,14 +209,14 @@ class PipelinePause(Resource):
 @namespace.param('pipeline_id', 'The id of the pipeline.')
 @api.doc(security='apikey')
 class PipelinePlay(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
         else:
             pipeline_service.play(dbm, pipeline_id)
             dbm.close_session()
@@ -225,14 +225,14 @@ class PipelinePlay(Resource):
 @namespace.route('/project/import_zip')
 @api.doc(security='apikey')
 class TemplateImportZip(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
         else:
             try:
                 fm = AppFileMan(LOST_CONFIG)
@@ -282,7 +282,7 @@ class TemplateImportZip(Resource):
 @namespace.route('/project/import_git')
 @api.doc(security='apikey')
 class TemplateImportGit(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
 
         def git(*args):
@@ -292,7 +292,7 @@ class TemplateImportGit(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
         else:
             try:
                 fm = AppFileMan(LOST_CONFIG)
@@ -340,14 +340,14 @@ class TemplateImportGit(Resource):
 @api.doc(security='apikey')
 class PipelineTemplateExport(Resource):
     # @api.marshal_with(pipeline)
-    @jwt_required
+    @jwt_required()
     def get(self, pipe_project):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
         else:
             # TODO Export here !
             # src = fm.get_pipe_project_path(content['namespace'])
@@ -368,14 +368,14 @@ class PipelineTemplateExport(Resource):
 @namespace.route('/project/delete')
 @api.doc(security='apikey')
 class TemplateDelete(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
 
         else:
             data = json.loads(request.data)
@@ -390,7 +390,7 @@ class TemplateDelete(Resource):
 @api.doc(security='apikey')
 class ProjectList(Resource):
     @api.marshal_with(templates)
-    @jwt_required
+    @jwt_required()
     def get(self, visibility):
         def filter_by_pipe_project(re):
             pipeProjects = list()
@@ -417,19 +417,19 @@ class ProjectList(Resource):
         if visibility == VisLevel().USER:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx)
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
             else:
                 re = template_service.get_templates(dbm)
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+                return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
     
@@ -442,7 +442,7 @@ class ProjectList(Resource):
 @namespace.param('pipeline_element_id', 'Pipeline Element ID to get Logs for')
 @api.doc(security='apikey')
 class Logs(Resource):
-    @jwt_required 
+    @jwt_required()
     def get(self, pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -463,7 +463,7 @@ class Logs(Resource):
 @namespace.route('/element/<int:pipeline_element_id>/review')
 @api.doc(security='apikey')
 class Review(Resource):
-    @jwt_required
+    @jwt_required()
     @api.doc(security='apikey')
     @api.param('direction', 'One of "next","prev" or "first"')
     @api.param('lastImgId', 'ID of the last image')
@@ -475,7 +475,7 @@ class Review(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
 
         else:
             data = json.loads(request.data)
@@ -483,14 +483,14 @@ class Review(Resource):
             dbm.close_session()
             return re
     
-    @jwt_required 
+    @jwt_required()
     def put(self, pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
 
         else:
             data = json.loads(request.data)
@@ -504,14 +504,14 @@ class Review(Resource):
 @namespace.param('pipeline_element_id', 'The id of reviewed pipe element.')
 @api.doc(security='apikey')
 class ReviewOptions(Resource):
-    @jwt_required 
+    @jwt_required()
     def get(self, pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
 
         else:
             re = sia.reviewoptions(dbm, pipeline_element_id, user.idx)
@@ -527,7 +527,7 @@ class ReviewOptions(Resource):
 # @namespace.route('/annoexport_parquet/<peid>')
 # @api.doc(security='apikey')
 # class AnnoExportParquet(Resource):
-#     @jwt_required 
+#     @jwt_required()
 #     def get(self, peid):
 #          dbm = access.DBMan(LOST_CONFIG)
 #          identity = get_jwt_identity()
@@ -551,7 +551,7 @@ class ReviewOptions(Resource):
 # @namespace.route('/annoexport_csv/<peid>')
 # @api.doc(security='apikey')
 # class AnnoExportCSV(Resource):
-#     @jwt_required 
+#     @jwt_required()
 #     def get(self, peid):
 #          dbm = access.DBMan(LOST_CONFIG)
 #          identity = get_jwt_identity()
@@ -576,7 +576,7 @@ class ReviewOptions(Resource):
 # @namespace.route('/report')
 # @api.doc(security='apikey',description='STILL NEEDS TO BE REFACTORED WILL BE MOVED TO PIPELINE')
 # class ReportService(Resource):
-#     @jwt_required 
+#     @jwt_required()
 #     def post(self):
 #         dbm = access.DBMan(LOST_CONFIG)
 #         identity = get_jwt_identity()

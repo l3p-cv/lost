@@ -34,7 +34,7 @@ class Available(Resource):
     @api.param('page', 'Which page to return when using pagination')
     @api.param('filteredName', 'Name Filter')
     @api.param('filteredStates', 'State Filter passed as comma seperated ids')
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -75,7 +75,7 @@ class Available(Resource):
     @api.expect(annotask_parser)
     @api.doc(description='Select an annotation task for the authenticated user.')
     @api.response(200, 'Task selected successfully.')
-    @jwt_required 
+    @jwt_required()
     def post(self):
         args = annotask_parser.parse_args(request)
         dbm = access.DBMan(LOST_CONFIG)
@@ -92,8 +92,8 @@ class Available(Resource):
 @api.response(401, 'Unauthorized. User does not have the required role.')
 @api.doc(security='apikey',description='Get currently active Annotask')
 class Working(Resource):
-    @api.marshal_with(anno_task)
-    @jwt_required 
+    # @api.marshal_with(anno_task)
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -104,9 +104,9 @@ class Working(Resource):
         else:
             working_task = annotask_service.get_current_annotask(dbm, user)
             logging.info(f"Working Task {working_task} ")
-            if working_task == None:
-                return "Not Found", 404
-            dbm.close_session()        
+            if working_task is None:
+                return "Current working annotation task not found", 412
+            dbm.close_session()
 
             return working_task
 
@@ -117,10 +117,9 @@ class Working(Resource):
 @api.param('config', 'is the config supposed to be returned too')
 @api.doc(security='apikey')
 class AnnotaskById(Resource):
-    @jwt_required 
+    @jwt_required()
     @api.marshal_with(anno_task)
     @api.doc(security='apikey',description='Get details for Annotask with the given id')
-
     def get(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -183,7 +182,7 @@ class AnnotaskById(Resource):
 @namespace.param('annotask_id', 'The id of the annotation task.')
 @api.doc(security='apikey',description='Forces the release of the Annotations that are currently lock by users')
 class ForceRelease(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -201,7 +200,7 @@ class ForceRelease(Resource):
 @namespace.param('annotask_id', 'The id of the annotation task.')
 @api.doc(security='apikey')
 class ChangeUser(Resource):
-    @jwt_required 
+    @jwt_required()
     @api.expect(update_group_parser)
     @api.doc(security='apikey',description='Update the group or user the annotation is assigned to')
 
@@ -235,7 +234,7 @@ class ChangeUser(Resource):
 
 class UpdateAnnoTaskConfig(Resource):
     @api.doc(security='apikey',description='Update the config of the annotask')
-    @jwt_required 
+    @jwt_required()
     def put(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity() 
@@ -262,7 +261,7 @@ class UpdateAnnoTaskConfig(Resource):
 class GetAnnoTaskStorageSettings(Resource):
     @api.marshal_with(storage_settings)
     @api.doc(security='apikey',description='Get the storage settings of the annotask')
-    @jwt_required
+    @jwt_required()
     def get(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity() 
@@ -277,7 +276,7 @@ class GetAnnoTaskStorageSettings(Resource):
             'dataset_id': anno_task.dataset_id
         }
     
-    @jwt_required
+    @jwt_required()
     @api.doc(security='apikey',description='Update the storage settings of the annotask')
     @api.expect(storage_parser)
     def patch(self, annotask_id):
@@ -310,7 +309,7 @@ class GetAnnoTaskStorageSettings(Resource):
 class Exports(Resource):
     @api.expect(generate_export_parser)
     @api.doc(security='apikey',description='Generates an export for the annotask')
-    @jwt_required 
+    @jwt_required()
     def post(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity() 
@@ -362,7 +361,7 @@ class Exports(Resource):
             return "Success", 200
 
     @api.marshal_with(anno_task_export_list)
-    @jwt_required 
+    @jwt_required()
     @api.doc(security='apikey',description='Get all exports for the annotask')
 
     def get(self, annotask_id):
@@ -394,7 +393,7 @@ class Exports(Resource):
 class DataExportDownload(Resource):
     # @api.marshal_with(anno_task_export_download)
     @api.doc(security='apikey',description='Get the export with the given id in binary format')
-    @jwt_required 
+    @jwt_required()
     def get(self, anno_task_export_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -422,7 +421,7 @@ class DataExportDownload(Resource):
             # return 500
 
     @api.doc(security='apikey',description='Delete the export with the given id')
-    @jwt_required 
+    @jwt_required()
     def delete(self, anno_task_export_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity() 
@@ -450,7 +449,7 @@ class DataExportDownload(Resource):
 @namespace.route('/filterLabels')
 @api.doc(description='Get possible filter labels for annotation lists')
 class GetLabels(Resource):
-    @jwt_required
+    @jwt_required()
     @api.marshal_with(anno_task_filter_lables)    
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -476,7 +475,7 @@ class DatasetReviewImageSearch(Resource):
     @api.param('filter', 'String to search for')
     @api.marshal_with(review_images)
 
-    @jwt_required
+    @jwt_required()
     def get(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -544,7 +543,7 @@ class DatasetReviewImageSearch(Resource):
 class UpdateOneThing(Resource):
     @api.doc(security='apikey',description='Update Image Annotime Junk status or Image Label for the Annotask')
 
-    @jwt_required 
+    @jwt_required()
     def patch(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -577,7 +576,7 @@ class ReviewOptions(Resource):
     @api.doc(security='apikey',description='Get the Review Options for the Annotask')
 
     @api.marshal_with(review_options)
-    @jwt_required 
+    @jwt_required()
     def get(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -598,7 +597,7 @@ class ReviewOptions(Resource):
 @api.doc(security='apikey')
 class AnnotaskReview(Resource):
     @api.doc(description="Get data for the next annotask review image")
-    @jwt_required
+    @jwt_required()
     def post(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

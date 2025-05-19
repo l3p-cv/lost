@@ -131,7 +131,7 @@ class Datasets(Resource):
         description="Lists all available datasets with children and annotation tasks."
     )
     @api.response(200, "success", [datasetModel])
-    @jwt_required
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -201,7 +201,7 @@ class Datasets(Resource):
 
         return dataset
 
-    @jwt_required
+    @jwt_required()
     @api.doc(description="Creates a new dataset.")
     @api.expect(datasetModelCreate)
     @api.response(201, "success")
@@ -253,7 +253,7 @@ class Datasets(Resource):
     @api.expect(datasetModelUpdate)
     @api.response(204, "success")
     @api.response(400, "error", errorMessage)
-    @jwt_required
+    @jwt_required()
     def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -333,7 +333,7 @@ class Datasets(Resource):
 class DatasetReview(Resource):
     @api.doc(description="Get data for the next dataset review annotation")
     @api.response(200, "success")
-    @jwt_required
+    @jwt_required()
     def delete(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -368,7 +368,7 @@ class DatasetReview(Resource):
 class DatasetsFlat(Resource):
     @api.doc(description="Lists all available datasets in a flat list.")
     @api.response(200, "success", [datasetModel])
-    @jwt_required
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -398,7 +398,7 @@ class DatasetReview(Resource):
     @api.doc(description="Get data for the next dataset review annotation")
     @api.expect(datasetReviewRequestModel)
     @api.response(200, "success", [datasetModel])
-    @jwt_required
+    @jwt_required()
     def post(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -623,7 +623,7 @@ class DatasetReviewImageSearch(Resource):
 
     # @api.expect(datasetImageSearchRequestModel)
     @api.response(200, 'success', [datasetModel])
-    @jwt_required
+    @jwt_required()
     def get(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -698,7 +698,7 @@ class DatasetReviewImageSearch(Resource):
 class DatasetReviewImageSearch(Resource):
     @api.doc(description="Get all possible labels for a dataset")
     @api.response(200, "success", [])
-    @jwt_required
+    @jwt_required()
     def get(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -732,7 +732,7 @@ class DatasetReviewImageSearch(Resource):
 @api.doc(security="apikey")
 class DatasetParquetExport(Resource):
     @api.doc(description="Export dataset as parquet to a given file system")
-    @jwt_required
+    @jwt_required()
     def post(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -788,7 +788,7 @@ class DatasetParquetExport(Resource):
 @namespace.route("/<int:dataset_id>/ds_exports")
 class DatasetExports(Resource):
     @api.doc(description="Get all exports of a dataset")
-    @jwt_required
+    @jwt_required()
     def get(self, dataset_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -820,7 +820,7 @@ class DatasetExports(Resource):
 @namespace.route("/ds_exports/<int:export_id>")
 class DatasetExport(Resource):
     @api.doc(description="Delete a single export of a dataset")
-    @jwt_required
+    @jwt_required()
     def delete(self, export_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -841,7 +841,7 @@ class DatasetExport(Resource):
         return "success", 200
 
     @api.doc(description="Download a single export of a dataset")
-    @jwt_required
+    @jwt_required()
     def get(self, export_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

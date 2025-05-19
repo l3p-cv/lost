@@ -23,7 +23,7 @@ namespace = api.namespace('fb', description='Lost Filebrowser API')
 @namespace.route('/ls')
 @api.doc(security='apikey')
 class LS(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -49,7 +49,7 @@ class LS(Resource):
 @namespace.route('/lsTest')
 @api.doc(security='apikey')
 class LS(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -78,7 +78,7 @@ class LS(Resource):
 @namespace.route('/rm')
 @api.doc(security='apikey')
 class RM(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -101,7 +101,7 @@ class RM(Resource):
 @namespace.route('/delete')
 @api.doc(security='apikey')
 class Delete(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -129,7 +129,7 @@ class Delete(Resource):
 @namespace.route('/fslist/<string:visibility>')
 @api.doc(security='apikey')
 class FsList(Resource):
-    @jwt_required 
+    @jwt_required()
     def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -171,7 +171,7 @@ class FsList(Resource):
 @namespace.route('/fstypes')
 @api.doc(security='apikey')
 class FsTypes(Resource):
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -186,7 +186,7 @@ class FsTypes(Resource):
 @namespace.route('/savefs')
 @api.doc(security='apikey')
 class SaveFs(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -239,7 +239,7 @@ class SaveFs(Resource):
 @namespace.route('/fullfs')
 @api.doc(security='apikey')
 class FullFs(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -273,7 +273,7 @@ class FullFs(Resource):
 @namespace.route('/upload')
 @api.doc(security='apikey')
 class Upload(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -302,8 +302,8 @@ class Upload(Resource):
 
 @namespace.route('/mkdirs')
 @api.doc(security='apikey')
-class MkDirs(Resource): 
-    @jwt_required 
+class MkDirs(Resource):
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

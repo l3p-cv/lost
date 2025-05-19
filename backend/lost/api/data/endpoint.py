@@ -17,8 +17,8 @@ namespace = api.namespace('data', description='Data API.')
 
 # @namespace.route('/<string:path>')
 # @api.doc(security='apikey')
-# class Data(Resource): 
-#     @jwt_required 
+# class Data(Resource):
+#     @jwt_required()
 #     def get(self, path):
 #         dbm = access.DBMan(LOST_CONFIG)
 #         identity = get_jwt_identity()
@@ -32,7 +32,7 @@ namespace = api.namespace('data', description='Data API.')
 
 # @namespace.route('/logs/<path:path>')
 # class Logs(Resource): 
-#     @jwt_required 
+#     @jwt_required()
 #     def get(self, path):
 #         print(path)
 #         dbm = access.DBMan(LOST_CONFIG)
@@ -58,7 +58,7 @@ namespace = api.namespace('data', description='Data API.')
 @api.doc(security='apikey')
 class DataExport(Resource):
     @api.doc(security='apikey',description="Get the data export for the given export id as Blob ")
-    @jwt_required 
+    @jwt_required()
     def get(self, deid):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -99,7 +99,7 @@ class GetImage(Resource):
     @api.param('type', 'Size of the Pages for pagination')
     @api.param('drawAnno', 'Which page to return when using pagination')
     @api.param('addContext', 'Name Filter')
-    @jwt_required 
+    @jwt_required()
     def get(self,image_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -184,9 +184,9 @@ class GetImage(Resource):
 class GetDatastoresByKey(Resource):
     @api.doc(security='apikey',description='Get the Datastores with their names')
 
-    @jwt_required
+    @jwt_required()
     def get(self):
-        return {    
+        return {
             1: "Datastore 1",
             2: "Datastore 2",
             3: "Datastore 3",

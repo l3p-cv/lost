@@ -42,7 +42,7 @@ class Version(Resource):
 @api.doc(security='apikey')
 class JupyterLabUrl(Resource):
     @api.doc(security='apikey',description='Get jupyter lab url if jupyter lab is activated')         
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
