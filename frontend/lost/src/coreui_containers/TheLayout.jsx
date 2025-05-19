@@ -26,8 +26,11 @@ const TheLayout = () => {
             axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem(
                 'token',
             )}`
-            const { roles } = jwtDecode(token).user_claims
+
+            const jwtDecoded = jwtDecode(token)
+            const { roles } = jwtDecoded
             role.current = roles[0]
+
             if (!guiSetup[role.current]) {
                 throw new Error(`Role ${role.current} not found in Gui Setup`)
             } else {
