@@ -1,0 +1,14 @@
+services:
+  frontend:
+    image: lost-frontend
+    build:
+      context: ../../frontend
+    volumes:
+      - ../../frontend/:/code/
+
+  backend:
+    image: lost-backend
+    build:
+      context: ../../backend
+    volumes:
+      - ../../backend:/code/

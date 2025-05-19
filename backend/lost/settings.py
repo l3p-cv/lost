@@ -1,6 +1,7 @@
 from lostconfig import LOSTConfig
 
 FLASK_THREADED = True
+FLASK_LISTEN_HOST="0.0.0.0"
 
 RESTX_SWAGGER_EXPANSIONS = 'list'
 RESTX_VAL = True

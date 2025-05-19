@@ -1,0 +1,70 @@
+name: lost
+volumes:
+  app:
+  data:
+  db:
+
+services:
+  traefik:
+    command:
+    - --api.insecure=true
+    - --api.dashboard=true
+    - --providers.docker=true
+    - --providers.docker.exposedbydefault=false
+    - --entrypoints.web.address=:80
+    image: traefik:v3.4.0
+    ports:
+    - 80:80
+    - 8090:8080
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  frontend:
+    image: l3pcv/lost-test:${LOST_VERSION}
+    restart: always
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.frontend.rule=PathPrefix(`/`)
+    - traefik.http.routers.frontend.entrypoints=web    
+
+  backend:
+    image: l3pcv/lost-test:${LOST_VERSION}
+    env_file:
+      - .env
+    volumes:
+      - app:/home/lost/app
+      - data:/home/lost/data
+    restart: always
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.backend.rule=PathPrefix(`/api`)||PathPrefix(`/swaggerui`)
+    - traefik.http.routers.backend.entrypoints=web
+    - traefik.http.routers.backend.service=backend
+    - traefik.http.services.backend.loadbalancer.server.port=5000
+
+
+  db:
+    image: mysql:9.3.0
+    volumes:
+      - db:/var/lib/mysql
+    restart: always
+    ports:
+    - 3306:3306
+    environment:
+      MYSQL_DATABASE: ${LOST_DB_NAME}
+      MYSQL_USER: ${LOST_DB_USER}
+      MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
+
+  # For easy db access while dev.
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      MYSQL_USER: ${LOST_DB_USER}
+      MYSQL_PASSWORD: ${LOST_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${LOST_DB_ROOT_PASSWORD}
+      MYSQL_HOST: "%"
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "8081:80"
