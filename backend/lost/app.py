@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask import request
 from flask_jwt_extended import JWTManager
 import logging
+import time
 import traceback
 from lost import settings
 from lost.api.api import api
@@ -35,7 +36,7 @@ if settings.LOST_CONFIG.use_graylog:
     from flask.logging import default_handler
     app.logger.removeHandler(default_handler)
     app.logger.addHandler(GelfUdpHandler(host='graylog', port=12201,  _type='lost-api', include_extra_fields=True))
-    app.logger.info('Started LOST Flask Application.')  
+    app.logger.info('Started LOST Flask Application.')
 
 
 app.config['SWAGGER_UI_DOC_EXPANSION'] = settings.RESTX_SWAGGER_EXPANSIONS
@@ -52,14 +53,14 @@ app.config['CORS_HEADERS'] = settings.CORS_HEADERS
 jwt = JWTManager(app)
 
 
-@jwt.token_in_blacklist_loader
-def check_if_token_in_blacklist(decrypted_token):
-    jti = decrypted_token['jti']
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blacklist(_, payload_data):
+    jti = payload_data['jti']
     return jti in blacklist
 
 
-@jwt.user_claims_loader
-def add_claims_to_jwt(identity):
+@jwt.user_lookup_loader
+def add_claims_to_jwt(_, identity):
     dbm = access.DBMan(settings.LOST_CONFIG)
     roles = []
     for role in dbm.get_user_roles(user_id=identity):
@@ -95,14 +96,14 @@ CORS(app)
 @app.errorhandler(Exception)
 def handle_500(e):
     app.logger.error(traceback.format_exc())
-    # original = getattr(e, "original_exception", None)
-    # if original is None:
-    #     app.logger.error(e)
-    # else:
-    #     app.logger.error(original) 
-    return 'error', 500
 
-import time
+    # send corresponding HTTP return codes for errors
+    exception_name: str = type(e).__name__ 
+    match exception_name:
+        case 'NotFound':
+            return str(e), 404
+        case _:
+            return str(e), 500
 
 @app.before_request
 def before_request():
@@ -117,9 +118,9 @@ def after_request(response):
             (response.content_type.startswith('text/html'))):
             response.set_data(response.get_data().replace(
                 b'__EXECUTION_TIME__', bytes(str(diff), 'utf-8')))
-        app.logger.info('Webservice Meta Info', extra={'response_time': diff, 
-                                            'response_code': response.status_code,
-                                            })
+        app.logger.info('Webservice Meta Info', extra={'response_time': diff,
+            'response_code': response.status_code,
+        })
     return response
 
 
@@ -132,7 +133,7 @@ def main():
             daemon=True
         )
         t.start()
-    app.run(debug=settings.FLASK_DEBUG, threaded=settings.FLASK_THREADED)
+    app.run(debug=settings.FLASK_DEBUG, threaded=settings.FLASK_THREADED, host=settings.FLASK_LISTEN_HOST)
 
 
 if __name__ == "__main__":
