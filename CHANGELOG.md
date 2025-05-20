@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reworked PaginatorBottom completely (see "Changed")
 - New general Sweetalert for deletions
 - Added argument "color" to SelectFileButton
+- Rearranged + recolored Buttons on Pipeline-Inspection
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 - Renamed "Start"-column to "Options" in RunningPipelines
