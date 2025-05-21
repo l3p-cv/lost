@@ -3,13 +3,13 @@ from lost.settings import LOST_CONFIG
 from flask_jwt_extended import create_access_token, create_refresh_token
 from lost.db.model import User as DBUser, Group, UserRoles, UserGroups, Role
 from lost.db import roles
-import logging
-class LoginManager():
+
+class LoginManager:
     def __init__(self, dbm, user_name, password):
         self.dbm = dbm
         self.user_name = user_name
         self.password = password
-    
+
     def login(self):
         # if LOST_CONFIG.ldap_config['LDAP_ACTIVE']:
         #     try:
@@ -28,8 +28,9 @@ class LoginManager():
             }, 200
         return {'message': 'Invalid credentials'}, 401
 
-    def __get_token(self, user_id: int, roles: list[Role]):
-        expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
+    def create_jwt(self, user_id: int, roles: list[Role], expires=None):
+        if not expires:
+            expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
         expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
 
         # get all roles of user as str
@@ -43,7 +44,7 @@ class LoginManager():
         }
 
         access_token = create_access_token(identity=str(user_id), fresh=True, expires_delta=expires, additional_claims=additional_claims)
-        refresh_token = create_refresh_token(user_id, expires_delta=expires_refresh)
+        refresh_token = create_refresh_token(str(user_id), expires_delta=expires_refresh)
 
         return access_token, refresh_token
 
@@ -51,7 +52,7 @@ class LoginManager():
         if self.user_name:
             user = self.dbm.find_user_by_user_name(self.user_name)
         if user and user.check_password(self.password):
-            return self.__get_token(user.idx, user.roles)
+            return self.create_jwt(user.idx, user.roles)
         return None, None
 
     # def __authenticate_ldap(self):

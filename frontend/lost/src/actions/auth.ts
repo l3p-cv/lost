@@ -79,7 +79,6 @@ const refreshToken = async () => {
             axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem(
                 'refreshToken',
             )}`
-            await axios.post(`${API_URL}/user/logout2`)
             localStorage.removeItem('token')
             localStorage.removeItem('refreshToken')
             localStorage.removeItem('view')

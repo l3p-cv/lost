@@ -10,6 +10,9 @@ const Logout = () => {
     const { mutate: logout, isLoading, isError } = useLogout()
 
     useEffect(() => {
+        // don't try to log out if we are already
+        if (localStorage.getItem('token') === null) return
+
         logout()
     }, [logout])
 

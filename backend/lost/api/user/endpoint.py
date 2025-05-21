@@ -2,6 +2,7 @@ import datetime
 
 from flask_restx import Resource
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
+import logging
 from lost.api.api import api
 from lost.api.user.api_definition import user, user_list, user_login
 from lost.api.user.parsers import login_parser, create_user_parser, update_user_parser
@@ -304,56 +305,51 @@ class UserSelf(Resource):
             return "No user found.", 405
 
 @namespace.route('/logout')
-@api.doc(security='apikey')
+@api.doc(security='apikey', description='Marks the current JWT as invalid')
 class UserLogout(Resource):
     @jwt_required()
     def post(self):
+        jti = get_jwt()['jti']
+        blacklist.add(jti)
+
         identity = get_jwt_identity()
         dbm = access.DBMan(LOST_CONFIG)
         release_user_annos(dbm, identity)
         user = dbm.get_user_by_id(identity)
+        dbm.close_session()
+
         if LOST_CONFIG.worker_management == 'dynamic':
             dask_session.ds_man.shutdown_cluster(user)
-        dbm.close_session()
-        jti = get_jwt()['jti'] 
-        blacklist.add(jti)
-        return {"msg": "Successfully logged out"}, 200
 
-@namespace.route('/logout2')
-@api.doc(security='apikey')
-class UserLogoutRefresh(Resource):
-    @jwt_required(refresh=True)
-    def post(self):
-        jti = get_jwt()['jti']
-        blacklist.add(jti)
         return {"msg": "Successfully logged out"}, 200
 
 @namespace.route('/refresh')
-@api.doc(security='apikey')
+@api.doc(security='apikey', description='Returns a new JWT token pair using the existing refresh token')
 class UserTokenRefresh(Resource):
     @jwt_required(refresh=True)
     def post(self):
-        dbm = access.DBMan(LOST_CONFIG) 
+        dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if LOST_CONFIG.worker_management == 'dynamic':
             dask_session.ds_man.refresh_user_session(user)
-        expires = datetime.timedelta(minutes=LOST_CONFIG.session_timeout)
-        expires_refresh = datetime.timedelta(minutes=LOST_CONFIG.session_timeout + 2)
-        if user:
-            access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
-            refresh_token = create_refresh_token(user.idx, expires_delta=expires_refresh)
-            ret = {
+
+        lm = LoginManager(dbm, user.user_name, '')
+        lm.create_jwt(user.idx, user.roles)
+
+        access_token, refresh_token = lm.create_jwt(user.idx, user.roles)
+
+        if access_token and refresh_token:
+            return {
                 'token': access_token,
                 'refresh_token': refresh_token
-            }
-            dbm.close_session()
-            return ret, 200
+            }, 200
+
         dbm.close_session()
-        return {'message': 'Invalid user'}, 401
+        return api.abort(401, 'Invalid user')
 
 @namespace.route('/login')
-@api.doc(security='apikey')
+@api.doc(security='apikey', description='Returns a JWT using userName and password')
 class UserLogin(Resource):
     @api.expect(user_login)
     def post(self):
@@ -363,31 +359,32 @@ class UserLogin(Resource):
         user = dbm.find_user_by_user_name(data['userName'])
         lm = LoginManager(dbm, data['userName'], data['password'])
         response = lm.login()
-        if LOST_CONFIG.worker_management == 'dynamic':
-            if response[1] == 200:
-                dask_session.ds_man.create_user_cluster(user)
+        if LOST_CONFIG.worker_management == 'dynamic' and response[1] == 200:
+            dask_session.ds_man.create_user_cluster(user)
         dbm.close_session()
         return response
 
 @namespace.route('/token')
-@api.doc(security='apikey')
-class Token(Resource):
-    @api.expect(user_login)
+@api.doc(security='apikey', description='Creates a long lived token (JWT) using an exising (short lived) token')
+class UserLongLivedToken(Resource):
+    @jwt_required()
     def post(self):
-        # get data from parser
-        data = login_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
-        # find user in database
-        if 'user_name' in data:
-            user = dbm.find_user_by_user_name(data['user_name'])
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if LOST_CONFIG.worker_management == 'dynamic':
+            dask_session.ds_man.refresh_user_session(user)
 
-        # check password
-        if user and user.check_password(data['password']):
-            dbm.close_session()
-            expires = datetime.timedelta(days=3650)
-            access_token = create_access_token(identity=user.idx, fresh=True, expires_delta=expires)
+        lm = LoginManager(dbm, user.user_name, '')
+        lm.create_jwt(user.idx, user.roles)
+
+        expires = datetime.timedelta(days=3650)
+        access_token, _ = lm.create_jwt(user.idx, user.roles, expires)
+
+        if access_token:
             return {
                 'token': access_token
             }, 200
+
         dbm.close_session()
-        return {'message': 'Invalid credentials'}, 401
+        return api.abort(401, 'Invalid user')
