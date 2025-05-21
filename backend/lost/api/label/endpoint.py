@@ -28,7 +28,7 @@ class LabelTrees(Resource):
         if visibility == VisLevel().USER:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return "You are not authorized.", 403
             else:
                 root_leaves = dbm.get_all_label_trees(group_id=default_group.idx)
                 trees = list()
@@ -39,7 +39,7 @@ class LabelTrees(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return "You are not authorized.", 403
             else:
                 root_leaves = dbm.get_all_label_trees(global_only=True)
                 trees = list()
@@ -50,7 +50,7 @@ class LabelTrees(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return "You are not authorized.", 403
             else:
                 root_leaves = dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
                 trees = list()
@@ -59,7 +59,7 @@ class LabelTrees(Resource):
                 dbm.close_session()
                 return trees
         dbm.close_session()
-        return "You are not authorized.", 401 
+        return "You are not authorized.", 403 
 
 
 @namespace.route('/<string:visibility>')
@@ -75,7 +75,7 @@ class LabelEditNew(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             label = dbm.get_label_leaf(int(args.get('id')))
             label.name = args.get('name')
@@ -99,7 +99,7 @@ class LabelEditNew(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return "You are not authorized.", 403
             else:
                 label = model.LabelLeaf(name=args.get('name'),abbreviation=args.get('abbreviation'), \
                 description=args.get('description'),external_id=args.get('external_id'), 
@@ -113,7 +113,7 @@ class LabelEditNew(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return "You are not authorized.", 403
             else:
                 label = model.LabelLeaf(name=args.get('name'),abbreviation=args.get('abbreviation'), \
                 description=args.get('description'),external_id=args.get('external_id'), 
@@ -125,7 +125,7 @@ class LabelEditNew(Resource):
                 dbm.close_session()
                 return {"message": "Label added successfully", "labelId": label_id}
         dbm.close_session()
-        return "You are not authorized.", 401 
+        return "You are not authorized.", 403 
 
 
 
@@ -142,7 +142,7 @@ class Label(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             re = dbm.get_label_leaf(label_leaf_id)
             dbm.close_session()
@@ -156,7 +156,7 @@ class Label(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             label = dbm.get_label_leaf(label_leaf_id)
             dbm.delete(label)
@@ -175,7 +175,7 @@ class ExportLabelTree(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             label_tree = LabelTree(dbm, root_id=label_leaf_id)
             ldf = label_tree.to_df()
@@ -211,7 +211,7 @@ class ImportLabelTree(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return "You are not authorized.", 403
             else:
                 tree = LabelTree(dbm, logger=logging, group_id=default_group.idx)
                 df = pd.read_csv(file)
@@ -226,7 +226,7 @@ class ImportLabelTree(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return "You are not authorized.", 403
             else:
                 tree = LabelTree(dbm, logger=logging)
                 df = pd.read_csv(file)
@@ -238,4 +238,4 @@ class ImportLabelTree(Resource):
                     dbm.close_session()
                     return {"message": "Tree imported successfully"}
         dbm.close_session()
-        return "You are not authorized.", 401
+        return "You are not authorized.", 403

@@ -41,7 +41,7 @@ class Available(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             args = get_annotasks_parser.parse_args(request)
             page_size =  args.page_size
@@ -83,7 +83,7 @@ class Available(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             annotask_service.choose_annotask(dbm, args.id ,user.idx)
             dbm.close_session()
@@ -100,7 +100,7 @@ class Working(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             working_task = annotask_service.get_current_annotask(dbm, user)
             logging.info(f"Working Task {working_task} ")
@@ -126,7 +126,7 @@ class AnnotaskById(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             statistics = request.args.get('statistics')
             config = request.args.get('config')
@@ -150,7 +150,7 @@ class AnnotaskById(Resource):
                 annotask_type = "mia"
             elif annotask.dtype == dtype.AnnoTask.SIA:
                 annotask_type = "sia"
-                
+
             # add label leaves
             label_leaves = []
             db_leaves = dbm.get_all_required_label_leaves(annotask_id)
@@ -161,19 +161,19 @@ class AnnotaskById(Resource):
                 leaf_json['name'] = leaf.name
                 leaf_json['color'] = leaf.color
                 label_leaves.append(leaf_json)
-            
+
             # collect annotask info
-                
+
                 annotask_dict['type']= annotask_type
-                annotask_dict['user_name']= annotask_user_name                
+                annotask_dict['user_name']= annotask_user_name
                 annotask_dict['img_count']= img_count
-                annotask_dict['annotated_img_count']= annotated_img_count            
+                annotask_dict['annotated_img_count']= annotated_img_count
                 annotask_dict['label_leaves']= label_leaves
-            
+
             # add annotask configuration only if available
             if annotask.configuration and config == 'true':
                 annotask_dict['configuration'] = json.loads(annotask.configuration)
-            
+
             return annotask_dict
 
 
@@ -189,7 +189,7 @@ class ForceRelease(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             force_anno_release(dbm, annotask_id)
             dbm.close_session()
@@ -213,7 +213,7 @@ class ChangeUser(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             anno_task = dbm.get_anno_task(annotask_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
@@ -222,9 +222,9 @@ class ChangeUser(Resource):
                 dbm.save_obj(anno_task)
                 dbm.close_session()
                 return "Success", 200
-    
+
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
 
 @namespace.route('/<int:annotask_id>/config')
 @namespace.param('annotask_id', 'The id of the annotation task.')
@@ -241,7 +241,7 @@ class UpdateAnnoTaskConfig(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             args = annotask_config_parser.parse_args(request)
             anno_task = dbm.get_anno_task(annotask_id)
@@ -251,9 +251,9 @@ class UpdateAnnoTaskConfig(Resource):
                 dbm.save_obj(anno_task)
                 dbm.close_session()
                 return "Success", 200
-    
+
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
 
 @namespace.route('/<int:annotask_id>/storage_settings')
 @namespace.param('annotask_id', 'The id of the annotation task.')
@@ -268,14 +268,14 @@ class GetAnnoTaskStorageSettings(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
 
         anno_task = dbm.get_anno_task(annotask_id)
-        
+
         return {
             'dataset_id': anno_task.dataset_id
         }
-    
+
     @jwt_required()
     @api.doc(security='apikey',description='Update the storage settings of the annotask')
     @api.expect(storage_parser)
@@ -285,23 +285,23 @@ class GetAnnoTaskStorageSettings(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
-        
+            return "You are not authorized.", 403
+
         anno_task = dbm.get_anno_task(annotask_id)
         data = json.loads(request.data)
         args = storage_parser.parse_args(request)
-        
+
         # save dataset if given
         if 'datasetId' in data:
             dataset_id = args.dataset_id
             anno_task.dataset_id = dataset_id
-            
+
             # -1 = no dataset given (remove ds id in case there was one before)
             if str(dataset_id) == '-1':
                 anno_task.dataset_id = None
-            
+
             dbm.save_obj(anno_task)
-        
+
 
 @namespace.route('/<int:annotask_id>/exports')
 @namespace.param('annotask_id', 'The id of the annotation task.')
@@ -319,11 +319,11 @@ class Exports(Resource):
         # raise Exception(f'may_access_pe: {udb.may_access_pe(anno_task.pipe_element)}')
         if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
 
             args = generate_export_parser.parse_args(request)
-            
+
             include_images = args.include_images
             random_splits_active = args.random_splits['active']
             splits=None
@@ -333,7 +333,7 @@ class Exports(Resource):
                 img_count = r
             for r in dbm.count_image_remaining_annos(anno_task_id=anno_task.idx):
                 annotated_img_count = img_count - r
-            
+
             # check if amount of images to export is bigger than given limit in config
             if include_images:
                 if args.annotated_only:
@@ -350,7 +350,7 @@ class Exports(Resource):
                                             )
             dbm.save_obj(dExport)
             client = dask_session.get_client(user)
-          
+
             client.submit(export_ds, anno_task.pipe_element_id, identity, 
                                 dExport.idx, dExport.name, splits, 
                                 args.export_type, include_images, 
@@ -372,20 +372,20 @@ class Exports(Resource):
         anno_task = dbm.get_anno_task(annotask_id)
         if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             d_exports = dbm.get_anno_task_export(anno_task_id=anno_task.idx)
             ret_json = []
             for export in d_exports:
                 export_json = export.to_dict()  
                 if export.file_path:
-                    file_type = export.file_path.split('.')[-1]                
+                    file_type = export.file_path.split('.')[-1]
                     export_json['file_type'] = file_type
                 ret_json.append(export_json)
             dbm.close_session()
             return {'anno_task_exports':ret_json}, 200
 
-        
+
 @namespace.route('/exports/<int:anno_task_export_id>')
 @namespace.param('anno_task_export_id', 'The id of the anno_task_export to download.')
 @api.doc(security='apikey')
@@ -404,7 +404,7 @@ class DataExportDownload(Resource):
         anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
         if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             fs_db = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, fs_db)
@@ -428,7 +428,7 @@ class DataExportDownload(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             anno_task_data_export = dbm.get_anno_task_export(anno_task_export_id)
             anno_task = dbm.get_anno_task(anno_task_data_export.anno_task_id)
@@ -440,17 +440,17 @@ class DataExportDownload(Resource):
                 dbm.commit()
                 dbm.close_session()
                 return "Success", 200
-    
+
             dbm.close_session()
-            return "You are not authorized.", 401
-  
+            return "You are not authorized.", 403
+
 
 
 @namespace.route('/filterLabels')
 @api.doc(description='Get possible filter labels for annotation lists')
 class GetLabels(Resource):
     @jwt_required()
-    @api.marshal_with(anno_task_filter_lables)    
+    @api.marshal_with(anno_task_filter_lables)
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -463,7 +463,7 @@ class GetLabels(Resource):
             res['states'] = [0, 1]
             dbm.close_session()
             return res
-        
+
 
 
 
@@ -483,17 +483,17 @@ class DatasetReviewImageSearch(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        
+
         search_str = request.args.get('filter')
         labels = request.args.get('labels')
         if search_str == None:
             search_str=""
 
         db_result = dbm.get_search_images_in_annotask(annotask_id, search_str)
-        
+
         found_image_ids: list[int] = []
         found_images: list[dict[str, any]] = []
-        
+
         for entry in db_result:
             # prepare list of image ids for label filter (we can't iterate multiple times through db_result)
             found_image_ids.append(entry.idx)
@@ -504,15 +504,15 @@ class DatasetReviewImageSearch(Resource):
                 'annotation_id': entry.anno_task_id,
                 'annotation_name': entry.name
             })
-            
+
         # filter for images annotated with specific labels if labels are in the request
         if labels is not None:
             search_labels = list(map(int, labels.split(',')))
-            
+
             # no labels -> no images
             if len(search_labels) == 0:
                 return []
-            
+
             # found_image_ids = [entry.idx for entry in db_result]
             img_with_label_db_result = dbm.get_all_images_with_labels(
                 found_image_ids, search_labels
@@ -531,9 +531,9 @@ class DatasetReviewImageSearch(Resource):
 
             # replace list with label filtered list
             found_images = found_img_with_label
-        
+
         return {'images':found_images}
-    
+
 
 
 
@@ -605,22 +605,22 @@ class AnnotaskReview(Resource):
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
-        
+
         data = request.json
         serialized_review_data = self.__review(dbm, annotask_id, user.idx, data)
-        
+
         return serialized_review_data
-    
-    
+
+
     def __review(self, dbm, annotask_id, user_id, data):
-        
+
         annotask = dbm.get_anno_task(anno_task_id=annotask_id)
         direction = data['direction']
         current_idx = data['imageAnnoId']
         iteration = data['iteration']
-        
+
         first_annotation = dbm.get_sia_review_first(annotask.idx, iteration)
-        
+
         # get annotask selected by user or the first one if he didn't select one
         current_annotask_idx = data['annotaskIdx'] if 'annotaskIdx' in data else annotask.idx
         current_annotask = annotask
@@ -635,12 +635,12 @@ class AnnotaskReview(Resource):
             image_anno = dbm.get_sia_review_prev(current_annotask.idx, current_idx, iteration)
         elif direction == "specificImage":
             image_anno = dbm.get_sia_review_id(annotask_id, current_idx, iteration)
-        
+
         if not image_anno:
             return 'no annotation found'
-        
+
         anno_current_image_number, anno_total_image_amount = get_image_progress(dbm, annotask, image_anno.idx, iteration)
-            
+
         # check if user moved to the first of all images
         is_first_image = False
         if first_annotation.idx == image_anno.idx:
@@ -653,7 +653,7 @@ class AnnotaskReview(Resource):
 
         sia_serialize = SiaSerialize(image_anno, user_id, DATA_URL, is_first_image, is_last_image, anno_current_image_number, anno_total_image_amount)
         json_response = sia_serialize.serialize()
-        
+
         # add current annotation task index to response
         json_response['current_annotask_idx'] = current_annotask_idx
 

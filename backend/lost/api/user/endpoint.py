@@ -28,7 +28,7 @@ class UserList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             users = dbm.get_users()
             for us in users:
@@ -37,8 +37,8 @@ class UserList(Resource):
                         us.groups.remove(g)
             dbm.close_session()
             ulist = {'users':users}
-            return ulist 
-            
+            return ulist
+
     @jwt_required()
     @api.expect(create_user_parser)
     def post(self):
@@ -47,7 +47,7 @@ class UserList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         # get data from parser
         data = create_user_parser.parse_args()
         # find user in database
@@ -59,7 +59,7 @@ class UserList(Resource):
 
         if user:
             return {'message': 'User already exists.'}, 401
-        else: 
+        else:
             user = DBUser(
             user_name = data['user_name'],
             email = data['email'],
@@ -76,7 +76,7 @@ class UserList(Resource):
             anno_role = dbm.get_role_by_name(roles.ANNOTATOR)
             ur = UserRoles(user_id=user.idx, role_id=anno_role.idx)
             dbm.save_obj(ur)
-            
+
             if data['roles']:
                 role_ids = [db_role.role_id for db_role in dbm.get_user_roles(user.idx)]
                 for role_name in data['roles']:
@@ -87,7 +87,7 @@ class UserList(Resource):
                             if not role.idx in role_ids:
                                 ur = UserRoles(user_id=user.idx, role_id=role.idx)
                                 dbm.save_obj(ur)
-            
+
             if data['groups']:
                 for group_name in data['groups']:
                     group = dbm.get_group_by_name(group_name)
@@ -111,7 +111,7 @@ class UserList(Resource):
             return {
                 'message': 'success'
             }, 200
-         
+
 @namespace.route('/anno_task_user')
 @api.doc(description='User Api get method for anno task users.')
 @api.doc(security='apikey')
@@ -124,10 +124,10 @@ class UserListAnnoTask(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             users = dbm.get_users()
-            
+
             # remove sensitive user information
             for user in users:
                 user.api_token = None
@@ -151,7 +151,7 @@ class User(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
 
         requesteduser = dbm.get_user_by_id(id)
         dbm.close_session()
@@ -167,10 +167,10 @@ class User(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
 
         requesteduser = dbm.get_user_by_id(id)
-        
+
         if requesteduser.idx == user.idx:
             dbm.close_session()
             return "You are not able to delete yourself", 400
@@ -195,7 +195,7 @@ class User(Resource):
         else:
             dbm.close_session()
             return "User with ID '{}' not found.".format(id), 400
-    
+
     @jwt_required()
     @api.expect(update_user_parser)
     def patch(self, id):
@@ -205,10 +205,10 @@ class User(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
 
         requesteduser = dbm.get_user_by_id(id)
-         
+
         if requesteduser:
             if not requesteduser.is_external:
                 requesteduser.email = args.get('email')
@@ -219,7 +219,7 @@ class User(Resource):
                 if requesteduser.user_name != 'admin': 
                     dbm.delete(user_role) 
                     dbm.commit()
-            
+
             user_default_group_id = get_user_default_group(dbm, requesteduser.idx)
             user_role_list = []
             if requesteduser.user_name != 'admin': 
@@ -261,13 +261,13 @@ class User(Resource):
 
             dbm.save_obj(requesteduser)
             dbm.close_session()
-            return 'success', 200 
+            return 'success', 200
         else:
             dbm.close_session()
             return "User with ID '{}' not found.".format(id), 400
 
-    
- 
+
+
 @namespace.route('/self')
 @api.doc(security='apikey')
 class UserSelf(Resource):

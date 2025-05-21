@@ -3,7 +3,6 @@ import shutil
 from flask import request, make_response
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from datetime import datetime
 from lost.api.api import api
 from lost.logic.file_man import AppFileMan
 from lost.api.pipeline.api_definition import templates, template
@@ -432,7 +431,7 @@ class ProjectList(Resource):
                 return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 403
             else:
                 re = template_service.get_templates(dbm, group_id=default_group.idx, add_global=True)
-    
+
         re = filter_by_pipe_project(re)
         dbm.close_session()
         return re
@@ -449,7 +448,7 @@ class Logs(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             user_fs = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, user_fs)           
@@ -457,7 +456,7 @@ class Logs(Resource):
             resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
             resp.headers["Content-Type"] = "text/csv"
             return resp
-        
+
 
 
 @namespace.route('/element/<int:pipeline_element_id>/review')
@@ -534,7 +533,7 @@ class ReviewOptions(Resource):
 #          user = dbm.get_user_by_id(identity)
 #          if not user.has_role(roles.DESIGNER):
 #              dbm.close_session()
-#              return "You are not authorized.", 401
+#              return "You are not authorized.", 403
 #          else:
 #              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
 #              pe = pe_base.Element(pe_db, dbm)
@@ -558,7 +557,7 @@ class ReviewOptions(Resource):
 #          user = dbm.get_user_by_id(identity)
 #          if not user.has_role(roles.DESIGNER):
 #              dbm.close_session()
-#              return "You are not authorized.", 401
+#              return "You are not authorized.", 403
 #          else:
 #              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
 #              pe = pe_base.Element(pe_db, dbm)
@@ -583,7 +582,7 @@ class ReviewOptions(Resource):
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.DESIGNER):
 #             dbm.close_session()
-#             return "You are not authorized.", 401
+#             return "You are not authorized.", 403
 #         else:
 #             data = json.loads(request.data)
 #             report = Report(dbm, data)

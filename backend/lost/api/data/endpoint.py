@@ -7,10 +7,9 @@ from lost.db import access, roles
 from lost.logic.file_man import FileMan
 from lost.logic import dask_session
 from lost.logic.file_access import UserFileAccess
-import json
 import lost_ds as lds
 import cv2
-import base64 
+import base64
 from lost.api.data.parsers import get_image_parser
 import logging
 namespace = api.namespace('data', description='Data API.')
@@ -25,7 +24,7 @@ namespace = api.namespace('data', description='Data API.')
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.ANNOTATOR):
 #             dbm.close_session()
-#             return "You are not authorized.", 401
+#             return "You are not authorized.", 403
 #         else:
 #             raise Exception('data/ -> Not Implemented!')
             # return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data'), path)
@@ -40,7 +39,7 @@ namespace = api.namespace('data', description='Data API.')
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.ANNOTATOR):
 #             dbm.close_session()
-#             return "You are not authorized.", 401
+#             return "You are not authorized.", 403
 #         else:
 #             # raise Exception('data/logs/ -> Not Implemented!')
 #             fm = FileMan(LOST_CONFIG)
@@ -65,9 +64,8 @@ class DataExport(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
-            # data = json.loads(request.data)
             de = dbm.get_data_export(deid)
             fs_db = de.fs
             fm = FileMan(fs_db=fs_db)

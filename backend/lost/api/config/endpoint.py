@@ -1,4 +1,5 @@
 import json
+from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
@@ -72,7 +73,7 @@ class ConfigList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             project_config = ProjectConfigMan(dbm)
             return project_config.get_all()
@@ -86,7 +87,7 @@ class ConfigList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             data = json.loads(request.data)
             project_config = ProjectConfigMan(dbm)

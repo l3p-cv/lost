@@ -19,7 +19,7 @@ class WorkerList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             workers = dbm.get_worker()
             dbm.close_session()
@@ -37,7 +37,7 @@ class Logs(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return "You are not authorized.", 403
         else:
             raise Exception('data/workerlogs/ -> Not Implemented!')
             # fm = AppFileMan(LOST_CONFIG)
