@@ -30,7 +30,7 @@ class LS(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fs']['id'])
@@ -56,13 +56,13 @@ class LS(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             if data['fs']['fsType'] == 'file':
                 if not user.has_role(roles.ADMINISTRATOR):
                     dbm.close_session()
-                    return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+                    return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
             connection_dict = ast.literal_eval(data['fs']['connection'])
             db_fs = model.FileSystem(
                 connection=json.dumps(connection_dict),
@@ -85,7 +85,7 @@ class RM(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fsId'])
@@ -108,7 +108,7 @@ class Delete(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fs']['id'])
@@ -136,7 +136,7 @@ class FsList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             group_id = get_user_default_group(dbm, identity)
             # for user_group in dbm.get_user_groups_by_user_id(identity):
@@ -193,7 +193,7 @@ class SaveFs(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             if 'id' in data:
@@ -246,7 +246,7 @@ class FullFs(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             for user_group in dbm.get_user_groups_by_user_id(identity):
@@ -280,7 +280,7 @@ class Upload(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = request.form
             fsId = data['fsId'] 
@@ -310,7 +310,7 @@ class MkDirs(Resource):
         user = dbm.get_user_by_id(identity) 
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data) 
             fs_id = data['fsId']

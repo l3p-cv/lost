@@ -24,7 +24,7 @@ class Update(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             data = json.loads(request.data)
@@ -43,7 +43,7 @@ class Next(Resource):
         user = dbm.get_user_by_id(identity)     
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             re = mia.get_next(dbm, identity, max_amount)
             dbm.close_session()
@@ -61,7 +61,7 @@ class Label(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             re = mia.get_label_trees(dbm, identity)
             dbm.close_session()
@@ -80,7 +80,7 @@ class Finish(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             re = mia.finish(dbm, identity)
@@ -98,7 +98,7 @@ class Special(Resource):
         user = dbm.get_user_by_id(identity)     
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             data = json.loads(request.data)
             re = mia.get_special(dbm, identity, data['miaIds'])

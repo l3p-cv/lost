@@ -28,7 +28,7 @@ class UserList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             users = dbm.get_users()
             for us in users:
@@ -47,7 +47,7 @@ class UserList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         # get data from parser
         data = create_user_parser.parse_args()
         # find user in database
@@ -124,7 +124,7 @@ class UserListAnnoTask(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             users = dbm.get_users()
 
@@ -151,7 +151,7 @@ class User(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
         requesteduser = dbm.get_user_by_id(id)
         dbm.close_session()
@@ -167,7 +167,7 @@ class User(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
         requesteduser = dbm.get_user_by_id(id)
 
@@ -205,7 +205,7 @@ class User(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
         requesteduser = dbm.get_user_by_id(id)
 

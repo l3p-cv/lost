@@ -31,7 +31,7 @@ class First(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             direction = request.args.get('direction')
             last_img_id = int(request.args.get('lastImgId'))
@@ -61,7 +61,7 @@ class First(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             try:
@@ -87,7 +87,7 @@ class First(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             data = json.loads(request.data)
 
@@ -118,7 +118,7 @@ class Filter(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
 
@@ -175,7 +175,7 @@ class AllowedExampler(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             up = UserPermissions(dbm, user)
@@ -193,7 +193,7 @@ class NextAnnoId(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             # raise Exception('JJ')
@@ -212,7 +212,7 @@ class Finish(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             re = sia.finish(dbm, identity)
@@ -232,7 +232,7 @@ class Label(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             re = sia.get_label_trees(dbm, identity)
             dbm.close_session()
@@ -250,7 +250,7 @@ class Configuration(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             re = sia.get_configuration(dbm, identity)
             dbm.close_session()

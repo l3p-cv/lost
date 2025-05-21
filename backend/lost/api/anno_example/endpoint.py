@@ -21,7 +21,7 @@ class GetAnnoExample(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             #TODO: Check if user is permitted to load this image

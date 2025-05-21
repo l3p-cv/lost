@@ -19,7 +19,7 @@ class Personal(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             from lost.api.statistics.example_data import example_stats
             personal_stats = personal.PersonalStats(dbm, user.idx)
@@ -45,7 +45,7 @@ class Designer(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             from lost.api.statistics.example_data import example_stats
             designer_stats = designer.DesignerStats(dbm, user.idx)

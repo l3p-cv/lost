@@ -630,7 +630,7 @@ class DatasetReviewImageSearch(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         
         # data = request.json
         # search_str = data['filter']

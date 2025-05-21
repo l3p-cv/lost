@@ -24,7 +24,7 @@ namespace = api.namespace('data', description='Data API.')
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.ANNOTATOR):
 #             dbm.close_session()
-#             return "You are not authorized.", 403
+#             return api.abort(403, "You are not authorized.")
 #         else:
 #             raise Exception('data/ -> Not Implemented!')
             # return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data'), path)
@@ -39,7 +39,7 @@ namespace = api.namespace('data', description='Data API.')
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.ANNOTATOR):
 #             dbm.close_session()
-#             return "You are not authorized.", 403
+#             return api.abort(403, "You are not authorized.")
 #         else:
 #             # raise Exception('data/logs/ -> Not Implemented!')
 #             fm = FileMan(LOST_CONFIG)
@@ -64,7 +64,7 @@ class DataExport(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             de = dbm.get_data_export(deid)
             fs_db = de.fs
@@ -104,7 +104,7 @@ class GetImage(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))

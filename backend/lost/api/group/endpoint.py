@@ -22,7 +22,7 @@ class GroupList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             glist = {'groups':dbm.get_user_groups(user_defaults=False)}
             dbm.close_session()
@@ -71,7 +71,7 @@ class Group(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
         group = dbm.get_group_by_id(id)
         

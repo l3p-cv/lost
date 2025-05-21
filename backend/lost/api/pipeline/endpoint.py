@@ -231,7 +231,7 @@ class TemplateImportZip(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
         else:
             try:
                 fm = AppFileMan(LOST_CONFIG)
@@ -291,7 +291,7 @@ class TemplateImportGit(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
         else:
             try:
                 fm = AppFileMan(LOST_CONFIG)
@@ -346,7 +346,7 @@ class PipelineTemplateExport(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
         else:
             # TODO Export here !
             # src = fm.get_pipe_project_path(content['namespace'])
@@ -374,7 +374,7 @@ class TemplateDelete(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 403
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
 
         else:
             data = json.loads(request.data)
@@ -448,7 +448,7 @@ class Logs(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             user_fs = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, user_fs)           
@@ -533,7 +533,7 @@ class ReviewOptions(Resource):
 #          user = dbm.get_user_by_id(identity)
 #          if not user.has_role(roles.DESIGNER):
 #              dbm.close_session()
-#              return "You are not authorized.", 403
+#              return api.abort(403, "You are not authorized.")
 #          else:
 #              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
 #              pe = pe_base.Element(pe_db, dbm)
@@ -557,7 +557,7 @@ class ReviewOptions(Resource):
 #          user = dbm.get_user_by_id(identity)
 #          if not user.has_role(roles.DESIGNER):
 #              dbm.close_session()
-#              return "You are not authorized.", 403
+#              return api.abort(403, "You are not authorized.")
 #          else:
 #              pe_db = dbm.get_pipe_element(pipe_e_id=peid)
 #              pe = pe_base.Element(pe_db, dbm)
@@ -582,7 +582,7 @@ class ReviewOptions(Resource):
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.DESIGNER):
 #             dbm.close_session()
-#             return "You are not authorized.", 403
+#             return api.abort(403, "You are not authorized.")
 #         else:
 #             data = json.loads(request.data)
 #             report = Report(dbm, data)

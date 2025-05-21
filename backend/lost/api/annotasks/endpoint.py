@@ -5,16 +5,14 @@ from flask import request, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
 from lost.settings import LOST_CONFIG, DATA_URL
-from lost.logic.file_man import AppFileMan
 from lost.logic.file_access import UserFileAccess
 from lost.logic.db_access import UserDbAccess
 from lost.db import access, roles, model, dtype
 from lost.api.annotasks.parsers import annotask_parser, update_group_parser, annotask_config_parser,storage_parser,generate_export_parser,get_annotasks_parser,patch_annotation_parser
 from lost.logic import anno_task as annotask_service
-from lost.logic.jobs.jobs import force_anno_release, export_ds, delete_ds_export
-from lost.logic.report import Report
+from lost.logic.jobs.jobs import force_anno_release, export_ds
 from lost.logic import dask_session
-from lost.api.annotasks.api_definition import anno_task_list, anno_task, storage_settings, anno_task_export_list, anno_task_export_download,anno_task_filter_lables,review_images,review_options
+from lost.api.annotasks.api_definition import anno_task_list, anno_task, storage_settings, anno_task_export_list, anno_task_export_download, anno_task_filter_lables,review_images,review_options
 import json
 from lost.logic.sia import SiaSerialize,get_image_progress,SiaUpdateOneThing
 import logging
@@ -41,7 +39,7 @@ class Available(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             args = get_annotasks_parser.parse_args(request)
             page_size =  args.page_size
@@ -62,8 +60,8 @@ class Available(Resource):
             if page_size!= None and page!= None:
                 anno_tasks = dbm.get_annotasks_filtered(group_ids=group_ids, page_size=page_size, page=page,  filtered_name=filtered_name,filtered_states=filtered_states)
                 total_pages = dbm.get_annotasks_total_pages(group_ids=group_ids, page_size=page_size, filtered_name=filtered_name,filtered_states=filtered_states)
-                
-                
+
+
                 for at in anno_tasks:
                     annotask_list.append(annotask_service.get_at_info(dbm, at, user_id=user.idx))
             else:
@@ -83,7 +81,7 @@ class Available(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             annotask_service.choose_annotask(dbm, args.id ,user.idx)
             dbm.close_session()
@@ -100,7 +98,7 @@ class Working(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             working_task = annotask_service.get_current_annotask(dbm, user)
             logging.info(f"Working Task {working_task} ")
@@ -126,7 +124,7 @@ class AnnotaskById(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             statistics = request.args.get('statistics')
             config = request.args.get('config')
@@ -143,7 +141,7 @@ class AnnotaskById(Resource):
             annotask_user_name = "All Users"
             if annotask.group_id:
                 annotask_user_name = annotask.group.name
-            
+
             # add annotask type
             annotask_type = ""
             if annotask.dtype == dtype.AnnoTask.MIA:
@@ -189,7 +187,7 @@ class ForceRelease(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             force_anno_release(dbm, annotask_id)
             dbm.close_session()
@@ -213,7 +211,7 @@ class ChangeUser(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             anno_task = dbm.get_anno_task(annotask_id)
             pipe_manager_id = anno_task.pipe_element.pipe.manager_id
@@ -224,7 +222,7 @@ class ChangeUser(Resource):
                 return "Success", 200
 
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
 @namespace.route('/<int:annotask_id>/config')
 @namespace.param('annotask_id', 'The id of the annotation task.')
@@ -241,7 +239,7 @@ class UpdateAnnoTaskConfig(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             args = annotask_config_parser.parse_args(request)
             anno_task = dbm.get_anno_task(annotask_id)
@@ -253,7 +251,7 @@ class UpdateAnnoTaskConfig(Resource):
                 return "Success", 200
 
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
 @namespace.route('/<int:annotask_id>/storage_settings')
 @namespace.param('annotask_id', 'The id of the annotation task.')
@@ -268,7 +266,7 @@ class GetAnnoTaskStorageSettings(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
         anno_task = dbm.get_anno_task(annotask_id)
 
@@ -285,7 +283,7 @@ class GetAnnoTaskStorageSettings(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
         anno_task = dbm.get_anno_task(annotask_id)
         data = json.loads(request.data)
@@ -319,7 +317,7 @@ class Exports(Resource):
         # raise Exception(f'may_access_pe: {udb.may_access_pe(anno_task.pipe_element)}')
         if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
 
             args = generate_export_parser.parse_args(request)
@@ -372,7 +370,7 @@ class Exports(Resource):
         anno_task = dbm.get_anno_task(annotask_id)
         if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             d_exports = dbm.get_anno_task_export(anno_task_id=anno_task.idx)
             ret_json = []
@@ -404,7 +402,7 @@ class DataExportDownload(Resource):
         anno_task = dbm.get_anno_task(anno_task_export.anno_task_id)
         if not udb.may_access_pe(anno_task.pipe_element):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             fs_db = dbm.get_user_default_fs(user.idx)
             ufa = UserFileAccess(dbm, user, fs_db)
@@ -428,7 +426,7 @@ class DataExportDownload(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
         else:
             anno_task_data_export = dbm.get_anno_task_export(anno_task_export_id)
             anno_task = dbm.get_anno_task(anno_task_data_export.anno_task_id)
@@ -442,7 +440,7 @@ class DataExportDownload(Resource):
                 return "Success", 200
 
             dbm.close_session()
-            return "You are not authorized.", 403
+            return api.abort(403, "You are not authorized.")
 
 
 
@@ -482,7 +480,7 @@ class DatasetReviewImageSearch(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
 
         search_str = request.args.get('filter')
         labels = request.args.get('labels')
@@ -550,7 +548,7 @@ class UpdateOneThing(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             args = patch_annotation_parser.parse_args(request)
             logging.info(args)
@@ -583,7 +581,7 @@ class ReviewOptions(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
 
         else:
             re = sia.reviewoptions_annotask(dbm, annotask_id, user.idx)
@@ -604,7 +602,7 @@ class AnnotaskReview(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
 
         data = request.json
         serialized_review_data = self.__review(dbm, annotask_id, user.idx, data)
