@@ -11,10 +11,13 @@ import {
     CDropdownDivider
 } from '@coreui/react'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
-import IconButton from './IconButton'
+import IconButton from '../IconButton'
 import React, { useState, useEffect } from "react";
 
-const TablePagination = ({ table, totalPages, targetPage, setTargetPage }) => {
+const TablePagination = ({ table,
+    totalPages,
+    targetPage,
+    setTargetPage }) => {
     // const [currentPage, setCurrentPage] = useState(table.getState().pagination.pageIndex + 1);
 
     const handleSubmit = (value) => {
@@ -69,7 +72,10 @@ const TablePagination = ({ table, totalPages, targetPage, setTargetPage }) => {
 }
 
 
-const PaginatorBottom = ({ table, visible = true }) => {
+const PaginatorBottomWhole = ({table,
+    visible = true,
+    totalPages = table.getPageCount()
+}) => {
 
     if (!visible) return
 
@@ -105,7 +111,7 @@ const PaginatorBottom = ({ table, visible = true }) => {
             <CCol>
                 <TablePagination
                     table={table}
-                    totalPages={table.getPageCount()}
+                    totalPages={totalPages}
                     targetPage={targetPage}
                     setTargetPage={setTargetPage} />
             </CCol>
@@ -148,4 +154,4 @@ const PaginatorBottom = ({ table, visible = true }) => {
     )
 }
 
-export default PaginatorBottom
+export default PaginatorBottomWhole

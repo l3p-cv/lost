@@ -1,7 +1,7 @@
 // TODO: PLEASE RENAME THIS!!!
 import { CCol, CRow, CTable, CTableBody, CTableHead } from '@coreui/react'
 import BaseContainer from './BaseContainer'
-import PaginatorBottom from './PaginatorBottom'
+import { useState } from 'react'
 import {
     flexRender,
     getCoreRowModel,
@@ -11,9 +11,36 @@ import {
     useReactTable,
 } from '@tanstack/react-table'
 import React, { Fragment, useEffect } from 'react'
+import PaginationWrapper from './Pagination/PaginationWrapper'
+import PaginatorBottomWhole from './Pagination/PaginatorBottomWhole'
 
 // const CoreDataTable = ( {tableData, columns} ) => { // TODO: rewrite as const???
-function CoreDataTable({ tableData, columns, usePagination=true }) {
+function CoreDataTable({
+    className = '',
+    tableData = [],
+    columns = [],
+    usePagination = true,
+    isLoading = false,
+    pageCount = undefined,
+    pageSize = 10,
+    rowHeight = 55,
+    onPaginationChange = () => { },
+    onColumnFiltersChange = () => { },
+    wholeData = true
+}) {
+    const [columnFilters, setColumnFilters] = useState([])
+    const [doRerender, setDoRerender] = useState(false)
+    const [paginationState, setPaginationState] = useState({
+        pageIndex: 0,
+        pageSize: pageSize,
+    })
+    const [possiblePageSizes, setPossiblePageSizes] = useState([
+        pageSize,
+        pageSize * 2,
+        pageSize * 3,
+        pageSize * 4,
+        pageSize * 5,
+    ])
     const [expanded, setExpanded] = React.useState({})
     const table = useReactTable({
         data: tableData,
@@ -28,6 +55,8 @@ function CoreDataTable({ tableData, columns, usePagination=true }) {
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
     })
+
+
 
     return (
         <>
@@ -66,7 +95,7 @@ function CoreDataTable({ tableData, columns, usePagination=true }) {
                     ))}
                 </CTableBody>
             </CTable>
-            <PaginatorBottom table={table} visible={usePagination} />
+            <PaginationWrapper table={table} visible={usePagination} wholeData={wholeData} />
             {/* </BaseContainer> */}
         </>
     )
