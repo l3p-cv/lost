@@ -15,7 +15,7 @@ class GroupList(Resource):
     @api.doc(security='apikey',description='Get a list of all groups')
 
     @api.marshal_with(group_list)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -30,7 +30,7 @@ class GroupList(Resource):
 
     @api.doc(security='apikey',description='Add a new group')
     @api.expect(group_parser)
-    @jwt_required 
+    @jwt_required()
     def post(self):
         args = group_parser.parse_args(request)
         dbm = access.DBMan(LOST_CONFIG)
@@ -52,7 +52,7 @@ class GroupList(Resource):
 class Group(Resource):
     @api.doc(security='apikey',description='Get Group with a given ID')
     @api.marshal_with(group)
-    @jwt_required 
+    @jwt_required()
     def get(self, id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -64,7 +64,7 @@ class Group(Resource):
             return "Group with ID '{}' not found.".format(id)
         
     @api.doc(security='apikey',description='Delete Group with given ID')
-    @jwt_required 
+    @jwt_required()
     def delete(self, id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

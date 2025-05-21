@@ -1,11 +1,8 @@
-from datetime import time, datetime
-import json
-from flask import request
 from flask_restx import Resource
 from lost.api.api import api
-from lost.settings import LOST_CONFIG, DATA_URL
+from lost.settings import LOST_CONFIG
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from lost.db import model, roles, access
+from lost.db import roles, access
 from lost.logic.statistics import personal, designer
 from lost.api.statistics.api_definition import anno_statistics
 namespace = api.namespace('statistics', description='LOST Statistics API')
@@ -13,9 +10,9 @@ namespace = api.namespace('statistics', description='LOST Statistics API')
 @namespace.route('/personal')
 @api.doc(security='apikey')
 class Personal(Resource):
-    @api.marshal_with(anno_statistics)   
-    @jwt_required 
-    @api.doc(security='apikey',description='Get personal annotation Statistics')            
+    @api.marshal_with(anno_statistics)
+    @jwt_required()
+    @api.doc(security='apikey',description='Get personal annotation Statistics')
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -39,9 +36,9 @@ class Personal(Resource):
 @namespace.route('/designer')
 @api.doc(security='apikey')
 class Designer(Resource):
-    @api.doc(security='apikey',description='Get designer annotation Statistics')         
-    @api.marshal_with(anno_statistics)   
-    @jwt_required 
+    @api.doc(security='apikey',description='Get designer annotation Statistics')
+    @api.marshal_with(anno_statistics)
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

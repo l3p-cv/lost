@@ -1,9 +1,8 @@
 import traceback
 import flask
-from flask import request, send_file
+from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from lost import db
 from lost.api.api import api
 from lost.api.sia.api_definition import sia_anno, sia_config, sia_update,labels
 from lost.db import roles, access
@@ -14,7 +13,6 @@ import json
 import base64
 import cv2
 from lost.logic.file_man import FileMan
-from lost.api.label.api_definition import label_trees
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -26,7 +24,7 @@ namespace = api.namespace('sia', description='SIA Annotation API.')
 class First(Resource):
     @api.doc(security='apikey',description='Get SIA information')
     @api.marshal_with(sia_anno)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -55,7 +53,7 @@ class First(Resource):
             return 'error', 400
         
     @api.doc(security='apikey',description='Update whole SIA Annotation')
-    @jwt_required 
+    @jwt_required()
     @api.expect(sia_anno)
     def put(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -80,7 +78,7 @@ class First(Resource):
                 dbm.close_session()
                 return 'error updating sia anno', 500
     @api.doc(security='apikey',description='Update partial SIA Annotation')            
-    @jwt_required 
+    @jwt_required()
     @api.expect(sia_anno)
 
     def patch(self):
@@ -113,7 +111,7 @@ class Filter(Resource):
 
     @api.param('angle', 'Angle to rotate leave clear for no rotation, valid angles are 0,90,180,-90')
     @api.param('clipLimit', 'Clip limit for clahe filter leave clear for no clahe')
-    @jwt_required 
+    @jwt_required()
     def get(self,image_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -170,7 +168,7 @@ class Filter(Resource):
 @api.doc(security='apikey')
 class AllowedExampler(Resource):
     @api.doc(security='apikey',description='Provides the info if the currently logged in user is allowed to mark images as exsamples')            
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -188,7 +186,7 @@ class AllowedExampler(Resource):
 class NextAnnoId(Resource):
     # @api.expect(sia_update)
     @api.doc(security='apikey',description='Get the ID of the next annotation')            
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -206,7 +204,7 @@ class NextAnnoId(Resource):
 @namespace.route('/finish')
 @api.doc(security='apikey')
 class Finish(Resource):
-    @jwt_required 
+    @jwt_required()
     @api.doc(security='apikey',description='Finish the current sia task')            
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -227,7 +225,7 @@ class Finish(Resource):
 class Label(Resource):
     @api.marshal_with(labels)
     @api.doc(security='apikey',description='Get label trees for the sia task')            
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -245,7 +243,7 @@ class Label(Resource):
 class Configuration(Resource):
     @api.doc(security='apikey',description='Get conmfig for the current SIA Task')            
     @api.marshal_with(sia_config)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

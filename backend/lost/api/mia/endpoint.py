@@ -9,12 +9,7 @@ from lost.db import roles, access
 from lost.settings import LOST_CONFIG
 from lost.logic import mia
 import json
-import cv2
-import base64
-from lost.logic.file_man import FileMan
-from lost.pyapi.utils import anno_helper
 from lost.logic import mia
-from lost.logic import dask_session
 
 namespace = api.namespace('mia', description='MIA Annotation API.')
 
@@ -22,7 +17,7 @@ namespace = api.namespace('mia', description='MIA Annotation API.')
 @api.doc(security='apikey')
 class Update(Resource):
     @api.doc(security='apikey',description='Update MIA Task')
-    @jwt_required 
+    @jwt_required()
     def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -41,7 +36,7 @@ class Update(Resource):
 class Next(Resource):
     @api.doc(security='apikey',description='Get next MIA anno')
     #@api.marshal_with(mia_anno)
-    @jwt_required 
+    @jwt_required()
     def get(self, max_amount):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -59,7 +54,7 @@ class Next(Resource):
 class Label(Resource):
     @api.doc(security='apikey',description='Get possible MIA Labels')
     #@api.marshal_with(label_trees)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -78,7 +73,7 @@ class Label(Resource):
 @api.doc(security='apikey')
 class Finish(Resource):
     @api.doc(security='apikey',description='Finish MIA Task')
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -96,7 +91,7 @@ class Finish(Resource):
 @api.doc(security='apikey')
 class Special(Resource):
     @api.doc(security='apikey',description='Get special MIA Images')
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

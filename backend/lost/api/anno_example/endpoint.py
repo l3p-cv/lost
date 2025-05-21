@@ -1,17 +1,10 @@
-from datetime import time, datetime
 import json
 from flask import request
 from flask_restx import Resource
 from lost.api.api import api
-from lost.settings import LOST_CONFIG, DATA_URL
-from lost.db.vis_level import VisLevel
-from lost.logic.file_man import FileMan
+from lost.settings import LOST_CONFIG
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from lost.db import model, roles, access
-import lost_ds as lds
-import numpy as np
-import cv2
-import base64
+from lost.db import roles, access
 import random
 
 namespace = api.namespace('annoExample', description='API to get annotation examples')
@@ -21,7 +14,7 @@ namespace = api.namespace('annoExample', description='API to get annotation exam
 @api.doc(security='apikey')
 class GetAnnoExample(Resource):
 
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

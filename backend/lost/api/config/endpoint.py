@@ -1,5 +1,4 @@
 import json
-from flask import request, make_response
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
@@ -66,7 +65,7 @@ if not key in db_key_list:
 class ConfigList(Resource):
     @api.doc(security='apikey',description='Get all config entries ')
     @api.marshal_with(config)
-    @jwt_required
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -79,7 +78,7 @@ class ConfigList(Resource):
             return project_config.get_all()
         
     @api.doc(security='apikey',description='Update all passed config entries ')
-    @jwt_required
+    @jwt_required()
     def patch(self):
 
         dbm = access.DBMan(LOST_CONFIG)
