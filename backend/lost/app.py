@@ -1,11 +1,13 @@
 import threading
-from flask import Flask, Blueprint, g
+from flask import Blueprint, g, jsonify
+
 from flask_cors import CORS
-from flask import request
 from flask_jwt_extended import JWTManager
+import json
 import logging
 import time
 import traceback
+
 from lost import settings
 from lost.api.api import api
 from lost.api.user.endpoint import namespace as user_namespace
@@ -95,15 +97,26 @@ CORS(app)
 
 @app.errorhandler(Exception)
 def handle_500(e):
-    app.logger.error(traceback.format_exc())
+    trace = traceback.format_exc()
+    app.logger.error(trace)
 
     # send corresponding HTTP return codes for errors
-    exception_name: str = type(e).__name__ 
+    exception_name: str = type(e).__name__
     match exception_name:
         case 'NotFound':
             return str(e), 404
         case _:
-            return str(e), 500
+            # general errors (return as 500)
+            response = {
+                "error": str(e),
+                "type": type(e).__name__
+            }
+
+            # append stack trace in debug mode
+            if settings.FLASK_DEBUG:
+                response['traceback'] = trace.splitlines()
+
+            return jsonify(response), 500
 
 @app.before_request
 def before_request():
