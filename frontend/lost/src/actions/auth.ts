@@ -1,5 +1,5 @@
 import axios from 'axios'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { isEmpty } from 'lodash'
 import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
