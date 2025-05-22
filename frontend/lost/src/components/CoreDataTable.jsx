@@ -37,16 +37,13 @@ function CoreDataTable({
     const [expanded, setExpanded] = React.useState({})
     const [dataTemp, setDataTemp] = useState([])
 
-
-    // GPT soulution:
     useEffect(() => {
         const newPageCount = pageCount ?? table.getPageCount()
         const currentIndex = paginationState.pageIndex
 
         if (tableData !== dataTemp) {
             setDataTemp(tableData)
-
-            // Only correct the page if we’re actually out of range
+            // Only correct the page if it's actually out of range
             if (newPageCount > 0 && currentIndex >= newPageCount) {
                 setPaginationState((prev) => ({
                     ...prev,
@@ -57,9 +54,6 @@ function CoreDataTable({
     }, [tableData])
 
     useEffect(() => {
-        console.log('Pagination changed in Core!')
-        console.log('Pagination:', paginationState)
-        console.log('table.getState().pagination:', table.getState().pagination)
         onPaginationChange(table)
     }, [paginationState])
 
@@ -85,8 +79,6 @@ function CoreDataTable({
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
     })
-
-    console.log("Pagination Core: ", paginationState)
 
     return (
         <>
@@ -129,11 +121,7 @@ function CoreDataTable({
                 visible={usePagination}
                 wholeData={wholeData}
                 pageSize={paginationState.pageSize}
-                tableData={tableData}
-                onpaginationChange={onPaginationChange}
                 pageCount={pageCount}
-                dataTemp={dataTemp}
-                setDataTemp={setDataTemp}
                 paginationState={paginationState}
                 setPaginationState={setPaginationState}
             />

@@ -4,11 +4,6 @@ import {
     CForm,
     CFormInput,
     CFormSelect,
-    CDropdown,
-    CDropdownToggle,
-    CDropdownMenu,
-    CDropdownItem,
-    CDropdownDivider
 } from '@coreui/react'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 import IconButton from '../IconButton'
@@ -87,7 +82,7 @@ const PaginatorBottomWhole = ({ table,
         pageSize * 5,
     ])
 
-    const [targetPage, setTargetPage] = useState(table.getState().pagination.pageIndex + 1);
+    const [targetPage, setTargetPage] = useState(table.getState().pagination.pageIndex + 1)
     const buttonFontsize = "1rem"
     const buttonWidth = "100%"
 
@@ -109,7 +104,6 @@ const PaginatorBottomWhole = ({ table,
                     <IconButton
                         icon={faAngleLeft}
                         text="Previous"
-                        // onClick={() => table.previousPage()}
                         onClick={handlePrev}
                         disabled={!table.getCanPreviousPage()}
                         style={{ fontSize: buttonFontsize, padding: '0.75rem 1.5rem', width: buttonWidth }}
@@ -124,10 +118,6 @@ const PaginatorBottomWhole = ({ table,
                     setTargetPage={setTargetPage} />
             </CCol>
             <CCol xs="auto" style={{ marginRight: '0%' }}>
-
-                {/* <label htmlFor="pageSize" className="form-label me-2">
-                        Rows per page:
-                    </label> */}
                 <div className="d-flex align-items-center gap-2 justify-content-center my-2">
                     <CFormSelect
                         id="pageSize"
@@ -148,7 +138,6 @@ const PaginatorBottomWhole = ({ table,
                     <IconButton
                         icon={faAngleRight}
                         text="Next"
-                        // onClick={() => table.nextPage()}
                         onClick={handleNext}
                         disabled={!table.getCanNextPage()}
                         style={{
