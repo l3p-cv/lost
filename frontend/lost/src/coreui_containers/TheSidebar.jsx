@@ -4,14 +4,20 @@ import {
     CNavTitle,
     CSidebar,
     CSidebarBrand,
+    CSidebarHeader,
     CSidebarNav,
     CSidebarToggler,
 } from '@coreui/react'
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
     const [isUnfoldable, setisUnfoldable] = useState(false)
+
+    const sidebarStyling = {
+        '--cui-sidebar-bg': '#092f38',
+        '--cui-sidebar-color': '#eee',
+    }
 
     if (navItems) {
         const navbarItemsDom = []
@@ -25,8 +31,8 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                 case 'CSidebarNavItem':
                     newItem = (
                         <CNavItem key={itemKey++}>
-                            <NavLink key={itemKey++} to={item.to}>
-                                <CNavLink key={itemKey++}>
+                            <Link to={item.to}>
+                                <CNavLink>
                                     <span
                                         style={{
                                             width: '20px',
@@ -38,7 +44,7 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                                     </span>
                                     {item.name}
                                 </CNavLink>
-                            </NavLink>
+                            </Link>
                         </CNavItem>
                     )
                     break
@@ -55,20 +61,24 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
         return (
             <CSidebar
                 position="fixed"
-                unfoldable={isUnfoldable}
+                colorScheme="dark"
+                narrow={isUnfoldable}
                 visible={canShowSidebar}
                 onVisibleChange={(visible) => {
                     setCanShowSidebar(visible)
                 }}
+                style={sidebarStyling}
             >
-                <CSidebarBrand className="d-md-down-none" to="/dashboard">
+                <CSidebarHeader className="d-md-down-none">
+                    <CSidebarBrand>
                     <img
                         alt=""
                         src="/assets/lost_logo.png"
                         style={{ maxWidth: '60%', maxHeight: '60%' }}
                         className="img-avatar"
                     />
-                </CSidebarBrand>
+                    </CSidebarBrand>
+                </CSidebarHeader>
                 <CSidebarNav>{navbarItemsDom}</CSidebarNav>
                 <CSidebarToggler
                     className="d-none d-lg-flex"
