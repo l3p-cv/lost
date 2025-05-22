@@ -453,21 +453,10 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         <>
             {renderStatisticModal()}
             <CCol sm="12">{filterLabels && renderFilter()}</CCol>
-            {/* TODO: GET ALL PAGES?!?!?!?! */}
             <BaseContainer>
                 <CoreDataTable
-                    columns={columns} //{defineColumns()}
+                    columns={columns}
                     tableData={aTData}
-                    // onPaginationChange={(table) => {
-                    //     setATData([])
-                    //     const tableState = table.getState()
-                    // setDatatableInfo({
-                    //     pageSize: tableState.pagination.pageSize,
-                    //     page: tableState.pagination.pageIndex,
-                    //     sorted: tableState.sorting,
-                    //     filtered: tableState.columnFilters,
-                    // })
-                    // }}
                     onPaginationChange={(table) => {
                         const nextPage = table.getState().pagination.pageIndex;
                         setLastRequestedPage(nextPage);
@@ -484,6 +473,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     wholeData={false}
                 />
             </BaseContainer>
+            {/* Below: old DataTable */}
             {/* <DataTable
                 className="mt-3"
                 data={aTData}
