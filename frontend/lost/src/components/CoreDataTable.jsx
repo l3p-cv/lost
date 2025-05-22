@@ -30,23 +30,53 @@ function CoreDataTable({
 }) {
     const [columnFilters, setColumnFilters] = useState([])
     const [doRerender, setDoRerender] = useState(false)
-    const [paginationState, setPaginationState] = useState({
+    const [paginationState, setPaginationState] = useState(() => ({
         pageIndex: 0,
-        pageSize: pageSize,
-    })
-    const [possiblePageSizes, setPossiblePageSizes] = useState([
         pageSize,
-        pageSize * 2,
-        pageSize * 3,
-        pageSize * 4,
-        pageSize * 5,
-    ])
+    }));
     const [expanded, setExpanded] = React.useState({})
+    const [dataTemp, setDataTemp] = useState([])
+
+
+    // GPT soulution:
+    useEffect(() => {
+        const newPageCount = pageCount ?? table.getPageCount()
+        const currentIndex = paginationState.pageIndex
+
+        if (tableData !== dataTemp) {
+            setDataTemp(tableData)
+
+            // Only correct the page if we’re actually out of range
+            if (newPageCount > 0 && currentIndex >= newPageCount) {
+                setPaginationState((prev) => ({
+                    ...prev,
+                    pageIndex: Math.max(0, newPageCount - 1),
+                }))
+            }
+        }
+    }, [tableData])
+
+    useEffect(() => {
+        console.log('Pagination changed in Core!')
+        console.log('Pagination:', paginationState)
+        console.log('table.getState().pagination:', table.getState().pagination)
+        onPaginationChange(table)
+    }, [paginationState])
+
     const table = useReactTable({
-        data: tableData,
+        data: (dataTemp != []) ? dataTemp : tableData, // TODO: dataTemp
+        manualPagination: pageCount !== undefined ? true : false,
         columns,
         state: {
             expanded,
+            pagination: paginationState
+        },
+        onPaginationChange: (updater) => {
+            setPaginationState((old) => {
+                const newState = typeof updater === 'function' ? updater(old) : updater;
+                return newState;
+            });
+            onPaginationChange(table); // notify parent, optional
         },
         onExpandedChange: setExpanded,
         getSubRows: (row) => row.children,
@@ -56,7 +86,7 @@ function CoreDataTable({
         getExpandedRowModel: getExpandedRowModel(),
     })
 
-
+    console.log("Pagination Core: ", paginationState)
 
     return (
         <>
@@ -95,7 +125,18 @@ function CoreDataTable({
                     ))}
                 </CTableBody>
             </CTable>
-            <PaginationWrapper table={table} visible={usePagination} wholeData={wholeData} />
+            <PaginationWrapper table={table}
+                visible={usePagination}
+                wholeData={wholeData}
+                pageSize={paginationState.pageSize}
+                tableData={tableData}
+                onpaginationChange={onPaginationChange}
+                pageCount={pageCount}
+                dataTemp={dataTemp}
+                setDataTemp={setDataTemp}
+                paginationState={paginationState}
+                setPaginationState={setPaginationState}
+            />
             {/* </BaseContainer> */}
         </>
     )

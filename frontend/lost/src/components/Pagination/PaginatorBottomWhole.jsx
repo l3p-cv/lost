@@ -72,12 +72,20 @@ const TablePagination = ({ table,
 }
 
 
-const PaginatorBottomWhole = ({table,
+const PaginatorBottomWhole = ({ table,
     visible = true,
-    totalPages = table.getPageCount()
+    totalPages = table.getPageCount(),
+    pageSize = 10
 }) => {
 
     if (!visible) return
+    const [possiblePageSizes, setPossiblePageSizes] = useState([
+        pageSize,
+        pageSize * 2,
+        pageSize * 3,
+        pageSize * 4,
+        pageSize * 5,
+    ])
 
     const [targetPage, setTargetPage] = useState(table.getState().pagination.pageIndex + 1);
     const buttonFontsize = "1rem"
@@ -127,7 +135,7 @@ const PaginatorBottomWhole = ({table,
                         onChange={(e) => table.setPageSize(Number(e.target.value))}
                         className="form-select-sm"
                     >
-                        {[10, 20, 30, 40, 50].map((pageSize) => (
+                        {possiblePageSizes.map((pageSize) => (
                             <option key={pageSize} value={pageSize}>
                                 Show {pageSize}
                             </option>
