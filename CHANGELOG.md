@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New general Sweetalert for deletions
 - Added argument "color" to SelectFileButton
 - Rearranged + recolored Buttons on Pipeline-Inspection
+- Replaced tables in Annotation-Tab
+- Added 2 Pagination-Components (for whole and for partial tableData) + 1 Wrapper for them, to use with CoreDataTable
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 - Renamed "Start"-column to "Options" in RunningPipelines

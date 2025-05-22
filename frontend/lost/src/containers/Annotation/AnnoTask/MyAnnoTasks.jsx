@@ -10,11 +10,10 @@ import { Card, CardBody, CardHeader, Col, Modal, Pagination, Progress, Row } fro
 import IconButton from '../../../components/IconButton'
 import AmountPerLabel from './AmountPerLabel'
 import { getColor } from './utils'
-
 import actions from '../../../actions'
 import * as atActions from '../../../actions/annoTask/anno_task_api'
 import DropdownInput from '../../../components/DropdownInput'
-import DataTable from '../../../components/NewDataTable'
+// import DataTable from '../../../components/NewDataTable'
 import CoreDataTable from '../../../components/CoreDataTable'
 import BaseContainer from '../../../components/BaseContainer'
 
