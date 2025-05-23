@@ -24,6 +24,9 @@ variables:
 #     variables:
 #       - $CI_COMMIT_MESSAGE =~ /lost-base/
 
+before_script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
+
 build-frontend:
   stage: build
   script:
