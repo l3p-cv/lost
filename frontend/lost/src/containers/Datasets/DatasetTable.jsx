@@ -90,27 +90,27 @@ const DatasetTable = ({
             columnHelper.display({
                 id: 'name',
                 header: 'Name',
-                cell: (props) => {
-                    if (props.row.original.isMetaDataset) return <b>{props.row.original.name}</b>
-                    if (props.row.original.isAnnotask) {
+                cell: ({row}) => {
+                    if (row.original.isMetaDataset) return <b>{row.original.name}</b>
+                    if (row.original.isAnnotask) {
                         return (
                             <>
-                                {/* <b>{props.row.original.name}</b> */}
-                                {props.row.original.name}
+                                {/* <b>{row.original.name}</b> */}
+                                {row.original.name}
                                 <div className="small text-muted">
-                                    {`ID: ${props.row.original.idx}`}
+                                    {`ID: ${row.original.idx}`}
                                 </div>
                             </>)
                     }
                     return (
                         <>
-                            <b>{props.row.original.name}</b>
+                            <b>{row.original.name}</b>
                             <HelpButton
-                                id={props.row.original.idx}
-                                text={props.row.original.description}
+                                id={row.original.idx}
+                                text={row.original.description}
                             />
                             <div className="small text-muted">
-                                {`ID: ${props.row.original.idx}`}
+                                {`ID: ${row.original.idx}`}
                             </div>
                         </>)
                 }
@@ -118,8 +118,8 @@ const DatasetTable = ({
             columnHelper.display({
                 id: "annotaskStatus",
                 header: 'Task Status',
-                cell: (props) => {
-                    if (props.row.original.isAnnotask) return props.row.original.description
+                cell: ({row}) => {
+                    if (row.original.isAnnotask) return row.original.description
                     return "-"
                 }
             }),
@@ -137,22 +137,22 @@ const DatasetTable = ({
             // }),
             columnHelper.accessor('createdAt', {
                 header: () => 'Created at',
-                cell: (props) => {
-                    if (props.row.original.isMetaDataset) return ''
-                    if (props.row.original.isAnnotask) return props.row.original.created_at
-                    return props.row.original.createdAt // isDataset
+                cell: ({row}) => {
+                    if (row.original.isMetaDataset) return ''
+                    if (row.original.isAnnotask) return row.original.created_at
+                    return row.original.createdAt // isDataset
                 }
             }),
             columnHelper.display({
                 id: 'review',
                 header: () => 'Review',
-                cell: (props) => {
+                cell: ({row}) => {
                     // reviewing metadatasets is impossible
-                    if (props.row.original.isMetaDataset) return ''
+                    if (row.original.isMetaDataset) return ''
 
                     // disable the review button on datasets without children
                     const isDisabled = !(
-                        props.row.original.isAnnotask || props.row.original.isReviewable
+                        row.original.isAnnotask || row.original.isReviewable
                     )
 
                     return (
@@ -161,7 +161,7 @@ const DatasetTable = ({
                             color="info"
                             isOutline={true}
                             onClick={() => {
-                                const rowData = props.row.original
+                                const rowData = row.original
                                 const isAnnotask = rowData.isAnnotask === true
                                 openReview(rowData.idx, isAnnotask)
                             }}
