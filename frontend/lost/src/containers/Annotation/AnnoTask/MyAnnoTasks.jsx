@@ -16,6 +16,7 @@ import DropdownInput from '../../../components/DropdownInput'
 // import DataTable from '../../../components/NewDataTable'
 import CoreDataTable from '../../../components/CoreDataTable'
 import BaseContainer from '../../../components/BaseContainer'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -320,11 +321,12 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                         (row.original.finished / row.original.size) * 100,
                     )
                     return (
-                        <IconButton
+                        <CoreIconButton
                             onClick={() => handleStatisticsClick(row.original)}
-                            color="primary"
+                            color="info"
                             disabled={progress > 0 ? false : true}
                             text="Statistic"
+                            isOutline={true}
                             icon={faChartBar}
                         />
                     )
@@ -340,15 +342,15 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     return (
                         <>
                             {row.original.status === 'inProgress' ? (
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => handleRowClick(row.original)}
                                     color="primary"
-                                    isOutline={false}
                                     text="Annotate"
+                                    isOutline={true}
                                     icon={faPencil}
                                 />
                             ) : (
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => handleRowClick(row.original)}
                                     color="primary"
                                     isOutline={false}
@@ -400,18 +402,18 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                                     relatedId={[1]}
                                     placeholder="Name"
                                 />
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => resetFilter()}
                                     color="danger"
-                                    isOutline={false}
+                                    isOutline={true}
                                     style={{ marginLeft: 20 }}
                                     text="Reset filter"
                                     icon={<FaTrashAlt />}
                                 />
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => applyFilter()}
-                                    color="primary"
-                                    isOutline={false}
+                                    color="info"
+                                    isOutline={true}
                                     style={{ marginLeft: 20 }}
                                     text="Apply filter"
                                     icon={<FaFilter />}
@@ -459,7 +461,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     onPaginationChange={(table) => {
                         const nextPage = table.getState().pagination.pageIndex;
                         setLastRequestedPage(nextPage);
-                        setATData([]); // simulate fetch
+                        // setATData([]); // simulate fetch
                         const tableState = table.getState()
                         setDatatableInfo({
                             pageSize: tableState.pagination.pageSize,

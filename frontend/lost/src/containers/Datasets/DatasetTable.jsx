@@ -11,8 +11,6 @@ import { createColumnHelper } from '@tanstack/react-table'
 import React, { Fragment, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BaseContainer from '../../components/BaseContainer'
-import IconButton from '../../components/IconButton'
-import { CTooltip } from '@coreui/react'
 import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
 import HelpButton from '../../components/HelpButton'
@@ -85,6 +83,7 @@ const DatasetTable = ({
         columns = [
             columnHelper.display({
                 id: 'expander',
+                header: 'Expand',
                 cell: ({ row }) => renderRowIcon(row),
             }),
             columnHelper.display({
