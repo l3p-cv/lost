@@ -33,13 +33,26 @@ def get_first(db_man, user_id, media_url):
             return sia_serialize.serialize()
     else:
         return "nothing available"
+
+def set_labeled_state_for_last_image(db_man:DBMan, last_img_id):
+    # Prevent to get same image again, since labeled state has not been set 
+    # correctly by update_one_thing. Which can be caused when update webservice 
+    # is slower than next webservice
+    if last_img_id != -1:
+        last_image_anno = db_man.get_image_anno(last_img_id)
+        if last_image_anno is not None:
+            if last_image_anno.state != state.Anno.LABELED:
+                last_image_anno.state = state.Anno.LABELED
+                db_man.save_obj(last_image_anno)
+
 def get_next(db_man:DBMan, user_id, img_id, media_url):
-    # ptvsd.wait_for_attach()
-    # ptvsd.break_into_debugger()
     """ Get next ImageAnno with all its TwoDAnnos
     :type db_man: lost.db.access.DBMan
     """
     at = get_sia_anno_task(db_man, user_id)
+    # The image that has been viewed (img_id) by the annotator should alway have 
+    # state labeled
+    set_labeled_state_for_last_image(db_man, img_id)
     if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
         image_anno = None
         iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
@@ -85,6 +98,7 @@ def get_previous(db_man:DBMan, user_id, img_id, media_url):
     :type db_man: lost.db.access.DBMan
     """
     at = get_sia_anno_task(db_man, user_id)
+    set_labeled_state_for_last_image(db_man, img_id)
     iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
     image_anno = db_man.get_previous_sia_anno(at.idx, user_id, img_id, iteration)
     is_last_image = False

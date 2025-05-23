@@ -441,9 +441,10 @@ class ScriptOutput(Output):
         dfo = lds.df.copy()
         # None can only be assgined to object type columns
         dfo = dfo.apply(lambda x: x.where(pd.notna(x), None) if x.dtype == object else x.fillna(-1), axis=0)
-        if 'anno_format' in dfo:
-            if len( dfo[dfo['anno_format'] != 'rel'] ) > 0:
-                raise Exception('All anno in LOSTDataset need to be in rel format!')
+        if 'anno_format' in dfo and 'anno_data' in dfo:
+            invalid_rows = dfo[(dfo['anno_format'] != 'rel') & (dfo['anno_data'].notna())]
+            if not invalid_rows.empty:
+                raise Exception('All non-empty annos in LOSTDataset need to be in rel format!')
         else:
             self._script.logger.warning('anno_format column is missing in lds')
         if 'anno_style' in dfo:
