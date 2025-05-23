@@ -24,18 +24,17 @@ variables:
 #     variables:
 #       - $CI_COMMIT_MESSAGE =~ /lost-base/
 
-before_script:
-  - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
-
 build-frontend:
   stage: build
   script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
     - docker build -t $LOST_TEST_FRONTEND_IMAGE -f frontend/Dockerfile frontend
     - docker push $LOST_TEST_FRONTEND_IMAGE
 
 build-backend:
   stage: build
   script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
     - docker build -t $LOST_TEST_BACKEND_IMAGE --build-arg LOST_VERSION=${CI_COMMIT_TAG} -f backend/Dockerfile backend
     - docker push $LOST_TEST_BACKEND_IMAGE
 
@@ -50,6 +49,7 @@ release-frontend:
   stage: release
   needs: ['test-lost']
   script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
     - docker pull $LOST_TEST_FRONTEND_IMAGE
     - docker tag $LOST_TEST_FRONTEND_IMAGE $LOST_PROD_FRONTEND_IMAGE
     - docker push $LOST_PROD_FRONTEND_IMAGE
@@ -60,6 +60,7 @@ release-backend:
   stage: release
   needs: ['test-lost']
   script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
     - docker pull $LOST_TEST_BACKEND_IMAGE
     - docker tag $LOST_TEST_BACKEND_IMAGE $LOST_PROD_BACKEND_IMAGE
     - docker push $LOST_PROD_BACKEND_IMAGE
