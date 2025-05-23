@@ -31,7 +31,7 @@ const CoreIconButton = ({
         iconButtonIcon = icon
     }
 
-    const buttonVariant = (isOutline ? "outline" : undefined)
+    const buttonVariant = (isOutline ? "outline" : "")
 
     const renderContent = () => {
         if (isLoading) {

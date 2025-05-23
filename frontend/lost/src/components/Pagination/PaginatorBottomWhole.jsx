@@ -42,7 +42,16 @@ const TablePagination = ({ table,
     }
 
     return (
-        <div className="d-flex align-items-center gap-2 my-2 text-muted small">
+        <div
+            className="d-inline-flex align-items-center gap-2 my-2 text-muted small"
+            style={{
+                border: '1px solid var(--cui-secondary)', // outer border
+                borderRadius: '0.25rem',     
+                padding: '0.05rem 0.05rem',  
+                backgroundColor: 'var(--cui-light',
+                height: "35px"
+            }}
+        >
             <span style={{ marginLeft: "0%" }}>
                 <>Page</>
             </span>
@@ -56,7 +65,11 @@ const TablePagination = ({ table,
                     className="text-center"
                     // max={totalPages}
                     size="sm"
-                    style={{ width: '55px' }} // Optional inline style
+                    style={{
+                        width: '60px',
+                        border: '1px solid var(--cui-secondary)', // inner border
+                        borderRadius: '0.5rem',
+                    }}
                 />
             </CForm>
             <span>

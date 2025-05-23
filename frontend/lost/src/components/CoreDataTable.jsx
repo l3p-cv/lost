@@ -1,6 +1,6 @@
 // TODO: PLEASE RENAME THIS!!!
-import { CCol, CRow, CTable, CTableBody, CTableHead } from '@coreui/react'
-import BaseContainer from './BaseContainer'
+import { CTable, CTableBody, CTableHead, CSpinner } from '@coreui/react'
+// import BaseContainer from './BaseContainer'
 import { useState } from 'react'
 import {
     flexRender,
@@ -12,7 +12,6 @@ import {
 } from '@tanstack/react-table'
 import React, { Fragment, useEffect } from 'react'
 import PaginationWrapper from './Pagination/PaginationWrapper'
-import PaginatorBottomWhole from './Pagination/PaginatorBottomWhole'
 
 // const CoreDataTable = ( {tableData, columns} ) => { // TODO: rewrite as const???
 function CoreDataTable({
@@ -23,7 +22,7 @@ function CoreDataTable({
     isLoading = false,
     pageCount = undefined,
     pageSize = 10,
-    rowHeight = 55,
+    rowHeight = "55px",
     onPaginationChange = () => { },
     onColumnFiltersChange = () => { },
     wholeData = true
@@ -88,11 +87,18 @@ function CoreDataTable({
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                                <th key={header.id}>
+                                <th
+                                    key={header.id}
+                                    style={{ textAlign: 'center',
+                                            borderRight: '1px solid var(--cui-light)',
+                                            textDecoration: 'underline solid var(--cui-secondary)'
+                                     }}
+                                >
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(
-                                            header.column.columnDef.header,
+                                            header.column.columnDef
+                                                .header,
                                             header.getContext(),
                                         )}
                                 </th>
@@ -103,9 +109,23 @@ function CoreDataTable({
                 <CTableBody>
                     {table.getRowModel().rows.map((row) => (
                         <Fragment key={row.id}>
-                            <tr key={row.id}>
+                            <tr key={row.id}
+                                style={{
+                                    height: rowHeight,
+                                    maxHeight: rowHeight,
+                                }}
+                            >
                                 {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id}>
+                                    <td
+                                        key={cell.id}
+                                        style={{
+                                            textAlign: 'center',
+                                            verticalAlign: 'middle',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            borderRight: '1px solid var(--cui-light)'
+                                        }}
+                                    >
                                         {flexRender(
                                             cell.column.columnDef.cell,
                                             cell.getContext(),
@@ -117,6 +137,24 @@ function CoreDataTable({
                     ))}
                 </CTableBody>
             </CTable>
+            {tableData === [] && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: 10,
+                        width: '100%',
+                        height: '100%',
+                        background: 'rgba(255,255,255,0.6)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <CSpinner />
+                </div>
+            )}
             <PaginationWrapper table={table}
                 visible={usePagination}
                 wholeData={wholeData}
