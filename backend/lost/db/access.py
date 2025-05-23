@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import text
-from api.inference_model.api_definition import InferenceModelRequest
+from lost.api.inference_model.api_definition import InferenceModelRequest
 from lost.db import model, state, dtype
 
 

@@ -1,3 +1,5 @@
+import { Model } from '../../inference-model/model-api'
+
 export interface PipelineTemplateResponse {
     id: number
     description: string
@@ -56,6 +58,7 @@ export interface Configuration {
     showProposedLabel: boolean
     addContext: number
     drawAnno: boolean
+    inferenceModel?: Model
 }
 
 export interface Annos {

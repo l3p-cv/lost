@@ -168,3 +168,35 @@ export const useUpdateInferenceModel = () => {
         },
     })
 }
+
+export type PointPrompt = {
+    x: number
+    y: number
+    label: 'positive' | 'negative'
+}
+
+export type BoxPrompt = {
+    x: number
+    y: number
+    w: number
+    h: number
+}
+
+export interface Prompts {
+    points?: PointPrompt[] // optional list of points
+    boxes?: BoxPrompt[] // optional list of boxes
+}
+
+export interface TritonInferenceRequest {
+    imageId: number
+    modelId: number
+    prompts?: Prompts // optional prompts
+}
+
+export const useTritonInference = () => {
+    return useMutation({
+        mutationFn: (data: TritonInferenceRequest) => {
+            return httpClient.post(`/triton/infer`, data)
+        },
+    })
+}

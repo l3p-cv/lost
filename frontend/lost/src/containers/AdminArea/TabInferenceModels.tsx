@@ -63,16 +63,14 @@ export const TabInferenceModels = () => {
                 noDataText={error ? 'Failed to load data' : 'No models available'}
                 columns={[
                     {
-                        Header: 'Name / Last Updated',
+                        Header: 'Name / Id',
                         accessor: 'displayName',
                         Cell: (row) => {
                             return (
                                 <>
                                     <b>{row.original.displayName}</b>
                                     <div className="small text-muted">
-                                        {new Date(
-                                            row.original.lastUpdated,
-                                        ).toLocaleString()}
+                                        Id: {row.original.id}
                                     </div>
                                 </>
                             )
