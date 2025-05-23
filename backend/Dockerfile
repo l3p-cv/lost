@@ -9,10 +9,6 @@ COPY pyproject.toml /code/pyproject.toml
 RUN uv pip compile pyproject.toml > requirements.txt
 RUN uv pip install --system -r requirements.txt
 
-# hack for testing lost
-COPY debug /tmp/debug
-RUN uv pip install --system -e /tmp/debug/lost_ds
-
 COPY . .
 ENV PYTHONPATH=/code
 CMD ["bash", "/code/entrypoint.sh"]
