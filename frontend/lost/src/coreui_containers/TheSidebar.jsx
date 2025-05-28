@@ -69,21 +69,27 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                 }}
                 style={sidebarStyling}
             >
-                <CSidebarHeader className="d-md-down-none">
+                <CSidebarHeader
+                    className="border-bottom"
+                    style={{ background: '#072631' }}
+                >
                     <CSidebarBrand>
-                    <img
-                        alt=""
-                        src="/assets/lost_logo.png"
-                        style={{ maxWidth: '60%', maxHeight: '60%' }}
-                        className="img-avatar"
-                    />
+                        <img
+                            alt=""
+                            src="/assets/lost_logo.png"
+                            style={{
+                                maxWidth: '85%',
+                                paddingLeft: '30px',
+                                paddingRight: '5px',
+                            }}
+                            className="img-avatar"
+                        />
                     </CSidebarBrand>
                 </CSidebarHeader>
                 <CSidebarNav>{navbarItemsDom}</CSidebarNav>
-                <CSidebarToggler
-                    className="d-none d-lg-flex"
-                    onClick={() => setisUnfoldable(!isUnfoldable)}
-                />
+                <CSidebarHeader className="border-top" style={{ background: '#072631' }}>
+                    <CSidebarToggler onClick={() => setisUnfoldable(!isUnfoldable)} />
+                </CSidebarHeader>
             </CSidebar>
         )
     }
