@@ -40,14 +40,23 @@ build-backend:
 
 test-lost:
   stage: test
-  needs: ['build-backend']
+  needs: ["build-backend"]
   image: $LOST_TEST_BACKEND_IMAGE
+  services:
+    - alias: db
+      name: mysql:9.3.0
+      variables:
+        MYSQL_DATABASE: lost
+        MYSQL_USER: lost
+        MYSQL_PASSWORD: LostDevLost
   script:
-    - bash /pytest.sh
+    - pip3 install pytest
+    - python3 /code/lost/logic/init/initlost.py
+    - pytest /code/lost
 
 release-frontend:
   stage: release
-  needs: ['test-lost']
+  needs: ["test-lost"]
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
     - docker pull $LOST_TEST_FRONTEND_IMAGE
@@ -58,7 +67,7 @@ release-frontend:
 
 release-backend:
   stage: release
-  needs: ['test-lost']
+  needs: ["test-lost"]
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login --username $CI_REGISTRY_USER --password-stdin "$CI_REGISTRY"
     - docker pull $LOST_TEST_BACKEND_IMAGE
