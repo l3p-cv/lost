@@ -1,7 +1,7 @@
+import { CButton } from '@coreui/react'
 import { faArrowLeft, faArrowRight, faSync } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import PropTypes from 'prop-types'
-import { Button } from 'reactstrap'
 
 const IconButton = ({
     isBack,
@@ -61,7 +61,7 @@ const IconButton = ({
     }
 
     return (
-        <Button
+        <CButton
             size={size}
             type={type}
             className={className}
@@ -72,11 +72,7 @@ const IconButton = ({
             color={color}
         >
             {renderContent()}
-            {/* { props.text && (
-                <span style={{marginLeft: 5}}>{props.text}</span>
-            )
-            } */}
-        </Button>
+        </CButton>
     )
 }
 
