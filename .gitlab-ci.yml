@@ -49,6 +49,9 @@ test-lost:
         MYSQL_DATABASE: lost
         MYSQL_USER: lost
         MYSQL_PASSWORD: LostDevLost
+  variables:
+    # for testing only
+    LOST_SECRET_KEY: lJlnysKuOHSy7bHIU2uNLUTEjyUOupNMcHWhpAh_4z0=
   script:
     - pip3 install pytest
     - python3 /code/lost/logic/init/initlost.py
