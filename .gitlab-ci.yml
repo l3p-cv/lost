@@ -52,6 +52,8 @@ test-lost:
   variables:
     # for testing only
     LOST_SECRET_KEY: lJlnysKuOHSy7bHIU2uNLUTEjyUOupNMcHWhpAh_4z0=
+    # for communication with services
+    FF_NETWORK_PER_BUILD: 1
   script:
     - pip3 install pytest
     - python3 /code/lost/logic/init/initlost.py
