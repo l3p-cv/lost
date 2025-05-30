@@ -25,6 +25,13 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
         }
 
         updateNodeData(nodeId, { instructionId: selectedOption.value });
+
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+        if (joyrideRunning) {
+            window.dispatchEvent(
+                new CustomEvent('joyride-next-step', { detail: { step: 'anno-task-info-done' } })
+            );
+        }
     };
 
     const instructionOptions = [

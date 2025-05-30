@@ -26,6 +26,15 @@ const LABEL_SELECTION_STEP = 4
 const STORAGE_SETTINGS_STEP = 5
 const CONFIGURATION_STEP = 6
 
+const stepEventMap: Record<number, string> = {
+    1: 'anno-task-info-done',
+    2: 'user-selection-done',
+    3: 'label-tree-selection-done',
+    4: 'label-selection-done',
+    5: 'storage-settings-done',
+    6: 'configuration-done',
+}
+
 interface StepperProps {
     toggleModal: () => void
     nodeId: string
@@ -78,7 +87,26 @@ export const AnnoTaskStepper = ({
 
     const handleNextClick = () => {
         if (isStepComplete()) {
+            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            const eventDetail = stepEventMap[currentStep]
+            if (joyrideRunning && eventDetail) {
+                window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                    detail: { step: eventDetail },
+                }))
+            }
             goToNextStep()
+        }
+    }
+    const handleLastClick = () => {
+        if (isStepComplete()) {
+            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            const eventDetail = stepEventMap[currentStep]
+            if (joyrideRunning && eventDetail) {
+                window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                    detail: { step: eventDetail },
+                }))
+            }
+            toggleModal()
         }
     }
 
@@ -141,6 +169,7 @@ export const AnnoTaskStepper = ({
                                 color="primary"
                                 onClick={handleNextClick}
                                 id="nextStepButton"
+                                className={currentStep === ANNO_TASK_INFO_STEP ? 'step1next' : currentStep === USER_SELECTION_STEP ? 'step2next' : currentStep === LABEL_TREE_SELECTION_STEP ? 'step3next':currentStep === LABEL_SELECTION_STEP ? 'step4next': currentStep === STORAGE_SETTINGS_STEP ? 'step5next':currentStep === CONFIGURATION_STEP ? 'step6next':""}
                                 onMouseEnter={() => setTooltipOpen(true)}
                                 onMouseLeave={() => setTooltipOpen(false)}
                             >
@@ -160,8 +189,9 @@ export const AnnoTaskStepper = ({
                     {currentStep === NUM_STEPS && (
                         <Button
                             color="success"
-                            onClick={toggleModal}
+                            onClick={handleLastClick}
                             disabled={!isStepComplete()}
+                            className= 'steplast'
                         >
                             Done
                         </Button>

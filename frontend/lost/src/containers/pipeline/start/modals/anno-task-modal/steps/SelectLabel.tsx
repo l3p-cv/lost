@@ -43,10 +43,17 @@ export const SelectLabel = ({ availableLabelTrees, nodeId }: SelectLabelProps) =
                 edges: labelTreeEdges,
             },
         })
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+        if (joyrideRunning) {
+            window.dispatchEvent(
+                new CustomEvent('joyride-next-step', { detail: { step: 'label-selection-done' } })
+            );
+        }
     }
 
     return (
-        <ReactFlowProvider>
+        <div  id="select-label-container">
+            <ReactFlowProvider>
             <h4 className="mb-3 text-center">Label Selection</h4>
             <Card>
                 <CardBody>
@@ -67,6 +74,6 @@ export const SelectLabel = ({ availableLabelTrees, nodeId }: SelectLabelProps) =
                     />
                 </CardBody>
             </Card>
-        </ReactFlowProvider>
+        </ReactFlowProvider></div>
     )
 }

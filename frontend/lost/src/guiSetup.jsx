@@ -158,6 +158,7 @@ const PipelineTemplatesPage = {
     to: '/pipeline-templates',
     component: PipelineTemplatesTable,
     icon: <FaPlay {...iconProps} />,
+    id: 'nav-start-pipeline',
 }
 
 const TemplatePage = {

@@ -26,7 +26,7 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                     newItem = (
                         <CNavItem key={itemKey++}>
                             <NavLink key={itemKey++} to={item.to}>
-                                <CNavLink key={itemKey++}>
+                                <CNavLink key={itemKey++} id={item.id}>
                                     <span
                                         style={{
                                             width: '20px',
@@ -41,7 +41,7 @@ const TheSidebar = ({ navItems, canShowSidebar, setCanShowSidebar }) => {
                             </NavLink>
                         </CNavItem>
                     )
-                    break
+                    break                    
                 default:
                     newItem = (
                         <CNavItem key={itemKey++} href="#">
