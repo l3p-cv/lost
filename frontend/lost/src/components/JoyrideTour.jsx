@@ -24,14 +24,15 @@ const JoyrideTour = () => {
   const location = useLocation();
 
   const siaPipelineId = localStorage.getItem('siaPipelineId');
-  const steps = useJoyrideSteps('mainPipeline');
+  const miaPipelineId = localStorage.getItem('miaPipelineId'); 
+  const [pipelineType, setPipelineType] = useState('mainPipeline');
+  const steps = useJoyrideSteps(pipelineType);
 
   useEffect(() => {
     const handleResume = () => setShouldResume(true);
 
     const handleJoyrideNextStep = (event) => {
       const { step } = event.detail;
-
       const stepMap = {
         'dropdown-open': 6,
         'datasource-selected': 7,
@@ -45,9 +46,10 @@ const JoyrideTour = () => {
         'storage-settings-done': 23,
         'configuration-done': 25,
         'template-next': 26,
-        'last-step-done':29
+        'last-step-done': 29,
+        'latest-running-pipeline': 29,
+        'latest-running-annotask': 30,
       };
-
       const nextStep = stepMap[step];
       if (typeof nextStep === 'number') {
         setCurrentStep(nextStep);
@@ -57,7 +59,6 @@ const JoyrideTour = () => {
 
     window.addEventListener('resume-joyride', handleResume);
     window.addEventListener('joyride-next-step', handleJoyrideNextStep);
-
     return () => {
       window.removeEventListener('resume-joyride', handleResume);
       window.removeEventListener('joyride-next-step', handleJoyrideNextStep);
@@ -70,33 +71,33 @@ const JoyrideTour = () => {
 
   const getTooltipStyles = (stepIndex) => {
     const hideNext = [5, 6, 9, 14, 16, 18, 20, 22, 24, 25, 28];
-    const hideBack = [3, 4, 10, 12, 15, 17, 19, 21, 23, 25, 26];
+    const hideBack = [3, 4, 10, 12, 15, 17, 19, 21, 23, 25, 26, 29];
     return {
       ...(hideNext.includes(stepIndex) && { buttonNext: { display: 'none' } }),
       ...(hideBack.includes(stepIndex) && { buttonBack: { display: 'none' } }),
     };
   };
 
-  const getOverlayStyles = (stepIndex) => {
-    const noOverlaySteps = [13, 15, 17, 19, 21, 22, 23, 24];
-    if (noOverlaySteps.includes(stepIndex)) {
-      return {
-        options: {
-          overlayColor: 'transparent',
-          overlayOpacity: 0,
-          zIndex: 10000,
-        },
-        overlay: { pointerEvents: 'none' },
-      };
-    }
-    return {
-      options: {
-        overlayColor: 'rgba(0, 0, 0, 0.5)',
-        overlayOpacity: 0.5,
-        zIndex: 10000,
-      },
-    };
-  };
+   const getOverlayStyles = (stepIndex) => {
+     const noOverlaySteps = [13, 15, 17, 19, 21, 22, 23, 24];
+     if (noOverlaySteps.includes(stepIndex)) {
+       return {
+         options: {
+           overlayColor: 'transparent',
+           overlayOpacity: 0,
+           zIndex: 10000,
+         },
+         overlay: { pointerEvents: 'none' },
+       };
+     }
+     return {
+       options: {
+         overlayColor: 'rgba(0, 0, 0, 0.5)',
+         overlayOpacity: 0.5,
+         zIndex: 10000,
+       },
+     };
+   };
 
   useEffect(() => {
     const savedStep = localStorage.getItem('currentStep');
@@ -128,6 +129,32 @@ const JoyrideTour = () => {
     return () => clearTimeout(timeoutId);
   }, [location.pathname, steps, currentStep, shouldResume, run]);
 
+  useEffect(() => {
+    if (location.pathname === '/pipelines' && localStorage.getItem('latestRowReady') === 'true') {
+      window.dispatchEvent(
+        new CustomEvent('joyride-next-step', {
+          detail: { step: 'latest-running-pipeline' },
+        })
+      )
+      localStorage.removeItem('latestRowReady')
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (location.pathname === '/annotation') {
+    if (localStorage.getItem('resumeAfterReload') === 'true') {
+      localStorage.removeItem('resumeAfterReload');
+      setRun(true);
+      setCurrentStep(29);
+    } else {
+      window.dispatchEvent(
+        new CustomEvent('joyride-next-step', {
+          detail: { step: 'latest-running-annotask' },
+        })
+      )
+    }}
+  }, [location.pathname])
+
   const handleJoyrideCallback = ({ action, index, status, type }) => {
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status) || action === 'close') {
       localStorage.setItem('hasCompletedTour', 'true');
@@ -151,7 +178,11 @@ const JoyrideTour = () => {
             if (siaPipelineId) setShouldResume(true);
             break;
           case 2:
-            if (siaPipelineId) navigate(`/pipeline-template/${siaPipelineId}`);
+            if (pipelineType === 'miaPipeline' && miaPipelineId) {
+              navigate(`/pipeline-template/${miaPipelineId}`);
+            } else if (pipelineType === 'mainPipeline' && siaPipelineId) {
+              navigate(`/pipeline-template/${siaPipelineId}`);
+            }
             setShouldResume(true);
             break;
           case 3:
@@ -166,6 +197,14 @@ const JoyrideTour = () => {
             const combo = document.querySelector('#instruction [role="combobox"]');
             if (combo) combo.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
             break;
+          case 29:
+            localStorage.setItem('resumeAfterReload', 'true');
+            localStorage.setItem('currentStep', '29');
+            navigate('/annotation');
+            window.location.reload();
+            break;
+
+            break;
           default:
             break;
         }
@@ -177,9 +216,10 @@ const JoyrideTour = () => {
     }
   };
 
-  const handleTourStart = () => {
+  const handleTourStart = (type = 'mainPipeline') => {
     localStorage.removeItem('hasCompletedTour');
     localStorage.setItem('currentStep', '0');
+    setPipelineType(type);
     setCurrentStep(0);
     setRun(true);
     setIsModalVisible(false);

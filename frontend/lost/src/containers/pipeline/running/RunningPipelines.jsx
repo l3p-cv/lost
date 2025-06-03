@@ -13,22 +13,33 @@ import { getColor } from '../../Annotation/AnnoTask/utils'
 import '../globalComponents/pipeline.scss'
 
 export const RunningPipelines = () => {
-    const navigate = useNavigate()
-    const { data, isError, isLoading } = usePipelines()
+  const navigate = useNavigate()
+  const { data, isError, isLoading } = usePipelines()
 
-    const renderDatatable = () => {
-        if (isLoading) {
-            return <CenteredSpinner />
-        }
+  const renderDatatable = () => {
+    if (isLoading) return <CenteredSpinner />
+    if (isError) return <div className="pipeline-error-message">Error loading data</div>
+    if (data) {
+      if (data.error) return <div className="pipeline-error-message">{data.error}</div>
 
-        if (isError) {
-            return <div className="pipeline-error-message">Error loading data</div>
-        }
-        if (data) {
-            if (data.error) {
-                return <div className="pipeline-error-message">{data.error}</div>
-            }
-            const tableData = data.pipes
+      const tableData = data.pipes
+
+      const latestPipeline = tableData.reduce((latest, current) =>
+        new Date(current.date) > new Date(latest.date) ? current : latest,
+        tableData[0]
+      )
+      const latestPipelineId = latestPipeline?.id
+
+      const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+      if (joyrideRunning) {
+        window.dispatchEvent(
+          new CustomEvent('joyride-next-step', {
+            detail: { step: 'latest-running-pipeline' },
+          })
+        )
+        localStorage.setItem('latestRowReady', 'true')
+      }
+
             return (
                 <ReactTable
                     columns={[
@@ -101,30 +112,32 @@ export const RunningPipelines = () => {
                                     text="Open"
                                 />
                             ),
-                        },
-                    ]}
-                    defaultSorted={[
-                        {
-                            id: 'date',
-                            desc: false,
-                        },
-                    ]}
-                    data={tableData}
-                    defaultPageSize={10}
-                    className="-striped -highlight"
-                />
-            )
-        }
-    }
+                            },
+                        ]}
+                        defaultSorted={[{ id: 'date', desc: false }]}
+                        data={tableData}
+                        defaultPageSize={10}
+                        className="-striped -highlight"
+                        getTrProps={(state, rowInfo) => {
+                            if (!rowInfo) return {}
+                            return {
+                            className:
+                                rowInfo.original.id === latestPipelineId ? 'latest-pipeline-row' : '',
+                            }
+                        }}
+                        />
+                    )
+                    }
+                }
 
-    return (
-        <CContainer style={{ marginTop: '15px' }}>
-            <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
-                Pipelines
-            </h3>
-            <BaseContainer>
-                <div className="pipeline-running-1">{renderDatatable()}</div>
-            </BaseContainer>
-        </CContainer>
-    )
-}
+                return (
+                    <CContainer style={{ marginTop: '15px' }}>
+                    <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
+                        Pipelines
+                    </h3>
+                    <BaseContainer>
+                        <div className="pipeline-running-1">{renderDatatable()}</div>
+                    </BaseContainer>
+                    </CContainer>
+                )
+                }

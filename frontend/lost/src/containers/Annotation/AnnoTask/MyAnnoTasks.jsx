@@ -124,6 +124,19 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
     }, [datatableInfo])
 
     useEffect(() => {
+      if (aTData.length > 0) {
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+        if (joyrideRunning) {
+          window.dispatchEvent(
+            new CustomEvent('joyride-next-step', {
+              detail: { step: 'latest-running-annotask' },
+            })
+          )
+        }
+      }
+    }, [aTData])
+
+    useEffect(() => {
         if (annoTaskListData) {
             setPages(annoTaskListData.pages)
             setATData(annoTaskListData.annoTasks)
@@ -464,6 +477,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     })
                 }}
                 pageCount={pages}
+                getRowClassName={(row, index) => (index === 0 ? 'first-row-class' : '')}
             />
         </>
     )

@@ -10,20 +10,31 @@ import IconButton from '../../components/IconButton';
 
 const TourStartTable = ({ onStartTour }) => {
   const { data, isLoading, isError } = useTemplates('all');
-  const [siaPipeline, setSiaPipeline] = useState(null);
+  const [pipelines, setPipelines] = useState([]);
 
   useEffect(() => {
     if (data?.templates) {
-      const template = data.templates.find(t => t.name === 'found.sia');
-      if (template) {
-        localStorage.setItem('siaPipelineId', template.id);
-        setSiaPipeline(template);
+      const foundSia = data.templates.find(t => t.name === 'found.sia');
+      const foundMia = data.templates.find(t => t.name === 'found.mia');
+
+      const newPipelines = [];
+
+      if (foundSia) {
+        localStorage.setItem('siaPipelineId', foundSia.id);
+        newPipelines.push({ ...foundSia, tourType: 'mainPipeline', label: 'SIA' });
       }
+
+      if (foundMia) {
+        localStorage.setItem('miaPipelineId', foundMia.id);
+        newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' });
+      }
+
+      setPipelines(newPipelines);
     }
   }, [data]);
 
   if (isLoading) return <CenteredSpinner />;
-  if (isError || !siaPipeline) return <div>Error loading SIA pipeline</div>;
+  if (isError || pipelines.length === 0) return <div>Error loading pipeline templates</div>;
 
   return (
     <CContainer style={{ marginTop: '15px' }}>
@@ -32,10 +43,10 @@ const TourStartTable = ({ onStartTour }) => {
           columns={[
             {
               Header: 'Name / Project',
-              accessor: 'name',
-              Cell: () => (
+              accessor: 'label',
+              Cell: (row) => (
                 <>
-                  <b>SIA</b>
+                  <b>{row.original.label}</b>
                   <div className="small text-muted">found</div>
                 </>
               ),
@@ -43,28 +54,28 @@ const TourStartTable = ({ onStartTour }) => {
             {
               Header: 'Description',
               accessor: 'description',
-              Cell: () => (
+              Cell: (row) => (
                 <HelpButton
-                  id="sia-description"
-                  text={siaPipeline.description}
+                  id={`${row.original.label.toLowerCase()}-description`}
+                  text={row.original.description}
                 />
               ),
             },
             {
               Header: 'Start Tour',
               accessor: 'id',
-              Cell: () => (
+              Cell: (row) => (
                 <IconButton
                   icon={faPlay}
                   text="Start Tour"
                   color="primary"
-                  onClick={onStartTour}
+                  onClick={() => onStartTour(row.original.tourType)}
                 />
               ),
             },
           ]}
-          data={[siaPipeline]}
-          defaultPageSize={1}
+          data={pipelines}
+          defaultPageSize={2}
         />
       </BaseContainer>
     </CContainer>

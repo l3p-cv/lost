@@ -66,17 +66,27 @@ export const PipelineTemplatesTable = () => {
             {
               Header: 'Start',
               accessor: 'id',
-              Cell: (row) => (
-                <IconButton
-                  color="primary"
-                  size="m"
-                  isOutline={false}
-                  className={row.original.name === 'found.sia' ? 'sia-start-button' : ''}
-                  onClick={() => navigate(`/pipeline-template/${row.value}`)}
-                  icon={faPlay}
-                  text="Start"
-                />
-              ),
+              Cell: (row) => {
+                const isSia = row.original.name === 'found.sia';
+                const isMia = row.original.name === 'found.mia';
+                return (
+                  <IconButton
+                    color="primary"
+                    size="m"
+                    isOutline={false}
+                    className={
+                      isSia
+                        ? 'sia-start-button'
+                        : isMia
+                        ? 'mia-start-button'
+                        : ''
+                    }
+                    onClick={() => navigate(`/pipeline-template/${row.value}`)}
+                    icon={faPlay}
+                    text="Start"
+                  />
+                );
+              },
             },
           ]}
           data={data.templates}
