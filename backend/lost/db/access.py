@@ -162,6 +162,24 @@ class DBMan(object):
             list of :class:`.project.Pipe`
         '''
         return self.session.query(model.Pipe).all()
+    
+    def get_pipelines_paged(self,
+        group_ids,
+        page_index,
+        page_size):
+        # get everything
+        query = self.session.query(model.Pipe)\
+            .filter((model.Pipe.group_id.in_(group_ids) &  (model.Pipe.state!=state.Pipe.DELETED) ))
+        # get page
+        pipe_page = (query.order_by(model.Pipe.timestamp.desc())\
+                     .limit(page_size)\
+                    .offset(page_index * page_size)).all()
+        # total pages
+        count = query.count()
+        pages = count // page_size
+        if count % page_size:
+            pages += 1
+        return pipe_page, pages
 
     def get_pipes_to_process(self) -> list[model.Pipe]:
         '''Get all :class:`project.Pipe` objects that are not finished.

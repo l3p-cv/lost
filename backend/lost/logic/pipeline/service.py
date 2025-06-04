@@ -302,6 +302,25 @@ def get_pipelines(db_man, group_ids, debug_mode=False):
     pipes = db_man.get_pipes(group_ids)
     result = __serialize_pipes(db_man, debug_mode, pipes)
     return result
+
+def get_pipelines_paged(db_man, group_ids, page_index, page_size, debug_mode=False):
+    '''Read out all pipelines of a certain page dependent on debug_mode.
+
+    Args:
+        db_man:
+        group_ids: Group ids to search for
+        page_index (int): page to load, starting with 0
+        page_size (int): entries per page
+        debug_mode (Boolean): Weather to load Pipes in debug or normal
+    
+    Returns: 
+        Tuple of JSON with all meta info about the pipelines and the total pages.
+    '''
+    
+    # dump(group_ids, "--- printing group_ids ---")
+    pipes, pages = db_man.get_pipelines_paged(group_ids, page_index, page_size)
+    result = __serialize_pipes(db_man, debug_mode, pipes)
+    return result, pages
 ############################ get_completed_pipes ##################
 #                                                                 #
 ###################################################################
