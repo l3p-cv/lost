@@ -23,8 +23,8 @@ import TabUser from './TabUser'
 const AnnoTaskTabs = ({
     annotask,
     changeUser,
-    datastoreList,
-    datasetList,
+    // datastoreList,
+    // datasetList,
     hasChangeUser = true,
     hasShowLabels = true,
     hasAdaptConfiguration = true,
