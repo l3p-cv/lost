@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reworked PaginatorBottom completely (see "Changed")
 - New general Sweetalert for deletions
 - Added argument "color" to SelectFileButton
-- Rearranged + recolored Buttons on Pipeline-Inspection
+- Rearranged + recolored Buttons in all tables
 - Replaced tables in Annotation-Tab
 - Added 2 Pagination-Components (for whole and for partial tableData) + 1 Wrapper for them, to use with CoreDataTable
 ### Changed
