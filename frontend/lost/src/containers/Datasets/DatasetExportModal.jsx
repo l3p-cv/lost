@@ -8,8 +8,8 @@ const DatasetExportModal = ({
     datasetName,
     description,
     annoTask,
-    datastoreList,
-    datasetList,
+    // datastoreList,
+    // datasetList,
 }) => {
     const [activeTaskTab, setActiveTaskTab] = useState(0) // remember which Tab is active
     return (
@@ -19,8 +19,8 @@ const DatasetExportModal = ({
                 <div className="mt-2">{description}</div>
                 <AnnoTaskTabs
                     annotask={annoTask}
-                    datastoreList={datastoreList}
-                    datasetList={datasetList}
+                    // datastoreList={datastoreList}
+                    // datasetList={datasetList}
                     hasChangeUser={false}
                     hasShowLabels={false}
                     hasAdaptConfiguration={false}

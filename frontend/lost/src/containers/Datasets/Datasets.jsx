@@ -11,7 +11,7 @@ import DatasetTable from './DatasetTable'
 import { WholeDatasetExportModal } from './WholeDatasetExportModal'
 
 const Datasets = () => {
-    const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
+    // const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
     const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
         datasetApi.useFlatDatasets()
 
@@ -26,6 +26,35 @@ const Datasets = () => {
     const [isWholeDatasetModalOpen, toggleWholeDatasetModal] = useToggle(false)
 
     const [editedDatasetObj, setEditedDatasetObj] = useState()
+
+    // new stuff
+    const [pageSize, setPageSize] = useState(10)
+    const [page, setPage] = useState(0)
+    const [pageCount, setPageCount] = useState(0) //(null)
+    const [lastRequestedPage, setLastRequestedPage] = useState(0)
+    const [datatableInfo, setDatatableInfo] = useState()
+    const [dSData, setDSData] = useState([])
+    // TODO: use isError
+    const { data, isError, isLoading, refetch: reloadFlatDatasetListPaged } = datasetApi.useDatasetsPaged(page, pageSize)
+
+    useEffect(() => {
+        if (data && page === lastRequestedPage) {
+            setPageCount(data.pages)
+            setDSData(data.datasets)
+        }
+        if (isLoading && !dSData) {
+            setDSData([])
+        }
+    }, [data, lastRequestedPage])
+
+    useEffect(() => {
+        if (datatableInfo) {
+            setPageSize(datatableInfo.pageSize)
+            setPage(datatableInfo.page)
+        }
+    }, [datatableInfo])
+
+
 
     const openAddDatasetMenu = () => {
         // clear data from previous modal editings
@@ -97,11 +126,10 @@ const Datasets = () => {
     useEffect(() => {
         // update the list after the data has changed (modal closes on API response)
         if (isEditModalOpen === false) {
-            reloadDatasetList()
+            reloadFlatDatasetListPaged()
             reloadFlatDatasetList()
         }
-    }, [isEditModalOpen, reloadDatasetList, reloadFlatDatasetList])
-
+    }, [isEditModalOpen, reloadFlatDatasetListPaged, reloadFlatDatasetList])
     return (
         <>
             <DatasetExportModal
@@ -110,8 +138,8 @@ const Datasets = () => {
                 datasetName="Test"
                 description="Test"
                 annoTask={annotask}
-                datastoreList={datastores}
-                datasetList={datasetList}
+            // datastoreList={datastores}
+            // datasetList={datasetList}
             />
             <DatasetEditModal
                 isVisible={isEditModalOpen}
@@ -119,7 +147,8 @@ const Datasets = () => {
                 editedDatasetObj={editedDatasetObj}
                 flatDatasetList={flatDatasetList}
                 // datastoreList={datastores} // not used as of now
-                onDatasetCreated={reloadDatasetList}
+                // onDatasetCreated={reloadDatasetList}
+                onDatasetCreated={reloadFlatDatasetListPaged}
             />
 
             <WholeDatasetExportModal
@@ -159,10 +188,14 @@ const Datasets = () => {
                     <CCol>
                         <div className="h-4">&nbsp;</div>
                         <DatasetTable
-                            datasetList={datasetList}
+                            datasetList={dSData}
                             datastores={datastores}
                             onExportButtonClicked={openExportModal}
                             onEditButtonClicked={openEditDatasetMenu}
+                            page={page}
+                            pageCount={pageCount}
+                            setLastRequestedPage={setLastRequestedPage}
+                            setDatatableInfo={setDatatableInfo}
                         />
                     </CCol>
                 </CRow>

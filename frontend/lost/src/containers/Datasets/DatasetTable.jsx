@@ -20,9 +20,12 @@ const DatasetTable = ({
     datastores,
     onExportButtonClicked,
     onEditButtonClicked,
+    page,
+    pageCount,
+    setLastRequestedPage,
+    setDatatableInfo
 }) => {
     const navigate = useNavigate()
-
     const [tableData, setTableData] = React.useState(() => [...datasetList])
 
     // update the table when the parameter data changes
@@ -89,7 +92,7 @@ const DatasetTable = ({
             columnHelper.display({
                 id: 'name',
                 header: 'Name',
-                cell: ({row}) => {
+                cell: ({ row }) => {
                     if (row.original.isMetaDataset) return <b>{row.original.name}</b>
                     if (row.original.isAnnotask) {
                         return (
@@ -117,7 +120,7 @@ const DatasetTable = ({
             columnHelper.display({
                 id: "annotaskStatus",
                 header: 'Task Status',
-                cell: ({row}) => {
+                cell: ({ row }) => {
                     if (row.original.isAnnotask) return row.original.description
                     return "-"
                 }
@@ -136,7 +139,7 @@ const DatasetTable = ({
             // }),
             columnHelper.accessor('createdAt', {
                 header: () => 'Created at',
-                cell: ({row}) => {
+                cell: ({ row }) => {
                     if (row.original.isMetaDataset) return ''
                     if (row.original.isAnnotask) return row.original.created_at
                     return row.original.createdAt // isDataset
@@ -145,7 +148,7 @@ const DatasetTable = ({
             columnHelper.display({
                 id: 'review',
                 header: () => 'Review',
-                cell: ({row}) => {
+                cell: ({ row }) => {
                     // reviewing metadatasets is impossible
                     if (row.original.isMetaDataset) return ''
 
@@ -235,7 +238,25 @@ const DatasetTable = ({
 
     return (
         <BaseContainer>
-            <CoreDataTable tableData={tableData} columns={defineColumns()} />
+            {/* <CoreDataTable tableData={tableData} columns={defineColumns()} /> */}
+            <CoreDataTable
+                columns={defineColumns()}
+                tableData={tableData}
+                onPaginationChange={(table) => {
+                    const nextPage = table.getState().pagination.pageIndex
+                    setLastRequestedPage(nextPage)
+                    const tableState = table.getState()
+                    setDatatableInfo({
+                        pageSize: tableState.pagination.pageSize,
+                        page: tableState.pagination.pageIndex,
+                        sorted: tableState.sorting,
+                        filtered: tableState.columnFilters,
+                    })
+                }}
+                pageIndex={page}
+                pageCount={pageCount}
+                wholeData={false}
+            />
         </BaseContainer>
     )
 }
