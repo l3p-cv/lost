@@ -25,12 +25,13 @@ function CoreDataTable({
     rowHeight = "55px",
     onPaginationChange = () => { },
     onColumnFiltersChange = () => { },
+    pageIndex=0,
     wholeData = true
 }) {
     const [columnFilters, setColumnFilters] = useState([])
     const [doRerender, setDoRerender] = useState(false)
     const [paginationState, setPaginationState] = useState(() => ({
-        pageIndex: 0,
+        pageIndex: pageIndex,
         pageSize,
     }));
     const [expanded, setExpanded] = React.useState({})
@@ -57,7 +58,8 @@ function CoreDataTable({
     }, [paginationState])
 
     const table = useReactTable({
-        data: (dataTemp != []) ? dataTemp : tableData, // TODO: dataTemp
+        // data: (dataTemp.length === 0) ? dataTemp : tableData, // TODO: dataTemp
+        data: dataTemp,
         manualPagination: pageCount !== undefined ? true : false,
         columns,
         state: {
@@ -137,7 +139,7 @@ function CoreDataTable({
                     ))}
                 </CTableBody>
             </CTable>
-            {tableData === [] && (
+            {tableData.length === 0 && (
                 <div
                     style={{
                         position: 'absolute',

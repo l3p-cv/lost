@@ -1,40 +1,34 @@
-import { CCol, CRow, CTable, CTableBody, CTableHead, CContainer } from '@coreui/react'
-import { faAngleLeft, faAngleRight, faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { CContainer } from '@coreui/react'
+import { faEye, faPlay, faPause, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import ReactTable from 'react-table'
 import 'react-table/react-table.css'
 import { Progress } from 'reactstrap'
 import {
     usePipelines, usePlayPipeline, usePausePipeline, useDeletePipeline,
-    useTemplates
+    useTemplates, usePipelinesPaged
 } from '../../../actions/pipeline/pipeline_api'
 import BaseContainer from '../../../components/BaseContainer'
 import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import HelpButton from '../../../components/HelpButton'
-import IconButton from '../../../components/IconButton'
 import { getColor } from '../../Annotation/AnnoTask/utils'
 import '../globalComponents/pipeline.scss'
 import { CButton, CButtonGroup, CTooltip } from '@coreui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { alertDeletePipeline } from '../globalComponents/Sweetalert'
-import { template } from 'lodash'
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
-// import React, { Fragment, useEffect } from 'react'
-// import {
-//     createColumnHelper,
-//     flexRender,
-//     getCoreRowModel,
-//     getExpandedRowModel,
-//     getFilteredRowModel,
-//     getPaginationRowModel,
-//     useReactTable,
-// } from '@tanstack/react-table'
 
 export const RunningPipelines = () => {
     const navigate = useNavigate()
-    const { data, isError, isLoading } = usePipelines()
+    // const { data, isError, isLoading } = usePipelines()
+    const [pageSize, setPageSize] = useState(10)
+    const [page, setPage] = useState(0)
+    const [pageCount, setPageCount] = useState(0) //(null)
+    const [lastRequestedPage, setLastRequestedPage] = useState(0)
+    const [datatableInfo, setDatatableInfo] = useState()
+    const [pipelineData, setPipelineData] = useState(null)
+    const { data, isError, isLoading } = usePipelinesPaged(page, pageSize)
     const { data: templateData,
         isLoading: templateIsLoading,
         isError: templateIsError } = useTemplates('all')
@@ -48,13 +42,26 @@ export const RunningPipelines = () => {
     const playPipelineHandler = (data) => {
         playPipeline(data.id)
     }
-
     const deletePipelineHandler = async (data) => {
         const response = await alertDeletePipeline()
         if (response.value) {
             deletePipeline(data.id)
         }
     }
+
+    useEffect(() => {
+        if (data && page === lastRequestedPage) {
+            setPageCount(data.pages)
+            setPipelineData(data.pipelines.pipes)
+        }
+    }, [data, lastRequestedPage])
+
+    useEffect(() => {
+        if (datatableInfo) {
+            setPageSize(datatableInfo.pageSize)
+            setPage(datatableInfo.page)
+        }
+    }, [datatableInfo])
 
     function UnPauseButton({ original }) {
         return (
@@ -111,7 +118,6 @@ export const RunningPipelines = () => {
         )
     }
 
-
     const TemplateDescButton = ({ templates, templName, pipeID }) => {
         const match = templates.find(t => t.name === templName);
         return (
@@ -120,119 +126,128 @@ export const RunningPipelines = () => {
                 text={match.description} />
         );
     };
-    const tableData = useMemo(() => {
-        if (data === undefined) {
-            return []
-        }
-        return [...data.pipes].reverse();
-    }, [data]);
+
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            ...columns,
+            columnHelper.accessor('name', {
+                header: 'Name',
+                cell: (props) => {
+                    return (
+                        <>
+                            <b>{props.row.original.name}</b>
+                            <HelpButton
+                                id={props.row.original.id}
+                                text={props.row.original.description}
+                            />
+                            <div className="small text-muted">
+                                {`ID: ${props.row.original.id}`}
+                            </div>
+                        </>)
+                }
+            }),
+            columnHelper.accessor('description', {
+                header: 'Template',
+                cell: (props) => {
+                    return (
+                        <>
+                            <b>{props.row.original.templateName.split('.')[1]}</b>
+                            <TemplateDescButton
+                                templName={props.row.original.templateName}
+                                templates={templateData.templates}
+                                pipeID={props.row.original.id}
+                            />
+                            <div className="small text-muted">
+                                {props.row.original.templateName.split('.')[0]}
+                            </div>
+                        </>
+                    )
+
+                }
+            }),
+            columnHelper.accessor('progress', {
+                header: 'Progress',
+                cell: (props) => {
+                    const progress = parseInt(props.row.original.progress)
+                    if (props.row.original.progress === 'ERROR') {
+                        return (<div>ERROR</div>)
+                    }
+                    if (props.row.original.progress === 'PAUSED') {
+                        return (<div>PAUSED</div>)
+                    }
+                    return (
+                        <Progress
+                            className="progress-xs rt-progress"
+                            color={getColor(progress)}
+                            value={progress}
+                        />
+                    )
+                }
+
+            }),
+            columnHelper.accessor('date', {
+                header: 'Started on',
+                cell: ({ row }) =>
+                    new Date(row.original.date).toLocaleString(),
+                // sortMethod: (date1, date2) => {
+                //     return new Date(date1) > new Date(date2) ? -1 : 1
+                // },
+            }),
+            columnHelper.display({
+                id: 'options',
+                header: 'Options',
+                cell: ({ row }) => {
+                    return (
+                        <>
+                            {/* <CButtonGroup role="group" aria-label="Basic mixed styles example"> */}
+                            <OpenIcon original={row.original} />
+                            <UnPauseButton original={row.original} />
+                            <DeleteButton original={row.original} />
+                            {/* </CButtonGroup> */}
+                        </>
+                    )
+                }
+            }),
+        ]
+        return columns
+    }
+
     const renderDatatable = () => {
-        if (isLoading || templateIsLoading) {
+        if ((isLoading || templateIsLoading) && !pipelineData) {
             return <CenteredSpinner />
         }
 
         if (isError || templateIsError) {
             return <div className="pipeline-error-message">Error loading data</div>
         }
-        if (data && templateData) {
-            if (data.error || templateData.error) {
-                return <div className="pipeline-error-message">{data.error}</div>
+        if (pipelineData) {
+            if ((data && templateData) && (data.pipelines.error || templateData.error)) {
+                return <div className="pipeline-error-message">{data.pipelines.error}</div>
             }
-            const defineColumns = () => {
-                const columnHelper = createColumnHelper()
-
-                let columns = []
-
-                columns = [
-                    ...columns,
-                    columnHelper.accessor('name', {
-                        header: 'Name',
-                        cell: (props) => {
-                            return (
-                                <>
-                                    <b>{props.row.original.name}</b>
-                                    <HelpButton
-                                        id={props.row.original.id}
-                                        text={props.row.original.description}
-                                    />
-                                    <div className="small text-muted">
-                                        {`ID: ${props.row.original.id}`}
-                                    </div>
-                                </>)
-                        }
-                    }),
-                    columnHelper.accessor('description', {
-                        header: 'Template',
-                        cell: (props) => {
-                            return (
-                                <>
-                                    <b>{props.row.original.templateName.split('.')[1]}</b>
-                                    <TemplateDescButton
-                                        templName={props.row.original.templateName}
-                                        templates={templateData.templates}
-                                        pipeID={props.row.original.id}
-                                    />
-                                    <div className="small text-muted">
-                                        {props.row.original.templateName.split('.')[0]}
-                                    </div>
-                                </>
-                            )
-
-                        }
-                    }),
-                    columnHelper.accessor('progress', {
-                        header: 'Progress',
-                        cell: (props) => {
-                            const progress = parseInt(props.row.original.progress)
-                            if (props.row.original.progress === 'ERROR') {
-                                return (
-                                    <div>ERROR</div>
-                                )
-                            }
-                            if (props.row.original.progress === 'PAUSED') {
-                                return (
-                                    <div>PAUSED</div>
-                                )
-                            }
-                            return (
-                                <Progress
-                                    className="progress-xs rt-progress"
-                                    color={getColor(progress)}
-                                    value={progress}
-                                />
-                            )
-                        }
-
-                    }),
-                    columnHelper.accessor('date', {
-                        header: 'Started on',
-                        cell: (props) =>
-                            new Date(props.row.original.date).toLocaleString(),
-                        // sortMethod: (date1, date2) => {
-                        //     return new Date(date1) > new Date(date2) ? -1 : 1
-                        // },
-                    }),
-                    columnHelper.display({
-                        id: 'options',
-                        header: 'Options',
-                        cell: (props) => {
-                            return (
-                                <>
-                                    {/* <CButtonGroup role="group" aria-label="Basic mixed styles example"> */}
-                                    <OpenIcon original={props.row.original} />
-                                    <UnPauseButton original={props.row.original} />
-                                    <DeleteButton original={props.row.original} />
-                                    {/* </CButtonGroup> */}
-                                </>
-                            )
-                        }
-                    }),
-                ]
-                return columns
+            if (!data && !pipelineData) {
+                return <CenteredSpinner />
             }
-            // console.log("RENDERING!!!")
             return (
-                <CoreDataTable columns={defineColumns()} tableData={tableData} />
+                <CoreDataTable
+                    columns={defineColumns()}
+                    tableData={pipelineData}
+                    onPaginationChange={(table) => {
+                        const nextPage = table.getState().pagination.pageIndex
+                        setLastRequestedPage(nextPage)
+                        const tableState = table.getState()
+                        setDatatableInfo({
+                            pageSize: tableState.pagination.pageSize,
+                            page: tableState.pagination.pageIndex,
+                            sorted: tableState.sorting,
+                            filtered: tableState.columnFilters,
+                        })
+                    }}
+                    pageIndex={page}
+                    pageCount={pageCount}
+                    wholeData={false}
+                />
             )
         }
     }
