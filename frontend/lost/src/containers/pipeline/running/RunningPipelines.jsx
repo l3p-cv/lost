@@ -226,9 +226,6 @@ export const RunningPipelines = () => {
             if ((data && templateData) && (data.pipelines.error || templateData.error)) {
                 return <div className="pipeline-error-message">{data.pipelines.error}</div>
             }
-            if (!data && !pipelineData) {
-                return <CenteredSpinner />
-            }
             return (
                 <CoreDataTable
                     columns={defineColumns()}
