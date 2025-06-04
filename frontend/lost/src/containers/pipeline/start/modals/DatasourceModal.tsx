@@ -94,12 +94,15 @@ export const DatasourceModal = ({
                     })
                 }
 
+            const isJoyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            const isValidPath = path && path !== DEFAULT_TEXT_PATH;
+            if (isJoyrideRunning && isValidPath) {
                 window.dispatchEvent(new CustomEvent('joyride-next-step', {
-                    detail: { step: 'path-selected' }
+                     detail: { step: 'path-selected' }
                 }));
-            }
+            }}
         },
-        [selectedPath, selectedFs, updateNodeData, nodeId],
+        [selectedPath, selectedFs, updateNodeData, nodeId]
     )
 
     const selectDS = useCallback((fs) => {
@@ -179,6 +182,10 @@ export const DatasourceModal = ({
                         }));
                     }}
                     id="done-button"
+                    disabled={
+                        localStorage.getItem('joyrideRunning') === 'true' &&
+                        (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
+                    }
                     >
                     Done
                 </Button>

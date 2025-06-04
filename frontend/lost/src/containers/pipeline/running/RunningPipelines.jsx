@@ -37,7 +37,6 @@ export const RunningPipelines = () => {
             detail: { step: 'latest-running-pipeline' },
           })
         )
-        localStorage.setItem('latestRowReady', 'true')
       }
 
             return (

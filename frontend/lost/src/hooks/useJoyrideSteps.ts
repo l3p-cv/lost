@@ -476,7 +476,7 @@ export const useJoyrideSteps = (
       {
         target: '.latest-pipeline-row',
         title: 'Latest Created Pipeline',
-        content: 'This is the pipeline you created. Click "Next" to continue to Annotation.',
+        content: 'This is the pipeline you created. The pipeline execution is being initialized and might take a few seconds. Please wait before clicking "Next" to continue to Annotation.',
         placement: 'top',
         spotlightClicks: true,
         disableBeacon: true,
@@ -484,7 +484,7 @@ export const useJoyrideSteps = (
       {
         target: '.first-row-class',
         title: 'Latest Annotation Task',
-        content: 'This is your most recently created annotation task.',
+        content: 'This is your most recently created annotation task for the pipeline.',
         placement: 'top',
         spotlightClicks: true,
         disableBeacon: true,
