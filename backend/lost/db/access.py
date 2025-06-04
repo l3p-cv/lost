@@ -167,6 +167,13 @@ class DBMan(object):
         group_ids,
         page_index,
         page_size):
+        '''Returns a page of all pipelines and the total number of pages
+
+        Args:
+            group_ids [int]: IDs of groups
+            page_index (int): Zero-based page-index
+            page_size (int): entries per page
+        '''
         # get everything
         query = self.session.query(model.Pipe)\
             .filter((model.Pipe.group_id.in_(group_ids) &  (model.Pipe.state!=state.Pipe.DELETED) ))
@@ -1289,6 +1296,32 @@ class DBMan(object):
         '''Get all datasets
         '''
         return self.session.query(model.Dataset).all()
+    
+    def get_datasets_paged(self,
+        page_index,
+        page_size):
+        '''Returns a page of datasets and the total number of pages
+
+        Args:
+            page_index (int): Zero-based page-index
+            page_size (int): entries per page
+            is_final_page (boolean): true if the selected page is the final one
+        '''
+        # get everything
+        # query = self.session.query(model.Dataset)
+        # get everything without parent
+        query = self.session.query(model.Dataset).filter(model.Dataset.parent_id == None)
+        # get page
+        ds_page = (query\
+                     .limit(page_size)\
+                    .offset(page_index * page_size)).all()
+        # total pages
+        count = query.count()
+        pages = count // page_size
+        if count % page_size:
+            pages += 1
+        is_final_page = (pages == page_index+1)
+        return ds_page, pages, is_final_page
 
     def get_dataset(self, dataset_id):
         '''Get dataset by idx

@@ -112,10 +112,9 @@ class PipelineList(Resource):
 @namespace.param('page_size', 'Number of elements per page.')
 @api.doc(security='apikey')
 class PipelineListPaged(Resource):
-    # TODO: adapt all below!!!
     # marshal caused problems json string was fine, api returned { pipelines: null }.
     # @api.marshal_with(pipelines) 
-    @api.doc(security='apikey',description='Get all pipelines')
+    @api.doc(security='apikey',description='Get all pipelines paged')
     @jwt_required
     def get(self, page_index, page_size):
         dbm = access.DBMan(LOST_CONFIG)
@@ -131,6 +130,7 @@ class PipelineListPaged(Resource):
             group_ids = [g.group_id for g in user.groups]
             re, pages = pipeline_service.get_pipelines_paged(dbm, group_ids, page_index, page_size)
             dbm.close_session()
+            print("PIPE JSON: ", re)
             # print("--- PipelineList result ---")
             # print(re) 
             return {'pipelines': re,
