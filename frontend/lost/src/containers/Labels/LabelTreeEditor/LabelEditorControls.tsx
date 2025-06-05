@@ -108,16 +108,17 @@ const LabelEditorControls = ({
                     }}
                 />
                 <IconButton
-                    color="danger"
-                    onClick={handleDelete}
-                    icon={faTrash}
-                    disabled={getEdges().some((edge) => edge.source === nodeId)}
-                />
-                <IconButton
-                    color="primary"
+                    color="success"
                     onClick={handleSave}
                     icon={faCheck}
                     text="Save"
+                />
+                <IconButton
+                    color="danger"
+                    onClick={handleDelete}
+                    icon={faTrash}
+                    text="Delete"
+                    disabled={getEdges().some((edge) => edge.source === nodeId)}
                 />
             </InputGroup>
         </>
