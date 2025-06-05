@@ -17,7 +17,7 @@ import HelpButton from '../../components/HelpButton'
 
 const DatasetTable = ({
     datasetList,
-    datastores,
+    // datastores,
     onExportButtonClicked,
     onEditButtonClicked,
     page,

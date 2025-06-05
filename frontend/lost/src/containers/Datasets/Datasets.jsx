@@ -15,7 +15,7 @@ const Datasets = () => {
     const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
         datasetApi.useFlatDatasets()
 
-    const { data: datastores } = datasetApi.useDatastoreKeys()
+    // const { data: datastores } = datasetApi.useDatastoreKeys()
     const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotask()
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -189,7 +189,7 @@ const Datasets = () => {
                         <div className="h-4">&nbsp;</div>
                         <DatasetTable
                             datasetList={dSData}
-                            datastores={datastores}
+                            // datastores={datastores}
                             onExportButtonClicked={openExportModal}
                             onEditButtonClicked={openEditDatasetMenu}
                             page={page}
