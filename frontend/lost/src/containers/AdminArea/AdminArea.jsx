@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane, CContainer } from '@coreui/react'
+import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane, CContainer, CTooltip } from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
 import { useLostConfig } from '../../hooks/useLostConfig'
@@ -61,54 +61,64 @@ const AdminArea = () => {
                     <CNav variant="tabs" role="tablist">
                         <CNav variant="tabs">
                             <CNavItem>
-                                <CNavLink active={active === 0} onClick={() => setActive(0)}>
-                                    <FontAwesomeIcon
-                                        color="#092F38"
-                                        size="1x"
-                                        icon={faUsers}
-                                    />
-                                    {active === 0 && ' Users & Groups'}
-                                </CNavLink>
+                                <CTooltip content="Users & Groups" placement="top">
+                                    <CNavLink active={active === 0} onClick={() => setActive(0)}>
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faUsers}
+                                        />
+                                        {active === 0 && ' Users & Groups'}
+                                    </CNavLink>
+                                </CTooltip>
                             </CNavItem>
                             <CNavItem>
-                                <CNavLink active={active === 1} onClick={() => setActive(1)}>
-                                    <FontAwesomeIcon
-                                        color="#092F38"
-                                        size="1x"
-                                        icon={faWandMagicSparkles}
-                                    />
-                                    {active === 1 && ' Pipeline Projects'}
-                                </CNavLink>
+                                <CTooltip content="Pipeline Projects" placement="top">
+                                    <CNavLink active={active === 1} onClick={() => setActive(1)}>
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faWandMagicSparkles}
+                                        />
+                                        {active === 1 && ' Pipeline Projects'}
+                                    </CNavLink>
+                                </CTooltip>
                             </CNavItem>
                             <CNavItem>
-                                <CNavLink active={active === 2} onClick={() => setActive(2)}>
-                                    <FontAwesomeIcon
-                                        color="#092F38"
-                                        size="1x"
-                                        icon={faDatabase}
-                                    />
-                                    {active === 2 && ' Global Datasources'}
-                                </CNavLink>
+                                <CTooltip content="Global Datasources" placement="top">
+                                    <CNavLink active={active === 2} onClick={() => setActive(2)}>
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faDatabase}
+                                        />
+                                        {active === 2 && ' Global Datasources'}
+                                    </CNavLink>
+                                </CTooltip>
                             </CNavItem>
                             <CNavItem>
-                                <CNavLink active={active === 3} onClick={() => setActive(3)}>
-                                    <FontAwesomeIcon
-                                        color="#092F38"
-                                        size="1x"
-                                        icon={faTags}
-                                    />
-                                    {active === 3 && ' Global Labels'}
-                                </CNavLink>
+                                <CTooltip content="Global Labels" placement="top">
+                                    <CNavLink active={active === 3} onClick={() => setActive(3)}>
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faTags}
+                                        />
+                                        {active === 3 && ' Global Labels'}
+                                    </CNavLink>
+                                </CTooltip>
                             </CNavItem>
                             <CNavItem>
-                                <CNavLink active={active === 4} onClick={() => setActive(4)}>
-                                    <FontAwesomeIcon
-                                        color="#092F38"
-                                        size="1x"
-                                        icon={faCubes}
-                                    />
-                                    {active === 4 && ' Worker'}
-                                </CNavLink>
+                                <CTooltip content="Worker" placement="top">
+                                    <CNavLink active={active === 4} onClick={() => setActive(4)}>
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faCubes}
+                                        />
+                                        {active === 4 && ' Worker'}
+                                    </CNavLink>
+                                </CTooltip>
                             </CNavItem>
                             {renderJupyterLabNav()}
                         </CNav>
@@ -143,7 +153,7 @@ const AdminArea = () => {
                                 visible={active === 3}
                                 style={{ marginTop: 30 }}
                             >
-                                <Labels visLevel="global"></Labels>
+                                <Labels visLevel="global" showHeader={false}></Labels>
                             </CTabPane>
                             <CTabPane
                                 role="tabpanel"

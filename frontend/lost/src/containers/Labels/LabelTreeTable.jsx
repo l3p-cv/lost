@@ -58,6 +58,20 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                     return <CBadge color="primary">Global</CBadge>
                 },
             }),
+            columnHelper.accessor('export', {
+                header: 'Export',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faFileExport}
+                            text="Export"
+                            color="info"
+                            isOutline={true}
+                            onClick={() => exportLabelTree(props.row.original.idx)}
+                        />
+                    )
+                },
+            }),
             columnHelper.accessor('edit', {
                 header: 'Edit',
                 cell: (props) => {
@@ -104,20 +118,6 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                 })
                                 setIsEditModalOpen(true)
                             }}
-                        />
-                    )
-                },
-            }),
-            columnHelper.accessor('export', {
-                header: 'Export',
-                cell: (props) => {
-                    return (
-                        <IconButton
-                            icon={faFileExport}
-                            text="Export"
-                            color="info"
-                            isOutline={true}
-                            onClick={() => exportLabelTree(props.row.original.idx)}
                         />
                     )
                 },

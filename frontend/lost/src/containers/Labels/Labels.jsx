@@ -5,7 +5,7 @@ import CreateLabelTree from './CreateLabelTree'
 import LabelTreeTable from './LabelTreeTable'
 import { CContainer } from '@coreui/react'
 
-const Labels = ({ visLevel }) => {
+const Labels = ({ visLevel, showHeader=true }) => {
     const { data: labelTrees, isLoading, isError } = useGetLabelTrees(visLevel)
 
     if (isLoading) {
@@ -19,9 +19,10 @@ const Labels = ({ visLevel }) => {
     if (labelTrees) {
         return (
             <CContainer style={{ marginTop: '15px' }}>
+                {showHeader && 
                 <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
                     Labels
-                </h3>
+                </h3>}
                 <BaseContainer className="mt-3">
                     <CreateLabelTree visLevel={visLevel} />
 

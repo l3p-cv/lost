@@ -65,7 +65,7 @@ const CreateLabelTree = ({ visLevel }) => {
                 </CCol>
             </CRow>
             <CRow>
-                <CCol className="justify-content-end d-flex">
+                <CCol className="justify-content-start d-flex">
                     <SelectFileButton
                         accept=".csv"
                         onSelect={(file) => {
