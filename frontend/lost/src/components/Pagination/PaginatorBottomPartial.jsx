@@ -4,19 +4,24 @@ import {
     CForm,
     CFormInput,
     CFormSelect,
+    CButtonGroup
 } from '@coreui/react'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
-import IconButton from '../IconButton'
+import CoreIconButton from '../CoreIconButton';
 import React, { useState, useEffect } from "react";
 
 
-const TablePagination = ({ table,
+const TablePagination = ({
+    table,
     totalPages,
     targetPage,
     setTargetPage,
     setPaginationState,
+    possiblePageSizes = [10, 20, 50, 100],
+    buttonWidth,
+    minButtonWidth,
+    wide = true,
 }) => {
-
     const handleSubmit = (value) => {
         if (isNaN(value)) {
             setTargetPage(table.getState().pagination.pageIndex + 1)
@@ -48,36 +53,91 @@ const TablePagination = ({ table,
         console.log("Paginator set table to: ", table)
     }
 
-    return (
-        <div
-            className="d-inline-flex align-items-center gap-2 my-2 text-muted small"
-            style={{
-                border: '1px solid var(--cui-secondary)', // outer border
-                borderRadius: '0.25rem',     
-                padding: '0.05rem 0.05rem',  
-                backgroundColor: 'var(--cui-light',
-                height: "35px"
-            }}
-        >
-            <span>Page</span>
-            <CForm onSubmit={jumpToPage}>
-                <CFormInput
-                    id="currentPageShown2"
-                    type="number"
-                    value={targetPage}
-                    onInput={handleInput}
-                    className="text-center"
-                    size="sm"
-                    style={{
-                        width: '60px',
-                        border: '1px solid var(--cui-secondary)', // inner border
-                        borderRadius: '0.5rem',
-                    }}
-                />
-            </CForm>
-            <span>of {totalPages}</span>
-        </div>
-    )
+    if (wide) {
+        return (
+            <div
+                className="d-flex bg-light border rounded overflow-hidden"
+                style={{ height: '38px', minWidth: '350px' }}
+            >
+                {/* Left: Page Jump */}
+                <div className="d-flex align-items-center gap-2 px-3 w-50">
+                    <span className="text-muted small">Page</span>
+                    <CForm onSubmit={jumpToPage} className="d-flex align-items-center gap-2">
+                        <CFormInput
+                            type="number"
+                            value={targetPage}
+                            onInput={handleInput}
+                            className="form-control-sm text-center"
+                            style={{ width: '60px', borderRadius: '0.375rem' }}
+                        />
+                    </CForm>
+                    <span className="text-muted small">of {totalPages}</span>
+                </div>
+
+                {/* Divider */}
+                <div className="vr my-1" />
+
+                {/* Right: Page Size Selector */}
+                <div className="d-flex align-items-center justify-content-end gap-2 px-3 w-50">
+                    <span className="text-muted small">Show:</span>
+                    <CFormSelect
+                        value={table.getState().pagination.pageSize}
+                        onChange={(e) => table.setPageSize(Number(e.target.value))}
+                        className="form-select-sm"
+                        style={{ width: 'auto', minWidth: '80px', borderRadius: '0.375rem' }}
+                    >
+                        {possiblePageSizes.map((pageSize) => (
+                            <option key={pageSize} value={pageSize}>
+                                {pageSize}
+                            </option>
+                        ))}
+                    </CFormSelect>
+                </div>
+            </div>
+        )
+    } else {
+        return (
+            <div
+                className="d-flex flex-column bg-light border rounded p-2 gap-2"
+                style={{ minWidth: '1px' }}
+            >
+                {/* Page Jump */}
+                <div className="d-flex align-items-center gap-2">
+                    <span className="text-muted small">Page</span>
+                    <CForm onSubmit={jumpToPage} className="d-flex align-items-center gap-2">
+                        <CFormInput
+                            type="number"
+                            value={targetPage}
+                            onInput={handleInput}
+                            className="form-control-sm text-center"
+                            style={{ width: '60px', borderRadius: '0.375rem' }}
+                        />
+                    </CForm>
+                    <span className="text-muted small">of {totalPages}</span>
+                </div>
+
+                {/* Divider */}
+                <hr className="my-1" />
+
+                {/* Page Size Selector */}
+                <div className="d-flex align-items-center gap-2">
+                    <span className="text-muted small">Show:</span>
+                    <CFormSelect
+                        value={table.getState().pagination.pageSize}
+                        onChange={(e) => table.setPageSize(Number(e.target.value))}
+                        className="form-select-sm"
+                        style={{ width: 'auto', minWidth: '80px', borderRadius: '0.375rem' }}
+                    >
+                        {possiblePageSizes.map((pageSize) => (
+                            <option key={pageSize} value={pageSize}>
+                                {pageSize}
+                            </option>
+                        ))}
+                    </CFormSelect>
+                </div>
+            </div>
+        )
+    }
 }
 
 
@@ -88,6 +148,7 @@ const PaginatorBottomPartial = ({
     visible = true,
     totalPages = undefined,
     pageSize = 10,
+    large = true // TODO: implement
 }) => {
 
     if (!visible) return
@@ -100,8 +161,19 @@ const PaginatorBottomPartial = ({
     ])
 
     const [targetPage, setTargetPage] = useState(paginationState.pageIndex + 1);
-    const buttonFontsize = "1rem"
-    const buttonWidth = "100%"
+    let buttonFontsize = "1rem"
+    let buttonWidth = "100%"
+    let minButtonWidth = "200px"
+    let nextText = "Next"
+    let prevText = "Previous"
+
+    if (!large) {
+        // buttonFontsize = "0.8rem"
+        // buttonWidth = "50%"
+        minButtonWidth = "100px"
+        nextText = ""
+        prevText = ""
+    }
 
     const handlePrev = () => {
         const prevIndex = paginationState.pageIndex + -1
@@ -121,14 +193,6 @@ const PaginatorBottomPartial = ({
         table.setPageIndex(nextIndex)
     }
 
-    function changePageState(num) {
-        setPaginationState(() => ({
-            ...paginationState,
-            pageSize: num
-        }))
-        table.setPageSize(num)
-    }
-
     const hasPrevious = (paginationState.pageIndex > 0)
     const hasNext = ((paginationState.pageIndex + 1) < totalPages)
 
@@ -137,54 +201,58 @@ const PaginatorBottomPartial = ({
     }, [paginationState])
 
     return (
-        <CRow>
-            <CCol>
-                <IconButton
-                    icon={faAngleLeft}
-                    text="Previous"
-                    onClick={handlePrev}
-                    disabled={!hasPrevious}
-                    style={{ fontSize: buttonFontsize, padding: '0.75rem 1.5rem', width: buttonWidth }}
-                />
-            </CCol>
-            <CCol>
-                <TablePagination
-                    table={table}
-                    totalPages={totalPages}
-                    targetPage={targetPage}
-                    setTargetPage={setTargetPage}
-                    setPaginationState={setPaginationState}
-                />
-            </CCol>
-            <CCol xs="auto" style={{ marginRight: '0%' }}>
-                <div className="d-flex align-items-center gap-2 justify-content-center my-2">
-                    <CFormSelect
-                        id="pageSize"
-                        value={table.getState().pagination.pageSize}
-                        onChange={(e) => changePageState(Number(e.target.value))}
-                        className="form-select-sm"
-                    >
-                        {possiblePageSizes.map((pageSize) => (
-                            <option key={pageSize} value={pageSize}>
-                                Show {pageSize}
-                            </option>
-                        ))}
-                    </CFormSelect>
+        <>
+            <CRow className="align-items-center">
+                {/* Left Spacer */}
+                <CCol xs="4" />
+
+                {/* Centered Button Group */}
+                <CCol xs="4" className="d-flex justify-content-center">
+                    <CButtonGroup>
+                        <CoreIconButton
+                            icon={faAngleLeft}
+                            text={prevText}
+                            onClick={handlePrev}
+                            disabled={!hasPrevious}
+                            style={{
+                                minWidth: minButtonWidth,
+                                fontSize: buttonFontsize,
+                                padding: '0.75rem 1.25rem',
+                            }}
+                        />
+                        <CoreIconButton
+                            icon={faAngleRight}
+                            text={nextText}
+                            color='primary'
+                            isTextLeft={true}
+                            onClick={handleNext}
+                            disabled={!hasNext}
+                            style={{
+                                minWidth: minButtonWidth,
+                                fontSize: buttonFontsize,
+                                padding: '0.75rem 1.25rem',
+                            }}
+                        />
+                    </CButtonGroup>
+                </CCol>
+            </CRow>
+            <CRow>
+                {/* Right-aligned page info + selector */}
+                <div className="d-flex justify-content-center my-2">
+                    <TablePagination
+                        table={table}
+                        totalPages={totalPages}
+                        targetPage={targetPage}
+                        setTargetPage={setTargetPage}
+                        setPaginationState={setPaginationState}
+                        possiblePageSizes={possiblePageSizes}
+                        buttonWidth={buttonWidth}
+                        minButtonWidth={minButtonWidth}
+                        wide={large}
+                    />
                 </div>
-            </CCol>
-            <CCol>
-                <IconButton
-                    icon={faAngleRight}
-                    text="Next"
-                    onClick={handleNext}
-                    disabled={!hasNext}
-                    style={{
-                        float: 'right', fontSize: buttonFontsize, padding: '0.75rem 1.5rem',
-                        width: buttonWidth
-                    }}
-                />
-            </CCol>
-        </CRow>
+            </CRow>
+        </>
     )
 }
 

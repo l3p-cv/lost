@@ -10,10 +10,11 @@ const PaginationWrapper = ({
     totalPages = table.getPageCount(),
     wholeData = true,
     pageCount = undefined,
+    large=true,
 }) => {
     if (wholeData) {
         return (
-            <PaginatorBottomWhole table={table} visible={visible} totalPages={totalPages} />
+            <PaginatorBottomWhole table={table} visible={visible} totalPages={totalPages} large={large} />
         )
     }
     return (
@@ -23,6 +24,7 @@ const PaginationWrapper = ({
             pageSize={pageSize}
             paginationState={paginationState}
             setPaginationState={setPaginationState}
+            large={large}
         />
     )
 
