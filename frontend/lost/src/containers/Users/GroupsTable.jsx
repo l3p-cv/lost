@@ -66,7 +66,9 @@ export const Groups = () => {
                     <CoreDataTable
                         columns={columns}
                         tableData={groupsData.groups}
-                        usePagination={needPages} />
+                        usePagination={needPages}
+                        paginationLarge={false}
+                        />
                 </BaseContainer>
                 {/* <Datatable
                     data={groupsData.groups}
