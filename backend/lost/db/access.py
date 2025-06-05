@@ -1305,10 +1305,7 @@ class DBMan(object):
         Args:
             page_index (int): Zero-based page-index
             page_size (int): entries per page
-            is_final_page (boolean): true if the selected page is the final one
         '''
-        # get everything
-        # query = self.session.query(model.Dataset)
         # get everything without parent
         query = self.session.query(model.Dataset).filter(model.Dataset.parent_id == None)
         # get page
@@ -1316,12 +1313,11 @@ class DBMan(object):
                      .limit(page_size)\
                     .offset(page_index * page_size)).all()
         # total pages
-        count = query.count()
+        count = query.count() + 1 # +1 due to meta-dataset for parentless annotasks
         pages = count // page_size
         if count % page_size:
             pages += 1
-        is_final_page = (pages == page_index+1)
-        return ds_page, pages, is_final_page
+        return ds_page, pages
 
     def get_dataset(self, dataset_id):
         '''Get dataset by idx

@@ -376,13 +376,13 @@ class DatasetListPaged(Resource):
             dbm.close_session()
             return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
         else: 
-            ds_no_parent_page, pages, is_final_page = dbm.get_datasets_paged(page_index, page_size)
+            ds_no_parent_page, pages = dbm.get_datasets_paged(page_index, page_size)
             datasets_json = []
             for dataset in ds_no_parent_page:
                 datasets_json.append(self.__build_dataset_children_tree_dict(dataset))
 
             # Only add Annotasks without DS for final page
-            if is_final_page:
+            if (page_index +1  == pages):
                 annotasks_without_dataset = dbm.get_annotasks_without_dataset()
                 annotasks_without_dataset_json = []
                 for annotask in annotasks_without_dataset:
