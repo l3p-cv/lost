@@ -9,13 +9,14 @@ import DatasetEditModal from './DatasetEditModal'
 import DatasetExportModal from './DatasetExportModal'
 import DatasetTable from './DatasetTable'
 import { WholeDatasetExportModal } from './WholeDatasetExportModal'
+import BaseContainer from '../../components/BaseContainer'
 
 const Datasets = () => {
     // const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
     const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
         datasetApi.useFlatDatasets()
 
-    // const { data: datastores } = datasetApi.useDatastoreKeys()
+    const { data: datastores } = datasetApi.useDatastoreKeys()
     const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotask()
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -187,16 +188,18 @@ const Datasets = () => {
                 <CRow>
                     <CCol>
                         <div className="h-4">&nbsp;</div>
-                        <DatasetTable
-                            datasetList={dSData}
-                            // datastores={datastores}
-                            onExportButtonClicked={openExportModal}
-                            onEditButtonClicked={openEditDatasetMenu}
-                            page={page}
-                            pageCount={pageCount}
-                            setLastRequestedPage={setLastRequestedPage}
-                            setDatatableInfo={setDatatableInfo}
-                        />
+                        <BaseContainer>
+                            <DatasetTable
+                                datasetList={dSData}
+                                datastores={datastores}
+                                onExportButtonClicked={openExportModal}
+                                onEditButtonClicked={openEditDatasetMenu}
+                                page={page}
+                                pageCount={pageCount}
+                                setLastRequestedPage={setLastRequestedPage}
+                                setDatatableInfo={setDatatableInfo}
+                            />
+                        </BaseContainer>
                     </CCol>
                 </CRow>
             </CContainer>

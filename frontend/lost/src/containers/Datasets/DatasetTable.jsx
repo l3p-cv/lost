@@ -34,8 +34,6 @@ const DatasetTable = ({
         setTableData(datasetList)
     }, [datasetList])
 
-    const columnHelper = createColumnHelper()
-
     const openReview = async (index, isAnnotask) => {
         // move to annotation review or dataset review (depending on clicked item)
         const reviewType = isAnnotask ? 'annotasks' : 'datasets'
@@ -237,27 +235,24 @@ const DatasetTable = ({
     }
 
     return (
-        <BaseContainer>
-            {/* <CoreDataTable tableData={tableData} columns={defineColumns()} /> */}
-            <CoreDataTable
-                columns={defineColumns()}
-                tableData={tableData}
-                onPaginationChange={(table) => {
-                    const nextPage = table.getState().pagination.pageIndex
-                    setLastRequestedPage(nextPage)
-                    const tableState = table.getState()
-                    setDatatableInfo({
-                        pageSize: tableState.pagination.pageSize,
-                        page: tableState.pagination.pageIndex,
-                        sorted: tableState.sorting,
-                        filtered: tableState.columnFilters,
-                    })
-                }}
-                pageIndex={page}
-                pageCount={pageCount}
-                wholeData={false}
-            />
-        </BaseContainer>
+        <CoreDataTable
+            columns={defineColumns()}
+            tableData={tableData}
+            onPaginationChange={(table) => {
+                const nextPage = table.getState().pagination.pageIndex
+                setLastRequestedPage(nextPage)
+                const tableState = table.getState()
+                setDatatableInfo({
+                    pageSize: tableState.pagination.pageSize,
+                    page: tableState.pagination.pageIndex,
+                    sorted: tableState.sorting,
+                    filtered: tableState.columnFilters,
+                })
+            }}
+            pageIndex={page}
+            pageCount={pageCount}
+            wholeData={false}
+        />
     )
 }
 
