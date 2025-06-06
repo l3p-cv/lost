@@ -25,8 +25,11 @@ function CoreDataTable({
     rowHeight = "55px",
     onPaginationChange = () => { },
     onColumnFiltersChange = () => { },
-    pageIndex=0,
-    wholeData = true
+    pageIndex = 0,
+    wholeData = true,
+    paginationLarge = true,
+    expanded={},
+    setExpanded=undefined
 }) {
     const [columnFilters, setColumnFilters] = useState([])
     const [doRerender, setDoRerender] = useState(false)
@@ -34,14 +37,14 @@ function CoreDataTable({
         pageIndex: pageIndex,
         pageSize,
     }));
-    const [expanded, setExpanded] = React.useState({})
+    // const [expanded, setExpanded] = React.useState({})
     const [dataTemp, setDataTemp] = useState([])
 
     useEffect(() => {
         const newPageCount = pageCount ?? table.getPageCount()
         const currentIndex = paginationState.pageIndex
 
-        if (tableData !== dataTemp) {
+        if (tableData !== dataTemp && tableData?.length > 0) {
             setDataTemp(tableData)
             // Only correct the page if it's actually out of range
             if (newPageCount > 0 && currentIndex >= newPageCount) {
@@ -91,10 +94,11 @@ function CoreDataTable({
                             {headerGroup.headers.map((header) => (
                                 <th
                                     key={header.id}
-                                    style={{ textAlign: 'center',
-                                            borderRight: '1px solid var(--cui-light)',
-                                            textDecoration: 'underline solid var(--cui-secondary)'
-                                     }}
+                                    style={{
+                                        textAlign: 'center',
+                                        borderRight: '1px solid var(--cui-light)',
+                                        textDecoration: 'underline solid var(--cui-secondary)'
+                                    }}
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -164,6 +168,7 @@ function CoreDataTable({
                 pageCount={pageCount}
                 paginationState={paginationState}
                 setPaginationState={setPaginationState}
+                large={paginationLarge}
             />
             {/* </BaseContainer> */}
         </>

@@ -8,9 +8,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { createColumnHelper } from '@tanstack/react-table'
-import React, { Fragment, useEffect } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BaseContainer from '../../components/BaseContainer'
 import CoreDataTable from '../../components/CoreDataTable'
 import CoreIconButton from '../../components/CoreIconButton'
 import HelpButton from '../../components/HelpButton'
@@ -25,6 +24,7 @@ const DatasetTable = ({
     setLastRequestedPage,
     setDatatableInfo
 }) => {
+    const [expanded, setExpanded] = useState({})
     const navigate = useNavigate()
     const [tableData, setTableData] = React.useState(() => [...datasetList])
 
@@ -239,6 +239,7 @@ const DatasetTable = ({
             columns={defineColumns()}
             tableData={tableData}
             onPaginationChange={(table) => {
+                setExpanded({})
                 const nextPage = table.getState().pagination.pageIndex
                 setLastRequestedPage(nextPage)
                 const tableState = table.getState()
@@ -252,6 +253,8 @@ const DatasetTable = ({
             pageIndex={page}
             pageCount={pageCount}
             wholeData={false}
+            expanded={expanded}
+            setExpanded={setExpanded}
         />
     )
 }
