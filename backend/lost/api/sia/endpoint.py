@@ -27,7 +27,7 @@ class First(Resource):
     @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
-        identity = get_jwt_identity()
+        identity :int = int(get_jwt_identity())
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
@@ -48,10 +48,10 @@ class First(Resource):
                 re = sia.get_previous(dbm, identity,last_img_id, DATA_URL)
                 dbm.close_session()
                 return re
-            
-            dbm.close_session()            
+
+            dbm.close_session()
             return 'error', 400
-        
+
     @api.doc(security='apikey',description='Update whole SIA Annotation')
     @jwt_required()
     @api.expect(sia_anno)
