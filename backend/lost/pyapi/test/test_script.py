@@ -17,7 +17,7 @@ REF_BBOXES = [
     [0.3, 0.3, 0.3, 0.15]
 ]
 
-EXAMPLE_IMG_DIR = '/code/src/backend/lost/pyapi/examples/images/10_voc2012'
+EXAMPLE_IMG_DIR = '/code/lost/pyapi/examples/images/10_voc2012'
 LOST_EXAMPLE_IMG_DIR = '/home/lost/data/test'
 
 IMG_NAME1 = '2007_008547.jpg'
