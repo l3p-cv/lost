@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rearranged + recolored Buttons in all tables
 - Replaced tables in Annotation-Tab
 - Added 2 Pagination-Components (for whole and for partial tableData) + 1 Wrapper for them, to use with CoreDataTable
+- Added paged getting of pipeline-data and datasets per API
+- Made pipline- and dataset-tables load page by page
+- Expanding datasets in dataset-table now ignores limit of elements per page 
+- Commented out unused arguments datastoreList + datasetList from DatasetExportModal and AnnoTaskTabs
+- Relocated BaseContainer usage for Datasettable
 ### Changed
 - Commented out unused variable "datastoreList" for datasets
 - Renamed "Start"-column to "Options" in RunningPipelines
