@@ -57,6 +57,7 @@ const LabelEditorControls = ({
             <b>Edit Label</b>
             <InputGroup>
                 <Input
+                    className="edit-label-name"
                     type="text"
                     name="name"
                     placeholder="name"
@@ -66,6 +67,7 @@ const LabelEditorControls = ({
                     }}
                 />
                 <Input
+                    className="edit-label-description"
                     type="text"
                     name="description"
                     placeholder="description"
@@ -94,6 +96,7 @@ const LabelEditorControls = ({
                 />
                 <Input
                     type="color"
+                    className="edit-label-color"
                     value={labelData.color || '#ffffff'}
                     onChange={(e) => {
                         updateNodeData(nodeId, {
@@ -109,6 +112,7 @@ const LabelEditorControls = ({
                     disabled={getEdges().some((edge) => edge.source === nodeId)}
                 />
                 <IconButton
+                    className="edit-label-save"
                     color="primary"
                     onClick={handleSave}
                     icon={faCheck}

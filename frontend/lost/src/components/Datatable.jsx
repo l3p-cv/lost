@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types'
-import ReactTable from 'react-table'
-import 'react-table/react-table.css'
-import { Badge } from 'reactstrap'
-import './datatable.css'
+import PropTypes from 'prop-types';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
+import { Badge } from 'reactstrap';
+import './datatable.css';
 
 const Datatable = ({
     key,
@@ -16,6 +16,7 @@ const Datatable = ({
     isLoading,
     onFetchData,
     pages,
+    getTrProps,   
 }) => {
     const datatableOnRowClick = (state, rowInfo, column, instance) => {
         let color
@@ -28,13 +29,14 @@ const Datatable = ({
                 color = 'wheat'
             }
         }
-        return {
+            const defaultProps = {
             onClick: () => (onRowClick ? onRowClick(rowInfo.original) : null),
             style: {
                 background: color,
             },
-        }
-    }
+        };
+        return getTrProps ? { ...defaultProps, ...getTrProps(state, rowInfo, column, instance) } : defaultProps;
+    } 
 
     return (
         <ReactTable
@@ -59,7 +61,7 @@ const Datatable = ({
     )
 }
 
-Datatable.propTypes = {
+    Datatable.propTypes = {
     onFetchData: PropTypes.any,
     isLoading: PropTypes.bool,
     manual: PropTypes.bool,
@@ -70,9 +72,11 @@ Datatable.propTypes = {
     data: PropTypes.array,
     columns: PropTypes.array,
     onRowClick: PropTypes.func,
-}
+    height: PropTypes.any, 
+    getTrProps: PropTypes.func, 
+    };
 
-Datatable.defaultProps = {
+    Datatable.defaultProps = {
     onFetchData: undefined,
     isLoading: false,
     manual: false,
@@ -85,7 +89,9 @@ Datatable.defaultProps = {
     pages: undefined,
     columns: [],
     onRowClick: () => {},
-}
+    height: undefined,
+    getTrProps: undefined, 
+    };
 
 const smallText = (text) => <p className="small text-muted">{text}</p>
 

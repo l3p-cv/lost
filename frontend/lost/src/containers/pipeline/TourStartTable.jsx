@@ -29,6 +29,20 @@ const TourStartTable = ({ onStartTour }) => {
         newPipelines.push({ ...foundMia, tourType: 'miaPipeline', label: 'MIA' });
       }
 
+      newPipelines.push({
+        id: 'instructionTour',
+        label: 'Instructions',
+        description: 'Learn how to create, view, and edit instructions.',
+        tourType: 'instructionTour',
+      });
+
+      newPipelines.push({
+        id: 'labelTour',
+        label: 'Labels',
+        description: 'Learn how to label data in a pipeline.',
+        tourType: 'labelTour',
+      });
+
       setPipelines(newPipelines);
     }
   }, [data]);
@@ -47,7 +61,9 @@ const TourStartTable = ({ onStartTour }) => {
               Cell: (row) => (
                 <>
                   <b>{row.original.label}</b>
-                  <div className="small text-muted">found</div>
+                  <div className="small text-muted">
+                    {row.original.tourType === 'instructionTour' ? 'Instructions' : 'found'}
+                  </div>
                 </>
               ),
             },
@@ -75,7 +91,7 @@ const TourStartTable = ({ onStartTour }) => {
             },
           ]}
           data={pipelines}
-          defaultPageSize={2}
+          defaultPageSize={3} 
         />
       </BaseContainer>
     </CContainer>

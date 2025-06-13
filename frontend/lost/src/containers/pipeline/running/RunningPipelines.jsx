@@ -32,6 +32,7 @@ export const RunningPipelines = () => {
 
       const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
       if (joyrideRunning) {
+        localStorage.setItem('latestPipelineId', latestPipelineId);
         window.dispatchEvent(
           new CustomEvent('joyride-next-step', {
             detail: { step: 'latest-running-pipeline' },
@@ -109,6 +110,7 @@ export const RunningPipelines = () => {
                                     onClick={() => navigate(`/pipeline/${original.id}`)}
                                     icon={faEye}
                                     text="Open"
+                                    className={original.id === latestPipelineId ? 'latest-pipeline-open-button' : ''}
                                 />
                             ),
                             },

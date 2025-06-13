@@ -42,6 +42,13 @@ const Instruction = ({ visLevel }) => {
     setEditingInstruction(instruction);
     setViewingInstruction(null);
     setModalOpen(true);
+    if (instruction.isLastRow) {
+      window.dispatchEvent(
+        new CustomEvent('joyride-next-step', {
+          detail: { step: 'edit-step' },
+        })
+      );
+    }
   };
 
   const handleViewClick = (instruction) => {
@@ -72,8 +79,13 @@ const Instruction = ({ visLevel }) => {
       : instructions
     : [];
 
+  const enhancedInstructions = filteredInstructions.map((item, idx) => ({
+    ...item,
+    isLastRow: idx === filteredInstructions.length - 1,
+  }));
+
   const columns = [
-    { Header: 'Annotation Option', accessor: 'option' },
+    { Header: 'Annotation Option', accessor: 'option' }, // Simplified, no Cell renderer needed
     { Header: 'Description', accessor: 'description' },
     {
       Header: 'Global',
@@ -89,7 +101,10 @@ const Instruction = ({ visLevel }) => {
       Cell: ({ original }) => {
         if (canEdit(visLevel, original)) {
           return (
-            <IconButton icon={faPen} color="warning" text="Edit" onClick={() => handleEditClick(original)} />
+            <IconButton icon={faPen} color="warning" text="Edit"
+              onClick={() => handleEditClick(original)}
+              className={original.isLastRow ? 'edit-instruction-button' : ''}
+            />
           );
         }
         if (canView(visLevel, original)) {
@@ -126,6 +141,7 @@ const Instruction = ({ visLevel }) => {
       <CRow>
         <CCol sm="auto">
           <IconButton
+            className="add-instruction-button"
             icon={faUserPlus}
             color="primary"
             text="Add Instruction"
@@ -141,13 +157,21 @@ const Instruction = ({ visLevel }) => {
             {filteredInstructions.length === 0 && !isLoading && (
               <p>No instructions available.</p>
             )}
-            <Datatable
-              key="instructionsTable"
-              data={filteredInstructions}
-              columns={columns}
-              pageSize={10}
-              isLoading={isLoading}
-            />
+            <div className="instruction-list">
+              <Datatable
+                key="instructionsTable"
+                data={enhancedInstructions}
+                columns={columns}
+                pageSize={10}
+                isLoading={isLoading}
+                getTrProps={(state, rowInfo) => {
+                  if (rowInfo && rowInfo.original.isLastRow) {
+                    return { className: 'last-row-highlight' };
+                  }
+                  return {};
+                }}
+              />
+            </div>
           </BaseContainer>
         </CCol>
       </CRow>

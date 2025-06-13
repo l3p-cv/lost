@@ -47,7 +47,17 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
     const { mutate: createLabel } = useCreateLabel()
 
     useEffect(() => {
-        setNodes(initialNodes)
+        const childIds = new Set(initialEdges.map((e) => e.target))
+
+        const processedNodes = initialNodes.map((node) => ({
+            ...node,
+            data: {
+                ...node.data,
+                is_root: !childIds.has(node.id),
+            },
+        }))
+
+        setNodes(processedNodes)
         setEdges(initialEdges)
     }, [initialNodes, initialEdges, setNodes, setEdges])
 
@@ -82,6 +92,22 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
                 },
                 {
                     onSuccess: (response: CreateLabelResponse) => {
+                const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+
+                setEdges((prevEdges) => {
+                    setNodes((prevNodes) => {
+                        const childCount = prevNodes.filter(
+                            (n) => prevEdges.find((e) => e.source === node.id && e.target === n.id)
+                        ).length
+
+                        let childClass = 'new-label-node'
+
+                        if (joyrideRunning) {
+                            if (childCount === 0) childClass += ' first-label-node'
+                            else if (childCount === 1) childClass += ' second-label-node'
+                            else if (childCount === 2) childClass += ' third-label-node'
+                        }
+
                         const childNode: Node = {
                             id: response.labelId.toString(),
                             type: 'labelEditorNode',
@@ -92,19 +118,26 @@ export const LabelTreeEditor: React.FC<LabelTreeFlowProps> = ({
                                 externalId: '',
                                 color: '#ffffff',
                                 textColor: '#000000',
+                                is_root: false,
                             } as LabelEditorNodeData,
                             position: { x: 0, y: 0 }, // no need to pass a position as it is computed by the layout hook
+                            className: childClass,
                         }
                         // Add new node and edge to the graph
-                        setNodes((prevNodes) => [...prevNodes, childNode])
-                        setEdges((prevEdges) => [
-                            ...prevEdges,
-                            {
-                                id: `${node.id}-${childNode.id}`,
-                                source: node.id,
-                                target: childNode.id,
-                            },
-                        ])
+                        const newNodes = [...prevNodes, childNode]
+                                // Add new edge to edges in outer setEdges call
+                                const newEdge = {
+                                    id: `${node.id}-${childNode.id}`,
+                                    source: node.id,
+                                    target: childNode.id,
+                                }
+                                setEdges([...prevEdges, newEdge])
+
+                                return newNodes
+                            })
+
+                            return prevEdges
+                        })
                     },
                 },
             )

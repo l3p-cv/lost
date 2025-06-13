@@ -83,6 +83,9 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         setSelectedPath(instructionMediaPath);
       }
       setBrowseOpen(true);
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+          detail: { step: 'open-file-browser' }
+      }));
     } catch (err) {
       console.error('Browse error:', err);
       Notification.showError('Failed to open file browser.');
@@ -105,10 +108,15 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
           const markdown = await getImageMarkdown(encodedPath);
           setContent(prev => `${prev}\n${markdown}`);
           setBrowseOpen(false);
+          const currentStep = localStorage.getItem('currentStep');
+          if (currentStep !== '12') {
+            window.dispatchEvent(new CustomEvent('joyride-next-step', {
+              detail: { step: 'save-step' }
+            }));
+          }
         } catch (err) {
           Notification.showError('Could not insert image markdown.');
         }
-        
       } catch (error) {
         console.error('Error selecting the file:', error);
         Notification.showError('Error inserting image. Please try again.');
@@ -128,18 +136,28 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
       description,
       instruction: content,
     });
+    const currentStep = localStorage.getItem('currentStep');
+    if (currentStep === '12') {
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'pipelines-nav' }
+      }));
+    } else {
+      window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'instruction-list' }
+      }));
+    }
 
     visLevel !== 'global' ? navigate('/instruction') : onClose();
   };
 
   return (
-    <div>
+    <div className='edit-instructions-modal'>
       <CFormInput
         label="Annotation Option"
         value={option}
         onChange={(e) => setOption(e.target.value)}
         placeholder="Enter annotation option"
-        className="mb-3"
+        className="mb-3 annotation-option-input"
       />
       <CFormInput
         label="Description"
@@ -150,9 +168,10 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
           else alert('Description cannot exceed 20 words.');
         }}
         placeholder="Enter description (max 20 words)"
-        className="mb-3"
+        className="mb-3 description-input"
       />
       <MdEditor
+        id="instruction-editor"
         value={content}
         style={{ height: '400px' }}
         renderHTML={(text) => mdParser.render(text)}
@@ -167,10 +186,11 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         }}
       />
       <div className="mt-3 d-flex justify-content-between align-items-center">
-        <CButton color="primary" onClick={handleSave}>
+        <CButton className="save-button" color="primary" onClick={handleSave}>
           Save
         </CButton>
         <IconButton
+          className="browse-files-button"
           icon={faFolderOpen}
           color="info"
           text="Browse Files"

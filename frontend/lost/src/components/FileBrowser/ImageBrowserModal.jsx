@@ -8,7 +8,7 @@ const ImageBrowserModal = ({ visible, onClose, fs, fsLoading, fullFs, initPath, 
       <CModalHeader>
         <CModalTitle>Select an Image</CModalTitle>
       </CModalHeader>
-      <CModalBody>
+      <CModalBody  className="file-browser-modal">
         {fsLoading ? (
           <CSpinner color="primary" />
         ) : (

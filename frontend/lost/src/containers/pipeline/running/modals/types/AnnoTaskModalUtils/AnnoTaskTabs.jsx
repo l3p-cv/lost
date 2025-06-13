@@ -186,7 +186,7 @@ const AnnoTaskTabs = ({
                     </CNavItem>
                 )}
                                 <CNavItem>
-                    <CNavLink active={active === 6} onClick={() => setActive(6)}>
+                    <CNavLink active={active === 6} onClick={() => setActive(6)}  className='inactive-tab-class'>
                         <FontAwesomeIcon color="#092F38" size="1x" icon={faFileAlt} />
                         {active === 6 && ' Instruction options'}
                     </CNavLink>
@@ -233,7 +233,7 @@ const AnnoTaskTabs = ({
                         />
                     </CTabPane>
                 )}
-                <CTabPane visible={active === 6} style={{ marginTop: 30, marginLeft: 5 }}>
+                <CTabPane visible={active === 6} style={{ marginTop: 30, marginLeft: 5 }} className='instruction-tab'>
                 <TabInstructions annotask={updatedAnnotask} updateAnnotask={updateAnnotask} />
                 </CTabPane>
             </CTabContent>

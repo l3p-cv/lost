@@ -1,5 +1,5 @@
 import { faEdit, faEye, faFileExport } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { CAlert, CBadge } from '@coreui/react'
 import { ReactFlowProvider } from '@xyflow/react'
@@ -20,6 +20,8 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
     const [readonly, setReadonly] = useState(false)
+    const [highlightLatestRow, setHighlightLatestRow] = useState(false)
+
 
     const getAmountOfLabels = (n) => {
         amountOfLabels += 1
@@ -29,6 +31,35 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
         })
         return amountOfLabels
     }
+
+    const newlyCreatedTreeId = Number(localStorage.getItem('newlyCreatedLabelTreeId'))
+
+    useEffect(() => {
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+        const currentStep = localStorage.getItem('currentStep')
+
+        if (joyrideRunning && currentStep === '4') {
+            setHighlightLatestRow(true)
+        }
+    }, [labelTrees.length])
+
+    useEffect(() => {
+        if (highlightLatestRow) {
+            const checkRow = () => {
+                const el = document.getElementById('latest-label-tree')
+                if (el) {
+                    window.dispatchEvent(
+                        new CustomEvent('joyride-next-step', {
+                            detail: { step: 'latest-label-tree' },
+                        })
+                    )
+                } else {
+                    setTimeout(checkRow, 100)
+                }
+            }
+            checkRow()
+        }
+    }, [highlightLatestRow])
 
     return (
         <>
@@ -109,6 +140,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                         Header: 'Edit',
                         id: 'edit',
                         accessor: (d) => {
+                            const isNewlyCreated = d.idx === newlyCreatedTreeId
                             return (
                                 <IconButton
                                     icon={
@@ -126,6 +158,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                                             : 'Edit'
                                     }
                                     color="primary"
+                                    className={isNewlyCreated ? 'latest-edit-button' : ''}
                                     onClick={() => {
                                         const lT = labelTrees.find((labelTree) => {
                                             if (labelTree.idx === d.idx) {
@@ -172,6 +205,19 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                         },
                     },
                 ]}
+                getTrProps={(state, rowInfo) => {
+                    if (!rowInfo) return {}
+                    const isNewTree = rowInfo.original.idx === newlyCreatedTreeId
+                    const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+                    const currentStep = localStorage.getItem('currentStep')
+
+                    return {
+                        className: isNewTree ? 'latestLabelTree' : '',
+                        ...(isNewTree && joyrideRunning && currentStep === '4' && {
+                            id: 'latest-label-tree',
+                        }),
+                    }
+                }}
             />
         </>
     )

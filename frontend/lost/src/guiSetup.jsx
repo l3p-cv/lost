@@ -79,6 +79,7 @@ const InstructionRoute = {
     name: 'Instruction',
     to: '/instruction',
     component: InstructionDashboard,
+    id: 'nav-instruction',
     icon: <FaFileAlt {...iconProps} />,
 }
 
@@ -91,6 +92,7 @@ const Labels = {
     name: 'Labels',
     to: '/labels',
     component: LabelsComponent,
+    id: 'nav-labels',
     icon: <FaTag {...iconProps} />,
 }
 
@@ -145,6 +147,7 @@ const RunningPipelinesPage = {
     to: '/pipelines',
     component: RunningPipelines,
     icon: <FaTasks {...iconProps} />,
+    id: 'nav-pipelines',
 }
 
 const PipelinePage = {
