@@ -1,7 +1,10 @@
 import { CCol, CFormInput, CFormSwitch, CRow } from '@coreui/react'
 import { useEffect, useState } from 'react'
 import Select from 'react-select'
-import { useModels } from '../../../../../../actions/inference-model/model-api'
+import {
+    INFERENCE_MODEL_TYPE,
+    useModels,
+} from '../../../../../../actions/inference-model/model-api'
 import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import HelpButton from '../../../../../../components/HelpButton'
 
@@ -56,9 +59,11 @@ export const SelectSIAConfiguration = ({ ...props }) => {
             case 'inference-model':
                 if (!value) {
                     newConfiguration.inferenceModel = undefined
+                    newConfiguration.tools.sam = false
                     break
                 }
                 newConfiguration.inferenceModel = { ...value }
+                newConfiguration.tools.sam = value.modelType === INFERENCE_MODEL_TYPE.SAM
                 break
             default:
                 break

@@ -87,7 +87,8 @@ sia_config_tools = api.model('SIA Config Tools', {
     'line': fields.Boolean(readOnly=True, description='Weather to work with lines.'),
     'polygon': fields.Boolean(readOnly=True, description='Weather to work with polygons.'),
     'bbox': fields.Boolean(readOnly=True, description='Weather to work with bboxes.'),
-    'junk': fields.Boolean(readOnly=True, description='Indicates wether a junk button is visible.')
+    'junk': fields.Boolean(readOnly=True, description='Indicates wether a junk button is visible.'),
+    'sam': fields.Boolean(readOnly=True, description='Indicates wether the SAM tools are available.'),
 })
 
 sia_config_annos_actions = api.model('SIA Config Anno Actions', {
@@ -113,6 +114,7 @@ sia_config_img = api.model('SIA Config Annos', {
 sia_inference_model_config = api.model('SIA Inference Model Config', {
     'id': fields.Integer(readOnly=True, description='The identifier of the inference model.'),
     'displayName': fields.String(readOnly=True, description='The display name of the inference model.'),
+    'modelType': fields.String(readOnly=True, description='The type of the inference model.'),
     })
 
 sia_config = api.model('SIA Configuration', {

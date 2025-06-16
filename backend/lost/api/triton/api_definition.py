@@ -21,20 +21,20 @@ class TritonModelListResponse(BaseModelWithCamelCase):
 
 
 class PointPrompt(BaseModelWithCamelCase):
-    x: int
-    y: int
+    x: float
+    y: float
     label: Literal["positive", "negative"]
 
 
 class BoxPrompt(BaseModelWithCamelCase):
-    x: int
-    y: int
-    w: int
-    h: int
+    x_min: float
+    y_min: float
+    x_max: float
+    y_max: float
 
 class Prompts(BaseModelWithCamelCase):
     points: Optional[list[PointPrompt]] = None
-    boxes: Optional[list[BoxPrompt]] = None
+    bbox: Optional[BoxPrompt] = None
 
 
 

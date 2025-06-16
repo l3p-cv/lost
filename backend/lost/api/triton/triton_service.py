@@ -1,4 +1,6 @@
+import cv2
 import flask
+import requests
 import tritonclient.grpc as grpcclient
 from tritonclient.utils import InferenceServerException
 
@@ -54,6 +56,35 @@ def process_detection(detection, img_height, img_width, img_id, labels):
 
 
 
+def process_polygon(polygon, img_id, img_width, img_height):
+    data = []
+    for point in polygon:
+        x, y = point
+        data.append({
+            "x": x / img_width,
+            "y": y / img_height
+        })
+
+    return {
+        "anno": {
+            "id": f"new{uuid.uuid4().int}",
+            "type": dtype.TwoDAnno.TYPE_TO_STR[dtype.TwoDAnno.POLYGON],
+            "data": data,
+            "mode": "view",
+            "status": "new",
+            "labelIds": [],
+            "selectedNode": 2,
+            "annoTime": 0,
+            "timestamp": datetime.now(timezone.utc).timestamp() * 1000
+        },
+        "img": {
+            "imgActions": [],
+            "imgId": img_id,
+            "annoTime": 0,
+        },
+        "action": "annoCreatedFinalNode"
+    }
+
 class TritonService:
     def __init__(self, url: str):
         """
@@ -99,11 +130,10 @@ class TritonService:
         """
         Perform inference using a specific model on the Triton server.
         """
-        client = self.get_triton_client()
-
-        labels = sia.get_label_trees(dbm, user_id)
 
         if model.model_type == InferenceModelType.YOLO:
+            client = self.get_triton_client()
+            labels = sia.get_label_trees(dbm, user_id)
             image = image.astype(np.float32)
             input = grpcclient.InferInput("img", image.shape, "FP32")
             input.set_data_from_numpy(image)
@@ -124,10 +154,67 @@ class TritonService:
                 for det in detections:
                     processed_detection = process_detection(det, img_height, img_width, inference_request.image_id, labels)
                     sia.update_one_thing(dbm, processed_detection, user_id)
+            
+            elif model.task_type == InferenceModelTaskType.SEGMENTATION:
+                output = grpcclient.InferRequestedOutput("polygons")
+                response = client.infer(model_name=model_name, inputs=[input], outputs=[output])
+                polygons = response.as_numpy("polygons")
+
+                if polygons is None:
+                    flask.current_app.logger.debug("No polygons found in the response.")
+                    return
+                
+                img_height, img_width = image.shape[:2]
+                for polygon in polygons:
+                    processed_polygon = process_polygon(polygon, inference_request.image_id, img_width, img_height)
+                    sia.update_one_thing(dbm, processed_polygon, user_id)
                     
         elif model.model_type == InferenceModelType.SAM:
-            # todo
-            pass
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) # convert to RGB
+            image = image.astype(np.uint8)
+            img_height, img_width = image.shape[:2]
+
+            if inference_request.prompts is None:
+                raise ValueError("Prompts are required for SAM model inference.")
+
+            points = np.array([[
+                [round(p.x * img_width), round(p.y * img_height)]
+                for p in inference_request.prompts.points]
+            ], dtype=np.int64) if inference_request.prompts.points else None
+
+            labels = np.array([
+                [1 if p.label == "positive" else 0 for p in inference_request.prompts.points]
+            ], dtype=np.int64) if inference_request.prompts.points else None
+
+            bbox = np.array(
+                (
+                    [
+                        round(inference_request.prompts.bbox.x_min * img_width), 
+                        round(inference_request.prompts.bbox.y_min * img_height), 
+                        round(inference_request.prompts.bbox.x_max * img_width), 
+                        round(inference_request.prompts.bbox.y_max * img_height)
+                    ]
+                ),
+                dtype=np.int64
+            ) if inference_request.prompts.bbox else None
+
+            payload = {
+                "image": image.tolist(),
+                "points": points.tolist() if points is not None and points.size > 0 else None,  
+                "labels": labels.tolist() if labels is not None and labels.size > 0 else None,
+                "imageId": inference_request.image_id,
+                "bboxes": bbox.tolist() if bbox is not None and bbox.size > 0 else None,
+            }
+
+            sam_response = requests.post(f"http://{model.server_url}/segment/", json=payload)
+            if sam_response.status_code != 200:
+                raise RuntimeError(f"Failed to get response from SAM service: {sam_response.text}")
+            sam_output = sam_response.json()
+
+            polygons = sam_output.get("polygons", [])
+            for polygon in polygons:
+                processed_polygon = process_polygon(polygon, inference_request.image_id, img_width, img_height)
+                sia.update_one_thing(dbm, processed_polygon, user_id)
         else:
             raise ValueError(f"Unsupported model type: {model.model_type}")
 

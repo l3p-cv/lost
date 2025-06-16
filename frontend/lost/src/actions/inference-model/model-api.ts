@@ -176,15 +176,15 @@ export type PointPrompt = {
 }
 
 export type BoxPrompt = {
-    x: number
-    y: number
-    w: number
-    h: number
+    xMin: number
+    yMin: number
+    xMax: number
+    yMax: number
 }
 
 export interface Prompts {
     points?: PointPrompt[] // optional list of points
-    boxes?: BoxPrompt[] // optional list of boxes
+    bbox?: BoxPrompt // optional list of boxes
 }
 
 export interface TritonInferenceRequest {

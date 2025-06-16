@@ -16,7 +16,10 @@ import {
 } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
 import { Badge, Button } from 'reactstrap'
-import { useTritonInference } from '../../../actions/inference-model/model-api'
+import {
+    INFERENCE_MODEL_TYPE,
+    useTritonInference,
+} from '../../../actions/inference-model/model-api'
 import {
     showError,
     showInfo,
@@ -68,6 +71,8 @@ const SiaWrapper = (props) => {
     const [annoSaveResponse, setAnnoSaveResponse] = useState()
     const [blockImageChange, setBlockImageChange] = useState(false)
     const [localTaskFinished, setLocalTaskFinished] = useState(false)
+    const [samPoints, setSamPoints] = useState([])
+    const [samBBox, setSamBBox] = useState(null)
 
     const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
         useTritonInference()
@@ -94,12 +99,14 @@ const SiaWrapper = (props) => {
 
     useEffect(() => {
         if (props.getNextImage) {
+            handleClearSamHelperAnnos()
             getNewImage(props.getNextImage, 'next')
         }
     }, [props.getNextImage])
 
     useEffect(() => {
         if (props.getPrevImage) {
+            handleClearSamHelperAnnos()
             getNewImage(props.getPrevImage, 'prev')
         }
     }, [props.getPrevImage])
@@ -332,6 +339,9 @@ const SiaWrapper = (props) => {
                     ...props.uiConfig,
                     nodeRadius: data,
                 })
+                break
+            case 'clearSamHelperAnnos':
+                handleClearSamHelperAnnos()
                 break
             default:
                 break
@@ -610,10 +620,26 @@ const SiaWrapper = (props) => {
                 {
                     imageId: image.id,
                     modelId: props.canvasConfig.inferenceModel.id,
+                    prompts: {
+                        points: samPoints.map((point) => ({
+                            x: point.normX,
+                            y: point.normY,
+                            label: point.type,
+                        })),
+                        bbox: samBBox
+                            ? {
+                                  xMin: samBBox.xMinNorm,
+                                  yMin: samBBox.yMinNorm,
+                                  xMax: samBBox.xMaxNorm,
+                                  yMax: samBBox.yMaxNorm,
+                              }
+                            : undefined,
+                    },
                 },
                 {
                     onSuccess: () => {
                         showSuccess('Annotations inferred successfully!')
+                        setSamBBox(null) // reset SAM bounding box
                         // getNewImage(image.id, 'current')
                         props.getSiaAnnos(image.id, 'current')
                     },
@@ -625,6 +651,31 @@ const SiaWrapper = (props) => {
         } else {
             console.warn('No image id found!')
         }
+    }
+
+    const handleSamPointClick = (x, y, normX, normY, type) => {
+        // @ts-expect-error disabling type check since it is a jsx file
+        setSamPoints((prev) => [
+            ...prev,
+            {
+                x: Math.round(x),
+                y: Math.round(y),
+                type,
+                normX,
+                normY,
+            },
+        ])
+    }
+
+    const handleUpdateSamBBox = (bbox) => {
+        setSamBBox({
+            ...bbox,
+        })
+    }
+
+    const handleClearSamHelperAnnos = () => {
+        setSamPoints([])
+        setSamBBox(null)
     }
 
     return (
@@ -646,9 +697,15 @@ const SiaWrapper = (props) => {
                         </Badge>
                         <Button
                             onClick={handleAddAnnotation}
-                            disabled={isInferenceLoading}
+                            disabled={
+                                isInferenceLoading ||
+                                (props.canvasConfig.inferenceModel.modelType ===
+                                    INFERENCE_MODEL_TYPE.SAM &&
+                                    samPoints.length === 0 &&
+                                    (samBBox === null || samBBox.width === 0))
+                            }
                         >
-                            Infer Annotations
+                            Infer Annotation
                         </Button>
                     </div>
                 )}
@@ -707,6 +764,10 @@ const SiaWrapper = (props) => {
                         filter: { rotate: false, clahe: true },
                         help: true,
                     }}
+                    samPoints={samPoints}
+                    onSamPointClick={handleSamPointClick}
+                    samBBox={samBBox}
+                    onUpdateSamBBox={handleUpdateSamBBox}
                 />
             </div>
         </>

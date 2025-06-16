@@ -88,6 +88,7 @@ export interface Tools {
     polygon: boolean
     bbox: boolean
     junk: boolean
+    sam: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type

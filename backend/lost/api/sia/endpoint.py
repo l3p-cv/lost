@@ -242,7 +242,7 @@ class Label(Resource):
             return re
 
 @namespace.route('/configuration')
-@api.doc(security='apikey')
+@api.doc(security='apikey') 
 class Configuration(Resource):
     @api.doc(security='apikey',description='Get conmfig for the current SIA Task')            
     @api.marshal_with(sia_config)
