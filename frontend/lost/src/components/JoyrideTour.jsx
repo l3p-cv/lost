@@ -141,7 +141,7 @@ const JoyrideTour = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (currentStep === 29 && pipelineType === 'miaPipeline') {
+    if (currentStep === 29 && (pipelineType === 'miaPipeline' || pipelineType === 'mainPipeline')) {
       setIsNextEnabled(false);
       const timer = setTimeout(() => setIsNextEnabled(true), 8000);
       return () => clearTimeout(timer);

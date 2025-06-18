@@ -83,9 +83,12 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
         setSelectedPath(instructionMediaPath);
       }
       setBrowseOpen(true);
-      window.dispatchEvent(new CustomEvent('joyride-next-step', {
-          detail: { step: 'open-file-browser' }
-      }));
+      const currentStep = localStorage.getItem('currentStep');
+      if (currentStep == '5') {
+        window.dispatchEvent(new CustomEvent('joyride-next-step', {
+            detail: { step: 'open-file-browser' }
+        }));
+      }
     } catch (err) {
       console.error('Browse error:', err);
       Notification.showError('Failed to open file browser.');

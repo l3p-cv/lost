@@ -37,6 +37,18 @@ export const usePipelines = () => {
     })
 }
 
+export const usePipelinesPaged = (page_index: number, page_size: number) => {
+    return useQuery({
+        queryFn: () => httpClient.get(`pipeline/${page_index}/${page_size}`),
+        // queryFn: () => httpClient.get(`pipeline/${page_index}/${page_size}`).then(res => res.data),
+        queryKey: ['pipelines', page_index, page_size],
+        onError: () => {
+            console.error('An error occurred when fetching pipeline data')
+        },
+        refetchInterval: 3000,
+    })
+}
+
 export const useTemplates = (visLevel) => {
     return useQuery({
         queryKey: ['templates', visLevel],
