@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useMutation, useQuery } from 'react-query'
 import { API_URL } from '../../lost_settings'
 
-import { uiConfig, SIA_INITIAL_UI_CONFIG } from 'lost-sia'
+import { uiConfig, SIA_INITIAL_UI_CONFIG } from 'lost-sia/utils'
 
 export const useReview = (isAnnotaskReview) => {
     return useMutation((requestArguments) => {
@@ -74,12 +74,14 @@ export const useImageSearch = (isAnnotaskReview) => {
     return useMutation((requestData) => {
         // annotaskId task or datasetId (depends on review mode)
         const [id, query, selectedFilterLabels] = requestData
-        return axios.get(
-            `${API_URL}/${reviewType}/${id}/review/images?filter=${query}&labels=${selectedFilterLabels}`,
-        ).then((res) => {
-            if (res.status !== 200 || res.data === undefined) return []
-            return res.data.images
-        })
+        return axios
+            .get(
+                `${API_URL}/${reviewType}/${id}/review/images?filter=${query}&labels=${selectedFilterLabels}`,
+            )
+            .then((res) => {
+                if (res.status !== 200 || res.data === undefined) return []
+                return res.data.images
+            })
     })
 }
 
