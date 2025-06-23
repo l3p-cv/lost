@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased] - 
 ### Added
-- Your stuff here
+- Add support for model assisted image annotation, model management UI
 
 ## [2.6.0] - 2025-04-17
 ### Added
