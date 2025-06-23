@@ -1,9 +1,17 @@
 import { CCol, CFormInput, CFormSwitch, CRow } from '@coreui/react'
 import { useEffect, useState } from 'react'
+import Select from 'react-select'
+import {
+    INFERENCE_MODEL_TYPE,
+    useModels,
+} from '../../../../../../actions/inference-model/model-api'
+import { CenteredSpinner } from '../../../../../../components/CenteredSpinner'
 import HelpButton from '../../../../../../components/HelpButton'
 
 export const SelectSIAConfiguration = ({ ...props }) => {
     const [configuration, setConfiguration] = useState(undefined)
+
+    const { data: modelsData, isLoading: isModelsLoading } = useModels()
 
     useEffect(() => {
         setConfiguration(props.configuration)
@@ -47,6 +55,15 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                 break
             case 'image-multilabel':
                 newConfiguration.img.multilabels = value
+                break
+            case 'inference-model':
+                if (!value) {
+                    newConfiguration.inferenceModel = undefined
+                    newConfiguration.tools.sam = false
+                    break
+                }
+                newConfiguration.inferenceModel = { ...value }
+                newConfiguration.tools.sam = value.modelType === INFERENCE_MODEL_TYPE.SAM
                 break
             default:
                 break
@@ -419,6 +436,28 @@ export const SelectSIAConfiguration = ({ ...props }) => {
                                     </CCol>
                                 </CRow>
                             </CCol>
+                        </CCol>
+                    </CRow>
+
+                    <hr />
+                    <CRow style={{ margin: '5px' }}>
+                        <CCol sm="12" style={{ marginTop: '5px' }}>
+                            <h4>Inference Model</h4>
+                            {modelsData && (
+                                <Select
+                                    options={modelsData.models}
+                                    isClearable
+                                    getOptionLabel={(option) => option.displayName}
+                                    getOptionValue={(option) => option.id.toString()}
+                                    onChange={(selectedOption) => {
+                                        changeValue('inference-model', selectedOption)
+                                    }}
+                                    placeholder="Select a model..."
+                                    defaultValue={configuration.inferenceModel}
+                                    id="inferenceModelSelect"
+                                />
+                            )}
+                            {isModelsLoading && <CenteredSpinner />}
                         </CCol>
                     </CRow>
                 </>

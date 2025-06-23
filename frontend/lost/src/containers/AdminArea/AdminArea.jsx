@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import {
     faCubes,
     faDatabase,
+    faProjectDiagram,
     faRobot,
     faTags,
     faUsers,
@@ -10,7 +11,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane, CContainer, CTooltip } from '@coreui/react'
+import {
+    CCol,
+    CContainer,
+    CNav,
+    CNavItem,
+    CNavLink,
+    CTabContent,
+    CTabPane,
+    CTooltip,
+} from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
 import { useLostConfig } from '../../hooks/useLostConfig'
@@ -19,6 +29,7 @@ import Labels from '../Labels/Labels'
 import PipelineProjects from '../Pipelines/PipelineProjects'
 import UsersAndGroups from '../Users/UsersAndGroups'
 import WorkersTable from '../Workers/WorkersTable'
+import { TabInferenceModels } from './TabInferenceModels'
 import TabJupyterLab from './TabJupyterLab'
 
 const AdminArea = () => {
@@ -62,7 +73,10 @@ const AdminArea = () => {
                         <CNav variant="tabs">
                             <CNavItem>
                                 <CTooltip content="Users & Groups" placement="top">
-                                    <CNavLink active={active === 0} onClick={() => setActive(0)}>
+                                    <CNavLink
+                                        active={active === 0}
+                                        onClick={() => setActive(0)}
+                                    >
                                         <FontAwesomeIcon
                                             color="#092F38"
                                             size="1x"
@@ -74,7 +88,10 @@ const AdminArea = () => {
                             </CNavItem>
                             <CNavItem>
                                 <CTooltip content="Pipeline Projects" placement="top">
-                                    <CNavLink active={active === 1} onClick={() => setActive(1)}>
+                                    <CNavLink
+                                        active={active === 1}
+                                        onClick={() => setActive(1)}
+                                    >
                                         <FontAwesomeIcon
                                             color="#092F38"
                                             size="1x"
@@ -86,7 +103,10 @@ const AdminArea = () => {
                             </CNavItem>
                             <CNavItem>
                                 <CTooltip content="Global Datasources" placement="top">
-                                    <CNavLink active={active === 2} onClick={() => setActive(2)}>
+                                    <CNavLink
+                                        active={active === 2}
+                                        onClick={() => setActive(2)}
+                                    >
                                         <FontAwesomeIcon
                                             color="#092F38"
                                             size="1x"
@@ -98,7 +118,10 @@ const AdminArea = () => {
                             </CNavItem>
                             <CNavItem>
                                 <CTooltip content="Global Labels" placement="top">
-                                    <CNavLink active={active === 3} onClick={() => setActive(3)}>
+                                    <CNavLink
+                                        active={active === 3}
+                                        onClick={() => setActive(3)}
+                                    >
                                         <FontAwesomeIcon
                                             color="#092F38"
                                             size="1x"
@@ -110,13 +133,31 @@ const AdminArea = () => {
                             </CNavItem>
                             <CNavItem>
                                 <CTooltip content="Worker" placement="top">
-                                    <CNavLink active={active === 4} onClick={() => setActive(4)}>
+                                    <CNavLink
+                                        active={active === 4}
+                                        onClick={() => setActive(4)}
+                                    >
                                         <FontAwesomeIcon
                                             color="#092F38"
                                             size="1x"
                                             icon={faCubes}
                                         />
                                         {active === 4 && ' Worker'}
+                                    </CNavLink>
+                                </CTooltip>
+                            </CNavItem>
+                            <CNavItem>
+                                <CTooltip content="Inference Models" placement="top">
+                                    <CNavLink
+                                        active={active === 5}
+                                        onClick={() => setActive(5)}
+                                    >
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faProjectDiagram}
+                                        />
+                                        {active === 5 && ' Inference Models'}
                                     </CNavLink>
                                 </CTooltip>
                             </CNavItem>
@@ -162,6 +203,14 @@ const AdminArea = () => {
                                 style={{ marginTop: 30 }}
                             >
                                 <WorkersTable></WorkersTable>
+                            </CTabPane>
+                            <CTabPane
+                                role="tabpanel"
+                                aria-labelledby="inference-models-tab-pane"
+                                visible={active === 5}
+                                style={{ marginTop: 30 }}
+                            >
+                                <TabInferenceModels />
                             </CTabPane>
                             {renderJupyterLabTab()}
                         </CTabContent>

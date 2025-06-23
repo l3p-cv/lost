@@ -31,7 +31,7 @@
         "i18next-http-backend": "^2.2.1",
         "jwt-decode": "^3.1.2",
         "lodash": "^4.17.21",
-        "lost-sia": "2.0.0-alpha17",
+        "lost-sia": "../../../lost-sia",
         "process": "^0.11.10",
         "prop-types": "^15.8.1",
         "react": "^18.2.0",

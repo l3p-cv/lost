@@ -1,13 +1,10 @@
-from enum import auto
 import lost
 import json
-import os
 import flask
 from lost.db import dtype, state, model
 from lost.db.access import DBMan
 from lost.logic.anno_task import set_finished, update_anno_task
 from datetime import datetime
-from lost.logic.file_man import FileMan
 __author__ = "Gereon Reus"
 
 def get_first(db_man, user_id, media_url):
@@ -33,6 +30,25 @@ def get_first(db_man, user_id, media_url):
             return sia_serialize.serialize()
     else:
         return "nothing available"
+
+def get_current(db_man, user_id, img_id, media_url):
+    at = get_sia_anno_task(db_man, user_id)
+    
+    if at and at.pipe_element.pipe.state != state.Pipe.PAUSED:
+        iteration = db_man.get_pipe_element(pipe_e_id=at.pipe_element_id).iteration
+        image_anno = db_man.get_image_anno(img_id)
+
+        is_first_image = True
+        first_image_anno = db_man.get_first_sia_anno(at.idx, iteration, user_id)
+        if first_image_anno is not None and first_image_anno.idx != image_anno.idx:
+            is_first_image = False
+        is_last_image = __is_last_image__(db_man, user_id, at.idx, iteration, image_anno.idx) 
+        current_image_number, total_image_amount = get_image_progress(db_man, at, image_anno.idx, at.pipe_element.iteration)
+        sia_serialize = SiaSerialize(image_anno, user_id, media_url, is_first_image, is_last_image, current_image_number, total_image_amount)
+        return sia_serialize.serialize()
+
+    return "nothing available"
+
 
 def set_labeled_state_for_last_image(db_man:DBMan, last_img_id):
     # Prevent to get same image again, since labeled state has not been set 
@@ -134,6 +150,7 @@ def get_label_trees(db_man, user_id, at=None):
                 label_leaf_json['name'] = label_leaf.name
                 label_leaf_json['nameAndClass'] = label_leaf.name + " (" + rll.label_leaf.name + ")"
                 label_leaf_json['description'] = label_leaf.description
+                label_leaf_json['externalId'] = label_leaf.external_id
                 if label_leaf.color and label_leaf.color != '':
                     label_leaf_json['color'] = label_leaf.color
                 label_trees_json['labels'].append(label_leaf_json)
