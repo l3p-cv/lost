@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Your stuff here
+### Fixed
+- Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page
 
 ## [2.7.0] - 2025-06-12 
 ### Added
