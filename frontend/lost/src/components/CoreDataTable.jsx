@@ -143,24 +143,6 @@ function CoreDataTable({
                     ))}
                 </CTableBody>
             </CTable>
-            {tableData.length === 0 && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        zIndex: 10,
-                        width: '100%',
-                        height: '100%',
-                        background: 'rgba(255,255,255,0.6)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <CSpinner />
-                </div>
-            )}
             <PaginationWrapper table={table}
                 visible={usePagination}
                 wholeData={wholeData}
