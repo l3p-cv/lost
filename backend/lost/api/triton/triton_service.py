@@ -56,7 +56,7 @@ def process_detection(detection, img_height, img_width, img_id, labels):
 
 
 
-def process_polygon(polygon, img_id, img_width, img_height):
+def process_polygon(polygon, img_id, img_width, img_height, class_id=None, labels=None):
     data = []
     for point in polygon:
         x, y = point
@@ -65,6 +65,9 @@ def process_polygon(polygon, img_id, img_width, img_height):
             "y": y / img_height
         })
 
+    lost_class = next((item for item in labels["labels"] if int(item.get("externalId")) == int(class_id)), None) if  (labels and class_id is not None) else None
+
+
     return {
         "anno": {
             "id": f"new{uuid.uuid4().int}",
@@ -72,7 +75,7 @@ def process_polygon(polygon, img_id, img_width, img_height):
             "data": data,
             "mode": "view",
             "status": "new",
-            "labelIds": [],
+            "labelIds": [lost_class['id']] if lost_class else [],
             "selectedNode": 2,
             "annoTime": 0,
             "timestamp": datetime.now(timezone.utc).timestamp() * 1000
@@ -156,17 +159,19 @@ class TritonService:
                     sia.update_one_thing(dbm, processed_detection, user_id)
             
             elif model.task_type == InferenceModelTaskType.SEGMENTATION:
-                output = grpcclient.InferRequestedOutput("polygons")
-                response = client.infer(model_name=model_name, inputs=[input], outputs=[output])
+                polygon_output = grpcclient.InferRequestedOutput("polygons")
+                class_ids_output = grpcclient.InferRequestedOutput("class_ids")
+                response = client.infer(model_name=model_name, inputs=[input], outputs=[polygon_output, class_ids_output])
                 polygons = response.as_numpy("polygons")
+                class_ids = response.as_numpy("class_ids")
 
-                if polygons is None:
+                if polygons is None or class_ids is None:
                     flask.current_app.logger.debug("No polygons found in the response.")
                     return
                 
                 img_height, img_width = image.shape[:2]
-                for polygon in polygons:
-                    processed_polygon = process_polygon(polygon, inference_request.image_id, img_width, img_height)
+                for polygon, class_id in zip(polygons, class_ids):
+                    processed_polygon = process_polygon(polygon, inference_request.image_id, img_width, img_height, class_id, labels)
                     sia.update_one_thing(dbm, processed_polygon, user_id)
                     
         elif model.model_type == InferenceModelType.SAM:
