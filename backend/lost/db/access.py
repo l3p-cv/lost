@@ -164,6 +164,31 @@ class DBMan(object):
             list of :class:`.project.Pipe`
         '''
         return self.session.query(model.Pipe).all()
+    
+    def get_pipelines_paged(self,
+        group_ids,
+        page_index,
+        page_size):
+        '''Returns a page of all pipelines and the total number of pages
+
+        Args:
+            group_ids [int]: IDs of groups
+            page_index (int): Zero-based page-index
+            page_size (int): entries per page
+        '''
+        # get everything
+        query = self.session.query(model.Pipe)\
+            .filter((model.Pipe.group_id.in_(group_ids) &  (model.Pipe.state!=state.Pipe.DELETED) ))
+        # get page
+        pipe_page = (query.order_by(model.Pipe.timestamp.desc())\
+                     .limit(page_size)\
+                    .offset(page_index * page_size)).all()
+        # total pages
+        count = query.count()
+        pages = count // page_size
+        if count % page_size:
+            pages += 1
+        return pipe_page, pages
 
     def get_pipes_to_process(self) -> list[model.Pipe]:
         '''Get all :class:`project.Pipe` objects that are not finished.
@@ -1273,6 +1298,28 @@ class DBMan(object):
         '''Get all datasets
         '''
         return self.session.query(model.Dataset).all()
+    
+    def get_datasets_paged(self,
+        page_index,
+        page_size):
+        '''Returns a page of datasets and the total number of pages
+
+        Args:
+            page_index (int): Zero-based page-index
+            page_size (int): entries per page
+        '''
+        # get everything without parent
+        query = self.session.query(model.Dataset).filter(model.Dataset.parent_id == None)
+        # get page
+        ds_page = (query\
+                     .limit(page_size)\
+                    .offset(page_index * page_size)).all()
+        # total pages
+        count = query.count() + 1 # +1 due to meta-dataset for parentless annotasks
+        pages = count // page_size
+        if count % page_size:
+            pages += 1
+        return ds_page, pages
 
     def get_dataset(self, dataset_id):
         '''Get dataset by idx

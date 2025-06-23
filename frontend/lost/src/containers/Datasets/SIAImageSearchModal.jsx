@@ -94,6 +94,18 @@ const SIAImageSearchModal = ({
         }),
         columnHelper.accessor('imageName', {
             header: 'Image name',
+            cell: (props) => {
+                return (
+                    <div style={{
+                        width: "320px",              // width constraint
+                        whiteSpace: "normal",        // Allow wrapping
+                        wordBreak: "break-all",      // Force long strings to break
+                        overflowWrap: "break-word",  // Backup for compatibility
+                      }}>
+                {/* <div className="w-72 whitespace-normal break-all"> */}
+                    {props.row.original.imageName}
+                </div>)
+            }
         }),
         columnHelper.accessor('annotationId', {
             header: 'AnnoTask ID',

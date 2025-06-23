@@ -23,6 +23,22 @@ export const useFlatDatasets = (select) => {
     )
 }
 
+export const useDatasetsPaged = (page_index, page_size) => {
+    return useQuery(
+        ['datasetsPaged', page_index, page_size],
+        () => axios
+            .get(`${API_URL}/datasets/paged/${page_index}/${page_size}`)
+            .then((res) => res.data),
+        {
+            keepPreviousData: true,
+            staleTime: 3000,
+            onError: () => {
+                console.error('An error occurred when fetching paged datasets')
+            },
+        }
+    )
+}
+
 export const useDatastoreKeys = () => {
     return useQuery(
         ['datastoresKey'],

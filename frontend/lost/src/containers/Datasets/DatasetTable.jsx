@@ -1,7 +1,4 @@
-import { CCol, CRow, CTable, CTableBody, CTableHead } from '@coreui/react'
 import {
-    faAngleLeft,
-    faAngleRight,
     faCaretDown,
     faCaretRight,
     faDownload,
@@ -10,28 +7,25 @@ import {
     faPen,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    createColumnHelper,
-    flexRender,
-    getCoreRowModel,
-    getExpandedRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    useReactTable,
-} from '@tanstack/react-table'
-import React, { Fragment, useEffect } from 'react'
+import { createColumnHelper } from '@tanstack/react-table'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BaseContainer from '../../components/BaseContainer'
-import IconButton from '../../components/IconButton'
+import CoreDataTable from '../../components/CoreDataTable'
+import CoreIconButton from '../../components/CoreIconButton'
+import HelpButton from '../../components/HelpButton'
 
 const DatasetTable = ({
     datasetList,
-    datastores,
+    // datastores,
     onExportButtonClicked,
     onEditButtonClicked,
+    page,
+    pageCount,
+    setLastRequestedPage,
+    setDatatableInfo
 }) => {
+    const [expanded, setExpanded] = useState({})
     const navigate = useNavigate()
-
     const [tableData, setTableData] = React.useState(() => [...datasetList])
 
     // update the table when the parameter data changes
@@ -39,8 +33,6 @@ const DatasetTable = ({
         // possibility to change data between HTTP response and table refresh event
         setTableData(datasetList)
     }, [datasetList])
-
-    const columnHelper = createColumnHelper()
 
     const openReview = async (index, isAnnotask) => {
         // move to annotation review or dataset review (depending on clicked item)
@@ -86,222 +78,184 @@ const DatasetTable = ({
         )
     }
 
-    const columns = [
-        columnHelper.display({
-            id: 'expander',
-            cell: ({ row }) => renderRowIcon(row),
-        }),
-        columnHelper.accessor('name', {
-            header: 'Name',
-        }),
-        columnHelper.accessor('description', {
-            header: 'Description',
-        }),
-        // columnHelper.accessor('datastoreId', {
-        //     header: () => 'Datastore',
-        //     cell: info => {
-        //         const datastoreID = info.renderValue()
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            columnHelper.display({
+                id: 'expander',
+                header: 'Expand',
+                cell: ({ row }) => renderRowIcon(row),
+            }),
+            columnHelper.display({
+                id: 'name',
+                header: 'Name',
+                cell: ({ row }) => {
+                    if (row.original.isMetaDataset) return <b>{row.original.name}</b>
+                    if (row.original.isAnnotask) {
+                        return (
+                            <>
+                                {/* <b>{row.original.name}</b> */}
+                                {row.original.name}
+                                <div className="small text-muted">
+                                    {`ID: ${row.original.idx}`}
+                                </div>
+                            </>)
+                    }
+                    return (
+                        <>
+                            <b>{row.original.name}</b>
+                            <HelpButton
+                                id={row.original.idx}
+                                text={row.original.description}
+                            />
+                            <div className="small text-muted">
+                                {`ID: ${row.original.idx}`}
+                            </div>
+                        </>)
+                }
+            }),
+            columnHelper.display({
+                id: "annotaskStatus",
+                header: 'Task Status',
+                cell: ({ row }) => {
+                    if (row.original.isAnnotask) return row.original.description
+                    return "-"
+                }
+            }),
+            // columnHelper.accessor('datastoreId', {
+            //     header: () => 'Datastore',
+            //     cell: info => {
+            //         const datastoreID = info.renderValue()
 
-        //         if (datastoreID in datastores) {
-        //             return datastores[datastoreID]
-        //         }
+            //         if (datastoreID in datastores) {
+            //             return datastores[datastoreID]
+            //         }
 
-        //         return ""
-        //     }
-        // }),
-        columnHelper.accessor('createdAt', {
-            header: () => 'Created at',
-        }),
-        columnHelper.display({
-            id: 'review',
-            header: () => 'Review',
-            cell: (props) => {
-                // reviewing metadatasets is impossible
-                if (props.row.original.isMetaDataset) return ''
+            //         return ""
+            //     }
+            // }),
+            columnHelper.accessor('createdAt', {
+                header: () => 'Created at',
+                cell: ({ row }) => {
+                    if (row.original.isMetaDataset) return ''
+                    if (row.original.isAnnotask) return row.original.created_at
+                    return row.original.createdAt // isDataset
+                }
+            }),
+            columnHelper.display({
+                id: 'review',
+                header: () => 'Review',
+                cell: ({ row }) => {
+                    // reviewing metadatasets is impossible
+                    if (row.original.isMetaDataset) return ''
 
-                // disable the review button on datasets without children
-                const isDisabled = !(
-                    props.row.original.isAnnotask || props.row.original.isReviewable
-                )
+                    // disable the review button on datasets without children
+                    const isDisabled = !(
+                        row.original.isAnnotask || row.original.isReviewable
+                    )
 
-                return (
-                    <IconButton
-                        icon={faEye}
-                        color="primary"
-                        isOutline={false}
-                        onClick={() => {
-                            const rowData = props.row.original
-                            const isAnnotask = rowData.isAnnotask === true
-                            openReview(rowData.idx, isAnnotask)
-                        }}
-                        disabled={isDisabled}
-                        // text="Review"
-                    />
-                )
-            },
-        }),
-        columnHelper.display({
-            id: 'showExport',
-            header: () => 'Export',
-            cell: (props) => {
-                const rowData = props.row.original
+                    return (
+                        <CoreIconButton
+                            icon={faEye}
+                            color="info"
+                            isOutline={true}
+                            onClick={() => {
+                                const rowData = row.original
+                                const isAnnotask = rowData.isAnnotask === true
+                                openReview(rowData.idx, isAnnotask)
+                            }}
+                            disabled={isDisabled}
+                            toolTip='Review Dataset/Task'
+                        />
+                    )
+                },
+            }),
+            columnHelper.display({
+                id: 'showExport',
+                header: () => 'Export',
+                cell: (props) => {
+                    const rowData = props.row.original
 
-                if (rowData.idx == '-1') return ''
+                    if (rowData.idx == '-1') return ''
 
-                // disable the review button on datasets without children
-                const isDisabled = !(
-                    props.row.original.isAnnotask || props.row.original.isReviewable
-                )
+                    // disable the review button on datasets without children
+                    const isDisabled = !(
+                        props.row.original.isAnnotask || props.row.original.isReviewable
+                    )
 
-                return (
-                    <IconButton
-                        icon={faDownload}
-                        color="primary"
-                        isOutline={false}
-                        onClick={() => {
-                            const datasetID = rowData.idx
-                            const isAnnotask = rowData.isAnnotask === true
-                            const name = rowData.name
-                            const description = rowData.description
-                            onExportButtonClicked(
-                                datasetID,
-                                isAnnotask,
-                                name,
-                                description,
-                            )
-                        }}
-                        disabled={isDisabled}
-                    />
-                )
-            },
-        }),
-        columnHelper.display({
-            id: 'showEdit',
-            header: () => 'Edit',
-            cell: (props) => {
-                const rowData = props.row.original
+                    return (
+                        <CoreIconButton
+                            icon={faDownload}
+                            color="info"
+                            isOutline={true}
+                            onClick={() => {
+                                const datasetID = rowData.idx
+                                const isAnnotask = rowData.isAnnotask === true
+                                const name = rowData.name
+                                const description = rowData.description
+                                onExportButtonClicked(
+                                    datasetID,
+                                    isAnnotask,
+                                    name,
+                                    description,
+                                )
+                            }}
+                            disabled={isDisabled}
+                            toolTip='Export Dataset'
+                        />
+                    )
+                },
+            }),
+            columnHelper.display({
+                id: 'showEdit',
+                header: () => 'Edit',
+                cell: (props) => {
+                    const rowData = props.row.original
 
-                // only show edit icon for datasets
-                if (rowData.isAnnotask || rowData.isMetaDataset) return ''
+                    // only show edit icon for datasets
+                    if (rowData.isAnnotask || rowData.isMetaDataset) return ''
 
-                return (
-                    <IconButton
-                        icon={faPen}
-                        color="primary"
-                        isOutline={false}
-                        onClick={() => {
-                            onEditButtonClicked(props.row.original)
-                        }}
-                        disabled={false}
-                        // text="Edit"
-                    />
-                )
-            },
-        }),
-    ]
-
-    const [expanded, setExpanded] = React.useState({})
-
-    const table = useReactTable({
-        data: tableData,
-        columns,
-        state: {
-            expanded,
-        },
-        onExpandedChange: setExpanded,
-        getSubRows: (row) => row.children,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getExpandedRowModel: getExpandedRowModel(),
-    })
+                    return (
+                        <CoreIconButton
+                            icon={faPen}
+                            color="warning"
+                            isOutline={true}
+                            onClick={() => {
+                                onEditButtonClicked(props.row.original)
+                            }}
+                            disabled={false}
+                            toolTip='Edit Dataset'
+                        />
+                    )
+                },
+            }),
+        ]
+        return columns
+    }
 
     return (
-        <BaseContainer>
-            <CTable striped>
-                <CTableHead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <th key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                              header.column.columnDef.header,
-                                              header.getContext(),
-                                          )}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </CTableHead>
-                <CTableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Fragment key={row.id}>
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id}>
-                                        {flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext(),
-                                        )}
-                                    </td>
-                                ))}
-                            </tr>
-                        </Fragment>
-                    ))}
-                </CTableBody>
-            </CTable>
-
-            <CRow>
-                <CCol>
-                    {
-                        <IconButton
-                            icon={faAngleLeft}
-                            text="Previous"
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        />
-                    }
-                </CCol>
-                <CCol>
-                    <span style={{ lineHeight: 2 }}>
-                        Page
-                        <strong>
-                            {table.getState().pagination.pageIndex + 1} of{' '}
-                            {table.getPageCount()}
-                        </strong>
-                    </span>
-                </CCol>
-                <CCol>
-                    <span style={{ lineHeight: 2 }}>
-                        <select
-                            value={table.getState().pagination.pageSize}
-                            onChange={(e) => {
-                                table.setPageSize(Number(e.target.value))
-                            }}
-                        >
-                            {[10, 20, 30, 40, 50].map((pageSize) => (
-                                <option key={pageSize} value={pageSize}>
-                                    Show {pageSize}
-                                </option>
-                            ))}
-                        </select>
-                    </span>
-                </CCol>
-                <CCol>
-                    {
-                        <IconButton
-                            icon={faAngleRight}
-                            text="Next"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                            style={{ float: 'right' }}
-                        />
-                    }
-                </CCol>
-            </CRow>
-        </BaseContainer>
+        <CoreDataTable
+            columns={defineColumns()}
+            tableData={tableData}
+            onPaginationChange={(table) => {
+                setExpanded({})
+                const nextPage = table.getState().pagination.pageIndex
+                setLastRequestedPage(nextPage)
+                const tableState = table.getState()
+                setDatatableInfo({
+                    pageSize: tableState.pagination.pageSize,
+                    page: tableState.pagination.pageIndex,
+                    sorted: tableState.sorting,
+                    filtered: tableState.columnFilters,
+                })
+            }}
+            pageIndex={page}
+            pageCount={pageCount}
+            wholeData={false}
+            expanded={expanded}
+            setExpanded={setExpanded}
+        />
     )
 }
 

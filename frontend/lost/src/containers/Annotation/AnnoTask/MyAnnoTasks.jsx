@@ -1,20 +1,22 @@
 import { CButtonToolbar, CCol, CFormInput, CRow } from '@coreui/react'
 import { faChartBar, faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { createColumnHelper } from '@tanstack/react-table'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FaFilter, FaTrashAlt } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import 'react-table/react-table.css'
-import { Card, CardBody, CardHeader, Col, Modal, Progress, Row } from 'reactstrap'
+import { Card, CardBody, CardHeader, Col, Modal, Pagination, Progress, Row } from 'reactstrap'
 import IconButton from '../../../components/IconButton'
 import AmountPerLabel from './AmountPerLabel'
 import { getColor } from './utils'
-
 import actions from '../../../actions'
 import * as atActions from '../../../actions/annoTask/anno_task_api'
 import DropdownInput from '../../../components/DropdownInput'
-import DataTable from '../../../components/NewDataTable'
+// import DataTable from '../../../components/NewDataTable'
+import CoreDataTable from '../../../components/CoreDataTable'
+import BaseContainer from '../../../components/BaseContainer'
+import CoreIconButton from '../../../components/CoreIconButton'
 
 const { getAnnoTaskStatistic } = actions
 
@@ -233,7 +235,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                 header: 'Name',
                 cell: ({ row }) => (
                     <>
-                        <div>{row.original.name}</div>
+                        <div><b>{row.original.name}</b></div>
                         <div className="small text-muted">ID: {row.original.id}</div>
                     </>
                 ),
@@ -243,7 +245,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                 header: 'Pipeline',
                 cell: ({ row }) => (
                     <>
-                        <div>{row.original.pipelineName}</div>
+                        <div><b>{row.original.pipelineName}</b></div>
                         <div className="small text-muted">
                             Created by: {row.original.pipelineCreator}
                         </div>
@@ -319,11 +321,12 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                         (row.original.finished / row.original.size) * 100,
                     )
                     return (
-                        <IconButton
+                        <CoreIconButton
                             onClick={() => handleStatisticsClick(row.original)}
-                            color="primary"
+                            color="info"
                             disabled={progress > 0 ? false : true}
                             text="Statistic"
+                            isOutline={true}
                             icon={faChartBar}
                         />
                     )
@@ -339,15 +342,15 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     return (
                         <>
                             {row.original.status === 'inProgress' ? (
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => handleRowClick(row.original)}
                                     color="primary"
-                                    isOutline={false}
                                     text="Annotate"
+                                    isOutline={true}
                                     icon={faPencil}
                                 />
                             ) : (
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => handleRowClick(row.original)}
                                     color="primary"
                                     isOutline={false}
@@ -399,18 +402,18 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                                     relatedId={[1]}
                                     placeholder="Name"
                                 />
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => resetFilter()}
                                     color="danger"
-                                    isOutline={false}
+                                    isOutline={true}
                                     style={{ marginLeft: 20 }}
                                     text="Reset filter"
                                     icon={<FaTrashAlt />}
                                 />
-                                <IconButton
+                                <CoreIconButton
                                     onClick={() => applyFilter()}
-                                    color="primary"
-                                    isOutline={false}
+                                    color="info"
+                                    isOutline={true}
                                     style={{ marginLeft: 20 }}
                                     text="Apply filter"
                                     icon={<FaFilter />}
@@ -445,11 +448,34 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
         )
     }
 
+    const [lastRequestedPage, setLastRequestedPage] = useState(0)
+    const columns = useMemo(() => defineColumns())
     return (
         <>
             {renderStatisticModal()}
             <CCol sm="12">{filterLabels && renderFilter()}</CCol>
-            <DataTable
+            <BaseContainer>
+                <CoreDataTable
+                    columns={columns}
+                    tableData={aTData}
+                    onPaginationChange={(table) => {
+                        const nextPage = table.getState().pagination.pageIndex;
+                        setLastRequestedPage(nextPage);
+                        // setATData([]); // simulate fetch
+                        const tableState = table.getState()
+                        setDatatableInfo({
+                            pageSize: tableState.pagination.pageSize,
+                            page: tableState.pagination.pageIndex,
+                            sorted: tableState.sorting,
+                            filtered: tableState.columnFilters,
+                        })
+                    }}
+                    pageCount={pages}
+                    wholeData={false}
+                />
+            </BaseContainer>
+            {/* Below: old DataTable */}
+            {/* <DataTable
                 className="mt-3"
                 data={aTData}
                 columns={defineColumns()}
@@ -464,7 +490,7 @@ const MyAnnoTasks = ({ callBack, annoTasks }) => {
                     })
                 }}
                 pageCount={pages}
-            />
+            /> */}
         </>
     )
 }

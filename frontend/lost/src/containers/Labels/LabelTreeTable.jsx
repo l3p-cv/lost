@@ -7,11 +7,12 @@ import { FaInfoCircle } from 'react-icons/fa'
 import { Card, CardBody } from 'reactstrap'
 import { useExportLabelTree } from '../../actions/label/label-api'
 import BaseModal from '../../components/BaseModal'
-import Datatable from '../../components/Datatable'
 import HelpButton from '../../components/HelpButton'
 import IconButton from '../../components/IconButton'
 import { LabelTreeEditor } from './LabelTreeEditor/LabelTreeEditor'
 import { convertLabelTreeToReactFlow } from './LabelTreeEditor/label-tree-util'
+import CoreDataTable from '../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
 
 let amountOfLabels = 0
 
@@ -20,6 +21,110 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
     const [readonly, setReadonly] = useState(false)
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            ...columns,
+            columnHelper.accessor('name', {
+                header: 'Tree Name',
+                cell: (props) => {
+                    return (
+                        <>
+                            <b>{props.row.original.name}</b>
+                            <HelpButton
+                                id={props.row.original.idx}
+                                text={props.row.original.description}
+                            />
+                            <div className="small text-muted">
+                                {`ID: ${props.row.original.idx}`}
+                            </div>
+                        </>)
+                }
+            }),
+            columnHelper.accessor('d', {
+                header: 'Amount of Labels',
+                cell: (props) => {
+                    amountOfLabels = 0
+                    return getAmountOfLabels(props.row.original) - 1
+                }
+            }),
+            columnHelper.accessor('group_id', {
+                header: 'Global',
+                cell: (props) => {
+                    if (props.row.original.group_id) {
+                        return <CBadge color="success">User</CBadge>
+                    }
+                    return <CBadge color="primary">Global</CBadge>
+                },
+            }),
+            columnHelper.accessor('export', {
+                header: 'Export',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faFileExport}
+                            text="Export"
+                            color="info"
+                            isOutline={true}
+                            onClick={() => exportLabelTree(props.row.original.idx)}
+                        />
+                    )
+                },
+            }),
+            columnHelper.accessor('edit', {
+                header: 'Edit',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={
+                                props.row.original.group_id === null
+                                    ? visLevel !== 'global'
+                                        ? faEye
+                                        : faEdit
+                                    : faEdit
+                            }
+                            text={
+                                props.row.original.group_id === null
+                                    ? visLevel !== 'global'
+                                        ? 'Show'
+                                        : 'Edit'
+                                    : 'Edit'
+                            }
+                            color="warning"
+                            onClick={() => {
+                                const lT = labelTrees.find((labelTree) => {
+                                    if (labelTree.idx === props.row.original.idx) {
+                                        return labelTree
+                                    }
+                                })
+                                if (visLevel === 'global') {
+                                    setReadonly(false)
+                                } else {
+                                    if (lT.group_id) {
+                                        setReadonly(false)
+                                    } else {
+                                        setReadonly(true)
+                                    }
+                                }
+
+                                const graph = convertLabelTreeToReactFlow(lT)
+
+                                setSelectedTree({
+                                    // @ts-expect-error type is not an issue here
+                                    nodes: graph.nodes,
+                                    // @ts-expect-error type is not an issue here
+                                    edges: graph.edges,
+                                })
+                                setIsEditModalOpen(true)
+                            }}
+                        />
+                    )
+                },
+            }),
+        ]
+        return columns
+    }
 
     const getAmountOfLabels = (n) => {
         amountOfLabels += 1
@@ -36,7 +141,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                 isOpen={isEditModalOpen}
                 title={readonly ? 'View Label Tree' : 'Edit Label Tree'}
                 toggle={() => setIsEditModalOpen(false)}
-                onClosed={() => {}}
+                onClosed={() => { }}
                 size="xl"
                 fullscreen
                 isShowCancelButton={false}
@@ -67,112 +172,7 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                     </Card>
                 </ReactFlowProvider>
             </BaseModal>
-
-            <Datatable
-                data={labelTrees}
-                columns={[
-                    {
-                        Header: 'Tree Name',
-                        accessor: 'name',
-                    },
-                    {
-                        Header: 'Description',
-                        accessor: 'description',
-                        Cell: (row) => {
-                            return (
-                                <HelpButton
-                                    id={row.original.idx}
-                                    text={row.original.description}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Amount of Labels',
-                        id: 'idx',
-                        accessor: (d) => {
-                            amountOfLabels = 0
-                            return getAmountOfLabels(d) - 1
-                        },
-                    },
-                    {
-                        Header: 'Global',
-                        id: 'group_id',
-                        accessor: (d) => {
-                            if (d.group_id) {
-                                return <CBadge color="success">User</CBadge>
-                            }
-                            return <CBadge color="primary">Global</CBadge>
-                        },
-                    },
-                    {
-                        Header: 'Edit',
-                        id: 'edit',
-                        accessor: (d) => {
-                            return (
-                                <IconButton
-                                    icon={
-                                        d.group_id === null
-                                            ? visLevel !== 'global'
-                                                ? faEye
-                                                : faEdit
-                                            : faEdit
-                                    }
-                                    text={
-                                        d.group_id === null
-                                            ? visLevel !== 'global'
-                                                ? 'Show'
-                                                : 'Edit'
-                                            : 'Edit'
-                                    }
-                                    color="primary"
-                                    onClick={() => {
-                                        const lT = labelTrees.find((labelTree) => {
-                                            if (labelTree.idx === d.idx) {
-                                                return labelTree
-                                            }
-                                        })
-                                        if (visLevel === 'global') {
-                                            setReadonly(false)
-                                        } else {
-                                            if (lT.group_id) {
-                                                setReadonly(false)
-                                            } else {
-                                                setReadonly(true)
-                                            }
-                                        }
-
-                                        const graph = convertLabelTreeToReactFlow(lT)
-
-                                        setSelectedTree({
-                                            // @ts-expect-error type is not an issue here
-                                            nodes: graph.nodes,
-                                            // @ts-expect-error type is not an issue here
-                                            edges: graph.edges,
-                                        })
-                                        setIsEditModalOpen(true)
-                                    }}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Export',
-                        id: 'export',
-                        accessor: (d) => {
-                            return (
-                                <IconButton
-                                    icon={faFileExport}
-                                    text="Export"
-                                    color="primary"
-                                    isOutline={false}
-                                    onClick={() => exportLabelTree(d.idx)}
-                                />
-                            )
-                        },
-                    },
-                ]}
-            />
+            <CoreDataTable columns={defineColumns()} tableData={labelTrees} />
         </>
     )
 }

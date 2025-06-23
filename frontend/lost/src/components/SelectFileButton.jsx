@@ -3,7 +3,7 @@ import { useRef } from 'react'
 import { FaUpload } from 'react-icons/fa'
 import IconButton from './IconButton2'
 
-const SelectFileButton = ({ text, className, accept, onSelect, disabled = false }) => {
+const SelectFileButton = ({ text, className, accept, onSelect, disabled = false, color = "primary" }) => {
     const inputRef = useRef()
     const selectVideoFaker = () => {
         inputRef.current.click()
@@ -36,6 +36,7 @@ const SelectFileButton = ({ text, className, accept, onSelect, disabled = false 
                 onClick={() => {
                     selectVideoFaker()
                 }}
+                color={color}
             />
         </div>
     )

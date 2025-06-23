@@ -84,14 +84,19 @@ const Toolbar = (props) => {
                 toggle={toggleLogfileModal}
                 pipelineId={props.data?.id}
             />
-
             <Button
                 className="pipeline-running-toolbar-button"
-                id="pipeline-button-delete-pipeline"
-                onClick={deletePipelineHandler}
-                color="secondary"
+                id="pipeline-button-download-start-definition"
+                onClick={() => {
+                    downloadJSON(
+                        props.data.startDefinition,
+                        `start_definition_${props.data.id}.json`,
+                    )
+                }}
+                color="info"
+                outline={true}
             >
-                <FontAwesomeIcon icon={faTrash} size="2x" />
+                <FontAwesomeIcon icon={faFileDownload} size="2x" />
             </Button>
             {props.data && (
                 <>
@@ -99,10 +104,21 @@ const Toolbar = (props) => {
                         className="pipeline-running-toolbar-button"
                         id="pipeline-button-download-logfile"
                         onClick={toggleLogfileModal}
-                        color="secondary"
+                        color="info"
+                        outline={true}
                     >
                         <FontAwesomeIcon icon={faStickyNote} size="2x" />
                     </Button>
+                    <Button
+                        className="pipeline-running-toolbar-button"
+                        id="pipeline-button-regenerate"
+                        onClick={toggleModal}
+                        color="success"
+                        outline={true}
+                    >
+                        <FontAwesomeIcon icon={faRedo} size="2x" />
+                    </Button>
+
                     <Button
                         className="pipeline-running-toolbar-button"
                         id="pipeline-button-play-pause"
@@ -111,7 +127,11 @@ const Toolbar = (props) => {
                                 ? playPipelineHandler
                                 : pausePipelineHandler
                         }
-                        color="secondary"
+                        color={(props.data.progress === 'PAUSED')
+                            ? "success"
+                            : "warning"
+                        }
+                        outline={true}
                     >
                         {props.data.progress === 'PAUSED' ? (
                             <FontAwesomeIcon icon={faPlay} size="2x" />
@@ -121,24 +141,12 @@ const Toolbar = (props) => {
                     </Button>
                     <Button
                         className="pipeline-running-toolbar-button"
-                        id="pipeline-button-regenerate"
-                        onClick={toggleModal}
-                        color="secondary"
+                        id="pipeline-button-delete-pipeline"
+                        onClick={deletePipelineHandler}
+                        color="danger"
+                        outline={true}
                     >
-                        <FontAwesomeIcon icon={faRedo} size="2x" />
-                    </Button>
-                    <Button
-                        className="pipeline-running-toolbar-button"
-                        id="pipeline-button-download-start-definition"
-                        onClick={() => {
-                            downloadJSON(
-                                props.data.startDefinition,
-                                `start_definition_${props.data.id}.json`,
-                            )
-                        }}
-                        color="secondary"
-                    >
-                        <FontAwesomeIcon icon={faFileDownload} size="2x" />
+                        <FontAwesomeIcon icon={faTrash} size="2x" />
                     </Button>
                     <GrayLine />
 
