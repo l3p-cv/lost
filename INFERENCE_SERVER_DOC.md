@@ -80,10 +80,10 @@ output [
 Description of Inputs and Outputs:
 
 - **Input (`img`)**:  
-    The input tensor `img` represents the image data to be processed by the model. It is expected to be a floating-point tensor (`TYPE_FP32`) with three dimensions: height, width, and channels. Pass a `numpy` array.
+    Pass a `numpy` array as described above.
 
 - **Output (`polygons`)**:  
-    The output tensor `polygons` contains the segmentation results in the form of polygon coordinates. It is a floating-point tensor (`TYPE_FP32`) with two dimensions: the number of detected objects and a variable number of points defining the polygons for each object.
+    The output tensor `polygons` should contain the segmentation results in the form of polygon coordinates. It should be floating-point tensor (`TYPE_FP32`) with two dimensions: the number of detected objects and a variable number of points defining the polygons for each object.
 
 - **Output (`class_ids`)**:  
-    The output tensor `class_ids` provides the class identifiers for the segmented objects. It is a floating-point tensor (`TYPE_FP32`) with one dimension, where each entry corresponds to the class ID of a detected object. It has a 1-1 correspondence with the `polygons` tensor.
+    The output tensor `class_ids` should the class identifiers for the segmented objects. It should be a floating-point tensor (`TYPE_FP32`) with one dimension, where each entry corresponds to the class ID of a detected object. It should have a 1-1 correspondence with the `polygons` tensor.
