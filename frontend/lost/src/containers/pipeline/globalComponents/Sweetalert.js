@@ -53,3 +53,15 @@ export const alertDeletePipeline = (id) => {
         confirmButtonText: 'Yes, delete it!',
     })
 }
+
+export const alertDeletion = (text) => {
+    return Swal.fire({
+        title: `Do you really want to delete the ${text}?`,
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: 'primary',
+        confirmButtonText: 'Yes, delete it!',
+    })
+}

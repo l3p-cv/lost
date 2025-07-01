@@ -54,8 +54,8 @@ const CreateLabelTree = ({ visLevel }) => {
                             className='treeDesc'
                         />
                         <IconButton
-                            isOutline={false}
-                            color="primary"
+                            isOutline={true}
+                            color="success"
                             onClick={handleCreateSave}
                             disabled={
                                 createLabelName === '' || createLabelDescription === ''
@@ -68,7 +68,7 @@ const CreateLabelTree = ({ visLevel }) => {
                 </CCol>
             </CRow>
             <CRow>
-                <CCol className="justify-content-end d-flex">
+                <CCol className="justify-content-start d-flex">
                     <SelectFileButton
                         accept=".csv"
                         onSelect={(file) => {
@@ -76,6 +76,7 @@ const CreateLabelTree = ({ visLevel }) => {
                         }}
                         text="Import Label Tree"
                         className="mb-3"
+                        color='success'
                     />
                 </CCol>
             </CRow>

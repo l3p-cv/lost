@@ -1014,7 +1014,7 @@ export const useJoyrideSteps = (
         title: 'Open Latest Pipeline',
         content: 'Click the "Open" button to view the latest created pipeline.',
         placement: 'top',
-        spotlightClicks: true,
+        spotlightClicks: false,
         disableBeacon: true,
       },
       {
@@ -1023,7 +1023,7 @@ export const useJoyrideSteps = (
         title: 'Edit Instructions',
         content: 'To edit instructions in your pipeline, click next.',
         placement: 'top',
-        disableBeacon: true,
+        disableBeacon: false,
         spotlightClicks: true,
       },
       {

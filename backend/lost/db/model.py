@@ -769,7 +769,7 @@ class ImageAnno(Base):
 
         img_dict = {
             'img_uid': self.idx,
-            # 'img_anno_task_id': self.anno_task_id,
+            'annotask_id': self.anno_task_id,
             'img_timestamp': self.timestamp,
             'img_state': self.state,
             'img_sim_class': self.sim_class,

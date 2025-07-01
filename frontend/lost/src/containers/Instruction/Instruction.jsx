@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGetInstructions, useDeleteInstruction, useAddInstruction, useEditInstruction } from './instruction_api';
 import { CContainer, CRow, CCol, CSpinner, CBadge, CTooltip } from '@coreui/react';
-import Datatable from '../../components/Datatable';
+// import Datatable from '../../components/Datatable';
 import BaseModal from '../../components/BaseModal';
 import IconButton from '../../components/IconButton';
 import EditInstruction from './EditInstruction';
@@ -10,6 +10,8 @@ import BaseContainer from '../../components/BaseContainer';
 import * as Notification from '../../components/Notification';
 import { useOwnUser } from '../../actions/user/user_api';
 import { faUserPlus, faPen, faTrash, faEye } from '@fortawesome/free-solid-svg-icons';
+import CoreDataTable from '../../components/CoreDataTable';
+import { createColumnHelper } from '@tanstack/react-table';
 
 const canEdit = (visLevel, instruction) => visLevel === 'global' || (visLevel === 'all' && instruction.group_id);
 const canView = (visLevel, instruction) => visLevel === 'all' && !instruction.group_id;
@@ -84,57 +86,86 @@ const Instruction = ({ visLevel }) => {
     isLastRow: idx === filteredInstructions.length - 1,
   }));
 
-  const columns = [
-    { Header: 'Annotation Option', accessor: 'option' }, // Simplified, no Cell renderer needed
-    { Header: 'Description', accessor: 'description' },
-    {
-      Header: 'Global',
-      id: 'group_id',
-      Cell: ({ original }) => (
-        <CBadge color={original.group_id ? 'primary' : 'success'}>
-          {original.group_id ? 'User' : 'Global'}
-        </CBadge>
-      ),
-    },
-    {
-      Header: 'Edit',
-      Cell: ({ original }) => {
-        if (canEdit(visLevel, original)) {
+  const getRowClassName = (original) => {
+    return original.isLastRow ? 'last-row-highlight' : '';
+  };
+
+  const defineColumns = () => {
+    const columnHelper = createColumnHelper();
+    
+    return [
+      columnHelper.accessor('option', {
+        header: 'Annotation Option',
+        cell: ({ getValue }) => getValue(),
+      }),
+      columnHelper.accessor('description', {
+        header: 'Description',
+        cell: ({ getValue }) => getValue(),
+      }),
+      columnHelper.accessor('group_id', {
+        header: 'Global',
+        cell: ({ row }) => (
+          <CBadge color={row.original.group_id ? 'primary' : 'success'}>
+            {row.original.group_id ? 'User' : 'Global'}
+          </CBadge>
+        ),
+      }),
+      columnHelper.display({
+        id: 'edit',
+        header: 'Edit',
+        cell: ({ row }) => {
+          const original = row.original;
+          if (canEdit(visLevel, original)) {
+            return (
+              <IconButton 
+                icon={faPen} 
+                color="warning" 
+                text="Edit"
+                onClick={() => handleEditClick(original)}
+                className={original.isLastRow ? 'edit-instruction-button' : ''}
+              />
+            );
+          }
+          if (canView(visLevel, original)) {
+            return (
+              <IconButton 
+                icon={faEye} 
+                color="primary" 
+                text="Show" 
+                onClick={() => handleViewClick(original)} 
+              />
+            );
+          }
+          return null;
+        },
+      }),
+      columnHelper.display({
+        id: 'delete',
+        header: 'Delete',
+        cell: ({ row }) => {
+          const original = row.original;
+          const disabled = !canDelete(visLevel, original);
           return (
-            <IconButton icon={faPen} color="warning" text="Edit"
-              onClick={() => handleEditClick(original)}
-              className={original.isLastRow ? 'edit-instruction-button' : ''}
-            />
+            <div>
+              {disabled ? (
+                <CTooltip content="Deletion is restricted to admins only.">
+                  <span>
+                    <IconButton icon={faTrash} color="secondary" disabled />
+                  </span>
+                </CTooltip>
+              ) : (
+                <IconButton 
+                  icon={faTrash} 
+                  color="danger" 
+                  onClick={() => handleDelete(original.id)} 
+                />
+              )}
+            </div>
           );
-        }
-        if (canView(visLevel, original)) {
-          return (
-            <IconButton icon={faEye} color="primary" text="Show" onClick={() => handleViewClick(original)} />
-          );
-        }
-        return null;
-      },
-    },
-    {
-      Header: 'Delete',
-      Cell: ({ original }) => {
-        const disabled = !canDelete(visLevel, original);
-        return (
-          <div>
-            {disabled ? (
-              <CTooltip content="Deletion is restricted to admins only.">
-                <span>
-                  <IconButton icon={faTrash} color="secondary" disabled />
-                </span>
-              </CTooltip>
-            ) : (
-              <IconButton icon={faTrash} color="danger" onClick={() => handleDelete(original.id)} />
-            )}
-          </div>
-        );
-      },
-    },
-  ];
+        },
+      }),
+    ];
+  };
 
   return (
     <CContainer>
@@ -158,18 +189,15 @@ const Instruction = ({ visLevel }) => {
               <p>No instructions available.</p>
             )}
             <div className="instruction-list">
-              <Datatable
+              <CoreDataTable
                 key="instructionsTable"
-                data={enhancedInstructions}
-                columns={columns}
+                tableData={enhancedInstructions}
+                columns={defineColumns()}
                 pageSize={10}
                 isLoading={isLoading}
-                getTrProps={(state, rowInfo) => {
-                  if (rowInfo && rowInfo.original.isLastRow) {
-                    return { className: 'last-row-highlight' };
-                  }
-                  return {};
-                }}
+                getRowClassName={getRowClassName}
+                usePagination={true}
+                wholeData={true}
               />
             </div>
           </BaseContainer>

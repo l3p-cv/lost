@@ -5,9 +5,9 @@ import {
     faTrash,
     faUserPlus,
 } from '@fortawesome/free-solid-svg-icons'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { createColumnHelper } from '@tanstack/react-table'
 import BaseModal from '../../components/BaseModal'
-import Datatable from '../../components/Datatable'
 import LostFileBrowser from '../../components/FileBrowser/LostFileBrowser'
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
@@ -16,6 +16,7 @@ import EditDSModal from './EditDSModal'
 import { CBadge, CCol, CRow } from '@coreui/react'
 import * as fbAPI from '../../actions/fb/fb_api'
 import BaseContainer from '../../components/BaseContainer'
+import CoreDataTable from '../../components/CoreDataTable'
 
 export const DSTable = ({ visLevel }) => {
     const [isNewDS, setIsNewDS] = useState(false)
@@ -24,7 +25,7 @@ export const DSTable = ({ visLevel }) => {
     const userName = localStorage.getItem('username') || ''
     const defaultDsName = 'default'
     const [browseOpen, setBrowseOpen] = useState(false)
-    const [fs, setFs] = useState()
+    // const [fs, setFs] = useState()
     const { mutate: getFSListNew, data: fsList } = fbAPI.useGetFSList()
     const { mutate: getFullFs, data: fullFs } = fbAPI.useGetFullFs()
     const { mutate: getPossibleFsTypes, data: possibleFsTypes } =
@@ -61,7 +62,7 @@ export const DSTable = ({ visLevel }) => {
         }
     }, [deleteStatus])
 
-    useEffect(() => {}, [possibleFsTypes])
+    useEffect(() => { }, [possibleFsTypes])
     // control modal close
     const [isDsEditOpenControl, setIsDsEditOpenControl] = useState(false)
     const [selectedDs, setSelectedDs] = useState()
@@ -119,7 +120,7 @@ export const DSTable = ({ visLevel }) => {
             },
             option2: {
                 text: 'NO!',
-                callback: () => {},
+                callback: () => { },
             },
         })
     }
@@ -135,7 +136,7 @@ export const DSTable = ({ visLevel }) => {
             },
             option2: {
                 text: 'Cancel',
-                callback: () => {},
+                callback: () => { },
             },
         })
     }
@@ -160,6 +161,100 @@ export const DSTable = ({ visLevel }) => {
             }
         }
         return false
+    }
+
+
+    const fsListSafe = Array.isArray(fsList) ? fsList : []
+    const [tableData, setTableData] = React.useState(() => [...fsListSafe])
+    // update the table when the parameter data changes
+    useEffect(() => {
+        // possibility to change data between HTTP response and table refresh event
+        setTableData(fsList)
+    }, [fsList])
+
+    const columnHelper = createColumnHelper()
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        let columns = []
+        columns = [
+            columnHelper.accessor('name', {
+                header: 'Name',
+                cell: (props) => {
+                    return (
+                        <>
+                            <b>{props.row.original.name}</b>
+                            <div className="small text-muted">
+                                {`ID: ${props.row.original.id}`}
+                            </div>
+                        </>)
+                }
+            }),
+            columnHelper.accessor('fsType', {
+                header: 'Type'
+            }),
+            // columnHelper.accessor('rootPath', {
+            //     header: 'Root Path'
+            // }),
+            // columnHelper.accessor('connection', {
+            //     header: 'Connection'
+            // }),
+            columnHelper.accessor('groupId', {
+                header: 'Global',
+                cell: (d) => {
+                    if (d.groupId) {
+                        return <CBadge color="success">User</CBadge>
+                    }
+                    return <CBadge color="primary">Global</CBadge>
+                },
+            }),
+            columnHelper.display({
+                id: 'browse',
+                header: () => 'Browse',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faFolderOpen}
+                            color="info"
+                            onClick={() => onOpenFileBrowser(props.row.original)}
+                            text="Browse"
+                        // isOutline={false}
+                        />
+                    )
+                }
+            }),
+            columnHelper.display({
+                id: 'edit',
+                header: () => 'Edit',
+                cell: (props) => {
+                    return (
+                        <IconButton
+                            icon={faEdit}
+                            color="warning"
+                            onClick={() => onEditDs(props.row)}
+                            disabled={checkEditable(props.row)}
+                            text="Edit"
+                        // isOutline={false}
+                        />
+                    )
+                }
+            }),
+            columnHelper.display({
+                id: 'delete',
+                header: () => 'Delete',
+                cell: (row) => {
+                    return (
+                        <IconButton
+                            icon={faTrash}
+                            color="danger"
+                            onClick={() => onDeleteDs(row)}
+                            disabled={checkEditable(row)}
+                            text="Delete"
+                        />
+                    )
+                }
+            })
+        ]
+        return columns
     }
 
     return (
@@ -195,12 +290,11 @@ export const DSTable = ({ visLevel }) => {
                     visLevel={visLevel}
                 />
             )}
-
             <CRow>
                 <CCol sm="auto">
                     <IconButton
-                        isOutline={false}
-                        color="primary"
+                        isOutline={true}
+                        color="success"
                         icon={faUserPlus}
                         text="Add Datasource"
                         onClick={createNewDS}
@@ -208,89 +302,9 @@ export const DSTable = ({ visLevel }) => {
                     />
                 </CCol>
             </CRow>
-            <CRow>
-                <CCol>
-                    <BaseContainer>
-                        <Datatable
-                            data={fsList}
-                            columns={[
-                                {
-                                    Header: 'Name',
-                                    accessor: 'name',
-                                },
-                                {
-                                    Header: 'Type',
-                                    accessor: 'fsType',
-                                },
-                                // {
-                                //     Header: 'Root Path',
-                                //     accessor: 'rootPath',
-                                // },
-                                // {
-                                //     Header: 'Connection',
-                                //     accessor: 'connection',
-                                // },
-                                {
-                                    Header: 'Global',
-                                    id: 'groupId',
-                                    accessor: (d) => {
-                                        if (d.groupId) {
-                                            return <CBadge color="success">User</CBadge>
-                                        }
-                                        return <CBadge color="primary">Global</CBadge>
-                                    },
-                                },
-                                {
-                                    Header: 'Delete',
-                                    id: 'delete',
-                                    accessor: (row) => {
-                                        return (
-                                            <IconButton
-                                                icon={faTrash}
-                                                color="danger"
-                                                onClick={() => onDeleteDs(row)}
-                                                disabled={checkEditable(row)}
-                                                text="Delete"
-                                            />
-                                        )
-                                    },
-                                },
-                                {
-                                    Header: 'Edit',
-                                    id: 'edit',
-                                    accessor: (row) => {
-                                        return (
-                                            <IconButton
-                                                icon={faEdit}
-                                                color="primary"
-                                                onClick={() => onEditDs(row)}
-                                                disabled={checkEditable(row)}
-                                                text="Edit"
-                                                // isOutline={false}
-                                            />
-                                        )
-                                    },
-                                },
-                                {
-                                    Header: 'Browse',
-                                    id: 'browse',
-                                    accessor: (row) => {
-                                        return (
-                                            <IconButton
-                                                icon={faFolderOpen}
-                                                color="primary"
-                                                onClick={() => onOpenFileBrowser(row)}
-                                                text="Browse"
-                                                // isOutline={false}
-                                            />
-                                        )
-                                    },
-                                },
-                            ]}
-                        />
-                    </BaseContainer>
-                </CCol>
-            </CRow>
+            <BaseContainer>
+                <CoreDataTable columns={defineColumns()} tableData={tableData} />
+            </BaseContainer>
         </>
     )
 }

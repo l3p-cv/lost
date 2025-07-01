@@ -78,7 +78,7 @@ const WorkingOn = ({ annoTask }) => {
                     <IconButton
                         onClick={() => handleContinue(annoTask.type)}
                         color="primary"
-                        isOutline={false}
+                        isOutline={true}
                         icon={faFastForward}
                         text="Continue"
                     />

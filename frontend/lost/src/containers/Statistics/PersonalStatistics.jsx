@@ -160,6 +160,9 @@ const PersonalStatistics = () => {
 
     return (
         <CContainer style={{ marginTop: 15 }}>
+            <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
+                Dashboard
+            </h3>
             <CRow>
                 <CCol sm="5">
                     <h2 id="traffic" className="card-title mb-2">

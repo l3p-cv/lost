@@ -107,6 +107,35 @@ class PipelineList(Resource):
             # print(re) 
             return re
  
+@namespace.route('/<int:page_index>/<int:page_size>')
+@namespace.param('page_index', 'Zero-based index of the page.')
+@namespace.param('page_size', 'Number of elements per page.')
+@api.doc(security='apikey')
+class PipelineListPaged(Resource):
+    # marshal caused problems json string was fine, api returned { pipelines: null }.
+    # @api.marshal_with(pipelines) 
+    @api.doc(security='apikey',description='Get all pipelines paged')
+    @jwt_required
+    def get(self, page_index, page_size):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else: 
+            # for group in user.groups:
+            #     print("--- printing group of user.groups ---")
+            #     print(group) 
+            group_ids = [g.group_id for g in user.groups]
+            re, pages = pipeline_service.get_pipelines_paged(dbm, group_ids, page_index, page_size)
+            dbm.close_session()
+            print("PIPE JSON: ", re)
+            # print("--- PipelineList result ---")
+            # print(re) 
+            return {'pipelines': re,
+                    'pages': pages}
+
 
 @namespace.route('/<int:pipeline_id>')
 @namespace.param('pipeline_id', 'The id of the pipeline.')
