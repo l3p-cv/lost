@@ -8,49 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Your stuff here
 
-## [2.7.0] - 2025-06-12 
-### Added
-- Column for dataset/annotask-ID to dataset-tab
-- ID-Columns for Users and groups in admin-area
-- Node-ID in label-editor
-- IDs of Filesystems (Datasources) in UI
-- Button in Pipeline-Overview to pause/unpause + delete next to "open pipeline"-button
-- DatasetTable shows when Annotasks were created
-- Menus for Annotask-exports can (if implemented) remember which tab was opened last
-- The above applied for DatasetTable
-- Renamed column "Description" to "Task Status" in DatasetTable
-- Merged columns "Description" into col "Name" (DatasetTable) (when it comes to DS descriptions)
-- Merged columns "Description" into col "Tree Name" (LabelTable)
-- Merged columns "Description" into col "Name/Project" (Start Pipeline)
-- Added Headers to each Tab seen in the sidebar, like in Pipelines/"Pipeline Templates" (Labels, Datasets, Datasources, Annotation, Admin Area)
-- Description for templates in RunningPipelines
-- New component "CoreDataTAble" based on what DatasetTable used (for reusing this for all tables)
-- Reworked PaginatorBottom completely (see "Changed")
-- New general Sweetalert for deletions
-- Added argument "color" to SelectFileButton
-- Rearranged + recolored Buttons in all tables
-- Replaced tables in Annotation-Tab
-- Added 2 Pagination-Components (for whole and for partial tableData) + 1 Wrapper for them, to use with CoreDataTable
-- Added paged getting of pipeline-data and datasets per API
-- Made pipline- and dataset-tables load page by page
-- Expanding datasets in dataset-table now ignores limit of elements per page 
-- Commented out unused arguments datastoreList + datasetList from DatasetExportModal and AnnoTaskTabs
-- Relocated BaseContainer usage for Datasettable
-### Changed
-- Commented out unused variable "datastoreList" for datasets
-- Renamed "Start"-column to "Options" in RunningPipelines
-- DatasetTable navigation-bottom made to new component PaginatorBottom
-- Buttons now mostly outlined and colored
-### Fixed
-- IMG-Search: Image-path in review now stays inside of box
-
-## [2.6.0] - 2025-04-17
-### Added
-- Added col annotask_id to lost anno export file
-### Fixed
-- Sia is blocking, when clicking on next/ prev, because same image is returned 
-  all the time by the backend
-
 ## [2.5.1] - 2025-04-02
 ### Fixed
 - Review-Search now looks out for image-labels

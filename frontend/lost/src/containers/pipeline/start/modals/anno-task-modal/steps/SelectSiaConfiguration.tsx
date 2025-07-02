@@ -60,7 +60,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
     return (
         <>
             {configuration ? (
-                <>
+                <div id="sia-configuration-heading">
                     <h4 className="mb-3 text-center">SIA Configuration</h4>
                     <CRow style={{ margin: '5px' }}>
                         <CCol sm="6">
@@ -413,7 +413,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                             </CCol>
                         </CCol>
                     </CRow>
-                </>
+                </div>
             ) : (
                 ''
             )}

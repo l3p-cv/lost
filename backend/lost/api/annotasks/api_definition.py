@@ -73,7 +73,7 @@ anno_task = api.model('Anno Task',{
     'pipelineName': fields.String(description='The name of the anno task',attribute='pipeline_name'),
     'pipelineCreator': fields.String(description='The name of the anno task',attribute='pipeline_creator'),
     'group': fields.String(description='The group of the anno task'),
-    'instructions': fields.String(description='The instructions of the anno task'),
+    'instructionId': fields.Integer(description='The ID of the instruction associated with the anno task'),
     'createdAt': fields.DateTime(description='The creation date of the anno task', attribute='created_at'),
     'lastActivity': fields.DateTime(description='The last activity of the anno task',attribute='last_activity'),
     'lastAnnotator': fields.String(description='The last annotator of the anno task',attribute='last_annotator'),

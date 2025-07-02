@@ -49,6 +49,12 @@ export const PipelineStartModal = ({
             templateId: templateData.id,
             elements: getFormattedPipelineRequestElements(nodes, templateData),
         }
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+        if (joyrideRunning) {
+            window.dispatchEvent(
+                new CustomEvent('joyride-next-step', { detail: { step: 'last-step-done' } })
+            );
+        }
 
         startPipeline(pipeline)
         toggle()
@@ -99,6 +105,7 @@ export const PipelineStartModal = ({
                                             onChange={(e) => setName(e.target.value)}
                                             type="text"
                                             name="name"
+                                            className='start-pipeline-modal'
                                             id="name"
                                         />
                                     </FormGroup>
@@ -135,6 +142,7 @@ export const PipelineStartModal = ({
                             color="primary"
                             isTextLeft={false}
                             style={{ marginBottom: 20 }}
+                            className="start-pipeline-btn"
                         />
                     </ModalFooter>
                 </Form>

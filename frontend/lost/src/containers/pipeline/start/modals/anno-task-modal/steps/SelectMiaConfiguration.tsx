@@ -45,7 +45,7 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
     return (
         <>
             {configuration ? (
-                <>
+                <div id="mia-configuration-heading">
                     <h4 className="mb-3 text-center">MIA Configuration</h4>
                     <CRow style={{ margin: '5px' }}>
                         <CCol sm="6">
@@ -193,7 +193,7 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
                             )}
                         </CRow>
                     </CRow>
-                </>
+                </div>
             ) : (
                 ''
             )}

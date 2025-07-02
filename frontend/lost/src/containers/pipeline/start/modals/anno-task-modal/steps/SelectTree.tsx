@@ -26,6 +26,12 @@ export const SelectTree = ({ nodeId, availableLabelTrees }: SelectTreeProps) => 
                 edges: [],
             },
         })
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+        if (joyrideRunning) {
+            window.dispatchEvent(
+            new CustomEvent('joyride-next-step', { detail: { step: 'label-tree-selection-done' } })
+            )
+        }
     }
 
     return (

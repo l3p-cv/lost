@@ -210,7 +210,7 @@ class PipeStarter(object):
             anno_task.dtype = dtype.AnnoTask.SIA
         anno_task.configuration = json.dumps(data_element['annoTask']['configuration'])
         anno_task.name = data_element['annoTask']['name']
-        anno_task.instructions = data_element['annoTask']['instructions']
+        anno_task.instruction_id = data_element['annoTask']['instructionId']
         anno_task.group_id = data_element['annoTask']['workerId']
         anno_task.timestamp = datetime.now()
         
@@ -580,7 +580,7 @@ class PipeSerialize(object):
         anno_task_json['progress'] = anno_task.progress
         anno_task_json['imgCount'] = img_count
         anno_task_json['annotatedImgCount'] = annotated_img_count
-        anno_task_json['instructions'] = anno_task.instructions
+        anno_task_json['instructionId'] = anno_task.instruction_id
         if anno_task.configuration:
             anno_task_json['configuration'] = json.loads(anno_task.configuration)
         anno_task_json['labelLeaves'] = list()

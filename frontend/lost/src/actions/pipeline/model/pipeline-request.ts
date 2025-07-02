@@ -17,7 +17,7 @@ export interface Element {
 export interface AnnoTask {
     name: string
     type: string
-    instructions: string
+    instructionId: number
     configuration: Configuration
     assignee: string
     workerId: number

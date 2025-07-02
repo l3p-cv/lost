@@ -339,6 +339,7 @@ const DataTable = ({
             <Fragment key={row.id}>
                 <tr
                     key={row.id}
+                    className={row.original === dataTemp?.[0] ? 'first-row-class' : ''}
                     style={
                         onRowClick !== undefined
                             ? { cursor: 'pointer', height: rowHeight }

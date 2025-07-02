@@ -71,8 +71,14 @@ export const DatasourceModal = ({
     })
 
     const toggleDs = useCallback(() => {
-        setDsDropdownOpen((prevState) => !prevState)
-    }, [])
+        setDsDropdownOpen((prevState) => {
+            const isOpening = !prevState;
+            if (isOpening) {
+                window.dispatchEvent(new CustomEvent('joyride-next-step', { detail: { step: 'dropdown-open' } }));
+            }
+            return isOpening;
+        });
+    }, []);
 
     const selectItem = useCallback(
         (path) => {
@@ -87,19 +93,30 @@ export const DatasourceModal = ({
                         fsId: selectedFs.id,
                     })
                 }
-            }
+
+            const isJoyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            const isValidPath = path && path !== DEFAULT_TEXT_PATH;
+            if (isJoyrideRunning && isValidPath) {
+                window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                     detail: { step: 'path-selected' }
+                }));
+            }}
         },
-        [selectedPath, selectedFs, updateNodeData, nodeId],
+        [selectedPath, selectedFs, updateNodeData, nodeId]
     )
 
     const selectDS = useCallback((fs) => {
-        setSelectedFs({ ...fs })
+        setSelectedFs({ ...fs });
+
+        window.dispatchEvent(new CustomEvent('joyride-next-step', {
+            detail: { step: 'datasource-selected' }
+        }));
     }, [])
 
     const datasourceDropDown = () => {
         return (
             <div>
-                <Dropdown isOpen={dsDropdownOpen} toggle={toggleDs}>
+                <Dropdown id="datasource-dropdown" isOpen={dsDropdownOpen} toggle={toggleDs}>
                     <DropdownToggle caret>
                         <Icon name="database" />
                         {selectedFs ? selectedFs.name : 'Select Datasource ...'}
@@ -136,13 +153,13 @@ export const DatasourceModal = ({
 
     return (
         <>
-            <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode}>
+            <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode} id="datasource-modal">
                 <ModalHeader toggle={toggle}>Datasource</ModalHeader>
                 <ModalBody>
                     <div>
-                        <div>{datasourceDropDown()}</div>
+                        <div id="datasource-dropdown-container">{datasourceDropDown()}</div>
                         <Divider horizontal>File Browser</Divider>
-                        <div>
+                        <div id="file-browser-container">
                             <LostFileBrowser
                                 fs={selectedFs}
                                 onPathSelected={(path) => selectItem(path)}
@@ -151,13 +168,27 @@ export const DatasourceModal = ({
                         </div>
                         <Divider horizontal>Selected Datasource</Divider>
                         {/* @ts-expect-error Still works with string color */}
-                        <Label color={selectedPathColor}>
+                        <Label color={selectedPathColor} id="selected-datasource-path">
                             <Icon name="folder open" /> {selectedPath}
                         </Label>
                     </div>
                 </ModalBody>
                 <ModalFooter>
-                    <Button onClick={toggle}> Done </Button>
+                <Button
+                    onClick={() => {
+                        toggle();
+                        window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                        detail: { step: 'done-clicked' },
+                        }));
+                    }}
+                    id="done-button"
+                    disabled={
+                        localStorage.getItem('joyrideRunning') === 'true' &&
+                        (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
+                    }
+                    >
+                    Done
+                </Button>
                 </ModalFooter>
             </Modal>
         </>

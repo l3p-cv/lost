@@ -13,7 +13,7 @@ export type AnnoTaskNodeData = {
     name: string
     type: string
     verified: boolean
-    instructions: string
+    instructionId: number
     selectedDataset?: {
         value: string
         label: string
