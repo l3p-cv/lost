@@ -45,7 +45,10 @@ dependencies:
   - uwsgi
   - werkzeug=0.16.1
   - pip:
-    - lost_ds==1.2.0a1
-    - opencv-python
+      - lost_ds==1.2.0a1
+      - opencv-python
+      - tritonclient[all]
+      - pydantic==2.8.2
+      - Flask-Pydantic==0.12.0
 
 prefix: /opt/conda/envs/lost

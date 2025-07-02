@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { useInterval } from 'react-use'
-import IconButton from '../../components/IconButton'
-import Datatable from '../../components/Datatable'
-import { API_URL } from '../../lost_settings'
-import { saveAs } from 'file-saver'
 import { CBadge } from '@coreui/react'
+import { faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { saveAs } from 'file-saver'
+import { useEffect, useState } from 'react'
+import Datatable from '../../components/Datatable'
+import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
+import { API_URL } from '../../lost_settings'
 
 import * as pipelineProjectsApi from '../../actions/pipeline/pipeline_projects_api'
 import AddPipelineProject from './AddPipelineProject'
@@ -49,9 +48,9 @@ const PTTable = ({ visLevel }) => {
             }
         }
     }, [pipelineProjects])
-    useInterval(() => {
-        refetch()
-    }, 1000)
+    // useInterval(() => {
+    //     refetch()
+    // }, 1000)
     useEffect(() => {
         if (deletePipelineProjectStatus === 'success') {
             refetch()

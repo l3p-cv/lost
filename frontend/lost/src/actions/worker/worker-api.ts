@@ -7,6 +7,6 @@ export const useWorkers = () => {
         queryFn: () => {
             return httpClient.get('/worker')
         },
-        refetchInterval: 5000,
+        // refetchInterval: 5000,
     })
 }

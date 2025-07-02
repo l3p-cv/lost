@@ -1,11 +1,10 @@
 import traceback
 import flask
-from flask import request, send_file
+from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from lost import db
 from lost.api.api import api
-from lost.api.sia.api_definition import sia_anno, sia_config, sia_update,labels
+from lost.api.sia.api_definition import sia_anno, sia_config, labels
 from lost.db import roles, access
 from lost.settings import LOST_CONFIG, DATA_URL
 from lost.logic import sia
@@ -14,7 +13,6 @@ import json
 import base64
 import cv2
 from lost.logic.file_man import FileMan
-from lost.api.label.api_definition import label_trees
 
 namespace = api.namespace('sia', description='SIA Annotation API.')
 
@@ -49,6 +47,9 @@ class First(Resource):
             elif direction == 'prev':
                 re = sia.get_previous(dbm, identity,last_img_id, DATA_URL)
                 dbm.close_session()
+                return re
+            elif direction == 'current':
+                re = sia.get_current(dbm, identity,last_img_id, DATA_URL)
                 return re
             
             dbm.close_session()            
@@ -241,7 +242,7 @@ class Label(Resource):
             return re
 
 @namespace.route('/configuration')
-@api.doc(security='apikey')
+@api.doc(security='apikey') 
 class Configuration(Resource):
     @api.doc(security='apikey',description='Get conmfig for the current SIA Task')            
     @api.marshal_with(sia_config)

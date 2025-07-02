@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, BLOB
 # from sqlalchemy.dialects.mysql import DATETIME
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, TIMESTAMP
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -1976,3 +1976,17 @@ class DatasetExport(Base):
     dataset_id = Column(Integer, ForeignKey('dataset.idx'), nullable=False)
     file_path = Column(String(255), nullable=False)
     progress = Column(Integer, nullable=False, default=0)
+
+
+class InferenceModel(Base):
+    __tablename__ = 'inference_model'
+
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False)
+    display_name = Column(String(255), unique=True)
+    server_url = Column(String(2048), nullable=False)
+    task_type = Column(Integer)  # renamed from 'type'
+    model_type = Column(String(255), nullable=False)  # newly added
+    description = Column(Text)  # newly added
+    last_updated = Column(TIMESTAMP, server_default=func.current_timestamp(),
+                          onupdate=func.current_timestamp())

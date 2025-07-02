@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [unreleased] - 
 ### Added
 - Instruction page for annotation tasks
-  - Worte also db_patch for instruction data
+- Wrote db_patch for instruction data
 - A tourguide for lost onboarding using Joyride
+- Add support for model assisted image annotation, model management UI
 
 ## [2.7.0] - 2025-06-12 
 ### Added
