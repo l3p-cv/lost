@@ -27,7 +27,6 @@ def main():
     # Create Tables
     dbm = access.DBMan(lostconfig)
     perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
-    DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update(perfrom_all_patches)
     dbm.create_database()
     create_roles(dbm)
     user, group = create_first_user(dbm)
@@ -37,6 +36,7 @@ def main():
         import_ootb_pipelines(dbm, user)
         copy_example_images(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
+    DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update(perfrom_all_patches)
     release_all_pipe_locks(dbm)
     dbm.close_session()
 
