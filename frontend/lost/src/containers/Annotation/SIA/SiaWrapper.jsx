@@ -15,6 +15,11 @@ import {
     transform,
 } from 'lost-sia'
 import { useNavigate } from 'react-router-dom'
+import { Badge, Button } from 'reactstrap'
+import {
+    INFERENCE_MODEL_TYPE,
+    useTritonInference,
+} from '../../../actions/inference-model/model-api'
 import {
     showError,
     showInfo,
@@ -66,6 +71,11 @@ const SiaWrapper = (props) => {
     const [annoSaveResponse, setAnnoSaveResponse] = useState()
     const [blockImageChange, setBlockImageChange] = useState(false)
     const [localTaskFinished, setLocalTaskFinished] = useState(false)
+    const [samPoints, setSamPoints] = useState([])
+    const [samBBox, setSamBBox] = useState(null)
+
+    const { mutate: inferAnnotations, isLoading: isInferenceLoading } =
+        useTritonInference()
 
     useEffect(() => {
         document.body.style.overflow = 'hidden'
@@ -89,12 +99,14 @@ const SiaWrapper = (props) => {
 
     useEffect(() => {
         if (props.getNextImage) {
+            handleClearSamHelperAnnos()
             getNewImage(props.getNextImage, 'next')
         }
     }, [props.getNextImage])
 
     useEffect(() => {
         if (props.getPrevImage) {
+            handleClearSamHelperAnnos()
             getNewImage(props.getPrevImage, 'prev')
         }
     }, [props.getPrevImage])
@@ -327,6 +339,9 @@ const SiaWrapper = (props) => {
                     ...props.uiConfig,
                     nodeRadius: data,
                 })
+                break
+            case 'clearSamHelperAnnos':
+                handleClearSamHelperAnnos()
                 break
             default:
                 break
@@ -599,64 +614,163 @@ const SiaWrapper = (props) => {
         setCanvas(c)
     }
 
+    const handleAddAnnotation = () => {
+        if (image.id) {
+            inferAnnotations(
+                {
+                    imageId: image.id,
+                    modelId: props.canvasConfig.inferenceModel.id,
+                    prompts: {
+                        points: samPoints.map((point) => ({
+                            x: point.normX,
+                            y: point.normY,
+                            label: point.type,
+                        })),
+                        bbox: samBBox
+                            ? {
+                                  xMin: samBBox.xMinNorm,
+                                  yMin: samBBox.yMinNorm,
+                                  xMax: samBBox.xMaxNorm,
+                                  yMax: samBBox.yMaxNorm,
+                              }
+                            : undefined,
+                    },
+                },
+                {
+                    onSuccess: () => {
+                        showSuccess('Annotations inferred successfully!')
+                        setSamBBox(null) // reset SAM bounding box
+                        // getNewImage(image.id, 'current')
+                        props.getSiaAnnos(image.id, 'current')
+                    },
+                    onError: () => {
+                        showError('An error occurred while inferring annotations!')
+                    },
+                },
+            )
+        } else {
+            console.warn('No image id found!')
+        }
+    }
+
+    const handleSamPointClick = (x, y, normX, normY, type) => {
+        // @ts-expect-error disabling type check since it is a jsx file
+        setSamPoints((prev) => [
+            ...prev,
+            {
+                x: Math.round(x),
+                y: Math.round(y),
+                type,
+                normX,
+                normY,
+            },
+        ])
+    }
+
+    const handleUpdateSamBBox = (bbox) => {
+        setSamBBox({
+            ...bbox,
+        })
+    }
+
+    const handleClearSamHelperAnnos = () => {
+        setSamPoints([])
+        setSamBBox(null)
+    }
+
     return (
-        <div>
-            <Sia
-                onAnnoEvent={(anno, annos, action) =>
-                    handleAnnoPerformedAction(anno, annos, action)
-                }
-                onNotification={(messageObj) => handleNotification(messageObj)}
-                onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
-                onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
-                onGetAnnoExample={(exampleArgs) =>
-                    props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
-                }
-                onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
-                onAnnoSaveEvent={(action, saveData) =>
-                    handleAnnoSaveEvent(action, saveData)
-                }
-                canvasConfig={{
-                    ...props.canvasConfig,
-                    annos: { ...props.canvasConfig.annos, maxAnnos: null },
-                    // autoSaveInterval: 60,
-                    allowedToMarkExample: allowedToMark,
-                }}
-                uiConfig={{
-                    ...props.uiConfig,
-                    imgBarVisible: true,
-                    imgLabelInputVisible: props.imgLabelInput.show,
-                    centerCanvasInContainer: true,
-                    maxCanvas: true,
-                }}
-                // nextAnnoId={nextAnnoId}
-                annoSaveResponse={annoSaveResponse}
-                annos={annos.annotations}
-                isImageChanging={blockNextImageTrigger}
-                imageMeta={annos.image}
-                imageBlob={image.data}
-                possibleLabels={props.possibleLabels}
-                exampleImg={props.exampleImg}
-                layoutUpdate={props.layoutUpdate}
-                selectedTool={props.selectedTool}
-                isJunk={props.isJunk}
-                blocked={blockCanvas}
-                onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
-                fullscreen={fullscreen}
-                filter={props.filter}
-                preventScrolling={false}
-                toolbarEnabled={{
-                    imgLabel: true,
-                    nextPrev: true,
-                    toolSelection: true,
-                    fullscreen: true,
-                    junk: true,
-                    deleteAll: true,
-                    settings: { infoBoxes: true, annoStyle: true },
-                    filter: { rotate: false, clahe: true },
-                    help: true,
-                }}
-            />
-        </div>
+        <>
+            {props.canvasConfig.inferenceModel &&
+                props.canvasConfig.inferenceModel.id && (
+                    <div
+                        style={{
+                            paddingBottom: '10px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: '10px',
+                        }}
+                    >
+                        <Badge color="dark">
+                            Inference Model:
+                            {' ' + props.canvasConfig.inferenceModel.displayName}
+                        </Badge>
+                        <Button
+                            onClick={handleAddAnnotation}
+                            disabled={
+                                isInferenceLoading ||
+                                (props.canvasConfig.inferenceModel.modelType ===
+                                    INFERENCE_MODEL_TYPE.SAM &&
+                                    samPoints.length === 0 &&
+                                    (samBBox === null || samBBox.width === 0))
+                            }
+                        >
+                            Infer Annotation
+                        </Button>
+                    </div>
+                )}
+            <div>
+                <Sia
+                    onAnnoEvent={(anno, annos, action) =>
+                        handleAnnoPerformedAction(anno, annos, action)
+                    }
+                    onNotification={(messageObj) => handleNotification(messageObj)}
+                    onCanvasKeyDown={(e) => handleCanvasKeyDown(e)}
+                    onCanvasEvent={(action, data) => handleCanvasEvent(action, data)}
+                    onGetAnnoExample={(exampleArgs) =>
+                        props.onGetAnnoExample ? props.onGetAnnoExample(exampleArgs) : {}
+                    }
+                    onGetFunction={(canvasFunc) => handleGetFunction(canvasFunc)}
+                    onAnnoSaveEvent={(action, saveData) =>
+                        handleAnnoSaveEvent(action, saveData)
+                    }
+                    canvasConfig={{
+                        ...props.canvasConfig,
+                        annos: { ...props.canvasConfig.annos, maxAnnos: null },
+                        // autoSaveInterval: 60,
+                        allowedToMarkExample: allowedToMark,
+                    }}
+                    uiConfig={{
+                        ...props.uiConfig,
+                        imgBarVisible: true,
+                        imgLabelInputVisible: props.imgLabelInput.show,
+                        centerCanvasInContainer: true,
+                        maxCanvas: true,
+                    }}
+                    // nextAnnoId={nextAnnoId}
+                    annoSaveResponse={annoSaveResponse}
+                    annos={annos.annotations}
+                    isImageChanging={blockNextImageTrigger}
+                    imageMeta={annos.image}
+                    imageBlob={image.data}
+                    possibleLabels={props.possibleLabels}
+                    exampleImg={props.exampleImg}
+                    layoutUpdate={props.layoutUpdate}
+                    selectedTool={props.selectedTool}
+                    isJunk={props.isJunk}
+                    blocked={blockCanvas}
+                    onToolBarEvent={(e, data) => handleToolBarEvent(e, data)}
+                    fullscreen={fullscreen}
+                    filter={props.filter}
+                    preventScrolling={false}
+                    toolbarEnabled={{
+                        imgLabel: true,
+                        nextPrev: true,
+                        toolSelection: true,
+                        fullscreen: true,
+                        junk: true,
+                        deleteAll: true,
+                        settings: { infoBoxes: true, annoStyle: true },
+                        filter: { rotate: false, clahe: true },
+                        help: true,
+                    }}
+                    samPoints={samPoints}
+                    onSamPointClick={handleSamPointClick}
+                    samBBox={samBBox}
+                    onUpdateSamBBox={handleUpdateSamBBox}
+                />
+            </div>
+        </>
     )
 }
 

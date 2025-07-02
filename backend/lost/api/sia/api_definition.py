@@ -1,4 +1,3 @@
-from sqlalchemy.sql.sqltypes import Text
 from flask_restx import fields
 
 from lost.api.api import api
@@ -88,7 +87,8 @@ sia_config_tools = api.model('SIA Config Tools', {
     'line': fields.Boolean(readOnly=True, description='Weather to work with lines.'),
     'polygon': fields.Boolean(readOnly=True, description='Weather to work with polygons.'),
     'bbox': fields.Boolean(readOnly=True, description='Weather to work with bboxes.'),
-    'junk': fields.Boolean(readOnly=True, description='Indicates wether a junk button is visible.')
+    'junk': fields.Boolean(readOnly=True, description='Indicates wether a junk button is visible.'),
+    'sam': fields.Boolean(readOnly=True, description='Indicates wether the SAM tools are available.'),
 })
 
 sia_config_annos_actions = api.model('SIA Config Anno Actions', {
@@ -111,10 +111,17 @@ sia_config_img = api.model('SIA Config Annos', {
     'actions': fields.Nested(sia_config_img_actions)
 })
 
+sia_inference_model_config = api.model('SIA Inference Model Config', {
+    'id': fields.Integer(readOnly=True, description='The identifier of the inference model.'),
+    'displayName': fields.String(readOnly=True, description='The display name of the inference model.'),
+    'modelType': fields.String(readOnly=True, description='The type of the inference model.'),
+    })
+
 sia_config = api.model('SIA Configuration', {
     'tools': fields.Nested(sia_config_tools,description='Tools to work with in SIA.'),
     'annos': fields.Nested(sia_config_annos, description="Config for 2d annotations."),
     'img': fields.Nested(sia_config_img, description="Config for the image"),
+    'inferenceModel': fields.Nested(sia_inference_model_config, description="Config for the inference model"),
 })
 
 sia_update_bbox = api.model('SIA update bbox', {
@@ -174,7 +181,8 @@ label_leaf = api.model('Label Leaf',{
     'description': fields.String(description='The description of the label leaf.'),
     'label': fields.String(description='Name if the Label'),
     'nameAndClass': fields.String(description='Combination of name and class'),
-    'color': fields.String(description='Color in Hex-Format of that label leaf.')
+    'color': fields.String(description='Color in Hex-Format of that label leaf.'),
+    'externalId': fields.Integer(description='External id of that label leaf.')
 })
 
 labels = api.model('Labels', {
