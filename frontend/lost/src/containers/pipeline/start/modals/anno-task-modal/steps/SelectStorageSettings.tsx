@@ -69,6 +69,7 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
                         <CRow>
                             <CCol>
                                 <Select
+                                    id="select-storage-container"
                                     placeholder="Select Dataset"
                                     isSearchable
                                     options={flatDatasetList}
@@ -80,6 +81,12 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
                                         updateNodeData(nodeId, {
                                             selectedDataset: selectedOption,
                                         })
+                                        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+                                        if (joyrideRunning) {
+                                            window.dispatchEvent(
+                                            new CustomEvent('joyride-next-step', { detail: { step: 'storage-settings-done' } })
+                                            )
+                                        }
                                     }}
                                 />
                             </CCol>

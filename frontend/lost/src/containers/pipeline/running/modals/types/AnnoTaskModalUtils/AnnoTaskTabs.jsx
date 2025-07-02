@@ -1,6 +1,7 @@
 import {
     faBox,
     faDownload,
+    faFileAlt,
     faGears,
     faTags,
     faUsers,
@@ -19,6 +20,7 @@ import TabGenerateExport from './TabGenerateExport'
 import TabShowLabels from './TabShowLabel'
 import TabStorageSettings from './TabStorageSettings'
 import TabUser from './TabUser'
+import TabInstructions from './TabInstructions'
 
 const AnnoTaskTabs = ({
     annotask,
@@ -38,6 +40,7 @@ const AnnoTaskTabs = ({
 
     const [dataExports, setDataExports] = useState([])
     const { data: dataExportData, refetch } = annoTaskApi.useGetDataexports(annotask.id)
+    const [updatedAnnotask, setUpdatedAnnotask] = useState(annotask)
     useInterval(() => {
         refetch()
     }, 2000)
@@ -46,6 +49,12 @@ const AnnoTaskTabs = ({
             setDataExports(dataExportData)
         }
     }, [dataExportData])
+    const updateAnnotask = (newData) => {
+        setUpdatedAnnotask(prevState => ({
+            ...prevState,
+            ...newData
+        }))
+    }
     const renderGenOrShowExportLinks = () => {
         if (dataExports.length > 0) {
             return (
@@ -182,6 +191,12 @@ const AnnoTaskTabs = ({
                         </CNavLink>
                     </CNavItem>
                 )}
+                                <CNavItem>
+                    <CNavLink active={effectiveActive === 6} onClick={() => effectiveSetActive(6)}  className='inactive-tab-class'>
+                        <FontAwesomeIcon color="#092F38" size="1x" icon={faFileAlt} />
+                        {effectiveSetActive === 6 && ' Instruction options'}
+                    </CNavLink>
+                </CNavItem>
             </CNav>
             <CTabContent className="w-100" style={{ paddingBottom: '10px' }}>
                 {renderGenOrShowExport()}
@@ -224,6 +239,9 @@ const AnnoTaskTabs = ({
                         />
                     </CTabPane>
                 )}
+                <CTabPane visible={effectiveActive === 6} style={{ marginTop: 30, marginLeft: 5 }} className='instruction-tab'>
+                <TabInstructions annotask={updatedAnnotask} updateAnnotask={updateAnnotask} />
+                </CTabPane>
             </CTabContent>
             {/* </CTabs> */}
         </CNav>

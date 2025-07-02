@@ -44,7 +44,7 @@ export interface PipelineTemplateElement {
 export interface AnnoTask {
     name: string
     type: string
-    instructions: string
+    instructionId: number
     configuration: Configuration
 }
 

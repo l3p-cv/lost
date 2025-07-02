@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { faCircle, faEye, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { ModalBody, ModalHeader } from 'reactstrap'
@@ -23,6 +24,16 @@ function handleForceAnnotationRelease(props) {
 const AnnoTaskModal = (props) => {
     const navigate = useNavigate()
 
+    useEffect(() => {
+    const timeout = setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('joyride-next-step', {
+        detail: { step: 'anno-modal-opened' }
+        }));
+    }, 300);
+
+    return () => clearTimeout(timeout);
+    }, []);
+
     return (
         <>
             <ModalHeader>Annotation Task</ModalHeader>
@@ -33,10 +44,6 @@ const AnnoTaskModal = (props) => {
                         {
                             key: 'Annotation Task Name',
                             value: props.annoTask.name,
-                        },
-                        {
-                            key: 'Instructions',
-                            value: props.annoTask.instructions,
                         },
                         {
                             key: 'Pipe Element ID',

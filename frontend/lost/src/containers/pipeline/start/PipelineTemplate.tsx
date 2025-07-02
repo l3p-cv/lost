@@ -53,42 +53,48 @@ export const PipelineTemplate: React.FC<PipelineTemplateProps> = ({
     const [nodes, setNodes, onNodesChange] = useNodesState([] as Node[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[])
 
-    useEffect(() => {
-        setNodes(initialNodes)
-        setEdges(initialEdges)
-    }, [initialNodes, initialEdges, setNodes, setEdges])
+  useEffect(() => {
+    const nodesWithClassNames = initialNodes.map((node) => {
+      let className = '';
+      if (node.type === 'datasourceNode') className = 'datasource-node';
+      if (node.type === 'scriptNode') className = 'script-node';
+      if (node.type === 'annoTaskNode') className = 'anno-task-node';
+      return { ...node, className };
+    });
 
-    useAutoLayout(defaultLayoutOptions)
+    setNodes(nodesWithClassNames)
+    setEdges(initialEdges)
+  }, [initialNodes, initialEdges])
 
-    useEffect(() => {
-        fitView({
-            maxZoom: 1.0,
-        })
-    }, [nodes, fitView])
+  useAutoLayout(defaultLayoutOptions)
 
-    return (
-        <div style={{ height: '90vh', width: '100%' }}>
-            <ReactFlow
-                nodes={nodes}
-                nodeTypes={templateNodeTypes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                elementsSelectable={false}
-                nodesDraggable={false}
-                onNodeClick={onNodeClick}
-                zoomOnDoubleClick={false}
-            >
-                <Background color="#fff" variant={BackgroundVariant.Lines} gap={0} />
-                <Controls
-                    onFitView={() => fitView({ maxZoom: 1.0 })}
-                    position="top-right"
-                    showInteractive={false}
-                />
-                <Panel position="top-left">
-                    <p>Name : {name}</p>
-                </Panel>
-            </ReactFlow>
-        </div>
-    )
+  useEffect(() => {
+    fitView({ maxZoom: 1.0 })
+  }, [nodes, fitView])
+
+  return (
+    <div style={{ height: '90vh', width: '100%' }}>
+      <ReactFlow
+        nodes={nodes}
+        nodeTypes={templateNodeTypes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        elementsSelectable={false}
+        nodesDraggable={false}
+        onNodeClick={onNodeClick}
+        zoomOnDoubleClick={false}
+      >
+        <Background color="#fff" variant={BackgroundVariant.Lines} gap={0} />
+        <Controls
+          onFitView={() => fitView({ maxZoom: 1.0 })}
+          position="top-right"
+          showInteractive={false}
+        />
+        <Panel position="top-left">
+          <p>Name : {name}</p>
+        </Panel>
+      </ReactFlow>
+    </div>
+  )
 }

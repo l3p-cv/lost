@@ -44,12 +44,14 @@ const CreateLabelTree = ({ visLevel }) => {
                             placeholder="Tree name"
                             value={createLabelName}
                             onChange={handleCreateLabelName}
+                            className='treeName'
                         />
                         <CFormInput
                             type="text"
                             placeholder="Description"
                             value={createLabelDescription}
                             onChange={handleCreateLabelDescription}
+                            className='treeDesc'
                         />
                         <IconButton
                             isOutline={true}
@@ -60,6 +62,7 @@ const CreateLabelTree = ({ visLevel }) => {
                             }
                             icon={faPlus}
                             text="Add Label Tree"
+                            className='treeAdd'
                         />
                     </CInputGroup>
                 </CCol>

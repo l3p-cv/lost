@@ -29,7 +29,8 @@ function CoreDataTable({
     wholeData = true,
     paginationLarge = true,
     expanded={},
-    setExpanded=undefined
+    setExpanded=undefined,
+    getRowClassName = () => ''
 }) {
     const [columnFilters, setColumnFilters] = useState([])
     const [doRerender, setDoRerender] = useState(false)
@@ -116,6 +117,7 @@ function CoreDataTable({
                     {table.getRowModel().rows.map((row) => (
                         <Fragment key={row.id}>
                             <tr key={row.id}
+                                className={getRowClassName(row.original)}
                                 style={{
                                     height: rowHeight,
                                     maxHeight: rowHeight,

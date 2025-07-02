@@ -333,3 +333,31 @@ class MkDirs(Resource):
                 res = ufa.mkdirs(path, exist_ok=False)
             dbm.close_session()
             return 'success', 200 
+
+@namespace.route('/check-path')
+@api.doc(security='apikey')
+class CheckPath(Resource):
+    @jwt_required
+    def post(self):  
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        data = request.get_json()  
+        fs_id = data.get('fsId')  
+        path = data.get('path')  
+
+        fs_db = dbm.get_fs(fs_id=fs_id)
+        ufa = UserFileAccess(dbm, user, fs_db)
+
+        try:
+            exists = ufa.exists(path)
+            dbm.close_session()
+            return {'exists': exists}, 200
+        except Exception as e:
+            dbm.close_session()
+            return {'error': str(e)}, 500

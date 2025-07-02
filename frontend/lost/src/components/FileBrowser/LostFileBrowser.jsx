@@ -29,7 +29,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
     const { acceptedFiles, getRootProps, getInputProps, isDragReject, isFocused } =
         useDropzone({})
     const [uploadFilesData, uploadFiles, breakUpload] = fb_api.useUploadFiles()
-
+    const [isUploading, setIsUploading] = useState(false);
     const {
         mutate: deleteFiles,
         status: deleteFilesStatus,
@@ -94,15 +94,22 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
     }
 
     useEffect(() => {
-        if (uploadFilesData.isSuccess) {
-            setCopiedAcceptedFiles([])
-            Notification.showSuccess('Upload succeeded.')
-            ls(fs, selectedDir)
+        if (uploadFilesData.idle === false) {
+            setIsUploading(true); 
+        } else if (uploadFilesData.isSuccess) {
+            setIsUploading(false);
+            Notification.showSuccess('Upload succeeded.');
+            ls(fs, selectedDir);
+
+            setCopiedAcceptedFiles([]); 
+            setSize(0);
+
+            uploadFilesData.progress = null; 
+        } else if (uploadFilesData.error) {
+            setIsUploading(false);
+            Notification.showError('Upload failed.');
         }
-        if (uploadFilesData.isSuccess === false) {
-            Notification.showError('Upload failed.')
-        }
-    }, [uploadFilesData])
+    }, [uploadFilesData]);   
 
     useEffect(() => {
         if (deleteFilesStatus === 'success') {
@@ -244,7 +251,7 @@ const LostFileBrowser = ({ fs, onPathSelected, mode = undefined, initPath }) => 
                                 }
                             />
                             <div style={{ marginTop: 10 }}>
-                                {uploadFilesData.progress
+                                {uploadFilesData.progress !== null && uploadFilesData.progress !== undefined
                                     ? `Progress: ${Number(
                                           uploadFilesData.progress * 100,
                                       ).toFixed(2)}%`

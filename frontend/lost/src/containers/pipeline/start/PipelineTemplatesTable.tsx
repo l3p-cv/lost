@@ -7,6 +7,7 @@ import { CenteredSpinner } from '../../../components/CenteredSpinner'
 import Datatable from '../../../components/Datatable'
 import HelpButton from '../../../components/HelpButton'
 import IconButton from '../../../components/IconButton'
+import { useEffect, useState } from 'react'
 import CoreDataTable from '../../../components/CoreDataTable'
 import { createColumnHelper } from '@tanstack/react-table'
 
@@ -16,6 +17,19 @@ export const PipelineTemplatesTable = () => {
         console.log("VAL 1: ", val)
     }
     const { data, isLoading, isError } = useTemplates('all')
+
+    const [siaPipelineId, setSiaPipelineId] = useState(null);
+
+    useEffect(() => {
+      if (data?.templates) {
+        const siaTemplate = data.templates.find(t => t.name === 'found.sia');
+        if (siaTemplate) {
+          localStorage.setItem('siaPipelineId', siaTemplate.id);
+          setSiaPipelineId(siaTemplate.id);
+        }
+      }
+    }, [data]);
+
 
     const defineColumns = () => {
         const columnHelper = createColumnHelper()
@@ -46,15 +60,22 @@ export const PipelineTemplatesTable = () => {
                 cell: (props) => {
                     return (
                         <IconButton
-                            color="success"
-                            size="m"
-                            isOutline={true}
-                            onClick={() =>
-                                navigate(`/pipeline-template/${props.row.original.id}`)
-                            }
-                            icon={faPlay}
-                            text="Start"
-                        />
+                          color="primary"
+                          size="m"
+                          isOutline={false}
+                          className={
+                              props.row.original.name === 'found.sia'
+                                  ? 'sia-start-button'
+                                  : props.row.original.name === 'found.mia'
+                                  ? 'mia-start-button'
+                                  : ''
+                          }
+                          onClick={() =>
+                              navigate(`/pipeline-template/${props.row.original.id}`)
+                          }
+                          icon={faPlay}
+                          text="Start"
+                      />
                     )
                 }
             })
