@@ -145,6 +145,7 @@ function CoreDataTable({
                     ))}
                 </CTableBody>
             </CTable>
+            {/* HACK: Add feature to show spinner based on request state to get a clean solution!
             {tableData.length === 0 && (
                 <div
                     style={{
@@ -162,7 +163,7 @@ function CoreDataTable({
                 >
                     <CSpinner />
                 </div>
-            )}
+            )} */}
             <PaginationWrapper table={table}
                 visible={usePagination}
                 wholeData={wholeData}
