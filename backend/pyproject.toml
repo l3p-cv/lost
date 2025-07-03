@@ -37,6 +37,7 @@ dependencies = [
     "pydantic>=2.11.7",
     "pygelf>=0.4.2",
     "pytest>=8.3.5",
+    "requests>=2.32.3",
     "scikit-image>=0.25.2",
     "sqlalchemy>=2.0.41",
     "tritonclient[all]>=2.59.0",
