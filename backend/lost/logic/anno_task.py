@@ -134,7 +134,7 @@ def get_at_info(dbm, annotask, user_id, amount_per_label=False):
     at['pipeline_name'] = pipeline.name
     at['pipeline_creator'] = pipeline.manager.user_name
     at['group'] = annotask.group.name
-    at['instructions'] = annotask.instructions
+    at['instruction_id'] = annotask.instruction_id
     at['created_at'] = None
     if annotask.timestamp:
         at['created_at'] = annotask.timestamp.strftime(settings.STRF_TIME)

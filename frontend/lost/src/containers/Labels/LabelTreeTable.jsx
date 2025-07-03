@@ -1,5 +1,5 @@
 import { faEdit, faEye, faFileExport } from '@fortawesome/free-solid-svg-icons'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { CAlert, CBadge } from '@coreui/react'
 import { ReactFlowProvider } from '@xyflow/react'
@@ -7,11 +7,12 @@ import { FaInfoCircle } from 'react-icons/fa'
 import { Card, CardBody } from 'reactstrap'
 import { useExportLabelTree } from '../../actions/label/label-api'
 import BaseModal from '../../components/BaseModal'
-import Datatable from '../../components/Datatable'
 import HelpButton from '../../components/HelpButton'
 import IconButton from '../../components/IconButton'
 import { LabelTreeEditor } from './LabelTreeEditor/LabelTreeEditor'
 import { convertLabelTreeToReactFlow } from './LabelTreeEditor/label-tree-util'
+import CoreDataTable from '../../components/CoreDataTable'
+import { createColumnHelper } from '@tanstack/react-table'
 
 let amountOfLabels = 0
 
@@ -20,14 +21,152 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [selectedTree, setSelectedTree] = useState({ nodes: [], edges: [] })
     const [readonly, setReadonly] = useState(false)
+    const [highlightLatestRow, setHighlightLatestRow] = useState(false)
+
+    const newlyCreatedTreeId = Number(localStorage.getItem('newlyCreatedLabelTreeId'))
+
+    useEffect(() => {
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+        const currentStep = localStorage.getItem('currentStep')
+
+        if (joyrideRunning && currentStep === '4') {
+            setHighlightLatestRow(true)
+        }
+    }, [labelTrees.length])
+
+    useEffect(() => {
+        if (highlightLatestRow) {
+            const checkRow = () => {
+                const el = document.getElementById('latest-label-tree')
+                if (el) {
+                    window.dispatchEvent(
+                        new CustomEvent('joyride-next-step', {
+                            detail: { step: 'latest-label-tree' },
+                        })
+                    )
+                } else {
+                    setTimeout(checkRow, 100)
+                }
+            }
+            checkRow()
+        }
+    }, [highlightLatestRow])
 
     const getAmountOfLabels = (n) => {
         amountOfLabels += 1
         if (n.children === undefined) return 1
-        n.children.forEach(function (c) {
-            getAmountOfLabels(c)
-        })
+        n.children.forEach(getAmountOfLabels)
         return amountOfLabels
+    }
+
+    const getRowClassName = (original, index) => {
+        const isNewTree = original.idx === newlyCreatedTreeId
+        return isNewTree ? 'latestLabelTree' : ''
+    }
+
+    const defineColumns = () => {
+        const columnHelper = createColumnHelper()
+        return [
+            columnHelper.accessor('name', {
+                header: 'Tree Name',
+                cell: (props) => {
+                    const isNewTree = props.row.original.idx === newlyCreatedTreeId
+                    return (
+                        <div
+                            id={
+                                isNewTree &&
+                                localStorage.getItem('joyrideRunning') === 'true' &&
+                                localStorage.getItem('currentStep') === '4'
+                                    ? 'latest-label-tree'
+                                    : undefined
+                            }
+                        >
+                            <b>{props.row.original.name}</b>
+                            <HelpButton
+                                id={props.row.original.idx}
+                                text={props.row.original.description}
+                            />
+                            <div className="small text-muted">
+                                {`ID: ${props.row.original.idx}`}
+                            </div>
+                        </div>
+                    )
+                },
+            }),
+            columnHelper.accessor('d', {
+                header: 'Amount of Labels',
+                cell: (props) => {
+                    amountOfLabels = 0
+                    return getAmountOfLabels(props.row.original) - 1
+                },
+            }),
+            columnHelper.accessor('group_id', {
+                header: 'Global',
+                cell: (props) =>
+                    props.row.original.group_id ? (
+                        <CBadge color="success">User</CBadge>
+                    ) : (
+                        <CBadge color="primary">Global</CBadge>
+                    ),
+            }),
+            columnHelper.accessor('edit', {
+                header: 'Edit',
+                cell: (props) => {
+                    const isNewlyCreated = props.row.original.idx === newlyCreatedTreeId
+                    return (
+                        <IconButton
+                            icon={
+                                props.row.original.group_id === null
+                                    ? visLevel !== 'global'
+                                        ? faEye
+                                        : faEdit
+                                    : faEdit
+                            }
+                            text={
+                                props.row.original.group_id === null
+                                    ? visLevel !== 'global'
+                                        ? 'Show'
+                                        : 'Edit'
+                                    : 'Edit'
+                            }
+                            color="warning"
+                            className={isNewlyCreated ? 'latest-edit-button' : ''}
+                            onClick={() => {
+                                const lT = labelTrees.find(
+                                    (labelTree) => labelTree.idx === props.row.original.idx
+                                )
+                                setReadonly(
+                                    visLevel === 'global'
+                                        ? false
+                                        : !!lT.group_id
+                                            ? false
+                                            : true
+                                )
+
+                                const graph = convertLabelTreeToReactFlow(lT)
+                                setSelectedTree({
+                                    nodes: graph.nodes,
+                                    edges: graph.edges,
+                                })
+                                setIsEditModalOpen(true)
+                            }}
+                        />
+                    )
+                },
+            }),
+            columnHelper.accessor('export', {
+                header: 'Export',
+                cell: (props) => (
+                    <IconButton
+                        icon={faFileExport}
+                        text="Export"
+                        color="info"
+                        isOutline={true}
+                        onClick={() => exportLabelTree(props.row.original.idx)}
+                    />
+                ),
+            }),
+        ]
     }
 
     return (
@@ -68,112 +207,13 @@ const LabelTreeTable = ({ labelTrees, visLevel }) => {
                 </ReactFlowProvider>
             </BaseModal>
 
-            <Datatable
-                data={labelTrees}
-                columns={[
-                    {
-                        Header: 'Tree Name',
-                        accessor: 'name',
-                    },
-                    {
-                        Header: 'Description',
-                        accessor: 'description',
-                        Cell: (row) => {
-                            return (
-                                <HelpButton
-                                    id={row.original.idx}
-                                    text={row.original.description}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Amount of Labels',
-                        id: 'idx',
-                        accessor: (d) => {
-                            amountOfLabels = 0
-                            return getAmountOfLabels(d) - 1
-                        },
-                    },
-                    {
-                        Header: 'Global',
-                        id: 'group_id',
-                        accessor: (d) => {
-                            if (d.group_id) {
-                                return <CBadge color="success">User</CBadge>
-                            }
-                            return <CBadge color="primary">Global</CBadge>
-                        },
-                    },
-                    {
-                        Header: 'Edit',
-                        id: 'edit',
-                        accessor: (d) => {
-                            return (
-                                <IconButton
-                                    icon={
-                                        d.group_id === null
-                                            ? visLevel !== 'global'
-                                                ? faEye
-                                                : faEdit
-                                            : faEdit
-                                    }
-                                    text={
-                                        d.group_id === null
-                                            ? visLevel !== 'global'
-                                                ? 'Show'
-                                                : 'Edit'
-                                            : 'Edit'
-                                    }
-                                    color="primary"
-                                    onClick={() => {
-                                        const lT = labelTrees.find((labelTree) => {
-                                            if (labelTree.idx === d.idx) {
-                                                return labelTree
-                                            }
-                                        })
-                                        if (visLevel === 'global') {
-                                            setReadonly(false)
-                                        } else {
-                                            if (lT.group_id) {
-                                                setReadonly(false)
-                                            } else {
-                                                setReadonly(true)
-                                            }
-                                        }
-
-                                        const graph = convertLabelTreeToReactFlow(lT)
-
-                                        setSelectedTree({
-                                            // @ts-expect-error type is not an issue here
-                                            nodes: graph.nodes,
-                                            // @ts-expect-error type is not an issue here
-                                            edges: graph.edges,
-                                        })
-                                        setIsEditModalOpen(true)
-                                    }}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Export',
-                        id: 'export',
-                        accessor: (d) => {
-                            return (
-                                <IconButton
-                                    icon={faFileExport}
-                                    text="Export"
-                                    color="primary"
-                                    isOutline={false}
-                                    onClick={() => exportLabelTree(d.idx)}
-                                />
-                            )
-                        },
-                    },
-                ]}
+            <CoreDataTable 
+                columns={defineColumns()} 
+                tableData={labelTrees} 
+                getRowClassName={getRowClassName}
             />
         </>
     )
 }
+
 export default LabelTreeTable

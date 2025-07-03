@@ -361,6 +361,69 @@ class DatasetReview(Resource):
         # save all changes
         dbm.session.commit()
 
+@namespace.route('/paged/<int:page_index>/<int:page_size>')
+@namespace.param('page_index', 'Zero-based index of the page.')
+@namespace.param('page_size', 'Number of elements per page.')
+@api.doc(security='apikey')
+class DatasetListPaged(Resource):
+    @api.doc(security='apikey',description='Get all datasets paged')
+    @jwt_required
+    def get(self, page_index, page_size):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else: 
+            ds_no_parent_page, pages = dbm.get_datasets_paged(page_index, page_size)
+            datasets_json = []
+            for dataset in ds_no_parent_page:
+                datasets_json.append(self.__build_dataset_children_tree_dict(dataset))
+
+            # Only add Annotasks without DS for final page
+            if (page_index +1  == pages):
+                annotasks_without_dataset = dbm.get_annotasks_without_dataset()
+                annotasks_without_dataset_json = []
+                for annotask in annotasks_without_dataset:
+                    annotasks_without_dataset_json.append(annotask.to_dict())
+                meta_ds = {
+                    "isMetaDataset": True,
+                    "idx": "-1",
+                    "name": "Annotasks without a Dataset",
+                    "description": "Meta dataset that contains all annotation tasks that are not assigned to a dataset",
+                    "datastoreId": None,
+                    "parentId": None,
+                    "createdAt": "(meta dataset)",
+                    "children": annotasks_without_dataset_json,
+                }
+                datasets_json.append(meta_ds)
+
+            return jsonify({'datasets': datasets_json,
+                    'pages': pages})
+        
+    def __build_dataset_children_tree_dict(self, dataset):
+        dataset.is_reviewable = False
+        children_dicts = []
+
+        for child in dataset.dataset_children:
+            # also check for children of children
+            child_dict = self.__build_dataset_children_tree_dict(child)
+            if child.is_reviewable:
+                dataset.is_reviewable = True
+            children_dicts.append(child_dict)
+
+        # add annotask children (annotasks can't have a child)
+        for annotask in dataset.annotask_children or []:
+            dataset.is_reviewable = True
+            children_dicts.append(annotask.to_dict())
+
+        dataset_dict = dataset.to_dict()
+        dataset_dict['children'] = children_dicts
+
+        return dataset_dict
+
+
 
 @namespace.route("/flat/")
 @namespace.route("/flat")

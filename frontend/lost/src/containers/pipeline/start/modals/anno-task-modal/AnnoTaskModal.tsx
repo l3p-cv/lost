@@ -31,7 +31,7 @@ export const AnnoTaskModal = ({
     const verifyNode = useCallback(() => {
         if (
             !isEmpty(annoTaskNodeData.name.trim()) &&
-            !isEmpty(annoTaskNodeData.instructions.trim()) &&
+            annoTaskNodeData.instructionId !== undefined &&
             !isEmpty(annoTaskNodeData.selectedUserGroup) &&
             !isEmpty(annoTaskNodeData.selectedLabelTree) &&
             annoTaskNodeData.labelTreeGraph.nodes.some(
@@ -47,7 +47,7 @@ export const AnnoTaskModal = ({
             })
         }
     }, [
-        annoTaskNodeData.instructions,
+        annoTaskNodeData.instructionId,
         annoTaskNodeData.labelTreeGraph.nodes,
         annoTaskNodeData.name,
         annoTaskNodeData.selectedLabelTree,

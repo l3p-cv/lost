@@ -4,9 +4,10 @@ import IconButton from '../../../components/IconButton'
 interface NavRibbonProps {
     onNext: () => void
     onBack: () => void
+    nextButtonClassName?: string
 }
 
-export const NavRibbon = ({ onNext, onBack }: NavRibbonProps) => {
+export const NavRibbon = ({ onNext, onBack, nextButtonClassName }: NavRibbonProps) => {
     return (
         <div
             style={{
@@ -31,6 +32,7 @@ export const NavRibbon = ({ onNext, onBack }: NavRibbonProps) => {
                     onClick={onNext}
                     isTextLeft={true}
                     style={{ marginBottom: 20 }}
+                    className={nextButtonClassName}
                 />
             </div>
         </div>

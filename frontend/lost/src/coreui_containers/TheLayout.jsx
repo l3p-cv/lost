@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom';
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 import { useEffect, useRef, useState } from 'react'
@@ -9,8 +10,10 @@ import TheContent from './TheContent'
 import TheFooter from './TheFooter'
 import TheHeader from './TheHeader'
 import TheSidebar from './TheSidebar'
+import JoyrideTour from '../components/JoyrideTour/JoyrideTour'; 
 
 const TheLayout = () => {
+    const location = useLocation();
     const role = useRef()
     const navigate = useNavigate()
     const [navItems, setNavItems] = useState([])
@@ -91,6 +94,8 @@ const TheLayout = () => {
         }
     }, [i18n.language])
 
+    const isDashboard = location.pathname === '/dashboard';
+
     return (
         <div>
             <TheSidebar
@@ -98,6 +103,7 @@ const TheLayout = () => {
                 canShowSidebar={canShowSidebar}
                 setCanShowSidebar={setCanShowSidebar}
             />
+            <JoyrideTour/>
             <div className="wrapper d-flex flex-column min-vh-100 bg-light">
                 <TheHeader
                     numNavItems={navItems.length}

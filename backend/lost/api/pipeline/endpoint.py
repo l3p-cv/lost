@@ -13,21 +13,20 @@ from lost.logic.pipeline import service as pipeline_service
 from lost.logic.pipeline import template_import
 from lost.logic import template as template_service
 from lost.db.vis_level import VisLevel
-import json 
+import json
 import os
 from io import BytesIO
 import traceback
 from lost.logic.file_access import UserFileAccess
 from lost.logic import sia
 
-namespace = api.namespace('pipeline', description='Pipeline API.')
+namespace = api.namespace("pipeline", description="Pipeline API.")
 
 
-
-@namespace.route('/template/<string:visibility>')
-@api.doc(security='apikey')
+@namespace.route("/template/<string:visibility>")
+@api.doc(security="apikey")
 class TemplateList(Resource):
-    @api.doc(security='apikey',description='Get list of pipeline Templates for given visibility')
+    @api.doc(security="apikey", description="Get list of pipeline Templates for given visibility")
     @api.marshal_with(templates)
     @jwt_required()
     def get(self, visibility):
@@ -60,11 +59,12 @@ class TemplateList(Resource):
                 dbm.close_session()
                 return re
 
-@namespace.route('/template/<int:template_id>')
-@namespace.param('template_id', 'The id of the template.')
-@api.doc(security='apikey')
+
+@namespace.route("/template/<int:template_id>")
+@namespace.param("template_id", "The id of the template.")
+@api.doc(security="apikey")
 class Template(Resource):
-    @api.doc(security='apikey',description='Get pipeline template for given template ID')
+    @api.doc(security="apikey", description="Get pipeline template for given template ID")
     @api.marshal_with(template, skip_none=True)
     @jwt_required()
     def get(self, template_id):
@@ -81,12 +81,12 @@ class Template(Resource):
             return re
 
 
-@namespace.route('')
-@api.doc(security='apikey')
+@namespace.route("")
+@api.doc(security="apikey")
 class PipelineList(Resource):
     # marshal caused problems json string was fine, api returned { pipelines: null }.
     # @api.marshal_with(pipelines)
-    @api.doc(security='apikey',description='Get all pipelines')
+    @api.doc(security="apikey", description="Get all pipelines")
     @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
@@ -98,7 +98,7 @@ class PipelineList(Resource):
         else:
             # for group in user.groups:
             #     print("--- printing group of user.groups ---")
-            #     print(group) 
+            #     print(group)
             group_ids = [g.group_id for g in user.groups]
             re = pipeline_service.get_pipelines(dbm, group_ids)
             dbm.close_session()
@@ -107,12 +107,41 @@ class PipelineList(Resource):
             return re
 
 
-@namespace.route('/<int:pipeline_id>')
-@namespace.param('pipeline_id', 'The id of the pipeline.')
-@api.doc(security='apikey')
+@namespace.route("/<int:page_index>/<int:page_size>")
+@namespace.param("page_index", "Zero-based index of the page.")
+@namespace.param("page_size", "Number of elements per page.")
+@api.doc(security="apikey")
+class PipelineListPaged(Resource):
+    # marshal caused problems json string was fine, api returned { pipelines: null }.
+    # @api.marshal_with(pipelines)
+    @api.doc(security="apikey", description="Get all pipelines paged")
+    @jwt_required
+    def get(self, page_index, page_size):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+        else:
+            # for group in user.groups:
+            #     print("--- printing group of user.groups ---")
+            #     print(group)
+            group_ids = [g.group_id for g in user.groups]
+            re, pages = pipeline_service.get_pipelines_paged(dbm, group_ids, page_index, page_size)
+            dbm.close_session()
+            print("PIPE JSON: ", re)
+            # print("--- PipelineList result ---")
+            # print(re)
+            return {"pipelines": re, "pages": pages}
+
+
+@namespace.route("/<int:pipeline_id>")
+@namespace.param("pipeline_id", "The id of the pipeline.")
+@api.doc(security="apikey")
 class Pipeline(Resource):
     # @api.marshal_with(pipeline)
-    @api.doc(security='apikey',description='Get pipeline with given ID')
+    @api.doc(security="apikey", description="Get pipeline with given ID")
     @jwt_required()
     def get(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -125,7 +154,8 @@ class Pipeline(Resource):
             re = pipeline_service.get_running_pipe(dbm, identity, pipeline_id, DATA_URL)
             dbm.close_session()
             return re
-    @api.doc(security='apikey',description='Delete Pipeline with given ID')
+
+    @api.doc(security="apikey", description="Delete Pipeline with given ID")
     @jwt_required()
     def delete(self, pipeline_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -137,12 +167,11 @@ class Pipeline(Resource):
         else:
             tasks.delete_pipe(pipeline_id)
             dbm.close_session()
-            return 'success'
+            return "success"
 
 
-
-@namespace.route('/start')
-@api.doc(security='apikey')
+@namespace.route("/start")
+@api.doc(security="apikey")
 class PipelineStart(Resource):
     # @api.marshal_with(pipeline_start)
     @jwt_required()
@@ -157,6 +186,7 @@ class PipelineStart(Resource):
             data = request.data
             # quick and dirty here, data was binary but should be dictonary without using json.loads locally.
             import json
+
             data = json.loads(data)
             group_id = None
             for user_group in dbm.get_user_groups_by_user_id(identity):
@@ -171,8 +201,8 @@ class PipelineStart(Resource):
                 return "default group for user {} not found.".format(identity), 400
 
 
-@namespace.route('/updateArguments')
-@api.doc(security='apikey')
+@namespace.route("/updateArguments")
+@api.doc(security="apikey")
 class PipelineUpdateArguments(Resource):
     @jwt_required()
     def post(self):
@@ -187,9 +217,10 @@ class PipelineUpdateArguments(Resource):
             dbm.close_session()
             return status
 
-@namespace.route('/pause/<int:pipeline_id>')
-@namespace.param('pipeline_id', 'The id of the pipeline.')
-@api.doc(security='apikey')
+
+@namespace.route("/pause/<int:pipeline_id>")
+@namespace.param("pipeline_id", "The id of the pipeline.")
+@api.doc(security="apikey")
 class PipelinePause(Resource):
     @jwt_required()
     def post(self, pipeline_id):
@@ -204,9 +235,10 @@ class PipelinePause(Resource):
             dbm.close_session()
             return "success"
 
-@namespace.route('/play/<int:pipeline_id>')
-@namespace.param('pipeline_id', 'The id of the pipeline.')
-@api.doc(security='apikey')
+
+@namespace.route("/play/<int:pipeline_id>")
+@namespace.param("pipeline_id", "The id of the pipeline.")
+@api.doc(security="apikey")
 class PipelinePlay(Resource):
     @jwt_required()
     def post(self, pipeline_id):
@@ -221,8 +253,9 @@ class PipelinePlay(Resource):
             dbm.close_session()
             return "success"
 
-@namespace.route('/project/import_zip')
-@api.doc(security='apikey')
+
+@namespace.route("/project/import_zip")
+@api.doc(security="apikey")
 class TemplateImportZip(Resource):
     @jwt_required()
     def post(self):
@@ -235,18 +268,18 @@ class TemplateImportZip(Resource):
         else:
             try:
                 fm = AppFileMan(LOST_CONFIG)
-                uploaded_file = request.files['zip_file']
+                uploaded_file = request.files["zip_file"]
                 upload_path = fm.get_upload_path(identity, uploaded_file.filename)
                 USER_NAMESPACE = False
                 if USER_NAMESPACE:
                     head, tail = os.path.split(upload_path)
-                    upload_path = os.path.join(head, f'{identity}_{tail}')
+                    upload_path = os.path.join(head, f"{identity}_{tail}")
                 uploaded_file.save(upload_path)
 
                 pp_path = fm.get_pipe_project_path()
                 dst_dir = os.path.basename(upload_path)
                 dst_dir = os.path.splitext(dst_dir)[0]
-                e_path = os.path.join(os.path.split(upload_path)[0], 'extract')
+                e_path = os.path.join(os.path.split(upload_path)[0], "extract")
                 extract_path = os.path.join(e_path, dst_dir)
                 dst_path = os.path.join(pp_path, dst_dir)
                 if os.path.exists(dst_path):
@@ -255,8 +288,8 @@ class TemplateImportZip(Resource):
                     template_import.unpack_pipe_project(upload_path, extract_path)
                 except:
                     dbm.close_session()
-                    return 'No valid pipeline found.', 200
-                shutil.copytree(extract_path, dst_path,dirs_exist_ok=True)
+                    return "No valid pipeline found.", 200
+                shutil.copytree(extract_path, dst_path, dirs_exist_ok=True)
                 dbm = access.DBMan(LOST_CONFIG)
                 if not USER_NAMESPACE:
                     importer = template_import.PipeImporter(dst_path, dbm)
@@ -266,7 +299,7 @@ class TemplateImportZip(Resource):
                 fm.fs.rm(upload_path, recursive=True)
                 fm.fs.rm(e_path, recursive=True)
                 dbm.close_session()
-                if error_message != '':
+                if error_message != "":
                     return error_message, 200
                 return "success", 200
             except template_import.JSONDecodeError:
@@ -278,14 +311,15 @@ class TemplateImportZip(Resource):
                 shutil.rmtree(upload_path)
                 raise
 
-@namespace.route('/project/import_git')
-@api.doc(security='apikey')
+
+@namespace.route("/project/import_git")
+@api.doc(security="apikey")
 class TemplateImportGit(Resource):
     @jwt_required()
     def post(self):
-
         def git(*args):
-            return subprocess.check_call(['git'] + list(args))
+            return subprocess.check_call(["git"] + list(args))
+
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -296,16 +330,16 @@ class TemplateImportGit(Resource):
             try:
                 fm = AppFileMan(LOST_CONFIG)
                 data = json.loads(request.data)
-                git_url = data['gitUrl']
-                git_branch = data['gitBranch']
+                git_url = data["gitUrl"]
+                git_branch = data["gitBranch"]
                 git_project = os.path.splitext(os.path.basename(git_url))[0]
                 # raise Exception(git_project)
 
                 upload_path = fm.get_upload_path(identity, git_project)
-                if git_branch == 'main':
-                    git('clone', git_url, upload_path)
+                if git_branch == "main":
+                    git("clone", git_url, upload_path)
                 else:
-                    git('clone', git_url, upload_path, '-b', git_branch)
+                    git("clone", git_url, upload_path, "-b", git_branch)
                 pp_path = fm.get_pipe_project_path()
                 dst_dir = os.path.basename(upload_path)
                 dst_path = os.path.join(pp_path, dst_dir)
@@ -320,9 +354,9 @@ class TemplateImportGit(Resource):
                 error_message = importer.start_import()
                 shutil.rmtree(upload_path)
                 dbm.close_session()
-                if error_message != '':
+                if error_message != "":
                     return error_message, 200
-                else: 
+                else:
                     return "success", 200
             except template_import.JSONDecodeError:
                 dbm.close_session()
@@ -334,9 +368,9 @@ class TemplateImportGit(Resource):
                 raise
 
 
-@namespace.route('/project/export/<string:pipe_project>')
-@namespace.param('pipeline_id', 'The id of the pipeline.')
-@api.doc(security='apikey')
+@namespace.route("/project/export/<string:pipe_project>")
+@namespace.param("pipeline_id", "The id of the pipeline.")
+@api.doc(security="apikey")
 class PipelineTemplateExport(Resource):
     # @api.marshal_with(pipeline)
     @jwt_required()
@@ -352,11 +386,10 @@ class PipelineTemplateExport(Resource):
             # src = fm.get_pipe_project_path(content['namespace'])
             pipe_template = dbm.get_pipe_template_by_pipe_project(pipe_project)[0]
 
-
             f = BytesIO()
             # f = open('/home/lost/app/test.zip', 'wb')
             template_import.pack_pipe_project_to_stream(f, pipe_template.install_path)
-            
+
             f.seek(0)
             resp = make_response(f.read())
             resp.headers["Content-Disposition"] = f"attachment; filename={pipe_project}.zip"
@@ -364,8 +397,9 @@ class PipelineTemplateExport(Resource):
             dbm.close_session()
             return resp
 
-@namespace.route('/project/delete')
-@api.doc(security='apikey')
+
+@namespace.route("/project/delete")
+@api.doc(security="apikey")
 class TemplateDelete(Resource):
     @jwt_required()
     def post(self):
@@ -379,14 +413,16 @@ class TemplateDelete(Resource):
         else:
             data = json.loads(request.data)
             fm = AppFileMan(LOST_CONFIG)
-            pipe_project = data['pipeProject']
+            pipe_project = data["pipeProject"]
             pipe_template = dbm.get_pipe_template_by_pipe_project(pipe_project)[0]
             importer = template_import.PipeImporter(pipe_template.install_path, dbm)
             importer.remove_pipe_project()
             dbm.close_session()
             return "success", 200
-@namespace.route('/project/<string:visibility>')
-@api.doc(security='apikey')
+
+
+@namespace.route("/project/<string:visibility>")
+@api.doc(security="apikey")
 class ProjectList(Resource):
     @api.marshal_with(templates)
     @jwt_required()
@@ -395,20 +431,21 @@ class ProjectList(Resource):
             pipeProjects = list()
             unique = list()
             pipeProjectCounter = dict()
-            for x in re['templates']:
-                if x['pipeProject'] in pipeProjectCounter:
-                    pipeProjectCounter[x['pipeProject']] += x['pipelineCount']
+            for x in re["templates"]:
+                if x["pipeProject"] in pipeProjectCounter:
+                    pipeProjectCounter[x["pipeProject"]] += x["pipelineCount"]
                 else:
-                    pipeProjectCounter[x['pipeProject']] = x['pipelineCount']
-                if x['pipeProject'] not in pipeProjects:
+                    pipeProjectCounter[x["pipeProject"]] = x["pipelineCount"]
+                if x["pipeProject"] not in pipeProjects:
                     unique.append(x)
-                    pipeProjects.append(x['pipeProject'])
-            
+                    pipeProjects.append(x["pipeProject"])
+
             for projectName in pipeProjects:
                 for un in unique:
-                    if un['pipeProject'] == projectName:
-                        un['pipelineCount'] = pipeProjectCounter[projectName]
+                    if un["pipeProject"] == projectName:
+                        un["pipelineCount"] = pipeProjectCounter[projectName]
             return {"templates": unique}
+
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -437,9 +474,9 @@ class ProjectList(Resource):
         return re
 
 
-@namespace.route('/element/<int:pipeline_element_id>/logs')
-@namespace.param('pipeline_element_id', 'Pipeline Element ID to get Logs for')
-@api.doc(security='apikey')
+@namespace.route("/element/<int:pipeline_element_id>/logs")
+@namespace.param("pipeline_element_id", "Pipeline Element ID to get Logs for")
+@api.doc(security="apikey")
 class Logs(Resource):
     @jwt_required()
     def get(self, pipeline_element_id):
@@ -451,24 +488,23 @@ class Logs(Resource):
             return api.abort(403, "You are not authorized.")
         else:
             user_fs = dbm.get_user_default_fs(user.idx)
-            ufa = UserFileAccess(dbm, user, user_fs)           
+            ufa = UserFileAccess(dbm, user, user_fs)
             resp = make_response(ufa.get_pipe_log_file(pipeline_element_id))
             resp.headers["Content-Disposition"] = "attachment; filename=log.csv"
             resp.headers["Content-Type"] = "text/csv"
             return resp
 
 
-
-@namespace.route('/element/<int:pipeline_element_id>/review')
-@api.doc(security='apikey')
+@namespace.route("/element/<int:pipeline_element_id>/review")
+@api.doc(security="apikey")
 class Review(Resource):
     @jwt_required()
-    @api.doc(security='apikey')
-    @api.param('direction', 'One of "next","prev" or "first"')
-    @api.param('lastImgId', 'ID of the last image')
+    @api.doc(security="apikey")
+    @api.param("direction", 'One of "next","prev" or "first"')
+    @api.param("lastImgId", "ID of the last image")
 
-    #TODO: NEEDS TO BE TRANSFORMED TO GET METHOD
-    def post(self,pipeline_element_id):
+    # TODO: NEEDS TO BE TRANSFORMED TO GET METHOD
+    def post(self, pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
@@ -481,7 +517,7 @@ class Review(Resource):
             re = sia.review(dbm, data, user.idx, DATA_URL)
             dbm.close_session()
             return re
-    
+
     @jwt_required()
     def put(self, pipeline_element_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -498,10 +534,9 @@ class Review(Resource):
             return re
 
 
-
-@namespace.route('/element/<int:pipeline_element_id>/review/options')
-@namespace.param('pipeline_element_id', 'The id of reviewed pipe element.')
-@api.doc(security='apikey')
+@namespace.route("/element/<int:pipeline_element_id>/review/options")
+@namespace.param("pipeline_element_id", "The id of reviewed pipe element.")
+@api.doc(security="apikey")
 class ReviewOptions(Resource):
     @jwt_required()
     def get(self, pipeline_element_id):
@@ -518,11 +553,8 @@ class ReviewOptions(Resource):
             return re
 
 
-
-
-
 # TODO: UNUSED ENDPOINTS CHECK IF THEY ARE NEEDED IF NOT COMPLETELY REMOVE THEM
-# 
+#
 # @namespace.route('/annoexport_parquet/<peid>')
 # @api.doc(security='apikey')
 # class AnnoExportParquet(Resource):

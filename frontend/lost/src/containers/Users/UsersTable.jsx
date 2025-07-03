@@ -11,6 +11,22 @@ import Datatable from '../../components/Datatable'
 import IconButton from '../../components/IconButton'
 import * as Notification from '../../components/Notification'
 import EditUserModal from './EditUserModal'
+import { createColumnHelper } from '@tanstack/react-table'
+import CoreDataTable from '../../components/CoreDataTable'
+import { CBadge, CButton, CTooltip } from '@coreui/react'
+import BaseContainer from '../../components/BaseContainer'
+import { FaFontAwesome } from 'react-icons/fa'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { alertDeletion } from '../pipeline/globalComponents/Sweetalert'
+
+const RenderBadge = ({ key, text, color }) => (
+    <div>
+        <CBadge color={color}>
+            {text}
+        </CBadge>
+    </div>
+)
+
 
 const EMPTY_USER = [
     {
@@ -28,6 +44,7 @@ export const UsersTable = () => {
 
     const { data: usersData, refetch: refetchUsers } = useUsers()
     const { mutate: deleteUser } = useDeleteUser()
+    const columnHelper = createColumnHelper()
 
     useEffect(() => {
         if (copiedObj.error) {
@@ -58,15 +75,18 @@ export const UsersTable = () => {
         setIsUserEditOpenView(true)
     }
 
-    const editClick = ({ row }) => {
+    const editClick = (row) => {
         setIsNewUser(false)
-        setSelectedUser(usersData.users.filter((el) => el.user_name === row.user_name))
+        setSelectedUser(usersData.users.filter((el) => el.user_name === row.original.user_name))
 
         openUserModal()
     }
 
-    const deleteClick = (row) => {
-        deleteUser(row.original.idx)
+    const deleteClick = async (row) => {
+        const response = await alertDeletion("user")
+        if (response.value) {
+            deleteUser(row.original.idx)
+        }
     }
 
     const closeModal = () => {
@@ -76,6 +96,103 @@ export const UsersTable = () => {
     const onClosedModal = () => {
         setIsUserEditOpenView(false)
     }
+
+    const columns = [
+        columnHelper.accessor('user_name', {
+            header: 'Username',
+            cell: (props) => (
+                <>
+                    <b>{props.row.original.user_name}</b>
+                    <div className="small text-muted">
+                        {`ID: ${props.row.original.idx}`}
+                    </div>
+                </>
+            ),
+        }),
+        columnHelper.accessor('roles', {
+            header: 'Roles',
+            cell: (props) => {
+                return props.row.original.roles.map((el) => (
+                    <RenderBadge // TODO: replace with CBadge
+                        key={el.idx}
+                        text={el.name}
+                        color="success"
+                    />
+                ))
+            },
+        }),
+        columnHelper.accessor('groups', {
+            header: 'Groups',
+            cell: (props) => {
+                return props.row.original.groups.map((el) => (
+                    <RenderBadge // TODO: replace with CBadge
+                        key={el.idx}
+                        text={el.name}
+                        color="primary"
+                    />
+                ))
+            },
+        }),
+        columnHelper.accessor('apiToken', {
+            header: 'API Token',
+            cell: (props) => {
+                const visBool = false
+                if (props.row.original.apiToken) {
+                    return (
+                        <CTooltip content="Copy Token to Clipboard" placement="top">
+                            <CButton
+                                color="info"
+                                variant='outline'
+                                onClick={() => {
+                                    copyToClipboard(props.row.original.apiToken)
+                                }}
+                            >
+                                <FontAwesomeIcon icon={faCopy} />
+                            </CButton>
+                        </CTooltip>
+                    )
+                }
+                return null
+            },
+        }),
+        columnHelper.accessor('edit', {
+            header: 'Edit',
+            cell: (props) => {
+                // console.log("Log 1: ", props.row.original.user_name)
+                const user_row = props.row
+                return (
+                    <CTooltip content="Edit User" placement="top">
+                        <CButton
+                            variant='outline'
+                            color="warning"
+                            onClick={() => editClick(user_row)}
+                        >
+                            <FontAwesomeIcon icon={faUserEdit} />
+                        </CButton>
+                    </CTooltip>
+                )
+            },
+        }),
+        columnHelper.accessor('delete', {
+            header: 'Delete',
+            cell: (props) => {
+                return (
+                    <CTooltip content="Delete User" placement="top">
+                        <CButton
+                            variant='outline'
+                            color="danger"
+                            onClick={() => {
+                                deleteClick(props.row)
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faTrash} />
+                        </CButton>
+                    </CTooltip>
+                )
+            },
+        }),
+    ]
+
     return usersData ? (
         <div>
             {isUserEditOpenView && (
@@ -90,95 +207,15 @@ export const UsersTable = () => {
             )}
 
             <IconButton
-                color="primary"
+                color="success"
                 icon={faUserPlus}
                 text="Add User"
                 onClick={createNewUser}
                 style={{ marginBottom: 20 }}
             />
-
-            <Datatable
-                data={usersData.users}
-                columns={[
-                    {
-                        Header: 'Username',
-                        accessor: 'user_name',
-                        Cell: function customCell(row) {
-                            return row.value
-                        },
-                    },
-                    {
-                        Header: 'API Token',
-                        accessor: 'apiToken',
-                        Cell: function customCell(row) {
-                            if (row.original.apiToken) {
-                                return (
-                                    <IconButton
-                                        color="primary"
-                                        icon={faCopy}
-                                        onClick={() => {
-                                            copyToClipboard(row.original.apiToken)
-                                        }}
-                                    />
-                                )
-                            }
-                            return null
-                        },
-                    },
-                    {
-                        Header: 'Roles',
-                        accessor: 'roles',
-                        Cell: function customCell(row) {
-                            return row.value.map((el) => (
-                                <Datatable.RenderBadge
-                                    key={el.idx}
-                                    text={el.name}
-                                    color="success"
-                                />
-                            ))
-                        },
-                    },
-                    {
-                        Header: 'Groups',
-                        accessor: 'groups',
-                        Cell: function customCell(row) {
-                            return row.value.map((el) => (
-                                <Datatable.RenderBadge
-                                    key={el.idx}
-                                    text={el.name}
-                                    color="primary"
-                                />
-                            ))
-                        },
-                    },
-                    {
-                        Header: 'Edit',
-                        Cell: function customCell(row) {
-                            return (
-                                <IconButton
-                                    icon={faUserEdit}
-                                    color="warning"
-                                    onClick={() => editClick(row)}
-                                />
-                            )
-                        },
-                    },
-                    {
-                        Header: 'Delete',
-                        Cell: function customCell(row) {
-                            return (
-                                <IconButton
-                                    icon={faTrash}
-                                    color="danger"
-                                    onClick={() => {
-                                        deleteClick(row)
-                                    }}
-                                />
-                            )
-                        },
-                    },
-                ]}
-            />
+            <BaseContainer>
+                <CoreDataTable columns={columns} tableData={usersData.users} />
+            </BaseContainer>
         </div>
     ) : (
         <></>

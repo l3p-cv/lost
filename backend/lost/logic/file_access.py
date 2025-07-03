@@ -257,6 +257,9 @@ class UserFileAccess(object):
         self._user_default_required()
         log_path = self.get_pipe_log_path(pipe_id)
         return self.fm.get_file_stream(log_path)
+    
+    def exists(self, path):
+        return self.fs.exists(path)
 
 class WriteAccessNotPermitted(Exception):
     '''Raise if a user is not permitted to write into filesystem'''

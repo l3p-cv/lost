@@ -44,28 +44,31 @@ const CreateLabelTree = ({ visLevel }) => {
                             placeholder="Tree name"
                             value={createLabelName}
                             onChange={handleCreateLabelName}
+                            className='treeName'
                         />
                         <CFormInput
                             type="text"
                             placeholder="Description"
                             value={createLabelDescription}
                             onChange={handleCreateLabelDescription}
+                            className='treeDesc'
                         />
                         <IconButton
-                            isOutline={false}
-                            color="primary"
+                            isOutline={true}
+                            color="success"
                             onClick={handleCreateSave}
                             disabled={
                                 createLabelName === '' || createLabelDescription === ''
                             }
                             icon={faPlus}
                             text="Add Label Tree"
+                            className='treeAdd'
                         />
                     </CInputGroup>
                 </CCol>
             </CRow>
             <CRow>
-                <CCol className="justify-content-end d-flex">
+                <CCol className="justify-content-start d-flex">
                     <SelectFileButton
                         accept=".csv"
                         onSelect={(file) => {
@@ -73,6 +76,7 @@ const CreateLabelTree = ({ visLevel }) => {
                         }}
                         text="Import Label Tree"
                         className="mb-3"
+                        color='success'
                     />
                 </CCol>
             </CRow>

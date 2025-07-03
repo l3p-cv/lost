@@ -333,6 +333,7 @@ const AddPipelineProject = ({ visLevel, projectNames = [], refetch }) => {
                 text="Import pipeline project"
                 onClick={() => setIsModalOpen(true)}
                 style={{ marginBottom: 20 }}
+                color='success'
             />
         </>
     )

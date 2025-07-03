@@ -42,10 +42,12 @@ export const useGetFullFs = () => {
 }
 
 export const useUploadFiles = () => {
-    const isUploadBreaked = useRef()
-    isUploadBreaked.current = false
+    const isUploadBreaked = useRef(false)
     const [state, setState] = useState({
         idle: true,
+        progress: null,
+        isSuccess: false,
+        error: null,
     })
 
     const breakUpload = () => {
@@ -54,12 +56,19 @@ export const useUploadFiles = () => {
 
     const mutate = useCallback(async (obj) => {
         const formData = new FormData()
-        obj.files.map((file) => {
+        obj.files.forEach((file) => {
             formData.append('file[]', file)
         })
         formData.append('fsId', obj.fsId)
         formData.append('path', obj.path)
-        setState({ progress: 0 })
+
+        setState({
+            idle: false,
+            progress: 0,
+            isSuccess: false,
+            error: null,
+        })
+
         try {
             const cancelTokenSource = axios.CancelToken.source()
             const response = await axios.request({
@@ -71,23 +80,31 @@ export const useUploadFiles = () => {
                     if (isUploadBreaked.current) {
                         cancelTokenSource.cancel()
                     }
-                    setState({
+                    setState((prev) => ({
+                        ...prev,
                         progress: p.loaded / p.total,
-                    })
+                    }))
                 },
             })
-            setState({
+
+            setState((prev) => ({
+                ...prev,
                 isSuccess: response.data === 'success',
-            })
+                idle: true,
+            }))
         } catch (error) {
-            setState({ error })
+            setState({
+                idle: true,
+                progress: null,
+                isSuccess: false,
+                error,
+            })
         }
-        setState({
-            idle: true,
-        })
-    })
+    }, [])
+
     return [state, mutate, breakUpload]
 }
+
 
 export const useDeleteFiles = () => {
     return useMutation(({ fs, files }) =>
@@ -102,3 +119,16 @@ export const useMkDir = () => {
             .then((res) => res.data),
     )
 }
+
+export const checkIfPathExists = async (fs, path) => {
+    try {
+        const res = await axios.post(`${API_URL}/fb/check-path`, {
+            fsId: fs.id,
+            path,
+        });
+        return res.data.exists;
+    } catch (err) {
+        console.error('Path check failed:', err);
+        return false;
+    }
+};
