@@ -26,8 +26,8 @@ def main():
     lostconfig = config.LOSTConfig()
     # Create Tables
     dbm = access.DBMan(lostconfig)
-    perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
     dbm.create_database()
+    perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
     create_roles(dbm)
     user, group = create_first_user(dbm)
     if user and group:
