@@ -1,0 +1,7 @@
+services:
+  backend:
+    image: l3pcv/lost-backend-test:${LOST_VERSION}
+    volumes: !reset []
+
+  db:
+    volumes: !reset []

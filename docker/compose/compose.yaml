@@ -46,6 +46,9 @@ services:
       - traefik.http.routers.backend.entrypoints=web
       - traefik.http.routers.backend.service=backend
       - traefik.http.services.backend.loadbalancer.server.port=5000
+    depends_on:
+      db:
+        condition: service_started
 
   db:
     image: mysql:9.3.0
