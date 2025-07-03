@@ -1,6 +1,6 @@
-image: docker:20.10.24
+image: docker:28.3.0
 services:
-  - docker:20.10.24-dind
+  - docker:28.3.0-dind
 
 stages:
   - build
