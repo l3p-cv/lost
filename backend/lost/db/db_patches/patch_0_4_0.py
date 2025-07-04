@@ -1,8 +1,9 @@
 import traceback
+import os
 from sqlalchemy import text
-from lost.db import access
 from lostconfig import LOSTConfig
-
+from lost.db import access
+from lost.logic.file_man import FileMan 
 
 def create_instruction_table(dbm):
     """Create the 'instruction' table if it doesn't exist."""
@@ -49,6 +50,31 @@ def add_instruction_id_column_if_not_exists(dbm):
     except:
         print("❌ Error adding 'instruction_id' column:\n" + traceback.format_exc())
 
+def create_instruction_media_path(dbm:access.DBMan):
+    try:
+        # check_sql = """
+        #     SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+        #     WHERE table_name = 'filesystem' AND column_name = 'pub_media_path';
+        # """
+        # result = dbm.session.execute(text(check_sql)).fetchone()
+        # if result[0] == 0:
+        #     dbm.session.execute(
+        #         text("""
+        #         ALTER TABLE filesystem
+        #         ADD COLUMN pub_media_path varchar(4096) DEFAULT NULL;
+        #     """)
+        #     )
+        #     print("✅ Added 'pub_media_path' column to 'filesystem'.")
+        # else:
+        #     print("ℹ️ Column 'pub_media_path' already exists. Skipping.")
+        
+        all_fs = dbm.get_fs()
+        for fs in all_fs:
+            if fs.user_default_id is not None:
+                media_path = FileMan(fs_db=fs).get_instruction_media_path()
+                print(f'Create media_path of fs: {fs.name} to {media_path} ')
+    except:
+        print("❌ Error adding 'media_path' column:\n" + traceback.format_exc())
 
 def drop_instruction_column_if_exists(dbm):
     """Drop 'instructions' column from 'anno_task' if it exists."""
@@ -86,6 +112,7 @@ def add_instruction_foreign_key(dbm):
 
 def run_all(dbm):
     print("\n--- Start LOST DB Patch 0.4.0 ---")
+    create_instruction_media_path(dbm)
     create_instruction_table(dbm)
     add_instruction_id_column_if_not_exists(dbm)
     add_instruction_foreign_key(dbm)

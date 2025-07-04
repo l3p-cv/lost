@@ -16,6 +16,7 @@ import ast
 import socket
 # from lost import settings
 from lost.logic.crypt import decrypt_fs_connection
+from lostconfig import LOSTConfig
 
 MEDIA_ROOT_PATH = "media/"
 EXPORT_ROOT_PATH = "ds_export/"
@@ -28,6 +29,7 @@ SIA_HISTORY_BACKUP_PATH = "sia_history/backup/"
 PIPE_LOG_PATH = "logs/pipes/"
 APP_LOG_PATH = "logs/"
 UPLOAD_PATH = "uploads"
+INSTRUCTION_MEDIA_PATH = "instruction_media"
 
 def chonkyfy(fs_list, root, fs):
     files, folder_chain = [], []
@@ -157,6 +159,7 @@ class AppFileMan(object):
 
 class FileMan(object):
     def __init__(self, lostconfig=None, fs_db=None, decrypt=True):
+        self.fs_db = fs_db
         if fs_db is not None:
             if decrypt:
                 fs_connection = decrypt_fs_connection(fs_db)
@@ -183,6 +186,17 @@ class FileMan(object):
             self.root_path = lostconfig.data_path
         else:
             raise Exception('Need either lostconifg or fs_db as argument!')
+
+    def get_instruction_media_path(self):
+        '''Get a public media path e.g. for instruction images'''
+        if self.fs_db is None:
+            raise Exception('fs_db requried to get a public media path')
+        if self.fs_db.user_default_id is None:
+            raise Exception('A public media path ca only be requested for user filesystems')
+        m_path = os.path.join(self.root_path, INSTRUCTION_MEDIA_PATH)
+        if not self.fs.exists(m_path):
+            self.fs.mkdirs(m_path)
+        return m_path
 
     def get_media_path(self):
         m_path = os.path.join(self.root_path, MEDIA_ROOT_PATH)

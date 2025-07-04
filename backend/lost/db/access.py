@@ -889,7 +889,7 @@ class DBMan(object):
         else:
             return self.session.query(model.FileSystem).all()
 
-    def get_fs(self, name=None, group_id=None, fs_id=None):
+    def get_fs(self, name=None, group_id=None, fs_id=None) -> list[model.FileSystem]:
         '''Get filesystem entries from database
 
         Args:
@@ -915,6 +915,15 @@ class DBMan(object):
             return self.session.query(model.FileSystem)\
                 .filter(model.FileSystem.deleted==False).all()
     
+    def get_all_user_default_fs(self) -> list[model.FileSystem]:
+        '''Get all user default filesystems
+
+        Retruns:
+            list of `model.FileSystem`: All user default filesystems
+        '''
+        return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.user_default_id!=None).all()
+
     def get_public_fs(self):
         '''Get all public available filesystem entries
 
