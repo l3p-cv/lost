@@ -58,6 +58,13 @@ class UserFileAccess(object):
         else:
             raise FsAccessNotPermitted()
     
+    def valid_instruction_media_save_path(self, path:str):
+        user_im_path = self.fm.get_instruction_media_path()
+        if not path.startswith(user_im_path):
+            return False
+        else:
+            return True
+
     def load_file(self, path, option='rb'):
         if 'r' in self.get_permission():
             return self.fm.load_file(path, option)

@@ -104,9 +104,10 @@ const EditInstruction = ({ instructionData, onSave, visLevel, onClose }) => {
 
     if (imageExtensions.includes(ext)) {
       try {
-        const groupId = instructionData.group_id || ownUser?.idx;
-        const relativePath = newPath.replace(`${fs.rootPath}/instruction_media/`, '');
-        const encodedPath = encodeURIComponent(`${groupId}/instruction_media/${relativePath}`);
+        // const groupId = instructionData.group_id || ownUser?.idx;
+        // const relativePath = newPath.replace(`${fs.rootPath}/instruction_media/`, '');
+        // const encodedPath = encodeURIComponent(`${groupId}/instruction_media/${relativePath}`);
+        const encodedPath = encodeURIComponent(`${newPath}`);
         try {
           const markdown = await getImageMarkdown(encodedPath);
           setContent(prev => `${prev}\n${markdown}`);
