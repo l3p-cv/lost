@@ -3,8 +3,6 @@ services:
     image: lost-frontend
     build:
       context: ../../frontend
-    volumes:
-      - ../../frontend/:/code/
 
   backend:
     image: lost-backend
