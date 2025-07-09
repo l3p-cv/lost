@@ -36,7 +36,12 @@ const Datasets = () => {
     const [datatableInfo, setDatatableInfo] = useState()
     const [dSData, setDSData] = useState([])
     // TODO: use isError
-    const { data, isError, isLoading, refetch: reloadFlatDatasetListPaged } = datasetApi.useDatasetsPaged(page, pageSize)
+    const {
+        data,
+        isError,
+        isLoading,
+        refetch: reloadFlatDatasetListPaged,
+    } = datasetApi.useDatasetsPaged(page, pageSize)
 
     useEffect(() => {
         if (data && page === lastRequestedPage) {
@@ -55,8 +60,6 @@ const Datasets = () => {
         }
     }, [datatableInfo])
 
-
-
     const openAddDatasetMenu = () => {
         // clear data from previous modal editings
         setEditedDatasetObj({})
@@ -67,11 +70,11 @@ const Datasets = () => {
 
     const openEditDatasetMenu = (datasetRowObj) => {
         // only select necessary properties out of row data
-        const datasetObj = (({ idx, name, description, parent_id, datastore_id }) => ({
+        const datasetObj = (({ idx, name, description, parentId, datastore_id }) => ({
             idx,
             name,
             description,
-            parent_id,
+            parentId,
             datastore_id,
         }))(datasetRowObj)
 
@@ -139,8 +142,8 @@ const Datasets = () => {
                 datasetName="Test"
                 description="Test"
                 annoTask={annotask}
-            // datastoreList={datastores}
-            // datasetList={datasetList}
+                // datastoreList={datastores}
+                // datasetList={datasetList}
             />
             <DatasetEditModal
                 isVisible={isEditModalOpen}
