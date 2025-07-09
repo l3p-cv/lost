@@ -367,7 +367,7 @@ class DatasetReview(Resource):
 @api.doc(security='apikey')
 class DatasetListPaged(Resource):
     @api.doc(security='apikey',description='Get all datasets paged')
-    @jwt_required
+    @jwt_required()
     def get(self, page_index, page_size):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

@@ -48,11 +48,11 @@ class ServeInstructionImage(Resource):
         #     return jsonify({'message': 'File not found'}), 404
 
         # return send_file(full_path)
-    
+
 @namespace.route('/get-image-markdown')
 @api.doc(security='apikey')
 class GetImageMarkdown(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

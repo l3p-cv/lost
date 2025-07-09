@@ -337,8 +337,8 @@ class MkDirs(Resource):
 @namespace.route('/check-path')
 @api.doc(security='apikey')
 class CheckPath(Resource):
-    @jwt_required
-    def post(self):  
+    @jwt_required()
+    def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
