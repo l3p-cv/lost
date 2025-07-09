@@ -76,7 +76,7 @@ const CreateLabelTree = ({ visLevel }) => {
                         }}
                         text="Import Label Tree"
                         className="mb-3"
-                        color='success'
+                        color='primary'
                     />
                 </CCol>
             </CRow>

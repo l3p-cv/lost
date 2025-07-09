@@ -167,7 +167,7 @@ const Datasets = () => {
                     <CCol sm="auto">
                         <IconButton
                             isOutline={true}
-                            color="success"
+                            color="primary"
                             icon={faFolderPlus}
                             text="Add Dataset"
                             onClick={openAddDatasetMenu}

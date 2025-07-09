@@ -207,7 +207,7 @@ export const UsersTable = () => {
             )}
 
             <IconButton
-                color="success"
+                color="primary"
                 icon={faUserPlus}
                 text="Add User"
                 onClick={createNewUser}
