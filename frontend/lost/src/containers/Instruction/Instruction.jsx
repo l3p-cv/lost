@@ -168,7 +168,10 @@ const Instruction = ({ visLevel }) => {
   };
 
   return (
-    <CContainer>
+    <CContainer style={{ marginTop: '15px' }}>
+      <h3 className="card-title mb-3" style={{ textAlign: 'center' }}>
+        Instructions
+      </h3>
       <CRow>
         <CCol sm="auto">
           <IconButton

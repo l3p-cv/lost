@@ -10,8 +10,7 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
-import InstructionDashboard from './containers/Instruction/InstructionsDashboard';
-
+import InstructionDashboard from './containers/Instruction/InstructionsDashboard'
 
 import {
     FaBox,
@@ -76,14 +75,14 @@ const TitleAnnotation = {
 }
 
 const InstructionRoute = {
-    name: 'Instruction',
-    to: '/instruction',
+    name: 'Instructions',
+    to: '/instructions',
     component: InstructionDashboard,
     id: 'nav-instruction',
     icon: <FaFileAlt {...iconProps} />,
 }
 
-const TitleInstruction= {
+const TitleInstruction = {
     title: true,
     name: 'Instruction',
 }
