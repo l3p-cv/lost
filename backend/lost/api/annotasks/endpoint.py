@@ -474,7 +474,7 @@ class DataExportDownload(Resource):
 @namespace.param("annotask_id", "The id of the annotation task.")
 @api.doc(security="apikey")
 class UpdateAnnoTaskInstruction(Resource):
-    @jwt_required
+    @jwt_required()
     @api.doc(security="apikey", description="Get the current instruction of the annotask")
     def get(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)
@@ -500,7 +500,7 @@ class UpdateAnnoTaskInstruction(Resource):
             dbm.close_session()
             return {"instruction_id": None}, 200
 
-    @jwt_required
+    @jwt_required()
     @api.doc(security="apikey", description="Update the instruction of the annotask")
     def patch(self, annotask_id):
         dbm = access.DBMan(LOST_CONFIG)

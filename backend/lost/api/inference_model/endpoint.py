@@ -13,7 +13,7 @@ namespace = api.namespace('models', description='API to manage inference models'
 
 @namespace.route('')
 class InferenceModelList(Resource):
-    # @jwt_required
+    # @jwt_required()
     @validate(response_by_alias=True)
     def get(self) -> InferenceModelListResponse:
         dbm = access.DBMan(LOST_CONFIG)
@@ -35,7 +35,7 @@ class InferenceModelList(Resource):
 
         return InferenceModelListResponse(models=models)
 
-    # @jwt_required
+    # @jwt_required()
     @validate(response_by_alias=True, body=InferenceModelRequest)
     def post(self, body: InferenceModelRequest):
         dbm = access.DBMan(LOST_CONFIG)
@@ -65,7 +65,7 @@ class InferenceModelList(Resource):
 
 @namespace.route('/<int:idx>')
 class InferenceModelResource(Resource):
-    # @jwt_required
+    # @jwt_required()
     @validate(response_by_alias=True)
     def get(self, idx):
         dbm = access.DBMan(LOST_CONFIG)
@@ -85,7 +85,7 @@ class InferenceModelResource(Resource):
         dbm.close_session()
         return model
 
-    # @jwt_required
+    # @jwt_required()
     @validate(response_by_alias=True, body=InferenceModelRequest)
     def put(self, idx, body: InferenceModelRequest):
         dbm = access.DBMan(LOST_CONFIG)
@@ -114,7 +114,7 @@ class InferenceModelResource(Resource):
         dbm.close_session()
         return model, 200
 
-    @jwt_required
+    @jwt_required()
     def delete(self, idx):
         dbm = access.DBMan(LOST_CONFIG)
         dbm.delete_inference_model(idx)

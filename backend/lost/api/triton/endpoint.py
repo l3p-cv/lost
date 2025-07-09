@@ -18,7 +18,7 @@ class TritonModelList(Resource):
     """
     API endpoint to list all models available on the Triton server.
     """
-    # @jwt_required
+    # @jwt_required()
     @validate(response_by_alias=True, query=TritonModelsQuery)
     def get(self, query: TritonModelsQuery) -> TritonModelListResponse:
         """
@@ -34,7 +34,7 @@ class TritonServerLiveness(Resource):
     """
     API endpoint to check the liveness of the Triton server.
     """
-    # @jwt_required
+    # @jwt_required()
     @validate(response_by_alias=True, query=TritonModelsQuery)
     def get(self, query: TritonModelsQuery) -> dict:
         """
@@ -66,7 +66,7 @@ class TritonModelInfer(Resource):
     """
     API endpoint to perform inference using a specific model on the Triton server.
     """
-    @jwt_required
+    @jwt_required()
     @validate(response_by_alias=True, body=TritonInferenceRequest)
     def post(self, body: TritonInferenceRequest):
         """
@@ -85,7 +85,7 @@ class TritonModelInfer(Resource):
         inference_model = dbm.get_inference_model_by_id(body.model_id)
         if inference_model is None:
             return {'message': f'Inference Model with id {body.model_id} not found'}, 404
-        
+
         triton_service = TritonService(inference_model.server_url)
         # try:
             # Perform inference

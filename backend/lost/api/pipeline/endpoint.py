@@ -115,7 +115,7 @@ class PipelineListPaged(Resource):
     # marshal caused problems json string was fine, api returned { pipelines: null }.
     # @api.marshal_with(pipelines)
     @api.doc(security="apikey", description="Get all pipelines paged")
-    @jwt_required
+    @jwt_required()
     def get(self, page_index, page_size):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()

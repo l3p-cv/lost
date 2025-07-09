@@ -11,7 +11,7 @@ namespace = api.namespace('instructions', description='API for managing instruct
 # GET: Fetch 
 @namespace.route('/getInstructions/<string:visibility>')
 class GetInstructions(Resource):
-    @jwt_required
+    @jwt_required()
     def get(self, visibility):
         vis_level = visibility  
          
@@ -51,7 +51,7 @@ class GetInstructions(Resource):
 # POST: Add 
 @namespace.route('/addInstruction')
 class AddInstruction(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         new_instruction = request.get_json()
 
@@ -96,7 +96,7 @@ class AddInstruction(Resource):
 # PUT: Edit
 @namespace.route('/editInstruction')
 class EditInstruction(Resource):
-    @jwt_required
+    @jwt_required()
     def put(self):
 
         dbm = access.DBMan(LOST_CONFIG)
@@ -135,7 +135,7 @@ class EditInstruction(Resource):
 # DELETE:
 @namespace.route('/deleteInstruction/<int:id>')
 class DeleteInstruction(Resource):
-    @jwt_required
+    @jwt_required()
     def delete(self, id):
 
         dbm = access.DBMan(LOST_CONFIG)
