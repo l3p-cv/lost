@@ -57,13 +57,15 @@ const AnnotatorDashboard = () => {
                                                 annoTask={workingOnAnnoTask}
                                             ></WorkingOn>
                                         </CCol>
-                                        <CCol xs="12" md="6" xl="6">
-                                            <AmountPerLabel
-                                                stats={
-                                                    workingOnAnnoTask.statistic.amountPerLabel
-                                                }
-                                            ></AmountPerLabel>
-                                        </CCol>
+                                        {workingOnAnnoTask.statistic.amountPerLabel && 
+                                            <CCol xs="12" md="6" xl="6">
+                                                <AmountPerLabel
+                                                    stats={
+                                                        workingOnAnnoTask.statistic.amountPerLabel
+                                                    }
+                                                />
+                                            </CCol>
+                                        }
                                     </CRow>
                                 </CCardBody>
                             </CCard>
