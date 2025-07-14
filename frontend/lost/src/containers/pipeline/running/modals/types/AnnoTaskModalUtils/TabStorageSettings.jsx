@@ -1,84 +1,66 @@
 import { CCol, CContainer, CRow } from '@coreui/react'
 import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import { Dropdown } from 'semantic-ui-react'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
 import HelpButton from '../../../../../../components/HelpButton'
 import IconButton from '../../../../../../components/IconButton'
 import { showSuccess } from '../../../../../../components/Notification'
 import DatasetEditModal from '../../../../../Datasets/DatasetEditModal'
+import Select from 'react-select'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
+
+const selectFlatDsFn = (data) => {
+    return [
+        {
+            value: '-1',
+            label: 'No Dataset',
+        },
+        ...Object.keys(data).map((key) => ({
+            value: key,
+            label: data[key],
+        })),
+    ]
+}
 
 // const TabStorageSettings = ({ datastoreList }) => {
 const TabStorageSettings = ({ annotaskId }) => {
     const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
-        datasetApi.useFlatDatasets()
+        datasetApi.useFlatDatasets(selectFlatDsFn)
     const { data: storageSettings, refetch: getStorageSettings } =
         annoTaskApi.useGetStorageSettings(annotaskId)
     const { data: updateStorageSettingsResponse, mutate: updateStorageSettings } =
         annoTaskApi.useUpdateStorageSettings()
 
-    // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
-    const [datasetDropdownOptions, setDatasetDropdownOptions] = useState([])
-
-    // const [selectedDatastoreID, setSelectedDatastoreID] = useState("0")
-    const [selectedDatasetID, setSelectedDatasetID] = useState()
+    const [selectedDataset, setSelectedDataset] = useState()
     const [isCreateDatasetModalOpen, setIsCreateDatasetModalOpen] = useState(false)
-
-    // convert the datasource list (id: name) to a list compatible to the Dropdown options
-    // const converDatasourcesToDropdownOptions = (datastores) => {
-    //     const options = []
-    //     Object.keys(datastores).forEach((datasourceID) => {
-    //         options.push({
-    //             key: datasourceID,
-    //             value: datasourceID,
-    //             text: datastores[datasourceID]
-    //         })
-    //     })
-    //     setDatastoreDropdownOptions(options)
-    // }
-
-    const convertDatasetToDropdownOptions = (datasets) => {
-        const options = [
-            {
-                key: '-1',
-                value: '-1',
-                text: 'No Dataset',
-            },
-        ]
-
-        Object.keys(datasets).forEach((datasetId) => {
-            options.push({
-                key: datasetId,
-                value: datasetId,
-                text: datasets[datasetId],
-            })
-        })
-        setDatasetDropdownOptions(options)
-    }
 
     useEffect(() => {
         getStorageSettings()
     }, [])
 
     useEffect(() => {
-        if (storageSettings === undefined || storageSettings === null) return
+        if (
+            storageSettings === undefined ||
+            storageSettings === null ||
+            flatDatasetList.length === 0
+        )
+            return
 
-        let datasetId = '-1'
-        if (storageSettings.datasetId !== null) datasetId = `${storageSettings.datasetId}`
+        // handle datasets with no parent
+        // -1 -> meta dataset
+        const datasetId =
+            storageSettings.datasetId === null || storageSettings.datasetId === undefined
+                ? '-1'
+                : storageSettings.datasetId
 
-        setSelectedDatasetID(datasetId)
-    }, [storageSettings])
-
-    // useEffect(() => {
-    //     converDatasourcesToDropdownOptions(datastoreList)
-    // }, [datastoreList])
-
-    useEffect(() => {
-        convertDatasetToDropdownOptions(flatDatasetList)
-    }, [flatDatasetList])
+        // get the parent dataset with the matching id
+        const newSelectedDataset =
+            flatDatasetList.filter((dataset) => dataset.value === `${datasetId}`)[0] ||
+            flatDatasetList[0]
+        setSelectedDataset(newSelectedDataset)
+    }, [storageSettings, flatDatasetList])
 
     useEffect(() => {
         if (updateStorageSettingsResponse === undefined) return
@@ -88,14 +70,14 @@ const TabStorageSettings = ({ annotaskId }) => {
         }
     }, [updateStorageSettingsResponse])
 
-    const updateSelectedDatasetID = (datasetId) => {
+    const updateSelectedDatasetID = (dataset) => {
         const data = {
             annotaskId,
-            datasetId: datasetId,
+            datasetId: dataset.value,
         }
 
         updateStorageSettings(data)
-        setSelectedDatasetID(datasetId)
+        setSelectedDataset(dataset)
     }
 
     return (
@@ -137,18 +119,18 @@ const TabStorageSettings = ({ annotaskId }) => {
                                 </h4>
                                 <CRow>
                                     <CCol>
-                                        <Dropdown
-                                            placeholder="Select Dataset"
-                                            fluid
-                                            search
-                                            selection
-                                            multiple={false}
-                                            options={datasetDropdownOptions}
-                                            value={selectedDatasetID}
-                                            onChange={(_, data) => {
-                                                updateSelectedDatasetID(data.value)
-                                            }}
-                                        />
+                                        {selectedDataset && flatDatasetList && (
+                                            <Select
+                                                placeholder="Select dataset"
+                                                isSearchable
+                                                options={flatDatasetList}
+                                                defaultValue={selectedDataset}
+                                                onChange={(dataset) => {
+                                                    updateSelectedDatasetID(dataset)
+                                                    setSelectedDataset(dataset)
+                                                }}
+                                            />
+                                        )}
                                     </CCol>
                                 </CRow>
                                 <CRow>
