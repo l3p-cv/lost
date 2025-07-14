@@ -12,9 +12,21 @@ import { WholeDatasetExportModal } from './WholeDatasetExportModal'
 import BaseContainer from '../../components/BaseContainer'
 
 const Datasets = () => {
-    // const { data: datasetList, refetch: reloadDatasetList } = datasetApi.useDatasets()
+    const selectFlatDsFn = (data) => {
+        return [
+            {
+                value: '-1',
+                label: 'No Dataset',
+            },
+            ...Object.keys(data).map((key) => ({
+                value: key,
+                label: data[key],
+            })),
+        ]
+    }
+
     const { data: flatDatasetList, refetch: reloadFlatDatasetList } =
-        datasetApi.useFlatDatasets()
+        datasetApi.useFlatDatasets(selectFlatDsFn)
 
     const { data: datastores } = datasetApi.useDatastoreKeys()
     const { data: annotaskResponse, mutate: loadAnnotask } = annotaskApi.useAnnotask()
@@ -28,19 +40,17 @@ const Datasets = () => {
 
     const [editedDatasetObj, setEditedDatasetObj] = useState()
 
-    // new stuff
-    const [pageSize, setPageSize] = useState(10)
+    const [pageSize, setPageSize] = useState(1)
     const [page, setPage] = useState(0)
-    const [pageCount, setPageCount] = useState(0) //(null)
+    const [pageCount, setPageCount] = useState(0)
     const [lastRequestedPage, setLastRequestedPage] = useState(0)
     const [datatableInfo, setDatatableInfo] = useState()
     const [dSData, setDSData] = useState([])
-    // TODO: use isError
+
     const {
         data,
-        isError,
         isLoading,
-        refetch: reloadFlatDatasetListPaged,
+        refetch: reloadDatasetsPaged,
     } = datasetApi.useDatasetsPaged(page, pageSize)
 
     useEffect(() => {
@@ -85,10 +95,6 @@ const Datasets = () => {
         setIsEditModalOpen(true)
     }
 
-    // const openAssignAnnotaskMenu = () => {
-    //     console.log("Clicked on assign annotask")
-    // }
-
     const openExportModal = async (idx, isAnnotask, name, description) => {
         // set content to selected dataset
         // @TODO
@@ -130,10 +136,10 @@ const Datasets = () => {
     useEffect(() => {
         // update the list after the data has changed (modal closes on API response)
         if (isEditModalOpen === false) {
-            reloadFlatDatasetListPaged()
             reloadFlatDatasetList()
+            reloadDatasetsPaged()
         }
-    }, [isEditModalOpen, reloadFlatDatasetListPaged, reloadFlatDatasetList])
+    }, [isEditModalOpen, reloadFlatDatasetList])
     return (
         <>
             <DatasetExportModal
@@ -151,8 +157,8 @@ const Datasets = () => {
                 editedDatasetObj={editedDatasetObj}
                 flatDatasetList={flatDatasetList}
                 // datastoreList={datastores} // not used as of now
-                // onDatasetCreated={reloadDatasetList}
-                onDatasetCreated={reloadFlatDatasetListPaged}
+                onDatasetCreated={reloadFlatDatasetList}
+                onDatasetModified={reloadFlatDatasetList}
             />
 
             <WholeDatasetExportModal

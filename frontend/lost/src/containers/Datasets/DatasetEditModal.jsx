@@ -2,10 +2,10 @@ import { CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow } from '@coreu
 import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
 import Swal from 'sweetalert2'
+import Select from 'react-select'
 import * as datasetApi from '../../actions/dataset/dataset_api'
 import IconButton from '../../components/IconButton'
 import { showError, showSuccess } from '../../components/Notification'
-import FilterableDropdown from '../../components/FilterableDropdown'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
@@ -15,6 +15,7 @@ const DatasetEditModal = ({
     editedDatasetObj = undefined,
     flatDatasetList,
     onDatasetCreated,
+    onDatasetModified,
 }) => {
     const { mutate: createDatasetApi, data: createResponse } =
         datasetApi.useCreateDataset()
@@ -27,74 +28,23 @@ const DatasetEditModal = ({
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [parentDataset, setParentDataset] = useState(undefined)
-    const [parentDatasetOptions, setParentDatasetOptions] = useState([])
-    // const [datastoreId, setDatastoreId] = useState("0")
-    // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
-
-    // convert the datasource list (id: name) to a list compatible to the Dropdown options
-    // const converDatastoreToDropdownOptions = (datastores) => {
-    //     const options = []
-    //     Object.keys(datastores).forEach((datasourceID) => {
-    //         options.push({
-    //             key: datasourceID,
-    //             value: datasourceID,
-    //             text: datastores[datasourceID]
-    //         })
-    //     })
-    //     setDatastoreDropdownOptions(options)
-    // }
-
-    // useEffect(() => {
-    //     converDatastoreToDropdownOptions(datastoreList)
-    // }, [datastoreList])
-
-    const convertDatasetListToDropdownOptions = (datasetList) => {
-        // default entry in case dataset shouldn't have a parent
-        const options = [
-            {
-                key: -1,
-                value: -1,
-                text: 'No parent Dataset',
-            },
-        ]
-
-        Object.keys(datasetList).forEach((datasetId) => {
-            options.push({
-                key: datasetId,
-                value: datasetId,
-                text: datasetList[datasetId],
-            })
-        })
-        setParentDatasetOptions(options)
-    }
-
-    useEffect(() => {
-        convertDatasetListToDropdownOptions(flatDatasetList)
-    }, [flatDatasetList])
 
     useEffect(() => {
         // only continue if data available
-        if (editedDatasetObj === undefined || parentDatasetOptions === undefined) return
+        if (editedDatasetObj === undefined || flatDatasetList === undefined) return
 
         // set idx to -1 when object is empty => creation mode
         setIdx(editedDatasetObj.idx === undefined ? -1 : editedDatasetObj.idx)
         setName(editedDatasetObj.name)
         setDescription(editedDatasetObj.description)
 
-        // handle datasets with no parent
-        // -1 -> meta dataset
-        const parentId =
-            editedDatasetObj.parentId === null || editedDatasetObj.parentId === undefined
-                ? -1
-                : editedDatasetObj.parentId
+        const parentDataset =
+            flatDatasetList.filter(
+                (ds) => ds.value == `${editedDatasetObj.parentId}`,
+            )[0] || flatDatasetList[0]
 
-        // get the parent dataset with the matching id
-        const newParentDataset = parentDatasetOptions.filter(
-            (dataset) => dataset.value == parentId,
-        )[0]
-
-        setParentDataset(newParentDataset)
-    }, [editedDatasetObj, parentDatasetOptions])
+        setParentDataset(parentDataset)
+    }, [editedDatasetObj])
 
     const showApiResponse = (
         apiResponse,
@@ -130,7 +80,9 @@ const DatasetEditModal = ({
     }, [createResponse])
 
     useEffect(() => {
-        showApiResponse(updateResponse, 'updated', 'updating')
+        showApiResponse(updateResponse, 'updated', 'updating', (response) => {
+            onDatasetModified(response.datasetId)
+        })
     }, [updateResponse])
 
     useEffect(() => {
@@ -224,10 +176,12 @@ const DatasetEditModal = ({
                 <CRow>
                     <CCol sm="2">Parent Dataset</CCol>
                     <CCol sm="6">
-                        <FilterableDropdown
-                            items={parentDatasetOptions}
-                            selectedItem={parentDataset}
-                            onChange={(item) => setParentDataset(item)}
+                        <Select
+                            placeholder="Select parent dataset"
+                            isSearchable
+                            options={flatDatasetList}
+                            defaultValue={parentDataset || flatDatasetList[0]}
+                            onChange={setParentDataset}
                         />
                     </CCol>
                 </CRow>
