@@ -9,6 +9,7 @@ import {
     CTable,
     CTableBody,
     CTableHead,
+    CButton,
 } from '@coreui/react'
 import {
     createColumnHelper,
@@ -29,7 +30,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
-import { Label } from 'semantic-ui-react'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 
 const SIAImageSearchModal = ({
@@ -190,9 +190,7 @@ const SIAImageSearchModal = ({
                 : '#95a5a6'
 
             html.push(
-                <Label
-                    as="div"
-                    tag
+                <CButton
                     key={label.id}
                     style={{
                         marginTop: 5,
@@ -206,7 +204,7 @@ const SIAImageSearchModal = ({
                     onClick={() => toggleSelectLabel(label.id)}
                 >
                     {label.name}
-                </Label>,
+                </CButton>,
             )
         })
 
