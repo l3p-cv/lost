@@ -28,10 +28,7 @@ import {
     faSearch,
 } from '@fortawesome/free-solid-svg-icons'
 
-import {
-    faSquare,
-    faSquareCheck,
-} from '@fortawesome/free-regular-svg-icons'
+import { faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons'
 import { Label } from 'semantic-ui-react'
 import * as datasetReviewApi from '../../actions/dataset/dataset_review_api'
 
@@ -43,9 +40,8 @@ const SIAImageSearchModal = ({
     onChooseImage,
     possibleAnnotaskLabels,
 }) => {
-    const { data: possibleDatasetLabels,
-        refetch: reloadPossibleDatasetLabels
-    } = datasetReviewApi.useGetPossibleLabels(id)
+    const { data: possibleDatasetLabels, refetch: reloadPossibleDatasetLabels } =
+        datasetReviewApi.useGetPossibleLabels(id)
     const { data: searchResults, mutate: doSearch } =
         datasetReviewApi.useImageSearch(isAnnotaskReview)
     const [enteredSearch, setEnteredSearch] = useState('')
@@ -54,26 +50,36 @@ const SIAImageSearchModal = ({
     const [selectedFilterLabels, setSelectedFilterLabels] = useState(() => [])
     const [possibleImageLabels, setPossibleImageLabels] = useState([])
 
-    useEffect(()=>{
+    useEffect(() => {
         // dataset review: get a list of all possible labels from all annotasks in the dataset
         // labels for single annotation tasks can be retrieved by the annotation options
-        if(!isAnnotaskReview) reloadPossibleDatasetLabels()
+        if (!isAnnotaskReview) reloadPossibleDatasetLabels()
     }, [])
 
     useEffect(() => {
         // use getPossibleLabels for datasets
-        if(isAnnotaskReview || possibleDatasetLabels === undefined || possibleDatasetLabels.length === 0) return        
+        if (
+            isAnnotaskReview ||
+            possibleDatasetLabels === undefined ||
+            possibleDatasetLabels.length === 0
+        )
+            return
         setPossibleImageLabels(possibleDatasetLabels)
     }, [possibleDatasetLabels])
 
     useEffect(() => {
         // use annotask options -> possible labels for single annotation tasks
-        if(!isAnnotaskReview || possibleAnnotaskLabels === undefined || possibleAnnotaskLabels.length === 0) return
+        if (
+            !isAnnotaskReview ||
+            possibleAnnotaskLabels === undefined ||
+            possibleAnnotaskLabels.length === 0
+        )
+            return
         setPossibleImageLabels(possibleAnnotaskLabels)
     }, [possibleAnnotaskLabels])
 
-    useEffect(()=> {
-        if(possibleImageLabels === undefined || possibleImageLabels.length === 0) return
+    useEffect(() => {
+        if (possibleImageLabels === undefined || possibleImageLabels.length === 0) return
 
         // activate all labels by default
         const allLabelIds = []
@@ -82,7 +88,7 @@ const SIAImageSearchModal = ({
     }, [possibleImageLabels])
 
     useEffect(() => {
-        if(searchResults === undefined) return
+        if (searchResults === undefined) return
         setTableData(searchResults)
     }, [searchResults])
 
@@ -96,16 +102,19 @@ const SIAImageSearchModal = ({
             header: 'Image name',
             cell: (props) => {
                 return (
-                    <div style={{
-                        width: "320px",              // width constraint
-                        whiteSpace: "normal",        // Allow wrapping
-                        wordBreak: "break-all",      // Force long strings to break
-                        overflowWrap: "break-word",  // Backup for compatibility
-                      }}>
-                {/* <div className="w-72 whitespace-normal break-all"> */}
-                    {props.row.original.imageName}
-                </div>)
-            }
+                    <div
+                        style={{
+                            width: '320px', // width constraint
+                            whiteSpace: 'normal', // Allow wrapping
+                            wordBreak: 'break-all', // Force long strings to break
+                            overflowWrap: 'break-word', // Backup for compatibility
+                        }}
+                    >
+                        {/* <div className="w-72 whitespace-normal break-all"> */}
+                        {props.row.original.imageName}
+                    </div>
+                )
+            },
         }),
         columnHelper.accessor('annotationId', {
             header: 'AnnoTask ID',
@@ -160,8 +169,8 @@ const SIAImageSearchModal = ({
 
         if (_selectedFilterLabels.includes(labelId)) {
             // remove item from list
-            const index = _selectedFilterLabels.indexOf(labelId);
-            if (index > -1) _selectedFilterLabels.splice(index, 1);
+            const index = _selectedFilterLabels.indexOf(labelId)
+            if (index > -1) _selectedFilterLabels.splice(index, 1)
         } else {
             _selectedFilterLabels.push(labelId)
         }
@@ -173,11 +182,12 @@ const SIAImageSearchModal = ({
         if (possibleImageLabels === undefined) return ''
         const html = []
         possibleImageLabels.forEach((label) => {
-
             // set a default label color in case the label has no color assigned
-            if(label.color === null) label.color = '#50b897'
+            if (label.color === null) label.color = '#50b897'
 
-            const labelColor = selectedFilterLabels.includes(label.id) ? label.color : '#95a5a6'
+            const labelColor = selectedFilterLabels.includes(label.id)
+                ? label.color
+                : '#95a5a6'
 
             html.push(
                 <Label
@@ -340,9 +350,7 @@ const SIAImageSearchModal = ({
                 <div>&nbsp;</div>
                 <CRow>
                     <CCol sm="2">Filter Labels:</CCol>
-                    <CCol sm="6">
-                        {renderPossibleLabels()}
-                    </CCol>
+                    <CCol sm="6">{renderPossibleLabels()}</CCol>
                     <CCol sm="2">
                         <IconButton
                             isOutline={true}
@@ -351,7 +359,9 @@ const SIAImageSearchModal = ({
                             text="Select all"
                             onClick={() => {
                                 const allLabelIds = []
-                                possibleImageLabels.forEach((label) => allLabelIds.push(label.id))
+                                possibleImageLabels.forEach((label) =>
+                                    allLabelIds.push(label.id),
+                                )
                                 setSelectedFilterLabels(allLabelIds)
                             }}
                             style={{ marginTop: '15px' }}

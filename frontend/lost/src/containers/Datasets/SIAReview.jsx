@@ -64,8 +64,8 @@ const SIAReview = ({ datasetId = null, annotaskId = null }) => {
     // stays empty when reviewing datasets
     const [possibleAnnotaskLabels, setPossibleAnnotaskLabels] = useState([])
 
-    useEffect(()=>{
-        if(!isAnnotaskReview || reviewOptions === undefined) return
+    useEffect(() => {
+        if (!isAnnotaskReview || reviewOptions === undefined) return
         setPossibleAnnotaskLabels(reviewOptions.possibleLabels)
     }, [reviewOptions])
 
