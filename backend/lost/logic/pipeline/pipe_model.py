@@ -1,6 +1,5 @@
 __author__ = 'Jonas Jaeger'
-from lost.db import model, access, state, dtype
-from datetime import datetime
+from lost.db import model, state, dtype
 import igraph
 
 class PipeEngine(object):

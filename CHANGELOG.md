@@ -5,7 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased] - 
+### Breaking Changes
+- The LOST docker container is now split into two containers: lost-frontend and lost-backend
 ### Added
+- Instruction page for annotation tasks
+- Wrote db_patch for instruction data
+- A tourguide for lost onboarding using Joyride
+- Add support for model assisted image annotation, model management UI
 - Your stuff here
 ### Fixed
 - Removed centered spinner of CoreDataTable, when faced with empty data, to not block the rest of the page

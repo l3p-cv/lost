@@ -10,6 +10,7 @@ import DatasetsReviewComponent from './containers/Datasets/ReviewPage'
 import LabelsComponent from './containers/Labels/LabelDashboard'
 import MyProfileComponent from './containers/Profile/Profile'
 import DesignerStatisticsComponent from './containers/Statistics/DesignerStatistics'
+import InstructionDashboard from './containers/Instruction/InstructionsDashboard'
 
 import {
     FaBox,
@@ -21,6 +22,7 @@ import {
     FaTag,
     FaTasks,
     FaTools,
+    FaFileAlt,
 } from 'react-icons/fa'
 import PersonalStatistics from './containers/Statistics/PersonalStatistics'
 import { PipelineView } from './containers/pipeline/running/PipelineView'
@@ -72,10 +74,24 @@ const TitleAnnotation = {
     name: 'Annotation',
 }
 
+const InstructionRoute = {
+    name: 'Instructions',
+    to: '/instructions',
+    component: InstructionDashboard,
+    id: 'nav-instruction',
+    icon: <FaFileAlt {...iconProps} />,
+}
+
+const TitleInstruction = {
+    title: true,
+    name: 'Instruction',
+}
+
 const Labels = {
     name: 'Labels',
     to: '/labels',
     component: LabelsComponent,
+    id: 'nav-labels',
     icon: <FaTag {...iconProps} />,
 }
 
@@ -130,6 +146,7 @@ const RunningPipelinesPage = {
     to: '/pipelines',
     component: RunningPipelines,
     icon: <FaTasks {...iconProps} />,
+    id: 'nav-pipelines',
 }
 
 const PipelinePage = {
@@ -143,6 +160,7 @@ const PipelineTemplatesPage = {
     to: '/pipeline-templates',
     component: PipelineTemplatesTable,
     icon: <FaPlay {...iconProps} />,
+    id: 'nav-start-pipeline',
 }
 
 const TemplatePage = {
@@ -184,6 +202,7 @@ const guiSetup = {
             Labels,
             Datasets,
             DataSources,
+            InstructionRoute,
             DesignerStatistics,
             TitleAnnotation,
             Annotation,
@@ -201,6 +220,7 @@ const guiSetup = {
             Labels,
             Datasets,
             DataSources,
+            InstructionRoute,
             DesignerStatistics,
             TitleAnnotation,
             Annotation,

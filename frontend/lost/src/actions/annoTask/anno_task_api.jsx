@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { API_URL } from '../../lost_settings'
 import { useMutation, useQuery } from 'react-query'
+import { showError, showSuccess } from '../../components/Notification'
 
 export const useUpdateConfig = () => {
     return useMutation((data) =>
@@ -27,6 +28,37 @@ export const useUpdateStorageSettings = () => {
             .then((res) => res),
     )
 }
+
+export const useUpdateInstruction = () => {
+    return useMutation(
+        (data) =>
+            axios
+                .patch(`${API_URL}/annotasks/${data.annotaskId}/instruction`, data)
+                .then((res) => res.data.message),
+        {
+            onSuccess: (message) => {
+                showSuccess('Instruction successfully saved!');
+            },
+            onError: (error) => {
+                showError('An error occurred while saving the instruction.');
+            },
+        }
+    );
+};
+
+export const useGetCurrentInstruction = (annotaskId) => {
+    return useQuery(
+        ['getCurrentInstruction', annotaskId],
+        () =>
+            axios
+                .get(`${API_URL}/annotasks/${annotaskId}/instruction`) 
+                .then((res) => res.data),
+        {
+            enabled: !!annotaskId,
+        }
+    );
+};
+
 
 export const useGenerateExport = () => {
     return useMutation((data) =>

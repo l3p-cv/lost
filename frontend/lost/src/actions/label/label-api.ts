@@ -35,6 +35,7 @@ export const useCreateLabel = () => {
         onSuccess: (response, variables, context) => {
             showSuccess(`Label id ${response.labelId} created successfully`)
             queryClient.invalidateQueries('labelTrees') // to refetch label trees
+            localStorage.setItem('newlyCreatedLabelTreeId', response.labelId.toString())
 
             // if a custom success handler exists, call it
             // @ts-expect-error this ts error can be ignored

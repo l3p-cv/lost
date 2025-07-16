@@ -23,14 +23,14 @@ namespace = api.namespace('fb', description='Lost Filebrowser API')
 @namespace.route('/ls')
 @api.doc(security='apikey')
 class LS(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fs']['id'])
@@ -49,20 +49,20 @@ class LS(Resource):
 @namespace.route('/lsTest')
 @api.doc(security='apikey')
 class LS(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             if data['fs']['fsType'] == 'file':
                 if not user.has_role(roles.ADMINISTRATOR):
                     dbm.close_session()
-                    return "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR), 401
+                    return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ADMINISTRATOR))
             connection_dict = ast.literal_eval(data['fs']['connection'])
             db_fs = model.FileSystem(
                 connection=json.dumps(connection_dict),
@@ -78,14 +78,14 @@ class LS(Resource):
 @namespace.route('/rm')
 @api.doc(security='apikey')
 class RM(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fsId'])
@@ -101,14 +101,14 @@ class RM(Resource):
 @namespace.route('/delete')
 @api.doc(security='apikey')
 class Delete(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             fs_db = dbm.get_fs(fs_id=data['fs']['id'])
@@ -129,14 +129,14 @@ class Delete(Resource):
 @namespace.route('/fslist/<string:visibility>')
 @api.doc(security='apikey')
 class FsList(Resource):
-    @jwt_required 
+    @jwt_required()
     def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             group_id = get_user_default_group(dbm, identity)
             # for user_group in dbm.get_user_groups_by_user_id(identity):
@@ -171,7 +171,7 @@ class FsList(Resource):
 @namespace.route('/fstypes')
 @api.doc(security='apikey')
 class FsTypes(Resource):
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -186,14 +186,14 @@ class FsTypes(Resource):
 @namespace.route('/savefs')
 @api.doc(security='apikey')
 class SaveFs(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             if 'id' in data:
@@ -239,14 +239,14 @@ class SaveFs(Resource):
 @namespace.route('/fullfs')
 @api.doc(security='apikey')
 class FullFs(Resource):
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data)
             for user_group in dbm.get_user_groups_by_user_id(identity):
@@ -273,14 +273,14 @@ class FullFs(Resource):
 @namespace.route('/upload')
 @api.doc(security='apikey')
 class Upload(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = request.form
             fsId = data['fsId'] 
@@ -302,15 +302,15 @@ class Upload(Resource):
 
 @namespace.route('/mkdirs')
 @api.doc(security='apikey')
-class MkDirs(Resource): 
-    @jwt_required 
+class MkDirs(Resource):
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity) 
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.DESIGNER))
         else:
             data = json.loads(request.data) 
             fs_id = data['fsId']
@@ -333,3 +333,31 @@ class MkDirs(Resource):
                 res = ufa.mkdirs(path, exist_ok=False)
             dbm.close_session()
             return 'success', 200 
+
+@namespace.route('/check-path')
+@api.doc(security='apikey')
+class CheckPath(Resource):
+    @jwt_required()
+    def post(self):
+        dbm = access.DBMan(LOST_CONFIG)
+        identity = get_jwt_identity()
+        user = dbm.get_user_by_id(identity)
+
+        if not user.has_role(roles.DESIGNER):
+            dbm.close_session()
+            return "You need to be {} in order to perform this request.".format(roles.DESIGNER), 401
+
+        data = request.get_json()  
+        fs_id = data.get('fsId')  
+        path = data.get('path')  
+
+        fs_db = dbm.get_fs(fs_id=fs_id)
+        ufa = UserFileAccess(dbm, user, fs_db)
+
+        try:
+            exists = ufa.exists(path)
+            dbm.close_session()
+            return {'exists': exists}, 200
+        except Exception as e:
+            dbm.close_session()
+            return {'error': str(e)}, 500

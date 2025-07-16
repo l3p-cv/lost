@@ -1,5 +1,5 @@
 import json
-from flask import request, make_response
+from flask import request
 from flask_restx import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from lost.api.api import api
@@ -66,20 +66,20 @@ if not key in db_key_list:
 class ConfigList(Resource):
     @api.doc(security='apikey',description='Get all config entries ')
     @api.marshal_with(config)
-    @jwt_required
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return api.abort(403, "You are not authorized.")
         else:
             project_config = ProjectConfigMan(dbm)
             return project_config.get_all()
         
     @api.doc(security='apikey',description='Update all passed config entries ')
-    @jwt_required
+    @jwt_required()
     def patch(self):
 
         dbm = access.DBMan(LOST_CONFIG)
@@ -87,7 +87,7 @@ class ConfigList(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ADMINISTRATOR):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return api.abort(403, "You are not authorized.")
         else:
             data = json.loads(request.data)
             project_config = ProjectConfigMan(dbm)

@@ -19,7 +19,7 @@ namespace = api.namespace('label', description='Label API.')
 class LabelTrees(Resource):
     @api.doc(security='apikey',description='Get all Label trees falling into the given visibility level')
     #@api.marshal_with()
-    @jwt_required 
+    @jwt_required()
     def get(self, visibility):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
@@ -28,7 +28,7 @@ class LabelTrees(Resource):
         if visibility == VisLevel().USER:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return api.abort(403, "You are not authorized.")
             else:
                 root_leaves = dbm.get_all_label_trees(group_id=default_group.idx)
                 trees = list()
@@ -39,7 +39,7 @@ class LabelTrees(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return api.abort(403, "You are not authorized.")
             else:
                 root_leaves = dbm.get_all_label_trees(global_only=True)
                 trees = list()
@@ -50,7 +50,7 @@ class LabelTrees(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return api.abort(403, "You are not authorized.")
             else:
                 root_leaves = dbm.get_all_label_trees(group_id=default_group.idx, add_global=True)
                 trees = list()
@@ -59,7 +59,7 @@ class LabelTrees(Resource):
                 dbm.close_session()
                 return trees
         dbm.close_session()
-        return "You are not authorized.", 401 
+        return api.abort(403, "You are not authorized.") 
 
 
 @namespace.route('/<string:visibility>')
@@ -67,7 +67,7 @@ class LabelTrees(Resource):
 class LabelEditNew(Resource):
     @api.doc(security='apikey',description='Update Label')
     @api.expect(update_label_parser)
-    @jwt_required 
+    @jwt_required()
     def patch(self, visibility):
         args = update_label_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
@@ -75,7 +75,7 @@ class LabelEditNew(Resource):
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return api.abort(403, "You are not authorized.")
         else:
             label = dbm.get_label_leaf(int(args.get('id')))
             label.name = args.get('name')
@@ -89,7 +89,7 @@ class LabelEditNew(Resource):
 
     @api.doc(security='apikey',description='Add new Label')
     @api.expect(create_label_parser)
-    @jwt_required 
+    @jwt_required()
     def post(self, visibility):
         args = create_label_parser.parse_args()
         dbm = access.DBMan(LOST_CONFIG)
@@ -99,7 +99,7 @@ class LabelEditNew(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return api.abort(403, "You are not authorized.")
             else:
                 label = model.LabelLeaf(name=args.get('name'),abbreviation=args.get('abbreviation'), \
                 description=args.get('description'),external_id=args.get('external_id'), 
@@ -113,7 +113,7 @@ class LabelEditNew(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return api.abort(403, "You are not authorized.")
             else:
                 label = model.LabelLeaf(name=args.get('name'),abbreviation=args.get('abbreviation'), \
                 description=args.get('description'),external_id=args.get('external_id'), 
@@ -125,7 +125,7 @@ class LabelEditNew(Resource):
                 dbm.close_session()
                 return {"message": "Label added successfully", "labelId": label_id}
         dbm.close_session()
-        return "You are not authorized.", 401 
+        return api.abort(403, "You are not authorized.") 
 
 
 
@@ -135,28 +135,28 @@ class LabelEditNew(Resource):
 class Label(Resource):
     @api.doc(security='apikey',description='Get Label Leaf with given ID')
     @api.marshal_with(label_leaf)
-    @jwt_required 
+    @jwt_required()
     def get(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return api.abort(403, "You are not authorized.")
         else:
             re = dbm.get_label_leaf(label_leaf_id)
             dbm.close_session()
             return re
         
     @api.doc(security='apikey',description='Delete Label with given ID')
-    @jwt_required 
+    @jwt_required()
     def delete(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return api.abort(403, "You are not authorized.")
         else:
             label = dbm.get_label_leaf(label_leaf_id)
             dbm.delete(label)
@@ -168,14 +168,14 @@ class Label(Resource):
 @api.doc(security='apikey')
 class ExportLabelTree(Resource):
     @api.doc(security='apikey',description='Get Export of a label Tree with the given label leaf as root, exported as CSV transmitted as BLOB')
-    @jwt_required 
+    @jwt_required()
     def get(self,label_leaf_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return api.abort(403, "You are not authorized.")
         else:
             label_tree = LabelTree(dbm, root_id=label_leaf_id)
             ldf = label_tree.to_df()
@@ -192,7 +192,7 @@ class ExportLabelTree(Resource):
 @api.doc(security='apikey')
 class ImportLabelTree(Resource):
     @api.doc(security='apikey',description='Import a label Tree with the given label leaf as root, imported from CSV')
-    @jwt_required 
+    @jwt_required()
     def post(self, visibility):
         if 'file' not in request.files:
             return jsonify({"error": "No file part"}), 400
@@ -200,7 +200,7 @@ class ImportLabelTree(Resource):
         file = request.files['file']
         if file.filename == '':
             return jsonify({"error": "No selected file"}), 400
-        
+
         if not file or not file.filename.endswith('.csv'):
             return jsonify({"error": "Invalid file format. Please upload a CSV file."}), 400
 
@@ -211,7 +211,7 @@ class ImportLabelTree(Resource):
         if visibility == VisLevel().ALL:
             if not user.has_role(roles.DESIGNER):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return api.abort(403, "You are not authorized.")
             else:
                 tree = LabelTree(dbm, logger=logging, group_id=default_group.idx)
                 df = pd.read_csv(file)
@@ -226,7 +226,7 @@ class ImportLabelTree(Resource):
         if visibility == VisLevel().GLOBAL:
             if not user.has_role(roles.ADMINISTRATOR):
                 dbm.close_session()
-                return "You are not authorized.", 401
+                return api.abort(403, "You are not authorized.")
             else:
                 tree = LabelTree(dbm, logger=logging)
                 df = pd.read_csv(file)
@@ -238,4 +238,4 @@ class ImportLabelTree(Resource):
                     dbm.close_session()
                     return {"message": "Tree imported successfully"}
         dbm.close_session()
-        return "You are not authorized.", 401 
+        return api.abort(403, "You are not authorized.")

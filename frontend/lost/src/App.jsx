@@ -1,6 +1,6 @@
 import axios from 'axios'
 import i18n from 'i18next'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import React, { Suspense } from 'react'
 import { initReactI18next } from 'react-i18next'
 import { QueryClient, QueryClientProvider } from 'react-query'

@@ -47,7 +47,7 @@ def delete_user(dbm, user):
 
 def get_voc_label_tree(dbm):
     tree = LabelTree(dbm)
-    df = pd.read_csv('/code/src/backend/lost/pyapi/examples/label_trees/pascal_voc2012.csv')
+    df = pd.read_csv('/code/lost/pyapi/examples/label_trees/pascal_voc2012.csv')
     root = tree.import_df(df)
     if root is None:
         name = df[df['parent_leaf_id'].isnull()]['name'].values[0]

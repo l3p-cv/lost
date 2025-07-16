@@ -78,7 +78,7 @@ class LOSTConfig(object):
         self.lost_db_name = ge('LOST_DB_NAME','lost')
         self.lost_db_pwd = ge('LOST_DB_PASSWORD','LostDevLost')
         self.lost_db_port = str(ge('LOST_DB_PORT','3306'))
-        self.lost_db_ip = str(ge('LOST_DB_IP',"db-lost"))
+        self.lost_db_ip = str(ge('LOST_DB_IP',"db"))
         self.db_connector = ge('LOST_DB_CONNECTOR',"mysql+mysqldb")
 
         # Worker management

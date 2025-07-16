@@ -46,12 +46,23 @@ export const TemplateView = () => {
         }
     }
 
+        const handleNextClick = () => {
+            const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true';
+            if (joyrideRunning) {
+                window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                    detail: { step: 'template-next' },
+                }))
+            }
+            toggleSubmitModal()
+        }
+
     return (
         data && (
             <CContainer style={{ marginTop: '15px' }}>
                 <NavRibbon
                     onBack={() => navigate('/pipeline-templates')}
-                    onNext={toggleSubmitModal}
+                    onNext={handleNextClick}
+                    nextButtonClassName="step-template-next"
                 ></NavRibbon>
                 <BaseContainer>
                     <CAlert color="secondary" dismissible>

@@ -58,6 +58,13 @@ class UserFileAccess(object):
         else:
             raise FsAccessNotPermitted()
     
+    def valid_instruction_media_save_path(self, path:str):
+        user_im_path = self.fm.get_instruction_media_path()
+        if not path.startswith(user_im_path):
+            return False
+        else:
+            return True
+
     def load_file(self, path, option='rb'):
         if 'r' in self.get_permission():
             return self.fm.load_file(path, option)
@@ -257,6 +264,9 @@ class UserFileAccess(object):
         self._user_default_required()
         log_path = self.get_pipe_log_path(pipe_id)
         return self.fm.get_file_stream(log_path)
+    
+    def exists(self, path):
+        return self.fs.exists(path)
 
 class WriteAccessNotPermitted(Exception):
     '''Raise if a user is not permitted to write into filesystem'''

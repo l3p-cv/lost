@@ -1,11 +1,10 @@
 __author__ = 'Jonas Jaeger, Gereon Reus'
 import io
-from flask_user import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, BLOB
 # from sqlalchemy.dialects.mysql import DATETIME
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, TIMESTAMP
 from sqlalchemy.schema import MetaData
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -15,7 +14,7 @@ from lost import settings
 
 import pandas as pd
 
-DB_VERSION = '0.2.0'
+DB_VERSION = '0.3.0'
 DB_VERSION_KEY = 'lost_db_version'
 
 # Set conventions for foreign key name generation
@@ -29,11 +28,8 @@ convention = {
 metadata = MetaData(naming_convention=convention)
 Base = declarative_base(metadata=metadata)
 
-# Define the User data-model.
-# NB: Make sure to add flask_user UserMixin !!!
 
-
-class User(Base, UserMixin):
+class User(Base):
     __tablename__ = 'user'
 
     idx = Column(Integer, primary_key=True)
@@ -959,7 +955,7 @@ class AnnoTask(Base):
         dtype (enum): See :class:`data_model.dtype.AnnoTask`
         pipe_element_id (int): ID of related pipeline element.
         timestamp (DateTime): Date and time when this anno task was created.
-        instructions (str): Instructions for the annotator of this AnnoTask.
+        instructionId (int): Instruction Id for the annotator of this AnnoTask.
         name (str): A name for this annotask.
         configuration (str): Configuration of this annotask.
         dataset_id (int): Foreign key to the dataset the annotask belongs to
@@ -981,7 +977,7 @@ class AnnoTask(Base):
     dtype = Column(Integer)
     pipe_element_id = Column(Integer, ForeignKey('pipe_element.idx'))
     timestamp = Column(DateTime())
-    instructions = Column(Text)
+    instruction_id = Column(Integer, ForeignKey('instruction.id'), nullable=True) 
     configuration = Column(Text)
     last_activity = Column(DateTime())
     last_annotator_id = Column(Integer, ForeignKey('user.idx'))
@@ -998,7 +994,7 @@ class AnnoTask(Base):
 
     def __init__(self, idx=None, manager_id=None, group_id=None, state=None,
                  progress=None, dtype=None, pipe_element_id=None,
-                 timestamp=None, name=None, instructions=None,
+                 timestamp=None, name=None, instruction_id=None,
                  configuration=None, last_activity=None, last_annotator=None, dataset_id=None, datastore_id=None):
         self.idx = idx
         self.manager_id = manager_id
@@ -1009,7 +1005,7 @@ class AnnoTask(Base):
         self.pipe_element_id = pipe_element_id
         self.timestamp = timestamp
         self.name = name
-        self.instructions = instructions
+        self.instruction_id = instruction_id
         self.configuration = configuration
         self.last_activity = last_activity
         self.last_annotator = last_annotator
@@ -1041,6 +1037,7 @@ class AnnoTask(Base):
             "created_at": self.timestamp,
             "name": self.name,
             "description": f'Progress: {annotask_progress}%',
+            "instruction_id": self.instruction_id,
             "isAnnotask": True
         }
 
@@ -1255,9 +1252,9 @@ class PipeElement(Base):
     dtype = Column(Integer)
     error_msg = Column(Text)
     error_reported = Column(Boolean)
-    warning_msg = Column(String(4096))
-    log_msg = Column(String(4096))
-    debug_session = Column(String(4096))
+    warning_msg = Column(Text)
+    log_msg = Column(Text)
+    debug_session = Column(Text)
     is_debug_mode = Column(Boolean)
     instance_context = Column(String(4096))
     pe_outs = relationship("PipeElement", secondary="result_link",
@@ -1733,6 +1730,52 @@ class RequiredLabelLeaf(Base):
         self.label_leaf_id = label_leaf_id
         self.max_labels = max_labels
 
+class Instruction(Base):
+    __tablename__ = 'instruction'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    option = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    instruction = Column(Text, nullable=False)
+    is_deleted = Column(Boolean, nullable=False, default=False)
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    parent_instruction_id = Column(Integer, ForeignKey('instruction.id'), nullable=True)
+    group_id = Column(Integer, ForeignKey('group.idx'), nullable=True)
+
+    parent_instruction = relationship('Instruction', remote_side=[id], backref='sub_instructions')
+    group = relationship('Group', backref='instructions', lazy='joined')
+
+    def to_dict(self):
+        '''Transform this object to a dictionary.
+
+        Returns:
+            dict: A dictionary representation of this Instruction instance.
+        '''
+        # Create the base dictionary for the Instruction model
+        result = {
+            'id': self.id,
+            'option': self.option,
+            'description': self.description,
+            'instruction': self.instruction,
+            'is_deleted': self.is_deleted,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'parent_instruction_id': self.parent_instruction_id,
+            'group_id': self.group_id,
+        }
+
+        # Manually serialize the group information
+        if self.group:
+            result['group'] = {
+                'idx': self.group.idx,
+                'name': self.group.name,
+                'manager_id': self.group.manager_id,
+                'is_user_default': self.group.is_user_default
+            }
+
+        return result
 
 class Worker(Base):
     '''Represents a container with related worker that executes scripts.
@@ -1824,7 +1867,7 @@ class FileSystem(Base):
 class Config(Base):
     __tablename__ = "config"
     idx = Column(Integer, primary_key=True)
-    key = Column(String(1024), unique=True)
+    key = Column(String(500), unique=True)
     default_value = Column(Text)
     value = Column(Text)
     config = Column(Text)
@@ -1929,3 +1972,17 @@ class DatasetExport(Base):
     dataset_id = Column(Integer, ForeignKey('dataset.idx'), nullable=False)
     file_path = Column(String(255), nullable=False)
     progress = Column(Integer, nullable=False, default=0)
+
+
+class InferenceModel(Base):
+    __tablename__ = 'inference_model'
+
+    idx = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False)
+    display_name = Column(String(255), unique=True)
+    server_url = Column(String(2048), nullable=False)
+    task_type = Column(Integer)  # renamed from 'type'
+    model_type = Column(String(255), nullable=False)  # newly added
+    description = Column(Text)  # newly added
+    last_updated = Column(TIMESTAMP, server_default=func.current_timestamp(),
+                          onupdate=func.current_timestamp())

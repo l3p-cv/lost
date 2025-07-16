@@ -29,7 +29,8 @@ function CoreDataTable({
     wholeData = true,
     paginationLarge = true,
     expanded={},
-    setExpanded=undefined
+    setExpanded=undefined,
+    getRowClassName = () => ''
 }) {
     const [columnFilters, setColumnFilters] = useState([])
     const [doRerender, setDoRerender] = useState(false)
@@ -116,6 +117,7 @@ function CoreDataTable({
                     {table.getRowModel().rows.map((row) => (
                         <Fragment key={row.id}>
                             <tr key={row.id}
+                                className={getRowClassName(row.original)}
                                 style={{
                                     height: rowHeight,
                                     maxHeight: rowHeight,
@@ -143,6 +145,25 @@ function CoreDataTable({
                     ))}
                 </CTableBody>
             </CTable>
+            {/* HACK: Add feature to show spinner based on request state to get a clean solution!
+            {tableData.length === 0 && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: 10,
+                        width: '100%',
+                        height: '100%',
+                        background: 'rgba(255,255,255,0.6)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <CSpinner />
+                </div>
+            )} */}
             <PaginationWrapper table={table}
                 visible={usePagination}
                 wholeData={wholeData}

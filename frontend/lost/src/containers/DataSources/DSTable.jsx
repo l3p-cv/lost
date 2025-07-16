@@ -294,7 +294,7 @@ export const DSTable = ({ visLevel }) => {
                 <CCol sm="auto">
                     <IconButton
                         isOutline={true}
-                        color="success"
+                        color="primary"
                         icon={faUserPlus}
                         text="Add Datasource"
                         onClick={createNewDS}

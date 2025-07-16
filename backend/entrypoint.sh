@@ -1,12 +1,10 @@
 #!/bin/bash
-/bin/bash -c "source /opt/miniforge/bin/activate lost"
-source /opt/miniforge/bin/activate lost
 
 # init env vars 
 export LOST_HOME="/home/lost"
 
 if [ -z "${LOST_DB_IP}" ]; then
-  export LOST_DB_IP="db-lost"
+  export LOST_DB_IP="db"
 fi
 
 if [ -z "${LOST_DB_PORT}" ]; then
@@ -23,11 +21,8 @@ while [ $n -ne 0 ]; do
     echo "$(date): Waiting for MySQL@$LOST_DB_IP:$LOST_DB_PORT"
 done
 
-python3 /code/src/backend/lost/logic/init/initlost.py
-# cd /code/docs/sphinx &&  make html && cd -
-python3 /code/src/backend/lost/logic/init/initworker.py
-# python3 /code/src/backend/lost/logic/init/init_patchsystem.py
-
+python3 /code/lost/logic/init/initlost.py
+python3 /code/lost/logic/init/initworker.py
 
 # start scheduler.
 daskscheduler="dask-scheduler"
@@ -37,7 +32,8 @@ eval $daskscheduler &
 worker="dask-worker localhost:8786 --name $LOST_WORKER_NAME"
 eval $worker &
 
-cron_jobs="python3 /code/src/backend/lost/logic/jobs/cron_jobs.py"
+# start cronjobs
+cron_jobs="python3 /code/lost/logic/jobs/cron_jobs.py"
 eval $cron_jobs &
 
 # start jupyter-lab instance if configured
@@ -46,6 +42,7 @@ if [ -n "${LOST_JUPYTER_LAB_ACTIVE}" ] && [ ${LOST_JUPYTER_LAB_ACTIVE} = "True" 
   eval $jupyter &
 fi
 
+# @TODO remove?
 if [[ -z "${LOST_GIT_USER}" ]]; then
   echo ""
 else
@@ -56,31 +53,13 @@ else
   chmod 600 /root/.git-credentials
 fi
 
-
-# remove config in case debug mode changed
-if [ -f "/etc/nginx/conf.d/lost.conf" ]; then
-  rm /etc/nginx/conf.d/lost.conf
-fi
-
+# start webserver
 if [ ${LOST_DEBUG_MODE} = "True" ]; then
-  if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
-    cp /etc/nginx/sites-available/dev.conf /etc/nginx/conf.d/default.conf
-  fi
-  # start nginx web server
-  nginx="service nginx start"
-  eval $nginx &
   # start flask dev server
-  endpoint="python3 /code/src/backend/lost/app.py"
-  eval $endpoint 
+  python3 /code/lost/app.py
+  #endpoint="sleep 999999"
 else
-  if [ "$CUSTOM_NGINX_CONF" != "True" ]; then
-	  cp /etc/nginx/sites-available/prod.conf /etc/nginx/conf.d/default.conf
-  fi
-  # start nginx web server
-  nginx="service nginx start"
-  eval $nginx &
-
-  # start uswgi server
-  cd /code/src/backend/lost
+  # start uswgi production server
+  cd /code/lost
   uwsgi --ini wsgi.ini
 fi

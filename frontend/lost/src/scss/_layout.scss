@@ -1,3 +1,6 @@
+@use "sass:map";
+@use "@coreui/coreui/scss/mixins" as *;
+
 .wrapper {
     width: 100%;
     @include ltr-rtl('padding-left', var(--cui-sidebar-occupy-start, 0));

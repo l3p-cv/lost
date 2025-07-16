@@ -22,6 +22,13 @@ export const SelectUser = ({ nodeId, availableGroups }: SelectUserProps) => {
         updateNodeData(nodeId, {
             selectedUserGroup: selectedOption,
         } as AnnoTaskNodeData)
+
+        const joyrideRunning = localStorage.getItem('joyrideRunning') === 'true'
+        if (joyrideRunning) {
+            window.dispatchEvent(
+                new CustomEvent('joyride-next-step', { detail: { step: 'user-selection-done' } })
+            )
+        }
     }
 
     const formatOptionLabel = (option) => (

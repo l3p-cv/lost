@@ -1,8 +1,10 @@
+from typing import Optional
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy import or_, and_
 from sqlalchemy.sql import text
+from lost.api.inference_model.api_definition import InferenceModelRequest
 from lost.db import model, state, dtype
 
 
@@ -649,7 +651,38 @@ class DBMan(object):
             return self.session.query(model.LabelLeaf)\
                 .filter(model.LabelLeaf.is_root == True, \
                         model.LabelLeaf.group_id==None).all()
+        
+    def get_all_instructions(self, group_id=None, global_only=False, add_global=False):
+        '''Get all instructions based on group visibility'''
+        query = self.session.query(model.Instruction).filter(model.Instruction.is_deleted == False)
 
+        if group_id:
+            if add_global:
+                return query.filter(
+                    or_(
+                        model.Instruction.group_id == group_id,
+                        model.Instruction.group_id == None
+                    )
+                ).order_by(
+                    model.Instruction.group_id.asc(), 
+                    model.Instruction.created_at.asc()  
+                ).all()
+            else:
+                return query.filter(model.Instruction.group_id == group_id)\
+                            .order_by(model.Instruction.created_at.asc()).all()
+
+        if global_only:
+            return query.filter(model.Instruction.group_id == None)\
+                        .order_by(model.Instruction.created_at.asc()).all()
+
+        return query.order_by(
+            case(
+                [(model.Instruction.group_id == None, 0)],  
+                else_=1
+            ),
+            model.Instruction.group_id.asc(), 
+            model.Instruction.created_at.asc()
+        ).all()
 
     def get_available_users(self):
         ''' Get all available users
@@ -856,7 +889,7 @@ class DBMan(object):
         else:
             return self.session.query(model.FileSystem).all()
 
-    def get_fs(self, name=None, group_id=None, fs_id=None):
+    def get_fs(self, name=None, group_id=None, fs_id=None) -> list[model.FileSystem]:
         '''Get filesystem entries from database
 
         Args:
@@ -882,6 +915,15 @@ class DBMan(object):
             return self.session.query(model.FileSystem)\
                 .filter(model.FileSystem.deleted==False).all()
     
+    def get_all_user_default_fs(self) -> list[model.FileSystem]:
+        '''Get all user default filesystems
+
+        Retruns:
+            list of `model.FileSystem`: All user default filesystems
+        '''
+        return self.session.query(model.FileSystem)\
+                .filter(model.FileSystem.user_default_id!=None).all()
+
     def get_public_fs(self):
         '''Get all public available filesystem entries
 
@@ -1481,3 +1523,42 @@ class DBMan(object):
 
     def get_dataset_export_by_id(self, idx: int) -> model.DatasetExport:
         return self.session.query(model.DatasetExport).filter_by(idx=idx).first()
+
+    def get_all_inference_models(self) -> list[model.InferenceModel]:
+        return self.session.query(model.InferenceModel).order_by(model.InferenceModel.last_updated.desc()).all()
+    
+    def create_inference_model(self, data: InferenceModelRequest) -> model.InferenceModel:
+        new_entry = model.InferenceModel(
+            name=data.name,
+            display_name=data.display_name,
+            server_url=data.server_url,
+            model_type=data.model_type,
+            task_type=data.task_type,
+            description=data.description,
+        )
+        self.session.add(new_entry)
+        self.session.commit()
+        return new_entry
+    
+    def update_inference_model(self, idx: int, data) -> Optional[model.InferenceModel]:
+        entry = self.session.query(model.InferenceModel).filter_by(idx=idx).first()
+        if not entry:
+            return None
+        entry.name = data.name
+        entry.display_name = data.display_name
+        entry.server_url = data.server_url
+        entry.model_type=data.model_type,
+        entry.task_type=data.task_type,
+        entry.description=data.description,
+        self.session.commit()
+        return entry
+    
+    def delete_inference_model(self, idx: int) -> None:
+        entry = self.session.query(model.InferenceModel).filter_by(idx=idx).first()
+        if entry:
+            self.session.delete(entry)
+            self.session.commit()
+        
+    def get_inference_model_by_id(self, idx: int) -> model.InferenceModel:
+        return self.session.query(model.InferenceModel).filter_by(idx=idx).first()
+    

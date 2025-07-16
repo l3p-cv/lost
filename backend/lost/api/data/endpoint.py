@@ -7,32 +7,31 @@ from lost.db import access, roles
 from lost.logic.file_man import FileMan
 from lost.logic import dask_session
 from lost.logic.file_access import UserFileAccess
-import json
 import lost_ds as lds
 import cv2
-import base64 
+import base64
 from lost.api.data.parsers import get_image_parser
 import logging
 namespace = api.namespace('data', description='Data API.')
 
 # @namespace.route('/<string:path>')
 # @api.doc(security='apikey')
-# class Data(Resource): 
-#     @jwt_required 
+# class Data(Resource):
+#     @jwt_required()
 #     def get(self, path):
 #         dbm = access.DBMan(LOST_CONFIG)
 #         identity = get_jwt_identity()
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.ANNOTATOR):
 #             dbm.close_session()
-#             return "You are not authorized.", 401
+#             return api.abort(403, "You are not authorized.")
 #         else:
 #             raise Exception('data/ -> Not Implemented!')
             # return send_from_directory(os.path.join(LOST_CONFIG.project_path, 'data'), path)
 
 # @namespace.route('/logs/<path:path>')
 # class Logs(Resource): 
-#     @jwt_required 
+#     @jwt_required()
 #     def get(self, path):
 #         print(path)
 #         dbm = access.DBMan(LOST_CONFIG)
@@ -40,7 +39,7 @@ namespace = api.namespace('data', description='Data API.')
 #         user = dbm.get_user_by_id(identity)
 #         if not user.has_role(roles.ANNOTATOR):
 #             dbm.close_session()
-#             return "You are not authorized.", 401
+#             return api.abort(403, "You are not authorized.")
 #         else:
 #             # raise Exception('data/logs/ -> Not Implemented!')
 #             fm = FileMan(LOST_CONFIG)
@@ -58,16 +57,15 @@ namespace = api.namespace('data', description='Data API.')
 @api.doc(security='apikey')
 class DataExport(Resource):
     @api.doc(security='apikey',description="Get the data export for the given export id as Blob ")
-    @jwt_required 
+    @jwt_required()
     def get(self, deid):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.DESIGNER):
             dbm.close_session()
-            return "You are not authorized.", 401
+            return api.abort(403, "You are not authorized.")
         else:
-            # data = json.loads(request.data)
             de = dbm.get_data_export(deid)
             fs_db = de.fs
             fm = FileMan(fs_db=fs_db)
@@ -99,14 +97,14 @@ class GetImage(Resource):
     @api.param('type', 'Size of the Pages for pagination')
     @api.param('drawAnno', 'Which page to return when using pagination')
     @api.param('addContext', 'Name Filter')
-    @jwt_required 
+    @jwt_required()
     def get(self,image_id):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             #flask.current_app.logger.info('mia -> getimage. Received data: {}'.format(data))
@@ -184,9 +182,9 @@ class GetImage(Resource):
 class GetDatastoresByKey(Resource):
     @api.doc(security='apikey',description='Get the Datastores with their names')
 
-    @jwt_required
+    @jwt_required()
     def get(self):
-        return {    
+        return {
             1: "Datastore 1",
             2: "Datastore 2",
             3: "Datastore 3",

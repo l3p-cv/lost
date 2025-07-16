@@ -1,5 +1,5 @@
 import axios from 'axios'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { isEmpty } from 'lodash'
 import { useMutation } from 'react-query'
 import { useNavigate } from 'react-router-dom'
@@ -79,7 +79,6 @@ const refreshToken = async () => {
             axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem(
                 'refreshToken',
             )}`
-            await axios.post(`${API_URL}/user/logout2`)
             localStorage.removeItem('token')
             localStorage.removeItem('refreshToken')
             localStorage.removeItem('view')

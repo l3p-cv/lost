@@ -9,12 +9,7 @@ from lost.db import roles, access
 from lost.settings import LOST_CONFIG
 from lost.logic import mia
 import json
-import cv2
-import base64
-from lost.logic.file_man import FileMan
-from lost.pyapi.utils import anno_helper
 from lost.logic import mia
-from lost.logic import dask_session
 
 namespace = api.namespace('mia', description='MIA Annotation API.')
 
@@ -22,14 +17,14 @@ namespace = api.namespace('mia', description='MIA Annotation API.')
 @api.doc(security='apikey')
 class Update(Resource):
     @api.doc(security='apikey',description='Update MIA Task')
-    @jwt_required 
+    @jwt_required()
     def patch(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             data = json.loads(request.data)
@@ -41,14 +36,14 @@ class Update(Resource):
 class Next(Resource):
     @api.doc(security='apikey',description='Get next MIA anno')
     #@api.marshal_with(mia_anno)
-    @jwt_required 
+    @jwt_required()
     def get(self, max_amount):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)     
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             re = mia.get_next(dbm, identity, max_amount)
             dbm.close_session()
@@ -59,14 +54,14 @@ class Next(Resource):
 class Label(Resource):
     @api.doc(security='apikey',description='Get possible MIA Labels')
     #@api.marshal_with(label_trees)
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             re = mia.get_label_trees(dbm, identity)
             dbm.close_session()
@@ -78,14 +73,14 @@ class Label(Resource):
 @api.doc(security='apikey')
 class Finish(Resource):
     @api.doc(security='apikey',description='Finish MIA Task')
-    @jwt_required 
+    @jwt_required()
     def get(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
 
         else:
             re = mia.finish(dbm, identity)
@@ -96,14 +91,14 @@ class Finish(Resource):
 @api.doc(security='apikey')
 class Special(Resource):
     @api.doc(security='apikey',description='Get special MIA Images')
-    @jwt_required 
+    @jwt_required()
     def post(self):
         dbm = access.DBMan(LOST_CONFIG)
         identity = get_jwt_identity()
         user = dbm.get_user_by_id(identity)     
         if not user.has_role(roles.ANNOTATOR):
             dbm.close_session()
-            return "You need to be {} in order to perform this request.".format(roles.ANNOTATOR), 401
+            return api.abort(403, "You need to be {} in order to perform this request.".format(roles.ANNOTATOR))
         else:
             data = json.loads(request.data)
             re = mia.get_special(dbm, identity, data['miaIds'])

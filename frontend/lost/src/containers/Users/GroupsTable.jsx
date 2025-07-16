@@ -59,7 +59,7 @@ export const Groups = () => {
                         value={newGroup}
                         onChange={(e) => setNewGroup(e.currentTarget.value)}
                     />
-                    <IconButton color="success" icon={faPlus} onClick={addGroup} />
+                    <IconButton color="primary" icon={faPlus} onClick={addGroup} />
                 </InputGroup>
                 {/* TODO: make pagination-buttons smaller */}
                 <BaseContainer>

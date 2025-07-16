@@ -1,13 +1,15 @@
 // If you want to override variables do it here
-@import 'variables';
+@use './variables' as *;
 
 // Import CoreUI styles
-@import '@coreui/coreui/scss/coreui.scss';
+@use "@coreui/coreui/scss/coreui" with(
+    $primary: $primary
+);
 
-@import 'layout';
+@use 'layout';
 
 // Some temp fixes
-@import 'fixes';
+@use 'fixes';
 
 // If you want to add something do it here
-@import 'custom';
+@use 'custom';

@@ -26,8 +26,8 @@ def main():
     lostconfig = config.LOSTConfig()
     # Create Tables
     dbm = access.DBMan(lostconfig)
-    perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
     dbm.create_database()
+    perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
     create_roles(dbm)
     user, group = create_first_user(dbm)
     if user and group:
@@ -176,7 +176,7 @@ def import_ootb_pipelines(dbm, user):
 
     # old way
     # fm = AppFileMan(lostconfig)
-    # src_path = '/code/src/backend/lost/pyapi/examples/pipes/lost'
+    # src_path = '/code/lost/pyapi/examples/pipes/lost'
     # pp_path = fm.get_pipe_project_path()
     # dst_path = os.path.join(pp_path, os.path.basename(src_path))
     # #try:
@@ -187,7 +187,7 @@ def import_ootb_pipelines(dbm, user):
 
 def copy_example_images(dbm, lostconfig, user):
     if lostconfig.add_examples:
-        src_path = '/code/src/backend/lost/pyapi/examples/images'
+        src_path = '/code/lost/pyapi/examples/images'
         admin_fs = dbm.get_user_default_fs(user.idx)
         ufa = UserFileAccess(dbm, user, admin_fs)
         ufa.fm.fs.put(src_path, ufa.get_media_path(), recursive=True)
@@ -196,9 +196,11 @@ def copy_example_images(dbm, lostconfig, user):
 def import_example_label_trees(dbm, lostconfig):
     if lostconfig.add_examples:
         tree = LabelTree(dbm)
-        src_pathes = ['/code/src/backend/lost/pyapi/examples/label_trees/pascal_voc2012.csv',
-                    '/code/src/backend/lost/pyapi/examples/label_trees/dummy_label_tree.csv']
-        
+        src_pathes = [
+            '/code/lost/pyapi/examples/label_trees/pascal_voc2012.csv',
+            '/code/lost/pyapi/examples/label_trees/dummy_label_tree.csv'
+        ]
+
         for src_path in src_pathes:
             df = pd.read_csv(src_path)
             tree.import_df(df)

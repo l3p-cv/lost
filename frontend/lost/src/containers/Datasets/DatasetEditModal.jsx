@@ -1,11 +1,11 @@
 import { CCol, CFormInput, CModal, CModalBody, CModalHeader, CRow } from '@coreui/react'
 import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useState } from 'react'
-import { Dropdown } from 'semantic-ui-react'
 import Swal from 'sweetalert2'
 import * as datasetApi from '../../actions/dataset/dataset_api'
 import IconButton from '../../components/IconButton'
 import { showError, showSuccess } from '../../components/Notification'
+import FilterableDropdown from '../../components/FilterableDropdown'
 
 const NOTIFICATION_TIMEOUT_MS = 5000
 
@@ -26,7 +26,7 @@ const DatasetEditModal = ({
     const [idx, setIdx] = useState(-1)
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-    const [parentDatasetId, setParentDatasetId] = useState('-1')
+    const [parentDataset, setParentDataset] = useState(undefined)
     const [parentDatasetOptions, setParentDatasetOptions] = useState([])
     // const [datastoreId, setDatastoreId] = useState("0")
     // const [datastoreDropdownOptions, setDatastoreDropdownOptions] = useState([])
@@ -52,8 +52,8 @@ const DatasetEditModal = ({
         // default entry in case dataset shouldn't have a parent
         const options = [
             {
-                key: '-1',
-                value: '-1',
+                key: -1,
+                value: -1,
                 text: 'No parent Dataset',
             },
         ]
@@ -74,7 +74,7 @@ const DatasetEditModal = ({
 
     useEffect(() => {
         // only continue if data available
-        if (editedDatasetObj === undefined) return
+        if (editedDatasetObj === undefined || parentDatasetOptions === undefined) return
 
         // set idx to -1 when object is empty => creation mode
         setIdx(editedDatasetObj.idx === undefined ? -1 : editedDatasetObj.idx)
@@ -82,13 +82,19 @@ const DatasetEditModal = ({
         setDescription(editedDatasetObj.description)
 
         // handle datasets with no parent
+        // -1 -> meta dataset
         const parentId =
-            editedDatasetObj.parent_id === null ? -1 : editedDatasetObj.parent_id
+            editedDatasetObj.parentId === null || editedDatasetObj.parentId === undefined
+                ? -1
+                : editedDatasetObj.parentId
 
-        // convert int to string to be recognized by semantic UIs Dropdown
-        setParentDatasetId('' + parentId)
-        // setDatastoreId("" + editedDatasetObj.datastore_id)
-    }, [editedDatasetObj])
+        // get the parent dataset with the matching id
+        const newParentDataset = parentDatasetOptions.filter(
+            (dataset) => dataset.value == parentId,
+        )[0]
+
+        setParentDataset(newParentDataset)
+    }, [editedDatasetObj, parentDatasetOptions])
 
     const showApiResponse = (
         apiResponse,
@@ -136,7 +142,7 @@ const DatasetEditModal = ({
             id: idx,
             name,
             description,
-            parentDatasetId,
+            parentDatasetId: parentDataset.value,
             // datastoreId: parseInt(datastoreId)
         }
 
@@ -147,7 +153,7 @@ const DatasetEditModal = ({
         const dataset = {
             name,
             description,
-            parentDatasetId,
+            parentDatasetId: parentDataset.value,
             // datastoreId: parseInt(datastoreId)
         }
 
@@ -161,7 +167,7 @@ const DatasetEditModal = ({
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
-            cancelButtonColor: 'primary',
+            cancelButtonColor: 'green',
             confirmButtonText: 'Yes, delete it!',
         }).then((result) => {
             if (result.isConfirmed) {
@@ -218,17 +224,10 @@ const DatasetEditModal = ({
                 <CRow>
                     <CCol sm="2">Parent Dataset</CCol>
                     <CCol sm="6">
-                        <Dropdown
-                            placeholder="Select Parent Dataset"
-                            fluid
-                            search
-                            selection
-                            multiple={false}
-                            options={parentDatasetOptions}
-                            value={parentDatasetId}
-                            onChange={(_, data) => {
-                                setParentDatasetId(data.value)
-                            }}
+                        <FilterableDropdown
+                            items={parentDatasetOptions}
+                            selectedItem={parentDataset}
+                            onChange={(item) => setParentDataset(item)}
                         />
                     </CCol>
                 </CRow>

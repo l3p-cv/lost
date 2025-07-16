@@ -3,14 +3,25 @@ import { useEffect, useState } from 'react'
 import {
     faCubes,
     faDatabase,
+    faProjectDiagram,
     faRobot,
     faTags,
     faUsers,
     faWandMagicSparkles,
+    faFileAlt,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import { CCol, CNav, CNavItem, CNavLink, CTabContent, CTabPane, CContainer, CTooltip } from '@coreui/react'
+import {
+    CCol,
+    CContainer,
+    CNav,
+    CNavItem,
+    CNavLink,
+    CTabContent,
+    CTabPane,
+    CTooltip,
+} from '@coreui/react'
 import BaseContainer from '../../components/BaseContainer'
 
 import { useLostConfig } from '../../hooks/useLostConfig'
@@ -19,7 +30,9 @@ import Labels from '../Labels/Labels'
 import PipelineProjects from '../Pipelines/PipelineProjects'
 import UsersAndGroups from '../Users/UsersAndGroups'
 import WorkersTable from '../Workers/WorkersTable'
+import { TabInferenceModels } from './TabInferenceModels'
 import TabJupyterLab from './TabJupyterLab'
+import Instruction from '../Instruction/Instruction';
 
 const AdminArea = () => {
     const [active, setActive] = useState(0)
@@ -33,10 +46,12 @@ const AdminArea = () => {
         if (jupyterLabUrl !== '') {
             return (
                 <CNavItem>
-                    <CNavLink>
-                        <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
-                        {active === 5 && ' JupyterLab'}
-                    </CNavLink>
+                    <CTooltip content="JupyterLab" placement="top">
+                        <CNavLink active={active === 6} onClick={() => setActive(6)}>
+                            <FontAwesomeIcon color="#092F38" size="1x" icon={faRobot} />
+                            {active === 6 && ' JupyterLab'}
+                        </CNavLink>
+                    </CTooltip>
                 </CNavItem>
             )
         }
@@ -44,8 +59,13 @@ const AdminArea = () => {
     const renderJupyterLabTab = () => {
         if (jupyterLabUrl !== '') {
             return (
-                <CTabPane style={{ marginTop: 30 }}>
-                    <TabJupyterLab jupyterLabUrl={jupyterLabUrl}></TabJupyterLab>
+                <CTabPane
+                    role="tabpanel"
+                    aria-labelledby="jupyterlab-tab-pane"
+                    visible={active === 6}
+                    style={{ marginTop: 30 }}
+                >
+                    <TabJupyterLab jupyterLabUrl={jupyterLabUrl} />
                 </CTabPane>
             )
         }
@@ -120,6 +140,33 @@ const AdminArea = () => {
                                     </CNavLink>
                                 </CTooltip>
                             </CNavItem>
+                            <CNavItem>
+                                <CTooltip content="Instructions" placement="top">
+                                    <CNavLink active={active === 5} onClick={() => setActive(5)}>
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faFileAlt}
+                                        />
+                                        {active === 5 && ' Instructions'}
+                                    </CNavLink>
+                                </CTooltip>
+                            </CNavItem>
+                            <CNavItem>
+                                <CTooltip content="Inference Models" placement="top">
+                                    <CNavLink
+                                        active={active === 6}
+                                        onClick={() => setActive(6)}
+                                    >
+                                        <FontAwesomeIcon
+                                            color="#092F38"
+                                            size="1x"
+                                            icon={faProjectDiagram}
+                                        />
+                                        {active === 6 && ' Inference Models'}
+                                    </CNavLink>
+                                </CTooltip>
+                            </CNavItem>
                             {renderJupyterLabNav()}
                         </CNav>
                         <CTabContent className="w-100">
@@ -161,8 +208,25 @@ const AdminArea = () => {
                                 visible={active === 4}
                                 style={{ marginTop: 30 }}
                             >
-                                <WorkersTable></WorkersTable>
                             </CTabPane>
+
+                            <CTabPane
+                                role="tabpanel"
+                                aria-labelledby="instructions-tab-pane"
+                                visible={active === 5}
+                                style={{ marginTop: 30 }}
+                            >
+                                <Instruction visLevel="global"></Instruction>
+                            </CTabPane>
+                            <CTabPane
+                                role="tabpanel"
+                                aria-labelledby="inference-models-tab-pane"
+                                visible={active === 6}
+                                style={{ marginTop: 30 }}
+                            >
+                                <TabInferenceModels />
+                            </CTabPane>
+
                             {renderJupyterLabTab()}
                         </CTabContent>
                     </CNav>

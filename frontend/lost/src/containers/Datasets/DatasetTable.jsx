@@ -22,7 +22,7 @@ const DatasetTable = ({
     page,
     pageCount,
     setLastRequestedPage,
-    setDatatableInfo
+    setDatatableInfo,
 }) => {
     const [expanded, setExpanded] = useState({})
     const navigate = useNavigate()
@@ -100,7 +100,8 @@ const DatasetTable = ({
                                 <div className="small text-muted">
                                     {`ID: ${row.original.idx}`}
                                 </div>
-                            </>)
+                            </>
+                        )
                     }
                     return (
                         <>
@@ -112,16 +113,17 @@ const DatasetTable = ({
                             <div className="small text-muted">
                                 {`ID: ${row.original.idx}`}
                             </div>
-                        </>)
-                }
+                        </>
+                    )
+                },
             }),
             columnHelper.display({
-                id: "annotaskStatus",
+                id: 'annotaskStatus',
                 header: 'Task Status',
                 cell: ({ row }) => {
                     if (row.original.isAnnotask) return row.original.description
-                    return "-"
-                }
+                    return '-'
+                },
             }),
             // columnHelper.accessor('datastoreId', {
             //     header: () => 'Datastore',
@@ -141,7 +143,7 @@ const DatasetTable = ({
                     if (row.original.isMetaDataset) return ''
                     if (row.original.isAnnotask) return row.original.created_at
                     return row.original.createdAt // isDataset
-                }
+                },
             }),
             columnHelper.display({
                 id: 'review',
@@ -166,7 +168,7 @@ const DatasetTable = ({
                                 openReview(rowData.idx, isAnnotask)
                             }}
                             disabled={isDisabled}
-                            toolTip='Review Dataset/Task'
+                            toolTip="Review Dataset/Task"
                         />
                     )
                 },
@@ -202,7 +204,7 @@ const DatasetTable = ({
                                 )
                             }}
                             disabled={isDisabled}
-                            toolTip='Export Dataset'
+                            toolTip="Export Dataset"
                         />
                     )
                 },
@@ -225,7 +227,7 @@ const DatasetTable = ({
                                 onEditButtonClicked(props.row.original)
                             }}
                             disabled={false}
-                            toolTip='Edit Dataset'
+                            toolTip="Edit Dataset"
                         />
                     )
                 },
