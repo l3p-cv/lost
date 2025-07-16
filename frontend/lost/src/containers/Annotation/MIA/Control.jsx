@@ -9,15 +9,16 @@ import {
     DropdownItem,
     DropdownMenu,
     DropdownToggle,
-    InputGroup,
     Row,
 } from 'reactstrap'
-import { Icon, Label } from 'semantic-ui-react'
 import actions from '../../../actions'
 
 import { FaArrowsAltH, FaSearchMinus, FaSearchPlus } from 'react-icons/fa'
 import UndoRedo from '../../../libs/hist'
 import './Tag.scss'
+import { CButton, CButtonGroup } from '@coreui/react'
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import IconButton from '../../../components/IconButton'
 
 const {
     miaZoomIn,
@@ -137,9 +138,7 @@ class Control extends Component {
     renderSelectedLabel() {
         if (this.props.selectedLabel) {
             return (
-                <Label
-                    as="a"
-                    tag
+                <CButton
                     style={{
                         background: this.props.selectedLabel.color,
                         marginLeft: 30,
@@ -148,7 +147,7 @@ class Control extends Component {
                     }}
                 >
                     {this.props.selectedLabel.label}
-                </Label>
+                </CButton>
                 // <div className="mia-tag">
                 //     <div>{this.props.selectedLabel.label}</div>
                 // </div>
@@ -163,60 +162,60 @@ class Control extends Component {
                 }}
             >
                 <Col xs="6" sm="6" lg="6">
-                    <InputGroup style={{ zIndex: 5 }}>
-                        <Autocomplete
-                            items={this.props.labels}
-                            shouldItemRender={(item, value) =>
-                                item.label.toLowerCase().indexOf(value.toLowerCase()) > -1
-                            }
-                            getItemValue={(item) => item.label}
-                            renderInput={(props) => {
-                                return (
-                                    <input
-                                        {...props}
-                                        style={{ width: '300px' }}
-                                        className="form-control"
-                                    />
-                                )
-                            }}
-                            renderItem={(item, highlighted) => (
-                                <div
-                                    className={`item ${
-                                        highlighted ? 'item-highlighted' : ''
-                                    }`}
-                                    key={item.id}
-                                >
-                                    {item.label}
-                                </div>
-                            )}
-                            value={this.state.value}
-                            onChange={(e) => this.setState({ value: e.target.value })}
-                            onSelect={(value, label) => {
-                                this.setState({ value: value })
-                                this.handleAddLabel(label)
-                            }}
-                        />
+                    <Autocomplete
+                        items={this.props.labels}
+                        shouldItemRender={(item, value) =>
+                            item.label.toLowerCase().indexOf(value.toLowerCase()) > -1
+                        }
+                        getItemValue={(item) => item.label}
+                        renderInput={(props) => {
+                            return (
+                                <input
+                                    {...props}
+                                    style={{ width: '300px' }}
+                                    className="form-control"
+                                />
+                            )
+                        }}
+                        renderItem={(item, highlighted) => (
+                            <div
+                                className={`item ${
+                                    highlighted ? 'item-highlighted' : ''
+                                }`}
+                                key={item.id}
+                            >
+                                {item.label}
+                            </div>
+                        )}
+                        value={this.state.value}
+                        onChange={(e) => this.setState({ value: e.target.value })}
+                        onSelect={(value, label) => {
+                            this.setState({ value: value })
+                            this.handleAddLabel(label)
+                        }}
+                    />
 
-                        {this.renderSelectedLabel()}
-                    </InputGroup>
+                    {this.renderSelectedLabel()}
                 </Col>
                 <Col xs="3" sm="3" lg="3">
-                    <ButtonGroup className="float-left">
-                        <Button
-                            disabled={this.hist.isEmpty()}
-                            className="btn-info"
+                    <CButtonGroup>
+                        <IconButton
+                            isOutline={false}
+                            color="primary"
+                            icon={faArrowLeft}
+                            text="Undo"
                             onClick={this.handleUndo}
-                        >
-                            <Icon name="arrow left" />
-                        </Button>
-                        <Button
-                            disabled={this.props.selectedLabel ? false : true}
-                            className="btn-info"
+                        ></IconButton>
+
+                        <IconButton
+                            isOutline={false}
+                            color="primary"
+                            icon={faArrowRight}
+                            isTextLeft={true}
+                            text="Submit"
                             onClick={this.handleSubmit}
-                        >
-                            <Icon name="arrow right" />
-                        </Button>
-                    </ButtonGroup>
+                        ></IconButton>
+                    </CButtonGroup>
                 </Col>
                 <Col xs="3" sm="3" lg="3">
                     <ButtonGroup className="float-right">
