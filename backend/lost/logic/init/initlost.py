@@ -26,8 +26,12 @@ def main():
     lostconfig = config.LOSTConfig()
     # Create Tables
     dbm = access.DBMan(lostconfig)
+    try:
+        perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
+        DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update(perfrom_all_patches)
+    except:
+        print(traceback.format_exc())
     dbm.create_database()
-    perfrom_all_patches = check_if_all_patches_should_be_applied(dbm)
     create_roles(dbm)
     user, group = create_first_user(dbm)
     if user and group:
@@ -36,7 +40,6 @@ def main():
         import_ootb_pipelines(dbm, user)
         copy_example_images(dbm, lostconfig, user)
         import_example_label_trees(dbm, lostconfig)
-    DBPatcher(dbm=dbm, patch_map=patch_dict).check_and_update(perfrom_all_patches)
     release_all_pipe_locks(dbm)
     dbm.close_session()
 
