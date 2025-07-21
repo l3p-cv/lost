@@ -83,6 +83,7 @@ export const RunningPipelines = () => {
             <CButton
                 color={original.progress === 'PAUSED' ? "success" : "warning"}
                 variant='outline'
+                disabled={original.progress === 'ERROR' || original.progress === '100%'}
                 style={{ marginRight: '5px' }}
                 onClick={() =>
                     original.progress === 'PAUSED'
@@ -200,14 +201,15 @@ export const RunningPipelines = () => {
     const renderDatatable = () => {
         if ((isLoading || templateIsLoading) && !pipelineData) return <CenteredSpinner />
         if (isError || templateIsError) return <div className="pipeline-error-message">Error loading data</div>
-        if (pipelineData && templateData) {
-            if (data.pipelines.error || templateData.error) {
+        if (pipelineData) {
+            if ((data && templateData) && (data.pipelines.error || templateData.error)) {
                 return <div className="pipeline-error-message">{data.pipelines.error}</div>
             }
+            // TODO: handle data?.pipelines not loading quick enough
             return (
                 <CoreDataTable
-                columns={defineColumns()}
-                tableData={pipelineData}
+                    columns={defineColumns()}
+                    tableData={pipelineData}
                     onPaginationChange={(table) => {
                         const nextPage = table.getState().pagination.pageIndex
                         setLastRequestedPage(nextPage)
