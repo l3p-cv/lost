@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wrote db_patch for instruction data
 - A tourguide for lost onboarding using Joyride
 - Add support for model assisted image annotation, model management UI
+### Fixed
+- Fixed execution of DBPatcher at wrong place on start up
 
 ## [2.7.0] - 2025-06-12 
 ### Added
