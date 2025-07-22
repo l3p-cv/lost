@@ -20,7 +20,9 @@ const CoreIconButton = ({
     className = '',
     color = 'primary',
     isOutline = true,
-    toolTip = ""
+    toolTip = "",
+    tTipPlacement="top",
+    shape=""
 }) => {
     let iconButtonIcon
     if (isBack) {
@@ -66,7 +68,7 @@ const CoreIconButton = ({
     // Because visible=false does not seem to work...
     if (toolTip != "") {
         return (
-            <CTooltip content={toolTip} placement="top">
+            <CTooltip content={toolTip} placement={tTipPlacement}>
                 <CButton
                     size={size}
                     // type={type}
@@ -76,6 +78,7 @@ const CoreIconButton = ({
                     disabled={disabled || isLoading}
                     onClick={onClick}
                     color={color}
+                    shape={shape}
                 >
                     {renderContent()}
                     {/* { props.text && (
