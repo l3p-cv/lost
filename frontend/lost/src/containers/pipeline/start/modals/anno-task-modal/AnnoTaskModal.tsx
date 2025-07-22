@@ -1,13 +1,13 @@
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { isEmpty } from 'lodash'
 import { useCallback } from 'react'
-import { Modal, ModalBody, ModalHeader } from 'reactstrap'
 import {
     AvailableGroup,
     AvailableLabelTree,
 } from '../../../../../actions/pipeline/model/pipeline-template-response'
 import { AnnoTaskNodeData } from '../../nodes'
 import { AnnoTaskStepper } from './AnnoTaskStepper'
+import { CModal, CModalBody, CModalHeader } from '@coreui/react'
 
 interface AnnoTaskModalProps {
     toggle: () => void
@@ -57,18 +57,17 @@ export const AnnoTaskModal = ({
     ])
 
     return (
-        <>
-            <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode}>
-                <ModalHeader toggle={toggle}>Annotation Task</ModalHeader>
-                <ModalBody>
-                    <AnnoTaskStepper
-                        nodeId={nodeId}
-                        availableGroups={availableGroups}
-                        availableLabelTrees={availableLabelTrees}
-                        toggleModal={toggle}
-                    />
-                </ModalBody>
-            </Modal>
-        </>
+            //TODO: make sure it opens with the first click all the time
+            <CModal size="lg" onShow={verifyNode} visible={isOpen} onClose={verifyNode}>
+                <CModalHeader>Annotation Task</CModalHeader>
+                    <CModalBody>
+                        <AnnoTaskStepper
+                            nodeId={nodeId}
+                            availableGroups={availableGroups}
+                            availableLabelTrees={availableLabelTrees}
+                            toggleModal={toggle}
+                        />
+                </CModalBody>
+            </CModal>
     )
 }

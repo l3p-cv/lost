@@ -1,7 +1,5 @@
 import { useNodesData } from '@xyflow/react'
 import { isEmpty } from 'lodash'
-import { useState } from 'react'
-import { Button, Progress, Tooltip } from 'reactstrap'
 import {
     AvailableGroup,
     AvailableLabelTree,
@@ -17,6 +15,8 @@ import {
     SelectTree,
     SelectUser,
 } from './steps'
+import CoreIconButton from '../../../../../components/CoreIconButton'
+import { CProgress } from '@coreui/react'
 
 const NUM_STEPS = 6
 const ANNO_TASK_INFO_STEP = 1
@@ -55,9 +55,6 @@ export const AnnoTaskStepper = ({
 
     const nodeData = useNodesData(nodeId)
     const annoTaskNodeData = nodeData?.data as AnnoTaskNodeData
-
-    const [tooltipOpen, setTooltipOpen] = useState(false)
-    const toggleTooltip = () => setTooltipOpen((prev) => !prev)
 
     const isStepComplete = () => {
         if (currentStep === ANNO_TASK_INFO_STEP) {
@@ -152,49 +149,40 @@ export const AnnoTaskStepper = ({
             <p className="text-center text-muted">
                 Step {currentStep}/{NUM_STEPS}
             </p>
-            <Progress value={(currentStep / NUM_STEPS) * 100} className="mb-3" />
+            <CProgress value={(currentStep / NUM_STEPS) * 100} className="mb-3" color="info" />
             {renderStep()}
 
             <div className="d-flex justify-content-between mt-3">
-                {canGoToPrevStep && (
-                    <Button color="secondary" onClick={goToPrevStep}>
-                        Previous
-                    </Button>
-                )}
-
+                    <CoreIconButton 
+                        style={{width: "100px"}}
+                        text="Previous" 
+                        color="primary" 
+                        onClick={goToPrevStep}
+                        disabled={!canGoToPrevStep}
+                    />
                 <div className="ms-auto">
                     {canGoToNextStep && (
-                        <>
-                            <Button
+                            <CoreIconButton
+                                className={currentStep === ANNO_TASK_INFO_STEP ? 'step1next' : currentStep === USER_SELECTION_STEP ? 'step2next' : currentStep === LABEL_TREE_SELECTION_STEP ? 'step3next':currentStep === LABEL_SELECTION_STEP ? 'step4next': currentStep === STORAGE_SETTINGS_STEP ? 'step5next':currentStep === CONFIGURATION_STEP ? 'step6next':""}
+                                style={{width: "100px"}}
+                                text="Next" 
                                 color="primary"
                                 onClick={handleNextClick}
-                                id="nextStepButton"
-                                className={currentStep === ANNO_TASK_INFO_STEP ? 'step1next' : currentStep === USER_SELECTION_STEP ? 'step2next' : currentStep === LABEL_TREE_SELECTION_STEP ? 'step3next':currentStep === LABEL_SELECTION_STEP ? 'step4next': currentStep === STORAGE_SETTINGS_STEP ? 'step5next':currentStep === CONFIGURATION_STEP ? 'step6next':""}
-                                onMouseEnter={() => setTooltipOpen(true)}
-                                onMouseLeave={() => setTooltipOpen(false)}
-                            >
-                                Next
-                            </Button>
-                            <Tooltip
-                                isOpen={tooltipOpen && !isStepComplete()}
-                                target="nextStepButton"
-                                toggle={toggleTooltip}
-                                placement="left"
-                            >
-                                Please complete this step before proceeding.
-                            </Tooltip>
-                        </>
+                                disabled={!canGoToNextStep}
+                                toolTip={isStepComplete() ? "" : "Please complete this step before proceeding"}
+                                tTipPlacement='right'
+                            />
                     )}
 
                     {currentStep === NUM_STEPS && (
-                        <Button
-                            color="success"
+                        <CoreIconButton 
+                            text="Done"
+                            style={{width: "100px"}}
+                            color='success'
                             onClick={handleLastClick}
                             disabled={!isStepComplete()}
                             className= 'steplast'
-                        >
-                            Done
-                        </Button>
+                        />
                     )}
                 </div>
             </div>

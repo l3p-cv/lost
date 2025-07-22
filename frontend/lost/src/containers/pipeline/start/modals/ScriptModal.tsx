@@ -1,11 +1,11 @@
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { useCallback } from 'react'
-import { Modal, ModalBody, ModalHeader } from 'reactstrap'
 import { Script } from '../../../../actions/pipeline/model/pipeline-template-response'
 import CollapseCard from '../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../globalComponents/modals/ScriptArgumentsTable'
 import Table from '../../globalComponents/modals/Table'
 import { ScriptNodeData } from '../nodes'
+import { CModal, CModalBody, CModalHeader } from '@coreui/react'
 
 interface ScriptModalProps {
     nodeId: string
@@ -44,10 +44,11 @@ export const ScriptModal = ({ script, nodeId, isOpen, toggle }: ScriptModalProps
     }, [nodeId, scriptNodeData.arguments, updateNodeData])
 
     return (
+        // TODO: make sure it opens with one click...
         <>
-            <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode}>
-                <ModalHeader toggle={toggle}>Script</ModalHeader>
-                <ModalBody>
+            <CModal size="lg" visible={isOpen} onShow={verifyNode} onClose={verifyNode}>
+                <CModalHeader>Script</CModalHeader>
+                <CModalBody>
                     <Table
                         data={[
                             {
@@ -74,8 +75,8 @@ export const ScriptModal = ({ script, nodeId, isOpen, toggle }: ScriptModalProps
                             ]}
                         />
                     </CollapseCard>
-                </ModalBody>
-            </Modal>
+                </CModalBody>
+            </CModal>
         </>
     )
 }

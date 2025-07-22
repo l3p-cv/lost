@@ -8,7 +8,7 @@ import { faDatabase, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     CBadge, CButton,
-    CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, // TODO: use
+    CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle,
     CModal, CModalBody, CModalFooter, CModalHeader
 } from '@coreui/react'
 import LDivider from '../../../../components/LDivider'
@@ -135,8 +135,9 @@ export const DatasourceModal = ({
     }, [datasourceNodeData.selectedPath, nodeId, updateNodeData])
 
     return (
-        <>
-            <CModal size="lg" visible={isOpen} onClose={verifyNode} id="datasource-modal">
+        //TODO: make sure it opens with the first click every time
+        <> 
+            <CModal size="lg" onShow={verifyNode} visible={isOpen} onClose={verifyNode} id="datasource-modal">
                 <CModalHeader>Datasource</CModalHeader>
                 <CModalBody>
                     <div>
