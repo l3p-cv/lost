@@ -40,6 +40,7 @@ export const SelectTree = ({ nodeId, availableLabelTrees }: SelectTreeProps) => 
                 <CCol sm="6">
                     <span className="py-1 fs-6 text-muted fw-bold">
                         Label Tree
+                        &nbsp;
                     </span>
                     <HelpButton
                         id="label-tree-select"

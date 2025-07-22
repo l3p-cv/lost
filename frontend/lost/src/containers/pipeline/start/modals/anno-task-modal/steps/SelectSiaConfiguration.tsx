@@ -104,7 +104,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Bbox
+                                            Bbox &nbsp;
                                             <HelpButton
                                                 id="bbox"
                                                 text={'Allow to add / edit bboxes'}
@@ -131,7 +131,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Polygon
+                                            Polygon &nbsp;
                                             <HelpButton
                                                 id="polygon"
                                                 text={'Allow to add / edit polygons'}
@@ -158,7 +158,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Point
+                                            Point &nbsp;
                                             <HelpButton
                                                 id="point"
                                                 text={'Allow to add / edit points'}
@@ -185,7 +185,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Line
+                                            Line &nbsp;
                                             <HelpButton
                                                 id="line"
                                                 text={'Allow to add / edit lines'}
@@ -218,7 +218,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Draw
+                                            Draw &nbsp;
                                             <HelpButton
                                                 id="draw-anno"
                                                 text={'Allow to add new annotations'}
@@ -245,7 +245,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Edit
+                                            Edit &nbsp;
                                             <HelpButton
                                                 id="edit-anno"
                                                 text={
@@ -277,7 +277,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Label
+                                            Label &nbsp;
                                             <HelpButton
                                                 id="label-anno"
                                                 text={
@@ -307,7 +307,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                     </CCol>
                                     <CCol>
                                         <b>
-                                            Multilabel
+                                            Multilabel &nbsp;
                                             <HelpButton
                                                 id="multilabel-anno"
                                                 text={
@@ -325,7 +325,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                 <CRow style={{ margin: '5px' }}>
                     <CCol sm="12" style={{ marginTop: '5px' }}>
                         <h4>
-                            Minimum Annotation Size{' '}
+                            Minimum Annotation Size &nbsp;
                             <HelpButton
                                 id="min-anno-area"
                                 text={
@@ -366,7 +366,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                 </CCol>
                                 <CCol>
                                     <b>
-                                        Junk
+                                        Junk &nbsp;
                                         <HelpButton
                                             id="junk-image"
                                             text={'Allow to mark whole image as junk'}
@@ -393,7 +393,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                 </CCol>
                                 <CCol>
                                     <b>
-                                        Label
+                                        Label &nbsp;
                                         <HelpButton
                                             id="label-image"
                                             text={'Allow to label the whole image'}
@@ -420,7 +420,7 @@ export const SelectSiaConfiguration = ({ nodeId }: SelectSiaConfigurationProps) 
                                 </CCol>
                                 <CCol>
                                     <b>
-                                        Multilabel
+                                        Multilabel &nbsp;
                                         <HelpButton
                                             id="multilabel-image"
                                             text={

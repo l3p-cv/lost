@@ -64,6 +64,7 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                 <CCol sm="10">
                                     <CFormLabel>
                                         Name
+                                        &nbsp;
                                         <HelpButton
                                             id="anno-start-name"
                                             text="Give your AnnotationTask a name. The name can also be seen by your annotators."
@@ -84,6 +85,7 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
                                     </CInputGroup>
                                     <CFormLabel>
                                         Description
+                                        &nbsp;
                                         <HelpButton
                                             id="anno-start-desc"
                                             text="Give instructions / hints to your annotators so they know what to do."

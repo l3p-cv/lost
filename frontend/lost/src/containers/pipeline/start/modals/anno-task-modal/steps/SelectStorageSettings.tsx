@@ -59,6 +59,7 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
                     <CCol sm="6">
                         <span className="py-1 fs-6 text-muted fw-bold">
                             Dataset
+                            &nbsp;
                         </span>
 
 

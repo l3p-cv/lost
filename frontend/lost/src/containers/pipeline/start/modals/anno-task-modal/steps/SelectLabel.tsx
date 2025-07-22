@@ -3,11 +3,11 @@ import { Edge, Node, ReactFlowProvider, useNodesData, useReactFlow } from '@xyfl
 import { isEmpty } from 'lodash'
 import { useEffect, useState } from 'react'
 import { FaInfoCircle } from 'react-icons/fa'
-import { Card, CardBody } from 'reactstrap'
 import { AvailableLabelTree } from '../../../../../../actions/pipeline/model/pipeline-template-response'
 import { AnnoTaskNodeData } from '../../../nodes'
 import { LabelTreeFlow } from './label-selection-graph/LabelTreeFlow'
 import { convertLabelTreeToReactFlow } from './label-selection-graph/label-tree-util'
+import { CCard, CCardBody } from '@coreui/react'
 
 interface SelectLabelProps {
     availableLabelTrees: AvailableLabelTree[]
@@ -55,8 +55,8 @@ export const SelectLabel = ({ availableLabelTrees, nodeId }: SelectLabelProps) =
         <div  id="select-label-container">
             <ReactFlowProvider>
             <h4 className="mb-3 text-center">Label Selection</h4>
-            <Card>
-                <CardBody>
+            <CCard>
+                <CCardBody>
                     <CAlert color="secondary" dismissible>
                         <div className="d-flex align-items-center">
                             <FaInfoCircle className="me-2" size={20} />
@@ -72,8 +72,8 @@ export const SelectLabel = ({ availableLabelTrees, nodeId }: SelectLabelProps) =
                         initialEdges={edges}
                         onLabelSelect={handleLabelSelect}
                     />
-                </CardBody>
-            </Card>
+                </CCardBody>
+            </CCard>
         </ReactFlowProvider></div>
     )
 }

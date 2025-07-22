@@ -71,6 +71,7 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
                                         }}
                                     >
                                         Show proposed label
+                                        &nbsp;
                                         <HelpButton
                                             id="show-proposed-label"
                                             text={'Show proposed label (if given)'}
@@ -85,6 +86,7 @@ export const SelectMiaConfiguration = ({ nodeId }: SelectMiaConfigurationProps) 
                     <CRow style={{ margin: '5px' }}>
                         <h4>
                             Annotation Type
+                            &nbsp;
                             <HelpButton
                                 id="anno-type"
                                 text={
