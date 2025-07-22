@@ -1,22 +1,14 @@
-import { CAlert, CCol, CRow } from '@coreui/react'
+import { CAlert, CCol, CRow,
+    CModal, CModalBody, CModalFooter, CModalHeader,
+    CForm, CFormInput, CInputGroup, CFormLabel
+ } from '@coreui/react'
 import { faPlay } from '@fortawesome/free-solid-svg-icons'
 import { Node, useNodes } from '@xyflow/react'
 import { useState } from 'react'
 import { FaExclamationTriangle } from 'react-icons/fa'
-import {
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-} from 'reactstrap'
 import { PipelineTemplateResponse } from '../../../../actions/pipeline/model/pipeline-template-response'
 import { getFormattedPipelineRequestElements } from '../../../../actions/pipeline/pipeline-util'
 import { useCreateAndStartPipeline } from '../../../../actions/pipeline/pipeline_api'
-import HelpButton from '../../../../components/HelpButton'
 import IconButton from '../../../../components/IconButton'
 
 interface SubmitPipelineModalProps {
@@ -61,10 +53,10 @@ export const PipelineStartModal = ({
     }
 
     return (
-        <Modal size="md" isOpen={isOpen} toggle={toggle}>
-            <ModalHeader toggle={toggle}>Start Pipeline</ModalHeader>
+        <CModal visible={isOpen}>
+            <CModalHeader>Start Pipeline</CModalHeader>
             {!isPipelineValid && (
-                <ModalBody>
+                <CModalBody>
                     <CAlert color="warning">
                         <div className="d-flex align-items-center">
                             <FaExclamationTriangle className="me-2" size={40} />
@@ -75,78 +67,66 @@ export const PipelineStartModal = ({
                             </p>
                         </div>
                     </CAlert>
-                </ModalBody>
+                </CModalBody>
             )}
 
             {isPipelineValid && (
-                <Form
+                <CForm
                     onSubmit={(e) => {
                         e.preventDefault()
                         handleSubmitPipeline(name, description, nodes, templateData)
                     }}
                 >
-                    <ModalBody>
+                    <CModalBody>
                         <div>
                             <CRow className="justify-content-center">
                                 <CCol sm="10">
-                                    <FormGroup>
-                                        <Label for="name" className="text-start">
-                                            Name
-                                        </Label>
-                                        <HelpButton
-                                            id={'pipeline-start-name'}
-                                            text={
-                                                'Give your pipeline a name so that you can identify it later.'
-                                            }
-                                        />
-                                        <Input
+                                        <CFormLabel>Name</CFormLabel>
+                                        <CInputGroup className="mb-3">
+                                        <CFormInput
                                             required
                                             defaultValue={name}
                                             onChange={(e) => setName(e.target.value)}
                                             type="text"
                                             name="name"
+                                            placeholder='Name your pipeline for identification'
                                             className='start-pipeline-modal'
                                             id="name"
-                                        />
-                                    </FormGroup>
-                                    <FormGroup>
-                                        <Label for="description" className="text-start">
-                                            Description
-                                        </Label>
-                                        <HelpButton
-                                            id={'pipeline-start-desc'}
-                                            text={
-                                                'Give your pipeline a description so that you still know later what you started it for.'
-                                            }
-                                        />
-                                        <Input
+                                        >
+                                        </CFormInput>
+                                        </CInputGroup>
+                                         <CFormLabel>Description</CFormLabel>
+                                        <CInputGroup className="mb-3">
+                                        <CFormInput
                                             defaultValue={description}
                                             onChange={(e) =>
                                                 setDescription(e.target.value)
                                             }
-                                            type="textarea"
+                                            type="text"
                                             name="description"
                                             id="description"
+                                            placeholder='Describe your pipeline'
                                             required
                                         />
-                                    </FormGroup>
+                                        </CInputGroup>
                                 </CCol>
                             </CRow>
                         </div>
-                    </ModalBody>
-                    <ModalFooter>
+                    </CModalBody>
+                    <CModalFooter>
                         <IconButton
                             icon={faPlay}
                             type="submit"
                             text="Start Pipeline"
                             color="primary"
+                            isOutline={false}
                             isTextLeft={false}
                             style={{ marginBottom: 20 }}
                             className="start-pipeline-btn"
                         />
-                    </ModalFooter>
-                </Form>
+                    </CModalFooter>
+                </CForm>
             )}
-        </Modal>
+        </CModal>
     )
 }

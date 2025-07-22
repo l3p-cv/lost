@@ -3,7 +3,6 @@ import { faBoxesPacking } from '@fortawesome/free-solid-svg-icons'
 import { useNodesData, useReactFlow } from '@xyflow/react'
 import { useState } from 'react'
 import Select from 'react-select'
-import { Label } from 'reactstrap'
 import * as datasetApi from '../../../../../../actions/dataset/dataset_api'
 import HelpButton from '../../../../../../components/HelpButton'
 import IconButton from '../../../../../../components/IconButton'
@@ -58,9 +57,10 @@ export const SelectStorageSettings = ({ nodeId }: SelectStorageSettingsProps) =>
 
                 <CRow className="justify-content-center">
                     <CCol sm="6">
-                        <Label for="dataset" className="text-start">
+                        <span className="py-1 fs-6 text-muted fw-bold">
                             Dataset
-                        </Label>
+                        </span>
+
 
                         <HelpButton
                             text={`Select the dataset where the annotations are linked to.`}

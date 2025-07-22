@@ -1,9 +1,9 @@
-import { CCol, CRow, CBadge } from '@coreui/react';
+import { CCol, CRow, CFormSelect,
+    CForm, CFormInput, CInputGroup, CFormLabel
+ } from '@coreui/react'
 import { useNodesData, useReactFlow } from '@xyflow/react';
-import { Input, Label } from 'reactstrap';
 import HelpButton from '../../../../../../components/HelpButton';
 import { AnnoTaskNodeData } from '../../../nodes';
-import Select from 'react-select';
 import { useGetInstructions } from '../../../../../../containers/Instruction/instruction_api';
 
 interface UserInfoProps {
@@ -54,61 +54,67 @@ export const AnnoTaskInfo = ({ nodeId }: UserInfoProps) => {
             <h4 className="mb-3 text-center">Task Information</h4>
             <CRow className="justify-content-center">
                 <CCol sm="6">
-                    <Label for="name" className="text-start">
-                        Name
-                    </Label>
-                    <HelpButton
-                        id="anno-start-name"
-                        text="Give your AnnotationTask a name. The name can also be seen by your annotators."
-                    />
-                    <Input
-                        defaultValue={annoTaskNodeData.name}
-                        onChange={(e) => updateNodeData(nodeId, { name: e.target.value })}
-                        type="text"
-                        name="name"
-                        id="name"
-                    />
-                    <br />
-                    <Label for="instruction" className="text-start">
-                        Instructions
-                    </Label>
-                    <HelpButton
-                        id="anno-start-desc"
-                        text="Give instructions / hints to your annotators so they know what to do."
-                    />
-                    {isLoading ? (
-                        <div>Loading instructions...</div>
-                    ) : error ? (
-                        <div>Error loading instructions</div>
-                    ) : (
-                        <Select
-                            options={instructionOptions}
-                            onChange={handleInstructionChange}
-                            placeholder="Select an instruction..."
-                            id="instruction"
-                            defaultValue={
-                                annoTaskNodeData.instructionId == null
-                                    ? instructionOptions[0]
-                                    : instructionOptions.find(
-                                          (option) => option.value === annoTaskNodeData.instructionId
-                                      )
-                            }
-                            formatOptionLabel={(option) => {
-                                if (option.value === '-1') return option.label;
-
-                                const group = option.group_id === null ? 'Global' : 'User';
-
-                                return (
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span>{option.label}</span>
-                                        <CBadge color={group === 'Global' ? 'success' : 'primary'}>
-                                            {group}
-                                        </CBadge>
-                                    </div>
-                                );
-                            }}
-                        />
-                    )}
+                    <CForm
+                        onSubmit={(e) => {
+                            e.preventDefault()
+                        }}
+                    >
+                        <div>
+                            <CRow className="justify-content-center">
+                                <CCol sm="10">
+                                    <CFormLabel>
+                                        Name
+                                        <HelpButton
+                                            id="anno-start-name"
+                                            text="Give your AnnotationTask a name. The name can also be seen by your annotators."
+                                        />
+                                    </CFormLabel>
+                                    <CInputGroup className="mb-3">
+                                        <CFormInput
+                                            required
+                                            defaultValue={annoTaskNodeData.name}
+                                            onChange={(e) => updateNodeData(nodeId, { name: e.target.value })}
+                                            type="text"
+                                            name="name"
+                                            placeholder='Name your pipeline for identification'
+                                            className='start-pipeline-modal'
+                                            id="name"
+                                        >
+                                        </CFormInput>
+                                    </CInputGroup>
+                                    <CFormLabel>
+                                        Description
+                                        <HelpButton
+                                            id="anno-start-desc"
+                                            text="Give instructions / hints to your annotators so they know what to do."
+                                        />
+                                    </CFormLabel>
+                                    {isLoading ? (
+                                        <div>Loading instructions...</div>
+                                    ) : error ? (
+                                        <div>Error loading instructions</div>
+                                    ) : (
+                                    <CInputGroup className="mb-3">
+                                        <CFormSelect
+                                            required
+                                            options={instructionOptions}
+                                            onChange={handleInstructionChange}
+                                            placeholder="Select an instruction..."
+                                            id="instruction"
+                                            defaultValue={
+                                                annoTaskNodeData.instructionId == null
+                                                    ? instructionOptions[0]
+                                                    : instructionOptions.find(
+                                                        (option) => option.value === annoTaskNodeData.instructionId
+                                                    )
+                                            }
+                                        />
+                                    </CInputGroup>
+                                    )}
+                                </CCol>
+                            </CRow>
+                        </div>
+                    </CForm>
                 </CCol>
             </CRow>
         </div>
