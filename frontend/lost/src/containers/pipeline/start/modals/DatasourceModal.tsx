@@ -2,20 +2,16 @@ import { useCallback, useState } from 'react'
 import LostFileBrowser from '../../../../components/FileBrowser/LostFileBrowser'
 
 import { useNodesData, useReactFlow } from '@xyflow/react'
-import {
-    Button,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-} from 'reactstrap'
-import { Divider, Icon, Label } from 'semantic-ui-react'
 import { Datasource } from '../../../../actions/pipeline/model/pipeline-template-response'
 import { DatasourceNodeData } from '../nodes'
+import { faDatabase, faFolderOpen } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+    CBadge, CButton,
+    CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, // TODO: use
+    CModal, CModalBody, CModalFooter, CModalHeader
+} from '@coreui/react'
+import LDivider from '../../../../components/LDivider'
 
 const DEFAULT_TEXT_PATH = 'No path selected!'
 
@@ -36,9 +32,6 @@ export const DatasourceModal = ({
     const datasourceNodeData = nodeData?.data as DatasourceNodeData
 
     const { updateNodeData } = useReactFlow()
-
-    const [dsDropdownOpen, setDsDropdownOpen] = useState(false)
-
     const [selectedFs, setSelectedFs] = useState(() => {
         if (datasourceNodeData.fsId) {
             return datasource.filesystems.find((el) => el.id === datasourceNodeData.fsId)
@@ -70,16 +63,6 @@ export const DatasourceModal = ({
         return undefined
     })
 
-    const toggleDs = useCallback(() => {
-        setDsDropdownOpen((prevState) => {
-            const isOpening = !prevState;
-            if (isOpening) {
-                window.dispatchEvent(new CustomEvent('joyride-next-step', { detail: { step: 'dropdown-open' } }));
-            }
-            return isOpening;
-        });
-    }, []);
-
     const selectItem = useCallback(
         (path) => {
             if (path !== selectedPath) {
@@ -98,7 +81,7 @@ export const DatasourceModal = ({
             const isValidPath = path && path !== DEFAULT_TEXT_PATH;
             if (isJoyrideRunning && isValidPath) {
                 window.dispatchEvent(new CustomEvent('joyride-next-step', {
-                     detail: { step: 'path-selected' }
+                    detail: { step: 'path-selected' }
                 }));
             }}
         },
@@ -116,25 +99,25 @@ export const DatasourceModal = ({
     const datasourceDropDown = () => {
         return (
             <div>
-                <Dropdown id="datasource-dropdown" isOpen={dsDropdownOpen} toggle={toggleDs}>
-                    <DropdownToggle caret>
-                        <Icon name="database" />
+                <CDropdown id="datasource-dropdown">
+                    <CDropdownToggle caret color='primary'>
+                        <FontAwesomeIcon icon={faDatabase} />
                         {selectedFs ? selectedFs.name : 'Select Datasource ...'}
-                    </DropdownToggle>
-                    <DropdownMenu>
+                    </CDropdownToggle>
+                    <CDropdownMenu>
                         {datasource.filesystems.map(
                             (el) =>
                                 el.name !== 'default' && (
-                                    <DropdownItem
+                                    <CDropdownItem
                                         onClick={() => selectDS(el)}
                                         key={el.name}
                                     >
                                         {el.name}
-                                    </DropdownItem>
+                                    </CDropdownItem>
                                 ),
                         )}
-                    </DropdownMenu>
-                </Dropdown>
+                    </CDropdownMenu>
+                </CDropdown>
             </div>
         )
     }
@@ -153,12 +136,12 @@ export const DatasourceModal = ({
 
     return (
         <>
-            <Modal size="lg" isOpen={isOpen} toggle={toggle} onClosed={verifyNode} id="datasource-modal">
-                <ModalHeader toggle={toggle}>Datasource</ModalHeader>
-                <ModalBody>
+            <CModal size="lg" visible={isOpen} onClose={verifyNode} id="datasource-modal">
+                <CModalHeader>Datasource</CModalHeader>
+                <CModalBody>
                     <div>
                         <div id="datasource-dropdown-container">{datasourceDropDown()}</div>
-                        <Divider horizontal>File Browser</Divider>
+                        <LDivider text={"File Browser"} className='fw-bold fs-5'></LDivider>
                         <div id="file-browser-container">
                             <LostFileBrowser
                                 fs={selectedFs}
@@ -166,31 +149,31 @@ export const DatasourceModal = ({
                                 initPath={initPath}
                             />
                         </div>
-                        <Divider horizontal>Selected Datasource</Divider>
-                        {/* @ts-expect-error Still works with string color */}
-                        <Label color={selectedPathColor} id="selected-datasource-path">
-                            <Icon name="folder open" /> {selectedPath}
-                        </Label>
+                        <LDivider text={"Selected Datasource"} className='fw-bold fs-5'></LDivider>
+                        <CBadge color={selectedPathColor}>
+                            <FontAwesomeIcon icon={faFolderOpen} /> {selectedPath}
+                        </CBadge>
                     </div>
-                </ModalBody>
-                <ModalFooter>
-                <Button
-                    onClick={() => {
-                        toggle();
-                        window.dispatchEvent(new CustomEvent('joyride-next-step', {
-                        detail: { step: 'done-clicked' },
-                        }));
-                    }}
-                    id="done-button"
-                    disabled={
-                        localStorage.getItem('joyrideRunning') === 'true' &&
-                        (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
-                    }
+                </CModalBody>
+                <CModalFooter>
+                    <CButton
+                        color='primary'
+                        onClick={() => {
+                            toggle();
+                            window.dispatchEvent(new CustomEvent('joyride-next-step', {
+                                detail: { step: 'done-clicked' },
+                            }));
+                        }}
+                        id="done-button"
+                        disabled={
+                            localStorage.getItem('joyrideRunning') === 'true' &&
+                            (!selectedPath || selectedPath === DEFAULT_TEXT_PATH)
+                        }
                     >
-                    Done
-                </Button>
-                </ModalFooter>
-            </Modal>
+                        Done
+                    </CButton>
+                </CModalFooter>
+            </CModal>
         </>
     )
 }
