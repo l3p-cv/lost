@@ -1,11 +1,11 @@
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
-import { ModalBody, ModalHeader, Progress } from 'reactstrap'
 import { useUpdatePipelineArguments } from '../../../../../actions/pipeline/pipeline_api'
 import IconButton from '../../../../../components/IconButton'
 import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import ArgumentsTable from '../../../globalComponents/modals/ScriptArgumentsTable'
 import Table from '../../../globalComponents/modals/Table'
+import { CModalBody, CModalHeader, CProgress } from '@coreui/react'
 
 const ScriptModal = (props) => {
     const [scriptArguments, setScriptArguments] = useState(props.script.arguments)
@@ -27,8 +27,8 @@ const ScriptModal = (props) => {
 
     return (
         <>
-            <ModalHeader>Script</ModalHeader>
-            <ModalBody>
+            <CModalHeader>Script</CModalHeader>
+            <CModalBody>
                 <Table
                     data={[
                         {
@@ -45,9 +45,9 @@ const ScriptModal = (props) => {
                         },
                     ]}
                 />
-                <Progress style={{ marginBottom: '20px' }} value={progress}>
-                    {progress}%
-                </Progress>
+                <CProgress color='info' value={progress}>
+                    {progress}
+                </CProgress>
                 <CollapseCard>
                     <Table
                         data={[
@@ -88,7 +88,7 @@ const ScriptModal = (props) => {
                         }
                     />
                 </CollapseCard>
-            </ModalBody>
+            </CModalBody>
         </>
     )
 }

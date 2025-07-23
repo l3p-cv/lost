@@ -1,10 +1,10 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { saveAs } from 'file-saver'
-import { ModalBody, ModalHeader } from 'reactstrap'
 
 import ReactTable from 'react-table'
 import IconButton from '../../../../../components/IconButton'
 import { API_URL } from '../../../../../lost_settings'
+import { CModalBody, CModalHeader } from '@coreui/react'
 
 const DataExportModal = ({ dataExport }) => {
     const downloadFile = (de_id, fileName) => {
@@ -20,8 +20,8 @@ const DataExportModal = ({ dataExport }) => {
 
     return (
         <>
-            <ModalHeader>Data Export</ModalHeader>
-            <ModalBody>
+            <CModalHeader>Data Export</CModalHeader>
+            <CModalBody>
                 <ReactTable
                     columns={[
                         {
@@ -64,7 +64,7 @@ const DataExportModal = ({ dataExport }) => {
                     defaultPageSize={10}
                     className="-striped -highlight"
                 />
-            </ModalBody>
+            </CModalBody>
         </>
     )
 }

@@ -1,5 +1,4 @@
 import { CCol, CRow, CButton, CSpinner, CBadge } from '@coreui/react';
-import { Label } from 'reactstrap';
 import HelpButton from '../../../../../../components/HelpButton';
 import { showSuccess, showError } from '../../../../../../components/Notification';
 import { useGetInstructions } from '../../../../../../containers/Instruction/instruction_api';
@@ -101,9 +100,10 @@ const TabInstructions = ({ annotask, updateAnnotask }) => {
     return (
         <CRow className="justify-content-center">
             <CCol sm="6" style={{ position: 'relative' }}>
-                <Label for="instruction" className="text-start">
-                    Instructions
-                </Label>
+                <span className="py-1 fs-6 text-muted fw-bold">
+                            Instructions
+                            &nbsp;
+                </span>
                 <HelpButton
                     id="anno-start-desc"
                     text="Give instructions / hints to your annotators so they know what to do."

@@ -1,5 +1,5 @@
+import { CBadge } from '@coreui/react'
 import React from 'react'
-import { Badge } from 'reactstrap'
 
 const TabShowLabels = ({ labelLeaves }) => {
     return (
@@ -8,11 +8,11 @@ const TabShowLabels = ({ labelLeaves }) => {
                 <b>All children of the label tree(s):</b>
             </div>
             <h5>
-                <Badge color="primary" pill>
+                <CBadge color="primary" pill>
                     {labelLeaves.map((l) => {
                         return l.name
                     })}
-                </Badge>
+                </CBadge>
             </h5>
         </>
     )

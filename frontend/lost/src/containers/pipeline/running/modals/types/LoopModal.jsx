@@ -1,11 +1,11 @@
-import { ModalBody, ModalHeader } from 'reactstrap'
 import Table from '../../../globalComponents/modals/Table'
+import { CModalBody, CModalHeader } from '@coreui/react'
 
 const LoopModal = (props) => {
     return (
         <>
-            <ModalHeader>Loop Modal</ModalHeader>
-            <ModalBody>
+            <CModalHeader>Loop Modal</CModalHeader>
+            <CModalBody>
                 <Table
                     data={[
                         {
@@ -42,7 +42,7 @@ const LoopModal = (props) => {
                         },
                     ]}
                 />
-            </ModalBody>
+            </CModalBody>
         </>
     )
 }

@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { faCircle, faEye, faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import { ModalBody, ModalHeader } from 'reactstrap'
 import IconButton from '../../../../../components/IconButton'
 import * as Notification from '../../../../../components/Notification'
 import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import Table from '../../../globalComponents/modals/Table'
 import AnnoTaskTabs from './AnnoTaskModalUtils/AnnoTaskTabs'
+import { CModalBody, CModalHeader } from '@coreui/react';
 
 function handleSiaRewiewClick(props, callback) {
     props.siaReviewSetElement(props.id)
@@ -36,8 +36,8 @@ const AnnoTaskModal = (props) => {
 
     return (
         <>
-            <ModalHeader>Annotation Task</ModalHeader>
-            <ModalBody>
+            <CModalHeader>Annotation Task</CModalHeader>
+            <CModalBody>
                 <Table
                     style={{ marginBottom: '20px' }}
                     data={[
@@ -99,7 +99,7 @@ const AnnoTaskModal = (props) => {
                     onClick={(e) => handleForceAnnotationRelease(props)}
                     text="Force Annotation Release"
                 />
-            </ModalBody>
+            </CModalBody>
         </>
     )
 }

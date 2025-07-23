@@ -1,12 +1,12 @@
-import { ModalBody, ModalHeader } from 'reactstrap'
 import CollapseCard from '../../../globalComponents/modals/CollapseCard'
 import Table from '../../../globalComponents/modals/Table'
+import { CModalBody, CModalHeader } from '@coreui/react'
 
 const DatasourceModal = (props) => {
     return (
         <>
-            <ModalHeader>Datasource</ModalHeader>
-            <ModalBody>
+            <CModalHeader>Datasource</CModalHeader>
+            <CModalBody>
                 <Table
                     data={[
                         {
@@ -33,7 +33,7 @@ const DatasourceModal = (props) => {
                         ]}
                     />
                 </CollapseCard>
-            </ModalBody>
+            </CModalBody>
         </>
     )
 }

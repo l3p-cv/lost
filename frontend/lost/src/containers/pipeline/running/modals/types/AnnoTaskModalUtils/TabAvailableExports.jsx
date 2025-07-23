@@ -3,12 +3,12 @@ import axios from 'axios'
 import { saveAs } from 'file-saver'
 import { useEffect } from 'react'
 import ReactTable from 'react-table'
-import { Progress } from 'reactstrap'
 import * as annoTaskApi from '../../../../../../actions/annoTask/anno_task_api'
 import IconButton from '../../../../../../components/IconButton'
 import * as Notification from '../../../../../../components/Notification'
 import { getColor } from '../../../../../../containers/Annotation/AnnoTask/utils'
 import { API_URL } from '../../../../../../lost_settings'
+import { CProgress } from '@coreui/react'
 
 const TabAvailableExports = (props) => {
     const {
@@ -113,7 +113,7 @@ const TabAvailableExports = (props) => {
                                         {/* <div className="float-left"> */}
                                         <strong>{progress}%</strong>
                                         {/* </div> */}
-                                        <Progress
+                                        <CProgress
                                             className="progress-xs rt-progress"
                                             color={getColor(progress)}
                                             value={progress}
